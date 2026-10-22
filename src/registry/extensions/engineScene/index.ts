@@ -6,6 +6,7 @@ import {
   MODE_MODELING_COMMAND_SCOPE,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   defineEngineSceneStreamClassName,
   defineEngineSceneViewExtension,
@@ -13,7 +14,6 @@ import {
   engineSceneStreamClassNamesValueSpec,
   engineSceneViewExtensionsValueSpec,
 } from '@src/registry/contracts/engineScene'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type KeymapItem,
@@ -267,7 +267,8 @@ const EngineSceneScreenshotStatusBarItem = () =>
  * the scene and the default view chrome rendered around the engine stream.
  */
 const engineSceneExtension = defineRegistryItemFactory((ctx) => {
-  const executionService = ctx.services.signal(executingEditorService)
+  const session = ctx.services.signal(projectSession)
+  const executionService = computed(() => session.value?.executingEditor.value)
   const selectionStatusBarItem = computed(() => {
     const selectionStatusLabel =
       executionService.value?.selectionStatusLabel.value

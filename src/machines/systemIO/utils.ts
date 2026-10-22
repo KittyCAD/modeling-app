@@ -1,6 +1,6 @@
 import type { MlToolResult } from '@kittycad/lib'
 import type { ExecState } from '@src/lang/wasm'
-import type { App } from '@src/lib/app'
+import type { ZDSProject } from '@src/lib/projectSession'
 import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
@@ -118,9 +118,17 @@ export enum SystemIOMachineGuards {
 
 export const NO_PROJECT_DIRECTORY = ''
 
+/** Capabilities used by legacy filesystem workflows, supplied by the registry. */
+export interface SystemIOHost {
+  readonly fileOperations: FileOperationsRegistryService
+  readonly project: ZDSProject | undefined
+  readonly wasmPromise: Promise<ModuleType>
+  readonly systemIOActor: SystemIOActor
+}
+
 export type SystemIOInput = {
   wasmInstancePromise: Promise<ModuleType>
-  app: App
+  host: SystemIOHost
 }
 
 export type SystemIOContext = SystemIOInput & {

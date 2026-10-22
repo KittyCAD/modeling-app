@@ -305,6 +305,7 @@ export class ZDSProject {
   }
 
   closeAllEditors() {
+    this.executingPath = null
     for (const path of this.editors.keys()) this.closeEditor(path.peek())
   }
 

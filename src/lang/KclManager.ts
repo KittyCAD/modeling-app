@@ -182,7 +182,7 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
+import type { ExecutingEditor } from '@src/registry/contracts/projectSession'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -528,7 +528,7 @@ export class KclManager extends File {
   get hasEditsSinceLastExecutionSignal() {
     return this._hasEditsSinceLastExecution
   }
-  get executingEditorService(): ExecutingEditorService {
+  get execution(): ExecutingEditor {
     return {
       code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
