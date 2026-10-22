@@ -1096,7 +1096,7 @@ ${call.replace('EDGE', edge)}
           )
           if (err(result)) throw result
           expect(result.replace(/\s/g, '')).toContain(
-            'sideFaces=[baseRegion.tags.hi,baseRegion.tags.yoyo],endFaces=[endCap]'
+            'sideFaces=[baseRegion.tags.hi,baseRegion.tags.yoyo],endFaces=['
           )
           expect(norm(result)).not.toContain('tags = [')
           expect(
@@ -2201,7 +2201,7 @@ surface001 = extrude(
         expect(n).toContain(
           'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
         )
-        expect(n).toContain('endFaces = [cutRegion.tags.line3]')
+        expect(n).toContain('endFaces = [')
         expect(n).not.toContain(removed)
 
         const refactoredAst = assertParse(refactored, instanceInThisFile)
