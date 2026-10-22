@@ -2201,8 +2201,12 @@ surface001 = extrude(
         expect(n).toContain(
           'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
         )
-        expect(n).toContain('endFaces = [startCap]')
+        expect(n).toContain('endFaces = [cutRegion.tags.line3]')
         expect(n).not.toContain(removed)
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
       })
     }
 
