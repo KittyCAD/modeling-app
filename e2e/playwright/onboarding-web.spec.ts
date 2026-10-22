@@ -10,6 +10,7 @@ import {
 import {
   mockClientErrorReports,
   setup,
+  waitForAppLoad,
   waitForWebKitBillingToSettle,
 } from '@e2e/playwright/test-utils'
 import { PLAYWRIGHT_PROJECT_DIRECTORY } from '@e2e/playwright/storageStates'
@@ -62,6 +63,8 @@ test(
         `${PROJECT_DIR}/tutorial-project/main.kcl`
       )}/onboarding/desktop/scene`
     )
+    // Document load does not await the deferred app bootstrap.
+    await waitForAppLoad(page)
 
     await expect(page).toHaveURL(
       /tutorial-project%2Fblank\.kcl\/onboarding\/desktop\/scene/,
@@ -109,6 +112,7 @@ liveTest.describe('Local onboarding with real API routes', () => {
       await page.goto(
         `/file/${encodeURIComponent(mainPath)}/onboarding/desktop/scene`
       )
+      await waitForAppLoad(page)
 
       await expect(page).toHaveURL(new URL(blankRoute, page.url()).href, {
         timeout: 15_000,
