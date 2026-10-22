@@ -546,14 +546,6 @@ export function createProjectReferenceCommands(deps: {
     }
     let bytes: Uint8Array
     if (entry.localProjectPath) {
-      const availableFiles = await localFiles(entry.localProjectPath)
-      if (!availableFiles.includes(path)) {
-        return Promise.reject(
-          new ProjectReferenceCommandError(
-            'File is not in the library project.'
-          )
-        )
-      }
       const projectRoot = await deps.fileOperations.realpath(
         entry.localProjectPath
       )
@@ -705,18 +697,6 @@ export function createProjectReferenceCommands(deps: {
                 catalog_revision: request.catalog_revision,
                 status: 'rejected',
                 error: 'The account changed. Search again.',
-              })
-            )
-            return
-          }
-          if (request.catalog_revision !== revision) {
-            ws.send(
-              JSON.stringify({
-                type: 'client_command_response',
-                request_id: request.request_id,
-                catalog_revision: request.catalog_revision,
-                status: 'rejected',
-                error: 'The command catalog changed.',
               })
             )
             return

@@ -484,6 +484,23 @@ describe('Zookeeper project reference commands', () => {
     expect(fileOperations.writeFile).not.toHaveBeenCalled()
   })
 
+  it('reads a known local KCL file without enumerating the project', async () => {
+    const { readDirectory, request } = fixture()
+    readDirectory.mockRejectedValue(new Error('Directory listing unavailable'))
+    const found = await request('projects.search', { query: 'TRUCK' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+
+    const read = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+
+    expect(read.result?.content).toBe('wheel = circle(10)')
+    expect(readDirectory).not.toHaveBeenCalled()
+  })
+
   it('rejects traversal, hidden files, and a project removed from the library', async () => {
     const { entries, readFile, request } = fixture()
     const found = await request('projects.search', { query: 'TRUCK' })
@@ -517,9 +534,15 @@ describe('Zookeeper project reference commands', () => {
       }
       return []
     })
-    realpath.mockImplementation(async (path) =>
-      path === '/private/library/TRUCK/linked' ? '/private/outside' : path
-    )
+    realpath.mockImplementation(async (path) => {
+      if (path === '/private/library/TRUCK/linked') {
+        return '/private/outside'
+      }
+      if (path === '/private/library/TRUCK/linked/secret.kcl') {
+        return '/private/outside/secret.kcl'
+      }
+      return path
+    })
     statReadOnly.mockImplementation(async (path) => ({
       kind: path.endsWith('/linked') ? 'directory' : 'file',
       size: 20,
