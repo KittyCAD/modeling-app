@@ -18,12 +18,12 @@ description: Physical properties router-template-slate.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 23474.541908353076
+    "value": 23474.540728635417
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 49.74584564898521
+    "value": 49.745844104739
   }
 }

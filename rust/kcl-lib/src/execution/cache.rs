@@ -5,11 +5,13 @@ use std::sync::Arc;
 use indexmap::IndexMap;
 use itertools::EitherOrBoth;
 use itertools::Itertools;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kittycad_modeling_cmds::KclVersion;
 use tokio::sync::RwLock;
 
 use crate::ExecOutcome;
 use crate::ExecutorContext;
-use crate::KclVersion;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::execution::ConstraintKey;
@@ -25,8 +27,6 @@ use crate::execution::memory::Stack;
 use crate::execution::state::ModuleInfoMap;
 use crate::execution::state::NotYetAdded;
 use crate::execution::state::{self as exec_state};
-use crate::front::Object;
-use crate::front::ObjectId;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
 use crate::modules::ModuleSource;
@@ -35,42 +35,92 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 use crate::walk::Node as WalkNode;
 
-lazy_static::lazy_static! {
-    /// A static mutable lock for updating the last successful execution state for the cache.
-    static ref OLD_AST: Arc<RwLock<Option<GlobalState>>> = Default::default();
+#[derive(Debug, Default)]
+struct CacheInner {
+    /// Last successful execution state for the cache.
+    pub old_ast: Option<GlobalState>,
     // The last successful run's memory. Not cleared after an unsuccessful run.
-    static ref PREV_MEMORY: Arc<RwLock<Option<SketchModeState>>> = Default::default();
+    pub prev_memory: Option<SketchModeState>,
+    /// Counts the runs that changed the engine scene. Never reset, so callers
+    /// can tell whether the scene changed since they last looked.
+    /// If the counter hasn't moved, the scene hasn't changed. If it has moved,
+    /// the scene may have changed.
+    pub engine_scene_generation: usize,
 }
 
-/// Read the old ast memory from the lock.
-pub(super) async fn read_old_ast() -> Option<GlobalState> {
-    let old_ast = OLD_AST.read().await;
-    old_ast.clone()
+/// Cached execution state for one engine session and its associated mock execution.
+///
+/// Clones share the same state. A default cache is empty and independent of all
+/// other caches. Callers must serialize executions that share an engine session;
+/// this cache only locks individual state accesses.
+#[derive(Debug, Clone)]
+pub struct Cache(Arc<dyn CacheStorage>);
+
+// Hide the cache's concrete state graph from Send/Sync proofs in callers.
+trait CacheStorage: std::fmt::Debug + Send + Sync {
+    fn inner(&self) -> &RwLock<CacheInner>;
 }
 
-pub(super) async fn write_old_ast(old_state: GlobalState) {
-    let mut old_ast = OLD_AST.write().await;
-    *old_ast = Some(old_state);
+impl CacheStorage for RwLock<CacheInner> {
+    fn inner(&self) -> &RwLock<CacheInner> {
+        self
+    }
 }
 
-pub(crate) async fn read_old_memory() -> Option<SketchModeState> {
-    let old_mem = PREV_MEMORY.read().await;
-    old_mem.clone()
+impl Default for Cache {
+    fn default() -> Self {
+        Self(Arc::new(RwLock::new(CacheInner::default())))
+    }
 }
 
-pub(crate) async fn write_old_memory(mem: SketchModeState) {
-    let mut old_mem = PREV_MEMORY.write().await;
-    *old_mem = Some(mem);
-}
+impl Cache {
+    /// Read the old AST state from the cache.
+    pub(super) async fn read_old_ast(&self) -> Option<GlobalState> {
+        self.0.inner().read().await.old_ast.clone()
+    }
 
-pub async fn bust_cache() {
-    let mut old_ast = OLD_AST.write().await;
-    *old_ast = None;
-}
+    pub(super) async fn write_old_ast(&self, old_state: GlobalState) {
+        let mut inner = self.0.inner().write().await;
+        inner.old_ast = Some(old_state);
+    }
 
-pub async fn clear_mem_cache() {
-    let mut old_mem = PREV_MEMORY.write().await;
-    *old_mem = None;
+    pub(crate) async fn read_old_memory(&self) -> Option<SketchModeState> {
+        self.0.inner().read().await.prev_memory.clone()
+    }
+
+    pub(crate) async fn write_old_memory(&self, mem: SketchModeState) {
+        let mut inner = self.0.inner().write().await;
+        inner.prev_memory = Some(mem);
+    }
+
+    /// The number of runs that have changed the engine scene.
+    pub(crate) async fn engine_scene_generation(&self) -> usize {
+        self.0.inner().read().await.engine_scene_generation
+    }
+
+    pub(super) async fn bump_engine_scene_generation(&self) {
+        let mut inner = self.0.inner().write().await;
+        inner.engine_scene_generation = inner.engine_scene_generation.wrapping_add(1);
+    }
+
+    /// Invalidate live execution state while preserving usable sketch-mode memory.
+    pub async fn bust_cache(&self) {
+        let mut inner = self.0.inner().write().await;
+        inner.old_ast = None;
+    }
+
+    /// Clear the memory reused by mock execution.
+    pub async fn clear_mem_cache(&self) {
+        let mut inner = self.0.inner().write().await;
+        inner.prev_memory = None;
+    }
+
+    /// Read a named value from the previous sketch-mode execution.
+    pub async fn read_old_memory_var(&self, name: &str) -> Option<KclValue> {
+        self.read_old_memory()
+            .await
+            .and_then(|memory| memory.stack.get(name, SourceRange::default()).ok())
+    }
 }
 
 /// Information for the caching an AST and smartly re-executing it if we can.
@@ -153,6 +203,7 @@ impl GlobalState {
         Ok(ExecOutcome {
             variables,
             filenames: self.exec_state.filenames(),
+            engine_scene_generation: ctx.cache.engine_scene_generation().await,
             operations: self.exec_state.operations_by_module(),
             artifact_graph: self.exec_state.artifacts.graph,
             scene_objects: self.exec_state.root_module_artifacts.scene_objects,
@@ -231,13 +282,6 @@ impl SketchModeState {
     pub(crate) fn reusable_for(&self, kcl_version: KclVersion) -> bool {
         self.kcl_version == kcl_version
     }
-}
-
-/// Read a named value from the previous sketch-mode execution.
-#[doc(hidden)]
-pub async fn read_old_memory_var(name: &str) -> Option<KclValue> {
-    let memory = read_old_memory().await?;
-    memory.stack.get(name, SourceRange::default()).ok()
 }
 
 #[cfg(test)]

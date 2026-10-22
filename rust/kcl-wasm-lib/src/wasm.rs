@@ -1,7 +1,7 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_api::KclVersion;
+use kcl_api::NumericSuffix;
 use kcl_lib::KclRuntimeFlags;
 use kcl_lib::Program;
 use kcl_lib::SourceRange;
@@ -10,7 +10,7 @@ use kcl_lib::exec::UnitAngle;
 use kcl_lib::exec::UnitLength;
 use kcl_lib::exec::UnitType;
 use kcl_lib::exec::WarningLevel;
-use kcl_lib::pretty::NumericSuffix;
+use kittycad_modeling_cmds::KclVersion;
 use kittycad_modeling_cmds::units::UnitLength as KcmcUnitLength;
 use wasm_bindgen::prelude::*;
 
@@ -342,6 +342,17 @@ pub fn kcl_language_version(program_json: &str) -> Result<JsValue, String> {
     JsValue::from_serde(&version).map_err(|e| e.to_string())
 }
 
+/// Check argument availability using the same version rules as the executor.
+#[wasm_bindgen]
+pub fn is_kcl_version_available(
+    version: &str,
+    added_in: Option<String>,
+    removed_in: Option<String>,
+) -> Result<bool, String> {
+    let version = version.parse::<KclVersion>().map_err(|e| e.to_string())?;
+    kcl_lib::is_kcl_version_available(version, added_in.as_deref(), removed_in.as_deref()).map_err(|e| e.to_string())
+}
+
 /// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
 #[wasm_bindgen]
 pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String> {
@@ -404,6 +415,12 @@ pub fn get_kcl_version() -> String {
     console_error_panic_hook::set_once();
 
     kcl_lib::version().to_string()
+}
+
+/// Returns the reserved name of the default KCL view.
+#[wasm_bindgen]
+pub fn kcl_default_view_name() -> String {
+    kcl_lib::named_views::default_view_name().to_string()
 }
 
 /// Get the allowed import file extensions.

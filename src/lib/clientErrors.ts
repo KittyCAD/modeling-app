@@ -34,7 +34,6 @@ export enum ClientErrorCode {
   EngineUnsupportedVideoCodec = 'engine_unsupported_video_codec',
   EngineWebrtcDisconnect = 'engine_webrtc_disconnect',
   FileOperationsError = 'file_operations_error',
-  LegacySketchMode = 'legacy_sketch_mode',
   SystemIOError = 'system_io_error',
   ToolbarDropdownAnchorPositioningError = 'toolbar_dropdown_anchor_positioning_error',
   UnsupportedBrowserFeature = 'unsupported_browser_feature',
@@ -44,6 +43,7 @@ export enum ClientErrorCode {
   ZookeeperWebsocketBinaryDecodeError = 'zookeeper_websocket_binary_decode_error',
   ZookeeperWebsocketJsonParseError = 'zookeeper_websocket_json_parse_error',
   EngineTeardown = 'engine_teardown',
+  EnginePingPongTiming = 'engine_ping_pong_timing',
 }
 
 const reportedClientErrors = new Set<string>()

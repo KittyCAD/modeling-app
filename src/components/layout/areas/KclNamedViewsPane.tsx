@@ -6,10 +6,7 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
-import {
-  KCL_DEFAULT_VIEW_NAME,
-  listNamedViews,
-} from '@src/lang/std/kclNamedViews'
+import { listNamedViews } from '@src/lang/std/kclNamedViews'
 import { useSingletons } from '@src/lib/boot'
 import { FILE_EXT } from '@src/lib/constants'
 import type {
@@ -25,6 +22,7 @@ import {
 } from '@src/lib/kclNamedViewActivation'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { reportRejection } from '@src/lib/trap'
+import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
 
 export type ViewRow = {
   /** Unique per row, so React keys stay stable across executions. */
@@ -74,7 +72,7 @@ export function viewRows(views: KclNamedView[]): ViewRow[] {
   return [
     {
       key: 'kcl-default',
-      label: KCL_DEFAULT_VIEW_NAME,
+      label: getKclDefaultViewName(),
       identity: null,
       target: { kind: 'kclDefault' },
     },

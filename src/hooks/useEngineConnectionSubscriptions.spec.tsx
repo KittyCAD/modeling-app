@@ -9,13 +9,6 @@ const normalizeEntityReference = vi.hoisted(() => vi.fn())
 const selectSketchPlane = vi.hoisted(() => vi.fn())
 
 vi.mock('@src/hooks/useModelingContext', () => ({ useModelingContext }))
-vi.mock('@src/lib/boot', () => ({
-  useApp: () => ({
-    userFeatures: {
-      useHas: () => false,
-    },
-  }),
-}))
 vi.mock('@src/lib/selections', () => ({
   engineTopologyFallbackFromReference: vi.fn(() => null),
   getEventForQueryEntityTypeWithPoint,
@@ -81,11 +74,7 @@ test('stores a post-selected primitive before starting a sketch', async () => {
       kclManager,
       rustContext,
       wasmInstance: {},
-      store: {
-        useSketchSolveMode: {
-          current: true,
-        },
-      },
+      store: {},
     },
   })
   getEventForQueryEntityTypeWithPoint.mockResolvedValue(selectionEvent)
@@ -103,7 +92,7 @@ test('stores a post-selected primitive before starting a sketch', async () => {
 
   await waitFor(() => {
     expect(send).toHaveBeenCalledWith(selectionEvent)
-    expect(selectSketchPlane).toHaveBeenCalledWith('face-id', true, kclManager)
+    expect(selectSketchPlane).toHaveBeenCalledWith('face-id', kclManager)
   })
   expect(send.mock.invocationCallOrder[0]).toBeLessThan(
     selectSketchPlane.mock.invocationCallOrder[0]

@@ -4,7 +4,6 @@ import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { createEdgeRefObjectExpression } from '@src/lang/modifyAst/edges'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { KclManager } from '@src/lang/KclManager'
@@ -19,6 +18,7 @@ import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   canSubmitSelectionArg,
+  type ResolvedSelectionType,
   codeToIdSelections,
   findLastRangeStartingBefore,
   getEventForQueryEntityTypeWithPoint,
@@ -3522,7 +3522,6 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
           kclManager: { ast, artifactGraph } as any,
           rustContext: { defaultPlanes: null } as any,
           wasmInstance: instance,
-          useSegmentsBasedRegions: false,
         }
       )
     ).resolves.toEqual({
@@ -3585,9 +3584,9 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     })
   })
 
-  test('converts region query responses to engine region selections', async () => {
+  test.each(['segments', 'point'])('selects region via %s', async (mode) => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
-    const ast = assertParse('', instance)
+    const ast = assertParse('@settings(defaultLengthUnit = in)', instance)
     const pathToNode = [['body', '']] as any
     const codeRef = {
       range: [0, 0, 0] as SourceRange,
@@ -3612,12 +3611,44 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
       consumed: false,
       sketchBlockId: sketchBlock.id,
     } satisfies Extract<Artifact, { type: 'path' }>
+    const segment = {
+      type: 'segment',
+      id: 'segment-1',
+      pathId: sketchPath.id,
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef,
+    } satisfies Extract<Artifact, { type: 'segment' }>
     const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
       [sketchBlock.id, sketchBlock],
       [sketchPath.id, sketchPath],
+      [segment.id, segment],
     ])
+    const regionInfo = {
+      segment: segment.id,
+      intersection_segment: 'segment-2',
+      intersection_index: 1,
+      intersection_count: 2,
+      curve_clockwise: true,
+    }
     const engineCommandManager = {
       sendSceneCommand: vi.fn(async (event: any) => {
+        if (
+          mode === 'segments' &&
+          event.cmd.type === 'region_get_resolvable_intersection_info'
+        ) {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'region_get_resolvable_intersection_info',
+                  data: regionInfo,
+                },
+              },
+            },
+          }
+        }
         if (event.cmd.type === 'region_get_query_point') {
           return {
             resp: {
@@ -3625,7 +3656,7 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
               data: {
                 modeling_response: {
                   type: 'region_get_query_point',
-                  data: { query_point: { x: 12, y: 34 } },
+                  data: { query_point: { x: 25.4, y: -50.8 } },
                 },
               },
             },
@@ -3638,13 +3669,18 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
               data: {
                 modeling_response: {
                   type: 'entity_get_parent_id',
-                  data: { entity_id: 'path-1' },
+                  data: { entity_id: sketchPath.id },
                 },
               },
             },
           }
         }
-        return undefined
+        return {
+          resp: {
+            type: 'modeling',
+            data: { modeling_response: { type: 'empty' } },
+          },
+        }
       }),
     }
 
@@ -3661,7 +3697,6 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
           kclManager: { ast, artifactGraph } as any,
           rustContext: { defaultPlanes: null } as any,
           wasmInstance: instance,
-          useSegmentsBasedRegions: false,
         }
       )
     ).resolves.toEqual({
@@ -3671,8 +3706,10 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
         selection: {
           type: 'engineRegion',
           id: 'region-1',
-          point: { x: 12, y: 34 },
           sketchId: 'sketch-1',
+          ...(mode === 'segments'
+            ? { resolvableIntersectionInfo: regionInfo }
+            : { point: { x: 1, y: -2 } }),
         },
       },
     })
@@ -3736,7 +3773,6 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
           kclManager: { ast, artifactGraph } as any,
           rustContext: { defaultPlanes: null } as any,
           wasmInstance: instance,
-          useSegmentsBasedRegions: false,
         }
       )
     ).resolves.toEqual({
@@ -3945,6 +3981,27 @@ describe('canSubmitSelectionArg', () => {
       false
     )
   })
+
+  test('preserves legacy acceptance of non-empty code selections', () => {
+    const source: Selection = {
+      codeRef: { range: [1, 2, 0], pathToNode: [] },
+    }
+    const counts = new Map<ResolvedSelectionType, number>([['other', 2]])
+    const arg = { ...bodyArgument, allowCodeReferences: true }
+
+    expect(
+      canSubmitSelectionArg(counts, arg, {
+        graphSelections: [source, source],
+        otherSelections: [],
+      })
+    ).toBe(true)
+    expect(
+      canSubmitSelectionArg(counts, arg, {
+        graphSelections: [{ codeRef: { range: [1, 1, 0], pathToNode: [] } }],
+        otherSelections: [],
+      })
+    ).toBe(false)
+  })
 })
 
 describe('getStableOffsetPlaneData', () => {
@@ -4077,25 +4134,5 @@ sketch001 = sketch(on = ${on}) {
     }
     expect(result.negated).toBe(false)
     expect(normalizeAxis(result.zAxis)).toEqual([0, 1, 0])
-  })
-})
-
-describe('selectSketchPlane', () => {
-  test('routes offset plane ids into sketch solve when sketch solve mode is enabled', async () => {
-    const modelingSend = vi.fn()
-    const getFaceDetails = vi.fn()
-
-    await selectSketchPlane('plane001', true, {
-      artifactGraph: new Map(),
-      rustContext: { defaultPlanes: null },
-      sceneEntitiesManager: { getFaceDetails },
-      sceneInfra: { modelingSend },
-    } as any)
-
-    expect(modelingSend).toHaveBeenCalledWith({
-      type: 'Select sketch solve plane',
-      data: 'plane001',
-    })
-    expect(getFaceDetails).not.toHaveBeenCalled()
   })
 })

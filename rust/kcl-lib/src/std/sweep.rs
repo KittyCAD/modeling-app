@@ -13,6 +13,7 @@ use serde::Serialize;
 
 use super::DEFAULT_TOLERANCE_MM;
 use super::args::TyF64;
+use crate::CompilationIssue;
 use crate::KclVersion;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -26,6 +27,7 @@ use crate::execution::Segment;
 use crate::execution::Sketch;
 use crate::execution::SketchSurface;
 use crate::execution::Solid;
+use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
@@ -78,6 +80,19 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         exec_state,
     )?;
     let sectional = args.get_kw_arg_opt("sectional", &RuntimeType::bool(), exec_state)?;
+    if sectional.is_some()
+        && exec_state.kcl_version() >= KclVersion::V3Preview
+        && let Some(arg) = args.labeled.get("sectional")
+    {
+        exec_state.warn(
+            CompilationIssue::err(
+                arg.source_range,
+                "Sectional sweeps are not supported in KCL 3. The `sectional` argument has no effect; remove it."
+                    .to_owned(),
+            ),
+            annotations::WARN_NOT_YET_SUPPORTED,
+        );
+    }
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
@@ -298,7 +313,10 @@ async fn inner_sweep(
                 .trajectory(trajectory)
                 .sectional(sectional.unwrap_or(false))
                 .tolerance(LengthUnit(
-                    tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                    tolerance
+                        .as_ref()
+                        .map(|t| t.unwrap_to_mm())
+                        .unwrap_or(DEFAULT_TOLERANCE_MM),
                 ))
                 .maybe_relative_to(profile_transform.relative_to())
                 .maybe_orient_profile_perpendicular(profile_transform.orient_profile_perpendicular())
@@ -388,6 +406,7 @@ async fn inner_sweep(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::errors::Severity;
     use crate::execution::ExecTestResults;
     use crate::execution::parse_execute;
 
@@ -471,6 +490,37 @@ mod tests {
             result.issues()
         );
         assert_eq!(emitted_sweep_cmd(&result).version, Some(2));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sectional_warns_only_in_kcl_3() {
+        for version in ["\"3.0-preview\"", "3"] {
+            for value in ["true", "false"] {
+                let result = run_sweep(version, &format!(", sectional = {value}")).await;
+                let warnings: Vec<_> = result
+                    .issues()
+                    .iter()
+                    .filter(|issue| issue.message.contains("Sectional sweeps are not supported in KCL 3"))
+                    .collect();
+                assert_eq!(warnings.len(), 1, "issues: {:#?}", result.issues());
+                assert_eq!(warnings[0].severity, Severity::Warning);
+            }
+            let result = run_sweep(version, "").await;
+            assert!(
+                result
+                    .issues()
+                    .iter()
+                    .all(|issue| !issue.message.contains("Sectional sweeps are not supported"))
+            );
+        }
+
+        let result = run_sweep("2.0", ", sectional = true").await;
+        assert!(
+            result
+                .issues()
+                .iter()
+                .all(|issue| !issue.message.contains("Sectional sweeps are not supported"))
+        );
     }
 
     /// Sweep a circle along a line under the given KCL version, passing

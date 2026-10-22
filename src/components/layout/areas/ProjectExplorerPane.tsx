@@ -6,7 +6,6 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
   clearActiveTextFile,
-  isEditableTextFile,
   openActiveTextFile,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -93,7 +92,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       if (
         !projectRef.current?.value.name ||
         entry.children != null ||
-        (!entry.path.endsWith(FILE_EXT) && !isEditableTextFile(entry.path))
+        !entry.path.endsWith(FILE_EXT)
       ) {
         return
       }
@@ -154,12 +153,8 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
           // immediately navigate
           navigateAfterFlush()
         }
-      } else if (
-        projectRef.current?.value.name &&
-        entry.children == null &&
-        isEditableTextFile(entry.path)
-      ) {
-        // Open text/markdown files directly in the code editor pane.
+      } else if (projectRef.current?.value.name && entry.children == null) {
+        // Inspect file contents before allowing edits, regardless of extension.
         openCodeEditorPaneIfClosed()
         openActiveTextFile(fileOperations, entry.path).catch(reportRejection)
       }

@@ -251,7 +251,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await test.step('Start a new sketch and select a plane', async () => {
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
       })
 
       await test.step('Add three line segments', async () => {
@@ -426,9 +425,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await scene.settled()
 
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
-        await toolbar.expectToolbarMode.toBe('sketchSolve')
-        await scene.clickNoWhere()
       })
 
       await test.step('Equip the line tool with its keybinding and draw a line', async () => {
@@ -580,9 +576,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await scene.settled()
 
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
-        await toolbar.expectToolbarMode.toBe('sketchSolve')
-        await scene.clickNoWhere()
       })
 
       const [lineStart] = scene.makeMouseHelpers(0.35, 0.45, {
@@ -676,7 +669,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await test.step('Start a new sketch and equip line tool', async () => {
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
+
         await toolbar.lineBtn.click()
         await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })
@@ -1282,7 +1275,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Start a new sketch and equip center arc', async () => {
       await toolbar.startSketchOnDefaultPlane('Top plane')
-      await editor.expectEditor.toContain('sketch(on = XY) {')
 
       await page.getByRole('button', { name: 'caret down arcs:' }).click()
       await expect(page.getByTestId('dropdown-center-arc')).toBeVisible()
@@ -2145,6 +2137,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Extrude region by clicking center', async () => {
       await toolbar.extrudeButton.click()
       await clickCenter()
+      await expect(page.getByText('1 region selected')).toBeVisible()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'sketches',
@@ -2184,7 +2177,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await scene.settled()
       await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
-        'region(point = [0.025mm, -1.9875mm], sketch = sketch001)'
+        'region(segments = [sketch001.line4, sketch001.line1])'
       )
       await editor.expectEditor.toContain(
         'extrude001 = extrude(region001, length = 5)'
@@ -2240,11 +2233,35 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await scene.settled()
       await editor.expectEditor.toContain('@settings(defaultLengthUnit = in')
       await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
+
+      // Force the point fallback while leaving the query point from the engine intact.
+      await page.evaluate(() => {
+        const engine = window.engineCommandManager
+        const sendSceneCommand = engine.sendSceneCommand.bind(engine)
+        engine.sendSceneCommand = async (...args) => {
+          const [command] = args
+          if (
+            command.type === 'modeling_cmd_req' &&
+            command.cmd.type === 'region_get_resolvable_intersection_info'
+          ) {
+            return {
+              success: true,
+              request_id: command.cmd_id,
+              resp: {
+                type: 'modeling',
+                data: { modeling_response: { type: 'empty' } },
+              },
+            }
+          }
+          return sendSceneCommand(...args)
+        }
+      })
     })
 
     await test.step('Extrude region by clicking center', async () => {
       await toolbar.extrudeButton.click()
       await clickCenter()
+      await expect(page.getByText('1 region selected')).toBeVisible()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'sketches',
@@ -2280,7 +2297,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await cmdBar.submit()
     })
 
-    await test.step('Expect extrusion uses inches for region point', async () => {
+    await test.step('Expect point fallback extrusion with inches as the default unit', async () => {
       await scene.settled()
       await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(

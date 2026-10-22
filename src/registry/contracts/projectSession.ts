@@ -1,6 +1,7 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { Signal } from '@preact/signals-core'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
+import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
 
 /**
  * Owns the currently opened project session.
@@ -10,6 +11,7 @@ import type { ZDSProject } from '@src/lang/KclManager'
  * fields delegate to this service while call sites are migrated.
  */
 export interface ProjectSessionService {
+  readonly textFileIO: TextFileIO
   readonly project: Signal<ZDSProject | undefined>
   readonly currentProjectLibraryId: Signal<string | undefined>
   getProject: () => ZDSProject | undefined

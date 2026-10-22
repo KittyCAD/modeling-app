@@ -18,12 +18,12 @@ description: Physical properties lots_of_planes.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 975.504264189908
+    "value": 975.5041709977876
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.7502470545141712
+    "value": 0.7502466462389057
   }
 }

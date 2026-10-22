@@ -178,16 +178,16 @@ fn view_error<E: std::fmt::Display>(err: E, args: &Args) -> KclError {
 /// Converts a coerced point argument to a point in millimeters.
 fn millimeter_point([x, y, z]: [TyF64; 3]) -> Point3d {
     Point3d {
-        x: x.to_mm(),
-        y: y.to_mm(),
-        z: z.to_mm(),
+        x: x.unwrap_to_mm(),
+        y: y.unwrap_to_mm(),
+        z: z.unwrap_to_mm(),
         units: Some(UnitLength::Millimeters),
     }
 }
 
 /// Converts a coerced length argument to a length in millimeters.
 fn millimeter_length(length: TyF64) -> TyF64 {
-    TyF64::new(length.to_mm(), NumericType::mm())
+    TyF64::new(length.unwrap_to_mm(), NumericType::mm())
 }
 
 /// Converts a coerced point argument to a unitless direction vector. Each
@@ -198,9 +198,9 @@ fn millimeter_length(length: TyF64) -> TyF64 {
 /// has to be consistent across the three coordinates.
 fn unitless_direction([x, y, z]: [TyF64; 3]) -> Point3d {
     Point3d {
-        x: x.to_mm(),
-        y: y.to_mm(),
-        z: z.to_mm(),
+        x: x.unwrap_to_mm(),
+        y: y.unwrap_to_mm(),
+        z: z.unwrap_to_mm(),
         units: None,
     }
 }
