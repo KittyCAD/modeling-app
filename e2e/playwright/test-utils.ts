@@ -152,9 +152,9 @@ export async function waitForWebKitBillingToSettle(page: Page) {
     .poll(
       () =>
         page.evaluate(() => {
-          const snapshot = window.app.billing.actor.getSnapshot()
+          const snapshot = window.app?.billing?.actor.getSnapshot()
           return (
-            snapshot.value === 'waiting' &&
+            snapshot?.value === 'waiting' &&
             (snapshot.context.lastFetch !== undefined ||
               snapshot.context.error !== undefined)
           )
