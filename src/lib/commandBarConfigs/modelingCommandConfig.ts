@@ -4,6 +4,7 @@ import type {
   OutputFormat3d,
   UnitLength,
 } from '@kittycad/lib'
+import type { StepSchema } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
@@ -227,6 +228,7 @@ export type ModelingCommandSchema = {
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
+    schema?: StepSchema
     up?: AxisDirectionPair['axis']
     scale?: UnitLength
   }
@@ -505,6 +507,27 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             default:
               return []
           }
+        },
+      },
+      schema: {
+        inputType: 'options',
+        displayName: 'Schema',
+        required: false,
+        prepopulate: true,
+        defaultValue: 'ap242',
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'step',
+        options: (commandContext) => {
+          const schema = commandContext.argumentsToSubmit.schema ?? 'ap242'
+          return [
+            {
+              name: 'AP203 (Edition 2)',
+              value: 'ap203',
+              isCurrent: schema === 'ap203',
+            },
+            { name: 'AP214', value: 'ap214', isCurrent: schema === 'ap214' },
+            { name: 'AP242', value: 'ap242', isCurrent: schema === 'ap242' },
+          ]
         },
       },
       up: {

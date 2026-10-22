@@ -23,6 +23,7 @@ import {
   recast,
 } from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
+import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -41,7 +42,7 @@ import {
 import toast from 'react-hot-toast'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { vi } from 'vitest'
-import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
+import { type ActorRefFrom, createActor, fromPromise, toPromise } from 'xstate'
 
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
@@ -93,6 +94,91 @@ function useEngineWorld() {
 beforeAll(async () => {
   worldWithoutEngine = await buildTheWorldAndNoEngineConnection()
   setTestWorld(worldWithoutEngine)
+})
+
+describe('STEP schema export requests', () => {
+  async function exportFormat(data: ModelingCommandSchema['Export']) {
+    const world = worldWithoutEngine
+    const program = assertParse(
+      '@settings(kclVersion = 3.0)\nvalue = 1',
+      world.instance
+    )
+    const hasErrors = vi
+      .spyOn(world.kclManager, 'hasErrors')
+      .mockReturnValue(false)
+    const ast = vi
+      .spyOn(world.kclManager, 'ast', 'get')
+      .mockReturnValue(program)
+    const exportRequest = vi
+      .spyOn(world.rustContext, 'export')
+      .mockResolvedValue(undefined)
+    const loading = vi
+      .spyOn(toast, 'loading')
+      .mockReturnValue('schema-export-test')
+    const implementation =
+      modelingMachine.implementations.actors.exportFromEngine
+    const logic = 'src' in implementation ? implementation.src : implementation
+    const actor = createActor(logic, {
+      input: {
+        data,
+        kclManager: world.kclManager,
+        rustContext: world.rustContext,
+        fileName: 'model.step',
+      },
+    })
+    try {
+      const done = toPromise(actor)
+      actor.start()
+      await done
+      expect(exportRequest).toHaveBeenCalledOnce()
+      return exportRequest.mock.calls[0]?.[0]
+    } finally {
+      actor.stop()
+      loading.mockRestore()
+      exportRequest.mockRestore()
+      ast.mockRestore()
+      hasErrors.mockRestore()
+    }
+  }
+
+  const schemas: ModelingCommandSchema['Export']['schema'][] = [
+    'ap203',
+    'ap214',
+    'ap242',
+    undefined,
+  ]
+  it.each(schemas)(
+    'requests schema %s while preserving export units and orientation',
+    async (schema) => {
+      expect(
+        await exportFormat({ type: 'step', schema, up: 'y', scale: 'in' })
+      ).toEqual({
+        type: 'step',
+        schema: schema ?? 'ap242',
+        units: 'in',
+        coords: {
+          forward: { axis: 'z', direction: 'positive' },
+          up: { axis: 'y', direction: 'positive' },
+        },
+      })
+    }
+  )
+
+  const otherFormats: ModelingCommandSchema['Export']['type'][] = [
+    'gltf',
+    'obj',
+    'stl',
+    'ply',
+    'fbx',
+  ]
+  it.each(otherFormats)(
+    'omits a stale STEP schema when exporting %s',
+    async (type) => {
+      const format = await exportFormat({ type, schema: 'ap214' })
+      expect(format).toMatchObject({ type })
+      expect(format).not.toHaveProperty('schema')
+    }
+  )
 })
 
 describe('modelingMachine.test.ts', () => {
