@@ -310,4 +310,17 @@ surface = extrude([profile.line1, profile.arc1, profile.line2, profile.line3], l
             result.unwrap();
         }
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn thicken_tight_tangent_return_regression() {
+        let code = include_str!("../../examples/thicken/05-tight-tangent-return.kcl");
+        for thickness in ["2mm", "3mm"] {
+            let code = code.replace("thickness = 3mm", &format!("thickness = {thickness}"));
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let ctx = crate::ExecutorContext::new_mock(None).await;
+            let result = ctx.run_mock(&program, &MockConfig::default()).await;
+            ctx.close().await;
+            result.unwrap();
+        }
+    }
 }
