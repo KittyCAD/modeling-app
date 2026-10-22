@@ -25,6 +25,7 @@ function isAnFsBacking(x: unknown): x is IZooDesignStudioFS {
     'writeFile' in x &&
     'readdir' in x &&
     'stat' in x &&
+    'lstat' in x &&
     'mkdir' in x &&
     'rm' in x
   )

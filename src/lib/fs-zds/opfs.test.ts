@@ -226,6 +226,7 @@ describe('opfs', () => {
 
     expect(stat.mtimeMs).toEqual(expect.any(Number))
     expect(JSON.parse(repaired)).toEqual({ mtimeMs: stat.mtimeMs })
+    await expect(opfs.impl.lstat(projectPath)).resolves.toEqual(stat)
   })
 
   test('repairs malformed directory metadata during stat', async () => {
