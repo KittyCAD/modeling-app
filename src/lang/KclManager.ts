@@ -443,7 +443,6 @@ export class KclManager extends File {
         fileName: getStringAfterLastSeparator(this.path),
         projectRef: this.modelingProjectRef,
         store: {
-          useSketchSolveMode: modeling.useSketchSolveMode,
           cameraProjection: modeling.cameraProjection,
           defaultUnit: modeling.defaultUnit,
         },
@@ -1150,7 +1149,6 @@ export class KclManager extends File {
       ast: parseResult.program,
       sourceCode: code,
       instance,
-      rustContext: this.rustContext,
       legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
       edgeRefactorMetadata: execState.edgeRefactorMetadata,
       directTagFilletMetadata: execState.directTagFilletMetadata,
@@ -2295,7 +2293,6 @@ export class KclManager extends File {
             ast,
             sourceCode: this.code,
             instance: await this.systemDeps.wasmInstancePromise,
-            rustContext: this.rustContext,
             legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
             edgeRefactorMetadata: execState.edgeRefactorMetadata,
             directTagFilletMetadata: execState.directTagFilletMetadata,
