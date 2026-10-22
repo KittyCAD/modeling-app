@@ -51,6 +51,18 @@ interface ProjectSnapshot {
   files: ApiFile[]
 }
 
+interface PlanePublicationOwner {
+  context: Context
+  sessionId: string | undefined
+  projectRevision: number
+}
+
+interface PlanePublicationReceipt {
+  owner: PlanePublicationOwner
+  generation: number
+  planes: DefaultPlanes
+}
+
 export default class RustContext {
   private ctxInstance: Context | null = null
   private initialization: Promise<Context> | undefined
@@ -61,6 +73,7 @@ export default class RustContext {
   private projectRevision = 0
   private restoredProjectRevision = -1
   private _defaultPlanes: DefaultPlanes | null = null
+  private planePublicationReceipt: PlanePublicationReceipt | undefined
   public readonly planesCreated = new LegacySignal()
 
   constructor(
@@ -92,6 +105,7 @@ export default class RustContext {
     // wasm-bindgen finalizer frees them after those references are released.
     this.ctxInstance = null
     this._defaultPlanes = null
+    this.planePublicationReceipt = undefined
     this.hasOpenedProject = false
     this.restoredProjectRevision = -1
     this.initialization = this.createContextFromWasm(
@@ -247,6 +261,7 @@ export default class RustContext {
     callbacks?: ExecCallbacks
   ): Promise<ExecState> {
     const instance = await this._checkContextInstance()
+    const planeOwner = this.capturePlaneOwner(instance)
     const executionContext = callbacks
       ? instance.cloneWithExecuteCallbacks(callbacks)
       : instance
@@ -260,13 +275,21 @@ export default class RustContext {
       const outcome = execStateFromRust(result.exec_outcome)
 
       // Set the default planes, safe to call after execute.
-      this.setDefaultPlanes(outcome.defaultPlanes)
+      this.setDefaultPlanes(
+        outcome.defaultPlanes,
+        outcome.engineSceneGeneration,
+        planeOwner
+      )
 
       // Return the result.
       return outcome
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
-      this.setDefaultPlanes(err.defaultPlanes)
+      this.setDefaultPlanes(
+        err.defaultPlanes,
+        err.engineSceneGeneration,
+        planeOwner
+      )
       return Promise.reject(err)
     }
   }
@@ -280,6 +303,7 @@ export default class RustContext {
     callbacks?: ExecCallbacks
   ): Promise<ExecState> {
     const instance = await this._checkContextInstance()
+    const planeOwner = this.capturePlaneOwner(instance)
     const executionContext = callbacks
       ? instance.cloneWithExecuteCallbacks(callbacks)
       : instance
@@ -296,11 +320,19 @@ export default class RustContext {
         usePrevMemory
       )
       const outcome = execStateFromRust(result)
-      this.setDefaultPlanes(outcome.defaultPlanes)
+      this.setDefaultPlanes(
+        outcome.defaultPlanes,
+        outcome.engineSceneGeneration,
+        planeOwner
+      )
       return outcome
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
-      this.setDefaultPlanes(err.defaultPlanes)
+      this.setDefaultPlanes(
+        err.defaultPlanes,
+        err.engineSceneGeneration,
+        planeOwner
+      )
       return Promise.reject(err)
     }
   }
@@ -312,13 +344,18 @@ export default class RustContext {
     path?: string
   ): Promise<ParseResult | Error> {
     const instance = await this._checkContextInstance()
+    const planeOwner = this.capturePlaneOwner(instance)
     try {
       const parsed: ParsedExecutionSource = await instance.parseForExecution(
         code,
         JSON.stringify(settings),
         path
       )
-      this.setDefaultPlanes(parsed.default_planes)
+      this.setDefaultPlanes(
+        parsed.default_planes,
+        parsed.engine_scene_generation,
+        planeOwner
+      )
       return new ParseResult(
         parsed.program,
         parsed.kcl_version,
@@ -327,7 +364,11 @@ export default class RustContext {
       )
     } catch (error) {
       const failure = errFromErrWithOutputs(error)
-      this.setDefaultPlanes(failure.defaultPlanes)
+      this.setDefaultPlanes(
+        failure.defaultPlanes,
+        failure.engineSceneGeneration,
+        planeOwner
+      )
       return failure
     }
   }
@@ -377,12 +418,58 @@ export default class RustContext {
     return this._defaultPlanes
   }
 
-  /** Internal setter for default planes that emits a planesCreated signal when planes are available */
-  private setDefaultPlanes(planes: DefaultPlanes | null) {
-    this._defaultPlanes = planes
-    if (planes) {
-      this.planesCreated.dispatch()
+  private capturePlaneOwner(context: Context): PlanePublicationOwner {
+    return {
+      context,
+      sessionId: this.engineCommandManager.engineSessionId,
+      projectRevision: this.projectRevision,
     }
+  }
+
+  /** Notify visibility consumers only for a new Rust-owned scene receipt. */
+  private setDefaultPlanes(
+    planes: DefaultPlanes | null,
+    generation: number | null | undefined,
+    owner: PlanePublicationOwner
+  ) {
+    if (
+      this.destroyed ||
+      owner.context !== this.ctxInstance ||
+      owner.sessionId !== this.engineCommandManager.engineSessionId ||
+      owner.projectRevision !== this.projectRevision
+    )
+      return
+
+    const previous = this.planePublicationReceipt
+    const sameOwner =
+      previous &&
+      previous.owner.context === owner.context &&
+      previous.owner.sessionId === owner.sessionId &&
+      previous.owner.projectRevision === owner.projectRevision
+    if (sameOwner && generation != null && generation < previous.generation)
+      return
+
+    this._defaultPlanes = planes
+    if (!planes || generation == null) {
+      // Unknown provenance cannot justify suppressing a required replay.
+      this.planePublicationReceipt = undefined
+      if (planes) this.planesCreated.dispatch()
+      return
+    }
+    if (
+      sameOwner &&
+      generation === previous.generation &&
+      planes.xy === previous.planes.xy &&
+      planes.xz === previous.planes.xz &&
+      planes.yz === previous.planes.yz &&
+      planes.negXy === previous.planes.negXy &&
+      planes.negXz === previous.planes.negXz &&
+      planes.negYz === previous.planes.negYz
+    )
+      return
+
+    this.planePublicationReceipt = { owner, generation, planes: { ...planes } }
+    this.planesCreated.dispatch()
   }
 
   getDefaultPlaneId(name: DefaultPlaneStr): string | Error {
@@ -1091,6 +1178,7 @@ export default class RustContext {
     this.initialization = undefined
     this.projectSnapshot = null
     this._defaultPlanes = null
+    this.planePublicationReceipt = undefined
     this.hasOpenedProject = false
     this.contextChanged.abort()
   }

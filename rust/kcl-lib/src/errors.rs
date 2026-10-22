@@ -166,9 +166,7 @@ pub struct KclErrorWithOutputs {
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
     pub default_planes: Option<DefaultPlanes>,
-    /// The engine scene generation after the run that failed, since a failed
-    /// run may still have changed the engine scene. Not set when the error did
-    /// not come from a run.
+    /// The owned engine scene generation, including unchanged scenes after parse errors.
     pub engine_scene_generation: Option<usize>,
 }
 

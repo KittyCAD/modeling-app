@@ -7,5 +7,7 @@ import type { Program } from "./Program";
 
 /**
  * Parsing an execution source also owns file-switch and engine-session semantics.
+ * The Rust scene generation distinguishes recreated planes with deterministic
+ * reused IDs from an unchanged scene observed by another parse.
  */
-export type ParsedExecutionSource = { program: Node<Program> | null, kcl_version: KclVersion | null, issues: Array<CompilationIssue>, default_planes: DefaultPlanes | null, };
+export type ParsedExecutionSource = { program: Node<Program> | null, kcl_version: KclVersion | null, issues: Array<CompilationIssue>, default_planes: DefaultPlanes | null, engine_scene_generation: number, };

@@ -37,6 +37,56 @@ profile = sketch(on = XY) {
 body = extrude(region(segments = [profile.perimeter]), length = height)
 "#;
 
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_contract_parse_reports_the_owned_plane_scene() {
+    // Consume the real serialized producer contract, including a mandatory
+    // generation. Plane UUIDs alone cannot identify a recreated engine scene.
+    #[derive(serde::Deserialize)]
+    struct PlaneReceipt {
+        default_planes: Option<kcl_api::DefaultPlanes>,
+        engine_scene_generation: usize,
+    }
+    let project = tempfile::tempdir().unwrap();
+    let main = project.path().join("main.kcl");
+    tokio::fs::write(&main, BODY).await.unwrap();
+    let program = Program::parse_no_errs(BODY).unwrap();
+    let ctx = kcl_lib::test_server::new_context(true, Some(main.clone()), false, program.language_version().unwrap())
+        .await
+        .unwrap();
+    let original = execute(&ctx, BODY).await;
+    let parsed = ctx.parse_for_execution(BODY).await.unwrap();
+    let receipt: PlaneReceipt = serde_json::from_slice(&serde_json::to_vec(&parsed).unwrap()).unwrap();
+    assert_eq!(receipt.engine_scene_generation, original.engine_scene_generation);
+    let first_planes = receipt.default_planes.unwrap();
+    let unchanged = execute(&ctx, BODY).await;
+    assert_eq!(unchanged.engine_scene_generation, original.engine_scene_generation);
+    let syntax = ctx
+        .parse_for_execution("@settings(kclVersion = 3.0)\nx = (")
+        .await
+        .unwrap();
+    let receipt: PlaneReceipt = serde_json::from_slice(&serde_json::to_vec(&syntax).unwrap()).unwrap();
+    assert_eq!(receipt.engine_scene_generation, original.engine_scene_generation);
+    assert_eq!(receipt.default_planes.as_ref(), Some(&first_planes));
+    let lexical = ctx
+        .parse_for_execution("@settings(kclVersion = 3.0)\nx = \"unterminated")
+        .await
+        .unwrap_err();
+    assert_eq!(lexical.engine_scene_generation, Some(original.engine_scene_generation));
+    assert_eq!(lexical.default_planes.as_ref(), Some(&first_planes));
+
+    let changed = BODY.replace("height = 5mm", "height = 6mm");
+    tokio::fs::write(&main, &changed).await.unwrap();
+    let rebuilt = execute(&ctx, &changed).await;
+    assert!(rebuilt.engine_scene_generation > original.engine_scene_generation);
+    let parsed = ctx.parse_for_execution(&changed).await.unwrap();
+    let receipt: PlaneReceipt = serde_json::from_slice(&serde_json::to_vec(&parsed).unwrap()).unwrap();
+    assert_eq!(receipt.engine_scene_generation, rebuilt.engine_scene_generation);
+    let rebuilt_planes = receipt.default_planes.unwrap();
+    assert_eq!(rebuilt_planes, first_planes);
+    assert_volume(volume(&ctx).await, 6.0);
+    ctx.close().await;
+}
+
 pub(super) async fn execute(ctx: &ExecutorContext, code: &str) -> ExecOutcome {
     let outcome = ctx
         .run_with_caching(Program::parse_no_errs(code).unwrap())
@@ -444,4 +494,88 @@ async fn kcl_test_cache_contract_replacement_engine_rebuilds_without_a_javascrip
     let cached = execute(&replacement, BODY).await;
     assert_eq!(cached.engine_scene_generation, changed.engine_scene_generation);
     replacement.close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_contract_imported_model_kernel_error_is_the_appended_fillet() {
+    use std::sync::atomic::Ordering::Relaxed;
+
+    let repository = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let fixture = tokio::fs::read_to_string(repository.join("rust/kcl-lib/tests/named_views_hide_extrude/input.kcl"))
+        .await
+        .unwrap();
+    // Match the app's existing unannotated entry point and legacy imports.
+    // Adding a 3.0 header would reject this workload before any geometry runs.
+    let code = format!(
+        "{}\n\nimport \"large-model/main.kcl\" as performanceModel\nperformanceModel\n",
+        fixture.trim_end()
+    );
+    let tail = "\n// Intentional trailing kernel failure for the performance profile.\nperformanceInvalid = fillet(boxVisible, edges = [{ sideFaces = [boxVisible.sketch.tags.line1, boxVisible.sketch.tags.line2] }], radius = 100000mm)\n";
+    let failing = format!("{}\n{tail}", code.trim_end());
+    let tail_start = failing.find("performanceInvalid = ").unwrap();
+    let project = tempfile::tempdir().unwrap();
+    let main = project.path().join("main.kcl");
+    let modules = project.path().join("large-model");
+    tokio::fs::create_dir(&modules).await.unwrap();
+    let mut sources = tokio::fs::read_dir(repository.join("public/kcl-samples/cpu-cooler"))
+        .await
+        .unwrap();
+    while let Some(source) = sources.next_entry().await.unwrap() {
+        tokio::fs::copy(source.path(), modules.join(source.file_name()))
+            .await
+            .unwrap();
+    }
+    tokio::fs::write(&main, &code).await.unwrap();
+    let parsed = Program::parse_no_errs(&code).unwrap();
+    let ctx = kcl_lib::test_server::new_context(true, Some(main.clone()), false, parsed.language_version().unwrap())
+        .await
+        .unwrap();
+    let warm = execute(&ctx, &code).await;
+    let ids = solid_ids(&ctx).await;
+    assert!(
+        ids.len() > 2,
+        "the real imported CPU cooler must exist before appending the failure"
+    );
+    let loaded_volume = volume(&ctx).await;
+    let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+    let cached = execute(&ctx, &code).await;
+    assert_eq!(cached.engine_scene_generation, warm.engine_scene_generation);
+    assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+
+    // Same file/session and real bytes. Only the root tail changes.
+    tokio::fs::write(&main, &failing).await.unwrap();
+    let failure = ctx.run_with_caching(Program::parse_no_errs(&failing).unwrap()).await;
+    let drained = ctx.engine_batch.is_empty().await;
+    let append_commands = ctx.engine.stats().commands_batched.load(Relaxed) - commands;
+    let retained_ids = solid_ids(&ctx).await;
+    let retained_volume = volume(&ctx).await;
+    ctx.close().await;
+
+    let failure = failure.expect_err("the deliberate fillet must fail; success is a regression");
+    let KclError::Engine { details } = failure.error else {
+        panic!("expected the appended engine fillet failure, got {failure:?}");
+    };
+    assert!(
+        details
+            .message
+            .contains("Fillet blend creation encountered an internal error."),
+        "wrong kernel failure: {}\nranges: {:?}\nappend commands: {append_commands}\nsource ({} bytes):\n{failing}",
+        details.message,
+        details.source_ranges,
+        failing.len()
+    );
+    assert!(!details.source_ranges.is_empty());
+    for range in details.source_ranges {
+        assert!(range.module_id().is_top_level());
+        assert!(range.start() >= tail_start && range.end() <= failing.len());
+    }
+    assert!(
+        drained,
+        "all real commands must settle before returning the kernel failure"
+    );
+    assert_eq!(
+        retained_ids, ids,
+        "the failing append must not recreate unchanged imported/root bodies"
+    );
+    assert!((retained_volume - loaded_volume).abs() <= loaded_volume.abs() * 1e-9);
 }
