@@ -812,9 +812,8 @@ const Toolbar_ = memo(
               <p className="text-xs">{symmetricToolPrompt}</p>
             </div>
           )}
-          {props.state.context.store.useSketchSolveMode?.current === true &&
-            modelingMachineStateToToolbarModeName(props.state) ===
-              'sketching' && <LegacySketchModeBanner />}
+          {modelingMachineStateToToolbarModeName(props.state) ===
+            'sketching' && <LegacySketchModeBanner />}
         </div>
       </menu>
     )

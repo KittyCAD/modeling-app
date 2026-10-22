@@ -5,31 +5,31 @@ import {
   provide,
 } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
-import { type Platform, isArray } from '@src/lib/utils'
+import { isArray, type Platform } from '@src/lib/utils'
 import {
   BASE_COMMAND_SCOPE,
   CODE_EDITOR_FOCUSED_COMMAND_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE,
   COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
+  type CommandScope,
+  commandScopesValueSpec,
   DEFAULT_COMMAND_SCOPES,
   EDITABLE_FOCUSED_COMMAND_SCOPE,
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
   FILE_COMMAND_SCOPES,
   GLOBAL_COMMAND_SCOPES,
-  HOME_COMMAND_SCOPE,
-  MODE_MODELING_COMMAND_SCOPE,
-  MODE_SKETCHING_COMMAND_SCOPE,
-  MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
-  MODE_SKETCH_SOLVE_COMMAND_SCOPE,
-  PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE,
-  PROJECT_EXPLORER_RENAMING_COMMAND_SCOPE,
-  SETTINGS_COMMAND_SCOPE,
-  SKETCH_COMMAND_SCOPES,
-  commandScopesValueSpec,
   getCommandScopePriority,
   getEffectiveCommandScopes,
+  HOME_COMMAND_SCOPE,
+  MODE_MODELING_COMMAND_SCOPE,
+  MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
+  MODE_SKETCH_SOLVE_COMMAND_SCOPE,
+  MODE_SKETCHING_COMMAND_SCOPE,
+  PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE,
+  PROJECT_EXPLORER_RENAMING_COMMAND_SCOPE,
   provideCommandScope,
-  type CommandScope,
+  SETTINGS_COMMAND_SCOPE,
+  SKETCH_COMMAND_SCOPES,
 } from '@src/registry/contracts/commands'
 
 export const BASE_KEYMAP_SCOPE = BASE_COMMAND_SCOPE
@@ -699,7 +699,22 @@ function isKeymapItemActiveForScope(item: KeymapItem, scope: string) {
   return getKeymapItemWhen(item).includes(scope)
 }
 
+/** A focused widget reserves keys unless a binding explicitly names its scope. */
+export interface KeymapEventOwner {
+  id: string
+  scope: string
+  owns: (event: KeyboardEvent) => boolean
+}
+
 export const keymapContract = defineContract({
+  keymapEventOwnersValueSpec: defineValueSpec<
+    KeymapEventOwner,
+    readonly KeymapEventOwner[]
+  >({
+    name: 'keymap.event-owners',
+    defaultValue: [],
+    combine: (items) => items,
+  }),
   keymapService: defineService<KeymapService>('keymap.service'),
   keymapValueSpec: defineValueSpec<KeymapContribution, KeymapTree>({
     name: 'keymap',
@@ -709,8 +724,12 @@ export const keymapContract = defineContract({
   keymapScopesValueSpec: commandScopesValueSpec,
 })
 
-export const { keymapService, keymapValueSpec, keymapScopesValueSpec } =
-  keymapContract
+export const {
+  keymapService,
+  keymapValueSpec,
+  keymapScopesValueSpec,
+  keymapEventOwnersValueSpec,
+} = keymapContract
 
 export function provideKeymapItem(item: KeymapItemInput) {
   return provide(keymapValueSpec, item, { key: item.id })
