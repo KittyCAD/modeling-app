@@ -1,5 +1,5 @@
 import type { CustomerBalance } from '@kittycad/lib'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { BillingError } from '../../lib/billing'
 import { classNames } from '../../lib/classNames'
 import { BillingIcon } from '../Billing/BillingIcon'
@@ -97,21 +97,9 @@ function getCurrencyAmountString(amount: number | string) {
 }
 
 function BillingBalance({ amount }: { amount: number }) {
-  const [showSpinner, setShowSpinner] = useState<boolean>(true)
-
-  useEffect(() => {
-    const id = setTimeout(() => {
-      setShowSpinner(false)
-    }, 5000)
-
-    return () => {
-      clearTimeout(id)
-    }
-  }, [])
-
   return amount === Number.POSITIVE_INFINITY ? (
     <BillingIcon data-testid="infinity" name="infinity" />
-  ) : showSpinner && (Number.isNaN(amount) || amount === undefined) ? (
+  ) : Number.isNaN(amount) ? (
     <Spinner className="h-4 w-4 text-inherit" />
   ) : (
     <span>{getBalanceString(amount)}</span>
@@ -123,17 +111,6 @@ export function BillingRemaining(props: BillingRemainingProps) {
   const totalDue = props.userPaymentBalance?.amount_due_after_credits ?? 0
   const totalDueString = getCurrencyAmountString(totalDue)
   const hasOverrun = Number(totalDue) > 0
-  const [showSpinner, setShowSpinner] = useState<boolean>(true)
-
-  useEffect(() => {
-    const id = setTimeout(() => {
-      setShowSpinner(false)
-    }, 5000)
-
-    return () => {
-      clearTimeout(id)
-    }
-  }, [])
 
   return (
     <div
@@ -152,7 +129,8 @@ export function BillingRemaining(props: BillingRemainingProps) {
           )}
         >
           {!isFlex &&
-            (typeof props.balance === 'number' ? (
+            (typeof props.balance === 'number' &&
+            !Number.isNaN(props.balance) ? (
               <div
                 className="whitespace-nowrap px-1 font-mono"
                 data-testid="billing-balance"
@@ -160,7 +138,7 @@ export function BillingRemaining(props: BillingRemainingProps) {
                 <BillingBalance amount={props.balance} />
               </div>
             ) : (
-              showSpinner && <Spinner className="h-4 w-4 text-inherit" />
+              !props.error && <Spinner className="h-4 w-4 text-inherit" />
             ))}
           {props.balance !== Number.POSITIVE_INFINITY && (
             <div
@@ -171,7 +149,7 @@ export function BillingRemaining(props: BillingRemainingProps) {
             >
               <ProgressBar
                 max={props.allowance ?? 1}
-                value={props.balance ?? 0}
+                value={Number.isNaN(props.balance) ? 0 : (props.balance ?? 0)}
               />
             </div>
           )}
@@ -180,7 +158,7 @@ export function BillingRemaining(props: BillingRemainingProps) {
       </div>
       {isFlex && (
         <div className="flex min-w-0 flex-row items-center gap-1 text-chalkboard-90">
-          {typeof props.balance === 'number' ? (
+          {typeof props.balance === 'number' && !Number.isNaN(props.balance) ? (
             props.balance !== Number.POSITIVE_INFINITY ? (
               <>
                 {getBalanceString(props.balance)} of Zookeeper reasoning time
@@ -189,8 +167,12 @@ export function BillingRemaining(props: BillingRemainingProps) {
             ) : null
           ) : (
             <>
-              {showSpinner && <Spinner className="h-4 w-4 text-inherit" />}{' '}
-              <span>Fetching remaining balance...</span>
+              {!props.error && (
+                <>
+                  <Spinner className="h-4 w-4 text-inherit" />{' '}
+                  <span>Fetching remaining balance...</span>
+                </>
+              )}
             </>
           )}
         </div>

@@ -3,7 +3,6 @@ import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjecti
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { LayoutsWithMetadata } from '@src/lib/layout/types'
 import type { OnboardingStatus } from '@src/lib/onboardingPaths'
-import { useRef } from 'react'
 
 import { NIL as uuidNIL } from 'uuid'
 
@@ -30,7 +29,6 @@ import { hexToRgba } from '@src/lib/utils'
 import { Setting } from '@src/lib/settings/Setting'
 
 const MS_IN_MINUTE = 1000 * 60
-const COLOR_INPUT_DEBOUNCE_MS = 500
 
 function createCoreSettings() {
   const settings = {
@@ -237,10 +235,6 @@ function createCoreSettings() {
             context.modeling.backfaceColor.current,
         },
         Component: ({ value, updateValue }) => {
-          const colorInputDebounceRef = useRef<
-            ReturnType<typeof setTimeout> | undefined
-          >(undefined)
-
           return (
             <div className="flex items-center gap-3">
               <input
@@ -248,11 +242,7 @@ function createCoreSettings() {
                 value={value.toLowerCase()}
                 onChange={(event) => {
                   const nextValue = event.target.value.toUpperCase()
-                  clearTimeout(colorInputDebounceRef.current)
-                  colorInputDebounceRef.current = setTimeout(
-                    () => updateValue(nextValue),
-                    COLOR_INPUT_DEBOUNCE_MS
-                  )
+                  updateValue(nextValue)
                 }}
                 className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
               />

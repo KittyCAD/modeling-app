@@ -173,6 +173,7 @@ export const ExchangeCardStatus = (props: {
   const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
+    // zds-performance-exception: activity-indicator -- Refresh elapsed streaming status while work is pending, without postponing streamed content.
     const i = setInterval(() => {
       setTriggerRender(triggerRender + 1)
     }, 500)
@@ -384,14 +385,6 @@ export const RequestCard = (props: RequestCardProps) => {
   )
 }
 
-export const Delta = (props: { children: ReactNode }) => {
-  return (
-    <span className="animate-delta-in" style={{ opacity: 0 }}>
-      {props.children}
-    </span>
-  )
-}
-
 type ResponsesCardProp = {
   items: Exchange['responses']
   deltasAggregated: Exchange['deltasAggregated']
@@ -428,7 +421,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       //   return response.delta.delta
       // }
       if ('info' in response && !isTransientRetryInfoResponse(response)) {
-        return <Delta key={index}>{response.info.text}</Delta>
+        return <span key={index}>{response.info.text}</span>
       }
       return null
     }
@@ -522,7 +515,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
 
   const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
-    transition-height duration-500 overflow-hidden text-sm
+    overflow-hidden text-sm
   `
 
   const onSeeReasoning = () => {
@@ -536,6 +529,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
+    // zds-performance-exception: activity-indicator -- Refresh the displayed stream timestamp while content arrives, without delaying any received content.
     const id = setInterval(() => {
       if (isEndOfStream) {
         clearInterval(id)

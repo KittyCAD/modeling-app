@@ -1,12 +1,15 @@
 import type {
   CameraDragInteractionType,
   CameraViewState,
+  ModelingCmdReq,
   Point3d,
 } from '@kittycad/lib'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { isArray, toSync } from '@src/lib/utils'
+import {
+  isModelingBatchResponse,
+  isModelingResponse,
+} from '@src/lib/kcSdkGuards'
+import { isArray } from '@src/lib/utils'
 
-import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
 import type { Camera } from 'three'
 import { Matrix4 } from 'three'
@@ -36,21 +39,15 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Signal as LegacySignal } from '@src/lib/signal'
 import { reportRejection } from '@src/lib/trap'
 import { err, isErr } from '@src/lib/trap'
-import {
-  getNormalisedCoordinates,
-  isReducedMotion,
-  roundOff,
-  throttle,
-  uuidv4,
-} from '@src/lib/utils'
+import { getNormalisedCoordinates, roundOff, uuidv4 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
 import { type ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   getDimensions,
+  getResponseErrorMessage,
   type Subscription,
   type UnreliableSubscription,
 } from '@src/lib/engineConnection/utils'
-import { degToRad } from 'three/src/math/MathUtils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
@@ -87,30 +84,41 @@ export type ReactCameraProperties =
       quaternion: [number, number, number, number]
     }
 
-class CameraRateLimiter {
-  lastSend?: Date = undefined
-  rateLimitMs: number = 16 //60 FPS
+class CameraFrame {
+  private frame: number | null = null
+  private callback: (() => void) | undefined
 
-  send = (f: () => void) => {
-    let now = new Date()
-
-    if (
-      this.lastSend === undefined ||
-      now.getTime() - this.lastSend.getTime() > this.rateLimitMs
-    ) {
-      f()
-      this.lastSend = now
-    }
+  send(callback: () => void) {
+    this.callback = callback
+    this.frame ??= requestAnimationFrame(this.flush)
   }
 
-  reset = () => {
-    this.lastSend = undefined
+  flush = () => {
+    if (this.frame !== null) cancelAnimationFrame(this.frame)
+    this.frame = null
+    const callback = this.callback
+    this.callback = undefined
+    callback?.()
+  }
+
+  reset() {
+    if (this.frame !== null) cancelAnimationFrame(this.frame)
+    this.frame = null
+    this.callback = undefined
   }
 }
 
 export class CameraControls {
   engineCommandManager: ConnectionManager
-  syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
+  private _syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
+  get syncDirection() {
+    return this._syncDirection
+  }
+  set syncDirection(value: 'clientToEngine' | 'engineToClient') {
+    if (value === this._syncDirection) return
+    this.cancelPendingUpdates()
+    this._syncDirection = value
+  }
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
   domElement: HTMLCanvasElement
@@ -126,8 +134,12 @@ export class CameraControls {
   enableRotate = true
   enablePan = true
   enableZoom = true
-  moveSender: CameraRateLimiter = new CameraRateLimiter()
-  zoomSender: CameraRateLimiter = new CameraRateLimiter()
+  private readonly moveFrame = new CameraFrame()
+  private readonly zoomFrame = new CameraFrame()
+  private readonly hoverFrame = new CameraFrame()
+  private readonly engineCameraFrame = new CameraFrame()
+  private readonly reactCameraFrame = new CameraFrame()
+  private cameraWriteVersion = 0
   lastPerspectiveFov = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
@@ -216,10 +228,10 @@ export class CameraControls {
   }
 
   private handleStart = () => {
-    this._isCamMovingCallback(true, false)
+    this._isCamMovingCallback(true)
   }
   private handleEnd = () => {
-    this._isCamMovingCallback(false, false)
+    this._isCamMovingCallback(false)
   }
 
   setCam = (camProps: ReactCameraProperties) => {
@@ -253,12 +265,28 @@ export class CameraControls {
     this.update(true)
   }
 
-  throttledEngCmd = throttle((cmd: EngineCommand) => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.engineCommandManager.sendSceneCommand(cmd)
-  }, 1000 / 30)
+  private queueEngineInteraction(frame: CameraFrame, callback: () => void) {
+    const connection = this.engineCommandManager.connection
+    frame.send(() => {
+      if (
+        this.syncDirection === 'engineToClient' &&
+        this.engineCommandManager.connection === connection
+      ) {
+        callback()
+      }
+    })
+  }
 
-  throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
+  private queueHoverCommand(cmd: EngineCommand) {
+    this.queueEngineInteraction(this.hoverFrame, () => {
+      this.engineCommandManager.sendSceneCommand(cmd).catch(reportRejection)
+    })
+  }
+
+  updateEngineCamera = (threeValues: ThreeCamValues) => {
+    this.cameraWriteVersion += 1
+    const connection = this.engineCommandManager.connection
+    const syncDirection = this.syncDirection
     const cmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -270,9 +298,23 @@ export class CameraControls {
         ),
       },
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.engineCommandManager.sendSceneCommand(cmd)
-  }, 1000 / 15)
+    this.engineCameraFrame.send(() => {
+      if (
+        this.syncDirection === syncDirection &&
+        this.engineCommandManager.connection === connection
+      ) {
+        this.engineCommandManager.sendSceneCommand(cmd).catch(reportRejection)
+      }
+    })
+  }
+
+  cancelPendingUpdates() {
+    this.moveFrame.reset()
+    this.zoomFrame.reset()
+    this.hoverFrame.reset()
+    this.engineCameraFrame.reset()
+    this.reactCameraFrame.reset()
+  }
 
   doMove = (
     interaction: CameraDragInteractionType,
@@ -390,11 +432,10 @@ export class CameraControls {
       this.camera.up.copy(newUp)
       this.camera.updateProjectionMatrix()
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
-        this.useOrthographicCamera()
+        this.useClientOrthographicCamera()
       }
       if (this.camera instanceof OrthographicCamera && !camSettings.ortho) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.usePerspectiveCamera()
+        this._usePerspectiveCamera()
       }
       if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
         this.camera.fov = camSettings.fov_y
@@ -405,36 +446,36 @@ export class CameraControls {
         this.camera.zoom = ORTHOGRAPHIC_CAMERA_SIZE / height
         this.camera.updateProjectionMatrix()
       }
-      this.onCameraChange()
+      // This is authoritative engine state, not a new client camera gesture.
+      // Notify local views without echoing projection or look-at commands.
+      this.updateCameraClippingPlanes()
+      this.notifyCameraSubscribers()
     }
 
-    setTimeout(() => {
-      this.engineCommandManager.subscribeTo({
-        event: 'camera_drag_end',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeToUnreliable({
-        event: 'default_camera_zoom',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeTo({
-        event: 'default_camera_get_settings',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeTo({
-        event: 'zoom_to_fit',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeToUnreliable({
-        event: 'camera_drag_move',
-        callback: cb,
-      })
+    this.engineCommandManager.subscribeTo({
+      event: 'camera_drag_end',
+      callback: cb,
+    })
+    this.engineCommandManager.subscribeToUnreliable({
+      event: 'default_camera_zoom',
+      callback: cb,
+    })
+    this.engineCommandManager.subscribeTo({
+      event: 'default_camera_get_settings',
+      callback: cb,
+    })
+    this.engineCommandManager.subscribeTo({
+      event: 'zoom_to_fit',
+      callback: cb,
+    })
+    this.engineCommandManager.subscribeToUnreliable({
+      event: 'camera_drag_move',
+      callback: cb,
     })
   }
 
-  private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
-    () => {}
-  setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
+  private _isCamMovingCallback: (isMoving: boolean) => void = () => {}
+  setIsCamMovingCallback(cb: (isMoving: boolean) => void) {
     this._isCamMovingCallback = cb
   }
 
@@ -473,6 +514,7 @@ export class CameraControls {
   }
 
   onMouseDown = (event: PointerEvent) => {
+    this.hoverFrame.reset()
     this.domElement.setPointerCapture(event.pointerId)
     this.isDragging = true
     // Reset the wasDragging flag to false when starting a new drag
@@ -523,7 +565,7 @@ export class CameraControls {
       this.wasDragging = true
 
       if (this.syncDirection === 'engineToClient') {
-        this.moveSender.send(() => {
+        this.queueEngineInteraction(this.moveFrame, () => {
           this.doMove(interaction, [event.clientX, event.clientY])
         })
         return
@@ -579,7 +621,7 @@ export class CameraControls {
           videoElement,
           this.engineCommandManager.streamDimensions
         )
-        this.throttledEngCmd({
+        this.queueHoverCommand({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'highlight_set_entity',
@@ -593,13 +635,16 @@ export class CameraControls {
 
   onMouseUp = (event: PointerEvent) => {
     if (event.pointerType === 'touch') {
-      // We support momentum flick gestures so we have to do these things after that completes
+      // Hammer owns touch gesture completion, including cancellation.
       return
     }
     this.onMouseUpInner(event)
   }
 
   onMouseUpInner = (event: PointerEvent) => {
+    // Deliver the final coalesced movement before ending the engine gesture.
+    this.moveFrame.flush()
+    this.zoomFrame.flush()
     this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
     this.handleEnd()
@@ -632,7 +677,7 @@ export class CameraControls {
 
     if (this.syncDirection === 'engineToClient') {
       if (interaction === 'zoom') {
-        this.zoomSender.send(() => {
+        this.queueEngineInteraction(this.zoomFrame, () => {
           this.doZoom(deltaY)
         })
       } else {
@@ -667,8 +712,8 @@ export class CameraControls {
     this.handleEnd()
   }
 
-  useOrthographicCamera = () => {
-    if (this.camera instanceof OrthographicCamera) return
+  private useClientOrthographicCamera = () => {
+    if (this.camera instanceof OrthographicCamera) return false
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     const oldCamUp = this.camera.up.clone()
@@ -695,6 +740,11 @@ export class CameraControls {
 
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
+    return true
+  }
+
+  useOrthographicCamera = () => {
+    if (!this.useClientOrthographicCamera()) return
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -708,18 +758,18 @@ export class CameraControls {
   private createPerspectiveCamera = () => {
     const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
     const previousCamUp = this.camera.up.clone()
-    this.camera = new PerspectiveCamera(
+    const camera = new PerspectiveCamera(
       this.lastPerspectiveFov,
       this.normalizedViewportAspect(),
       z_near,
       z_far
     )
-    this.camera.up.copy(previousCamUp)
-    this.camera.layers.enable(SKETCH_LAYER)
+    camera.up.copy(previousCamUp)
+    camera.layers.enable(SKETCH_LAYER)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
-      this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
+      camera.layers.enable(INTERSECTION_PLANE_LAYER)
 
-    return this.camera
+    return camera
   }
   private _usePerspectiveCamera = () => {
     const { x: px, y: py, z: pz } = this.camera.position
@@ -774,84 +824,35 @@ export class CameraControls {
     return this.camera
   }
 
-  dollyZoom = async (newFov: number, splitEngineCalls = false) => {
+  dollyZoom = async (newFov: number) => {
     if (!(this.camera instanceof PerspectiveCamera)) {
       console.warn('Dolly zoom is only applicable to perspective cameras.')
       return
     }
     this.lastPerspectiveFov = newFov
+    dollyZoomCamera(this.camera, this.target, newFov)
 
-    // Calculate the direction vector from the camera towards the controls target
-    const direction = new Vector3()
-      .subVectors(this.target, this.camera.position)
-      .normalize()
-
-    // Calculate the distance to the controls target before changing the FOV
-    const distanceBefore = this.camera.position.distanceTo(this.target)
-
-    // Calculate the scale factor for the new FOV compared to the old one
-    // This needs to be calculated before updating the camera's FOV
-    const oldFov = this.camera.fov
-    const scaleFactor = viewHeightFactor(oldFov) / viewHeightFactor(newFov)
-
-    this.camera.fov = newFov
-    this.camera.updateProjectionMatrix()
-
-    const distanceAfter = distanceBefore * scaleFactor
-
-    const newPosition = this.target
-      .clone()
-      .add(direction.multiplyScalar(-distanceAfter))
-    this.camera.position.copy(newPosition)
-
-    if (splitEngineCalls) {
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          ...convertThreeCamValuesToEngineCam(
-            {
-              isPerspective: true,
-              position: newPosition,
-              quaternion: this.camera.quaternion,
-              zoom: this.camera.zoom,
-              target: this.target,
-            },
-            this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
-          ),
-        },
-      })
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_set_perspective',
-          parameters: {
-            fov_y: newFov,
+    this.onCameraChange()
+    // Publish local camera state, but send only the final reliable command.
+    this.engineCameraFrame.reset()
+    await sendCameraCommand(this.engineCommandManager, {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_perspective_settings',
+        ...convertThreeCamValuesToEngineCam(
+          {
+            isPerspective: true,
+            position: this.camera.position,
+            quaternion: this.camera.quaternion,
+            zoom: this.camera.zoom,
+            target: this.target,
           },
-        },
-      })
-    } else {
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_perspective_settings',
-          ...convertThreeCamValuesToEngineCam(
-            {
-              isPerspective: true,
-              position: newPosition,
-              quaternion: this.camera.quaternion,
-              zoom: this.camera.zoom,
-              target: this.target,
-            },
-            this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
-          ),
-          fov_y: newFov,
-        },
-      })
-    }
+          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+        ),
+        fov_y: newFov,
+      },
+    })
   }
 
   update = (forceUpdate = false) => {
@@ -1311,6 +1312,7 @@ export class CameraControls {
       // indicates this, other than the amount of time between our request
       // and its response. Typically round-trip time is < 30ms. It seems safe
       // then to wait 1 magnitude of time before calling this request toasted.
+      // zds-performance-exception: network-deadline -- A disconnected engine must not block saving the camera before idle teardown.
       const timeoutId = setTimeout(reject, 300)
       ;(async () => {
         const cameraViewStateResponse =
@@ -1336,113 +1338,135 @@ export class CameraControls {
     })
   }
 
-  async tweenCameraToQuaternion(
+  async setCameraToQuaternion(
     targetQuaternion: Quaternion,
-    targetPosition = new Vector3(),
-    duration = 500
+    targetPosition = new Vector3()
   ): Promise<void> {
     if (this.syncDirection === 'engineToClient')
       console.warn(
-        'tweenCameraToQuaternion not design to work with engineToClient syncDirection.'
+        'setCameraToQuaternion is not designed for engineToClient syncDirection.'
       )
-    await this._tweenCameraToQuaternion(
-      targetQuaternion,
-      targetPosition,
-      duration
-    )
-  }
-  _tweenCameraToQuaternion(
-    targetQuaternion: Quaternion,
-    targetPosition: Vector3,
-    duration = 500
-  ): Promise<void> {
-    return new Promise((resolve) => {
-      const camera = this.camera
-      this._isCamMovingCallback(true, true)
-      const initialQuaternion = camera.quaternion.clone()
-      const initialTarget = this.target.clone()
-      let tweenEnd = 1
-      const tempVec = new Vector3()
-      const initialDistance = initialTarget.distanceTo(camera.position.clone())
-      const tempQuaternion = new Quaternion()
-      const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
-        const currentQ = tempQuaternion.slerpQuaternions(
-          initialQuaternion,
-          targetQuaternion,
-          animationProgress
-        )
-        const up = new Vector3(0, 0, 1).applyQuaternion(currentQ)
-        this.camera.up.copy(up)
-        const currentTarget = tempVec.lerpVectors(
-          initialTarget,
-          targetPosition,
-          animationProgress
-        )
-        // This if would break ortho camera animation from Gizmo
-        // if (this.camera instanceof PerspectiveCamera)
-        // changing the camera position back when it's orthographic doesn't do anything
-        // and it messes up animating back to perspective later
+    const distance = this.target.distanceTo(this.camera.position)
+    this.camera.position
+      .set(0, 0, 1)
+      .applyQuaternion(targetQuaternion)
+      .multiplyScalar(distance)
+      .add(targetPosition)
+    this.camera.up.set(0, 1, 0).applyQuaternion(targetQuaternion).normalize()
+    this.camera.quaternion.copy(targetQuaternion)
+    this.target.copy(targetPosition)
+    this.camera.updateProjectionMatrix()
+    this.camera.updateMatrixWorld()
+    this.onCameraChange()
 
-        this.camera.position
-          .set(0, 0, 1)
-          .applyQuaternion(currentQ)
-          .multiplyScalar(initialDistance)
-          .add(currentTarget)
-
-        this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
-        this.camera.quaternion.copy(currentQ)
-        this.target.copy(currentTarget)
-        this.camera.updateProjectionMatrix()
-        this.update()
-        this.onCameraChange()
-      }
-
-      const onComplete = async () => {
-        if (isReducedMotion()) {
-          // Even if there is no animation we need to call cameraAtTime so camera values are updated
-          cameraAtTime(1)
-        }
-        this.enableRotate = false
-        this._isCamMovingCallback(false, true)
-        resolve()
-      }
-
-      if (isReducedMotion()) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        onComplete()
-      } else {
-        new TWEEN.Tween({ t: 0 })
-          .to({ t: tweenEnd }, duration)
-          .easing(TWEEN.Easing.Quadratic.InOut)
-          .onUpdate(({ t }) => cameraAtTime(t))
-          .onComplete(toSync(onComplete, reportRejection))
-          .start()
-      }
+    // A final reliable update must be acknowledged before handing control back
+    // to the engine; a queued interactive frame is not a completion signal.
+    this.engineCameraFrame.reset()
+    await sendCameraCommand(this.engineCommandManager, {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam(
+          {
+            position: this.camera.position,
+            quaternion: this.camera.quaternion,
+            zoom: this.camera.zoom,
+            isPerspective: this.isPerspective,
+            target: this.target,
+          },
+          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+        ),
+      },
     })
   }
 
-  snapToPerspectiveBeforeHandingBackControlToEngine = async (
-    targetCamUp = new Vector3(0, 0, 1)
-  ) => {
+  disableSketchMode() {
+    return sendCameraCommand(this.engineCommandManager, {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'sketch_mode_disable' },
+    })
+  }
+
+  snapToPerspectiveBeforeHandingBackControlToEngine = async () => {
     if (this.syncDirection === 'engineToClient') {
       console.warn(
         'animate To Perspective not design to work with engineToClient syncDirection.'
       )
     }
+    const connection = this.engineCommandManager.connection
+    const isCurrentOwner = () =>
+      this.engineCommandManager.connection === connection &&
+      this.syncDirection === 'clientToEngine'
+    const ownershipError = new Error(
+      'Camera ownership changed while exiting sketch mode'
+    )
+    const flushInput = () => {
+      this.moveFrame.flush()
+      this.zoomFrame.flush()
+      this.engineCameraFrame.flush()
+    }
+    flushInput()
+    let synchronizedVersion = this.cameraWriteVersion
+    const drainInput = async () => {
+      if (!isCurrentOwner()) return Promise.reject(ownershipError)
+      flushInput()
+      // An authoritative response must not discard a newer queued gesture.
+      // Read back after its reliable write, including one sent by an earlier RAF.
+      while (synchronizedVersion !== this.cameraWriteVersion) {
+        synchronizedVersion = this.cameraWriteVersion
+        await sendCameraCommand(this.engineCommandManager, {
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'default_camera_get_settings' },
+        })
+        if (!isCurrentOwner()) return Promise.reject(ownershipError)
+        flushInput()
+      }
+    }
     this.isFovAnimationInProgress = true
-    const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
-    const initialCameraUp = this.camera.up.clone()
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.usePerspectiveCamera()
-    const tempVec = new Vector3()
-
-    const currentFov =
-      this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov)
-    const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, 1)
-    this.camera.up.copy(currentUp)
-    await this.dollyZoom(currentFov, true)
-
-    this.isFovAnimationInProgress = false
+    try {
+      const camera = this.createPerspectiveCamera()
+      camera.position.copy(this.camera.position)
+      camera.quaternion.copy(this.camera.quaternion)
+      const target = this.target.clone()
+      const fov = this.perspectiveFovBeforeOrtho
+      dollyZoomCamera(camera, target, fov)
+      await sendCameraCommands(this.engineCommandManager, [
+        { cmd_id: uuidv4(), cmd: { type: 'sketch_mode_disable' } },
+        {
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_perspective_settings',
+            ...convertThreeCamValuesToEngineCam(
+              {
+                position: camera.position,
+                quaternion: camera.quaternion,
+                zoom: camera.zoom,
+                isPerspective: true,
+                target,
+              },
+              fov
+            ),
+            fov_y: fov,
+          },
+        },
+        { cmd_id: uuidv4(), cmd: { type: 'default_camera_get_settings' } },
+      ])
+      await drainInput()
+      if (this.camera instanceof PerspectiveCamera)
+        this.lastPerspectiveFov = this.camera.fov
+    } catch (failure) {
+      try {
+        await drainInput()
+      } catch {
+        // Preserve the original exit failure if its connection also retired.
+      }
+      return Promise.reject(failure)
+    } finally {
+      this.isFovAnimationInProgress = false
+    }
   }
 
   get reactCameraProperties(): ReactCameraProperties {
@@ -1477,20 +1501,26 @@ export class CameraControls {
     this.reactCameraPropertiesCallback = cb
   }
 
-  deferReactUpdate = throttle((a: ReactCameraProperties) => {
-    this.reactCameraPropertiesCallback(a)
-  }, 200)
-
-  onCameraChange = (forceUpdate = false) => {
+  private updateCameraClippingPlanes = () => {
     const distance = this.target.distanceTo(this.camera.position)
     if (this.camera.far / 2.1 < distance || this.camera.far / 1.9 > distance) {
       this.camera.far = distance * 2
       this.camera.near = distance / 10
       this.camera.updateProjectionMatrix()
     }
+  }
 
+  private notifyCameraSubscribers = () => {
+    this.reactCameraFrame.send(() => {
+      this.reactCameraPropertiesCallback(this.reactCameraProperties)
+    })
+    this.cameraChange.dispatch()
+  }
+
+  onCameraChange = (forceUpdate = false) => {
+    this.updateCameraClippingPlanes()
     if (this.syncDirection === 'clientToEngine' || forceUpdate) {
-      this.throttledUpdateEngineCamera({
+      this.updateEngineCamera({
         quaternion: this.camera.quaternion,
         position: this.camera.position,
         zoom: this.camera.zoom,
@@ -1498,8 +1528,7 @@ export class CameraControls {
         target: this.target,
       })
     }
-    this.deferReactUpdate(this.reactCameraProperties)
-    this.cameraChange.dispatch()
+    this.notifyCameraSubscribers()
   }
   getInteractionType = (
     event: PointerEvent | WheelEvent | MouseEvent
@@ -1547,17 +1576,6 @@ export class CameraControls {
     const velocityLimit = 0.5
     /** Amount of pixel delta of calculated zoom transform needed before we send to the engine */
     const normalizedScaleThreshold = 5
-    const velocityFlickDecay = 0.03
-    /** Refresh rate for flick orbit decay timer */
-    const decayRefreshRate = 16
-    const decayIntervals: ReturnType<typeof setInterval>[] = []
-    const clearIntervals = () => {
-      for (let i = decayIntervals.length - 1; i >= 0; i--) {
-        clearInterval(decayIntervals[i])
-        decayIntervals.pop()
-      }
-    }
-
     const hammertime = new Hammer(domElement, {
       recognizers: [
         [Hammer.Pan, { pointers: 1, direction: Hammer.DIRECTION_ALL }],
@@ -1579,11 +1597,6 @@ export class CameraControls {
     // https://github.com/KittyCAD/engine/issues/3528
     hammertime.get('pinch').recognizeWith(hammertime.get('doublepan'))
 
-    // Clear decay intervals on any interaction start
-    hammertime.on('panstart doublepanstart pinchstart', () => {
-      clearIntervals()
-    })
-
     // Orbit gesture is a 1-finger "pan"
     hammertime.on('pan', (ev) => {
       if (this.syncDirection === 'engineToClient' && ev.maxPointers === 1) {
@@ -1592,62 +1605,20 @@ export class CameraControls {
             this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
               ? 'rotatetrackball'
               : 'rotate'
-          this.moveSender.send(() => {
+          this.queueEngineInteraction(this.moveFrame, () => {
             this.doMove(orbitMode, [ev.center.x, ev.center.y])
           })
         }
       }
     })
-    // Fake flicking by sending decaying orbit events in the last direction of orbit
-    hammertime.on('panend', (ev) => {
-      /** HammerJS's `event.velocity` gives you `Math.max(ev.velocityX, ev.velocityY`)`, not the actual velocity. */
-      let velocity = Math.sqrt(ev.velocityY ** 2 + ev.velocityX ** 2)
-      const center = ev.center
-      const direction = ev.angle
-
-      if (
-        this.syncDirection === 'engineToClient' &&
-        ev.maxPointers === 1 &&
-        this.enableRotate &&
-        velocity > 0
-      ) {
-        const orbitMode =
-          this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
-            ? 'rotatetrackball'
-            : 'rotate'
-
-        const decayInterval = setInterval(() => {
-          const decayedVelocity = velocity - velocityFlickDecay
-          if (decayedVelocity <= 0) {
-            if (ev.srcEvent instanceof PointerEvent) {
-              this.onMouseUpInner(ev.srcEvent)
-            }
-            clearInterval(decayInterval)
-          } else {
-            velocity = decayedVelocity
-          }
-
-          // We have to multiply by the refresh rate, because `velocity` is in px/ms
-          // but we only call every `decayRefreshRate` ms.
-          center.x =
-            center.x +
-            Math.cos(degToRad(direction)) * velocity * decayRefreshRate
-          center.y =
-            center.y +
-            Math.sin(degToRad(direction)) * velocity * decayRefreshRate
-
-          this.moveSender.send(() => {
-            this.doMove(orbitMode, [center.x, center.y])
-          })
-        }, decayRefreshRate)
-        decayIntervals.push(decayInterval)
-      }
+    hammertime.on('panend pancancel', (ev) => {
+      if (ev.srcEvent instanceof PointerEvent) this.onMouseUpInner(ev.srcEvent)
     })
 
     // Pan gesture is a 2-finger gesture I named "doublepan"
     hammertime.on('doublepan', (ev) => {
       if (this.syncDirection === 'engineToClient' && this.enablePan) {
-        this.moveSender.send(() => {
+        this.queueEngineInteraction(this.moveFrame, () => {
           this.doMove('pan', [ev.center.x, ev.center.y])
         })
       }
@@ -1675,7 +1646,7 @@ export class CameraControls {
         isUnderVelocityLimit &&
         isOverNormalizedScaleLimit
       ) {
-        this.zoomSender.send(() => {
+        this.queueEngineInteraction(this.zoomFrame, () => {
           this.doZoom(normalizedScale)
         })
         lastScale = ev.scale
@@ -1727,6 +1698,21 @@ const viewHeightFactor = (fov: number) => {
   return Math.tan(deg2Rad(fov / 2))
 }
 
+function dollyZoomCamera(
+  camera: PerspectiveCamera,
+  target: Vector3,
+  newFov: number
+) {
+  const direction = target.clone().sub(camera.position).normalize()
+  const distance = camera.position.distanceTo(target)
+  const scale = viewHeightFactor(camera.fov) / viewHeightFactor(newFov)
+  camera.fov = newFov
+  camera.updateProjectionMatrix()
+  camera.position.copy(
+    target.clone().add(direction.multiplyScalar(-distance * scale))
+  )
+}
+
 function convertThreeCamValuesToEngineCam(
   { target, position, quaternion, zoom, isPerspective }: ThreeCamValues,
   perspectiveFovY = 45
@@ -1740,9 +1726,9 @@ function convertThreeCamValuesToEngineCam(
   const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
   if (isPerspective) {
     return {
-      center: target,
+      center: target.clone(),
       up: upVector,
-      vantage: position,
+      vantage: position.clone(),
     }
   }
 
@@ -1754,7 +1740,7 @@ function convertThreeCamValuesToEngineCam(
   const vantage = target.clone().add(viewDir.multiplyScalar(eyeOffset))
 
   return {
-    center: target,
+    center: target.clone(),
     up: upVector,
     vantage,
   }
@@ -1780,41 +1766,113 @@ function _getInteractionType(
 }
 
 /**
- * Tells the engine to fire it's animation waits for it to finish and then requests camera settings
- * to ensure the client-side camera is synchronized with the engine's camera state.
+ * Enter sketch mode without camera animation, then synchronize the client camera
+ * from the acknowledged engine settings.
  *
  * @param engineCommandManager Our websocket singleton
  * @param entityId - The ID of face or sketchPlane.
  */
 
-export async function letEngineAnimateAndSyncCamAfter(
+export async function enterSketchModeAndSyncCamera(
   engineCommandManager: ConnectionManager,
   entityId: string
 ) {
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'enable_sketch_mode',
-      adjust_camera: true,
-      animated: !isReducedMotion(),
-      ortho: true,
-      entity_id: entityId,
+  const requests: ModelingCmdReq[] = [
+    {
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'enable_sketch_mode',
+        adjust_camera: true,
+        animated: false,
+        ortho: true,
+        entity_id: entityId,
+      },
     },
-  })
-  // wait 600ms (animation takes 500, + 100 for safety)
-  await new Promise((resolve) =>
-    setTimeout(resolve, isReducedMotion() ? 100 : 600)
-  )
-  await engineCommandManager.sendSceneCommand({
-    // CameraControls subscribes to default_camera_get_settings response events
-    // firing this at connection ensure the camera's are synced initially
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
+    {
+      cmd_id: uuidv4(),
+      cmd: { type: 'default_camera_get_settings' },
     },
-  })
+  ]
+  await sendCameraCommands(engineCommandManager, requests)
+}
+
+async function sendCameraCommands(
+  engineCommandManager: ConnectionManager,
+  requests: ModelingCmdReq[]
+) {
+  // The engine executes the batch in order and stops on the first failure.
+  // The acknowledgements and subscribed camera update arrive in one trip.
+  const response = await engineCommandManager
+    .sendSceneCommand(
+      {
+        type: 'modeling_cmd_batch_req',
+        batch_id: uuidv4(),
+        requests,
+        responses: true,
+      },
+      true
+    )
+    .catch((failure: unknown) =>
+      Promise.reject(
+        new Error(
+          getResponseErrorMessage(
+            failure,
+            'Sketch camera batch was not acknowledged'
+          )
+        )
+      )
+    )
+  const singleResponse = isArray(response) ? response[0] : response
+  const responses =
+    singleResponse &&
+    typeof singleResponse === 'object' &&
+    isModelingBatchResponse(singleResponse) &&
+    singleResponse.success
+      ? singleResponse.resp.data.responses
+      : undefined
+  for (const request of requests) {
+    const result = responses?.[request.cmd_id]
+    if (
+      !result ||
+      !('response' in result) ||
+      result.response.type !== request.cmd.type
+    ) {
+      return Promise.reject(
+        new Error(
+          getResponseErrorMessage(
+            result && 'errors' in result ? [result] : response,
+            `Camera command ${request.cmd.type} was not acknowledged`
+          )
+        )
+      )
+    }
+  }
+}
+
+async function sendCameraCommand(
+  engineCommandManager: ConnectionManager,
+  command: Extract<EngineCommand, { type: 'modeling_cmd_req' }>
+): Promise<void> {
+  // Final camera changes must use the acknowledged websocket path. Interactive
+  // perspective updates otherwise use the unreliable channel and return null.
+  const response = await engineCommandManager.sendSceneCommand(command, true)
+  const singleResponse = isArray(response) ? response[0] : response
+  if (
+    !singleResponse ||
+    typeof singleResponse !== 'object' ||
+    !isModelingResponse(singleResponse) ||
+    !singleResponse.success ||
+    singleResponse.resp.data.modeling_response.type !== command.cmd.type
+  ) {
+    return Promise.reject(
+      new Error(
+        getResponseErrorMessage(
+          response,
+          `Camera command ${command.cmd.type} was not acknowledged`
+        )
+      )
+    )
+  }
 }
 
 function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {

@@ -684,7 +684,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     if (exchangesLength === 0 || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: 'instant',
     })
   }, [exchangesLength])
 
@@ -693,7 +693,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     if (!isEndOfStream || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: 'instant',
     })
   }, [isEndOfStream])
 
@@ -796,6 +796,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                       ) : lastExchange &&
                         !isEndOfStream &&
                         props.isProcessing ? (
+                        // zds-performance-exception: activity-indicator -- Indicate a processing conversation turn while streamed messages and completion are displayed as soon as available.
                         <div className="absolute z-10 bottom-0 h-[1px] bg-ml-green animate-shimmer w-full" />
                       ) : null}
                     </>

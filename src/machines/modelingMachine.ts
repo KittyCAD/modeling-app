@@ -41,7 +41,7 @@ import type {
   Point3d,
 } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
-import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { enterSketchModeAndSyncCamera } from '@src/clientSideScene/CameraControls'
 import { deleteSegmentsOrProfiles } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
@@ -272,7 +272,6 @@ async function enterSketchSolveFromSketchBlockArtifact({
   kclManager,
   rustContext,
   engineCommandManager,
-  defaultUnit,
   projectRef,
   wasmInstance,
 }: {
@@ -280,7 +279,6 @@ async function enterSketchSolveFromSketchBlockArtifact({
   kclManager: KclManager
   rustContext: RustContext
   engineCommandManager: ConnectionManager
-  defaultUnit?: ModelingMachineContext['store']['defaultUnit']
   projectRef?: { current: Project | undefined }
   wasmInstance: ModuleType
 }): Promise<{
@@ -316,7 +314,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
 
   const id =
     planeData.type === 'extrudeFace' ? planeData.faceId : planeData.planeId
-  await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+  await enterSketchModeAndSyncCamera(engineCommandManager, id)
   kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
   const project = projectRef?.current
@@ -340,12 +338,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
       0,
       0,
       0,
-      sketchBlockArtifact.sketchId,
-      {
-        settings: {
-          modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-        },
-      }
+      sketchBlockArtifact.sketchId
     )
     if (!editSketchResult) {
       const errorMessage = 'Failed to edit sketch'
@@ -1024,8 +1017,7 @@ export const modelingMachine = setup({
     ),
     'hide default planes': assign({
       defaultPlaneVisibility: ({ context }) => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        context.kclManager.hidePlanes()
+        context.kclManager.hidePlanes().catch(reportRejection)
         return { xy: false, xz: false, yz: false }
       },
     }),
@@ -1430,8 +1422,7 @@ export const modelingMachine = setup({
     }),
     'show default planes': assign({
       defaultPlaneVisibility: ({ context }) => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        context.kclManager.showPlanes()
+        context.kclManager.showPlanes().catch(reportRejection)
         return { xy: true, xz: true, yz: true }
       },
     }),
@@ -1440,8 +1431,7 @@ export const modelingMachine = setup({
         context: { kclManager, defaultPlaneVisibility },
       }) => {
         if (!kclManager.hasErrors()) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          kclManager.showPlanes()
+          kclManager.showPlanes().catch(reportRejection)
           return { xy: true, xz: true, yz: true }
         }
         return { ...defaultPlaneVisibility }
@@ -1453,7 +1443,7 @@ export const modelingMachine = setup({
         // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
         return {}
       }
-      void context.kclManager.showPlanes()
+      context.kclManager.showPlanes().catch(reportRejection)
       return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
     }),
     'setup noPoints onClick listener': ({
@@ -1971,7 +1961,7 @@ export const modelingMachine = setup({
         return {}
       }
     ),
-    'Set mouse state': assign(({ context, event }) => {
+    'Set mouse state': assign(({ context, event, self }) => {
       if (event.type !== 'Set mouse state') return {}
       const nextSegmentHoverMap = () => {
         if (event.data.type === 'isHovering') {
@@ -2001,15 +1991,27 @@ export const modelingMachine = setup({
           const pathToNodeString = JSON.stringify(
             mouseOnParent?.userData?.pathToNode
           )
-          const timeoutId = setTimeout(() => {
-            context.kclManager.sceneInfra.modelingSend({
+          const filePath = context.kclManager.path
+          const projectPath = context.kclManager.systemDeps.project.peek()?.path
+          // zds-performance-exception: feedback-lifetime -- Keep the visible toolbar reachable while the pointer crosses its 20px gap to the controls.
+          const timeoutId = window.setTimeout(() => {
+            const snapshot = self.getSnapshot()
+            if (
+              snapshot.status !== 'active' ||
+              snapshot.context.kclManager.path !== filePath ||
+              snapshot.context.kclManager.systemDeps.project.peek()?.path !==
+                projectPath ||
+              snapshot.context.segmentHoverMap[pathToNodeString] !== timeoutId
+            )
+              return
+            self.send({
               type: 'Set mouse state',
               data: {
                 type: 'timeoutEnd',
                 pathToNodeString,
               },
             })
-          }, OVERLAY_TIMEOUT_MS) as unknown as number
+          }, OVERLAY_TIMEOUT_MS)
           return {
             ...context.segmentHoverMap,
             [pathToNodeString]: timeoutId,
@@ -2153,21 +2155,19 @@ export const modelingMachine = setup({
       async (args: { input: { context: ModelingMachineContext } }) => {
         const context = args.input.context
         const { store, engineCommandManager, kclManager } = context
+        const camControls = kclManager.sceneInfra.camControls
+        let cameraRestored = false
         try {
-          // When cancelling the sketch mode we should disable sketch mode within the engine.
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'sketch_mode_disable' },
-          })
-
-          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+          camControls.syncDirection = 'clientToEngine'
 
           if (store.cameraProjection?.current === 'perspective') {
-            await kclManager.sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            await camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+          } else {
+            await camControls.disableSketchMode()
           }
 
-          kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
+          cameraRestored = true
+          camControls.syncDirection = 'engineToClient'
 
           // TODO: Re-evaluate if this pause/play logic is needed.
           // TODO: Do I need this video element?
@@ -2189,12 +2189,11 @@ export const modelingMachine = setup({
             })
             .catch(reportRejection)
         } finally {
-          const camControls = kclManager.sceneInfra.camControls
           kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           kclManager.sceneEntitiesManager.removeSketchGrid()
-          camControls.enablePan = true
-          camControls.enableRotate = true
-          camControls.syncDirection = 'engineToClient'
+          camControls.enablePan = cameraRestored
+          camControls.enableRotate = cameraRestored
+          if (cameraRestored) camControls.syncDirection = 'engineToClient'
           kclManager.sceneEntitiesManager.resetOverlays()
           kclManager.sceneInfra.stop()
         }
@@ -3110,7 +3109,7 @@ export const modelingMachine = setup({
           }
 
           const id = plane.type === 'extrudeFace' ? plane.faceId : plane.planeId
-          await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+          await enterSketchModeAndSyncCamera(engineCommandManager, id)
           kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
           return {
             sketchEntryNodePath: [],
@@ -3131,10 +3130,7 @@ export const modelingMachine = setup({
           kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-        await letEngineAnimateAndSyncCamAfter(
-          engineCommandManager,
-          plane.planeId
-        )
+        await enterSketchModeAndSyncCamera(engineCommandManager, plane.planeId)
 
         return {
           sketchEntryNodePath: [],
@@ -3159,7 +3155,6 @@ export const modelingMachine = setup({
               rustContext: RustContext
               engineCommandManager: ConnectionManager
               wasmInstance: ModuleType
-              defaultUnit?: ModelingMachineContext['store']['defaultUnit']
               projectRef?: { current: Project | undefined }
             }
           | undefined
@@ -3178,7 +3173,6 @@ export const modelingMachine = setup({
           rustContext,
           engineCommandManager,
           wasmInstance,
-          defaultUnit,
           projectRef,
         } = input
         await kclManager.flushPendingEditorExecution()
@@ -3332,7 +3326,6 @@ export const modelingMachine = setup({
             kclManager,
             rustContext,
             engineCommandManager,
-            defaultUnit,
             projectRef,
             wasmInstance,
           })
@@ -3404,12 +3397,7 @@ export const modelingMachine = setup({
             0, // projectId - using 0 as placeholder
             0, // fileId - using 0 as placeholder
             0, // version - using 0 as placeholder
-            sketchArgs,
-            {
-              settings: {
-                modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-              },
-            }
+            sketchArgs
           )
         } catch (error) {
           await rustContext.hackSetProgram(
@@ -3425,7 +3413,7 @@ export const modelingMachine = setup({
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
-        await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+        await enterSketchModeAndSyncCamera(engineCommandManager, id)
 
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
         kclManager.updateCodeEditor(
@@ -3455,7 +3443,6 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               engineCommandManager: ConnectionManager
-              defaultUnit?: ModelingMachineContext['store']['defaultUnit']
               projectRef?: { current: Project | undefined }
             }
           | undefined
@@ -3474,7 +3461,6 @@ export const modelingMachine = setup({
           kclManager,
           rustContext,
           engineCommandManager,
-          defaultUnit,
           projectRef,
         } = input
         const wasmInstance = await kclManager.wasmInstancePromise
@@ -3492,7 +3478,6 @@ export const modelingMachine = setup({
           kclManager,
           rustContext,
           engineCommandManager,
-          defaultUnit,
           projectRef,
           wasmInstance,
         })
@@ -3765,7 +3750,7 @@ export const modelingMachine = setup({
               kclManager.ast,
               planeCodeRef.range
             )
-            await letEngineAnimateAndSyncCamAfter(
+            await enterSketchModeAndSyncCamera(
               engineCommandManager,
               artifact.id
             )
@@ -3785,7 +3770,7 @@ export const modelingMachine = setup({
           await kclManager.sceneEntitiesManager.getSketchOrientationDetails(
             sketch.value
           )
-        await letEngineAnimateAndSyncCamAfter(
+        await enterSketchModeAndSyncCamera(
           engineCommandManager,
           info?.sketchDetails?.faceId || ''
         )
@@ -6470,9 +6455,17 @@ export const modelingMachine = setup({
               actions: ['reset sketch metadata'],
             },
             onError: {
-              target: '#Modeling.idle',
-              actions: ['reset sketch metadata'],
+              target: 'exitFailed',
+              actions: ['toastError'],
             },
+          },
+        },
+        exitFailed: {
+          // Keep the real exit action available without claiming the model or
+          // camera is ready. Repeating it retries the failed engine handoff.
+          on: {
+            'Exit sketch': 'exiting',
+            Cancel: 'exiting',
           },
         },
       },
@@ -7651,7 +7644,6 @@ export const modelingMachine = setup({
             rustContext: context.rustContext,
             engineCommandManager: context.engineCommandManager,
             wasmInstance: context.wasmInstance,
-            defaultUnit: context.store.defaultUnit,
             projectRef: context.projectRef,
           }
         },
@@ -7668,7 +7660,6 @@ export const modelingMachine = setup({
               kclManager: context.kclManager,
               rustContext: context.rustContext,
               engineCommandManager: context.engineCommandManager,
-              defaultUnit: context.store.defaultUnit,
               projectRef: context.projectRef,
             }
           }
@@ -7691,7 +7682,6 @@ export const modelingMachine = setup({
                 kclManager: context.kclManager,
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,
-                defaultUnit: context.store.defaultUnit,
                 projectRef: context.projectRef,
               }
             }

@@ -257,40 +257,9 @@ code,
   background: white !important;
 }
 
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 0;
-  }
-
-  10% {
-    opacity: 1;
-  }
-}
-
-@keyframes send-up {
-  from {
-    transform: translateY(0px);
-  }
-
-  to {
-    transform: translateY(-1000px);
-  }
-}
-
 @keyframes loading-shimmer {
   100% {
     mask-position: left;
-  }
-}
-
-@keyframes delta-in {
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
   }
 }
 
@@ -445,7 +414,7 @@ code,
     @apply flex justify-between items-center gap-2 px-2 py-1 text-left border-none rounded-sm;
     @apply !no-underline text-xs select-none text-chalkboard-90 dark:!text-chalkboard-30;
     @apply ui-active:bg-primary/10 ui-active:text-primary ui-active:text-inherit dark:ui-active:bg-chalkboard-90;
-    @apply transition-colors ease-out;
+
     @apply m-0;
 
     & small {
@@ -458,7 +427,6 @@ code,
     @apply bg-transparent text-xs whitespace-nowrap text-chalkboard-90 dark:text-chalkboard-40;
     @apply hover:text-primary hover:border-primary dark:hover:border-chalkboard-70;
     @apply disabled:hover:border-transparent disabled:cursor-default disabled:bg-transparent;
-    @apply transition-colors ease-out;
 
     & p {
       @apply m-0;
@@ -624,20 +592,9 @@ code,
     @apply outline-chalkboard-100 dark:outline-chalkboard-10;
   }
 
-  /* highlight an object with a moving dashed outline */
+  /* Highlight the active onboarding target without moving its outline. */
   .onboarding-highlight {
     @apply outline outline-2;
-    animation: onboarding-highlight 0.7s ease-in-out infinite alternate-reverse;
-  }
-
-  @keyframes onboarding-highlight {
-    0% {
-      outline-offset: 0px;
-    }
-
-    100% {
-      outline-offset: 4px;
-    }
   }
 }
 
@@ -652,7 +609,7 @@ code,
 }
 
 .animate-shimmer {
-  animation-delay: 0.5s;
+  /* zds-performance-exception: activity-indicator -- Keep pending loading placeholders visibly active without delaying their first frame. */
   animation-duration: 1s;
   animation-iteration-count: infinite;
   animation-name: loading-shimmer;
@@ -660,12 +617,25 @@ code,
   display: inline-block;
 }
 
-.animate-delta-in {
-  animation-delay: 0.5s;
-  animation-duration: 1.5s;
-  animation-iteration-count: 1;
-  animation-fill-mode: forwards;
-  animation-name: delta-in;
+/* The library exposes no option for its position-wrapper transition. */
+.app-toaster > div {
+  transition: none !important;
+}
+
+@layer components {
+  .app-toast {
+    align-items: center;
+    background: #fff;
+    color: #363636;
+    line-height: 1.3;
+    box-shadow:
+      0 3px 10px #0000001a,
+      0 3px 3px #0000000d;
+    max-width: 350px;
+    pointer-events: auto;
+    padding: 8px 10px;
+    border-radius: 8px;
+  }
 }
 
 .bg-img-mel {

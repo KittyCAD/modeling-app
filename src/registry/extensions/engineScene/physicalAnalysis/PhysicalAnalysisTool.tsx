@@ -13,11 +13,17 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   getModelingData,
   getResponseErrorMessage,
 } from '@src/lib/engineConnection/utils'
+import {
+  type ActiveView,
+  activeViewSignal,
+} from '@src/lib/kclNamedViewActivation'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import {
@@ -39,7 +45,10 @@ import {
   unitAreaLabels,
   unitVolumeLabels,
 } from '../measurementUtils'
-import { physicalAnalysisService } from './physicalAnalysisService'
+import {
+  type PhysicalAnalysisPreferences,
+  physicalAnalysisService,
+} from './physicalAnalysisService'
 import {
   convertMaterialDensity,
   getDefaultDensityUnit,
@@ -55,7 +64,6 @@ import {
 } from './physicalAnalysisUtils'
 
 const physicalAnalysisFailedMessage = 'Physical analysis failed'
-const densityCommitDebounceMs = 400
 // Sized so every result fits without truncating or scrolling: content is
 // 289px tall at any width, and values stop being clipped at 380px wide.
 const defaultPanelWidth = 400
@@ -73,6 +81,19 @@ interface PhysicalAnalysisResult {
   massUnit: UnitMass
   centerOfMass: Point3d
   centerOfMassUnit: UnitLength
+}
+
+interface MeasuredModel {
+  editor: KclManager
+  path: string
+  projectPath: string | undefined
+  connection: ConnectionManager['connection']
+  sceneGeneration: number
+  activeView: ActiveView | null
+  fileLengthUnit: UnitLength
+  densityUnit: UnitDensity
+  materialDensity: number
+  result: PhysicalAnalysisResult
 }
 
 function getNumberField(data: unknown, key: string): number | null {
@@ -105,7 +126,7 @@ function getPoint3dField(data: unknown, key: string): Point3d | null {
 
 /**
  * An empty `entity_ids` tells the engine to use the default scene, so this
- * always reports on the whole model rather than the current selection.
+ * always reports on the visible model rather than the current selection.
  */
 async function requestPhysicalAnalysis({
   sendModelingCommand,
@@ -124,12 +145,9 @@ async function requestPhysicalAnalysis({
   densityUnit: UnitDensity
   materialDensity: number
 }): Promise<PhysicalAnalysisResult | Error> {
-  const [
-    volumeResponse,
-    surfaceAreaResponse,
-    centerOfMassResponse,
-    massResponse,
-  ] = await Promise.all([
+  // A rejected query does not cancel its sibling engine commands. Drain all
+  // four before a newer analysis can own the connection's measurement work.
+  const responses = await Promise.allSettled([
     sendModelingCommand({
       type: 'volume',
       entity_ids: [],
@@ -153,6 +171,20 @@ async function requestPhysicalAnalysis({
       material_density_unit: densityUnit,
     }),
   ])
+  const rejected = responses.find((response) => response.status === 'rejected')
+  if (rejected) {
+    return new Error(
+      getResponseErrorMessage(rejected.reason, physicalAnalysisFailedMessage)
+    )
+  }
+  const [
+    volumeResponse,
+    surfaceAreaResponse,
+    centerOfMassResponse,
+    massResponse,
+  ] = responses.map((response) =>
+    response.status === 'fulfilled' ? response.value : undefined
+  )
 
   const results = [
     getModelingData(volumeResponse, 'volume', physicalAnalysisFailedMessage),
@@ -315,22 +347,40 @@ const copyResultsButtonClassName =
   'm-0 w-full border-0 bg-transparent text-left hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:hover:bg-chalkboard-90 dark:focus:bg-chalkboard-90'
 
 export function PhysicalAnalysisTool() {
-  useSignals()
   const { state } = useModelingContext()
   const { engineCommandManager, kclManager, store } = state.context
   const [status, setStatus] = useState<'idle' | 'analyzing'>('idle')
   const [result, setResult] = useState<PhysicalAnalysisResult | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const latestRequestKey = useRef<string | null>(null)
+  const analysisQueue = useRef<Promise<void>>(Promise.resolve())
+  const measuredModel = useRef<MeasuredModel | null>(null)
 
   const isIdle = state.matches('idle')
-  const isExecuting = kclManager.isExecutingSignal.value
-  const preferences = physicalAnalysisService.preferences.value
-
-  const fileLengthUnit =
-    kclManager.fileSettings.defaultLengthUnit ??
-    store.defaultUnit?.current ??
-    DEFAULT_DEFAULT_LENGTH_UNIT
+  const signals = useSignals(1)
+  let isExecuting: boolean
+  let preferences: PhysicalAnalysisPreferences
+  let fileLengthUnit: UnitLength
+  let path: string
+  let projectPath: string | undefined
+  let sceneGeneration: number
+  let activeView: ActiveView | null
+  try {
+    isExecuting = kclManager.isExecutingSignal.value
+    sceneGeneration = kclManager.engineSceneGenerationSignal.value
+    activeView = activeViewSignal.value
+    path = kclManager.path
+    projectPath = kclManager.systemDeps.project.value?.path
+    preferences = physicalAnalysisService.preferences.value
+    fileLengthUnit =
+      kclManager.fileSettings.defaultLengthUnit ??
+      store.defaultUnit?.current ??
+      DEFAULT_DEFAULT_LENGTH_UNIT
+  } finally {
+    // End render tracking before immediate input writes can notify subscribers.
+    signals.f()
+  }
+  const connection = engineCommandManager.connection
 
   // A null preference means "follow the file", so untouched dropdowns re-seed
   // when the file's unit changes while explicit choices stay pinned.
@@ -348,24 +398,14 @@ export function PhysicalAnalysisTool() {
   const isDensityInputValid = isValidMaterialDensity(parsedDensityInput)
 
   useEffect(() => {
-    setDensityInput(String(materialDensity))
+    // Preserve a valid draft such as "1." while applying its numeric value.
+    // Unit changes and external preference updates still replace stale drafts.
+    setDensityInput((current) =>
+      Number.parseFloat(current) === materialDensity
+        ? current
+        : String(materialDensity)
+    )
   }, [materialDensity])
-
-  // Debounce so typing a density does not fire an engine request per keystroke.
-  useEffect(() => {
-    if (!isDensityInputValid || parsedDensityInput === materialDensity) {
-      return
-    }
-
-    const timeoutId = setTimeout(() => {
-      physicalAnalysisService.setPreference(
-        'materialDensity',
-        parsedDensityInput
-      )
-    }, densityCommitDebounceMs)
-
-    return () => clearTimeout(timeoutId)
-  }, [isDensityInputValid, parsedDensityInput, materialDensity])
 
   const sendModelingCommand = useCallback(
     (cmd: ModelingCmd) =>
@@ -378,70 +418,135 @@ export function PhysicalAnalysisTool() {
   )
 
   useEffect(() => {
+    latestRequestKey.current = null
     if (!isIdle) {
+      measuredModel.current = null
       return
     }
 
-    // Any change to a unit, the density, or the model makes the numbers on
-    // screen stale, so drop them rather than showing values that no longer
-    // match the controls above them.
-    setResult(null)
     setErrorMessage(null)
 
     if (isExecuting) {
       // Wait for the new geometry before asking the engine to measure it.
+      measuredModel.current = null
+      setResult(null)
       setStatus('analyzing')
       return
     }
 
+    const ownsModel = () =>
+      kclManager.path === path &&
+      kclManager.systemDeps.project.peek()?.path === projectPath &&
+      engineCommandManager.connection === connection &&
+      activeViewSignal.peek() === activeView &&
+      kclManager.engineSceneGenerationSignal.peek() === sceneGeneration &&
+      !kclManager.isExecutingSignal.peek()
+    const measured = measuredModel.current
+    if (
+      measured &&
+      measured.editor === kclManager &&
+      measured.path === path &&
+      measured.projectPath === projectPath &&
+      measured.connection === connection &&
+      measured.sceneGeneration === sceneGeneration &&
+      measured.activeView === activeView &&
+      measured.fileLengthUnit === fileLengthUnit &&
+      measured.densityUnit === densityUnit &&
+      measured.result.centerOfMassUnit === lengthUnit &&
+      measured.result.surfaceAreaUnit === areaUnit &&
+      measured.result.volumeUnit === volumeUnit &&
+      measured.result.massUnit === massUnit &&
+      ownsModel()
+    ) {
+      // Uniform density changes only mass. Scale the original measurement,
+      // not the previous displayed value, to avoid cumulative rounding.
+      setResult({
+        ...measured.result,
+        mass:
+          measured.result.mass * (materialDensity / measured.materialDensity),
+      })
+      setStatus('idle')
+      return
+    }
+
+    // A different model or unit needs fresh engine measurements. Never retain
+    // measurements from an execution, import, file switch, or retired session.
+    measuredModel.current = null
+    setResult(null)
     const requestKey = `${lengthUnit}:${areaUnit}:${volumeUnit}:${massUnit}:${densityUnit}:${materialDensity}:${uuidv4()}`
     latestRequestKey.current = requestKey
     setStatus('analyzing')
+    let cancelled = false
+    const isCurrent = () =>
+      !cancelled && latestRequestKey.current === requestKey && ownsModel()
 
-    requestPhysicalAnalysis({
-      sendModelingCommand,
-      lengthUnit,
-      areaUnit,
-      volumeUnit,
-      massUnit,
-      densityUnit,
-      materialDensity,
-    })
-      .then((analysisResult) => {
-        if (latestRequestKey.current !== requestKey) {
-          return
-        }
-
+    // Start immediately when idle. While an engine analysis is in flight,
+    // retain only the latest requested inputs instead of overlapping queries.
+    analysisQueue.current = analysisQueue.current.then(async () => {
+      if (!isCurrent()) return
+      try {
+        const analysisResult = await requestPhysicalAnalysis({
+          sendModelingCommand,
+          lengthUnit,
+          areaUnit,
+          volumeUnit,
+          massUnit,
+          densityUnit,
+          materialDensity,
+        })
+        if (!isCurrent()) return
         if (analysisResult instanceof Error) {
           setResult(null)
           setErrorMessage(analysisResult.message)
-          return
+        } else {
+          measuredModel.current = {
+            editor: kclManager,
+            path,
+            projectPath,
+            connection,
+            sceneGeneration,
+            activeView,
+            fileLengthUnit,
+            densityUnit,
+            materialDensity,
+            result: analysisResult,
+          }
+          setResult(analysisResult)
         }
-
-        setResult(analysisResult)
-      })
-      .catch((error) => {
-        if (latestRequestKey.current === requestKey) {
+      } catch (error) {
+        if (isCurrent()) {
           setResult(null)
           setErrorMessage(
             getResponseErrorMessage(error, physicalAnalysisFailedMessage)
           )
         }
         reportRejection(error)
-      })
-      .finally(() => {
-        if (latestRequestKey.current === requestKey) {
-          setStatus('idle')
-        }
-      })
+      } finally {
+        if (isCurrent()) setStatus('idle')
+      }
+    })
+    return () => {
+      cancelled = true
+      if (latestRequestKey.current === requestKey) {
+        latestRequestKey.current = null
+      }
+    }
   }, [
+    activeView,
     areaUnit,
+    connection,
     densityUnit,
+    engineCommandManager,
+    fileLengthUnit,
     isExecuting,
     isIdle,
+    kclManager,
     lengthUnit,
     massUnit,
     materialDensity,
+    path,
+    projectPath,
+    sceneGeneration,
     sendModelingCommand,
     volumeUnit,
   ])
@@ -505,7 +610,20 @@ export function PhysicalAnalysisTool() {
             min={0}
             className="w-full rounded-sm border border-chalkboard-30 bg-transparent p-1 text-xs dark:border-chalkboard-80"
             value={densityInput}
-            onChange={(event) => setDensityInput(event.target.value)}
+            onChange={(event) => {
+              const nextInput = event.target.value
+              setDensityInput(nextInput)
+              const nextDensity = Number.parseFloat(nextInput)
+              if (
+                isValidMaterialDensity(nextDensity) &&
+                nextDensity !== materialDensity
+              ) {
+                physicalAnalysisService.setPreference(
+                  'materialDensity',
+                  nextDensity
+                )
+              }
+            }}
           />
         </label>
         <UnitSelect

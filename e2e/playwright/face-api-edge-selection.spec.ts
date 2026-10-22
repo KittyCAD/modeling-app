@@ -1,4 +1,5 @@
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
+import { doAndWaitForImageDiff } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
@@ -338,7 +339,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
   })
 
   test('Can use an edge-extruded surface boundary as a Helix axis', async ({
-    context,
     page,
     scene,
     cmdBar,
@@ -360,20 +360,56 @@ surface001 = extrude(
 )
 hide(sketch001)`
 
-    await context.addInitScript(
-      ({ initialCode }) => {
-        localStorage.setItem('persistCode', initialCode)
-      },
-      {
-        initialCode: code,
-      }
-    )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('surface001 = extrude')
+    await page.evaluate(async () => {
+      const editor = window.app.project?.executingEditor.value
+      if (!editor) throw new Error('No executing editor')
+      await editor.flushPendingEditorExecution()
+    })
+    await expect
+      .poll(() =>
+        page.evaluate((code) => {
+          const editor = window.app.project?.executingEditor.value
+          return (
+            editor?.code === code &&
+            editor.lastSuccessfulCode === code &&
+            !editor.isExecuting
+          )
+        }, code)
+      )
+      .toBe(true)
     await editor.closePane()
+
+    // Typing preserves the existing view. Fit the loaded surface explicitly
+    // instead of relying on startup's zoom-to-fit of the empty project.
+    await page.evaluate(() => {
+      window.app.project?.executingEditor.value?.engineCommandManager.clearCommandLogs()
+    })
+    expect(
+      await doAndWaitForImageDiff(
+        scene.streamWrapper,
+        async () => {
+          await cmdBar.openCmdBar()
+          await cmdBar.chooseCommand('Zoom to fit')
+          await cmdBar.expectState({ stage: 'commandBarClosed' })
+        },
+        300
+      )
+    ).toBe(true)
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          window.app.project?.executingEditor.value?.engineCommandManager.commandLogs.some(
+            (log) =>
+              log.type === 'receive-reliable' && log.cmd_type === 'zoom_to_fit'
+          )
+        )
+      )
+      .toBe(true)
 
     const [clickSurfaceEdge] = scene.makeMouseHelpers(0.7513, 0.3071, {
       format: 'ratio',

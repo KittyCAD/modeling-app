@@ -1,5 +1,6 @@
 import {
   COMPARISON_ACTIONS,
+  COMPARISON_CONTEXTS,
   COMPARISON_PLAN,
   COMPARISON_WARM_CYCLES,
   compareInteractions,
@@ -13,6 +14,13 @@ import type { InteractionSample } from '@src/lib/interactionPerformance/types'
 import { describe, expect, it } from 'vitest'
 
 const open = interactions.commandPaletteOpen.id
+const modelingContexts = COMPARISON_CONTEXTS.filter(
+  (context) => context !== 'home'
+)
+const expectedStrata = Object.values(COMPARISON_ACTIONS).reduce(
+  (total, actions) => total + actions.length * 3 * 2,
+  0
+)
 
 interface Input {
   session: Readonly<ComparisonSessionIdentity>
@@ -99,7 +107,10 @@ describe('paired interaction comparison', () => {
     expect(result.status).toBe('no-regression')
     expect(result.collectionErrors).toEqual([])
     expect(result.failures).toEqual([])
-    expect(result.strata).toHaveLength(96)
+    expect(result.strata).toHaveLength(expectedStrata)
+    expect(new Set(result.strata.map(({ context }) => context))).toEqual(
+      new Set(COMPARISON_CONTEXTS)
+    )
     for (const stratum of result.strata) {
       expect(stratum.completePairs).toBe(10)
       expect(stratum.medianDeltaMs).toBe(0)
@@ -187,41 +198,49 @@ describe('paired interaction comparison', () => {
     }
   )
 
-  it('detects one delayed warm invocation per session through the maximum, not the median', () => {
-    const result = compareInteractions(
-      sessions(({ session, cycle, sample }) =>
-        session.variant === 'candidate' &&
-        session.context === 'modeling' &&
-        sample.id === interactions.codePaneOpen.id &&
-        cycle === 7
-          ? delayed(sample, 64)
-          : sample
+  it.each(modelingContexts)(
+    'detects one delayed warm invocation in %s independently through the maximum, not the median',
+    (context) => {
+      const result = compareInteractions(
+        sessions(({ session, cycle, sample }) =>
+          session.variant === 'candidate' &&
+          session.context === context &&
+          sample.id === interactions.codePaneOpen.id &&
+          cycle === 7
+            ? delayed(sample, 64)
+            : sample
+        )
       )
-    )
-    expect(result.status).toBe('regressed')
-    expect(result.failures).toEqual([
-      {
-        context: 'modeling',
-        id: interactions.codePaneOpen.id,
-        phase: 'warm-maximum',
-        metric: 'outcome',
-      },
-      {
-        context: 'modeling',
-        id: interactions.codePaneOpen.id,
-        phase: 'warm-maximum',
-        metric: 'event-timing',
-      },
-    ])
-    const typical = result.strata.find(
-      (row) =>
-        row.context === 'modeling' &&
-        row.id === interactions.codePaneOpen.id &&
-        row.phase === 'warm-median' &&
-        row.metric === 'outcome'
-    )
-    expect(typical?.medianDeltaMs).toBe(0)
-  })
+      expect(result.status).toBe('regressed')
+      expect(result.failures).toEqual([
+        {
+          context,
+          id: interactions.codePaneOpen.id,
+          phase: 'warm-maximum',
+          metric: 'outcome',
+        },
+        {
+          context,
+          id: interactions.codePaneOpen.id,
+          phase: 'warm-maximum',
+          metric: 'event-timing',
+        },
+      ])
+      const typical = result.strata.find(
+        (row) =>
+          row.context === context &&
+          row.id === interactions.codePaneOpen.id &&
+          row.phase === 'warm-median' &&
+          row.metric === 'outcome'
+      )
+      expect(typical?.medianDeltaMs).toBe(0)
+      expect(
+        result.strata
+          .filter((row) => row.context !== context)
+          .every((row) => row.status === 'no-regression')
+      ).toBe(true)
+    }
+  )
 
   it('requires the practical margin and nine positive pairs', () => {
     for (const { delay, affectedBlocks, expected } of [
@@ -263,7 +282,11 @@ describe('paired interaction comparison', () => {
     ({ candidateMs, positivePairs, expected }) => {
       const baseMs = 235.19999999995343
       const input = sessions(({ session, cycle, sample }) => {
-        if (session.context !== 'modeling' || cycle !== 0 || sample.id !== open)
+        if (
+          session.context !== 'modeling-large' ||
+          cycle !== 0 ||
+          sample.id !== open
+        )
           return sample
         if (session.block === 8)
           return {
@@ -278,7 +301,7 @@ describe('paired interaction comparison', () => {
       const result = compareInteractions(input)
       const first = result.strata.find(
         (row) =>
-          row.context === 'modeling' &&
+          row.context === 'modeling-large' &&
           row.id === open &&
           row.phase === 'first' &&
           row.metric === 'outcome'
@@ -343,20 +366,20 @@ describe('paired interaction comparison', () => {
       })
     )
     expect(result.status).toBe('regressed')
-    expect(result.failures).toHaveLength(2)
+    expect(result.failures).toHaveLength(COMPARISON_CONTEXTS.length)
     expect(result.strata.some((row) => row.status === 'unavailable')).toBe(true)
   })
 
   it('rejects a missing session instead of comparing a smaller cohort', () => {
     const input = sessions()
-    input.splice(7, 1)
+    const [removed] = input.splice(7, 1)
     const result = compareInteractions(input)
     expect(result.status).toBe('invalid')
     expect(result.collectionErrors).toContain(
-      'Expected 40 sessions; received 39.'
+      `Expected ${COMPARISON_PLAN.length} sessions; received ${COMPARISON_PLAN.length - 1}.`
     )
     expect(result.collectionErrors).toContain(
-      'Missing session 1/base/modeling.'
+      `Missing session ${removed.block}/${removed.variant}/${removed.context}.`
     )
     expect(result.strata.every((row) => row.pairs.length === 10)).toBe(true)
   })
@@ -370,7 +393,11 @@ describe('paired interaction comparison', () => {
       'Duplicate session 0/base/home.'
     )
     const reordered = sessions()
-    ;[reordered[0], reordered[2]] = [reordered[2], reordered[0]]
+    const candidateHome = COMPARISON_CONTEXTS.length
+    ;[reordered[0], reordered[candidateHome]] = [
+      reordered[candidateHome],
+      reordered[0],
+    ]
     const result = compareInteractions(reordered)
     expect(result.status).toBe('invalid')
     expect(result.collectionErrors).toContain(
@@ -403,21 +430,21 @@ describe('paired interaction comparison', () => {
     const input = sessions()
     input[0].snapshot.samples[0].status = 'timeout'
     input[1].snapshot.samples[0].outcomeMs = Number.NaN
-    input[2].snapshot.visibilityInterrupted = true
-    input[3].snapshot.registered[0].budgetMs = 151
+    input[COMPARISON_CONTEXTS.length].snapshot.visibilityInterrupted = true
+    input[COMPARISON_CONTEXTS.length + 2].snapshot.registered[0].budgetMs = 151
     const result = compareInteractions(input)
     expect(result.status).toBe('invalid')
     expect(result.collectionErrors).toContain(
       '0/base/home: Sample 1 (zds.commandPalette.open) has no completed outcome.'
     )
     expect(result.collectionErrors).toContain(
-      '0/base/modeling: Sample 1 (zds.commandPalette.open) has no completed outcome.'
+      '0/base/modeling-small: Sample 1 (zds.commandPalette.open) has no completed outcome.'
     )
     expect(result.collectionErrors).toContain(
       '0/candidate/home: The document was hidden during capture.'
     )
     expect(result.collectionErrors).toContain(
-      '0/candidate/modeling: Registered interaction definitions differ.'
+      '0/candidate/modeling-large: Registered interaction definitions differ.'
     )
   })
 })

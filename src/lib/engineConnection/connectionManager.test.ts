@@ -6,6 +6,11 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 })
 
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
+import type {
+  BatchResponse,
+  WebSocketRequest,
+  WebSocketResponse,
+} from '@kittycad/lib'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
@@ -18,6 +23,9 @@ import {
   type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { createSettings } from '@src/lib/settings/initialSettings'
+import { promiseFactory } from '@src/lib/utils'
+import { Themes } from '@src/lib/theme'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 class ReconnectTestWebSocket extends EventTarget {
@@ -45,7 +53,7 @@ class ReconnectTestWebSocket extends EventTarget {
 function createConnectionManager() {
   return new ConnectionManager({
     settingsActor: {
-      getSnapshot: () => ({ context: {} }),
+      getSnapshot: () => ({ context: createSettings() }),
     } as unknown as SettingsActorType,
   })
 }
@@ -68,7 +76,42 @@ function addConnectedState(manager: ConnectionManager) {
     disconnectAll: vi.fn(),
   } as unknown as Connection
   manager.started = true
+  return manager.connection
 }
+
+const settingUpdates = [
+  {
+    name: 'theme',
+    commandCount: 2,
+    update: (
+      manager: ConnectionManager,
+      latest: boolean,
+      isCurrent: () => boolean
+    ) => manager.setTheme(latest ? Themes.Dark : Themes.Light, isCurrent),
+  },
+  {
+    name: 'backface',
+    commandCount: 1,
+    update: (
+      manager: ConnectionManager,
+      latest: boolean,
+      isCurrent: () => boolean
+    ) =>
+      manager.setDefaultSystemProperties(
+        latest ? '#00ff00' : '#ff0000',
+        isCurrent
+      ),
+  },
+  {
+    name: 'edge visibility',
+    commandCount: 1,
+    update: (
+      manager: ConnectionManager,
+      latest: boolean,
+      isCurrent: () => boolean
+    ) => manager.setHighlightEdges(!latest, isCurrent),
+  },
+]
 
 function startConnectionManager(
   manager: ConnectionManager,
@@ -82,6 +125,57 @@ function startConnectionManager(
   })
 }
 
+function sceneCameraBatch(
+  responses = true
+): Extract<WebSocketRequest, { type: 'modeling_cmd_batch_req' }> {
+  return {
+    type: 'modeling_cmd_batch_req',
+    batch_id: 'scene-batch',
+    responses,
+    requests: [
+      {
+        cmd_id: 'enable',
+        cmd: {
+          type: 'enable_sketch_mode',
+          entity_id: 'plane',
+          animated: false,
+          ortho: true,
+          adjust_camera: true,
+        },
+      },
+      { cmd_id: 'settings', cmd: { type: 'default_camera_get_settings' } },
+    ],
+  }
+}
+
+const sceneCameraBatchResponse = {
+  success: true,
+  request_id: 'scene-batch',
+  resp: {
+    type: 'modeling_batch',
+    data: {
+      responses: {
+        // Deliberately reversed: callbacks must follow requests, not map order.
+        settings: {
+          response: {
+            type: 'default_camera_get_settings',
+            data: {
+              settings: {
+                center: { x: 0, y: 0, z: 0 },
+                pos: { x: 0, y: 0, z: 10 },
+                up: { x: 0, y: 1, z: 0 },
+                orientation: { x: 0, y: 0, z: 0, w: 1 },
+                ortho: true,
+              },
+            },
+          },
+        },
+        enable: { response: { type: 'enable_sketch_mode', data: {} } },
+      },
+    },
+  },
+} satisfies WebSocketResponse
+
 describe('ConnectionManager', () => {
   afterEach(() => {
     vi.useRealTimers()
@@ -89,6 +183,498 @@ describe('ConnectionManager', () => {
     vi.unstubAllGlobals()
     reportClientError.mockClear()
     ReconnectTestWebSocket.instances = []
+  })
+
+  it('awaits a scene batch and delivers subscriptions once in request order before completion', async () => {
+    vi.useFakeTimers()
+    const manager = createConnectionManager()
+    const connection = addConnectedState(manager)
+    connection.send = vi.fn()
+    const order: string[] = []
+    manager.subscribeTo({
+      event: 'enable_sketch_mode',
+      callback: () => order.push('enable'),
+    })
+    manager.subscribeTo({
+      event: 'default_camera_get_settings',
+      callback: () => order.push('settings'),
+    })
+    const result = manager
+      .sendSceneCommand(sceneCameraBatch())
+      .then((response) => {
+        order.push('complete')
+        return response
+      })
+    expect(Object.keys(manager.pendingCommands)).toEqual(['scene-batch'])
+    expect(manager.pendingCommands['scene-batch'].isSceneCommand).toBe(true)
+    expect(order).toEqual([])
+    const receive = manager.createMessageHandler()
+    const event = new MessageEvent('message', {
+      data: JSON.stringify(sceneCameraBatchResponse),
+    })
+    receive(event)
+    expect(order).toEqual(['enable', 'settings'])
+    expect(await result).toEqual(sceneCameraBatchResponse)
+    expect(order).toEqual(['enable', 'settings', 'complete'])
+    receive(event)
+    expect(order).toEqual(['enable', 'settings', 'complete'])
+    expect(
+      manager.commandLogs.filter(({ type }) => type === 'receive-reliable')
+    ).toHaveLength(2)
+    expect(manager.pendingCommands).toEqual({})
+  })
+
+  it('keeps responses:false scene batches fire-and-forget without pending work', async () => {
+    const manager = createConnectionManager()
+    const connection = addConnectedState(manager)
+    const send = vi.fn()
+    connection.send = send
+    const batch = sceneCameraBatch(false)
+    expect(await manager.sendSceneCommand(batch)).toBeNull()
+    expect(send).toHaveBeenCalledExactlyOnceWith(batch)
+    expect(manager.pendingCommands).toEqual({})
+  })
+
+  it.each(['acknowledged', 'missing', 'failed'])(
+    'waits for an %s object-visibility batch',
+    async (outcome) => {
+      vi.useFakeTimers()
+      const manager = createConnectionManager()
+      const connection = addConnectedState(manager)
+      const send = vi.fn<(command: WebSocketRequest) => void>()
+      connection.send = send
+      const visibility = new Map([
+        ['first-plane', true],
+        ['second-plane', false],
+      ])
+      let settled = false
+      const operation = manager.setObjectsHidden(visibility)
+      void operation.then(
+        () => {
+          settled = true
+        },
+        () => {
+          settled = true
+        }
+      )
+      const request = send.mock.calls[0]?.[0]
+      expect(request?.type).toBe('modeling_cmd_batch_req')
+      if (request?.type !== 'modeling_cmd_batch_req') {
+        throw new Error('Expected an object-visibility batch')
+      }
+      expect(request.responses).toBe(true)
+      expect(request.requests.map(({ cmd }) => cmd)).toEqual([
+        { type: 'object_visible', object_id: 'first-plane', hidden: true },
+        { type: 'object_visible', object_id: 'second-plane', hidden: false },
+      ])
+      await Promise.resolve()
+      expect(settled).toBe(false)
+      expect(Object.keys(manager.pendingCommands)).toEqual([request.batch_id])
+
+      const responses: Record<string, BatchResponse> = {}
+      for (const [index, { cmd_id }] of request.requests.entries()) {
+        if (index === 1 && outcome === 'missing') continue
+        responses[cmd_id] =
+          index === 1 && outcome === 'failed'
+            ? {
+                errors: [
+                  { error_code: 'internal_api', message: 'Missing plane' },
+                ],
+              }
+            : { response: { type: 'object_visible', data: {} } }
+      }
+      const response: WebSocketResponse = {
+        success: true,
+        request_id: request.batch_id,
+        resp: { type: 'modeling_batch', data: { responses } },
+      }
+      const result =
+        outcome === 'acknowledged'
+          ? expect(operation).resolves.toBeUndefined()
+          : expect(operation).rejects.toThrow(
+              outcome === 'failed' ? 'Missing plane' : /not acknowledged/
+            )
+      manager.createMessageHandler()(
+        new MessageEvent('message', {
+          data: JSON.stringify(response),
+        })
+      )
+      await result
+      expect(settled).toBe(true)
+      expect(manager.pendingCommands).toEqual({})
+    }
+  )
+
+  it('rejects a retired scene batch and ignores its late acknowledgement after replacement', async () => {
+    vi.useFakeTimers()
+    const manager = createConnectionManager()
+    addConnectedState(manager).send = vi.fn()
+    const callback = vi.fn()
+    manager.subscribeTo({ event: 'default_camera_get_settings', callback })
+    const receive = manager.createMessageHandler()
+    const retired = manager.sendSceneCommand(sceneCameraBatch())
+    const rejected = expect(retired).rejects.toMatchObject([
+      { errors: [{ error_code: 'connection_problem' }] },
+    ])
+    manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+    await rejected
+    addConnectedState(manager).send = vi.fn()
+    const currentBatch = { ...sceneCameraBatch(), batch_id: 'new-scene-batch' }
+    const current = manager.sendSceneCommand(currentBatch)
+    receive(
+      new MessageEvent('message', {
+        data: JSON.stringify(sceneCameraBatchResponse),
+      })
+    )
+    expect(callback).not.toHaveBeenCalled()
+    expect(Object.keys(manager.pendingCommands)).toEqual(['new-scene-batch'])
+    receive(
+      new MessageEvent('message', {
+        data: JSON.stringify({
+          ...sceneCameraBatchResponse,
+          request_id: currentBatch.batch_id,
+        }),
+      })
+    )
+    await current
+    expect(callback).toHaveBeenCalledOnce()
+    expect(manager.pendingCommands).toEqual({})
+  })
+
+  it('settles modeling responses before the WebRTC readiness handoff', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
+    const manager = createConnectionManager()
+    const startup = startConnectionManager(manager, {
+      width: 256,
+      height: 256,
+    }).catch((error: unknown) => error)
+    const websocket = ReconnectTestWebSocket.instances[0]
+    if (!websocket) expect.fail(String(await startup))
+    const requestId = '00000000-0000-4000-8000-000000000001'
+    const response = manager
+      .sendModelingCommandFromWasm(
+        requestId,
+        '[0,0,0]',
+        JSON.stringify({
+          type: 'modeling_cmd_req',
+          cmd_id: requestId,
+          cmd: { type: 'begin_execution', enable_render: true },
+        }),
+        '{}'
+      )
+      .catch(() => undefined)
+
+    try {
+      expect(manager.connection?.connected).toBe(false)
+      expect(Object.keys(manager.pendingCommands)).toEqual([requestId])
+      websocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            success: true,
+            request_id: requestId,
+            resp: {
+              type: 'modeling',
+              data: { modeling_response: { type: 'empty' } },
+            },
+          }),
+        })
+      )
+
+      expect(Object.keys(manager.pendingCommands)).toEqual([])
+      expect(await response).toBeInstanceOf(Uint8Array)
+      expect(
+        manager.commandLogs.filter(({ type }) => type === 'receive-reliable')
+      ).toHaveLength(1)
+    } finally {
+      manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+      await Promise.all([response, startup])
+    }
+  })
+
+  it('removes the early response listener before replacing its connection', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
+    const manager = createConnectionManager()
+    const firstStartup = startConnectionManager(manager, {
+      width: 256,
+      height: 256,
+    }).catch((error: unknown) => error)
+    const retiredWebsocket = ReconnectTestWebSocket.instances[0]
+    if (!retiredWebsocket) expect.fail(String(await firstStartup))
+    manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+    await firstStartup
+
+    const startup = startConnectionManager(manager, {
+      width: 256,
+      height: 256,
+    }).catch((error: unknown) => error)
+    const websocket = ReconnectTestWebSocket.instances[1]
+    if (!websocket) expect.fail(String(await startup))
+    const requestId = '00000000-0000-4000-8000-000000000002'
+    const response = manager
+      .sendModelingCommandFromWasm(
+        requestId,
+        '[0,0,0]',
+        JSON.stringify({
+          type: 'modeling_cmd_req',
+          cmd_id: requestId,
+          cmd: { type: 'begin_execution', enable_render: true },
+        }),
+        '{}'
+      )
+      .catch(() => undefined)
+    const payload = JSON.stringify({
+      success: true,
+      request_id: requestId,
+      resp: {
+        type: 'modeling',
+        data: { modeling_response: { type: 'empty' } },
+      },
+    })
+    try {
+      retiredWebsocket.dispatchEvent(
+        new MessageEvent('message', { data: payload })
+      )
+      expect(Object.keys(manager.pendingCommands)).toEqual([requestId])
+      expect(manager.responseMap[requestId]).toBeUndefined()
+
+      websocket.dispatchEvent(new MessageEvent('message', { data: payload }))
+      expect(Object.keys(manager.pendingCommands)).toEqual([])
+      expect(await response).toBeInstanceOf(Uint8Array)
+    } finally {
+      manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+      await Promise.all([response, startup])
+    }
+  })
+
+  it.each(settingUpdates)(
+    'sends only the latest $name after connection readiness',
+    async ({ update, commandCount }) => {
+      const manager = createConnectionManager()
+      const connection = addConnectedState(manager)
+      const readiness = promiseFactory<boolean>()
+      connection.deferredConnection = readiness
+      const send = vi.spyOn(manager, 'sendSceneCommand').mockResolvedValue(null)
+
+      const stale = update(manager, false, () => true)
+      const current = update(manager, true, () => true)
+      expect(send).not.toHaveBeenCalled()
+      readiness.resolve(true)
+      await Promise.all([stale, current])
+
+      expect(send).toHaveBeenCalledTimes(commandCount)
+    }
+  )
+
+  it.each(settingUpdates)(
+    'does not send pending $name to a replacement connection',
+    async ({ update }) => {
+      const manager = createConnectionManager()
+      const connection = addConnectedState(manager)
+      const readiness = promiseFactory<boolean>()
+      connection.deferredConnection = readiness
+      const send = vi.spyOn(manager, 'sendSceneCommand').mockResolvedValue(null)
+
+      const pending = update(manager, false, () => true)
+      addConnectedState(manager)
+      readiness.resolve(true)
+      await pending
+
+      expect(send).not.toHaveBeenCalled()
+    }
+  )
+
+  it.each(settingUpdates)(
+    'does not send pending $name after its editor loses ownership',
+    async ({ update }) => {
+      const manager = createConnectionManager()
+      const connection = addConnectedState(manager)
+      const readiness = promiseFactory<boolean>()
+      connection.deferredConnection = readiness
+      const send = vi.spyOn(manager, 'sendSceneCommand').mockResolvedValue(null)
+      let current = true
+
+      const pending = update(manager, false, () => current)
+      current = false
+      readiness.resolve(true)
+      await pending
+
+      expect(send).not.toHaveBeenCalled()
+    }
+  )
+
+  it('does not append stale theme colors after a newer theme has finished', async () => {
+    const manager = createConnectionManager()
+    addConnectedState(manager)
+    const first = promiseFactory<null>()
+    const send = vi
+      .spyOn(manager, 'sendSceneCommand')
+      .mockReturnValueOnce(first.promise)
+      .mockResolvedValue(null)
+
+    const stale = manager.setTheme(Themes.Light)
+    await Promise.resolve()
+    expect(send).toHaveBeenCalledTimes(1)
+    await manager.setTheme(Themes.Dark)
+    first.resolve(null)
+    await stale
+
+    expect(send).toHaveBeenCalledTimes(3)
+    expect(send).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        cmd: expect.objectContaining({ type: 'set_default_system_properties' }),
+      })
+    )
+  })
+
+  it('identifies actual connection replacement without treating scene resets as a new session', async () => {
+    const manager = createConnectionManager()
+    const createTransport = () =>
+      new Connection({
+        url: 'ws://localhost/modeling-session-identity',
+        token: 'test-token',
+        handleOnDataChannelMessage: vi.fn(),
+        recordShutdownTrigger: manager.recordShutdownTrigger.bind(manager),
+        tearDownManager: manager.tearDown.bind(manager),
+        rejectPendingCommand: vi.fn(),
+        handleMessage: vi.fn(),
+        getCloudProjectId: () => undefined,
+      })
+
+    expect(manager.engineSessionId).toBeUndefined()
+    const first = createTransport()
+    manager.connection = first
+    expect(manager.engineSessionId).toBe(first.id)
+
+    await manager.startNewSession()
+    expect(manager.engineSessionId).toBe(first.id)
+
+    const replacement = createTransport()
+    manager.connection = replacement
+    expect(manager.engineSessionId).toBe(replacement.id)
+    expect(manager.engineSessionId).not.toBe(first.id)
+
+    manager.connection = undefined
+    expect(manager.engineSessionId).toBeUndefined()
+  })
+
+  it.each([true, false])(
+    'updates grid and label visibility with fixed model units: %s',
+    async (visible) => {
+      const manager = createConnectionManager()
+      addConnectedState(manager)
+      const send = vi.spyOn(manager, 'sendSceneCommand').mockResolvedValue(null)
+
+      await manager.setShowScaleGrid(visible, true, 'in')
+
+      expect(
+        send.mock.calls.map(([request]) =>
+          request.type === 'modeling_cmd_req' ? request.cmd : null
+        )
+      ).toEqual([
+        {
+          type: 'object_visible',
+          object_id: 'cfa78409-653d-4c26-96f1-7c45fb784840',
+          hidden: !visible,
+        },
+        { type: 'set_grid_scale', value: 10, units: 'in' },
+        {
+          type: 'object_visible',
+          object_id: '10782f33-f588-4668-8bcd-040502d26590',
+          hidden: !visible,
+        },
+      ])
+    }
+  )
+
+  it('restores automatic scaling without changing model edge visibility', async () => {
+    const manager = createConnectionManager()
+    addConnectedState(manager)
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockResolvedValue(null)
+
+    await manager.setShowScaleGrid(true, false, 'mm')
+
+    expect(
+      send.mock.calls.map(([request]) =>
+        request.type === 'modeling_cmd_req' ? request.cmd : null
+      )
+    ).toEqual([
+      {
+        type: 'object_visible',
+        object_id: 'cfa78409-653d-4c26-96f1-7c45fb784840',
+        hidden: false,
+      },
+      { type: 'set_grid_auto_scale' },
+      {
+        type: 'object_visible',
+        object_id: '10782f33-f588-4668-8bcd-040502d26590',
+        hidden: false,
+      },
+    ])
+  })
+
+  it('does not append stale grid commands after a newer toggle completes', async () => {
+    const manager = createConnectionManager()
+    addConnectedState(manager)
+    const first = promiseFactory<null>()
+    const send = vi
+      .spyOn(manager, 'sendSceneCommand')
+      .mockReturnValueOnce(first.promise)
+      .mockResolvedValue(null)
+
+    const stale = manager.setShowScaleGrid(true, true, 'in')
+    await Promise.resolve()
+    expect(send).toHaveBeenCalledTimes(1)
+    await manager.setShowScaleGrid(false, false, 'mm')
+    first.resolve(null)
+    await stale
+
+    expect(send).toHaveBeenCalledTimes(4)
+    expect(send).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        cmd: {
+          type: 'object_visible',
+          object_id: '10782f33-f588-4668-8bcd-040502d26590',
+          hidden: true,
+        },
+      })
+    )
+  })
+
+  it('does not send remaining grid commands to a replacement engine', async () => {
+    const manager = createConnectionManager()
+    addConnectedState(manager)
+    const first = promiseFactory<null>()
+    const send = vi
+      .spyOn(manager, 'sendSceneCommand')
+      .mockReturnValueOnce(first.promise)
+
+    const update = manager.setShowScaleGrid(true, true, 'mm')
+    await Promise.resolve()
+    addConnectedState(manager)
+    first.resolve(null)
+    await update
+
+    expect(send).toHaveBeenCalledTimes(1)
+  })
+
+  it('stops a grid update when its editor no longer owns the scene', async () => {
+    const manager = createConnectionManager()
+    addConnectedState(manager)
+    const first = promiseFactory<null>()
+    const send = vi
+      .spyOn(manager, 'sendSceneCommand')
+      .mockReturnValueOnce(first.promise)
+    let current = true
+
+    const update = manager.setShowScaleGrid(true, true, 'mm', () => current)
+    await Promise.resolve()
+    current = false
+    first.resolve(null)
+    await update
+
+    expect(send).toHaveBeenCalledTimes(1)
   })
 
   it('warns when Engine rejects a modeling command', async () => {
@@ -449,6 +1035,41 @@ describe('ConnectionManager', () => {
     expect(manager.streamDimensions).toEqual({ width: 256, height: 256 })
     expect(send).not.toHaveBeenCalled()
   })
+
+  it.each(['replaced', 'retired'])(
+    'does not resize a %s connection after waiting for readiness',
+    async (transition) => {
+      const manager = createConnectionManager()
+      const makeConnection = () =>
+        new Connection({
+          url: 'ws://localhost/modeling-test',
+          token: 'test-token',
+          handleOnDataChannelMessage: vi.fn(),
+          recordShutdownTrigger: manager.recordShutdownTrigger.bind(manager),
+          tearDownManager: manager.tearDown.bind(manager),
+          onReconnectRequested: vi.fn(),
+          rejectPendingCommand: vi.fn(),
+          handleMessage: vi.fn(),
+          getCloudProjectId: () => undefined,
+        })
+      const connection = makeConnection()
+      const replacement = makeConnection()
+      const ready = promiseFactory<boolean>()
+      connection.deferredConnection = ready
+      manager.connection = connection
+      const send = vi.spyOn(connection, 'send')
+      const replacementSend = vi.spyOn(replacement, 'send')
+
+      const resize = manager.handleResize({ width: 512, height: 512 })
+      manager.connection = transition === 'replaced' ? replacement : undefined
+      ready.resolve(true)
+
+      await expect(resize).resolves.toBeUndefined()
+      expect(manager.streamDimensions).toEqual({ width: 256, height: 256 })
+      expect(send).not.toHaveBeenCalled()
+      expect(replacementSend).not.toHaveBeenCalled()
+    }
+  )
 
   it('reports a locally initiated shutdown before clearing connection state', () => {
     const manager = createConnectionManager()

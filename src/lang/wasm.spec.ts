@@ -590,10 +590,9 @@ describe('Project file lifecycle', () => {
       { id: 2, path: 'some/path/home.kcl', text: 'The third file 🐘' },
     ]
 
-    await rustContextInThisFile.sendOpenProject(
-      'not-important-to-test',
-      projectFiles
-    )
+    const currentFile = projectFiles[0]
+    if (!currentFile) expect.fail('Expected an active project file')
+    await rustContextInThisFile.sendOpenProject(currentFile.path, projectFiles)
     expect(await rustContextInThisFile.getProjectState()).toEqual(projectFiles)
 
     const newText = 'Things sure are changing.'

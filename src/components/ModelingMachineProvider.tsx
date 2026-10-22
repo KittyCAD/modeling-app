@@ -1,5 +1,5 @@
 import { useAppState } from '@src/AppState'
-import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { enterSketchModeAndSyncCamera } from '@src/clientSideScene/CameraControls'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
@@ -248,10 +248,7 @@ export const ModelingMachineProvider = ({
     if (!allowOrbitInSketchMode.current) {
       const targetId = modelingState.context.sketchDetails?.animateTargetId
       if (inSketchMode && targetId) {
-        letEngineAnimateAndSyncCamAfter(
-          kclManager.engineCommandManager,
-          targetId
-        )
+        enterSketchModeAndSyncCamera(kclManager.engineCommandManager, targetId)
           .then(() => {})
           .catch((e) => {
             console.error(

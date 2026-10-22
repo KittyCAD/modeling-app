@@ -171,6 +171,7 @@ function attachService(options?: {
   auth?: ReturnType<typeof createAuth>
   features?: ReturnType<typeof createUserFeatures>
   manager?: KclLspEditor
+  openProject?: boolean
 }) {
   const auth = options?.auth ?? createAuth()
   const features =
@@ -181,6 +182,12 @@ function attachService(options?: {
     getUserFeatures: () => features.service,
   })
   lsp.service.attachKclManager(manager)
+  if (options?.openProject !== false) {
+    lsp.service.onProjectOpen(
+      { name: 'Project', path: '/project' },
+      { name: 'main.kcl', path: manager.path, children: [] }
+    )
+  }
   return { auth, features, lsp, manager }
 }
 
@@ -206,6 +213,133 @@ describe('LSP runtime feature flags', () => {
   afterEach(() => {
     vi.useRealTimers()
     vi.unstubAllGlobals()
+  })
+
+  it('does not start on authenticated Home, then replays the first opened project', async () => {
+    const { auth, features, lsp } = attachService({
+      manager: createManager(''),
+      openProject: false,
+    })
+    await flushMicrotasks()
+    expect(mocks.workers).toHaveLength(0)
+    expect(mocks.attachKclLspToCodeMirror).not.toHaveBeenCalled()
+
+    auth.setToken('token-b')
+    features.update(UserFeaturesState.Ready, new Set())
+    await flushMicrotasks()
+    expect(mocks.workers).toHaveLength(0)
+
+    const manager = createManager()
+    lsp.service.attachKclManager(manager)
+    lsp.service.onProjectOpen(
+      { name: 'Project', path: '/project' },
+      { name: 'main.kcl', path: manager.path, children: [] }
+    )
+    lsp.service.onFileClose('/project/main.kcl', '/project')
+    lsp.service.onFileOpen('/project/current.kcl', '/project')
+    manager.path = '/project/current.kcl'
+    await flushMicrotasks()
+
+    expect(mocks.workers).toHaveLength(1)
+    expect(initPayload(mocks.workers[0])).toMatchObject({ token: 'token-b' })
+    mocks.clients[0].finishInitialize()
+    expect(
+      mocks.clients[0].workspaceDidChangeWorkspaceFolders
+    ).toHaveBeenCalledWith([{ name: 'Project', uri: 'file:///project' }], [])
+    expect(mocks.clients[0].textDocumentDidOpen).toHaveBeenCalledTimes(1)
+    expect(mocks.clients[0].textDocumentDidOpen).toHaveBeenCalledWith({
+      textDocument: expect.objectContaining({
+        uri: 'file:///project/current.kcl',
+      }),
+    })
+    expect(mocks.attachKclLspToCodeMirror).toHaveBeenCalledWith(
+      manager,
+      mocks.clients[0]
+    )
+    lsp.dispose()
+  })
+
+  it('cancels pending project startup on close and starts for a later file open', async () => {
+    const features = createUserFeatures(UserFeaturesState.Idle)
+    const { lsp } = attachService({ features })
+    expect(features.listenerCount()).toBe(2)
+
+    lsp.service.onProjectClose(null, '/project', false)
+    expect(features.listenerCount()).toBe(1)
+    features.update(UserFeaturesState.Ready, new Set())
+    await flushMicrotasks()
+    expect(mocks.workers).toHaveLength(0)
+
+    lsp.service.onFileOpen('/other/main.kcl', '/other')
+    await flushMicrotasks()
+    expect(mocks.workers).toHaveLength(1)
+    mocks.clients[0].finishInitialize()
+    expect(mocks.clients[0].textDocumentDidOpen).toHaveBeenCalledWith({
+      textDocument: expect.objectContaining({ uri: 'file:///other/main.kcl' }),
+    })
+    lsp.dispose()
+  })
+
+  it('starts after project auth arrives and detaches its initialized editor on close', async () => {
+    const auth = createAuth('')
+    const { lsp } = attachService({ auth })
+    await flushMicrotasks()
+    expect(mocks.workers).toHaveLength(0)
+
+    auth.setToken('token-b')
+    await flushMicrotasks()
+    mocks.clients[0].finishInitialize()
+    const attachment = mocks.attachKclLspToCodeMirror.mock.results[0].value
+
+    lsp.service.onProjectClose(
+      { name: 'main.kcl', path: '/project/main.kcl', children: [] },
+      '/project',
+      false
+    )
+    expect(mocks.clients[0].textDocumentDidClose).toHaveBeenCalledWith({
+      textDocument: { uri: 'file:///project/main.kcl' },
+    })
+    expect(attachment).toHaveBeenCalledTimes(1)
+    expect(mocks.clients[0].close).toHaveBeenCalledTimes(1)
+    expect(mocks.workers[0].terminate).toHaveBeenCalledTimes(1)
+
+    auth.setToken('token-c')
+    await flushMicrotasks()
+    expect(mocks.workers).toHaveLength(1)
+    lsp.dispose()
+  })
+
+  it('stops on project close and ignores a retired initialization after reopening', async () => {
+    const { auth, features, lsp, manager } = attachService()
+    await flushMicrotasks()
+    const retiredClient = mocks.clients[0]
+    const retiredWorker = mocks.workers[0]
+
+    lsp.service.onProjectClose(null, '/project', false)
+    expect(retiredClient.close).toHaveBeenCalledTimes(1)
+    expect(retiredWorker.terminate).toHaveBeenCalledTimes(1)
+    expect(manager.clearGlobalHistory).toHaveBeenCalledTimes(1)
+
+    auth.setToken('token-b')
+    features.update(UserFeaturesState.Ready, new Set())
+    await flushMicrotasks()
+    expect(mocks.workers).toHaveLength(1)
+
+    lsp.service.onProjectOpen(
+      { name: 'Other', path: '/other' },
+      { name: 'main.kcl', path: '/other/main.kcl', children: [] }
+    )
+    await flushMicrotasks()
+    retiredClient.finishInitialize()
+    expect(retiredClient.textDocumentDidOpen).not.toHaveBeenCalled()
+    expect(mocks.attachKclLspToCodeMirror).not.toHaveBeenCalled()
+
+    mocks.clients[1].finishInitialize()
+    expect(mocks.clients[1].textDocumentDidOpen).toHaveBeenCalledWith({
+      textDocument: expect.objectContaining({ uri: 'file:///other/main.kcl' }),
+    })
+    expect(mocks.attachKclLspToCodeMirror).toHaveBeenCalledTimes(1)
+    lsp.dispose()
   })
 
   it('waits for settled flags before constructing and initializing the worker', async () => {

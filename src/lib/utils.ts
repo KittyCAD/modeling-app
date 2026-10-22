@@ -177,6 +177,7 @@ export function throttle<T>(
       latestTimestamp = currentTimestamp
       func(latestArgs)
     } else if (!timeout) {
+      // zds-performance-exception: storage-batching -- Implement the shared trailing storage throttle; each production caller still needs its own justified functional exception.
       timeout = setTimeout(later, wait - (currentTimestamp - latestTimestamp))
     }
   }
@@ -214,6 +215,7 @@ export function deferredCallback<T>(func: (args: T) => any, wait: number) {
     if (timeout) {
       clearTimeout(timeout)
     }
+    // zds-performance-exception: storage-batching -- Implement coalesced durable writes; this helper does not exempt production callers from the interaction-delay guardrail.
     timeout = setTimeout(later, wait)
   }
 
@@ -342,15 +344,6 @@ export function platform(): Platform {
     navigator.userAgent
   )
   return ''
-}
-
-export function isReducedMotion(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    window.matchMedia &&
-    // TODO/Note I (Kurt) think '(prefers-reduced-motion: reduce)' and '(prefers-reduced-motion)' are equivalent, but not 100% sure
-    window.matchMedia('(prefers-reduced-motion)').matches
-  )
 }
 
 /**

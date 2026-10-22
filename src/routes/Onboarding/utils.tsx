@@ -44,7 +44,6 @@ import {
   DEFAULT_PROJECT_LIBRARY_ID,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
-import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
@@ -429,9 +428,7 @@ export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
     type: 'set.app.onboardingStatus',
     data: { level: 'user', value: 'dismissed' },
   })
-  void waitForToastAnimationEnd(ONBOARDING_TOAST_ID, () => {
-    toast.dismiss(ONBOARDING_TOAST_ID)
-  })
+  toast.dismiss(ONBOARDING_TOAST_ID)
   toast.success(
     'Click the question mark in the lower-right corner if you ever want to do the tutorial!',
     {
@@ -473,16 +470,16 @@ function WorkflowInviteOptionCard(props: WorkflowInviteOptionCardProps) {
       className={`group relative flex w-full min-w-[11rem] cursor-pointer hover:cursor-pointer flex-col items-center bg-transparent p-0 text-default outline-none focus-visible:ring-2 focus-visible:ring-primary border-none ${hoverBgClass}`}
     >
       <div
-        className={`w-full border border-chalkboard-50 py-2 text-center text-3xl font-semibold leading-none tracking-tight transition-colors dark:border-chalkboard-80 group-hover:bg-chalkboard-20 dark:group-hover:bg-chalkboard-120 ${hoverToneClasses}`}
+        className={`w-full border border-chalkboard-50 py-2 text-center text-3xl font-semibold leading-none tracking-tight dark:border-chalkboard-80 group-hover:bg-chalkboard-20 dark:group-hover:bg-chalkboard-120 ${hoverToneClasses}`}
       >
         {props.title}
       </div>
       <span
-        className={`pointer-events-none h-8 -translate-x-1/2 border-l border-chalkboard-50 transition-colors dark:border-chalkboard-80 ${hoverToneClasses}`}
+        className={`pointer-events-none h-8 -translate-x-1/2 border-l border-chalkboard-50 dark:border-chalkboard-80 ${hoverToneClasses}`}
       />
       {props.decoration}
       <div
-        className={`flex h-28 w-full flex-col items-center justify-center gap-3 border border-chalkboard-50 px-3 py-2 text-center text-default transition-colors dark:border-chalkboard-80 group-hover:bg-chalkboard-20 dark:group-hover:bg-chalkboard-120 ${hoverToneClasses}`}
+        className={`flex h-28 w-full flex-col items-center justify-center gap-3 border border-chalkboard-50 px-3 py-2 text-center text-default dark:border-chalkboard-80 group-hover:bg-chalkboard-20 dark:group-hover:bg-chalkboard-120 ${hoverToneClasses}`}
       >
         <CustomIcon name={props.icon} className="h-8 w-8 text-current" />
         <p className="m-0 text-sm leading-tight">{props.description}</p>

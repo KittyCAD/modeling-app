@@ -534,6 +534,7 @@ function PaneButton({
       >
         <CustomIcon
           name={icon}
+          // zds-performance-exception: activity-indicator -- Animate only a loading pane icon while its owner is busy; pane mounting and completed content remain immediate.
           className={`w-5 h-5 ${icon === 'loading' ? 'animate-spin' : ''}`}
           aria-hidden
         />
@@ -574,7 +575,7 @@ function NotificationBadge({ pane }: { pane: PaneChild }) {
     <p
       id={`${pane.id}-badge`}
       className={
-        'absolute m-0 p-0 top-0 right-0 min-w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-bl border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+        'absolute m-0 p-0 top-0 right-0 min-w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-bl border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2]'
       }
       onClick={onClick}
       title={

@@ -590,8 +590,9 @@ test(
     await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
-    await page.goto('/home')
-    await expectCloudSyncHomeReady(page)
+    // Seed same-origin storage before starting the app. Booting Home only to
+    // reload it after seeding aborts its pending imports and OPFS reads in WebKit.
+    await page.goto('/robots.txt')
 
     const cleanSyncedFiles = {
       'main.kcl': 'cleanLocal = 1\n',
@@ -651,7 +652,7 @@ test(
       ],
     })
 
-    await page.reload()
+    await page.goto('/home')
     await expectCloudSyncHomeReady(page)
     await expect
       .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })

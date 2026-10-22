@@ -259,6 +259,33 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
       )
     await expect.poll(sketchGridVisible).toBe(false)
 
+    // A fixed grid intentionally hides when its major lines are under 10px
+    // apart. Start at a readable density before testing visibility toggles.
+    const majorGridSpacingPixels = () =>
+      page.evaluate(() => {
+        const editor = window.app.project?.executingEditor.value
+        if (!editor) throw new Error('No executing editor')
+        const camera = editor.sceneInfra.camControls.camera
+        if (!('isOrthographicCamera' in camera)) {
+          throw new Error('Expected an orthographic sketch camera')
+        }
+        return (
+          editor.sceneInfra.getPixelsPerBaseUnit(camera) *
+          window.app.settings.get().modeling.majorGridSpacing.current
+        )
+      })
+    const [, moveToSketch] = scene.makeMouseHelpers(0.5, 0.5, {
+      format: 'ratio',
+    })
+    await moveToSketch()
+    for (let zooms = 0; zooms < 80; zooms++) {
+      const before = await majorGridSpacingPixels()
+      if (before >= 16) break
+      await page.mouse.wheel(0, -100)
+      await expect.poll(majorGridSpacingPixels).toBeGreaterThan(before)
+    }
+    expect(await majorGridSpacingPixels()).toBeGreaterThanOrEqual(16)
+
     const [openSketchMenu] = scene.makeMouseHelpers(0.8, 0.2, {
       format: 'ratio',
     })

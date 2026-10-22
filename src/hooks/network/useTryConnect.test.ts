@@ -100,7 +100,7 @@ describe('tryConnecting', () => {
 describe('reconnect camera restoration', () => {
   it.each(
     ['reconnect', 'idle', 'both'].flatMap((source) =>
-      ['none', 'clear', 'camera', 'named'].map((retired) => ({
+      ['none', 'execute', 'camera', 'named'].map((retired) => ({
         source,
         retired,
       }))
@@ -136,6 +136,7 @@ describe('reconnect camera restoration', () => {
       }
       const executeCode = vi.fn(async () => {
         events.push('execute')
+        if (retired === 'execute') manager.connection = { mediaStream: {} }
       })
       vi.mocked(reapplyActiveViewAfterReconnect).mockReset()
       vi.mocked(reapplyActiveViewAfterReconnect).mockImplementationOnce(
@@ -163,32 +164,23 @@ describe('reconnect camera restoration', () => {
         sceneInfra: { camControls } as unknown as SceneInfra,
         engineCommandManager: manager as unknown as ConnectionManager,
         kclManager: { executeCode } as unknown as KclManager,
-        rustContext: {
-          clearSceneAndBustCache: vi.fn(async () => {
-            events.push('clear')
-            if (retired === 'clear') manager.connection = { mediaStream: {} }
-          }),
-        } as unknown as RustContext,
+        rustContext: {} as RustContext,
       })
       expect(events).toEqual(
-        retired === 'clear'
-          ? ['clear']
-          : retired === 'camera'
-            ? ['clear', 'camera']
-            : ['clear', 'camera', 'execute', 'named view']
+        retired === 'camera'
+          ? ['camera']
+          : retired === 'execute'
+            ? ['camera', 'execute']
+            : ['camera', 'execute', 'named view']
       )
       expect(camControls.reconnectCameraState).toBeUndefined()
       expect(
         camControls.overrideOldCameraStateToPreventDesync
       ).toHaveBeenCalledTimes(source === 'idle' ? 1 : 0)
       expect(resetCameraPosition).not.toHaveBeenCalled()
-      if (retired === 'clear') {
-        expect(camControls.setCameraView).not.toHaveBeenCalled()
-      } else {
-        expect(camControls.setCameraView).toHaveBeenCalledExactlyOnceWith(
-          snapshot
-        )
-      }
+      expect(camControls.setCameraView).toHaveBeenCalledExactlyOnceWith(
+        snapshot
+      )
       if (retired === 'none' || retired === 'named') {
         expect(reapplyActiveViewAfterReconnect).toHaveBeenLastCalledWith(
           expect.anything(),

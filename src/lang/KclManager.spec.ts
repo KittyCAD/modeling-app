@@ -1,5 +1,5 @@
 import { signal } from '@preact/signals-core'
-import { createProjectForTest } from '@src/unitTestUtils'
+import { createProjectForTest, loadWasm } from '@src/unitTestUtils'
 import type { Diagnostic } from '@codemirror/lint'
 import { EditorView } from '@codemirror/view'
 import type {
@@ -22,6 +22,7 @@ import { File } from '@src/lib/projectSession'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { Themes } from '@src/lib/theme'
+import * as UserFeatures from '@src/machines/userFeaturesMachine'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { waitFor } from 'xstate'
 
@@ -211,6 +212,52 @@ describe('KclManager line wrapping settings', () => {
   })
 })
 
+describe('KclManager runtime API', () => {
+  it('does not expose the test-only panic hook in normal builds', async () => {
+    const module = await loadWasm()
+    expect(module.Context).toBeTypeOf('function')
+    expect(Reflect.has(module, 'e2e_panic')).toBe(false)
+  })
+})
+
+describe('KclManager default plane visibility', () => {
+  it.each([
+    { visible: true, all: false },
+    { visible: false, all: false },
+    { visible: true, all: true },
+    { visible: false, all: true },
+  ])('updates the requested planes together: %j', async ({ visible, all }) => {
+    const { app, kclManager } = createKclManagerTestHarness('')
+    const planes = {
+      xy: 'xy-plane',
+      yz: 'yz-plane',
+      xz: 'xz-plane',
+      negXy: 'negative-xy',
+      negYz: 'negative-yz',
+      negXz: 'negative-xz',
+    }
+    const hidden = vi
+      .spyOn(kclManager.engineCommandManager, 'setObjectsHidden')
+      .mockResolvedValue(undefined)
+    const individual = vi
+      .spyOn(kclManager.engineCommandManager, 'setPlaneHidden')
+      .mockResolvedValue(undefined)
+    vi.spyOn(kclManager, 'defaultPlanes', 'get').mockReturnValue(planes)
+    try {
+      await (visible ? kclManager.showPlanes(all) : kclManager.hidePlanes(all))
+      const ids = [planes.xy, planes.yz, planes.xz]
+      if (all) ids.push(planes.negXy, planes.negYz, planes.negXz)
+      expect(hidden).toHaveBeenCalledExactlyOnceWith(
+        new Map(ids.map((id) => [id, !visible]))
+      )
+      expect(individual).not.toHaveBeenCalled()
+    } finally {
+      kclManager.close()
+      app.dispose()
+    }
+  })
+})
+
 describe('KclManager settings ownership', () => {
   function mockEngineSettings(kclManager: KclManager) {
     const engine = kclManager.engineCommandManager
@@ -224,20 +271,244 @@ describe('KclManager settings ownership', () => {
     const executeCode = vi
       .spyOn(kclManager, 'executeCode')
       .mockResolvedValue(undefined)
-    const clearScene = vi
-      .spyOn(kclManager.rustContext, 'clearSceneAndBustCache')
-      .mockResolvedValue(kclManager.execState)
+    const sendSceneCommand = vi
+      .spyOn(engine, 'sendSceneCommand')
+      .mockResolvedValue(null)
     engine.connection = {
       connected: true,
+      websocket: { readyState: WebSocket.OPEN },
+      deferredConnection: null,
     } as typeof engine.connection
     return {
       setTheme,
       setHighlightEdges,
       setDefaultSystemProperties,
       executeCode,
-      clearScene,
+      sendSceneCommand,
     }
   }
+
+  it('applies all three scale-grid toggles to an imported model without executing or clearing it', async () => {
+    const code =
+      '@settings(kclVersion = 3.0)\nimport "cube.kcl" as cube\ncube\n'
+    const { app, kclManager } = createKclManagerTestHarness(code)
+    const settleFeatures = vi
+      .spyOn(UserFeatures, 'waitForUserFeaturesSettled')
+      .mockResolvedValue()
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const executeCode = kclManager.executeCode.bind(kclManager)
+      const mocks = mockEngineSettings(kclManager)
+      mocks.executeCode.mockImplementation(executeCode)
+      kclManager.engineCommandManager.started = true
+      const importedModel = emptyExecState()
+      importedModel.variables = { cube: { type: 'Module', value: 1 } }
+      importedModel.filenames = {
+        0: {
+          type: 'Local',
+          value: kclManager.path,
+          original_import_path: null,
+        },
+        1: { type: 'Local', value: 'cube.kcl', original_import_path: null },
+      }
+      const execute = vi
+        .spyOn(kclManager.rustContext, 'execute')
+        .mockResolvedValue(importedModel)
+      kclManager.setSceneSettingsActive(true)
+      await kclManager.executeCode()
+      expect(kclManager.hasErrors()).toBe(false)
+      expect(kclManager.variables.cube).toEqual({ type: 'Module', value: 1 })
+      expect(kclManager.lastSuccessfulCode).toBe(code)
+      const generation = kclManager.engineSceneGenerationSignal.peek()
+      for (const mock of Object.values(mocks)) mock.mockClear()
+      execute.mockClear()
+
+      for (const visible of [true, false, true]) {
+        app.settings.get().modeling.showScaleGrid.user = visible
+        await flushPromises(6)
+        expect(mocks.sendSceneCommand).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: 'modeling_cmd_req',
+            cmd: {
+              type: 'object_visible',
+              object_id: 'cfa78409-653d-4c26-96f1-7c45fb784840',
+              hidden: !visible,
+            },
+          })
+        )
+        expect(mocks.sendSceneCommand).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: 'modeling_cmd_req',
+            cmd: {
+              type: 'object_visible',
+              object_id: '10782f33-f588-4668-8bcd-040502d26590',
+              hidden: !visible,
+            },
+          })
+        )
+        expect(mocks.executeCode).not.toHaveBeenCalled()
+        expect(execute).not.toHaveBeenCalled()
+        expect(kclManager.code).toBe(code)
+        expect(kclManager.variables.cube).toEqual({ type: 'Module', value: 1 })
+        expect(kclManager.engineSceneGenerationSignal.peek()).toBe(generation)
+        mocks.sendSceneCommand.mockClear()
+      }
+    } finally {
+      settleFeatures.mockRestore()
+      app.dispose()
+    }
+  })
+
+  it('applies repeated backface colors without reexecuting or clearing the model', async () => {
+    const code = '@settings(kclVersion = 3.0)\nlength = 10\n'
+    const { app, kclManager } = createKclManagerTestHarness(code)
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const mocks = mockEngineSettings(kclManager)
+      mocks.setDefaultSystemProperties.mockRestore()
+      const execute = vi.spyOn(kclManager.rustContext, 'execute')
+      kclManager.setSceneSettingsActive(true)
+      await flushPromises(12)
+      for (const mock of Object.values(mocks)) mock.mockClear()
+
+      const colors = [
+        { hex: '#ff0000', rgba: { r: 1, g: 0, b: 0, a: 1 } },
+        { hex: '#00ff00', rgba: { r: 0, g: 1, b: 0, a: 1 } },
+        { hex: '#0000ff', rgba: { r: 0, g: 0, b: 1, a: 1 } },
+      ]
+      for (const color of colors) {
+        app.settings.get().modeling.backfaceColor.user = color.hex
+        await flushPromises(12)
+        expect(mocks.sendSceneCommand).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: 'modeling_cmd_req',
+            cmd: expect.objectContaining({
+              type: 'set_default_system_properties',
+              backface_color: color.rgba,
+            }),
+          })
+        )
+        expect(mocks.executeCode).not.toHaveBeenCalled()
+        expect(execute).not.toHaveBeenCalled()
+        expect(kclManager.code).toBe(code)
+        mocks.sendSceneCommand.mockClear()
+      }
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('reapplies settings changed during execution without another render or a cache clear', async () => {
+    const code = '@settings(kclVersion = 3.0)\nx = 2\n'
+    const { app, kclManager } = createKclManagerTestHarness(code)
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const ast = await kclManager.safeParse(code)
+      if (ast === null)
+        throw new Error('Expected the settings fixture to parse')
+      const mocks = mockEngineSettings(kclManager)
+      mocks.setDefaultSystemProperties.mockRestore()
+      kclManager.engineCommandManager.started = true
+      kclManager.setSceneSettingsActive(true)
+      await flushPromises(12)
+      for (const mock of Object.values(mocks)) mock.mockClear()
+      const pending = createDeferred<typeof kclManager.execState>()
+      const execute = vi
+        .spyOn(kclManager.rustContext, 'execute')
+        .mockReturnValueOnce(pending.promise)
+
+      const rendering = kclManager.executeAst({ ast, executionId: 7001 })
+      await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
+      const settings = app.settings.get().modeling
+      settings.backfaceColor.user = '#00ff00'
+      settings.showScaleGrid.user = !settings.showScaleGrid.current
+      await flushPromises(12)
+      expect(mocks.sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: expect.objectContaining({
+            type: 'set_default_system_properties',
+            backface_color: { r: 0, g: 1, b: 0, a: 1 },
+          }),
+        })
+      )
+      mocks.sendSceneCommand.mockClear()
+
+      // The executor can apply its captured older preferences before returning.
+      // Completion must restore the latest UI settings without rerunning KCL.
+      pending.resolve(kclManager.execState)
+      await rendering
+      await flushPromises(12)
+
+      expect(mocks.sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: expect.objectContaining({
+            type: 'set_default_system_properties',
+            backface_color: { r: 0, g: 1, b: 0, a: 1 },
+          }),
+        })
+      )
+      expect(mocks.sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: {
+            type: 'object_visible',
+            object_id: 'cfa78409-653d-4c26-96f1-7c45fb784840',
+            hidden: !settings.showScaleGrid.current,
+          },
+        })
+      )
+      expect(execute).toHaveBeenCalledOnce()
+      expect(mocks.executeCode).not.toHaveBeenCalled()
+      expect(kclManager.code).toBe(code)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('updates fixed-grid scaling directly using the model units', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const mocks = mockEngineSettings(kclManager)
+      const execute = vi.spyOn(kclManager.rustContext, 'execute')
+      kclManager.fileSettings = { defaultLengthUnit: 'in' }
+      kclManager.setSceneSettingsActive(true)
+      await flushPromises(12)
+      expect(mocks.sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: { type: 'set_grid_scale', value: 10, units: 'in' },
+        })
+      )
+      mocks.sendSceneCommand.mockClear()
+
+      app.settings.get().modeling.fixedSizeGrid.user = false
+      await flushPromises(12)
+      expect(mocks.sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({ cmd: { type: 'set_grid_auto_scale' } })
+      )
+      mocks.sendSceneCommand.mockClear()
+
+      app.settings.get().modeling.fixedSizeGrid.user = true
+      await flushPromises(12)
+      expect(mocks.sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: { type: 'set_grid_scale', value: 10, units: 'in' },
+        })
+      )
+      mocks.sendSceneCommand.mockClear()
+
+      kclManager.fileSettings = { defaultLengthUnit: 'cm' }
+      await flushPromises(12)
+      expect(mocks.sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: { type: 'set_grid_scale', value: 10, units: 'cm' },
+        })
+      )
+      expect(mocks.executeCode).not.toHaveBeenCalled()
+      expect(execute).not.toHaveBeenCalled()
+    } finally {
+      app.dispose()
+    }
+  })
 
   it('updates each editor and its local scene directly from settings', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
@@ -293,10 +564,17 @@ describe('KclManager settings ownership', () => {
       expect(mocks.setDefaultSystemProperties).not.toHaveBeenCalled()
 
       kclManager.setSceneSettingsActive(true)
-      expect(mocks.setTheme).toHaveBeenLastCalledWith(Themes.Light)
-      expect(mocks.setHighlightEdges).toHaveBeenLastCalledWith(false)
+      expect(mocks.setTheme).toHaveBeenLastCalledWith(
+        Themes.Light,
+        expect.any(Function)
+      )
+      expect(mocks.setHighlightEdges).toHaveBeenLastCalledWith(
+        false,
+        expect.any(Function)
+      )
       expect(mocks.setDefaultSystemProperties).toHaveBeenLastCalledWith(
-        '#123456'
+        '#123456',
+        expect.any(Function)
       )
 
       kclManager.setSceneSettingsActive(false)
@@ -304,7 +582,10 @@ describe('KclManager settings ownership', () => {
       settings.app.theme.user = Themes.Dark
       expect(mocks.setTheme).not.toHaveBeenCalled()
       kclManager.setSceneSettingsActive(true)
-      expect(mocks.setTheme).toHaveBeenCalledExactlyOnceWith(Themes.Dark)
+      expect(mocks.setTheme).toHaveBeenCalledExactlyOnceWith(
+        Themes.Dark,
+        expect.any(Function)
+      )
     } finally {
       app.dispose()
     }
@@ -316,6 +597,7 @@ describe('KclManager settings ownership', () => {
       await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
       const mocks = mockEngineSettings(kclManager)
       kclManager.setSceneSettingsActive(true)
+      await flushPromises(12)
       for (const mock of Object.values(mocks)) mock.mockClear()
       const replacement = createSettings(
         app.settings.actor.getSnapshot().context.extensionSettings
@@ -332,20 +614,24 @@ describe('KclManager settings ownership', () => {
       expect(mocks.setHighlightEdges).not.toHaveBeenCalled()
       expect(mocks.setDefaultSystemProperties).not.toHaveBeenCalled()
       expect(mocks.executeCode).not.toHaveBeenCalled()
+      expect(mocks.sendSceneCommand).not.toHaveBeenCalled()
 
       replacement.app.theme.user = Themes.Light
-      expect(mocks.setTheme).toHaveBeenLastCalledWith(Themes.Light)
+      expect(mocks.setTheme).toHaveBeenLastCalledWith(
+        Themes.Light,
+        expect.any(Function)
+      )
       replacement.modeling.highlightEdges.user =
         !replacement.modeling.highlightEdges.current
       expect(mocks.setHighlightEdges).toHaveBeenCalledTimes(1)
-      expect(mocks.executeCode).toHaveBeenCalledTimes(1)
+      expect(mocks.executeCode).not.toHaveBeenCalled()
     } finally {
       app.dispose()
     }
   })
 
   it.each(['showScaleGrid', 'fixedSizeGrid', 'highlightEdges'] as const)(
-    'rerenders only the executing manager when %s changes',
+    'applies %s directly for only the active manager without rerendering KCL',
     async (name) => {
       const { app, kclManager } = createKclManagerTestHarness()
       const other = new KclManager('other.kcl', '', kclManager.systemDeps)
@@ -358,16 +644,38 @@ describe('KclManager settings ownership', () => {
           .spyOn(other, 'executeCode')
           .mockResolvedValue(undefined)
         kclManager.setSceneSettingsActive(true)
+        await flushPromises(12)
+        for (const mock of Object.values(mocks)) mock.mockClear()
         const setting = app.settings.get().modeling[name]
         setting.user = !setting.current
-        expect(mocks.executeCode).toHaveBeenCalledTimes(1)
+        await flushPromises(12)
+        if (name === 'highlightEdges') {
+          expect(mocks.setHighlightEdges).toHaveBeenCalledExactlyOnceWith(
+            setting.current,
+            expect.any(Function)
+          )
+        } else {
+          expect(mocks.sendSceneCommand).toHaveBeenCalledTimes(3)
+        }
+        expect(mocks.executeCode).not.toHaveBeenCalled()
         expect(otherExecute).not.toHaveBeenCalled()
 
         kclManager.setSceneSettingsActive(false)
         other.setSceneSettingsActive(true)
+        await flushPromises(12)
+        for (const mock of Object.values(mocks)) mock.mockClear()
         setting.user = !setting.current
-        expect(mocks.executeCode).toHaveBeenCalledTimes(1)
-        expect(otherExecute).toHaveBeenCalledTimes(1)
+        await flushPromises(12)
+        if (name === 'highlightEdges') {
+          expect(mocks.setHighlightEdges).toHaveBeenCalledExactlyOnceWith(
+            setting.current,
+            expect.any(Function)
+          )
+        } else {
+          expect(mocks.sendSceneCommand).toHaveBeenCalledTimes(3)
+        }
+        expect(mocks.executeCode).not.toHaveBeenCalled()
+        expect(otherExecute).not.toHaveBeenCalled()
       } finally {
         other.close()
         app.dispose()
@@ -397,7 +705,6 @@ describe('KclManager settings ownership', () => {
         const current = setting.current
         setting.user = typeof current === 'boolean' ? !current : current + 1
         expect(grid).toHaveBeenCalledTimes(1)
-        expect(mocks.clearScene).not.toHaveBeenCalled()
         expect(mocks.executeCode).not.toHaveBeenCalled()
       } finally {
         app.dispose()
@@ -431,7 +738,7 @@ describe('KclManager settings ownership', () => {
   )
 
   it.each(['closed', 'inactive'])(
-    'does not render after a backface cache clear finishes for a %s manager',
+    'does not apply engine settings for a %s manager',
     async (state) => {
       const { app, kclManager } = createKclManagerTestHarness()
       try {
@@ -439,18 +746,21 @@ describe('KclManager settings ownership', () => {
           snapshot.matches('idle')
         )
         const mocks = mockEngineSettings(kclManager)
-        const pending = createDeferred<KclManager['execState']>()
-        mocks.clearScene.mockReturnValue(pending.promise)
         kclManager.setSceneSettingsActive(true)
-        app.settings.get().modeling.backfaceColor.user = '#123456'
-        expect(mocks.setDefaultSystemProperties).toHaveBeenLastCalledWith(
-          '#123456'
-        )
-        expect(mocks.clearScene).toHaveBeenCalledTimes(1)
+        await flushPromises(12)
         if (state === 'closed') kclManager.close()
         else kclManager.setSceneSettingsActive(false)
-        pending.resolve(kclManager.execState)
-        await flushPromises()
+        for (const mock of Object.values(mocks)) mock.mockClear()
+        const settings = app.settings.get()
+        settings.modeling.backfaceColor.user = '#123456'
+        settings.modeling.showScaleGrid.user =
+          !settings.modeling.showScaleGrid.current
+        settings.modeling.highlightEdges.user =
+          !settings.modeling.highlightEdges.current
+        await flushPromises(12)
+        expect(mocks.setDefaultSystemProperties).not.toHaveBeenCalled()
+        expect(mocks.setHighlightEdges).not.toHaveBeenCalled()
+        expect(mocks.sendSceneCommand).not.toHaveBeenCalled()
         expect(mocks.executeCode).not.toHaveBeenCalled()
       } finally {
         app.dispose()
@@ -458,22 +768,78 @@ describe('KclManager settings ownership', () => {
     }
   )
 
-  it('waits for a backface cache clear before rendering newer engine settings', async () => {
+  it.each(['closed', 'inactive', 'different file', 'different project'])(
+    'does not continue a grid update after its manager has a %s scene owner',
+    async (state) => {
+      const { app, kclManager } = createKclManagerTestHarness()
+      try {
+        await waitFor(app.settings.actor, (snapshot) =>
+          snapshot.matches('idle')
+        )
+        const mocks = mockEngineSettings(kclManager)
+        kclManager.setSceneSettingsActive(true)
+        await flushPromises(12)
+        for (const mock of Object.values(mocks)) mock.mockClear()
+        const firstCommand = createDeferred<null>()
+        mocks.sendSceneCommand.mockReturnValueOnce(firstCommand.promise)
+        const setting = app.settings.get().modeling.showScaleGrid
+        setting.user = !setting.current
+        await flushPromises(2)
+        expect(mocks.sendSceneCommand).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            cmd: {
+              type: 'object_visible',
+              object_id: 'cfa78409-653d-4c26-96f1-7c45fb784840',
+              hidden: !setting.current,
+            },
+          })
+        )
+
+        if (state === 'closed') kclManager.close()
+        else if (state === 'inactive') kclManager.setSceneSettingsActive(false)
+        else if (state === 'different file') kclManager.path = 'other.kcl'
+        else {
+          kclManager.systemDeps.project = signal(
+            createProjectForTest('other-project')
+          )
+        }
+        firstCommand.resolve(null)
+        await flushPromises(12)
+        expect(mocks.sendSceneCommand).toHaveBeenCalledTimes(1)
+        expect(mocks.executeCode).not.toHaveBeenCalled()
+      } finally {
+        app.dispose()
+      }
+    }
+  )
+
+  it('applies backface and grid changes without a cache-clear prerequisite', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {
       await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
       const mocks = mockEngineSettings(kclManager)
-      const pending = createDeferred<KclManager['execState']>()
-      mocks.clearScene.mockReturnValue(pending.promise)
       kclManager.setSceneSettingsActive(true)
+      await flushPromises(12)
+      for (const mock of Object.values(mocks)) mock.mockClear()
       const settings = app.settings.get()
       settings.modeling.backfaceColor.user = '#123456'
       settings.modeling.showScaleGrid.user =
         !settings.modeling.showScaleGrid.current
+      await flushPromises(12)
+      expect(mocks.setDefaultSystemProperties).toHaveBeenCalledExactlyOnceWith(
+        '#123456',
+        expect.any(Function)
+      )
+      expect(mocks.sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: {
+            type: 'object_visible',
+            object_id: 'cfa78409-653d-4c26-96f1-7c45fb784840',
+            hidden: !settings.modeling.showScaleGrid.current,
+          },
+        })
+      )
       expect(mocks.executeCode).not.toHaveBeenCalled()
-      pending.resolve(kclManager.execState)
-      await flushPromises(6)
-      expect(mocks.executeCode).toHaveBeenCalledTimes(1)
     } finally {
       app.dispose()
     }
@@ -508,6 +874,52 @@ describe('KclManager settings ownership', () => {
       app.dispose()
     }
   })
+})
+
+describe('KclManager queued editor ownership', () => {
+  it.each(['source.kcl', 'destination.kcl'])(
+    'does not execute an old request after reopening %s without Rust sync',
+    async (destination) => {
+      const code = '@settings(kclVersion = 3.0)\nx = 2\n'
+      const { app, kclManager } = createKclManagerTestHarness(code)
+      try {
+        kclManager.path = 'source.kcl'
+        const ast = await kclManager.safeParse(code)
+        if (ast === null)
+          throw new Error('Expected the queued file fixture to parse')
+        kclManager.engineCommandManager.started = true
+        const pending = createDeferred<typeof kclManager.execState>()
+        const execute = vi
+          .spyOn(kclManager.rustContext, 'execute')
+          .mockReturnValueOnce(pending.promise)
+        const executeCode = vi
+          .spyOn(kclManager, 'executeCode')
+          .mockResolvedValue(undefined)
+        vi.spyOn(kclManager, 'flushWriteToFile').mockResolvedValue(true)
+
+        const rendering = kclManager.executeAst({ ast, executionId: 7002 })
+        await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
+        kclManager.scheduleCurrentCodeExecution(false)
+        await KclManager.fromFile(
+          new File(destination, kclManager.textFileIO),
+          kclManager.systemDeps,
+          kclManager,
+          code,
+          { shouldSyncRustOnOpen: false }
+        )
+        pending.resolve(kclManager.execState)
+        await rendering
+        await kclManager.flushPendingEditorExecution()
+
+        expect(executeCode).not.toHaveBeenCalled()
+        expect(execute).toHaveBeenCalledOnce()
+        expect(kclManager.path).toBe(destination)
+        expect(kclManager.code).toBe(code)
+      } finally {
+        app.dispose()
+      }
+    }
+  )
 })
 
 describe('KclManager live operation updates', () => {
@@ -652,7 +1064,7 @@ describe('KclManager file switching', () => {
       expect(previousEditorArtifactGraph.size).toBe(1)
     }
 
-    kclManager.switchedFiles = true
+    kclManager.resetForFileSwitch()
 
     expect(kclManager.operationsByModule).toStrictEqual(
       emptyExecState().operations
@@ -930,7 +1342,7 @@ describe('KclManager diagnostics', () => {
     expect(writeToFileSpy).not.toHaveBeenCalled()
   })
 
-  it('debounces repeated direct editor edits down to one execution of the latest code', async () => {
+  it('executes the latest direct edit immediately without a timer', async () => {
     vi.useFakeTimers()
 
     const { kclManager } = createKclManagerTestHarness('a')
@@ -951,10 +1363,8 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('abc')
     expect(executeCodeSpy).not.toHaveBeenCalled()
 
-    await vi.advanceTimersByTimeAsync(999)
-    expect(executeCodeSpy).not.toHaveBeenCalled()
+    await flushPromises()
 
-    await vi.advanceTimersByTimeAsync(1)
     expect(executeCodeSpy).toHaveBeenCalledTimes(1)
     expect(executeCodeSpy).toHaveBeenCalledWith('abc')
   })
@@ -976,10 +1386,8 @@ describe('KclManager diagnostics', () => {
     })
     kclManager.scheduleCurrentCodeExecution(false)
 
-    await vi.advanceTimersByTimeAsync(999)
-    expect(executeCodeSpy).not.toHaveBeenCalled()
+    await flushPromises()
 
-    await vi.advanceTimersByTimeAsync(1)
     expect(executeCodeSpy).toHaveBeenCalledExactlyOnceWith('latest')
   })
 
@@ -1068,7 +1476,8 @@ describe('KclManager diagnostics', () => {
     const flush = kclManager.flushPendingEditorExecution().then(() => {
       flushCompleted = true
     })
-    await vi.waitFor(() => expect(kclManager.executeIsStale).not.toBeNull())
+    await flushPromises(6)
+    expect(rustExecuteSpy).toHaveBeenCalledTimes(1)
     expect(flushCompleted).toBe(false)
 
     activeRender.resolve(finalExecState)
@@ -1080,55 +1489,48 @@ describe('KclManager diagnostics', () => {
     expect(flushCompleted).toBe(true)
   })
 
-  it('flushes an edit scheduled while the execution queue is draining', async () => {
-    vi.useFakeTimers()
-
-    const { kclManager } = createKclManagerTestHarness('x = 1')
-    const queueDrain = createDeferred<undefined>()
-    kclManager.engineCommandManager.connection = {
-      connected: true,
-    } as unknown as typeof kclManager.engineCommandManager.connection
-    const executeCodeSpy = vi
-      .spyOn(kclManager, 'executeCode')
-      .mockResolvedValue(undefined)
-    const waitForExecutionQueueToIdleSpy = vi
-      .spyOn(
-        kclManager as unknown as {
-          waitForExecutionQueueToIdle(): Promise<void>
-        },
-        'waitForExecutionQueueToIdle'
-      )
-      .mockReturnValueOnce(queueDrain.promise)
-      .mockResolvedValueOnce(undefined)
-
-    kclManager.editorView.dispatch({
-      changes: { from: 4, to: 5, insert: '2' },
-    })
-
-    let flushCompleted = false
-    const flush = kclManager.flushPendingEditorExecution().then(() => {
-      flushCompleted = true
-    })
-    await vi.waitFor(() =>
-      expect(waitForExecutionQueueToIdleSpy).toHaveBeenCalledTimes(1)
+  it('coalesces newer edits behind the active render without overlapping executions', async () => {
+    vi.spyOn(UserFeatures, 'waitForUserFeaturesSettled').mockResolvedValue(
+      undefined
     )
-
-    kclManager.editorView.dispatch({
-      changes: { from: 4, to: 5, insert: '3' },
+    const { kclManager } = createKclManagerTestHarness('x = 1')
+    const activeRender = createDeferred<typeof kclManager.execState>()
+    const finalState = { ...kclManager.execState }
+    kclManager.engineCommandManager.started = true
+    const rustExecute = vi
+      .spyOn(kclManager.rustContext, 'execute')
+      .mockReturnValueOnce(activeRender.promise)
+      .mockResolvedValueOnce(finalState)
+    const executeCode = vi.spyOn(kclManager, 'executeCode')
+    const render = kclManager.executeAst({ ast: createEmptyAst() })
+    await vi.waitFor(() => expect(rustExecute).toHaveBeenCalledOnce())
+    kclManager.scheduleCurrentCodeExecution(false)
+    let flushed = false
+    const flush = kclManager.flushPendingEditorExecution().then(() => {
+      flushed = true
     })
-    expect(executeCodeSpy).toHaveBeenCalledTimes(1)
-    expect(flushCompleted).toBe(false)
-
-    queueDrain.resolve(undefined)
-    await flush
-
-    expect(waitForExecutionQueueToIdleSpy).toHaveBeenCalledTimes(2)
-    expect(executeCodeSpy).toHaveBeenCalledTimes(2)
-    expect(executeCodeSpy).toHaveBeenLastCalledWith('x = 3')
-    expect(flushCompleted).toBe(true)
-
-    await vi.advanceTimersByTimeAsync(1000)
-    expect(executeCodeSpy).toHaveBeenCalledTimes(2)
+    kclManager.updateCodeEditor('x = 2', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    kclManager.scheduleCurrentCodeExecution(false)
+    kclManager.updateCodeEditor('x = 3', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    kclManager.scheduleCurrentCodeExecution(false)
+    await flushPromises(6)
+    expect(rustExecute).toHaveBeenCalledOnce()
+    expect(executeCode).not.toHaveBeenCalled()
+    expect(flushed).toBe(false)
+    activeRender.resolve(finalState)
+    await Promise.all([render, flush])
+    expect(executeCode).toHaveBeenCalledExactlyOnceWith('x = 3')
+    expect(rustExecute).toHaveBeenCalledTimes(2)
+    expect(kclManager.code).toBe('x = 3')
+    expect(kclManager.lastSuccessfulCode).toBe('x = 3')
+    expect(kclManager.isExecuting).toBe(false)
+    expect(flushed).toBe(true)
   })
 
   it('tracks whether the editor differs from the last execution', () => {

@@ -271,7 +271,6 @@ export function OpenedProject() {
       <div className="relative flex flex-1 flex-col">
         <div className="relative flex items-center flex-col">
           <AppHeader
-            className="transition-opacity transition-duration-75"
             project={project?.projectIORefSignal.value}
             file={project?.executingFileEntry.value}
             enableMenu={true}
@@ -279,7 +278,7 @@ export function OpenedProject() {
             projectMenuChildren={undoRedoButtons}
           />
         </div>
-        <ModalContainer />
+        <ModalContainer enterTimeout={0} exitTimeout={0} />
         <section className="pointer-events-auto flex-1">
           <LayoutRootNode
             layout={layout.signal.value || defaultLayout}
