@@ -5,7 +5,7 @@ import {
   getFeatureTreeValueDetail,
   namedViewTooltipText,
   supportsZ0006AutoFixBeforeFeatureTreeEdit,
-} from '@src/components/layout/areas/FeatureTreePane'
+} from '@src/lib/featureTree/FeatureTreePane'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { defaultNodePath, type OperationsByModule } from '@src/lang/wasm'
 import { describe, expect, it } from 'vitest'

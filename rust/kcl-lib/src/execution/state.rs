@@ -799,7 +799,7 @@ impl ExecState {
         Ok(ExecOutcome {
             variables,
             filenames: self.global.filenames(),
-            from_cache: false,
+            engine_scene_generation: ctx.cache.engine_scene_generation().await,
             operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
             scene_objects: self.global.root_module_artifacts.scene_objects,
