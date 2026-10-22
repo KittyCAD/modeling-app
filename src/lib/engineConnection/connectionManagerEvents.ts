@@ -192,8 +192,6 @@ export const createOnEngineConnectionStarted = ({
   getUnreliableSubscriptions,
   setInSequence,
   getInSequence,
-  websocket,
-  handleMessage,
   connection,
   trackListener,
 }: {
@@ -205,8 +203,6 @@ export const createOnEngineConnectionStarted = ({
   }
   setInSequence: (sequence: number) => void
   getInSequence: () => number
-  websocket: WebSocket
-  handleMessage: (event: MessageEvent) => void
   connection: Connection
   trackListener: (
     name: string,

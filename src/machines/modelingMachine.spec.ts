@@ -1640,7 +1640,6 @@ sketch001 = sketch(on = YZ) {
           commandBarActor,
           machineManager,
         })
-        context.store.useSketchSolveMode = { current: true } as any
         context.store.defaultUnit = { current: 'mm' } as any
         context.projectRef = { current: {} as any }
 
@@ -1902,7 +1901,6 @@ sketch001 = sketch(on = YZ) {
         commandBarActor,
         machineManager,
       })
-      context.store.useSketchSolveMode = { current: true } as any
       context.store.defaultUnit = { current: 'mm' } as any
       context.projectRef = { current: {} as any }
 
@@ -1977,7 +1975,6 @@ sketch001 = sketch(on = YZ) {
         commandBarActor,
         machineManager,
       })
-      context.store.useSketchSolveMode = { current: true } as any
       context.store.defaultUnit = { current: 'mm' } as any
       context.projectRef = { current: {} as any }
 

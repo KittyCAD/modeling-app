@@ -74,11 +74,7 @@ test('stores a post-selected primitive before starting a sketch', async () => {
       kclManager,
       rustContext,
       wasmInstance: {},
-      store: {
-        useSketchSolveMode: {
-          current: true,
-        },
-      },
+      store: {},
     },
   })
   getEventForQueryEntityTypeWithPoint.mockResolvedValue(selectionEvent)
@@ -96,7 +92,7 @@ test('stores a post-selected primitive before starting a sketch', async () => {
 
   await waitFor(() => {
     expect(send).toHaveBeenCalledWith(selectionEvent)
-    expect(selectSketchPlane).toHaveBeenCalledWith('face-id', true, kclManager)
+    expect(selectSketchPlane).toHaveBeenCalledWith('face-id', kclManager)
   })
   expect(send.mock.invocationCallOrder[0]).toBeLessThan(
     selectSketchPlane.mock.invocationCallOrder[0]
@@ -123,7 +119,7 @@ test('does not overwrite sketch solve segment selection from an engine click', (
       kclManager: {},
       rustContext: { planesCreated: { add: vi.fn(() => unsubscribe) } },
       wasmInstance: {},
-      store: { useSketchSolveMode: { current: true } },
+      store: {},
     },
   })
 

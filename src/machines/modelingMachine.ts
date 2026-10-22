@@ -166,7 +166,6 @@ import {
   MAKE_TOAST_MESSAGES,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
 import { toProjectRelativePath, webSafePathSplit } from '@src/lib/paths'
@@ -711,9 +710,6 @@ export const modelingMachine = setup({
     input: {} as ModelingMachineInput,
   },
   guards: {
-    'should use sketch solve mode': ({ context }) => {
-      return context.store.useSketchSolveMode?.current === true
-    },
     'Artifact graph is empty': ({ context }) => {
       return context.kclManager.artifactGraph.size === 0
     },
@@ -1525,14 +1521,6 @@ export const modelingMachine = setup({
       kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
         shouldAddToHistory: false,
         shouldWriteToDisk: false,
-      })
-    },
-    'report legacy sketch mode': ({ context }) => {
-      if (context.store.useSketchSolveMode?.current !== true) return
-
-      void reportClientError({
-        code: ClientErrorCode.LegacySketchMode,
-        message: 'Legacy sketch mode entered',
       })
     },
     'reset client scene mouse handlers': ({ context }) => {
@@ -6437,11 +6425,7 @@ export const modelingMachine = setup({
         },
       },
 
-      entry: [
-        'add axis n grid',
-        'clientToEngine cam sync direction',
-        'report legacy sketch mode',
-      ],
+      entry: ['add axis n grid', 'clientToEngine cam sync direction'],
     },
 
     'Sketch no face': {

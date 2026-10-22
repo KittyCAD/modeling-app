@@ -255,7 +255,6 @@ export type SegmentOverlayPayload =
 export interface Store {
   videoElement?: HTMLVideoElement
   cameraProjection?: Setting<CameraProjectionType>
-  useSketchSolveMode?: Setting<boolean>
   defaultUnit?: Setting<BaseUnit>
 }
 
