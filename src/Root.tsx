@@ -1,4 +1,3 @@
-import { AppStateProvider } from '@src/AppState'
 import { Auth } from '@src/Auth'
 import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
 import { RouteProvider } from '@src/components/RouteProvider'
@@ -20,10 +19,8 @@ function RootLayout() {
       <OpenInDesktopAppHandler>
         <RouteProvider>
           <Auth>
-            <AppStateProvider>
-              <SystemIOMachineLogicListener />
-              <Outlet />
-            </AppStateProvider>
+            <SystemIOMachineLogicListener />
+            <Outlet />
           </Auth>
         </RouteProvider>
       </OpenInDesktopAppHandler>

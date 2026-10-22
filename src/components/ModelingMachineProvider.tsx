@@ -1,4 +1,3 @@
-import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
@@ -50,7 +49,7 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { settings, layout, registry } = useApp()
+  const { settings, layout, registry, engineCommandManager } = useApp()
   const { kclManager } = useSingletons()
   const modelingActor =
     kclManager.modelingActor ?? use(kclManager.modelingActorPromise)
@@ -112,7 +111,7 @@ export const ModelingMachineProvider = ({
   useMenuListener(cb)
 
   const { overallState } = useNetworkContext()
-  const { isStreamReady } = useAppState()
+  const isStreamReady = engineCommandManager.isStreamReady.value
 
   const toolbarConfigurationName =
     modelingMachineStateToToolbarModeName(modelingState)
