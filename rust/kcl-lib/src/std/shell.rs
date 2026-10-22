@@ -11,6 +11,7 @@ use super::args::TyF64;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
+use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Solid;
@@ -25,9 +26,17 @@ pub async fn thicken(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let mut surface: Box<Solid> = args.get_unlabeled_kw_arg("surface", &RuntimeType::solid(), exec_state)?;
     let thickness: TyF64 = args.get_kw_arg("thickness", &RuntimeType::length(), exec_state)?;
     let distance = thickness.unwrap_to_mm();
-    if !distance.is_finite() || distance == 0.0 {
+    let side: Option<String> = args.get_kw_arg_opt("side", &RuntimeType::string(), exec_state)?;
+    let side = side.as_deref().unwrap_or("normal");
+    if !matches!(side, "normal" | "opposite" | "center") {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Thickness must be a finite, nonzero length".to_owned(),
+            "Thicken side must be normal, opposite, or center".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+    if !distance.is_finite() || distance <= 0.0 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Thickness must be a finite, positive length; use side to choose its direction".to_owned(),
             vec![args.source_range],
         )));
     }
@@ -50,9 +59,59 @@ pub async fn thicken(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         )));
     }
 
+    if side == "center" {
+        // Reuse cloning and union so centering needs no additional wire/API fields.
+        let mut copies = super::clone::inner_clone(
+            vec![GeometryWithImportedGeometry::Solid(surface.as_ref().clone())],
+            exec_state,
+            args.clone(),
+        )
+        .await?;
+        let Some(GeometryWithImportedGeometry::Solid(mut opposite)) = copies.pop() else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "Could not copy the surface for centered thickening".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        thicken_one_side(&mut surface, distance * 0.5, exec_state, &args).await?;
+        thicken_one_side(&mut opposite, -distance * 0.5, exec_state, &args).await?;
+        let mut bodies = super::csg::inner_union(
+            vec![*surface, opposite],
+            None,
+            super::csg::CsgAlgorithm::Latest,
+            exec_state,
+            args.clone(),
+        )
+        .await?;
+        if bodies.len() != 1 {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Centered thickening could not join its two halves into one body".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        return Ok(KclValue::Solid {
+            value: Box::new(bodies.remove(0)),
+        });
+    }
+    thicken_one_side(
+        &mut surface,
+        if side == "opposite" { -distance } else { distance },
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(KclValue::Solid { value: surface })
+}
+
+async fn thicken_one_side(
+    surface: &mut Solid,
+    distance: f64,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<(), KclError> {
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, &args),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::Solid3dShellFace::builder()
                     .hollow(true)
@@ -65,7 +124,7 @@ pub async fn thicken(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         )
         .await?;
     surface.best_guess_body_type = Some(BodyType::Solid);
-    Ok(KclValue::Solid { value: surface })
+    Ok(())
 }
 
 /// Create a shell.
@@ -208,18 +267,22 @@ profile = sketch(on = XY) {
 }
 surface = extrude([profile.line1, profile.arc1, profile.line2, profile.line3], length = 10mm, bodyType = SURFACE)
 "#;
-        for thickness in ["2mm", "-2mm", "0.1in"] {
-            let code = format!(
-                "{setup}\nbody = thicken(surface, thickness = {thickness})\nassertIs(isSolid(body))\nassertIs(!isSurface(body))"
-            );
-            let program = crate::Program::parse_no_errs(&code).unwrap();
-            let ctx = crate::ExecutorContext::new_mock(None).await;
-            let result = ctx.run_mock(&program, &MockConfig::default()).await;
-            ctx.close().await;
-            result.unwrap();
+        for side in ["normal", "opposite", "center"] {
+            for thickness in ["2mm", "0.1in"] {
+                let code = format!(
+                    "{setup}\nbody = thicken(surface, thickness = {thickness}, side = \"{side}\")\nassertIs(isSolid(body))\nassertIs(!isSurface(body))"
+                );
+                let program = crate::Program::parse_no_errs(&code).unwrap();
+                let ctx = crate::ExecutorContext::new_mock(None).await;
+                let result = ctx.run_mock(&program, &MockConfig::default()).await;
+                ctx.close().await;
+                result.unwrap();
+            }
         }
         for (operation, message) in [
-            ("thicken(surface, thickness = 0mm)", "finite, nonzero"),
+            ("thicken(surface, thickness = 0mm)", "finite, positive"),
+            ("thicken(surface, thickness = -2mm)", "finite, positive"),
+            ("thicken(surface, thickness = 2mm, side = \"outside\")", "side must be"),
             (
                 "body = thicken(surface, thickness = 2mm)\nthicken(body, thickness = 1mm)",
                 "requires a surface body",
@@ -230,6 +293,21 @@ surface = extrude([profile.line1, profile.arc1, profile.line2, profile.line3], l
             let result = ctx.run_mock(&program, &MockConfig::default()).await;
             ctx.close().await;
             assert!(result.unwrap_err().to_string().contains(message));
+        }
+    }
+    #[tokio::test(flavor = "multi_thread")]
+    async fn thicken_samples_execute_in_mock() {
+        for code in [
+            include_str!("../../examples/thicken/01-side-comparison.kcl"),
+            include_str!("../../examples/thicken/02-centered-rounded-guard.kcl"),
+            include_str!("../../examples/thicken/03-sharp-z-bracket.kcl"),
+            include_str!("../../examples/thicken/04-overlap-experiment.kcl"),
+        ] {
+            let program = crate::Program::parse_no_errs(code).unwrap();
+            let ctx = crate::ExecutorContext::new_mock(None).await;
+            let result = ctx.run_mock(&program, &MockConfig::default()).await;
+            ctx.close().await;
+            result.unwrap();
         }
     }
 }

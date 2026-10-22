@@ -939,9 +939,10 @@ export fn shell(
 /// Give a planar/cylindrical surface or a connected straight extrusion of lines
 /// and circular arcs a uniform thickness, closing its boundaries into a solid.
 /// Tangent joins stay smooth; sharp corners use mitered joins.
-/// Positive thickness follows the surface normal; negative thickness reverses it.
-/// Collapsed arcs and intersecting offset contours are rejected. Other surface
-/// types and cut multi-face surfaces are not yet supported.
+/// Choose `side = "normal"` (default), `"opposite"`, or `"center"`.
+/// Thickness is a positive total wall thickness. Center places half on each side.
+/// Overlapping offset contours are passed through without a self-intersection check.
+/// Other surface types and cut multi-face surfaces are not yet supported.
 /// Requires an engine with surface thickening support.
 /// ```kcl,sketchSolve
 /// @settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
@@ -952,14 +953,16 @@ export fn shell(
 ///   line3 = line(start = [var 30mm, var 25mm], end = [var 45mm, var 25mm])
 /// }
 /// surface = extrude([profile.line1, profile.arc1, profile.line2, profile.line3], length = 10mm, bodyType = SURFACE)
-/// body = thicken(surface, thickness = 2mm)
+/// body = thicken(surface, thickness = 2mm, side = "center")
 /// ```
 @(impl = std_rust, feature_tree = true, experimental = true)
 export fn thicken(
   /// The surface body to thicken.
   @surface: Solid,
-  /// Signed thickness measured along the surface normal.
+  /// Positive total wall thickness.
   thickness: number(Length),
+  /// Which side to thicken: "normal", "opposite", or "center" (half on each side).
+  side?: string = "normal",
 ): Solid {}
 
 /// Make the inside of a 3D object hollow.

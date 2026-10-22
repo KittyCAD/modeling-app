@@ -1,0 +1,22 @@
+// Three identical surfaces on Y = 0, spaced along X.
+// Blue: along the normal. Orange: opposite. Green: centered.
+// Each finished wall is 2 mm thick; centered uses 1 mm on each side.
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  normalEdge = line(start = [var 0mm, var 0mm], end = [var 24mm, var 0mm])
+  oppositeEdge = line(start = [var 36mm, var 0mm], end = [var 60mm, var 0mm])
+  centerEdge = line(start = [var 72mm, var 0mm], end = [var 96mm, var 0mm])
+}
+
+normalSurface = extrude(profile.normalEdge, length = 18mm, bodyType = SURFACE)
+oppositeSurface = extrude(profile.oppositeEdge, length = 18mm, bodyType = SURFACE)
+centerSurface = extrude(profile.centerEdge, length = 18mm, bodyType = SURFACE)
+
+normalWall = thicken(normalSurface, thickness = 2mm, side = "normal")
+oppositeWall = thicken(oppositeSurface, thickness = 2mm, side = "opposite")
+centerWall = thicken(centerSurface, thickness = 2mm, side = "center")
+
+appearance(normalWall, color = "#3388dd", roughness = 35)
+appearance(oppositeWall, color = "#ee9933", roughness = 35)
+appearance(centerWall, color = "#44bb88", roughness = 35)

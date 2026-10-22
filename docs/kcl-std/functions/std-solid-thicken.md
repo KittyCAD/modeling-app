@@ -1,18 +1,19 @@
 ---
 title: "thicken"
 subtitle: "Function in std::solid"
-excerpt: "Give a planar/cylindrical surface or a connected straight extrusion of lines and circular arcs a uniform thickness, closing its boundaries into a solid. Tangent joins stay smooth; sharp corners use mitered joins. Positive thickness follows the surface normal; negative thickness reverses it. Collapsed arcs and intersecting offset contours are rejected. Other surface types and cut multi-face surfaces are not yet supported. Requires an engine with surface thickening support."
+excerpt: "Give a planar/cylindrical surface or a connected straight extrusion of lines and circular arcs a uniform thickness, closing its boundaries into a solid. Tangent joins stay smooth; sharp corners use mitered joins. Choose `side = \"normal\"` (default), `\"opposite\"`, or `\"center\"`. Thickness is a positive total wall thickness. Center places half on each side. Overlapping offset contours are passed through without a self-intersection check. Other surface types and cut multi-face surfaces are not yet supported. Requires an engine with surface thickening support."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-Give a planar/cylindrical surface or a connected straight extrusion of lines and circular arcs a uniform thickness, closing its boundaries into a solid. Tangent joins stay smooth; sharp corners use mitered joins. Positive thickness follows the surface normal; negative thickness reverses it. Collapsed arcs and intersecting offset contours are rejected. Other surface types and cut multi-face surfaces are not yet supported. Requires an engine with surface thickening support.
+Give a planar/cylindrical surface or a connected straight extrusion of lines and circular arcs a uniform thickness, closing its boundaries into a solid. Tangent joins stay smooth; sharp corners use mitered joins. Choose `side = "normal"` (default), `"opposite"`, or `"center"`. Thickness is a positive total wall thickness. Center places half on each side. Overlapping offset contours are passed through without a self-intersection check. Other surface types and cut multi-face surfaces are not yet supported. Requires an engine with surface thickening support.
 
 ```kcl
 thicken(
   @surface: Solid,
   thickness: number(Length),
+  side?: string,
 ): Solid
 ```
 
@@ -23,7 +24,8 @@ thicken(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `surface` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The surface body to thicken. | Yes |
-| `thickness` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Signed thickness measured along the surface normal. | Yes |
+| `thickness` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Positive total wall thickness. | Yes |
+| `side` | [`string`](/docs/kcl-std/types/std-types-string) | Which side to thicken: "normal", "opposite", or "center" (half on each side). | No |
 
 ### Returns
 
@@ -51,7 +53,7 @@ surface = extrude(
   length = 10mm,
   bodyType = SURFACE,
 )
-body = thicken(surface, thickness = 2mm)
+body = thicken(surface, thickness = 2mm, side = "center")
 
 ```
 
