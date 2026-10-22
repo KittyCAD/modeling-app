@@ -84,13 +84,13 @@ import {
 import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: feature-tree file opening (useNavigate).
 import { useNavigate } from 'react-router-dom'
@@ -198,7 +198,8 @@ export const FeatureTreePaneContents = memo(() => {
     platform
   )
   const { kclManager } = useSingletons()
-  const executionService = app.registry.signal(executingEditorService).value
+  const executionService =
+    app.registry.signal(projectSession).value?.executingEditor.value
   const { engineCommandManager, rustContext } = kclManager
   const {
     send: modelingSend,
