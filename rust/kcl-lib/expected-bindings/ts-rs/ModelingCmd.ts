@@ -3952,7 +3952,11 @@ units: UnitLength,
 /**
  * Presentation style.
  */
-presentation: StepPresentation, };
+presentation: StepPresentation, 
+/**
+ * STEP application protocol schema. Defaults to AP242.
+ */
+schema: StepSchema, };
 
 /**
  * Options for importing STEP format.
@@ -3986,6 +3990,11 @@ export type StepImportTargetRepresentation = "mesh" | "brep";
  * Describes the presentation style of the EXPRESS exchange format.
  */
 export type StepPresentation = "compact" | "pretty";
+
+/**
+ * Specifies the STEP application protocol schema for export.
+ */
+export type StepSchema = "ap203" | "ap214" | "ap242";
 
 /**
  * Options for exporting STL.

@@ -4463,7 +4463,7 @@ export const modelingMachine = setup({
           return new Error(errorMessage)
         }
 
-        const { up, scale, ...formatData } = data
+        const { up, scale, schema, ...formatData } = data
         const format = {
           ...formatData,
         } as Partial<OutputFormat3d>
@@ -4476,6 +4476,10 @@ export const modelingMachine = setup({
         // Set all the un-configurable defaults here.
         if (format.type === 'gltf') {
           format.presentation = 'pretty'
+        }
+
+        if (format.type === 'step') {
+          format.schema = schema ?? 'ap242'
         }
 
         if (
