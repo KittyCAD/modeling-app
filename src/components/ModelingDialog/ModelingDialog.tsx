@@ -238,6 +238,7 @@ export default function ModelingDialog({
                 autoFocus={name === firstFieldName}
                 aria-label={`Select ${label}`}
                 aria-pressed={selection.activeName === name}
+                data-modeling-dialog-selection={selection.activeName === name}
                 disabled={Boolean(state.context.argumentsToSubmit.nodeToEdit)}
                 title={
                   state.context.argumentsToSubmit.nodeToEdit
