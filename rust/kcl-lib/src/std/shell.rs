@@ -20,7 +20,7 @@ use crate::std::Args;
 use crate::std::sketch::FaceTag;
 use crate::std::surfaces::query_body_type;
 
-/// Give a single surface face a uniform thickness using the existing shell command.
+/// Give a surface body a uniform thickness using the existing shell command.
 pub async fn thicken(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let mut surface: Box<Solid> = args.get_unlabeled_kw_arg("surface", &RuntimeType::solid(), exec_state)?;
     let thickness: TyF64 = args.get_kw_arg("thickness", &RuntimeType::length(), exec_state)?;
@@ -201,9 +201,12 @@ mod tests {
         let setup = r#"
 @settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
 profile = sketch(on = XY) {
-  edge = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])
+  arc1 = arc(start = [var 20mm, var 0mm], end = [var 30mm, var 10mm], center = [var 20mm, var 10mm])
+  line2 = line(start = [var 30mm, var 10mm], end = [var 30mm, var 25mm])
+  line3 = line(start = [var 30mm, var 25mm], end = [var 45mm, var 25mm])
 }
-surface = extrude(profile.edge, length = 10mm, bodyType = SURFACE)
+surface = extrude([profile.line1, profile.arc1, profile.line2, profile.line3], length = 10mm, bodyType = SURFACE)
 "#;
         for thickness in ["2mm", "-2mm", "0.1in"] {
             let code = format!(

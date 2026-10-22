@@ -10505,7 +10505,7 @@ export default {
     "moduleName": "solid",
     "returnType": "Solid",
     "addedIn": null,
-    "summary": "Give a single planar or cylindrical surface face a uniform thickness, closing its boundaries to create a solid. Boundaries and holes are preserved. Positive thickness follows the surface normal; negative thickness reverses it. Joined surfaces and other curved surface types are not yet supported. Requires an engine with surface thickening support.",
+    "summary": "Give a planar/cylindrical surface or a connected straight extrusion of lines and circular arcs a uniform thickness, closing its boundaries into a solid. Tangent joins stay smooth; sharp corners use mitered joins. Positive thickness follows the surface normal; negative thickness reverses it. Collapsed arcs and intersecting offset contours are rejected. Other surface types and cut multi-face surfaces are not yet supported. Requires an engine with surface thickening support.",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -10514,7 +10514,7 @@ export default {
       {
         "name": "surface",
         "ty": "Solid",
-        "docs": "The single-face surface to thicken.",
+        "docs": "The surface body to thicken.",
         "required": true,
         "special": true,
         "experimental": false,
