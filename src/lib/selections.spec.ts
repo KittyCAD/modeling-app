@@ -4,7 +4,6 @@ import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { createEdgeRefObjectExpression } from '@src/lang/modifyAst/edges'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { KclManager } from '@src/lang/KclManager'
@@ -4135,25 +4134,5 @@ sketch001 = sketch(on = ${on}) {
     }
     expect(result.negated).toBe(false)
     expect(normalizeAxis(result.zAxis)).toEqual([0, 1, 0])
-  })
-})
-
-describe('selectSketchPlane', () => {
-  test('routes offset plane ids into sketch solve when sketch solve mode is enabled', async () => {
-    const modelingSend = vi.fn()
-    const getFaceDetails = vi.fn()
-
-    await selectSketchPlane('plane001', true, {
-      artifactGraph: new Map(),
-      rustContext: { defaultPlanes: null },
-      sceneEntitiesManager: { getFaceDetails },
-      sceneInfra: { modelingSend },
-    } as any)
-
-    expect(modelingSend).toHaveBeenCalledWith({
-      type: 'Select sketch solve plane',
-      data: 'plane001',
-    })
-    expect(getFaceDetails).not.toHaveBeenCalled()
   })
 })

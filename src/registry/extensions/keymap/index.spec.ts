@@ -1,5 +1,6 @@
 import {
   defineRegistryItem,
+  provide,
   provideService,
   Registry,
   Slot,
@@ -30,6 +31,7 @@ import {
   keymapContract,
   keymapScopesValueSpec,
   keymapService,
+  keymapEventOwnersValueSpec,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   MODE_SKETCHING_KEYMAP_SCOPE,
   type PersistedKeymap,
@@ -50,6 +52,62 @@ const testFileOperations = {} as FileOperationsRegistryService
 vi.mock('@src/registry/extensions/keymap/persistence', () => persistenceMocks)
 
 describe('keymap extension', () => {
+  it('leaves widget keys local while allowing explicitly scoped editable bindings', () => {
+    const send = vi.fn()
+    const tree = document.createElement('zoo-feature-tree')
+    const row = document.createElement('zoo-feature-tree-row')
+    const registry = createRegistryWithKeymapItems(
+      [
+        {
+          id: 'global-x',
+          title: 'Global X',
+          source: 'test',
+          command: 'global-x',
+          keystrokes: ['x'],
+          when: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+        },
+        {
+          id: 'tree-y',
+          title: 'Tree Y',
+          source: 'test',
+          command: 'tree-y',
+          keystrokes: ['y'],
+          when: ['feature-tree.focused'],
+        },
+      ],
+      {
+        send,
+        extraItems: [
+          defineRegistryItem({
+            id: 'widget-owner',
+            provides: [
+              provide(keymapEventOwnersValueSpec, {
+                id: 'tree',
+                scope: 'feature-tree.focused',
+                owns: (event) => event.composedPath().includes(tree),
+              }),
+            ],
+          }),
+        ],
+      }
+    )
+    const keymap = registry.get(keymapService)
+    keymap.applyScope('feature-tree.focused')
+    const event = (key: string) => {
+      const event = createKeyboardEventWithTarget(key, row, {
+        cancelable: true,
+      })
+      vi.spyOn(event, 'composedPath').mockReturnValue([row, tree])
+      return event
+    }
+    const printable = event('x')
+    expect(keymap.handleKeyDown(printable, { source: 'global' })).toBe(false)
+    expect(printable.defaultPrevented).toBe(false)
+    expect(send).not.toHaveBeenCalled()
+    expect(keymap.handleKeyDown(event('y'), { source: 'global' })).toBe(true)
+    expect(send).toHaveBeenCalledOnce()
+    registry[Symbol.dispose]()
+  })
   beforeEach(() => {
     persistenceMocks.readUserKeymapFile.mockReset().mockResolvedValue({
       version: KEYMAP_SCHEMA_VERSION,

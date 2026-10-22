@@ -283,11 +283,7 @@ export function createToolbarCommands(
       return result
     }
 
-    void selectSketchPlane(
-      selectedSketchTarget,
-      state.context.store.useSketchSolveMode?.current,
-      kclManager
-    )
+    void selectSketchPlane(selectedSketchTarget, kclManager)
 
     return result
   }
