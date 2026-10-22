@@ -47,7 +47,7 @@ window.app = app
 /**
  * Hook to gain access to the global app instance's singletons
  *
- * Alternatively, can use `useApp` and peel needed singletons off.
+ * @deprecated - Alternatively, can use `useApp` and peel needed singletons off.
  * `useSingletons` will eventually be deprecated.
  */
 export const useSingletons = () => React.useContext(AppContext).singletons
