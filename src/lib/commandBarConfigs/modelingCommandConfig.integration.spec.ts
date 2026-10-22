@@ -170,6 +170,29 @@ describe('GDT tolerance defaults', () => {
   })
 })
 
+describe('GDT Annotation primitive edges', () => {
+  it('accepts an engine edge pick without graph selections', () => {
+    const config = modelingMachineCommandConfig['GDT Annotation']
+    if (!config || isArray(config)) throw new Error('Missing annotation config')
+    const objects = config.args?.objects
+    if (!objects || objects.inputType !== 'selection') {
+      throw new Error('Annotation should expose an objects selection argument')
+    }
+
+    expect(
+      canSubmitSelectionArg(
+        new Map<ResolvedSelectionType, number>([['enginePrimitiveEdge', 1]]),
+        {
+          inputType: 'selection',
+          selectionTypes: objects.selectionTypes,
+          multiple: objects.multiple,
+          required: true,
+        }
+      )
+    ).toBe(true)
+  })
+})
+
 describe('Extrude surface arguments', () => {
   it('allows extrude profiles to include body edge selections', () => {
     const commandConfig = modelingMachineCommandConfig.Extrude
