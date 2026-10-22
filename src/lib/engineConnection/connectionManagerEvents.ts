@@ -214,21 +214,6 @@ export const createOnEngineConnectionStarted = ({
   // This is the second datachannel initialized on the peerConnection. One is already
   // attached when the createWebsocket() workflow is triggered before this code.
   const onEngineConnectionStarted = () => {
-    EngineDebugger.addLog({
-      label: 'onEngineConnectionStarted',
-      message: 'adding message on websocket',
-    })
-
-    const onMessage = (event: MessageEvent) => {
-      handleMessage(event)
-    }
-    trackListener('message', {
-      event: 'message',
-      callback: onMessage,
-      type: 'websocket',
-    })
-    websocket.addEventListener('message', onMessage)
-
     if (!peerConnection) {
       return
     }
