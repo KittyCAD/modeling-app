@@ -9,6 +9,18 @@ import { vi } from 'vitest'
 import 'vitest-webgl-canvas-mock'
 import { WebSocket } from 'ws'
 
+// Happy DOM does not implement the browser's Popover API. Keep this native
+// boundary mocked in component tests; real browser tests own top-layer layout.
+for (const method of ['showPopover', 'hidePopover']) {
+  if (!(method in HTMLElement.prototype)) {
+    Object.defineProperty(HTMLElement.prototype, method, {
+      configurable: true,
+      writable: true,
+      value: vi.fn(),
+    })
+  }
+}
+
 // Explicit cleanup is needed to prevent DOM elements persisting between tests
 afterEach(() => {
   cleanup()
