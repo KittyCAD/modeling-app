@@ -6,7 +6,11 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 })
 
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
-import type { WebSocketRequest, WebSocketResponse } from '@kittycad/lib'
+import type {
+  BatchResponse,
+  WebSocketRequest,
+  WebSocketResponse,
+} from '@kittycad/lib'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
@@ -230,6 +234,76 @@ describe('ConnectionManager', () => {
     expect(send).toHaveBeenCalledExactlyOnceWith(batch)
     expect(manager.pendingCommands).toEqual({})
   })
+
+  it.each(['acknowledged', 'missing', 'failed'])(
+    'waits for an %s object-visibility batch',
+    async (outcome) => {
+      vi.useFakeTimers()
+      const manager = createConnectionManager()
+      const connection = addConnectedState(manager)
+      const send = vi.fn<(command: WebSocketRequest) => void>()
+      connection.send = send
+      const visibility = new Map([
+        ['first-plane', true],
+        ['second-plane', false],
+      ])
+      let settled = false
+      const operation = manager.setObjectsHidden(visibility)
+      void operation.then(
+        () => {
+          settled = true
+        },
+        () => {
+          settled = true
+        }
+      )
+      const request = send.mock.calls[0]?.[0]
+      expect(request?.type).toBe('modeling_cmd_batch_req')
+      if (request?.type !== 'modeling_cmd_batch_req') {
+        throw new Error('Expected an object-visibility batch')
+      }
+      expect(request.responses).toBe(true)
+      expect(request.requests.map(({ cmd }) => cmd)).toEqual([
+        { type: 'object_visible', object_id: 'first-plane', hidden: true },
+        { type: 'object_visible', object_id: 'second-plane', hidden: false },
+      ])
+      await Promise.resolve()
+      expect(settled).toBe(false)
+      expect(Object.keys(manager.pendingCommands)).toEqual([request.batch_id])
+
+      const responses: Record<string, BatchResponse> = {}
+      for (const [index, { cmd_id }] of request.requests.entries()) {
+        if (index === 1 && outcome === 'missing') continue
+        responses[cmd_id] =
+          index === 1 && outcome === 'failed'
+            ? {
+                errors: [
+                  { error_code: 'internal_api', message: 'Missing plane' },
+                ],
+              }
+            : { response: { type: 'object_visible', data: {} } }
+      }
+      const response: WebSocketResponse = {
+        success: true,
+        request_id: request.batch_id,
+        resp: { type: 'modeling_batch', data: { responses } },
+      }
+      const result =
+        outcome === 'acknowledged'
+          ? expect(operation).resolves.toBeUndefined()
+          : expect(operation).rejects.toThrow(
+              outcome === 'failed' ? 'Missing plane' : /not acknowledged/
+            )
+      manager.createMessageHandler()(
+        new MessageEvent('message', {
+          data: JSON.stringify(response),
+        })
+      )
+      await result
+      expect(settled).toBe(true)
+      expect(manager.pendingCommands).toEqual({})
+    }
+  )
 
   it('rejects a retired scene batch and ignores its late acknowledgement after replacement', async () => {
     vi.useFakeTimers()

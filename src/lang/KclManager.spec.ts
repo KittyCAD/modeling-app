@@ -220,6 +220,44 @@ describe('KclManager runtime API', () => {
   })
 })
 
+describe('KclManager default plane visibility', () => {
+  it.each([
+    { visible: true, all: false },
+    { visible: false, all: false },
+    { visible: true, all: true },
+    { visible: false, all: true },
+  ])('updates the requested planes together: %j', async ({ visible, all }) => {
+    const { app, kclManager } = createKclManagerTestHarness('')
+    const planes = {
+      xy: 'xy-plane',
+      yz: 'yz-plane',
+      xz: 'xz-plane',
+      negXy: 'negative-xy',
+      negYz: 'negative-yz',
+      negXz: 'negative-xz',
+    }
+    const hidden = vi
+      .spyOn(kclManager.engineCommandManager, 'setObjectsHidden')
+      .mockResolvedValue(undefined)
+    const individual = vi
+      .spyOn(kclManager.engineCommandManager, 'setPlaneHidden')
+      .mockResolvedValue(undefined)
+    vi.spyOn(kclManager, 'defaultPlanes', 'get').mockReturnValue(planes)
+    try {
+      await (visible ? kclManager.showPlanes(all) : kclManager.hidePlanes(all))
+      const ids = [planes.xy, planes.yz, planes.xz]
+      if (all) ids.push(planes.negXy, planes.negYz, planes.negXz)
+      expect(hidden).toHaveBeenCalledExactlyOnceWith(
+        new Map(ids.map((id) => [id, !visible]))
+      )
+      expect(individual).not.toHaveBeenCalled()
+    } finally {
+      kclManager.close()
+      app.dispose()
+    }
+  })
+})
+
 describe('KclManager settings ownership', () => {
   function mockEngineSettings(kclManager: KclManager) {
     const engine = kclManager.engineCommandManager

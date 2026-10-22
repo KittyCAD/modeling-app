@@ -1636,7 +1636,7 @@ p3 = [342.51, 216.38],
             ast: { body: [] },
             code,
             editorView: { dispatch },
-            hidePlanes: vi.fn(),
+            hidePlanes: vi.fn().mockResolvedValue(undefined),
             isShiftDown: false,
             sceneEntitiesManager: { activeSegments: {} },
             sceneInfra: {
@@ -1844,8 +1844,8 @@ sketch001 = sketch(on = YZ) {
           },
           kclManager: {
             artifactGraph,
-            hidePlanes: vi.fn(),
-            showPlanes: vi.fn(),
+            hidePlanes: vi.fn().mockResolvedValue(undefined),
+            showPlanes: vi.fn().mockResolvedValue(undefined),
             sceneInfra: {
               animate: vi.fn(),
               resetMouseListeners: vi.fn(),
@@ -1905,11 +1905,11 @@ sketch001 = sketch(on = YZ) {
         kclManager: {
           artifactGraph,
           hasErrors: vi.fn(() => false),
-          hidePlanes: vi.fn(),
+          hidePlanes: vi.fn().mockResolvedValue(undefined),
           setCopilotEnabled: vi.fn(),
           setSelectionFilter: vi.fn(),
           setSelectionFilterToDefault: vi.fn(),
-          showPlanes: vi.fn(),
+          showPlanes: vi.fn().mockResolvedValue(undefined),
           sceneInfra: {
             animate: vi.fn(),
             stop: vi.fn(),

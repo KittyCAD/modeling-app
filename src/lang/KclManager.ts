@@ -2711,54 +2711,24 @@ export class KclManager extends File {
   }
 
   showPlanes(all = false) {
-    if (!this.defaultPlanes) return Promise.all([])
-    const thePromises = [
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false),
-    ]
-    if (all) {
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(
-          this.defaultPlanes.negXy,
-          false
-        )
-      )
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(
-          this.defaultPlanes.negYz,
-          false
-        )
-      )
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(
-          this.defaultPlanes.negXz,
-          false
-        )
-      )
-    }
-    return Promise.all(thePromises)
+    return this.setPlanesHidden(false, all)
   }
 
   hidePlanes(all = false) {
-    if (!this.defaultPlanes) return Promise.all([])
-    const thePromises = [
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true),
-    ]
+    return this.setPlanesHidden(true, all)
+  }
+
+  private setPlanesHidden(hidden: boolean, all: boolean) {
+    const planes = this.defaultPlanes
+    if (!planes) return Promise.resolve()
+    const ids = [planes.xy, planes.yz, planes.xz]
     if (all) {
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXy, true)
-      )
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negYz, true)
-      )
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXz, true)
-      )
+      ids.push(planes.negXy, planes.negYz, planes.negXz)
     }
-    return Promise.all(thePromises)
+    // One engine render boundary for the complete visibility change.
+    return this.engineCommandManager.setObjectsHidden(
+      new Map(ids.map((id) => [id, hidden]))
+    )
   }
 
   setPlaneVisibilityByKey(

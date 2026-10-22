@@ -1807,11 +1807,35 @@ export class ConnectionManager extends EventTarget {
       })
     )
 
-    return await this.sendSceneCommand({
+    const response = await this.sendSceneCommand({
       type: 'modeling_cmd_batch_req',
       batch_id: uuidv4(),
       requests,
-      responses: false,
+      responses: true,
     })
+    const acknowledgement = isArray(response) ? response[0] : response
+    const results =
+      acknowledgement &&
+      isModelingBatchResponse(acknowledgement) &&
+      acknowledgement.success
+        ? acknowledgement.resp.data.responses
+        : undefined
+    for (const request of requests) {
+      const result = results?.[request.cmd_id]
+      if (
+        !result ||
+        !('response' in result) ||
+        result.response.type !== 'object_visible'
+      ) {
+        return Promise.reject(
+          new Error(
+            getResponseErrorMessage(
+              result && 'errors' in result ? [result] : response,
+              'Object visibility command was not acknowledged'
+            )
+          )
+        )
+      }
+    }
   }
 }

@@ -1017,8 +1017,7 @@ export const modelingMachine = setup({
     ),
     'hide default planes': assign({
       defaultPlaneVisibility: ({ context }) => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        context.kclManager.hidePlanes()
+        context.kclManager.hidePlanes().catch(reportRejection)
         return { xy: false, xz: false, yz: false }
       },
     }),
@@ -1423,8 +1422,7 @@ export const modelingMachine = setup({
     }),
     'show default planes': assign({
       defaultPlaneVisibility: ({ context }) => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        context.kclManager.showPlanes()
+        context.kclManager.showPlanes().catch(reportRejection)
         return { xy: true, xz: true, yz: true }
       },
     }),
@@ -1433,8 +1431,7 @@ export const modelingMachine = setup({
         context: { kclManager, defaultPlaneVisibility },
       }) => {
         if (!kclManager.hasErrors()) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          kclManager.showPlanes()
+          kclManager.showPlanes().catch(reportRejection)
           return { xy: true, xz: true, yz: true }
         }
         return { ...defaultPlaneVisibility }
@@ -1446,7 +1443,7 @@ export const modelingMachine = setup({
         // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
         return {}
       }
-      void context.kclManager.showPlanes()
+      context.kclManager.showPlanes().catch(reportRejection)
       return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
     }),
     'setup noPoints onClick listener': ({
