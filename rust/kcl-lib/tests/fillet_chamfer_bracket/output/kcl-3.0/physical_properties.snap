@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties fillet_chamfer_bracket.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.000000000000014210854715202004,
+      "y": 0.000000000000014210854715202004,
+      "z": 41.96750002116359
+    },
+    "dimensions": {
+      "x": 120.00136614317992,
+      "y": 90.00136614317981,
+      "z": 101.2150000423272
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 51578.5478341418
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 305.7879835235884
+  }
+}

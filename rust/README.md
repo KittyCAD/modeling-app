@@ -14,7 +14,7 @@
     git commit -m "Bump versions"
     ```
 4. Push the changes, get your PR approved, and merge it to main.
-5. Check out main, to the commit from your merged PR.
+5. Check out main, specifically at the commit from your merged PR. We want that commit exactly to get tagged as the release commit.
 6. Publish the crates:
     ```bash
     just publish-kcl {version}

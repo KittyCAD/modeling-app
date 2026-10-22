@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import type { SweepSubType } from '@rust/kcl-lib/bindings/Artifact'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
@@ -9,7 +7,6 @@ import {
   engineIdForArtifact,
   engineIdsForVisibility,
   getViewUniverse,
-  KCL_DEFAULT_VIEW_NAME,
   listNamedViews,
   visibilityForKclDefault,
   visibilityForView,
@@ -217,31 +214,6 @@ function graphOf(artifacts: Artifact[]): ArtifactGraph {
 const rootOnlyFilenames: ExecState['filenames'] = {
   [ROOT_MODULE_ID]: ROOT_PATH,
 }
-
-/** The Rust module holding `RESERVED_DEFAULT_VIEW_NAME`. */
-const NAMED_VIEWS_RS = join(
-  process.cwd(),
-  'rust/kcl-lib/src/execution/named_views.rs'
-)
-
-describe('KCL_DEFAULT_VIEW_NAME', () => {
-  // Fails when the Rust constant changes without this literal.
-  // `reserved_default_view_name_matches_typescript` covers the other direction.
-  it('matches the name Rust reserves', () => {
-    const source = readFileSync(NAMED_VIEWS_RS, 'utf8')
-    const declaration =
-      /const RESERVED_DEFAULT_VIEW_NAME: &str = "([^"]*)"/.exec(source)
-
-    expect(
-      declaration,
-      `no RESERVED_DEFAULT_VIEW_NAME declaration found in ${NAMED_VIEWS_RS}`
-    ).not.toBeNull()
-    expect(
-      declaration?.[1],
-      'the reserved default view name is declared on both sides of the wasm boundary and the two have drifted apart; update this literal to match the Rust constant'
-    ).toBe(KCL_DEFAULT_VIEW_NAME)
-  })
-})
 
 describe('listNamedViews', () => {
   it('returns nothing when the program declared no views', () => {

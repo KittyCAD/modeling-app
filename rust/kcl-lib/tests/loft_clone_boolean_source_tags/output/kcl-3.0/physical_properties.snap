@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties loft_clone_boolean_source_tags.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 40.0,
+      "y": 0.0,
+      "z": 11.000000000000009
+    },
+    "dimensions": {
+      "x": 60.0,
+      "y": 20.0,
+      "z": 22.000000000000018
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 3931.239454061597
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 8.96192516168052
+  }
+}

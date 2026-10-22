@@ -321,7 +321,6 @@ describe('project settings serialization regression', () => {
             mouseControls: 'OnShape',
             gizmoType: 'axis',
             enableTouchControls: false,
-            useSketchSolveMode: false,
             showSketchGrid: true,
             snapToGrid: true,
             majorGridSpacing: 2.5,
@@ -360,7 +359,6 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('mouse_controls = "onshape"')
     expect(serializedToml).toContain('gizmo_type = "axis"')
     expect(serializedToml).toContain('enable_touch_controls = false')
-    expect(serializedToml).toContain('use_sketch_solve_mode = false')
     expect(serializedToml).toContain('show_sketch_grid = true')
     expect(serializedToml).toContain('snap_to_grid = true')
     expect(serializedToml).toContain('major_grid_spacing = 2.5')
@@ -405,7 +403,6 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.modeling?.mouseControls).toBe('OnShape')
     expect(parsedPayload.modeling?.gizmoType).toBe('axis')
     expect(parsedPayload.modeling?.enableTouchControls).toBe(false)
-    expect(parsedPayload.modeling?.useSketchSolveMode).toBe(false)
     expect(parsedPayload.modeling?.showSketchGrid).toBe(true)
     expect(parsedPayload.modeling?.snapToGrid).toBe(true)
     expect(parsedPayload.modeling?.majorGridSpacing).toBe(2.5)

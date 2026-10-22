@@ -142,7 +142,7 @@ describe('systemIOMachine - XState', () => {
         const actor = createActor(systemIOMachineImpl, {
           input: {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
-            app: appInstanceInThisFile,
+            host: appInstanceInThisFile,
           },
         }).start()
         const context = actor.getSnapshot().context
@@ -164,7 +164,7 @@ describe('systemIOMachine - XState', () => {
         const actor = createActor(systemIOMachineImpl, {
           input: {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
-            app: appInstanceInThisFile,
+            host: appInstanceInThisFile,
           },
         }).start()
         const state = actor.getSnapshot().value
@@ -194,7 +194,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -259,7 +259,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -308,7 +308,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -362,7 +362,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: wasmInstance.promise,
-              app,
+              host: app,
             },
           }
         ).start()
@@ -438,7 +438,7 @@ describe('systemIOMachine - XState', () => {
         const actor = createActor(systemIOMachineImpl, {
           input: {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
-            app: appInstanceInThisFile,
+            host: appInstanceInThisFile,
           },
         }).start()
         actor.send({
@@ -466,7 +466,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -510,7 +510,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -551,7 +551,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -594,7 +594,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -633,7 +633,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -686,7 +686,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -745,7 +745,7 @@ describe('systemIOMachine - XState', () => {
               requestedFileNameWithExtension: 'main.kcl',
               fileNameWithExtension: 'cylinder.kcl',
               absolutePathToParentDirectory: '/Test Project',
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             })
           ).rejects.toThrow('Filename already exists.')
 
@@ -788,7 +788,7 @@ describe('systemIOMachine - XState', () => {
             requestedFileNameWithExtension: 'renamed.kcl',
             fileNameWithExtension: 'main.kcl',
             absolutePathToParentDirectory: '/Test Project',
-            app: appInstanceInThisFile,
+            host: appInstanceInThisFile,
           })
 
           expect(flushWriteToFile).toHaveBeenCalledWith({
@@ -835,7 +835,7 @@ describe('systemIOMachine - XState', () => {
               requestedFileNameWithExtension: 'renamed.kcl',
               fileNameWithExtension: 'main.kcl',
               absolutePathToParentDirectory: '/Test Project',
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             })
           ).rejects.toThrow(
             'File has unsaved changes that could not be written. Rename canceled.'
@@ -866,7 +866,7 @@ describe('systemIOMachine - XState', () => {
             {
               input: {
                 wasmInstancePromise: Promise.resolve(instanceInThisFile),
-                app: appInstanceInThisFile,
+                host: appInstanceInThisFile,
               },
             }
           ).start()
@@ -912,7 +912,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -981,7 +981,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -1034,7 +1034,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -1068,7 +1068,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -1111,7 +1111,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -1171,7 +1171,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -1244,7 +1244,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -1284,6 +1284,53 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
+      it('passes the Zookeeper ordered ID to its bulk filesystem actor', async () => {
+        const receivedOrderedIds: (number | undefined)[] = []
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async (): Promise<Project[]> => []),
+              [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
+                fromPromise(async ({ input }) => {
+                  receivedOrderedIds.push(input.orderedId)
+                  return {
+                    message: 'Updated',
+                    projectName: input.requestedProjectName,
+                    fileName: input.requestedFileNameWithExtension,
+                    subRoute: '',
+                    shouldNavigate: false,
+                  }
+                }),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              host: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+            data: {
+              orderedId: 17,
+              files: [],
+              requestedProjectName: 'demo',
+              requestedFileNameWithExtension: 'main.kcl',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+          expect(receivedOrderedIds).toEqual([17])
+        } finally {
+          actor.stop()
+        }
+      })
+
       it('should identify a completed bulk-created file navigation', async () => {
         const onSuccess = vi.fn()
         const actor = createActor(
@@ -1304,7 +1351,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -1354,7 +1401,7 @@ describe('systemIOMachine - XState', () => {
         const actor = createActor(systemIOMachineImpl, {
           input: {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
-            app: appInstanceInThisFile,
+            host: appInstanceInThisFile,
           },
         }).start()
         actor.send({
@@ -1383,7 +1430,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -1445,7 +1492,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -1504,7 +1551,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -1563,7 +1610,7 @@ describe('systemIOMachine - XState', () => {
             {
               input: {
                 wasmInstancePromise: Promise.resolve(instanceInThisFile),
-                app: appInstanceInThisFile,
+                host: appInstanceInThisFile,
               },
             }
           ).start()
@@ -1601,7 +1648,7 @@ describe('systemIOMachine - XState', () => {
           {
             input: {
               wasmInstancePromise: Promise.resolve(instanceInThisFile),
-              app: appInstanceInThisFile,
+              host: appInstanceInThisFile,
             },
           }
         ).start()
@@ -1649,7 +1696,7 @@ describe('systemIOMachine - XState', () => {
         const actor = createActor(systemIOMachineImpl, {
           input: {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
-            app: appInstanceInThisFile,
+            host: appInstanceInThisFile,
           },
         }).start()
         actor.send({
