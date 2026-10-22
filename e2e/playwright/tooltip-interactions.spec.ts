@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import { normalizeLineEndings } from '@src/lib/codeEditor'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -31,79 +32,83 @@ async function expectCurrentToolbarTooltip(page: Page, id: string) {
   return tooltip
 }
 
+async function prepareTooltipModel({
+  page,
+  fs,
+  folderSetupFn,
+  homePage,
+  scene,
+}: Pick<Fixtures, 'fs' | 'folderSetupFn' | 'homePage' | 'scene'> & {
+  page: Page
+}) {
+  await page.setBodyDimensions({ width: 1200, height: 800 })
+  const sample = await readFile(
+    join('rust', 'kcl-lib', 'tests', 'named_views_hide_extrude', 'input.kcl'),
+    'utf8'
+  )
+  // Real scalar rows make the existing feature tree scroll without adding
+  // expensive geometry or constructing a separate tooltip-only UI.
+  const scalarRows = Array.from(
+    { length: 28 },
+    (_, index) => `tooltipValue${index} = ${index}mm`
+  ).join('\n')
+  // Exercise Windows file contents on every platform. Editors normalize to LF.
+  const fileCode =
+    `@settings(kclVersion = 3.0)\n${sample}\n${scalarRows}\n`.replace(
+      /\r?\n/g,
+      '\r\n'
+    )
+  const code = normalizeLineEndings(fileCode)
+  await folderSetupFn(async (directory) => {
+    const project = await fs.join(directory, 'tooltip-interactions')
+    await fs.mkdir(project, { recursive: true })
+    await fs.writeFile(
+      await fs.join(project, 'main.kcl'),
+      new TextEncoder().encode(fileCode)
+    )
+  })
+  await homePage.openProject('tooltip-interactions')
+  await scene.connectionEstablished()
+  await scene.settled()
+  await page.evaluate(async () => {
+    const editor = window.app.project?.executingEditor.value
+    if (!editor) throw new Error('No executing editor')
+    await editor.flushPendingEditorExecution()
+  })
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const editor = window.app.project?.executingEditor.value
+        if (!editor) return undefined
+        return {
+          code: editor.code,
+          lastSuccessfulCode: editor.lastSuccessfulCode,
+          isExecuting: editor.isExecuting,
+          hasErrors: editor.hasErrors(),
+          boxType: editor.variables.boxVisible?.type,
+          pendingCommands: Object.keys(
+            editor.engineCommandManager.pendingCommands
+          ).length,
+        }
+      })
+    )
+    .toEqual({
+      code,
+      lastSuccessfulCode: code,
+      isExecuting: false,
+      hasErrors: false,
+      boxType: 'Solid',
+      pendingCommands: 0,
+    })
+  await page.mouse.move(0, 0)
+  await expect(openTooltips(page)).toHaveCount(0)
+}
+
 test.describe(
   'Tooltip pointer ownership',
   { tag: ['@desktop', '@web'] },
   () => {
-    test.beforeEach(async ({ page, fs, folderSetupFn, homePage, scene }) => {
-      await page.setBodyDimensions({ width: 1200, height: 800 })
-      const sample = await readFile(
-        join(
-          'rust',
-          'kcl-lib',
-          'tests',
-          'named_views_hide_extrude',
-          'input.kcl'
-        ),
-        'utf8'
-      )
-      // Real scalar rows make the existing feature tree scroll without adding
-      // expensive geometry or constructing a separate tooltip-only UI.
-      const scalarRows = Array.from(
-        { length: 28 },
-        (_, index) => `tooltipValue${index} = ${index}mm`
-      ).join('\n')
-      // Exercise Windows file contents on every platform. Editors normalize to LF.
-      const fileCode =
-        `@settings(kclVersion = 3.0)\n${sample}\n${scalarRows}\n`.replace(
-          /\r?\n/g,
-          '\r\n'
-        )
-      const code = normalizeLineEndings(fileCode)
-      await folderSetupFn(async (directory) => {
-        const project = await fs.join(directory, 'tooltip-interactions')
-        await fs.mkdir(project, { recursive: true })
-        await fs.writeFile(
-          await fs.join(project, 'main.kcl'),
-          new TextEncoder().encode(fileCode)
-        )
-      })
-      await homePage.openProject('tooltip-interactions')
-      await scene.connectionEstablished()
-      await scene.settled()
-      await page.evaluate(async () => {
-        const editor = window.app.project?.executingEditor.value
-        if (!editor) throw new Error('No executing editor')
-        await editor.flushPendingEditorExecution()
-      })
-      await expect
-        .poll(() =>
-          page.evaluate(() => {
-            const editor = window.app.project?.executingEditor.value
-            if (!editor) return undefined
-            return {
-              code: editor.code,
-              lastSuccessfulCode: editor.lastSuccessfulCode,
-              isExecuting: editor.isExecuting,
-              hasErrors: editor.hasErrors(),
-              boxType: editor.variables.boxVisible?.type,
-              pendingCommands: Object.keys(
-                editor.engineCommandManager.pendingCommands
-              ).length,
-            }
-          })
-        )
-        .toEqual({
-          code,
-          lastSuccessfulCode: code,
-          isExecuting: false,
-          hasErrors: false,
-          boxType: 'Solid',
-          pendingCommands: 0,
-        })
-      await page.mouse.move(0, 0)
-      await expect(openTooltips(page)).toHaveCount(0)
-    })
+    test.beforeEach(prepareTooltipModel)
 
     test('fast toolbar sweeps keep the latest content and allow card boundaries and clicks', async ({
       page,
@@ -228,3 +233,55 @@ test.describe(
     })
   }
 )
+
+test.describe('Toolbar activation tooltip ownership', { tag: '@web' }, () => {
+  test.beforeEach(prepareTooltipModel)
+
+  test('Activating and reopening a toolbar command dismisses its interactive rich tooltip', async ({
+    page,
+    toolbar,
+  }) => {
+    const button = toolbar.revolveButton
+    const dialog = page.getByRole('region', { name: 'Revolve', exact: true })
+    const palette = page.getByTestId('command-bar-wrapper')
+    // The reported failure happened on the second Revolve activation.
+    for (let activation = 0; activation < 2; activation++) {
+      await button.hover()
+      const tooltip = await expectCurrentToolbarTooltip(page, 'revolve')
+      // Clicking readable card content must not activate the command or dismiss
+      // the card. Do not navigate its external documentation links in this test.
+      await tooltip.locator('p').first().click()
+      await expect(tooltip).toBeVisible()
+      await expect(dialog.or(palette)).not.toBeVisible()
+      await button.hover()
+      const point = await center(button)
+      // A native click must dismiss help before the next selection action.
+      await page.mouse.click(point.x, point.y)
+      await expect(tooltip).not.toBeVisible()
+      await expect(openTooltips(page)).toHaveCount(0)
+
+      await expect(dialog.or(palette)).toBeVisible()
+      if (await dialog.isVisible()) {
+        const profiles = dialog.getByRole('button', {
+          name: 'Select Profiles',
+          exact: true,
+        })
+        await expect(profiles).toBeEnabled()
+        await profiles.click()
+        await expect(profiles).toHaveAttribute('aria-pressed', 'true')
+        await dialog
+          .getByRole('button', { name: 'Cancel', exact: true })
+          .click()
+      } else {
+        await expect(page.getByTestId('command-name')).toHaveText('Revolve')
+        const profiles = palette.locator('#arg-form input[name="selection"]')
+        await expect(profiles.locator('..')).toBeVisible()
+        await expect(profiles).toBeEnabled()
+        await profiles.click()
+        await expect(profiles).toBeFocused()
+        await page.getByTestId('command-bar-close-button').click()
+      }
+      await expect(dialog.or(palette)).not.toBeVisible()
+    }
+  })
+})

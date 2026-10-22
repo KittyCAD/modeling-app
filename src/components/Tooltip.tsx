@@ -145,17 +145,29 @@ export default function Tooltip({
       window.removeEventListener('scroll', updateFallbackPosition, true)
       tooltip.current?.hidePopover()
     }
+    const hideOnActivation = (event: MouseEvent) => {
+      // Rich cards are interactive, but activating their trigger ends the help.
+      if (
+        event.target instanceof Node &&
+        tooltip.current?.contains(event.target)
+      ) {
+        return
+      }
+      hide()
+    }
 
     parent.addEventListener('mouseenter', show)
     parent.addEventListener('mouseleave', hide)
     parent.addEventListener('focus', show)
     parent.addEventListener('blur', hide)
+    parent.addEventListener('click', hideOnActivation)
 
     return () => {
       parent.removeEventListener('mouseenter', show)
       parent.removeEventListener('mouseleave', hide)
       parent.removeEventListener('focus', show)
       parent.removeEventListener('blur', hide)
+      parent.removeEventListener('click', hideOnActivation)
       window.removeEventListener('resize', updateFallbackPosition)
       window.removeEventListener('scroll', updateFallbackPosition, true)
     }
