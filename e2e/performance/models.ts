@@ -221,8 +221,7 @@ export async function assertModelLoaded(
       pendingCommandCount: Object.keys(
         editor.engineCommandManager.pendingCommands
       ).length,
-      executionElapsedMs:
-        editor.executingEditorService.executionElapsedMs.value,
+      executionElapsedMs: editor.execution.executionElapsedMs.value,
       isExecuting: editor.isExecutingSignal.value,
       hasEditsSinceLastExecution: editor.hasEditsSinceLastExecutionSignal.value,
     }
