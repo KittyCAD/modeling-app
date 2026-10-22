@@ -1,3 +1,4 @@
+import { computed, signal, type ReadonlySignal } from '@preact/signals-core'
 import type {
   ModelingCmdReq,
   WebSocketRequest,
@@ -83,6 +84,11 @@ export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
 }
 
+/** Initialization milestones are scoped to the connection that completed them. */
+export type StreamReadiness =
+  | { type: 'unavailable' }
+  | { type: 'scene-ready' | 'accepting-input'; connection: Connection }
+
 export class ConnectionManager extends EventTarget {
   started: boolean
   inSequence = 1
@@ -119,6 +125,45 @@ export class ConnectionManager extends EventTarget {
   private readonly activeExecutions = new Set<symbol>()
   private readonly activeRecoveries = new Set<symbol>()
 
+  /**
+   * User interaction readiness belongs to the current connection. Transport
+   * readiness (`isTransportReady`) remains independent so initialization can send commands.
+   */
+  private readonly streamReadinessState = signal<StreamReadiness>({
+    type: 'unavailable',
+  })
+  readonly streamReadiness: ReadonlySignal<StreamReadiness> =
+    this.streamReadinessState
+  readonly isStreamReady = computed(
+    () => this.streamReadiness.value.type !== 'unavailable'
+  )
+  readonly isStreamAcceptingInput = computed(
+    () => this.streamReadiness.value.type === 'accepting-input'
+  )
+
+  markStreamReady(connection: Connection): boolean {
+    if (!this.started || this.connection !== connection) return false
+    const readiness = this.streamReadiness.peek()
+    if (
+      readiness.type === 'unavailable' ||
+      readiness.connection !== connection
+    ) {
+      this.streamReadinessState.value = { type: 'scene-ready', connection }
+    }
+    return true
+  }
+
+  markStreamAcceptingInput(connection: Connection): boolean {
+    if (!this.started || this.connection !== connection) return false
+    const readiness = this.streamReadiness.peek()
+    if (readiness.type === 'unavailable' || readiness.connection !== connection)
+      return false
+    if (readiness.type !== 'accepting-input') {
+      this.streamReadinessState.value = { type: 'accepting-input', connection }
+    }
+    return true
+  }
+
   get isReconnectPending(): boolean {
     return (
       this.reconnectingConnection !== undefined &&
@@ -134,8 +179,11 @@ export class ConnectionManager extends EventTarget {
     return this.connection?.apiCallId
   }
 
-  /** True when a scene command sent now reaches the engine. */
-  get isReady(): boolean {
+  /**
+   * True when the started connection has an open WebSocket for scene commands.
+   * WebRTC, scene initialization, and input readiness may still be pending.
+   */
+  get isTransportReady(): boolean {
     return (
       this.connection !== undefined &&
       this.started &&
@@ -342,7 +390,6 @@ export class ConnectionManager extends EventTarget {
     width,
     height,
     token,
-    setStreamIsReady,
     callbackOnUnitTestingConnection,
     unitTestWebrtc,
     unitTestPool,
@@ -353,7 +400,6 @@ export class ConnectionManager extends EventTarget {
     width: number
     height: number
     token: string
-    setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestWebrtc?: boolean
     unitTestPool?: 'cpu'
@@ -388,6 +434,7 @@ export class ConnectionManager extends EventTarget {
     this.connectionStartedAt = performance.now()
     this.shutdownReported = false
     this.prepareForReconnect = prepareForReconnect
+    this.streamReadinessState.value = { type: 'unavailable' }
     this.started = true
     this.rejectAllPendingCommands()
 
@@ -440,7 +487,13 @@ export class ConnectionManager extends EventTarget {
       })
     )
 
-    await this.connection.connect()
+    const connection = this.connection
+    await connection.connect()
+    if (this.connection !== connection) {
+      return Promise.reject(
+        new Error('Connection replaced during initialization')
+      )
+    }
 
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
@@ -533,12 +586,12 @@ export class ConnectionManager extends EventTarget {
       // Don't think this needs the bind because it is an external set function for the callback
       camControlsCameraChange: this._camControlsCameraChange,
       connection: this.connection,
-      setStreamIsReady,
     })
 
     // Engine is ready to start sending events!
     // Gotcha: The other listenerse above need to be initialized otherwise this will halt forever.
     await onEngineConnectionOpened()
+    this.markStreamReady(connection)
   }
 
   /**
@@ -582,7 +635,7 @@ export class ConnectionManager extends EventTarget {
 
   // Set the engine's theme
   async setTheme(theme: Themes) {
-    if (!this.isReady) {
+    if (!this.isTransportReady) {
       EngineDebugger.addLog({
         label: 'connectionManager',
         message: 'setTheme, websocket is not ready',
@@ -1186,9 +1239,6 @@ export class ConnectionManager extends EventTarget {
       token,
       width: 256,
       height: 256,
-      setStreamIsReady: () => {
-        console.warn('This is a NO OP. Should not be called in web.')
-      },
     })
   }
 
@@ -1211,7 +1261,8 @@ export class ConnectionManager extends EventTarget {
   }
 
   async handleResize({ width, height }: { width: number; height: number }) {
-    if (!this.connection) {
+    const connection = this.connection
+    if (!connection) {
       console.warn('unable to resize, connection is not found')
       return
     }
@@ -1222,7 +1273,8 @@ export class ConnectionManager extends EventTarget {
     }
 
     // Make sure the connection is ready otherwise you are sending the events too early.
-    await this.connection.deferredConnection?.promise
+    await connection.deferredConnection?.promise
+    if (this.connection !== connection) return
 
     this.streamDimensions = {
       width,
@@ -1238,7 +1290,7 @@ export class ConnectionManager extends EventTarget {
         fps: 60, // This is required but it does next to nothing
       },
     }
-    this.connection.send(resizeCmd)
+    connection.send(resizeCmd)
   }
 
   recordShutdownTrigger(options: ManagerTearDown) {
@@ -1315,6 +1367,8 @@ export class ConnectionManager extends EventTarget {
     if (options.connectionError) {
       this.lastConnectionError = options.connectionError
     }
+
+    this.streamReadinessState.value = { type: 'unavailable' }
 
     // It was torn down from a websocket close.
     if (

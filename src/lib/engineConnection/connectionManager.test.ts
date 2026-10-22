@@ -1,3 +1,6 @@
+import fc from 'fast-check'
+import * as managerEvents from '@src/lib/engineConnection/connectionManagerEvents'
+import { Themes } from '@src/lib/theme'
 const reportClientError = vi.hoisted(() => vi.fn())
 
 vi.mock('@src/lib/clientErrors', async (importOriginal) => {
@@ -78,11 +81,125 @@ function startConnectionManager(
     width,
     height,
     token: 'token',
-    setStreamIsReady: vi.fn(),
   })
 }
 
 describe('ConnectionManager', () => {
+  it('keeps transport usable while initialization is pending', async () => {
+    const manager = createConnectionManager()
+    vi.spyOn(manager, 'settings', 'get').mockReturnValue({
+      theme: Themes.Dark,
+      highlightEdges: true,
+      enableSSAO: false,
+      showScaleGrid: true,
+      cameraProjection: 'perspective',
+      cameraOrbit: 'spherical',
+      backfaceColor: '#ffffff',
+    })
+    vi.spyOn(Connection.prototype, 'connect').mockImplementation(
+      async function (this: Connection) {
+        this.websocket = new ReconnectTestWebSocket() as unknown as WebSocket
+        this.peerConnection = new EventTarget() as RTCPeerConnection
+      }
+    )
+    let finishInitialization!: () => void
+    const pending = new Promise<void>((resolve) => {
+      finishInitialization = resolve
+    })
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockResolvedValue(null)
+    vi.spyOn(managerEvents, 'createOnEngineConnectionOpened').mockReturnValue(
+      async () => {
+        expect(manager.isTransportReady).toBe(true)
+        expect(manager.isStreamReady.value).toBe(false)
+        expect(manager.isStreamAcceptingInput.value).toBe(false)
+        await manager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: 'initialization',
+          cmd: { type: 'default_camera_get_settings' },
+        })
+        await pending
+      }
+    )
+    const starting = startConnectionManager(manager, {
+      width: 256,
+      height: 256,
+    })
+    await vi.waitFor(() => expect(send).toHaveBeenCalledOnce())
+    finishInitialization()
+    await starting
+    expect(manager.isStreamReady.value).toBe(true)
+    expect(manager.isStreamAcceptingInput.value).toBe(false)
+  })
+
+  it('does not send an in-flight resize to a replacement connection', async () => {
+    const manager = createConnectionManager()
+    let finish!: () => void
+    const pending = new Promise<void>((resolve) => {
+      finish = resolve
+    })
+    const oldSend = vi.fn()
+    const newSend = vi.fn()
+    manager.connection = {
+      deferredConnection: { promise: pending },
+      send: oldSend,
+    } as unknown as Connection
+    const resizing = manager.handleResize({ width: 512, height: 256 })
+    manager.connection = { send: newSend } as unknown as Connection
+    finish()
+    await resizing
+    expect(oldSend).not.toHaveBeenCalled()
+    expect(newSend).not.toHaveBeenCalled()
+    expect(manager.streamDimensions).toEqual({ width: 256, height: 256 })
+  })
+
+  it('ignores stale readiness transitions across arbitrary connection lifecycles', () => {
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.record({
+            action: fc.constantFrom('connect', 'scene', 'input', 'disconnect'),
+            target: fc.nat(),
+          }),
+          { maxLength: 100 }
+        ),
+        (operations) => {
+          const manager = createConnectionManager()
+          const connections: Connection[] = []
+          let current = -1
+          let sceneReady = false
+          let inputReady = false
+          const disconnect = () =>
+            manager.tearDown({ route: 'window-offline', initiatedBy: 'client' })
+          for (const { action, target } of operations) {
+            if (action === 'connect') {
+              disconnect()
+              addConnectedState(manager)
+              connections.push(manager.connection!)
+              current = connections.length - 1
+              sceneReady = inputReady = false
+            } else if (action === 'disconnect') {
+              disconnect()
+              current = -1
+              sceneReady = inputReady = false
+            } else if (connections.length) {
+              const index = target % connections.length
+              if (action === 'scene') {
+                manager.markStreamReady(connections[index])
+                if (index === current) sceneReady = true
+              } else {
+                manager.markStreamAcceptingInput(connections[index])
+                if (index === current && sceneReady) inputReady = true
+              }
+            }
+            expect(manager.isStreamReady.value).toBe(sceneReady)
+            expect(manager.isStreamAcceptingInput.value).toBe(inputReady)
+            if (current >= 0) expect(manager.isTransportReady).toBe(true)
+          }
+        }
+      )
+    )
+  })
+
   afterEach(() => {
     vi.useRealTimers()
     vi.restoreAllMocks()

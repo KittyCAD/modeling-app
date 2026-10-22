@@ -130,7 +130,11 @@ function flush(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0))
 }
 
-function fakes({ isReady = true }: { isReady?: boolean } = {}) {
+function fakes({
+  isTransportReady = true,
+}: {
+  isTransportReady?: boolean
+} = {}) {
   const setObjectsHidden = vi.fn().mockResolvedValue(null)
   const setCameraToAxis = vi.fn().mockResolvedValue(undefined)
   const sendSceneCommand = vi.fn().mockResolvedValue(null)
@@ -151,7 +155,11 @@ function fakes({ isReady = true }: { isReady?: boolean } = {}) {
     },
     modelingStateSignal,
     engineSceneGenerationSignal,
-    engineCommandManager: { setObjectsHidden, sendSceneCommand, isReady },
+    engineCommandManager: {
+      setObjectsHidden,
+      sendSceneCommand,
+      isTransportReady,
+    },
     sceneInfra: {
       camControls: {
         setCameraToAxis,
@@ -262,7 +270,7 @@ describe('activateNamedView', () => {
   })
 
   it('sends nothing while a command would not reach the engine', async () => {
-    const f = fakes({ isReady: false })
+    const f = fakes({ isTransportReady: false })
 
     await activateNamedView({
       target: { kind: 'declared', view: declaredView('Front') },
