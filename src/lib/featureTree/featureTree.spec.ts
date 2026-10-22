@@ -1,6 +1,6 @@
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
-import { defaultNodePath } from '@src/lang/wasm'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { defaultNodePath } from '@src/lang/wasm'
 import {
   type FeatureTreeVisibilityState,
   resolveFeatureTreeVisibility,

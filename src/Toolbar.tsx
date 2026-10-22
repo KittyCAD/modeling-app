@@ -51,13 +51,13 @@ import { isArray, type Platform } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getSymmetricToolSelectionStep } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useSelector } from '@xstate/react'
 import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
@@ -98,7 +98,8 @@ const Toolbar_ = memo(
     const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
     const platform = usePlatform()
-    const executionService = app.registry.signal(executingEditorService).value
+    const executionService =
+      app.registry.signal(projectSession).value?.executingEditor.value
     const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -812,9 +813,8 @@ const Toolbar_ = memo(
               <p className="text-xs">{symmetricToolPrompt}</p>
             </div>
           )}
-          {props.state.context.store.useSketchSolveMode?.current === true &&
-            modelingMachineStateToToolbarModeName(props.state) ===
-              'sketching' && <LegacySketchModeBanner />}
+          {modelingMachineStateToToolbarModeName(props.state) ===
+            'sketching' && <LegacySketchModeBanner />}
         </div>
       </menu>
     )
