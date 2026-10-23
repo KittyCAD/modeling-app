@@ -1,4 +1,8 @@
-import type { Feature } from '@kittycad/lib'
+import { resolveSceneBrowserLayout } from '@src/lib/featureTree/migrateLayout'
+import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
+import type { UserFeature } from '@src/machines/userFeaturesMachine'
+import { parseLayoutInner } from '@src/lib/layout/parse'
+import { SCENE_BROWSER_FEATURE } from '@src/lib/sceneBrowser/featureFlag'
 import {
   Registry,
   defineRegistryItem,
@@ -106,14 +110,17 @@ function createRuntimeService(runtimeInfo = playwrightRuntime) {
 }
 
 function createUserFeaturesService(
-  featureIds: readonly Feature[] = []
+  featureIds: readonly UserFeature[] = []
 ): UserFeaturesRegistryService & {
-  setFeatureIds: (featureIds: readonly Feature[]) => void
+  setReady: (value: boolean) => void
+  setFeatureIds: (featureIds: readonly UserFeature[]) => void
 } {
   const context = signal({ featureIds: new Set(featureIds) })
   const snapshot = {
     context: context.value,
-    matches: () => true,
+    matches: (state: UserFeaturesState) =>
+      state ===
+      (ready.value ? UserFeaturesState.Ready : UserFeaturesState.Loading),
   }
   const state = signal(snapshot)
   const ready = signal(true)
@@ -130,14 +137,20 @@ function createUserFeaturesService(
     context,
     contextSignal: context,
     ready,
-    has: (_featureFlagId: Feature, defaultValue: boolean) => defaultValue,
+    has: (feature: UserFeature, defaultValue: boolean) =>
+      context.value.featureIds.has(feature) || defaultValue,
     useContext: () => context.value,
-    useHas: (_featureFlagId: Feature, defaultValue: boolean) => defaultValue,
-    setFeatureIds: (nextFeatureIds: readonly Feature[]) => {
+    useHas: (feature: UserFeature, defaultValue: boolean) =>
+      context.value.featureIds.has(feature) || defaultValue,
+    setReady: (value: boolean) => {
+      ready.value = value
+    },
+    setFeatureIds: (nextFeatureIds: readonly UserFeature[]) => {
       context.value = { featureIds: new Set(nextFeatureIds) }
     },
   } as unknown as UserFeaturesRegistryService & {
-    setFeatureIds: (featureIds: readonly Feature[]) => void
+    setReady: (value: boolean) => void
+    setFeatureIds: (featureIds: readonly UserFeature[]) => void
   }
 }
 
@@ -273,5 +286,58 @@ describe('layout extension', () => {
 
     testUserFeaturesService.setFeatureIds([])
     expect(hasFeatureControlledPane(layout.get())).toBe(false)
+  })
+  it('migrates only when the Scene browser flag is granted and restores the prior layout when revoked', () => {
+    const settings = createSettings()
+    const original = structuredClone(defaultLayoutConfig)
+    settings.layout.configs.user = {
+      default: createLayoutWithMetadata(original),
+    }
+    const features = createUserFeaturesService()
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        providesServices: [
+          provideService(runtimeService, createRuntimeService(webRuntime)),
+          provideService(settingsService, createSettingsService({ settings })),
+          provideService(userFeaturesService, features),
+        ],
+      }),
+      layoutRegistryItem,
+    ])
+    const layout = registry.get(layoutService)
+    expect(layout.get()).toEqual(original)
+    features.setFeatureIds([SCENE_BROWSER_FEATURE])
+    expect(layout.get()).toMatchObject({ sceneBrowserFallback: original })
+    features.setFeatureIds([])
+    expect(layout.get()).toEqual(parseLayoutInner(original))
+  })
+  it('waits for user features before deciding whether a saved migrated layout must be restored', () => {
+    const settings = createSettings()
+    const migrated = {
+      ...resolveSceneBrowserLayout(defaultLayoutConfig, true),
+      label: 'Saved Scene browser layout',
+    }
+    settings.layout.configs.user = {
+      default: createLayoutWithMetadata(migrated),
+    }
+    const features = createUserFeaturesService()
+    features.setReady(false)
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        providesServices: [
+          provideService(runtimeService, createRuntimeService(webRuntime)),
+          provideService(settingsService, createSettingsService({ settings })),
+          provideService(userFeaturesService, features),
+        ],
+      }),
+      layoutRegistryItem,
+    ])
+    const layout = registry.get(layoutService)
+    expect(layout.get().label).toBe('Saved Scene browser layout')
+    features.setFeatureIds([SCENE_BROWSER_FEATURE])
+    features.setReady(true)
+    expect(layout.get().label).toBe('Saved Scene browser layout')
   })
 })
