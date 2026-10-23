@@ -436,7 +436,7 @@ export default function ModelingDialog({
               className="m-0 shrink-0 rounded-sm border border-chalkboard-30 px-2 py-1 aria-pressed:border-primary aria-pressed:text-primary dark:border-chalkboard-70"
               onClick={codePreview.toggle}
             >
-              Code changes
+              Show code changes
             </button>
           )}
           <span

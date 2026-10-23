@@ -313,7 +313,7 @@ body002 = clone(body001)
     await expect(submit).toBeEnabled()
     const codeBeforePreview = await editor.getCurrentCode()
     const codeChanges = dialog.getByRole('button', {
-      name: 'Code changes',
+      name: 'Show code changes',
       exact: true,
     })
     const preview = page.getByRole('region', {
