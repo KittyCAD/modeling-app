@@ -252,6 +252,8 @@ export const ZOOKEEPER_HEARTBEAT_INTERVAL_MS = 4_000
 export const ZOOKEEPER_HEARTBEAT_TIMEOUT_MS = 30_000
 export const ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE = 4409
 const ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS = 5_000
+// Matches text-to-cad's --ws-max-size.
+const ZOOKEEPER_MAX_MESSAGE_BYTES = 128 * 1024 * 1024
 
 const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
@@ -1640,7 +1642,13 @@ export const zookeeperManagerMachine = setup({
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
-      context.ws.send(msgpackEncode(request, { ignoreUndefined: true }))
+      const encodedRequest = msgpackEncode(request, { ignoreUndefined: true })
+      if (encodedRequest.byteLength > ZOOKEEPER_MAX_MESSAGE_BYTES) {
+        return Promise.reject(
+          new Error(ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON)
+        )
+      }
+      context.ws.send(encodedRequest)
 
       const exchange: Exchange = {
         request,
@@ -1712,10 +1720,16 @@ export const zookeeperManagerMachine = setup({
         command: 'continue',
       }
 
+      const encodedRequest = msgpackEncode(requestProjectContext, {
+        ignoreUndefined: true,
+      })
+      if (encodedRequest.byteLength > ZOOKEEPER_MAX_MESSAGE_BYTES) {
+        return Promise.reject(
+          new Error(ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON)
+        )
+      }
       context.ws.send(JSON.stringify(requestContinue))
-      context.ws.send(
-        msgpackEncode(requestProjectContext, { ignoreUndefined: true })
-      )
+      context.ws.send(encodedRequest)
 
       return {
         awaitingResponse: true,

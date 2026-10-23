@@ -5,7 +5,7 @@ import type {
   MlCopilotServerMessage,
 } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
-import { decode as msgpackDecode } from '@msgpack/msgpack'
+import * as msgpack from '@msgpack/msgpack'
 import {
   initializeClientErrorReporting,
   resetReportedClientErrorsForTests,
@@ -32,6 +32,7 @@ import {
   ZookeeperManagerTransitions,
   ZookeeperSetupErrors,
   zookeeperManagerMachine,
+  zookeeperDefaultContext,
   stopZookeeperManagerActor,
   ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
@@ -39,7 +40,7 @@ import * as zookeeperPromptRequest from '@src/lib/zookeeper/zookeeperPromptReque
 import { S } from '@src/machines/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createActor, fromPromise, waitFor } from 'xstate'
+import { createActor, fromPromise, toPromise, waitFor } from 'xstate'
 
 // Prompt construction is stubbed in the race test, so these dependencies are
 // only forwarded by the manager. Avoid loading the editor or Wasm for them.
@@ -1396,6 +1397,84 @@ describe('zookeeperManagerMachine', () => {
     })
   })
 
+  it.each([
+    ZookeeperManagerTransitions.MessageSend,
+    ZookeeperManagerStates.ContinueCheck,
+  ] as const)(
+    'rejects oversized encoded %s requests before sending anything',
+    async (type) => {
+      const encode = vi
+        .spyOn(msgpack, 'encode')
+        .mockReturnValueOnce(new Uint8Array(128 * 1024 * 1024 + 1))
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const send = vi.fn()
+      ws.send = send
+      const { kclManager, engineCommandManager, instance } =
+        await buildTheWorldAndNoEngineConnection(true)
+      const event: ZookeeperManagerEvents =
+        type === ZookeeperManagerStates.ContinueCheck
+          ? { type, projectName: 'demo', projectFiles: [] }
+          : {
+              type,
+              prompt: 'Inspect the project',
+              projectForPromptOutput: {
+                name: 'demo',
+                path: '/demo',
+                children: [],
+                default_file: '/demo/main.kcl',
+                directory_count: 0,
+                kcl_file_count: 1,
+                metadata: null,
+                readWriteAccess: true,
+              },
+              applicationProjectDirectory: '/',
+              fileSelectedDuringPrompting: {
+                entry: {
+                  name: 'main.kcl',
+                  path: '/demo/main.kcl',
+                  children: null,
+                },
+                content: '',
+              },
+              projectFiles: [],
+              selections: null,
+              artifactGraph: new Map(),
+              kclManager,
+              engineCommandManager,
+              wasmInstance: instance,
+            }
+      const logic = zookeeperManagerMachine.implementations.actors[type]
+      if (!logic || !('transition' in logic)) {
+        throw new Error('Missing request actor')
+      }
+      const actor = createActor(logic, {
+        input: {
+          context: {
+            ...zookeeperDefaultContext({}),
+            ws,
+            conversation: {
+              exchanges: [
+                {
+                  responses: [
+                    { reasoning: { type: 'text', content: 'Working' } },
+                  ],
+                  deltasAggregated: '',
+                },
+              ],
+            },
+          },
+          event,
+        },
+      })
+      const result = toPromise(actor)
+      actor.start()
+
+      await expect(result).rejects.toThrow('Your project files are too large')
+      expect(encode).toHaveBeenCalledOnce()
+      expect(send).not.toHaveBeenCalled()
+    }
+  )
+
   describe('ContinueCheck', () => {
     it('sends continue requests when the last exchange was interrupted', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
@@ -1483,7 +1562,7 @@ describe('zookeeperManagerMachine', () => {
         type: 'system',
         command: 'continue',
       })
-      expect(msgpackDecode(send.mock.calls[1][0])).toStrictEqual({
+      expect(msgpack.decode(send.mock.calls[1][0])).toStrictEqual({
         type: 'project_context',
         correlation_id: expect.stringMatching(
           /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
