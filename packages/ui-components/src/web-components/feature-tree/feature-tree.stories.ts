@@ -185,7 +185,7 @@ class FeatureTreeDemo extends LitElement {
     .hud header { border: 0; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; }
   `
 
-  private rows(nodes: Feature[], nested = false): TemplateResult {
+  private rows(nodes: Feature[]): TemplateResult {
     return html`${repeat(
       nodes,
       (node) => node.id,
@@ -194,7 +194,7 @@ class FeatureTreeDemo extends LitElement {
           ? { ...feature, ...hebrewFeatures[feature.id] }
           : feature
         return html`
-      <zoo-feature-tree-row slot=${nested ? 'children' : nothing}
+      <zoo-feature-tree-row
         .nodeId=${node.id} .label=${node.label} .detail=${node.detail ?? ''} .disabled=${!!node.disabled}>
         ${this.hud ? nothing : html`<span slot="icon">${node.children ? '▱' : '◇'}</span>`}
         ${
@@ -216,7 +216,6 @@ class FeatureTreeDemo extends LitElement {
           aria-label=${`${this.rtl ? 'פעולות עבור' : 'Actions for'} ${node.label}`} @click=${() => {
             this.message = `Action menu requested: ${node.label}`
           }}>…</button>
-        ${node.children ? this.rows(node.children, true) : nothing}
       </zoo-feature-tree-row>
     `
       }
@@ -224,6 +223,19 @@ class FeatureTreeDemo extends LitElement {
   }
 
   render() {
+    const nodes: (Feature & { parentId?: string })[] = []
+    const pending = features
+      .map((node) => ({ ...node, parentId: undefined as string | undefined }))
+      .reverse()
+    while (pending.length) {
+      const node = pending.pop()!
+      nodes.push(this.rtl ? { ...node, ...hebrewFeatures[node.id] } : node)
+      pending.push(
+        ...(node.children ?? [])
+          .map((child) => ({ ...child, parentId: node.id }))
+          .reverse()
+      )
+    }
     return html`
       ${
         this.rtl
@@ -238,6 +250,7 @@ class FeatureTreeDemo extends LitElement {
       <div class=${`frame ${this.dark || this.hud ? 'dark' : ''} ${this.narrow ? 'narrow' : ''} ${this.hud ? 'hud' : ''}`}>
         <header>${this.rtl ? 'תכונות' : 'Features'}</header>
         <zoo-feature-tree aria-label=${this.rtl ? 'תכונות המודל' : 'Model features'} .selectedIds=${this.selected}
+          .nodes=${nodes}
           .appearance=${this.hud ? 'hud' : 'default'}
           .expandedIds=${this.expanded} .multiselect=${this.multiselect}
           @zoo-selection-change=${(
@@ -256,7 +269,7 @@ class FeatureTreeDemo extends LitElement {
             event: CustomEvent<FeatureTreeContextMenuDetail>
           ) => {
             this.message = `Context menu requested: ${event.detail.nodeId}`
-          }}>${this.rows(features)}</zoo-feature-tree>
+          }}>${this.rows(nodes)}</zoo-feature-tree>
       </div>
       </section>
       <output aria-live="polite">${this.rtl && this.message === 'Ready' ? 'מוכן' : this.message}</output>

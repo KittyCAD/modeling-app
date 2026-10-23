@@ -10,18 +10,28 @@ const root = options.has('shadow')
   : mount
 root.innerHTML = `
   <zoo-feature-tree appearance="hud" aria-label="Features">
-    <zoo-feature-tree-row node-id="body" label="Housing">
-      <zoo-feature-tree-row slot="children" node-id="sketch" label="Sketch001">
-        <button slot="actions" id="visibility">Visibility</button>
-        <button slot="actions" id="edit">Edit</button>
-        <zoo-feature-tree-row slot="children" node-id="line" label="Construction line"></zoo-feature-tree-row>
-      </zoo-feature-tree-row>
-      <zoo-feature-tree-row slot="children" node-id="extrude" label="Extrude001 with a very long feature label"></zoo-feature-tree-row>
+    <zoo-feature-tree-row node-id="body"></zoo-feature-tree-row>
+    <zoo-feature-tree-row node-id="sketch">
+      <button slot="actions" id="visibility">Visibility</button>
+      <button slot="actions" id="edit">Edit</button>
     </zoo-feature-tree-row>
-    <zoo-feature-tree-row node-id="fillet" label="Fillet001"></zoo-feature-tree-row>
+    <zoo-feature-tree-row node-id="line"></zoo-feature-tree-row>
+    <zoo-feature-tree-row node-id="extrude"></zoo-feature-tree-row>
+    <zoo-feature-tree-row node-id="fillet"></zoo-feature-tree-row>
   </zoo-feature-tree>
 `
 const tree = root.querySelector('zoo-feature-tree')!
+tree.nodes = [
+  { id: 'body', label: 'Housing' },
+  { id: 'sketch', parentId: 'body', label: 'Sketch001' },
+  { id: 'line', parentId: 'sketch', label: 'Construction line' },
+  {
+    id: 'extrude',
+    parentId: 'body',
+    label: 'Extrude001 with a very long feature label',
+  },
+  { id: 'fillet', label: 'Fillet001' },
+]
 tree.expandedIds = ['body', 'sketch']
 tree.selectedIds = ['sketch']
 tree.addEventListener('zoo-expand', (event) => {

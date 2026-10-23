@@ -21,7 +21,7 @@ export interface FeatureTreeContextMenuDetail
  * Controlled presentation for one feature. This is a row building block, not a
  * complete ARIA tree: its container owns navigation and tree semantics.
  *
- * Slots: disclosure-icon, icon, label, detail, status, actions, children.
+ * Slots: disclosure-icon, icon, label, detail, status, actions.
  * Give icon-only actions accessible names. Slotted actions own their disabled
  * state and dispatch their own events.
  */
@@ -35,8 +35,8 @@ export class ZooFeatureTreeRow extends LitElement {
     expanded: { attribute: false },
     treeItem: { type: Boolean, attribute: false },
     appearance: { type: String, reflect: true },
-    nested: { type: Boolean, reflect: true },
-    lastSibling: { type: Boolean, attribute: 'last-sibling', reflect: true },
+    depth: { type: Number },
+    guides: { attribute: false },
   }
 
   declare nodeId: string
@@ -49,9 +49,10 @@ export class ZooFeatureTreeRow extends LitElement {
   /** Set by zoo-feature-tree, not by consumers. */
   declare treeItem: boolean
   declare appearance: FeatureTreeAppearance
-  /** Hierarchy metadata supplied by the tree for connector geometry. */
-  declare nested: boolean
-  declare lastSibling: boolean
+  /** Zero-based indentation supplied by the tree's visible-row model. */
+  declare depth: number
+  /** Each ancestor column continues below this row when its value is true. */
+  declare guides: readonly boolean[]
   private actionTabIndices = new Map<HTMLElement, string | null>()
 
   focus(options?: FocusOptions) {
@@ -69,8 +70,8 @@ export class ZooFeatureTreeRow extends LitElement {
     this.expanded = undefined
     this.treeItem = false
     this.appearance = 'default'
-    this.nested = false
-    this.lastSibling = false
+    this.depth = 0
+    this.guides = []
   }
 
   static styles = css`
@@ -81,7 +82,12 @@ export class ZooFeatureTreeRow extends LitElement {
       font: var(--zoo-tree-font, 400 0.875rem/1.4 system-ui, sans-serif);
     }
 
+    :host([hidden]) { display: none; }
+
     [part='row'] {
+      --_tree-indent: var(--zoo-tree-indent, 1rem);
+      position: relative;
+      box-sizing: border-box;
       display: flex;
       align-items: center;
       gap: var(--zoo-tree-gap, 0.375rem);
@@ -159,13 +165,18 @@ export class ZooFeatureTreeRow extends LitElement {
     [part='status'], [part='actions'] { display: flex; align-items: center; flex-shrink: 0; }
     slot[name='icon']::slotted(*) { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
     [part='actions'] { gap: var(--zoo-tree-gap, 0.375rem); }
-    [part='children'] { margin-inline-start: var(--zoo-tree-indent, 1rem); min-width: 0; }
+    .indent {
+      flex: 0 0 calc(var(--_tree-depth) * var(--_tree-indent));
+      margin-inline-end: calc(-1 * var(--zoo-tree-gap, 0.375rem));
+      align-self: stretch;
+      pointer-events: none;
+    }
     :host([aria-disabled='true']) [part='content'] { opacity: 0.5; }
     :host([role='treeitem']) [part='content'] { cursor: pointer; }
 
-    .connector, .continuation { display: none; pointer-events: none; }
+    [part='guide'] { display: none; pointer-events: none; }
     :host([appearance='hud']) [part='row'] {
-      position: relative;
+      --_tree-indent: var(--zoo-tree-indent, 0.75rem);
       border-radius: 0;
       padding-inline: 0.25rem;
       min-height: var(--zoo-tree-row-height, 1.75rem);
@@ -194,49 +205,33 @@ export class ZooFeatureTreeRow extends LitElement {
       border: var(--zoo-tree-guide-width, 1px) solid currentColor;
     }
     .junction.closed { background: currentColor; }
-    :host([appearance='hud']) [part='children'] {
-      margin-inline-start: 0.625rem;
-    }
     :host([appearance='hud']) [part='row'].open::after {
       content: ''; position: absolute;
-      inset-inline-start: calc(0.625rem - var(--zoo-tree-guide-width, 1px) / 2);
+      inset-inline-start: calc(0.625rem + var(--_tree-depth) * var(--_tree-indent) - var(--zoo-tree-guide-width, 1px) / 2);
       inset-block-start: calc(50% + var(--zoo-tree-junction-size, 0.375rem) / 2);
       inset-block-end: 0; pointer-events: none;
       border-inline-start: var(--zoo-tree-guide-width, 1px) solid var(--zoo-tree-guide-color, #8a9aaa);
     }
-    :host([appearance='hud'][nested]) {
-      display: grid;
-      grid-template-columns: var(--zoo-tree-indent, 0.75rem) minmax(0, 1fr);
-      grid-template-rows: auto auto;
+    :host([appearance='hud']) [part='guide'] {
+      display: block; position: absolute; inset-block: 0;
+      inset-inline-start: calc(0.625rem + var(--_tree-column) * var(--_tree-indent));
+      width: var(--_tree-indent);
+      color: var(--zoo-tree-guide-color, #8a9aaa);
     }
-    :host([appearance='hud'][nested]) [part='row'] { grid-column: 2; grid-row: 1; }
-    :host([appearance='hud'][nested]) [part='children'] { grid-column: 2; grid-row: 2; }
-    :host([appearance='hud'][nested]) .connector {
-      display: block; grid-column: 1; grid-row: 1; position: relative;
-    }
-    :host([appearance='hud'][nested]) .connector::before {
+    [part='guide'].continues::before, [part='guide'].elbow::before {
       content: ''; position: absolute;
-      inset-inline-start: calc(var(--zoo-tree-guide-width, 1px) / -2); inset-block: 0;
-      border-inline-start: var(--zoo-tree-guide-width, 1px) solid var(--zoo-tree-guide-color, #8a9aaa);
+      inset-inline-start: calc(var(--zoo-tree-guide-width, 1px) / -2);
+      inset-block: 0;
+      border-inline-start: var(--zoo-tree-guide-width, 1px) solid currentColor;
     }
-    :host([appearance='hud'][nested][last-sibling]) .connector::before { inset-block-end: 50%; }
-    :host([appearance='hud'][nested]) .connector::after {
+    [part='guide'].elbow:not(.continues)::before { inset-block-end: 50%; }
+    [part='guide'].elbow::after {
       content: ''; position: absolute; inset-inline: 0;
       inset-block-start: calc(50% - var(--zoo-tree-guide-width, 1px) / 2);
-      border-block-start: var(--zoo-tree-guide-width, 1px) solid var(--zoo-tree-guide-color, #8a9aaa);
+      border-block-start: var(--zoo-tree-guide-width, 1px) solid currentColor;
     }
-    :host([appearance='hud'][nested]) [part='row']::before {
-      content: ''; position: absolute; inset-inline-start: 0; width: 0.625rem;
-      inset-block-start: calc(50% - var(--zoo-tree-guide-width, 1px) / 2); pointer-events: none;
-      border-block-start: var(--zoo-tree-guide-width, 1px) solid var(--zoo-tree-guide-color, #8a9aaa);
-    }
-    :host([appearance='hud'][nested]) [part='row'].branch::before {
-      width: calc(0.625rem - var(--zoo-tree-junction-size, 0.375rem) / 2);
-    }
-    :host([appearance='hud'][nested]:not([last-sibling])) .continuation {
-      display: block; grid-column: 1; grid-row: 2;
-      margin-inline-start: calc(var(--zoo-tree-guide-width, 1px) / -2);
-      border-inline-start: var(--zoo-tree-guide-width, 1px) solid var(--zoo-tree-guide-color, #8a9aaa);
+    .branch [part='guide'].elbow::after {
+      inset-inline-end: calc(var(--zoo-tree-junction-size, 0.375rem) / 2);
     }
   `
 
@@ -327,8 +322,15 @@ export class ZooFeatureTreeRow extends LitElement {
 
   render() {
     return html`
-      <span class="connector" aria-hidden="true"></span>
-      <div part="row" class=${`${this.expanded !== undefined ? 'branch' : ''} ${this.expanded ? 'open' : ''}`}>
+      <div part="row" style=${`--_tree-depth: ${this.depth}`} class=${`${this.expanded !== undefined ? 'branch' : ''} ${this.expanded ? 'open' : ''}`}>
+        <span class="indent" aria-hidden="true"></span>
+        ${this.guides.map(
+          (continues, index) => html`
+          <span part="guide" aria-hidden="true"
+            style=${`--_tree-column: ${index}`}
+            class=${`${continues ? 'continues' : ''} ${index === this.depth - 1 ? 'elbow' : ''}`}></span>
+        `
+        )}
         ${
           this.expanded === undefined
             ? html`<span class="disclosure-space" aria-hidden="true"></span>`
@@ -355,9 +357,6 @@ export class ZooFeatureTreeRow extends LitElement {
         <span part="status"><slot name="status"></slot></span>
         <span part="actions"><slot name="actions" @slotchange=${this.syncActions}></slot></span>
       </div>
-      <span class="continuation" aria-hidden="true"></span>
-      <div part="children" role=${this.treeItem ? 'group' : nothing}
-        ?hidden=${!this.expanded}><slot name="children"></slot></div>
     `
   }
 }

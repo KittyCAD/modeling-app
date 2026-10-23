@@ -54,13 +54,25 @@ test('collapse and removal recover focus without stealing focus from outside', a
   await page.keyboard.press('ArrowDown')
   await expect(row(page, 'line')).toBeFocused()
   await page.locator('zoo-feature-tree').evaluate((element) => {
-    ;(element as HTMLElement & { expandedIds: string[] }).expandedIds = ['body']
+    ;(element as ZooFeatureTree).expandedIds = ['body']
   })
   await expect(row(page, 'sketch')).toBeFocused()
-  await row(page, 'sketch').evaluate((element) => element.remove())
+  await page.locator('zoo-feature-tree').evaluate((element) => {
+    const tree = element as ZooFeatureTree
+    const removed = new Set(['sketch', 'line'])
+    tree.nodes = tree.nodes.filter((node) => !removed.has(node.id))
+    for (const child of [...tree.children])
+      if (removed.has(child.getAttribute('node-id') ?? '')) child.remove()
+  })
   await expect(row(page, 'body')).toBeFocused()
   await page.locator('#after').focus()
-  await row(page, 'body').evaluate((element) => element.remove())
+  await page.locator('zoo-feature-tree').evaluate((element) => {
+    const tree = element as ZooFeatureTree
+    const removed = new Set(['body', 'extrude'])
+    tree.nodes = tree.nodes.filter((node) => !removed.has(node.id))
+    for (const child of [...tree.children])
+      if (removed.has(child.getAttribute('node-id') ?? '')) child.remove()
+  })
   await expect(page.locator('#after')).toBeFocused()
   await page.keyboard.press('Shift+Tab')
   await expect(row(page, 'fillet')).toBeFocused()
@@ -109,9 +121,12 @@ test('disabled rows remain reachable but cannot request selection', async ({
   page,
 }) => {
   await page.goto('/browser-tests/feature-tree.fixture.html')
-  await row(page, 'line').evaluate((element) =>
-    element.setAttribute('disabled', '')
-  )
+  await page.locator('zoo-feature-tree').evaluate((element) => {
+    const tree = element as ZooFeatureTree
+    tree.nodes = tree.nodes.map((node) =>
+      node.id === 'line' ? { ...node, disabled: true } : node
+    )
+  })
   await page.evaluate(() => {
     const requests: unknown[] = []
     Object.assign(window, { requests })
@@ -145,9 +160,13 @@ test('reordering a focused subtree preserves focus and its single Tab stop', asy
   await page.keyboard.press('Tab')
   await page.keyboard.press('ArrowDown')
   await expect(row(page, 'line')).toBeFocused()
-  await row(page, 'sketch').evaluate((element) =>
-    element.parentElement!.append(element)
-  )
+  await page.locator('zoo-feature-tree').evaluate((element) => {
+    const tree = element as ZooFeatureTree
+    const order = ['body', 'extrude', 'sketch', 'line', 'fillet']
+    tree.nodes = order.map((id) => tree.nodes.find((node) => node.id === id)!)
+    for (const id of order)
+      tree.append(tree.querySelector(`zoo-feature-tree-row[node-id="${id}"]`)!)
+  })
   await expect(row(page, 'line')).toBeFocused()
   await page.keyboard.press('ArrowUp')
   await expect(row(page, 'sketch')).toBeFocused()
@@ -155,9 +174,13 @@ test('reordering a focused subtree preserves focus and its single Tab stop', asy
   await expect(row(page, 'extrude')).toBeFocused()
   await page.keyboard.press('Tab')
   await expect(page.locator('#after')).toBeFocused()
-  await row(page, 'sketch').evaluate((element) =>
-    element.parentElement!.prepend(element)
-  )
+  await page.locator('zoo-feature-tree').evaluate((element) => {
+    const tree = element as ZooFeatureTree
+    const order = ['body', 'sketch', 'line', 'extrude', 'fillet']
+    tree.nodes = order.map((id) => tree.nodes.find((node) => node.id === id)!)
+    for (const id of order)
+      tree.append(tree.querySelector(`zoo-feature-tree-row[node-id="${id}"]`)!)
+  })
   await expect(page.locator('#after')).toBeFocused()
   await page.keyboard.press('Shift+Tab')
   await expect(row(page, 'extrude')).toBeFocused()

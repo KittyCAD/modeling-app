@@ -83,6 +83,46 @@ describe('feature tree row', () => {
     expect(action.disabled).toBe(false)
   })
 
+  it('renders model-supplied indentation and ancestor guide continuations without child groups', async () => {
+    const row = await mount()
+    row.appearance = 'hud'
+    row.depth = 3
+    row.guides = [true, false, false]
+    row.expanded = true
+    await row.updateComplete
+    const guides = [
+      ...row.shadowRoot!.querySelectorAll<HTMLElement>('[part="guide"]'),
+    ]
+    expect(guides).toHaveLength(3)
+    expect(
+      guides.map((guide) => guide.classList.contains('continues'))
+    ).toEqual([true, false, false])
+    expect(guides.map((guide) => guide.classList.contains('elbow'))).toEqual([
+      false,
+      false,
+      true,
+    ])
+    expect(
+      guides.map((guide) => guide.style.getPropertyValue('--_tree-column'))
+    ).toEqual(['0', '1', '2'])
+    expect(
+      row
+        .shadowRoot!.querySelector<HTMLElement>('[part="row"]')!
+        .style.getPropertyValue('--_tree-depth')
+    ).toBe('3')
+    expect(
+      row.shadowRoot!.querySelector('[role="group"], slot[name="children"]')
+    ).toBeNull()
+
+    row.depth = 1
+    row.guides = [true]
+    await row.updateComplete
+    const remaining = row.shadowRoot!.querySelectorAll('[part="guide"]')
+    expect(remaining).toHaveLength(1)
+    expect(remaining[0].classList.contains('continues')).toBe(true)
+    expect(remaining[0].classList.contains('elbow')).toBe(true)
+  })
+
   it('accepts a decorative disclosure icon without replacing the accessible control or HUD junction', async () => {
     const row = await mount()
     row.expanded = false

@@ -22,16 +22,22 @@ async function settle(tree: ZooFeatureTree) {
 async function mount() {
   const tree = document.createElement('zoo-feature-tree')
   tree.innerHTML = `
-    <zoo-feature-tree-row node-id="part" label="Part">
-      <zoo-feature-tree-row slot="children" node-id="sketch" label="Sketch">
-        <zoo-feature-tree-row slot="children" node-id="profile" label="Profile"></zoo-feature-tree-row>
-      </zoo-feature-tree-row>
-      <zoo-feature-tree-row slot="children" node-id="extrude" label="Extrude">
-        <button slot="actions">Hide</button><button slot="actions">Menu</button>
-      </zoo-feature-tree-row>
+    <zoo-feature-tree-row node-id="part"></zoo-feature-tree-row>
+    <zoo-feature-tree-row node-id="sketch"></zoo-feature-tree-row>
+    <zoo-feature-tree-row node-id="profile"></zoo-feature-tree-row>
+    <zoo-feature-tree-row node-id="extrude">
+      <button slot="actions">Hide</button><button slot="actions">Menu</button>
     </zoo-feature-tree-row>
     <zoo-feature-tree-row node-id="fillet" label="Fillet" disabled></zoo-feature-tree-row>
     <zoo-feature-tree-row node-id="extrude2" label="Extrude002"></zoo-feature-tree-row>`
+  tree.nodes = [
+    { id: 'part', label: 'Part' },
+    { id: 'sketch', parentId: 'part', label: 'Sketch' },
+    { id: 'profile', parentId: 'sketch', label: 'Profile' },
+    { id: 'extrude', parentId: 'part', label: 'Extrude' },
+    { id: 'fillet', label: 'Fillet', disabled: true },
+    { id: 'extrude2', label: 'Extrude002' },
+  ]
   tree.expandedIds = ['part', 'sketch']
   tree.selectedIds = ['extrude']
   document.body.append(tree)
@@ -93,11 +99,11 @@ describe('feature tree', () => {
     tree.appearance = 'hud'
     await settle(tree)
     expect(row('part').appearance).toBe('hud')
-    expect(row('part').nested).toBe(false)
-    expect(row('sketch').nested).toBe(true)
-    expect(row('sketch').lastSibling).toBe(false)
-    expect(row('extrude').lastSibling).toBe(true)
-    expect(row('profile').lastSibling).toBe(true)
+    expect(row('part').depth).toBe(0)
+    expect(row('sketch').depth).toBe(1)
+    expect(row('sketch').guides).toEqual([true])
+    expect(row('extrude').guides).toEqual([false])
+    expect(row('profile').guides).toEqual([true, false])
     expect(row('part').shadowRoot!.querySelector('.junction')).not.toBeNull()
     const expand = vi.fn()
     tree.addEventListener('zoo-expand', expand)
@@ -109,10 +115,11 @@ describe('feature tree', () => {
       expanded: false,
     })
     const removed = row('extrude')
+    tree.nodes = tree.nodes.filter(({ id }) => id !== 'extrude')
     removed.remove()
     await Promise.resolve()
     await settle(tree)
-    expect(row('sketch').lastSibling).toBe(true)
+    expect(row('sketch').guides).toEqual([false])
     tree.appearance = 'default'
     await settle(tree)
     expect(row('part').shadowRoot!.querySelector('.junction')).toBeNull()
@@ -121,6 +128,11 @@ describe('feature tree', () => {
   it('exposes hierarchy and uses one Tab stop without nested selection buttons', async () => {
     const { tree, row } = await mount()
     expect(tree.getAttribute('role')).toBe('tree')
+    expect(
+      [...tree.querySelectorAll('zoo-feature-tree-row')].every(
+        (item) => item.parentElement === tree
+      )
+    ).toBe(true)
     expect(row('profile').getAttribute('aria-level')).toBe('3')
     expect(row('extrude').getAttribute('aria-posinset')).toBe('2')
     expect(row('part').getAttribute('aria-expanded')).toBe('true')
@@ -133,9 +145,38 @@ describe('feature tree', () => {
       row('extrude').shadowRoot!.querySelector('button[part="content"]')
     ).toBeNull()
     expect(row('extrude').querySelector('button')!.tabIndex).toBe(-1)
-    row('extrude').label = 'Renamed extrusion'
-    await row('extrude').updateComplete
+    tree.nodes = tree.nodes.map((node) =>
+      node.id === 'extrude' ? { ...node, label: 'Renamed extrusion' } : node
+    )
+    await settle(tree)
     expect(row('extrude').getAttribute('aria-label')).toBe('Renamed extrusion')
+  })
+
+  it('uses model order and metadata independently of mounted row order and attributes', async () => {
+    const { tree, row } = await mount()
+    tree.prepend(row('extrude2'))
+    tree.nodes = tree.nodes.map((node) =>
+      node.id === 'extrude'
+        ? { ...node, label: 'Zebra extrusion', disabled: true }
+        : node
+    )
+    await settle(tree)
+    expect(row('extrude').label).toBe('Zebra extrusion')
+    expect(row('extrude').getAttribute('aria-disabled')).toBe('true')
+    expect(row('extrude').getAttribute('aria-posinset')).toBe('2')
+    row('part').focus()
+    key(row('part'), 'End')
+    expect(document.activeElement).toBe(row('extrude2'))
+    key(row('extrude2'), 'Home')
+    expect(document.activeElement).toBe(row('part'))
+    const select = vi.fn()
+    tree.addEventListener('zoo-selection-change', select)
+    key(row('extrude'), 'Enter')
+    expect(select).not.toHaveBeenCalled()
+    tree.nodes = tree.nodes.map((node) => ({ ...node, disabled: false }))
+    await settle(tree)
+    key(row('part'), 'z')
+    expect(document.activeElement).toBe(row('extrude'))
   })
 
   it('moves focus independently of selection, and emits controlled selection requests', async () => {
@@ -176,7 +217,8 @@ describe('feature tree', () => {
     tree.expandedIds = ['part']
     await settle(tree)
     expect(document.activeElement).toBe(row('sketch'))
-    expect(row('profile').tabIndex).toBe(-1)
+    expect(row('profile').hidden).toBe(true)
+    expect(row('profile').hasAttribute('tabindex')).toBe(false)
     key(row('sketch'), 'ArrowLeft')
     expect(document.activeElement).toBe(row('part'))
   })
@@ -244,6 +286,7 @@ describe('feature tree', () => {
     expect(context.mock.calls[0][0].detail.nodeId).toBe('extrude')
     const removed = row('extrude')
     removed.focus()
+    tree.nodes = tree.nodes.filter(({ id }) => id !== 'extrude')
     removed.remove()
     await Promise.resolve()
     await removed.updateComplete

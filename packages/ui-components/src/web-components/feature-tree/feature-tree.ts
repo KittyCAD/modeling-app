@@ -1,5 +1,11 @@
 import { LitElement, css, html } from 'lit'
 import {
+  buildFeatureTreeModel,
+  type FeatureTreeNode,
+  type FeatureTreeEntry,
+} from './feature-tree-model'
+export type { FeatureTreeNode, FeatureTreeEntry } from './feature-tree-model'
+import {
   registerFeatureTreeRow,
   ZooFeatureTreeRow,
 } from '../feature-tree-row/feature-tree-row'
@@ -39,20 +45,14 @@ const defaultShortcuts: Record<
   requestContextMenu: [{ key: 'ContextMenu' }, { key: 'F10', shift: true }],
 }
 
-/** Parsed DOM hierarchy. Only direct rows and rows in a parent's children slot participate. */
-interface TreeEntry {
-  row: ZooFeatureTreeRow
-  parent: TreeEntry | undefined
-  children: TreeEntry[]
-}
-
 /**
- * A controlled, composable tree. Rows are supplied as DOM so any framework can
- * populate their slots. This element owns focus, never the app's selected or
- * expanded state. Node IDs must be non-empty and unique within this tree.
+ * Controlled tree navigation over explicit node data. Mounted rows are flat,
+ * slotted siblings keyed by node-id; their content can come from any framework.
+ * Supply the complete model, even when only some visible rows are mounted.
  */
 export class ZooFeatureTree extends LitElement {
   static properties = {
+    nodes: { attribute: false },
     selectedIds: { attribute: false },
     expandedIds: { attribute: false },
     multiselect: { type: Boolean },
@@ -60,15 +60,17 @@ export class ZooFeatureTree extends LitElement {
     shortcuts: { attribute: false },
   }
 
+  declare nodes: readonly FeatureTreeNode[]
   declare selectedIds: readonly string[]
   declare expandedIds: readonly string[]
   declare multiselect: boolean
   declare appearance: FeatureTreeAppearance
   /** Partial replacements; [] disables one action, false disables all optional shortcuts. */
   declare shortcuts: FeatureTreeShortcuts | false
-  private entries: TreeEntry[] = []
-  private visible: TreeEntry[] = []
-  private active: ZooFeatureTreeRow | undefined
+  private model = buildFeatureTreeModel([], [])
+  private rows = new Map<string, ZooFeatureTreeRow>()
+  private active: string | undefined
+  private pendingFocus: string | undefined
   private focusOwner: HTMLElement | undefined
   private managed = new Set<ZooFeatureTreeRow>()
   private observer = new MutationObserver((records) => this.sync(records))
@@ -77,6 +79,7 @@ export class ZooFeatureTree extends LitElement {
 
   constructor() {
     super()
+    this.nodes = []
     this.selectedIds = []
     this.expandedIds = []
     this.multiselect = false
@@ -107,7 +110,7 @@ export class ZooFeatureTree extends LitElement {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['node-id', 'label', 'disabled', 'slot'],
+      attributeFilter: ['node-id', 'slot'],
     })
     this.requestUpdate()
   }
@@ -127,8 +130,9 @@ export class ZooFeatureTree extends LitElement {
   private release(row: ZooFeatureTreeRow) {
     row.treeItem = false
     row.appearance = 'default'
-    row.nested = false
-    row.lastSibling = false
+    row.depth = 0
+    row.guides = []
+    row.hidden = false
     for (const name of [
       'role',
       'tabindex',
@@ -143,9 +147,15 @@ export class ZooFeatureTree extends LitElement {
       row.removeAttribute(name)
   }
 
+  /** The full visible projection, including rows not currently mounted. */
+  get visibleNodes(): readonly FeatureTreeEntry[] {
+    return this.model.visible
+  }
+
   private sync = (records?: readonly MutationRecord[] | Event) => {
     if (!this.isConnected) return
-    const previousEntries = this.entries
+    const previous = this.model
+    const previousRow = this.active ? this.rows.get(this.active) : undefined
     const root = this.getRootNode() as Document | ShadowRoot
     let deepFocus = this.ownerDocument.activeElement
     while (deepFocus?.shadowRoot?.activeElement)
@@ -170,76 +180,90 @@ export class ZooFeatureTree extends LitElement {
     const focused =
       root.activeElement === this ||
       removedFocusOwner ||
-      (!!this.active &&
+      (!!previousRow &&
         ((!!root.activeElement &&
-          (root.activeElement === this.active ||
-            this.active.contains(root.activeElement))) ||
-          (!this.contains(this.active) && orphanedFocus)))
-    const read = (element: Element, parent?: TreeEntry): TreeEntry[] =>
-      [...element.children]
-        .filter(
-          (child): child is ZooFeatureTreeRow =>
-            child instanceof ZooFeatureTreeRow &&
-            (parent ? child.slot === 'children' : child.slot === '')
-        )
-        .map((row) => {
-          const entry: TreeEntry = { row, parent, children: [] }
-          entry.children = read(row, entry)
-          return entry
-        })
-    const roots = read(this)
-    const all: TreeEntry[] = []
-    const visible: TreeEntry[] = []
-    const visit = (siblings: TreeEntry[], level: number, shown: boolean) => {
-      siblings.forEach((entry, index) => {
-        const { row, children } = entry
-        all.push(entry)
-        row.treeItem = true
-        row.appearance = this.appearance
-        row.nested = level > 1
-        row.lastSibling = index === siblings.length - 1
-        row.selected = this.selectedIds.includes(row.nodeId)
-        row.expanded = children.length
-          ? this.expandedIds.includes(row.nodeId)
-          : undefined
-        row.setAttribute('role', 'treeitem')
-        row.setAttribute('aria-label', row.label)
-        row.setAttribute('aria-selected', String(row.selected))
-        row.setAttribute('aria-disabled', String(row.disabled))
-        row.setAttribute('aria-level', String(level))
-        row.setAttribute('aria-posinset', String(index + 1))
-        row.setAttribute('aria-setsize', String(siblings.length))
-        if (row.expanded === undefined) row.removeAttribute('aria-expanded')
-        else row.setAttribute('aria-expanded', String(row.expanded))
-        if (shown) visible.push(entry)
-        visit(children, level + 1, shown && row.expanded === true)
-      })
-    }
-    visit(roots, 1, true)
-    const managed = new Set(all.map(({ row }) => row))
-    for (const row of this.managed) if (!managed.has(row)) this.release(row)
-    this.managed = managed
-    this.entries = all
-    this.visible = visible
-    this.setAttribute('aria-multiselectable', String(this.multiselect))
-    if (visible.length) this.removeAttribute('tabindex')
-    else this.tabIndex = 0
+          (root.activeElement === previousRow ||
+            previousRow.contains(root.activeElement))) ||
+          (!this.contains(previousRow) && orphanedFocus)))
 
-    if (!visible.some(({ row }) => row === this.active)) {
-      // Collapsing/removing a focused subtree returns focus to its nearest visible ancestor.
-      let ancestor = previousEntries.find(
-        ({ row }) => row === this.active
-      )?.parent
-      while (ancestor && !visible.some(({ row }) => row === ancestor?.row))
-        ancestor = ancestor.parent
+    // DOM reconciliation identifies mounted views only; it never determines hierarchy.
+    this.model = buildFeatureTreeModel(this.nodes, this.expandedIds)
+    const visible = new Set(this.model.visible.map((entry) => entry.id))
+    const selected = new Set(this.selectedIds)
+    const rows = new Map<string, ZooFeatureTreeRow>()
+    const managed = new Set<ZooFeatureTreeRow>()
+    for (const child of this.children) {
+      if (!(child instanceof ZooFeatureTreeRow) || child.slot !== '') continue
+      managed.add(child)
+      const entry = this.model.entries.get(child.nodeId)
+      if (!entry) {
+        child.hidden = true
+        continue
+      }
+      rows.set(entry.id, child)
+      child.treeItem = true
+      child.appearance = this.appearance
+      child.depth = entry.depth
+      child.guides = entry.guides
+      child.label = entry.label
+      child.disabled = !!entry.disabled
+      child.hidden = !visible.has(entry.id)
+      child.selected = selected.has(entry.id)
+      child.expanded = entry.childIds.length
+        ? this.expandedIds.includes(entry.id)
+        : undefined
+      child.setAttribute('role', 'treeitem')
+      child.setAttribute('aria-label', entry.label)
+      child.setAttribute('aria-selected', String(child.selected))
+      child.setAttribute('aria-disabled', String(child.disabled))
+      child.setAttribute('aria-level', String(entry.depth + 1))
+      child.setAttribute('aria-posinset', String(entry.posInSet))
+      child.setAttribute('aria-setsize', String(entry.setSize))
+      if (child.expanded === undefined) child.removeAttribute('aria-expanded')
+      else child.setAttribute('aria-expanded', String(child.expanded))
+    }
+    for (const row of this.managed) if (!managed.has(row)) this.release(row)
+    this.rows = rows
+    this.managed = managed
+    this.setAttribute('aria-multiselectable', String(this.multiselect))
+
+    if (!this.active || !visible.has(this.active)) {
+      // Prefer a surviving visible ancestor when a logical branch disappears.
+      let ancestor = this.active
+        ? previous.entries.get(this.active)?.parentId
+        : undefined
+      while (ancestor && !visible.has(ancestor))
+        ancestor = previous.entries.get(ancestor)?.parentId
       this.active =
-        ancestor?.row ??
-        visible.find(({ row }) => row.selected)?.row ??
-        visible[0]?.row
-      if (focused) (this.active ?? this).focus()
-    } else if (removedFocusOwner) this.active?.focus()
+        ancestor ??
+        this.model.visible.find((entry) => selected.has(entry.id))?.id ??
+        this.model.visible[0]?.id
+      this.pendingFocus = undefined
+      if (focused) this.focusActive()
+    } else if (this.pendingFocus && focused && rows.has(this.pendingFocus)) {
+      this.focusActive()
+    } else if (removedFocusOwner && focused) this.focusActive()
     else if (movedFocusOwner) this.focusOwner?.focus()
-    for (const { row } of all) this.setTabStop(row, row === this.active)
+    if (!focused) this.pendingFocus = undefined
+    this.updateTabStops()
+  }
+
+  private updateTabStops() {
+    const mounted = this.active ? this.rows.get(this.active) : undefined
+    if (mounted && !mounted.hidden) this.removeAttribute('tabindex')
+    else this.tabIndex = 0
+    for (const [id, row] of this.rows)
+      this.setTabStop(row, id === this.active && !row.hidden)
+  }
+
+  private focusActive() {
+    const row = this.active ? this.rows.get(this.active) : undefined
+    if (row && !row.hidden) {
+      this.pendingFocus = undefined
+      this.setTabStop(row, true)
+      row.focus()
+      row.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
+    } else this.focus()
   }
 
   private eventRow(event: Event) {
@@ -258,33 +282,42 @@ export class ZooFeatureTree extends LitElement {
     else row.removeAttribute('tabindex')
   }
 
-  private moveFocus(row: ZooFeatureTreeRow) {
-    this.active = row
-    for (const entry of this.entries)
-      this.setTabStop(entry.row, entry.row === row)
-    row.focus()
-    row.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
+  private moveFocus(nodeId: string) {
+    this.active = nodeId
+    this.updateTabStops()
+    this.focusActive()
+    if (!this.rows.has(nodeId)) {
+      this.pendingFocus = nodeId
+      // A windowed renderer can mount the requested row, then sync restores focus.
+      this.dispatchEvent(
+        new CustomEvent<FeatureTreeRowEventDetail>('zoo-focus-request', {
+          detail: { nodeId },
+          bubbles: true,
+          composed: true,
+        })
+      )
+    }
   }
 
   private onFocusIn = (event: FocusEvent) => {
     const row = this.eventRow(event)
-    if (row) this.focusOwner = event.composedPath()[0] as HTMLElement
-    if (!row || row === this.active) return
-    this.active = row
-    for (const entry of this.entries)
-      this.setTabStop(entry.row, entry.row === row)
+    if (!row) return
+    this.focusOwner = event.composedPath()[0] as HTMLElement
+    if (row.nodeId === this.active) return
+    this.active = row.nodeId
+    this.updateTabStops()
   }
 
-  private requestSelection(row: ZooFeatureTreeRow) {
+  private requestSelection(row: FeatureTreeNode) {
     if (row.disabled) return
     const selectedIds = this.multiselect
-      ? this.selectedIds.includes(row.nodeId)
-        ? this.selectedIds.filter((id) => id !== row.nodeId)
-        : [...this.selectedIds, row.nodeId]
-      : [row.nodeId]
+      ? this.selectedIds.includes(row.id)
+        ? this.selectedIds.filter((id) => id !== row.id)
+        : [...this.selectedIds, row.id]
+      : [row.id]
     this.dispatchEvent(
       new CustomEvent<FeatureTreeSelectionDetail>('zoo-selection-change', {
-        detail: { nodeId: row.nodeId, selectedIds },
+        detail: { nodeId: row.id, selectedIds },
         bubbles: true,
         composed: true,
       })
@@ -294,22 +327,23 @@ export class ZooFeatureTree extends LitElement {
   private onSelect = (event: CustomEvent<FeatureTreeRowEventDetail>) => {
     const row = this.eventRow(event)
     if (row) {
-      this.moveFocus(row)
-      this.requestSelection(row)
+      this.moveFocus(row.nodeId)
+      const entry = this.model.entries.get(row.nodeId)
+      if (entry) this.requestSelection(entry)
     }
   }
 
   private onExpand = (event: CustomEvent<FeatureTreeRowExpandDetail>) => {
     // Expansion remains controlled. The row event passes through to the consumer.
     const row = this.eventRow(event)
-    if (row) this.moveFocus(row)
+    if (row) this.moveFocus(row.nodeId)
   }
 
-  private requestExpansion(row: ZooFeatureTreeRow, expanded: boolean) {
-    if (row.disabled || row.expanded === undefined) return
+  private requestExpansion(row: FeatureTreeEntry, expanded: boolean) {
+    if (row.disabled || !row.childIds.length) return
     this.dispatchEvent(
       new CustomEvent<FeatureTreeRowExpandDetail>('zoo-expand', {
-        detail: { nodeId: row.nodeId, expanded },
+        detail: { nodeId: row.id, expanded },
         bubbles: true,
         composed: true,
       })
@@ -317,7 +351,7 @@ export class ZooFeatureTree extends LitElement {
   }
 
   get focusedNodeId(): string | undefined {
-    return this.active?.nodeId
+    return this.active
   }
 
   private availableActions(row: ZooFeatureTreeRow) {
@@ -342,8 +376,9 @@ export class ZooFeatureTree extends LitElement {
 
   /** Enter/cycle enabled actions on the focused row. Safe for registry commands. */
   focusActions(): boolean {
-    if (!this.active || !this.managed.has(this.active)) return false
-    const actions = this.availableActions(this.active)
+    const row = this.active ? this.rows.get(this.active) : undefined
+    if (!row) return false
+    const actions = this.availableActions(row)
     if (!actions.length) return false
     const root = this.getRootNode() as Document | ShadowRoot
     const index = actions.findIndex(
@@ -355,14 +390,14 @@ export class ZooFeatureTree extends LitElement {
   }
 
   focusRow(): boolean {
-    if (!this.active || !this.managed.has(this.active)) return false
+    if (!this.active || !this.model.entries.has(this.active)) return false
     this.moveFocus(this.active)
     return true
   }
 
   requestContextMenu(): boolean {
-    const row = this.active
-    if (!row || !this.managed.has(row) || row.disabled) return false
+    const row = this.active ? this.rows.get(this.active) : undefined
+    if (!row || row.disabled) return false
     const rect = row.getBoundingClientRect()
     row.dispatchEvent(
       new CustomEvent('zoo-context-menu', {
@@ -395,7 +430,9 @@ export class ZooFeatureTree extends LitElement {
   private onKeyDown = (event: KeyboardEvent) => {
     if (event.defaultPrevented || event.isComposing) return
     const row = this.eventRow(event)
-    if (!row) return
+    const nodeId =
+      row?.nodeId ?? (event.target === this ? this.active : undefined)
+    if (!nodeId) return
     const fromAction = event
       .composedPath()
       .some(
@@ -434,11 +471,12 @@ export class ZooFeatureTree extends LitElement {
       return
     }
     if (fromAction) return
-    const index = this.visible.findIndex((entry) => entry.row === row)
-    const entry = this.visible[index]
+    const visible = this.model.visible
+    const index = visible.findIndex((entry) => entry.id === nodeId)
+    const entry = visible[index]
     if (!entry) return
     if (event.altKey || event.ctrlKey || event.metaKey) return
-    let next: ZooFeatureTreeRow | undefined
+    let next: string | undefined
     const rtl = getComputedStyle(this).direction === 'rtl'
     const key =
       rtl && event.key === 'ArrowLeft'
@@ -448,28 +486,30 @@ export class ZooFeatureTree extends LitElement {
           : event.key
     switch (key) {
       case 'ArrowDown':
-        next = this.visible[Math.min(index + 1, this.visible.length - 1)]?.row
+        next = visible[Math.min(index + 1, visible.length - 1)]?.id
         break
       case 'ArrowUp':
-        next = this.visible[Math.max(index - 1, 0)]?.row
+        next = visible[Math.max(index - 1, 0)]?.id
         break
       case 'Home':
-        next = this.visible[0]?.row
+        next = visible[0]?.id
         break
       case 'End':
-        next = this.visible.at(-1)?.row
+        next = visible.at(-1)?.id
         break
       case 'ArrowRight':
-        if (row.expanded === false) this.requestExpansion(row, true)
-        else if (row.expanded) next = entry.children[0]?.row
+        if (entry.childIds.length && !this.expandedIds.includes(entry.id))
+          this.requestExpansion(entry, true)
+        else next = entry.childIds[0]
         break
       case 'ArrowLeft':
-        if (row.expanded) this.requestExpansion(row, false)
-        else next = entry.parent?.row
+        if (entry.childIds.length && this.expandedIds.includes(entry.id))
+          this.requestExpansion(entry, false)
+        else next = entry.parentId
         break
       case 'Enter':
       case ' ':
-        this.requestSelection(row)
+        this.requestSelection(entry)
         break
       default: {
         if (event.key.length !== 1 || event.key.trim() === '') return
@@ -483,12 +523,11 @@ export class ZooFeatureTree extends LitElement {
         // Further characters refine the current match; repeated letters cycle matches.
         const start = repeated ? index + 1 : index
         next = Array.from(
-          { length: this.visible.length },
-          (_, offset) =>
-            this.visible[(start + offset) % this.visible.length].row
+          { length: visible.length },
+          (_, offset) => visible[(start + offset) % visible.length]
         ).find((candidate) =>
           candidate.label.toLocaleLowerCase().startsWith(prefix)
-        )
+        )?.id
       }
     }
     event.preventDefault()

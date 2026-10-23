@@ -23,6 +23,7 @@ async function fixture() {
     <button slot="actions" disabled>Disabled</button>
     <button slot="actions">Hide</button><button slot="actions">Menu</button>
   </zoo-feature-tree-row>`
+  tree.nodes = [{ id: 'a', label: 'A' }]
   document.body.append(tree)
   await settle(tree)
   const row = tree.firstElementChild as ZooFeatureTreeRow
@@ -127,11 +128,13 @@ describe('feature tree host integration', () => {
   it('handles empty/populated transitions and reconnects without losing action ownership', async () => {
     const { tree, row, actions } = await fixture()
     row.focus()
+    tree.nodes = []
     row.remove()
     await settle(tree)
     expect(document.activeElement).toBe(tree)
     expect(tree.tabIndex).toBe(0)
     expect(tree.focusActions()).toBe(false)
+    tree.nodes = [{ id: 'a', label: 'A' }]
     tree.append(row)
     await settle(tree)
     expect(document.activeElement).toBe(row)
@@ -159,6 +162,72 @@ describe('feature tree host integration', () => {
     row.remove()
     await settle(tree)
     expect(document.activeElement).toBe(outside)
+  })
+
+  it('keeps unmounted rows in the logical model and requests their view during navigation', async () => {
+    const { tree, row } = await fixture()
+    tree.nodes = [
+      { id: 'a', label: 'A' },
+      { id: 'branch', label: 'Branch' },
+      { id: 'child', parentId: 'branch', label: 'Child' },
+    ]
+    tree.expandedIds = ['branch']
+    await settle(tree)
+    expect(tree.visibleNodes.map(({ id }) => id)).toEqual([
+      'a',
+      'branch',
+      'child',
+    ])
+    const request = vi.fn()
+    tree.addEventListener('zoo-focus-request', request)
+    row.focus()
+    key(row, 'ArrowDown')
+    expect(tree.focusedNodeId).toBe('branch')
+    expect(document.activeElement).toBe(tree)
+    expect(request).toHaveBeenCalledOnce()
+    expect(request.mock.calls[0][0].detail).toEqual({ nodeId: 'branch' })
+    expect(request.mock.calls[0][0].bubbles).toBe(true)
+    expect(request.mock.calls[0][0].composed).toBe(true)
+
+    const branch = document.createElement('zoo-feature-tree-row')
+    branch.nodeId = 'branch'
+    tree.append(branch)
+    await settle(tree)
+    expect(document.activeElement).toBe(branch)
+    expect(tree.focusedNodeId).toBe('branch')
+    expect(branch.getAttribute('aria-expanded')).toBe('true')
+    expect(branch.tabIndex).toBe(0)
+    expect(row.hasAttribute('tabindex')).toBe(false)
+
+    branch.remove()
+    await settle(tree)
+    expect(tree.focusedNodeId).toBe('branch')
+    expect(tree.visibleNodes.map(({ id }) => id)).toEqual([
+      'a',
+      'branch',
+      'child',
+    ])
+    key(tree, 'ArrowRight')
+    expect(tree.focusedNodeId).toBe('child')
+    expect(request.mock.lastCall![0].detail).toEqual({ nodeId: 'child' })
+  })
+
+  it('does not reclaim pending row focus after the user leaves the tree', async () => {
+    const { tree, row } = await fixture()
+    tree.nodes = [...tree.nodes, { id: 'b', label: 'B' }]
+    await settle(tree)
+    row.focus()
+    key(row, 'ArrowDown')
+    expect(tree.focusedNodeId).toBe('b')
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    outside.focus()
+    const pending = document.createElement('zoo-feature-tree-row')
+    pending.nodeId = 'b'
+    tree.append(pending)
+    await settle(tree)
+    expect(document.activeElement).toBe(outside)
+    expect(tree.focusedNodeId).toBe('b')
   })
 
   it('dispatches one composed event across an enclosing shadow root', async () => {

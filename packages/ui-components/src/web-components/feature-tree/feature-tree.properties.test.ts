@@ -5,7 +5,7 @@ import type { ZooFeatureTreeRow } from '../feature-tree-row/feature-tree-row'
 
 registerFeatureTree()
 
-/** Flat records keep the oracle independent from the component's recursive DOM traversal. */
+/** Ancestor paths keep the oracle independent from the component's model traversal. */
 interface Node {
   id: string
   parent: string | null
@@ -105,29 +105,42 @@ describe('feature tree generated histories', () => {
             nodes.filter((candidate) => candidate.parent === node.parent)
           const children = (node: Node) =>
             nodes.filter((candidate) => candidate.parent === node.id)
+          const preorder = () =>
+            nodes.slice().sort((left, right) => {
+              const leftPath = [...ancestors(left), left]
+              const rightPath = [...ancestors(right), right]
+              for (
+                let index = 0;
+                index < Math.min(leftPath.length, rightPath.length);
+                index++
+              ) {
+                if (leftPath[index].id !== rightPath[index].id)
+                  return (
+                    nodes.indexOf(leftPath[index]) -
+                    nodes.indexOf(rightPath[index])
+                  )
+              }
+              return leftPath.length - rightPath.length
+            })
           const visible = () =>
-            nodes
-              .filter((node) =>
-                ancestors(node).every((ancestor) =>
-                  expanded.includes(ancestor.id)
-                )
+            preorder().filter((node) =>
+              ancestors(node).every((ancestor) =>
+                expanded.includes(ancestor.id)
               )
-              .sort((left, right) => {
-                const leftPath = [...ancestors(left), left]
-                const rightPath = [...ancestors(right), right]
-                for (
-                  let index = 0;
-                  index < Math.min(leftPath.length, rightPath.length);
-                  index++
-                ) {
-                  if (leftPath[index].id !== rightPath[index].id)
-                    return (
-                      nodes.indexOf(leftPath[index]) -
-                      nodes.indexOf(rightPath[index])
-                    )
-                }
-                return leftPath.length - rightPath.length
-              })
+            )
+          const render = () => {
+            tree.nodes = nodes.map((node) => ({
+              id: node.id,
+              parentId: node.parent ?? undefined,
+              label: `Feature ${node.id}`,
+              disabled: node.disabled,
+            }))
+            for (const [index, node] of preorder().entries()) {
+              const row = rows.get(node.id)!
+              const current = tree.children[index]
+              if (current !== row) tree.insertBefore(row, current ?? null)
+            }
+          }
           const insert = (parent: string | null, disabled: boolean) => {
             const node: Node = {
               id: `node-${nextId++}`,
@@ -138,10 +151,7 @@ describe('feature tree generated histories', () => {
             const row = document.createElement('zoo-feature-tree-row')
             row.nodeId = node.id
             row.label = `Feature ${node.id}`
-            row.disabled = node.disabled
-            if (parent !== null) row.slot = 'children'
             rows.set(node.id, row)
-            ;(parent === null ? tree : rows.get(parent)!).append(row)
             return node
           }
           const recover = (previousAncestors: string[]) => {
@@ -156,6 +166,9 @@ describe('feature tree generated histories', () => {
           }
           const check = () => {
             const shown = visible()
+            expect(
+              [...tree.children].map((row) => (row as ZooFeatureTreeRow).nodeId)
+            ).toEqual(preorder().map((node) => node.id))
             const tabStops = [...tree.querySelectorAll('zoo-feature-tree-row')]
               .filter((row) => row.tabIndex === 0)
               .map((row) => row.nodeId)
@@ -163,6 +176,14 @@ describe('feature tree generated histories', () => {
             expect(tree.tabIndex).toBe(shown.length ? -1 : 0)
             for (const node of nodes) {
               const row = rows.get(node.id)!
+              expect(row.parentElement).toBe(tree)
+              expect(row.label).toBe(`Feature ${node.id}`)
+              expect(row.hidden).toBe(!shown.includes(node))
+              expect(row.guides).toEqual(
+                [...ancestors(node), node]
+                  .slice(1)
+                  .map((ancestor) => siblings(ancestor).at(-1) !== ancestor)
+              )
               expect(row.getAttribute('aria-level')).toBe(
                 String(ancestors(node).length + 1)
               )
@@ -209,6 +230,7 @@ describe('feature tree generated histories', () => {
             }
             tree.expandedIds = expanded
             tree.selectedIds = selected
+            render()
             document.body.append(tree)
             await settle(tree)
             active = visible()[0]?.id
@@ -246,7 +268,10 @@ describe('feature tree generated histories', () => {
                 const removed = nodes.filter(
                   (node) => node === target || ancestors(node).includes(target)
                 )
-                rows.get(target.id)!.remove()
+                for (const node of removed) {
+                  rows.get(node.id)!.remove()
+                  rows.delete(node.id)
+                }
                 nodes = nodes.filter((node) => !removed.includes(node))
               } else if (step.kind === 'reorder' && target && canReorder) {
                 const first = siblings(target)[0]
@@ -254,8 +279,6 @@ describe('feature tree generated histories', () => {
                   nodes = nodes.filter((node) => node !== target)
                   nodes.splice(nodes.indexOf(first), 0, target)
                 }
-                const row = rows.get(target.id)!
-                row.parentElement!.prepend(row)
               } else if (step.kind === 'expand' && target) {
                 expanded = expanded.includes(target.id)
                   ? expanded.filter((id) => id !== target.id)
@@ -264,7 +287,6 @@ describe('feature tree generated histories', () => {
               } else if (step.kind === 'disable' && target) {
                 target.disabled = allowDisabled && !target.disabled
                 hasDisabledFocusQuirk ||= target.disabled
-                rows.get(target.id)!.disabled = target.disabled
               } else if (step.kind === 'select-state') {
                 selected = target ? [target.id] : []
                 tree.selectedIds = selected
@@ -316,6 +338,10 @@ describe('feature tree generated histories', () => {
                 key(rows.get(active)!, step.kind)
                 active = next.id
               }
+              if (
+                ['insert', 'remove', 'reorder', 'disable'].includes(step.kind)
+              )
+                render()
               recover(oldAncestors)
               await settle(tree)
               expect(selections).toEqual(expectedSelection)

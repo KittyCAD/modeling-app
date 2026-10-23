@@ -114,7 +114,7 @@ inherited CSS custom properties:
 | `--zoo-tree-guide-color` | `#8a9aaa` (HUD connectors) |
 
 For targeted customization, exposed CSS parts are `row`, `disclosure`, `content`,
-`label`, `detail`, `status`, and `actions`. Tokens cover shared visual decisions;
+`label`, `detail`, `status`, `actions`, `guide`, and `junction`. Tokens cover shared visual decisions;
 parts provide an escape hatch for specific surfaces.
 
 ### Native Lit stories
@@ -135,20 +135,42 @@ registerFeatureTree() // Also registers rows.
 
 ```html
 <zoo-feature-tree aria-label="Model features">
-  <zoo-feature-tree-row node-id="housing" label="Housing">
-    <zoo-feature-tree-row slot="children" node-id="sketch" label="Sketch001">
-      <span slot="detail">XY plane</span>
-      <button slot="actions" aria-label="Hide Sketch001">Hide</button>
-    </zoo-feature-tree-row>
+  <zoo-feature-tree-row node-id="housing"></zoo-feature-tree-row>
+  <zoo-feature-tree-row node-id="sketch">
+    <span slot="detail">XY plane</span>
+    <button slot="actions" aria-label="Hide Sketch001">Hide</button>
   </zoo-feature-tree-row>
 </zoo-feature-tree>
 ```
 
-Supply direct rows at the root and direct `slot="children"` rows for each
-branch. Keep `nodeId` non-empty, unique, and stable across updates. A row with
-children is a branch; a row without children is a leaf. The container derives
-hierarchy from the DOM and supplies row selection/expansion and tree semantics;
-do not assign those states or `treeItem` on managed rows.
+```ts
+const tree = document.querySelector('zoo-feature-tree')!
+tree.nodes = [
+  { id: 'housing', label: 'Housing' },
+  { id: 'sketch', parentId: 'housing', label: 'Sketch001' },
+]
+tree.expandedIds = ['housing']
+```
+
+Supply the complete logical tree through `nodes`, independently of mounted row
+hosts. IDs must be non-empty, unique, and stable; every `parentId` must reference
+another node, and parent links must not form cycles. Invalid models throw a
+`TypeError`. Sibling order follows the input array; a parent can appear after its
+children. The model derives preorder, branch status, visibility, accessibility
+positions, and HUD guides.
+
+Mount row hosts as direct siblings in model preorder, keyed by `node-id`. Slots
+still provide arbitrary labels, details, icons, status, and native actions.
+The container supplies managed row labels, disabled state, selection, expansion,
+and layout metadata from the model. Keep these fields in node data rather than
+assigning them on managed row elements. Collapsed descendants are hidden.
+
+`visibleNodes` exposes the full visible projection, including unmounted rows.
+Navigation and typeahead use this model, not the mounted DOM. Navigating to an
+unmounted row emits `zoo-focus-request` (`{ nodeId }`); focus rests on the tree
+until the consumer mounts that row, then transfers to it if focus is still in
+the tree. Leaving the tree cancels the pending transfer. This supplies a seam
+for a future windowed renderer; the component does not implement virtualization.
 
 Set `selectedIds` and `expandedIds` to immutable arrays of IDs. Listen for
 `zoo-selection-change` (`{ nodeId, selectedIds }`) and `zoo-expand`
@@ -180,7 +202,7 @@ width or resizing control: put it inside any resizable wrapper with a definite
 height (or a flex column with `min-height: 0`). Labels/details truncate while
 status and action controls retain their widths. The examples support widths
 down to 220px; extremely deep nesting or oversized action content may require
-horizontal scrolling. There is no virtualization or lazy child loading yet.
+horizontal scrolling. There is no built-in virtualization or lazy child loading yet.
 
 ### HUD presentation
 
