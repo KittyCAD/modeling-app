@@ -183,7 +183,7 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
+import type { ExecutingEditor } from '@src/registry/contracts/projectSession'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -559,7 +559,7 @@ export class KclManager extends File {
   get hasEditsSinceLastExecutionSignal() {
     return this._hasEditsSinceLastExecution
   }
-  get executingEditorService(): ExecutingEditorService {
+  get execution(): ExecutingEditor {
     return {
       code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
@@ -1912,12 +1912,6 @@ export class KclManager extends File {
       return editor
     }
 
-    // The legacy singleton can be reopened after its previous project disposed it.
-    // Actor ownership still ends at close; reopening creates a fresh actor on demand.
-    if (providedEditor.closed) {
-      providedEditor._modelingActorPromise = undefined
-      providedEditor.closed = false
-    }
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     await providedEditor.flushWriteToFile({ suppressConflictToast: true })
     providedEditor.flushRecoverySnapshot()
@@ -1927,6 +1921,15 @@ export class KclManager extends File {
     )
     if (systemDeps.editorHistory)
       providedEditor.useProjectHistory(systemDeps.editorHistory)
+    // The legacy singleton changes files without closing its retained project.
+    // Until each file owns an editor, end modeling interactions at this boundary.
+    const changingFile = providedEditor.path !== file.path
+    if (changingFile && !providedEditor.closed)
+      providedEditor.stopModelingActor()
+    if (changingFile || providedEditor.closed) {
+      providedEditor._modelingActorPromise = undefined
+      providedEditor.closed = false
+    }
     providedEditor.systemDeps.languageService = systemDeps.languageService
     providedEditor.setPathForFileSwitch(file.path)
     providedEditor.id = file.id
@@ -2065,10 +2068,8 @@ export class KclManager extends File {
     this.updateHistoryDepth()
   }
 
-  /** Clean up listeners, watchers, etc */
-  public close() {
-    if (this.closed) return
-    this.closed = true
+  /** End file-specific interactions while leaving the outgoing view readable. */
+  private stopModelingActor() {
     this.modelingGeneration += 1
     this.modelingSubscription?.unsubscribe()
     this.modelingSubscription = undefined
@@ -2076,6 +2077,13 @@ export class KclManager extends File {
     // The outgoing route can still render while its replacement is loading.
     // Keep its stopped actor readable until reopening installs the next one.
     this._modelingState.value = null
+  }
+
+  /** Clean up listeners, watchers, etc */
+  public close() {
+    if (this.closed) return
+    this.closed = true
+    this.stopModelingActor()
     this._editorView.dispatch({
       effects: this.languageServiceCompartment.reconfigure([]),
     })

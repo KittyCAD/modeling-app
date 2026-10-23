@@ -1,5 +1,4 @@
 import { newKclFile } from '@src/lang/project'
-import type { App } from '@src/lib/app'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   FILE_EXT,
@@ -48,6 +47,7 @@ import type {
   RequestedKCLFileDelete,
   RequestedProjectFile,
   SystemIOContext,
+  SystemIOHost,
 } from '@src/machines/systemIO/utils'
 import {
   collectProjectFiles,
@@ -56,7 +56,6 @@ import {
   SystemIOMachineActors,
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { fromPromise } from 'xstate'
 
 export {
@@ -64,15 +63,14 @@ export {
   sortProjectDirectoryEntriesByModifiedDesc,
 } from '@src/lib/projectLibraries/directoryScanner'
 
-const fileOperations = (context: SystemIOContext) =>
-  context.app.registry.get(fileOperationsService)
+const fileOperations = (context: SystemIOContext) => context.host.fileOperations
 
 type RenameFileForSystemIOInput = {
   context: SystemIOContext
   fileNameWithExtension: string
   requestedFileNameWithExtension: string
   absolutePathToParentDirectory: string
-  app: App
+  host: SystemIOHost
 }
 
 export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
@@ -81,7 +79,7 @@ export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
     requestedFileNameWithExtension,
     absolutePathToParentDirectory,
   } = input
-  const operations = input.app.registry.get(fileOperationsService)
+  const operations = input.host.fileOperations
 
   const oldPath = fsZds.join(
     absolutePathToParentDirectory,
@@ -115,7 +113,7 @@ export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
     return Promise.reject(new ExpectedSystemIOError('Filename already exists.'))
   }
 
-  const project = input.app.project
+  const project = input.host.project
   const executingPathSignal = project?.executingPathSignal.value
   const executingEditor =
     executingPathSignal?.value === oldPath
@@ -135,14 +133,14 @@ export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
   }
 
   await operations.rename(oldPath, newPath)
-  if (input.app.project === project)
+  if (input.host.project === project)
     project?.notifyFileRenamed(oldPath, newPath)
 
   if (
-    input.app.project?.executingPathSignal.value &&
-    input.app.project.executingPathSignal.value.value === oldPath
+    input.host.project?.executingPathSignal.value &&
+    input.host.project.executingPathSignal.value.value === oldPath
   ) {
-    input.app.project.executingPathSignal.value.value = newPath
+    input.host.project.executingPathSignal.value.value = newPath
   }
 
   return {
@@ -501,7 +499,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           previousProjects: context.folders,
           signal,
           onProgress: (folders) => {
-            context.app.systemIOActor.send({
+            context.host.systemIOActor.send({
               type: SystemIOMachineEvents.setFolders,
               data: { folders },
             })
@@ -715,7 +713,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         )
       }
 
-      const wasmInstance = await input.app.wasmPromise
+      const wasmInstance = await input.host.wasmPromise
 
       const baseDir = fsZds.join(
         input.context.projectDirectoryPath,
@@ -913,7 +911,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             input.onFileSystemSuccess?.()
 
             potentialError = new Error('prepareNavigation')
-            const project = input.context.app.project
+            const project = input.context.host.project
             const projectIsCurrent =
               input.requestedProjectPath === undefined ||
               input.requestedProjectPath === project?.path
@@ -1033,16 +1031,16 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
       await fileOperations(input.context).rename(oldPath, newPath)
 
-      // TODO: remove duplicate state, make `app.project` the source of truth,
+      // TODO: remove duplicate state, make `host.project` the source of truth,
       // migrate systemIOMachine into a system that operates on that.
       //
       // Replace the signal value for the currently-opened executing editor if its
       // parent directory was renamed
       if (
-        input.app.project?.executingPathSignal.value?.value.includes(oldPath)
+        input.host.project?.executingPathSignal.value?.value.includes(oldPath)
       ) {
-        const v = input.app.project.executingPathSignal.value.value
-        input.app.project.executingPathSignal.value.value = v.replace(
+        const v = input.host.project.executingPathSignal.value.value
+        input.host.project.executingPathSignal.value.value = v.replace(
           oldPath,
           newPath
         )
@@ -1069,9 +1067,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectName?: string | undefined
         }
       }) => {
-        const project = input.context.app.project
+        const project = input.context.host.project
         await fileOperations(input.context).remove(input.requestedPath)
-        if (input.context.app.project === project)
+        if (input.context.host.project === project)
           project?.notifyFileDeleted(input.requestedPath)
         const response = {
           message: 'File deleted successfully',
@@ -1090,7 +1088,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedAbsolutePath: string
         }
       }) => {
-        const project = input.context.app.project
+        const project = input.context.host.project
         const fileNameWithExtension = getStringAfterLastSeparator(
           input.requestedAbsolutePath
         )
@@ -1130,7 +1128,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           }
           return Promise.reject(error)
         }
-        if (input.context.app.project === project)
+        if (input.context.host.project === project)
           project?.notifyFileCreated(input.requestedAbsolutePath)
         return {
           message: `File ${fileNameWithExtension} written successfully`,

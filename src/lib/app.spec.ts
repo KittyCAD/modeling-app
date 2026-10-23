@@ -30,7 +30,6 @@ import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { billingService } from '@src/registry/contracts/billing'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
@@ -519,8 +518,14 @@ describe('project system', () => {
         }),
       ],
     })
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('')
-    vi.spyOn(File.ioImplementations, 'write').mockResolvedValue(undefined)
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'read'
+    ).mockResolvedValue('')
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'write'
+    ).mockResolvedValue(undefined)
     try {
       expect(createSession).not.toHaveBeenCalled()
       const project = await app.openProject(mockProject)
@@ -563,6 +568,71 @@ describe('project system', () => {
       expect(closed.at(-1)).toBe('file:///some-dir/test/main.kcl')
       project.notifyFileCreated('/some-dir/test/late.kcl')
       expect(onFileCreate).toHaveBeenCalledTimes(1)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('follows the executing project editor and releases it on close', async () => {
+    const app = createAppForTest()
+    try {
+      await waitForSettingsIdle(app)
+      const execution = app.registry.get(projectSession).executingEditor
+      expect(execution.value).toBeUndefined()
+      const project = await app.openProject(mockProject)
+      expect(execution.value).toBeUndefined()
+      const first = await project.openEditor(
+        '/some-dir/test/main.kcl',
+        undefined,
+        ''
+      )
+      const second = await project.openEditor(
+        '/some-dir/test/other.kcl',
+        undefined,
+        '',
+        false
+      )
+      const firstExecute = vi
+        .spyOn(first, 'executeCode')
+        .mockResolvedValue(undefined)
+      const secondExecute = vi
+        .spyOn(second, 'executeCode')
+        .mockResolvedValue(undefined)
+      const firstUpdate = vi.spyOn(first, 'updateCodeEditor')
+      const secondUpdate = vi.spyOn(second, 'updateCodeEditor')
+      const firstHandle = execution.value!
+      expect(firstHandle.code).toBe(first.codeSignal)
+      await firstHandle.executeCode()
+      expect(firstExecute).toHaveBeenCalledTimes(1)
+
+      project.executingPath = second.path
+      const secondHandle = execution.value!
+      expect(secondHandle.code).toBe(second.codeSignal)
+      await firstHandle.executeCode()
+      firstHandle.updateCode('stale')
+      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(firstUpdate).not.toHaveBeenCalled()
+      secondHandle.updateCode('current')
+      await secondHandle.executeCode()
+      expect(secondUpdate).toHaveBeenCalledWith('current', undefined)
+      expect(secondExecute).toHaveBeenCalledTimes(1)
+
+      project.closeEditor(second.path)
+      expect(execution.value).toBeUndefined()
+      await secondHandle.executeCode()
+      secondHandle.updateCode('closed')
+      expect(secondExecute).toHaveBeenCalledTimes(1)
+      expect(secondUpdate).toHaveBeenCalledTimes(1)
+      project.executingPath = first.path
+      expect(execution.value?.code).toBe(first.codeSignal)
+      project.closeAllEditors()
+      expect(execution.value).toBeUndefined()
+      await app.openProject({
+        ...mockProject,
+        name: 'other',
+        path: '/some-dir/other',
+      })
+      expect(execution.value).toBeUndefined()
     } finally {
       app.dispose()
     }
@@ -730,6 +800,9 @@ describe('project system', () => {
     const read = vi
       .spyOn(app.registry.get(projectSession).textFileIO, 'read')
       .mockResolvedValue('')
+    const write = vi
+      .spyOn(app.registry.get(projectSession).textFileIO, 'write')
+      .mockResolvedValue(undefined)
     const editor = app.singletons.kclManager
     try {
       const first = await app.openProject(mockProject)
@@ -761,6 +834,7 @@ describe('project system', () => {
       )
     } finally {
       read.mockRestore()
+      write.mockRestore()
       app.dispose()
     }
   })
@@ -1148,10 +1222,8 @@ describe('project system', () => {
         ])
       )
       expect(
-        app.registry.get(executingEditorService).hasEditsSinceLastExecution
-          .value
-      ).toBe(false)
-      expect(app.registry.get(executingEditorService).code.value).toBe('')
+        app.registry.get(projectSession).executingEditor.value
+      ).toBeUndefined()
 
       const textEditorSettings = app.settings.get().textEditor as Record<
         string,

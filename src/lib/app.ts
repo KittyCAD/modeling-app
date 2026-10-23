@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   pluginsValueSpec,
-  provideService,
   Registry,
   type RegistryItem,
   Slot,
@@ -32,7 +31,6 @@ import {
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
-import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   type SystemIOActor,
   SystemIOMachineEvents,
@@ -53,7 +51,6 @@ import {
 } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   type FileOperationsRegistryService,
   fileOperationsService,
@@ -92,11 +89,9 @@ import {
 } from '@src/registry/createZdsPlugin'
 import {
   appRegistryOverridesSlot,
-  appRegistryServicesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
 import type { SnapshotFrom, Subscription } from 'xstate'
-import { createActor } from 'xstate'
 
 const appCommandsSlot = new Slot()
 
@@ -217,7 +212,9 @@ export class App implements AppSubsystems {
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
    */
-  systemIOActor: SystemIOActor
+  get systemIOActor(): SystemIOActor {
+    return this.registry.get(systemIOService).actor
+  }
 
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
@@ -239,13 +236,6 @@ export class App implements AppSubsystems {
       )
     }
     this.userFeatures = subsystems.userFeatures
-    this.systemIOActor = createActor(systemIOMachineImpl, {
-      input: {
-        wasmInstancePromise: this.wasmPromise,
-        app: this,
-      },
-    }).start()
-
     this.syncAppCommands()
     this.commands.actor.send({
       type: 'Set userFeatures',
@@ -279,7 +269,6 @@ export class App implements AppSubsystems {
     appRegistry.configure([
       appRegistryOverridesSlot.of(...registryOverrides),
       appCommandsSlot.of(),
-      appRegistryServicesSlot.of(),
       engineSceneRuntimeExtensionsSlot.of(),
       ...coreRegistryItems,
     ])
@@ -481,7 +470,6 @@ export class App implements AppSubsystems {
     this.singletons.kclManager.close()
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
-    this.systemIOActor.stop()
     this.settings.actor.stop()
     this.commands.actor.stop()
     this.auth.actor.stop()
@@ -790,21 +778,6 @@ export class App implements AppSubsystems {
       userFeatures: this.userFeatures,
       keymap: this.registry.get(keymapService),
     })
-
-    this.registry.reconfigure(appRegistryServicesSlot, [
-      defineRegistryItem({
-        id: 'app.runtime-services',
-        providesServices: [
-          provideService(
-            executingEditorService,
-            kclManager.executingEditorService
-          ),
-          provideService(systemIOService, {
-            actor: this.systemIOActor,
-          }),
-        ],
-      }),
-    ])
 
     return {
       kclManager,
