@@ -14,3 +14,9 @@ export {
   type FeatureTreeShortcut,
   type FeatureTreeShortcuts,
 } from './feature-tree/feature-tree'
+
+export {
+  buildFeatureTreeModel,
+  type FeatureTreeNode,
+  type FeatureTreeEntry,
+} from './feature-tree/feature-tree-model'
