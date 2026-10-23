@@ -241,10 +241,17 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                   }}
                 >
                   <CustomIcon
-                    name={isActive ? 'eyeOpen' : 'namedView'}
-                    className="h-5 w-5"
+                    name="viewFrame"
+                    className="col-start-1 row-start-1 h-5 w-5"
                     aria-hidden
                   />
+                  {isActive && (
+                    <CustomIcon
+                      name="eyeOpen"
+                      className="col-start-1 row-start-1 h-4 w-4"
+                      aria-hidden
+                    />
+                  )}
                 </button>
                 <button
                   type="button"
