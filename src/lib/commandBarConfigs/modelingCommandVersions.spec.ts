@@ -63,7 +63,7 @@ describe('modeling command KCL versions', () => {
     return result
   }
 
-  it('only offers Named View for a supported parsed KCL version', async () => {
+  it('gates Named View on KCL version without experimental opt-in', async () => {
     const namedView = () =>
       createMachineCommand<typeof modelingMachine, ModelingCommandSchema>({
         groupId: 'modeling',
@@ -73,7 +73,7 @@ describe('modeling command KCL versions', () => {
         send: vi.fn(),
         commandBarConfig: modelingMachineCommandConfig,
         defaultScopes: [MODE_MODELING_COMMAND_SCOPE],
-        showExperimentalCommands: true,
+        showExperimentalCommands: false,
       })
 
     expect(namedView()).toBeNull()

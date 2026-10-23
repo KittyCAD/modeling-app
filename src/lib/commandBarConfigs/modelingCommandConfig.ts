@@ -638,7 +638,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'Named View': {
     icon: 'namedView',
-    status: 'experimental',
     available: (context) =>
       modelingStdLibCommandAvailable('Named View', context),
     needsReview: true,

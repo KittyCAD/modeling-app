@@ -203,7 +203,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
     const pane = page.locator(VIEW_SWITCHER_PANE)
-    await expect(pane.getByTestId('named-view-create')).toHaveCount(0)
+    await expect(pane.getByTestId('named-view-create')).toBeVisible()
     const rows = pane.getByTestId('named-view-row')
     const defaultView = rows.filter({ hasText: 'Default View' })
     const top = rows.filter({ hasText: 'Top' })

@@ -5879,7 +5879,7 @@ hole001 = hole::hole(
 
 test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
   test.use({
-    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG, 'modeling_dialogs'],
+    userFeatures: ['modeling_dialogs'],
   })
 
   test('Selects objects and annotations from the feature tree for Named View exceptions', async ({
