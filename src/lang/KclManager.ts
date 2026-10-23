@@ -182,6 +182,7 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
+import { getViewportTheme } from '@src/lib/settings/viewportRendering'
 import type {
   ModelingMachineEvent,
   modelingMachine,
@@ -2803,7 +2804,9 @@ export class KclManager extends File {
   }
   async updateTheme(newTheme: Themes, updateEngine = true) {
     const resolvedTheme = getResolvedTheme(newTheme)
-    const opposingTheme = getOppositeTheme(newTheme)
+    const mode = getSettingsFromActorContext(this.systemDeps.settings).modeling
+      .viewportRendering.current
+    const opposingTheme = getOppositeTheme(getViewportTheme(newTheme, mode))
     this.sceneInfra.theme = opposingTheme
     this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     this.setEditorTheme(resolvedTheme)
@@ -2893,6 +2896,18 @@ export class KclManager extends File {
       (value) => this.setCursorBlinking(value)
     )
     const theme = computed(() => settings.value.app.theme.currentSignal.value)
+    const viewportRendering = computed(
+      () => settings.value.modeling.viewportRendering.currentSignal.value
+    )
+    watchValue(
+      () => viewportRendering.value,
+      (value) => {
+        this.updateTheme(theme.peek(), false).catch(reportRejection)
+        this.sceneEntitiesManager.updateSketchGrid()
+        this.engineCommandManager.setViewportRendering(value)
+      },
+      true
+    )
     watchValue(
       () => theme.value,
       (value) => {

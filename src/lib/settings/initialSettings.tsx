@@ -28,6 +28,11 @@ import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray } from '@src/lib/utils'
 import { hexToRgba } from '@src/lib/utils'
 import { Setting } from '@src/lib/settings/Setting'
+import {
+  isViewportRendering,
+  viewportRenderingOptions,
+  type ViewportRendering,
+} from '@src/lib/settings/viewportRendering'
 
 const MS_IN_MINUTE = 1000 * 60
 const COLOR_INPUT_DEBOUNCE_MS = 500
@@ -219,12 +224,25 @@ function createCoreSettings() {
             })),
         },
       }),
-      enableSSAO: new Setting<boolean>({
-        defaultValue: true,
-        description:
-          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.',
-        validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'both', //for now
+      viewportRendering: new Setting<ViewportRendering>({
+        hideOnLevel: 'project',
+        defaultValue: 'ssao',
+        description: 'Choose how models look in the viewport.',
+        validate: isViewportRendering,
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.viewportRendering.current,
+          options: (_cmdContext, settingsContext) =>
+            viewportRenderingOptions.map((option) => ({
+              ...option,
+              isCurrent:
+                settingsContext.modeling.viewportRendering.shouldShowCurrentLabel(
+                  'user',
+                  option.value
+                ),
+            })),
+        },
       }),
       backfaceColor: new Setting<string>({
         defaultValue: DEFAULT_BACKFACE_COLOR,

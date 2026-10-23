@@ -215,6 +215,7 @@ describe('KclManager settings ownership', () => {
   function mockEngineSettings(kclManager: KclManager) {
     const engine = kclManager.engineCommandManager
     const setTheme = vi.spyOn(engine, 'setTheme').mockResolvedValue(undefined)
+    vi.spyOn(engine, 'setViewportRendering').mockImplementation(() => {})
     const setHighlightEdges = vi
       .spyOn(engine, 'setHighlightEdges')
       .mockResolvedValue(undefined)
