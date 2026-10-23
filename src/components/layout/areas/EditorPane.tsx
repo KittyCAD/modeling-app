@@ -258,15 +258,13 @@ function TextFileEditor({
         isFake: false,
       },
     }
-    const importAction = activeTextFile.errorReason
-      ? registry
-          .signal(projectExplorerRowContextMenuItemsValueSpec)
-          .value.find(
-            (item) =>
-              item.id === 'import-in-current-file' &&
-              item.isVisible?.(importContext)
-          )
-      : undefined
+    const importAction = registry
+      .signal(projectExplorerRowContextMenuItemsValueSpec)
+      .value.find(
+        (item) =>
+          item.id === 'import-in-current-file' &&
+          item.isVisible?.(importContext)
+      )
 
     return (
       <div className="h-full p-3 text-sm">

@@ -90,7 +90,6 @@ describe('text file detection', () => {
       status: 'error',
       text: '',
       error: 'This file is binary or is not UTF-8 text.',
-      errorReason: 'unsupported-text',
     })
     mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', '')
     await mod.flushActiveTextFileWrite()
@@ -121,7 +120,6 @@ describe('text file detection', () => {
     expect(mod.activeTextFileSignal.value).toMatchObject({
       status: 'error',
       error: 'Text files larger than 1 MiB cannot be edited.',
-      errorReason: 'too-large',
     })
   })
 
@@ -133,7 +131,6 @@ describe('text file detection', () => {
     expect(mod.activeTextFileSignal.value).toMatchObject({
       status: 'error',
       error: 'Text files larger than 1 MiB cannot be edited.',
-      errorReason: 'too-large',
     })
   })
 

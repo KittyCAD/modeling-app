@@ -6,8 +6,6 @@ import { reportRejection } from '@src/lib/trap'
 import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
-type TextFileErrorReason = 'unsupported-text' | 'too-large'
-
 /**
  * A non-KCL text file (e.g. Markdown or plain text) opened for editing in the
  * code pane. This lives entirely outside the KCL execution pipeline
@@ -38,7 +36,6 @@ export type ActiveTextFile =
       text: ''
       status: 'error'
       error: string
-      errorReason?: TextFileErrorReason
     }
 
 export const activeTextFileSignal = signal<ActiveTextFile | null>(null)
@@ -179,12 +176,7 @@ export async function openActiveTextFile(
     const stat = await fileOperations.stat(path)
     if (requestId !== latestOpenRequestId) return
     if (stat.size > MAX_EDITABLE_TEXT_FILE_BYTES) {
-      return setActiveTextFileError(
-        path,
-        name,
-        FILE_TOO_LARGE_MESSAGE,
-        'too-large'
-      )
+      return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
     }
 
     const bytes = await fileOperations.readFile(path)
@@ -193,12 +185,7 @@ export async function openActiveTextFile(
     }
     // Recheck the snapshot in case the file grew after stat.
     if (bytes.byteLength > MAX_EDITABLE_TEXT_FILE_BYTES) {
-      return setActiveTextFileError(
-        path,
-        name,
-        FILE_TOO_LARGE_MESSAGE,
-        'too-large'
-      )
+      return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
     }
 
     let text: string
@@ -209,21 +196,11 @@ export async function openActiveTextFile(
         const isControlCharacter = /\p{Control}/u.test(character)
         const isAllowedWhitespace = '\t\n\r'.includes(character)
         if (isControlCharacter && !isAllowedWhitespace) {
-          return setActiveTextFileError(
-            path,
-            name,
-            UNSUPPORTED_TEXT_MESSAGE,
-            'unsupported-text'
-          )
+          return setActiveTextFileError(path, name, UNSUPPORTED_TEXT_MESSAGE)
         }
       }
     } catch {
-      return setActiveTextFileError(
-        path,
-        name,
-        UNSUPPORTED_TEXT_MESSAGE,
-        'unsupported-text'
-      )
+      return setActiveTextFileError(path, name, UNSUPPORTED_TEXT_MESSAGE)
     }
     activeTextFileSignal.value = {
       path,
@@ -246,8 +223,7 @@ export async function openActiveTextFile(
 function setActiveTextFileError(
   path: string,
   name: string,
-  error: string,
-  errorReason?: TextFileErrorReason
+  error: string
 ): void {
   activeTextFileSignal.value = {
     path,
@@ -255,6 +231,5 @@ function setActiveTextFileError(
     text: '',
     status: 'error',
     error,
-    errorReason,
   }
 }
