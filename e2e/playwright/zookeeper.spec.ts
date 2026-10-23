@@ -1,6 +1,8 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import type { MlCopilotServerMessage } from '@kittycad/lib'
+import { decode } from '@msgpack/msgpack'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { createTwoFilesPatch } from 'diff'
 
 // See zookeeper/text_to_cad/zookeeper_magic_bypass.py
 const ZK_MOCK_REPLY_MARKER =
@@ -8,7 +10,6 @@ const ZK_MOCK_REPLY_MARKER =
 const ZOOKEEPER_TEST_TAGS = ['@desktop', '@web', '@zookeeper']
 
 test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
-  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
   test('Happy path: new project, easy prompt, good result', async ({
     page,
     editor,
@@ -18,6 +19,7 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     copilot,
   }) => {
     let holdResponses = false
+    let originalCode = ''
     let zookeeperConnectionCount = 0
     let releaseResponses: () => void = () => {
       throw new Error('Zookeeper WebSocket was not intercepted')
@@ -27,6 +29,38 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       const bufferedMessages: Parameters<typeof client.send>[0][] = []
       const server = client.connectToServer()
       server.onMessage((message) => {
+        const response = (
+          typeof message === 'string' ? JSON.parse(message) : decode(message)
+        ) as MlCopilotServerMessage
+        const result = 'tool_output' in response && response.tool_output.result
+        if (
+          result &&
+          result.type === 'edit_kcl_code' &&
+          !result.zookeeper_edit_patch
+        ) {
+          // The backend's magic reply predates patch-listed writes. Give this
+          // test response a real modification patch for the existing main.kcl.
+          const code = result.outputs?.['main.kcl']
+          if (typeof code !== 'string') {
+            throw new Error('Canned Zookeeper reply must include main.kcl')
+          }
+          result.zookeeper_edit_patch = {
+            run_id: '00000000-0000-4000-8000-000000000001',
+            changed_files: [
+              {
+                path: 'main.kcl',
+                status: 'modified',
+                diff: createTwoFilesPatch(
+                  'a/main.kcl',
+                  'b/main.kcl',
+                  originalCode,
+                  code
+                ),
+              },
+            ],
+          }
+          message = JSON.stringify(response)
+        }
         if (holdResponses) {
           bufferedMessages.push(message)
           return
@@ -47,6 +81,7 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     await test.step('Submit basic prompt', async () => {
       const prompt = `make a 10x10x10cm cube centered on the origin, name the last variable "cube" [${ZK_MOCK_REPLY_MARKER}]`
 
+      originalCode = await editor.getCurrentCode()
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await copilot.setMode('fast')
@@ -101,6 +136,18 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     'Chat history can be cleared',
     { tag: ['@desktop', '@web'] },
     async ({ page, homePage, scene, toolbar, copilot }) => {
+      let holdResponses = false
+      let zookeeperConnectionCount = 0
+      await page.routeWebSocket('**/ws/ml/copilot**', (client) => {
+        zookeeperConnectionCount += 1
+        const server = client.connectToServer()
+        server.onMessage((message) => {
+          if (!holdResponses) {
+            client.send(message)
+          }
+        })
+      })
+      await page.reload()
       await page.setBodyDimensions({ width: 1500, height: 1000 })
       await homePage.goToModelingScene()
       await scene.settled()
@@ -111,12 +158,33 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
         await copilot.conversationInput.fill(
           `This is a test prompt [${ZK_MOCK_REPLY_MARKER}]`
         )
+        holdResponses = true
         await copilot.submitButton.click()
         await expect(copilot.placeHolderResponse).toBeVisible()
       })
 
-      await test.step('Clear the chat history', async () => {
+      await test.step('Keep the current chat when clearing is dismissed', async () => {
+        const originalConnectionCount = zookeeperConnectionCount
         await copilot.clearChatButton.click()
+        const confirmationDialog = page.getByRole('dialog', {
+          name: 'Start a new chat?',
+        })
+        await expect(confirmationDialog).toContainText(
+          'This will stop the current Zookeeper response and start a new conversation.'
+        )
+        await page.getByRole('button', { name: 'Keep current chat' }).click()
+
+        await expect(confirmationDialog).not.toBeVisible()
+        await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(1)
+        await expect(copilot.clearChatButton).toBeVisible()
+        await expect(copilot.placeHolderResponse).toBeVisible()
+        expect(zookeeperConnectionCount).toBe(originalConnectionCount)
+      })
+
+      await test.step('Confirm clearing the chat history', async () => {
+        await copilot.clearChatButton.click()
+        holdResponses = false
+        await page.getByRole('button', { name: 'Start new chat' }).click()
         await expect(copilot.welcomeSection).not.toBeVisible()
         await expect(copilot.welcomeSection).toBeVisible({ timeout: 30_000 })
 

@@ -25,6 +25,7 @@ export const dummyInitSketchGraphDelta: SceneGraphDelta = Object.freeze({
       project_directory: null,
       current_file: null,
       fixed_size_grid: true,
+      geometry_only: false,
     },
     sketch_mode: null,
   },
@@ -38,6 +39,7 @@ export const dummyInitSketchGraphDelta: SceneGraphDelta = Object.freeze({
     filenames: {},
     defaultPlanes: null,
     refactorMetadata: [],
+    engineSceneGeneration: 0,
   },
 })
 

@@ -1,0 +1,2 @@
+import "../../e2e/executor/inputs/cube-embedded.gltf" as cube
+model = cube

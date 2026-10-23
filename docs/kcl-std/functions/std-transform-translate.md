@@ -46,7 +46,7 @@ and then rotate it using the `rotate` function to create a loft.
 ### Examples
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 sweepPath = sketch(on = XZ) {
   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -73,7 +73,7 @@ moved = sweep(pipeRegion, path = sweepPath)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the translate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-translate0.png"
@@ -102,7 +102,7 @@ cube
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the translate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-translate1.png"
@@ -131,7 +131,7 @@ cube
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the translate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-translate2.png"
@@ -176,7 +176,7 @@ translate(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the translate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-translate3.png"
@@ -214,7 +214,7 @@ square(10)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the translate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-translate4.png"
@@ -251,7 +251,7 @@ loft([profile001, profile002])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the translate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate5_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate5_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-translate5.png"

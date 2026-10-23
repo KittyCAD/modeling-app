@@ -27,6 +27,49 @@ pub struct PhysicalPropertiesRequest {
     pub bounding_box: Option<kcmc::BoundingBox>,
 }
 
+impl PhysicalPropertiesRequest {
+    pub(crate) fn modeling_cmd(&self) -> Option<kcmc::ModelingCmd> {
+        let mut commands = [
+            self.volume.clone().map(kcmc::ModelingCmd::from),
+            self.mass.clone().map(kcmc::ModelingCmd::from),
+            self.center_of_mass.clone().map(kcmc::ModelingCmd::from),
+            self.surface_area.clone().map(kcmc::ModelingCmd::from),
+            self.density.clone().map(kcmc::ModelingCmd::from),
+            self.bounding_box.clone().map(kcmc::ModelingCmd::from),
+        ]
+        .into_iter()
+        .flatten();
+        let first = commands.next()?;
+        if commands.next().is_none() {
+            // In particular, bounding-box-only requests do not need a tessellation.
+            return Some(first);
+        }
+
+        // Python setters always select the default scene. Supply valid inputs for
+        // unrequested properties; their results are discarded by the caller.
+        let mass = self.mass.as_ref();
+        let density = self.density.as_ref();
+        Some(kcmc::ModelingCmd::from(
+            kcmc::PhysicalProperties::builder()
+                .material_density(mass.map_or(1.0, |r| r.material_density))
+                .material_density_unit(mass.map_or(Default::default(), |r| r.material_density_unit))
+                .material_mass(density.map_or(1.0, |r| r.material_mass))
+                .material_mass_unit(density.map_or(Default::default(), |r| r.material_mass_unit))
+                .mass_output_unit(mass.map_or(Default::default(), |r| r.output_unit))
+                .density_output_unit(density.map_or(Default::default(), |r| r.output_unit))
+                .volume_output_unit(self.volume.as_ref().map_or(Default::default(), |r| r.output_unit))
+                .center_of_mass_output_unit(
+                    self.center_of_mass
+                        .as_ref()
+                        .map_or(Default::default(), |r| r.output_unit),
+                )
+                .surface_area_output_unit(self.surface_area.as_ref().map_or(Default::default(), |r| r.output_unit))
+                .bounding_box_output_unit(self.bounding_box.as_ref().map_or(Default::default(), |r| r.output_unit))
+                .build(),
+        ))
+    }
+}
+
 /// Resulting data from a `PhysicalPropertiesRequest`.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
 #[pyclass(from_py_object)]
@@ -229,5 +272,60 @@ impl PhysicalPropertiesRequest {
                 .build(),
         );
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn empty_request_sends_no_command() {
+        assert!(PhysicalPropertiesRequest::default().modeling_cmd().is_none());
+    }
+
+    #[test]
+    fn single_property_keeps_its_original_command() {
+        let mut request = PhysicalPropertiesRequest::default();
+        request.set_bounding_box(UnitLength::Inches).unwrap();
+        let Some(kcmc::ModelingCmd::BoundingBox(command)) = request.modeling_cmd() else {
+            panic!("expected bounding box without tessellation");
+        };
+        assert_eq!(command.output_unit, kcmc::units::UnitLength::Inches);
+    }
+
+    #[test]
+    fn multiple_properties_use_one_combined_command() {
+        let mut request = PhysicalPropertiesRequest::default();
+        request.set_volume(UnitVolume::CubicCentimeters);
+        request.set_center_of_mass(UnitLength::Centimeters);
+        request
+            .set_mass(UnitMass::Grams, 7850.0, UnitDensity::KilogramsPerCubicMeter)
+            .unwrap();
+        request
+            .set_density(UnitDensity::PoundsPerCubicFeet, 2.0, UnitMass::Pounds)
+            .unwrap();
+        request.set_surface_area(UnitArea::SquareFeet);
+        request.set_bounding_box(UnitLength::Inches).unwrap();
+        let Some(kcmc::ModelingCmd::PhysicalProperties(command)) = request.modeling_cmd() else {
+            panic!("expected one combined physical properties command");
+        };
+        assert!(command.entity_ids.is_empty());
+        assert_eq!(command.material_density, 7850.0);
+        assert_eq!(
+            command.material_density_unit,
+            kcmc::units::UnitDensity::KilogramsPerCubicMeter
+        );
+        assert_eq!(command.material_mass, 2.0);
+        assert_eq!(command.material_mass_unit, kcmc::units::UnitMass::Pounds);
+        assert_eq!(command.mass_output_unit, kcmc::units::UnitMass::Grams);
+        assert_eq!(
+            command.density_output_unit,
+            kcmc::units::UnitDensity::PoundsPerCubicFeet
+        );
+        assert_eq!(command.volume_output_unit, kcmc::units::UnitVolume::CubicCentimeters);
+        assert_eq!(command.center_of_mass_output_unit, kcmc::units::UnitLength::Centimeters);
+        assert_eq!(command.surface_area_output_unit, kcmc::units::UnitArea::SquareFeet);
+        assert_eq!(command.bounding_box_output_unit, kcmc::units::UnitLength::Inches);
     }
 }

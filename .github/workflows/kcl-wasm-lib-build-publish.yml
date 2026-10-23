@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           # node 24 fixed OIDC npm publishing; Node 26 seems to have an issue with electron/build and
           # it's dependency on yargs
@@ -27,7 +27,7 @@ jobs:
           registry-url: "https://registry.npmjs.org/"
           cache: "npm"
 
-      - run: npm install
+      - run: npm ci
 
       - name: Use correct Rust toolchain
         shell: bash
@@ -81,7 +81,7 @@ jobs:
       - name: Create kittycad.ts repository token
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         id: kittycad_ts_token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
@@ -103,7 +103,7 @@ jobs:
         env:
           VERSION: ${{ steps.version_check.outputs.local_version }}
         run: |
-          npm install "@kittycad/kcl-wasm-lib@$VERSION" --package-lock-only --ignore-scripts
+          npm install --save-exact "@kittycad/kcl-wasm-lib@$VERSION" --ignore-scripts
           if git diff --quiet; then
             exit 0
           fi

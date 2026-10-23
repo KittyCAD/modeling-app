@@ -5,6 +5,9 @@ use std::sync::Arc;
 use indexmap::IndexMap;
 use itertools::EitherOrBoth;
 use itertools::Itertools;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kittycad_modeling_cmds::KclVersion;
 use tokio::sync::RwLock;
 
 use crate::ExecOutcome;
@@ -18,11 +21,12 @@ use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
 use crate::execution::KclValueView;
 use crate::execution::annotations;
+#[cfg(test)]
+use crate::execution::computed_kcl_version;
 use crate::execution::memory::Stack;
 use crate::execution::state::ModuleInfoMap;
+use crate::execution::state::NotYetAdded;
 use crate::execution::state::{self as exec_state};
-use crate::front::Object;
-use crate::front::ObjectId;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
 use crate::modules::ModuleSource;
@@ -31,42 +35,92 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 use crate::walk::Node as WalkNode;
 
-lazy_static::lazy_static! {
-    /// A static mutable lock for updating the last successful execution state for the cache.
-    static ref OLD_AST: Arc<RwLock<Option<GlobalState>>> = Default::default();
+#[derive(Debug, Default)]
+struct CacheInner {
+    /// Last successful execution state for the cache.
+    pub old_ast: Option<GlobalState>,
     // The last successful run's memory. Not cleared after an unsuccessful run.
-    static ref PREV_MEMORY: Arc<RwLock<Option<SketchModeState>>> = Default::default();
+    pub prev_memory: Option<SketchModeState>,
+    /// Counts the runs that changed the engine scene. Never reset, so callers
+    /// can tell whether the scene changed since they last looked.
+    /// If the counter hasn't moved, the scene hasn't changed. If it has moved,
+    /// the scene may have changed.
+    pub engine_scene_generation: usize,
 }
 
-/// Read the old ast memory from the lock.
-pub(super) async fn read_old_ast() -> Option<GlobalState> {
-    let old_ast = OLD_AST.read().await;
-    old_ast.clone()
+/// Cached execution state for one engine session and its associated mock execution.
+///
+/// Clones share the same state. A default cache is empty and independent of all
+/// other caches. Callers must serialize executions that share an engine session;
+/// this cache only locks individual state accesses.
+#[derive(Debug, Clone)]
+pub struct Cache(Arc<dyn CacheStorage>);
+
+// Hide the cache's concrete state graph from Send/Sync proofs in callers.
+trait CacheStorage: std::fmt::Debug + Send + Sync {
+    fn inner(&self) -> &RwLock<CacheInner>;
 }
 
-pub(super) async fn write_old_ast(old_state: GlobalState) {
-    let mut old_ast = OLD_AST.write().await;
-    *old_ast = Some(old_state);
+impl CacheStorage for RwLock<CacheInner> {
+    fn inner(&self) -> &RwLock<CacheInner> {
+        self
+    }
 }
 
-pub(crate) async fn read_old_memory() -> Option<SketchModeState> {
-    let old_mem = PREV_MEMORY.read().await;
-    old_mem.clone()
+impl Default for Cache {
+    fn default() -> Self {
+        Self(Arc::new(RwLock::new(CacheInner::default())))
+    }
 }
 
-pub(crate) async fn write_old_memory(mem: SketchModeState) {
-    let mut old_mem = PREV_MEMORY.write().await;
-    *old_mem = Some(mem);
-}
+impl Cache {
+    /// Read the old AST state from the cache.
+    pub(super) async fn read_old_ast(&self) -> Option<GlobalState> {
+        self.0.inner().read().await.old_ast.clone()
+    }
 
-pub async fn bust_cache() {
-    let mut old_ast = OLD_AST.write().await;
-    *old_ast = None;
-}
+    pub(super) async fn write_old_ast(&self, old_state: GlobalState) {
+        let mut inner = self.0.inner().write().await;
+        inner.old_ast = Some(old_state);
+    }
 
-pub async fn clear_mem_cache() {
-    let mut old_mem = PREV_MEMORY.write().await;
-    *old_mem = None;
+    pub(crate) async fn read_old_memory(&self) -> Option<SketchModeState> {
+        self.0.inner().read().await.prev_memory.clone()
+    }
+
+    pub(crate) async fn write_old_memory(&self, mem: SketchModeState) {
+        let mut inner = self.0.inner().write().await;
+        inner.prev_memory = Some(mem);
+    }
+
+    /// The number of runs that have changed the engine scene.
+    pub(crate) async fn engine_scene_generation(&self) -> usize {
+        self.0.inner().read().await.engine_scene_generation
+    }
+
+    pub(super) async fn bump_engine_scene_generation(&self) {
+        let mut inner = self.0.inner().write().await;
+        inner.engine_scene_generation = inner.engine_scene_generation.wrapping_add(1);
+    }
+
+    /// Invalidate live execution state while preserving usable sketch-mode memory.
+    pub async fn bust_cache(&self) {
+        let mut inner = self.0.inner().write().await;
+        inner.old_ast = None;
+    }
+
+    /// Clear the memory reused by mock execution.
+    pub async fn clear_mem_cache(&self) {
+        let mut inner = self.0.inner().write().await;
+        inner.prev_memory = None;
+    }
+
+    /// Read a named value from the previous sketch-mode execution.
+    pub async fn read_old_memory_var(&self, name: &str) -> Option<KclValue> {
+        self.read_old_memory()
+            .await
+            .and_then(|memory| memory.stack.get(name, SourceRange::default()).ok())
+    }
 }
 
 /// Information for the caching an AST and smartly re-executing it if we can.
@@ -74,6 +128,21 @@ pub async fn clear_mem_cache() {
 pub struct CacheInformation<'a> {
     pub ast: &'a Node<Program>,
     pub settings: &'a ExecutorSettings,
+    /// The KCL version of this execution.
+    pub kcl_version: KclVersion,
+}
+
+impl<'a> CacheInformation<'a> {
+    #[cfg(test)]
+    fn new(ast: &'a Node<Program>, settings: &'a ExecutorSettings) -> Self {
+        // If the version couldn't be parsed, the default is used.
+        let kcl_version = computed_kcl_version(ast);
+        Self {
+            ast,
+            settings,
+            kcl_version,
+        }
+    }
 }
 
 /// The cached state of the whole program.
@@ -84,12 +153,15 @@ pub(super) struct GlobalState {
     pub(super) exec_state: exec_state::GlobalState,
     /// The last settings used for execution.
     pub(super) settings: ExecutorSettings,
+    /// The KCL version of this execution.
+    pub kcl_version: KclVersion,
 }
 
 impl GlobalState {
     pub fn new(
         state: exec_state::ExecState,
         settings: ExecutorSettings,
+        kcl_version: KclVersion,
         ast: Node<Program>,
         result_env: EnvironmentRef,
     ) -> Self {
@@ -101,6 +173,7 @@ impl GlobalState {
             },
             exec_state: state.global,
             settings,
+            kcl_version,
         }
     }
 
@@ -130,6 +203,7 @@ impl GlobalState {
         Ok(ExecOutcome {
             variables,
             filenames: self.exec_state.filenames(),
+            engine_scene_generation: ctx.cache.engine_scene_generation().await,
             operations: self.exec_state.operations_by_module(),
             artifact_graph: self.exec_state.artifacts.graph,
             scene_objects: self.exec_state.root_module_artifacts.scene_objects,
@@ -153,8 +227,11 @@ impl GlobalState {
             module_infos: self.exec_state.module_infos.clone(),
             path_to_source_id: self.exec_state.path_to_source_id.clone(),
             id_to_source: self.exec_state.id_to_source.clone(),
+            never_type_ranges: self.exec_state.never_type_ranges.clone(),
             constraint_state: self.main.exec_state.constraint_state.clone(),
             scene_objects: self.exec_state.root_module_artifacts.scene_objects.clone(),
+            std_not_yet_added: self.exec_state.std_not_yet_added.clone(),
+            kcl_version: self.exec_state.entry_point_kcl_version.unwrap_or_default(),
         })
     }
 }
@@ -181,17 +258,30 @@ pub(crate) struct SketchModeState {
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to source file contents.
     pub id_to_source: IndexMap<ModuleId, ModuleSource>,
+    /// Deferred `never` type uses in imported local modules.
+    pub never_type_ranges: IndexMap<ModuleId, Vec<SourceRange>>,
     /// Sticky per-constraint state persisted across sketch-mode mock solves.
     pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
     /// The scene objects.
     pub scene_objects: Vec<Object>,
+    /// See `GlobalState::std_not_yet_added`. Restored because a run reusing
+    /// this memory skips the prelude.
+    pub std_not_yet_added: IndexMap<String, NotYetAdded>,
+    /// The effective kclVersion (declared, or the default) of the program that
+    /// wrote this memory; see [`Self::reusable_for`].
+    pub kcl_version: KclVersion,
 }
 
-/// Read a named value from the previous sketch-mode execution.
-#[doc(hidden)]
-pub async fn read_old_memory_var(name: &str) -> Option<KclValue> {
-    let memory = read_old_memory().await?;
-    memory.stack.get(name, SourceRange::default()).ok()
+impl SketchModeState {
+    /// Whether a program with the effective `kcl_version` may reuse this
+    /// memory. Memory from another version keeps bindings, module outcomes,
+    /// and a prelude this program must not see, and the LSP worker reuses
+    /// memory with no other invalidation. Only the version counts: after other
+    /// settings changes the frontend may execute a single sketch, which needs
+    /// this memory and cannot rebuild it.
+    pub(crate) fn reusable_for(&self, kcl_version: KclVersion) -> bool {
+        self.kcl_version == kcl_version
+    }
 }
 
 #[cfg(test)]
@@ -202,8 +292,11 @@ impl SketchModeState {
             module_infos: ModuleInfoMap::default(),
             path_to_source_id: Default::default(),
             id_to_source: Default::default(),
+            never_type_ranges: Default::default(),
             constraint_state: Default::default(),
             scene_objects: Vec::new(),
+            std_not_yet_added: Default::default(),
+            kcl_version: KclVersion::default(),
         }
     }
 }
@@ -237,11 +330,18 @@ pub(super) enum CacheResult {
 /// re-executed.
 /// This function should never error, because in the case of any internal error, we should just pop
 /// the cache.
-///
-/// Returns `None` when there are no changes to the program, i.e. it is
-/// fully cached.
 pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInformation<'_>) -> CacheResult {
     let mut reapply_settings = false;
+
+    if old.kcl_version != new.kcl_version {
+        // If the KCL version differs, we need to send the version and
+        // re-execute.
+        return CacheResult::ReExecute {
+            clear_scene: true,
+            reapply_settings: true,
+            program: new.ast.clone(),
+        };
+    }
 
     // If the settings are different we might need to bust the cache.
     // We specifically do this before checking if they are the exact same.
@@ -442,14 +542,8 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         let ExecTestResults { program, exec_ctxt, .. } = parse_execute(new).await.unwrap();
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -488,14 +582,8 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         let program_new = crate::Program::parse_no_errs(new).unwrap();
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
-            CacheInformation {
-                ast: &program_new.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
+            CacheInformation::new(&program_new.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -534,14 +622,8 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         let program_new = crate::Program::parse_no_errs(new).unwrap();
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
-            CacheInformation {
-                ast: &program_new.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
+            CacheInformation::new(&program_new.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -584,14 +666,8 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         let program_new = crate::Program::parse_no_errs(new).unwrap();
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
-            CacheInformation {
-                ast: &program_new.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
+            CacheInformation::new(&program_new.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -622,14 +698,8 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         exec_ctxt.settings.show_grid = !exec_ctxt.settings.show_grid;
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &Default::default(),
-            },
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &Default::default()),
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -660,14 +730,8 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         exec_ctxt.settings.highlight_edges = !exec_ctxt.settings.highlight_edges;
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &Default::default(),
-            },
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &Default::default()),
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -678,14 +742,8 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         exec_ctxt.settings.highlight_edges = !exec_ctxt.settings.highlight_edges;
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &old_settings,
-            },
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &old_settings),
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -696,19 +754,49 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         exec_ctxt.settings.highlight_edges = !exec_ctxt.settings.highlight_edges;
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &old_settings,
-            },
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &old_settings),
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
         )
         .await;
 
         assert_eq!(result, CacheResult::NoAction(true));
         exec_ctxt.close().await;
+    }
+
+    // Changing only the KCL version must invalidate the cache and re-execute the whole program.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_kcl_version_using_annotation() {
+        for (old_version, new_version) in [
+            ("2.0", "\"3.0-preview\""),
+            ("2.0", "3.0"),
+            ("3.0", "2.0"),
+            ("\"3.0-preview\"", "3.0"),
+            ("3.0", "\"3.0-preview\""),
+        ] {
+            let old_code = format!("@settings(kclVersion = {old_version})\nx = 1\ny = x + 1\n");
+            let new_code = format!("@settings(kclVersion = {new_version})\nx = 1\ny = x + 1\n");
+            let mut program = crate::Program::parse_no_errs(&old_code).unwrap();
+            program.compute_digest();
+            let mut new_program = crate::Program::parse_no_errs(&new_code).unwrap();
+            new_program.compute_digest();
+            let settings = ExecutorSettings::default();
+
+            let result = get_changed_program(
+                CacheInformation::new(&program.ast, &settings),
+                CacheInformation::new(&new_program.ast, &settings),
+            )
+            .await;
+
+            assert_eq!(
+                result,
+                CacheResult::ReExecute {
+                    clear_scene: true,
+                    reapply_settings: true,
+                    program: new_program.ast,
+                },
+                "{old_version} -> {new_version}"
+            );
+        }
     }
 
     // Changing the units settings using an annotation with the exact same file
@@ -728,14 +816,8 @@ startSketchOn(XY)
         new_program.compute_digest();
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
-            CacheInformation {
-                ast: &new_program.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
+            CacheInformation::new(&new_program.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -767,14 +849,8 @@ startSketchOn(XY)
         new_program.compute_digest();
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
-            CacheInformation {
-                ast: &new_program.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
+            CacheInformation::new(&new_program.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -837,14 +913,8 @@ extrude(profile001, length = 100)"#
         new_program.compute_digest();
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
-            CacheInformation {
-                ast: &new_program.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
+            CacheInformation::new(&new_program.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -922,14 +992,8 @@ extrude(profile001, length = 100)
         new_program.compute_digest();
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
-            CacheInformation {
-                ast: &new_program.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
+            CacheInformation::new(&new_program.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -955,14 +1019,8 @@ import "tests/inputs/cube.step"
         new_program.compute_digest();
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
-            CacheInformation {
-                ast: &new_program.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
+            CacheInformation::new(&new_program.ast, &exec_ctxt.settings),
         )
         .await;
 
@@ -992,14 +1050,8 @@ import "tests/inputs/cube.step"
         new_program.compute_digest();
 
         let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
-            CacheInformation {
-                ast: &new_program.ast,
-                settings: &exec_ctxt.settings,
-            },
+            CacheInformation::new(&program.ast, &exec_ctxt.settings),
+            CacheInformation::new(&new_program.ast, &exec_ctxt.settings),
         )
         .await;
 

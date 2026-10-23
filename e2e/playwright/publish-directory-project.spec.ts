@@ -4,15 +4,14 @@ import {
   type CloudProject,
   cloudProjectResponse,
   routeCloudProjects,
+  zipProject,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { playwrightPluginSettings } from '@e2e/playwright/storageStates'
 import { mockClientErrorReports } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH } from '@src/lib/projectLibraries'
-import JSZip from 'jszip'
 
 const FLOW_TIMEOUT = 30_000
 
@@ -21,8 +20,6 @@ declare global {
     __publishFlowMessages: string[]
   }
 }
-
-test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
 
 test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
   let originalDesktopPaths:
@@ -194,9 +191,7 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
         }
         remoteArchives.set(
           remoteProjectId,
-          await zipLocalProject(movedProjectPath, {
-            'project.toml': createdProject.files['project.toml'],
-          })
+          await zipProject(createdProject.files)
         )
         return createdProject
       },
@@ -289,13 +284,18 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
       .toContain(encodeURIComponent(movedMainFile))
 
     await expect.poll(() => apiCalls.creates.length).toBe(1)
-    await expect.poll(() => apiCalls.updates.length).toBeGreaterThanOrEqual(1)
-    expect(
-      apiCalls.updates.some(({ postData }) =>
-        postData.includes('A project published from a directory library.')
+    await expect
+      .poll(
+        () =>
+          apiCalls.updates.some(({ postData }) =>
+            postData.includes('A project published from a directory library.')
+          ),
+        { timeout: FLOW_TIMEOUT }
       )
-    ).toBe(true)
-    expect(apiCalls.publishes).toEqual([remoteProjectId])
+      .toBe(true)
+    await expect
+      .poll(() => apiCalls.publishes, { timeout: FLOW_TIMEOUT })
+      .toEqual([remoteProjectId])
     expect(await pathExists(sourceProjectPath)).toBe(false)
     expect(await pathExists(movedMainFile)).toBe(true)
 
@@ -386,35 +386,24 @@ async function readCloudSyncState(page: Page) {
 }
 
 async function clearCloudSyncState(page: Page) {
-  await page.evaluate(
-    () =>
-      new Promise<void>((resolve, reject) => {
-        const request = indexedDB.deleteDatabase('zds-opfs-cloud-sync')
-        request.onerror = () => reject(request.error)
-        request.onsuccess = () => resolve()
-      })
-  )
-}
-
-async function zipLocalProject(
-  projectPath: string,
-  overrides: Record<string, string>
-) {
-  const zip = new JSZip()
-  const entries = await fsp.readdir(projectPath, {
-    recursive: true,
-    withFileTypes: true,
-  })
-  for (const entry of entries) {
-    if (!entry.isFile()) {
-      continue
-    }
-    const absolutePath = path.join(entry.parentPath, entry.name)
-    const relativePath = path.relative(projectPath, absolutePath)
-    zip.file(
-      relativePath,
-      overrides[relativePath] ?? (await fsp.readFile(absolutePath))
+  await expect
+    .poll(
+      async () => {
+        try {
+          await page.evaluate(
+            () =>
+              new Promise<void>((resolve, reject) => {
+                const request = indexedDB.deleteDatabase('zds-opfs-cloud-sync')
+                request.onerror = () => reject(request.error)
+                request.onsuccess = () => resolve()
+              })
+          )
+          return true
+        } catch {
+          return false
+        }
+      },
+      { timeout: FLOW_TIMEOUT }
     )
-  }
-  return Buffer.from(await zip.generateAsync({ type: 'uint8array' }))
+    .toBe(true)
 }

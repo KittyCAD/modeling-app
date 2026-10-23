@@ -1,0 +1,31 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints lots_of_planes.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'FOS'",
+    "pos": [
+      101,
+      104,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'FOS' to 'fos'",
+      "insert": "sigmaAllow = 15000 // psi\nwidth = 11 // inch\np = 150 // Force on shelf - lbs\ndistance = 12 // inches\nfos = 2\nthickness = sqrt(distance * p * fos * 6 / (sigmaAllow * width))\nfilletR = thickness * 2\nshelfMountL = 9\nwallMountL = 8\n\nbracket = startSketchOn(XY)\n  |> startProfile(at = [0, 0])\n  |> line(end = [0, wallMountL])\n  |> tangentialArc(radius = filletR, angle = 90deg)\n  |> line(end = [-shelfMountL, 0])\n  |> line(end = [0, -thickness])\n  |> line(end = [shelfMountL, 0])\n  |> tangentialArc(radius = filletR - thickness, angle = -90deg)\n  |> line(end = [0, -wallMountL])\n  |> close()\n  |> extrude(length = width)\n\npart001 = startSketchOn(XY)\n  |> startProfile(at = [-15.53, -10.28])\n  |> line(end = [10.49, -2.08])\n  |> line(end = [10.42, 8.47])\n  |> line(end = [-19.16, 5.1])\n  |> close()\n  |> extrude(length = 4)\n\npart002 = startSketchOn(-XZ)\n  |> startProfile(at = [-9.35, 19.18])\n  |> line(end = [32.14, -2.47])\n  |> line(end = [8.39, -3.73])\n  |> close()\n\npart003 = startSketchOn(-XZ)\n  |> startProfile(at = [13.82, 16.51])\n  |> line(end = [-6.24, -30.82])\n  |> line(end = [8.39, -3.73])\n  |> close()\n\npart004 = startSketchOn(YZ)\n  |> startProfile(at = [19.04, 20.22])\n  |> line(end = [9.44, -30.16])\n  |> line(end = [8.39, -3.73])\n  |> close()\n",
+      "source_range": [
+        0,
+        1253,
+        0
+      ]
+    }
+  }
+]

@@ -1,11 +1,10 @@
 //! Cache testing framework.
 
-use kcl_api::Artifact;
+use kcl_api::artifact::Artifact;
 use kcl_lib::ExecError;
 use kcl_lib::ExecOutcome;
 use kcl_lib::NodePathExt;
 use kcl_lib::NodePathStep;
-use kcl_lib::bust_cache;
 use kcl_lib::exec::Operation;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -35,11 +34,17 @@ async fn cache_test(
         .ok_or_else(|| anyhow::anyhow!("No variations provided for test '{}'", test_name))
         .unwrap();
 
-    let mut ctx = kcl_lib::ExecutorContext::new_with_client(first.settings.clone(), None, None)
-        .await
-        .unwrap();
+    let first_program = kcl_lib::Program::parse_no_errs(first.code).unwrap();
+    let mut ctx = kcl_lib::ExecutorContext::new_with_client(
+        first.settings.clone(),
+        None,
+        None,
+        first_program.language_version().unwrap(),
+    )
+    .await
+    .unwrap();
 
-    bust_cache().await;
+    ctx.bust_cache().await;
     let mut img_results = Vec::new();
     for (index, variation) in variations.iter().enumerate() {
         let program = kcl_lib::Program::parse_no_errs(variation.code).unwrap();
@@ -490,7 +495,9 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     // Get the current working directory.
     let code = "";
 
-    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
+    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kittycad_modeling_cmds::KclVersion::V2)
+        .await
+        .unwrap();
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
     let outcome = ctx.run_with_caching(program).await.unwrap();
 
@@ -916,7 +923,7 @@ import \"rectangle2.kcl\"
 async fn kcl_test_cache_rename_named_view_reports_the_new_name() {
     let code = |view_name: &str| {
         format!(
-            r#"@settings(experimentalFeatures = allow)
+            r#"@settings(kclVersion = "3.0-preview")
 
 plateSketch = sketch(on = XY) {{
   edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
@@ -990,7 +997,7 @@ view001 = view::named(
 /// this drives the caching context directly.
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_appended_duplicate_view_name_is_rejected() {
-    let first = r#"@settings(experimentalFeatures = allow)
+    let first = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 
 plateSketch = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
@@ -1022,8 +1029,10 @@ view002 = view::named(
 "#
     );
 
-    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
-    bust_cache().await;
+    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kittycad_modeling_cmds::KclVersion::V2)
+        .await
+        .unwrap();
+    ctx.bust_cache().await;
 
     ctx.run_with_caching(kcl_lib::Program::parse_no_errs(first).unwrap())
         .await

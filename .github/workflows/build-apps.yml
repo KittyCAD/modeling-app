@@ -31,12 +31,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm
 
-      - run: npm install
+      - run: npm ci
 
       - uses: actions/download-artifact@v8
         with:
@@ -153,12 +153,12 @@ jobs:
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - name: Sync node version and setup cache
-        uses: actions/setup-node@v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm # Set this to npm, npm or pnpm.
 
-      - run: npm install
+      - run: npm ci
 
       - name: Build the app (debug)
         if: ${{ env.IS_RELEASE == 'false' && env.FORCE_RELEASE_BUILD == 'false' && env.IS_STAGING == 'false' }}

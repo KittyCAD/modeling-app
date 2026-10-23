@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Execution success regression_test_hide_flatten_consumed.kcl
+---
+null

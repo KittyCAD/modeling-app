@@ -81,7 +81,8 @@ describe('useOnWebsocketClose', () => {
           })
         )
         engineCommandManager.tearDown({
-          websocketClosed: true,
+          route: 'websocket-closed',
+          initiatedBy: 'unknown',
           code,
           reconnectRequested: true,
         })
@@ -104,7 +105,11 @@ describe('useOnWebsocketClose', () => {
           engineCommandManager,
         })
       )
-      engineCommandManager.tearDown({ websocketClosed: true, code: '1000' })
+      engineCommandManager.tearDown({
+        route: 'websocket-closed',
+        initiatedBy: 'unknown',
+        code: '1000',
+      })
       expect(callback).toHaveBeenCalledExactlyOnceWith('1000', false)
       expect(infiniteLoopCallback).not.toHaveBeenCalled()
       unmount()
@@ -172,7 +177,8 @@ describe('useOnWebsocketClose', () => {
         }
 
         engineCommandManager.tearDown({
-          websocketClosed: true,
+          route: 'backend-shutdown',
+          initiatedBy: 'unknown',
           code: '1011',
           connectionError,
           reconnectRequested,

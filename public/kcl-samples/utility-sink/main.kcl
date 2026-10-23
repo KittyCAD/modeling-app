@@ -430,9 +430,9 @@ tapPlateSketch = sketch(on = offsetPlane(XY, offset = tableHeight)) {
   verticalDistance([centerYGuide.start, centerYGuide.end]) == tableDepth - 55
   horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
   distance([
-  tapPlateCircle.center,
-  tapPlateCircle.start
-]) == 40
+    tapPlateCircle.center,
+    tapPlateCircle.start
+  ]) == 40
 }
 
 tapPlateRegion = region(segments = [tapPlateSketch.tapPlateCircle])
@@ -471,9 +471,9 @@ tapPillarSketch = sketch(on = offsetPlane(XY, offset = tableHeight)) {
   verticalDistance([centerYGuide.start, centerYGuide.end]) == tableDepth - 55
   horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
   distance([
-  tapPillarCircle.center,
-  tapPillarCircle.start
-]) == 15
+    tapPillarCircle.center,
+    tapPillarCircle.start
+  ]) == 15
 }
 
 tapPillarRegion = region(segments = [tapPillarSketch.tapPillarCircle])
@@ -509,9 +509,9 @@ tapNoseSketch = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
   verticalDistance([heightGuide.start, heightGuide.end]) == tableHeight + 100
   horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
   distance([
-  tapNoseCircle.center,
-  tapNoseCircle.start
-]) == 10
+    tapNoseCircle.center,
+    tapNoseCircle.start
+  ]) == 10
 }
 
 tapNoseRegion = region(segments = [tapNoseSketch.tapNoseCircle])
@@ -550,9 +550,9 @@ tapHandleSketch = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
   verticalDistance([heightGuide.start, heightGuide.end]) == tableHeight + 150
   horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
   distance([
-  tapHandleCircle.center,
-  tapHandleCircle.start
-]) == 4
+    tapHandleCircle.center,
+    tapHandleCircle.start
+  ]) == 4
 }
 
 tapHandleRegion = region(segments = [tapHandleSketch.tapHandleCircle])
@@ -719,19 +719,19 @@ handleProfilePath = sketch(on = handlePlane) {
   horizontal(topSpanGuide)
 
   horizontalDistance([
-  startOffsetGuide.start,
-  startOffsetGuide.end
-]) == handleOffset
+    startOffsetGuide.start,
+    startOffsetGuide.end
+  ]) == handleOffset
   distance([leftLeg.start, leftLeg.end]) == handleLengthSegmentA
   equalLength([leftLeg, rightLeg])
   distance([
-  leftRadiusGuide.start,
-  leftRadiusGuide.end
-]) == handleFillet
+    leftRadiusGuide.start,
+    leftRadiusGuide.end
+  ]) == handleFillet
   distance([
-  rightRadiusGuide.start,
-  rightRadiusGuide.end
-]) == handleFillet
+    rightRadiusGuide.start,
+    rightRadiusGuide.end
+  ]) == handleFillet
   distance([grip.start, grip.end]) == handleLengthSegmentB
   horizontalDistance([topSpanGuide.start, topSpanGuide.end]) == handleWidth
   radius(leftArc) == handleFillet
@@ -764,9 +764,9 @@ handleSectionProfile = sketch(on = XZ) {
   verticalDistance([heightGuide.start, heightGuide.end]) == handleHeightAboveTheFloor
   horizontalDistance([centerXGuide.start, centerXGuide.end]) == handleOffset
   distance([
-  sectionCircle.center,
-  sectionCircle.start
-]) == 2
+    sectionCircle.center,
+    sectionCircle.start
+  ]) == 2
 }
 
 handleSection = region(segments = [handleSectionProfile.sectionCircle])

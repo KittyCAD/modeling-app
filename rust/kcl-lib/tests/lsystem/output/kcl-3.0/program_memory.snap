@@ -1,0 +1,63 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing lsystem.kcl
+---
+{
+  "Add": {
+    "type": "Function"
+  },
+  "And": {
+    "type": "Function"
+  },
+  "Eq": {
+    "type": "Function"
+  },
+  "F": {
+    "type": "Function"
+  },
+  "Gt": {
+    "type": "Function"
+  },
+  "Gt2": {
+    "type": "Function"
+  },
+  "Gte": {
+    "type": "Function"
+  },
+  "LSystem": {
+    "type": "Function"
+  },
+  "Lt": {
+    "type": "Function"
+  },
+  "Lt2": {
+    "type": "Function"
+  },
+  "Lte": {
+    "type": "Function"
+  },
+  "Not": {
+    "type": "Function"
+  },
+  "Or": {
+    "type": "Function"
+  },
+  "Sub": {
+    "type": "Function"
+  },
+  "cond": {
+    "type": "Function"
+  },
+  "setAngle": {
+    "type": "Function"
+  },
+  "setDepth": {
+    "type": "Function"
+  },
+  "setLength": {
+    "type": "Function"
+  },
+  "setSketch": {
+    "type": "Function"
+  }
+}

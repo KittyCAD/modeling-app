@@ -218,6 +218,7 @@ function LayoutNode({
       )
     case LayoutType.Panes:
       return <PaneLayout layout={layout} key={`node-${layout.id}`} />
+    case LayoutType.Simple:
     default: {
       const { Component, ...props } =
         areaLibrary[layout.areaType] ?? missingAreaDefinition

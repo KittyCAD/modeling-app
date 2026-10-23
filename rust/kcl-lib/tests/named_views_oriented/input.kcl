@@ -3,7 +3,7 @@
 // the projection defaulting to orthographic; and every optional argument
 // fixed. The ops snapshot additionally pins that each call emits a feature
 // tree operation recording its arguments.
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 minimal = view::oriented(view::Orientation::Isometric)
 

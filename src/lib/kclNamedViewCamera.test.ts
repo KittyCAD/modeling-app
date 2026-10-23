@@ -1,3 +1,4 @@
+import type { CameraViewState } from '@kittycad/lib'
 import type {
   ArtifactCameraView,
   ArtifactOrientation,
@@ -12,6 +13,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const CURRENT_TARGET = { x: 10, y: 20, z: 30 }
 const CURRENT_DISTANCE = 50
+const FITTED_ISOMETRIC_VIEW = {
+  pivot_position: CURRENT_TARGET,
+  eye_offset: CURRENT_DISTANCE,
+} as CameraViewState
 
 function mm(x: number, y: number, z: number): ArtifactPoint3d {
   return { x, y, z, units: 'mm' }
@@ -64,12 +69,16 @@ function directedCamera({
 function fakes() {
   const setCameraToAxis = vi.fn().mockResolvedValue(undefined)
   const setCameraProjection = vi.fn().mockResolvedValue(undefined)
+  const getCameraView = vi.fn().mockResolvedValue(FITTED_ISOMETRIC_VIEW)
+  const setCameraView = vi.fn().mockResolvedValue(undefined)
   const sendSceneCommand = vi.fn().mockResolvedValue(null)
 
   const sceneInfra = {
     camControls: {
       setCameraToAxis,
       setCameraProjection,
+      getCameraView,
+      setCameraView,
       target: CURRENT_TARGET,
       camera: { position: { distanceTo: () => CURRENT_DISTANCE } },
     },
@@ -84,6 +93,8 @@ function fakes() {
     engineCommandManager,
     setCameraToAxis,
     setCameraProjection,
+    getCameraView,
+    setCameraView,
     sendSceneCommand,
   }
 }
@@ -137,11 +148,57 @@ describe('applyNamedViewCamera', () => {
       })
 
       expect(f.setCameraToAxis).not.toHaveBeenCalled()
+      expect(f.getCameraView).not.toHaveBeenCalled()
+      expect(f.setCameraView).not.toHaveBeenCalled()
       expect(sentCommandTypes(f.sendSceneCommand)).toEqual([
         'view_isometric',
         'default_camera_get_settings',
       ])
     })
+
+    it.each([
+      {
+        fields: 'target',
+        target: mm(1, 2, 3),
+        distance: null,
+        expectedTarget: { x: 1, y: 2, z: 3 },
+        expectedDistance: CURRENT_DISTANCE,
+      },
+      {
+        fields: 'distance',
+        target: null,
+        distance: 7,
+        expectedTarget: CURRENT_TARGET,
+        expectedDistance: 7,
+      },
+      {
+        fields: 'target and distance',
+        target: mm(1, 2, 3),
+        distance: 7,
+        expectedTarget: { x: 1, y: 2, z: 3 },
+        expectedDistance: 7,
+      },
+    ])(
+      'applies an isometric view with its $fields',
+      async ({ target, distance, expectedTarget, expectedDistance }) => {
+        await applyNamedViewCamera({
+          camera: orientedCamera({
+            orientation: 'isometric',
+            target,
+            distance,
+          }),
+          sceneInfra: f.sceneInfra,
+          engineCommandManager: f.engineCommandManager,
+        })
+
+        expect(f.getCameraView).toHaveBeenCalledOnce()
+        expect(f.setCameraView).toHaveBeenCalledWith({
+          ...FITTED_ISOMETRIC_VIEW,
+          pivot_position: expectedTarget,
+          eye_offset: expectedDistance,
+        })
+      }
+    )
   })
 
   describe('framing when the author omitted it', () => {

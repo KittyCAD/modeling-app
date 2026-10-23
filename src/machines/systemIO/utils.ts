@@ -1,8 +1,9 @@
 import type { MlToolResult } from '@kittycad/lib'
 import type { ExecState } from '@src/lang/wasm'
-import type { App } from '@src/lib/app'
+import type { ZDSProject } from '@src/lib/projectSession'
 import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
+import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import fsZds from '@src/lib/fs-zds'
 import {
   appendGitignoreForDirectoryWithFs,
@@ -20,6 +21,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   getZookeeperEditPatchFromToolOutput,
   isZookeeperProjectEntrypointPath,
+  normalizeZookeeperPatchPath,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -116,9 +118,17 @@ export enum SystemIOMachineGuards {
 
 export const NO_PROJECT_DIRECTORY = ''
 
+/** Capabilities used by legacy filesystem workflows, supplied by the registry. */
+export interface SystemIOHost {
+  readonly fileOperations: FileOperationsRegistryService
+  readonly project: ZDSProject | undefined
+  readonly wasmPromise: Promise<ModuleType>
+  readonly systemIOActor: SystemIOActor
+}
+
 export type SystemIOInput = {
   wasmInstancePromise: Promise<ModuleType>
-  app: App
+  host: SystemIOHost
 }
 
 export type SystemIOContext = SystemIOInput & {
@@ -165,6 +175,11 @@ export type SystemIOContext = SystemIOInput & {
   deferredSystemIOEvent?: EventObject
   lastRecursiveMoveTarget?: string
   lastOperation: any
+}
+
+export interface BulkFileWriteProgress {
+  written: number
+  total: number
 }
 
 export type RequestedKCLFile = {
@@ -399,9 +414,24 @@ export const collectProjectFiles = async (args: {
         const relativePath = (
           fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
         ).replace(/\\/g, '/')
-        const isDirectory =
-          (await args.fileOperations.stat(absolutePathToFileNameWithExtension))
-            .kind === 'directory'
+        let isDirectory: boolean
+        try {
+          isDirectory =
+            (
+              await args.fileOperations.stat(
+                absolutePathToFileNameWithExtension
+              )
+            ).kind === 'directory'
+        } catch (error) {
+          // Directory entries can disappear while a project is being collected.
+          if (
+            error instanceof FileNotFound &&
+            args.skipUnreadableFiles !== false
+          ) {
+            continue
+          }
+          return Promise.reject(error)
+        }
 
         if (
           isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)
@@ -448,7 +478,6 @@ type ZookeeperNewFileRequestProps = {
   toolOutput: MlToolResult
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
-  filesToDelete?: RequestedKCLFileDelete[]
 }
 
 export const prepareZookeeperNewFileRequest = ({
@@ -456,7 +485,6 @@ export const prepareZookeeperNewFileRequest = ({
   toolOutput,
   projectNameCurrentlyOpened,
   fileFocusedOnInEditor,
-  filesToDelete = [],
 }: ZookeeperNewFileRequestProps & { fallbackFilePath?: string }) => {
   if (
     toolOutput.type !== 'text_to_cad' &&
@@ -464,18 +492,23 @@ export const prepareZookeeperNewFileRequest = ({
   ) {
     return
   }
-  const outputsRecord: Record<string, string> = {
-    ...(toolOutput.outputs ?? {}),
-  }
-  const requestedFiles: RequestedKCLFile[] = Object.entries(outputsRecord).map(
-    ([relativePath, fileContents]) => {
-      return {
-        requestedCode: fileContents,
-        requestedFileName: relativePath,
-        requestedProjectName: projectNameCurrentlyOpened,
-      }
-    }
+  const rawZookeeperEditPatch = getZookeeperEditPatchFromToolOutput(toolOutput)
+  const writablePaths = new Set(
+    (rawZookeeperEditPatch?.changed_files ?? [])
+      .filter((file) => file.status === 'created' || file.status === 'modified')
+      .map((file) => normalizeZookeeperPatchPath(file.path))
   )
+  const requestedFiles: RequestedKCLFile[] = Object.entries(
+    toolOutput.outputs ?? {}
+  )
+    .filter(([relativePath]) =>
+      writablePaths.has(normalizeZookeeperPatchPath(relativePath))
+    )
+    .map(([relativePath, fileContents]) => ({
+      requestedCode: fileContents,
+      requestedFileName: normalizeZookeeperPatchPath(relativePath),
+      requestedProjectName: projectNameCurrentlyOpened,
+    }))
 
   // getFilePathRelativeToProject intentionally keeps the leading separator
   // (e.g. "/newFile.kcl"). Strip it here so the returned value is genuinely
@@ -487,7 +520,6 @@ export const prepareZookeeperNewFileRequest = ({
   const requestedFileNameWithExtension = rawRelativePath.startsWith(fsZds.sep)
     ? rawRelativePath.slice(fsZds.sep.length)
     : rawRelativePath
-  const rawZookeeperEditPatch = getZookeeperEditPatchFromToolOutput(toolOutput)
   const zookeeperEditPatch = rawZookeeperEditPatch
     ? {
         ...rawZookeeperEditPatch,
@@ -499,14 +531,6 @@ export const prepareZookeeperNewFileRequest = ({
       }
     : undefined
   const filesToDeleteByPath = new Map<string, RequestedKCLFileDelete>()
-
-  for (const file of filesToDelete) {
-    if (isZookeeperProjectEntrypointPath(file.requestedFileName)) continue
-    filesToDeleteByPath.set(
-      normalizeKCLFileDeletePath(file.requestedFileName),
-      file
-    )
-  }
 
   for (const file of zookeeperEditPatch?.changed_files ?? []) {
     if (file.status !== 'deleted') continue

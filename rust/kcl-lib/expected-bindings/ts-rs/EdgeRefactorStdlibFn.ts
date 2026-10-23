@@ -3,4 +3,4 @@
 /**
  * Which stdlib edge function produced this refactor metadata (for lint/code mod).
  */
-export type EdgeRefactorStdlibFn = "getOppositeEdge" | "getNextAdjacentEdge" | "getPreviousAdjacentEdge" | "getCommonEdge" | "edgeId";
+export type EdgeRefactorStdlibFn = "getOppositeEdge" | "getNextAdjacentEdge" | "getPreviousAdjacentEdge" | "getCommonEdge" | "edgeId" | "directEdgeTag";

@@ -1,10 +1,10 @@
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
   TEST_SETTINGS_KEY,
 } from '@e2e/playwright/storageStates'
-import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   createProject,
   executorInputPath,
@@ -16,8 +16,8 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
 import type { Page } from '@playwright/test'
 import {
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
   PROJECT_SETTINGS_FILE_NAME,
+  SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
@@ -25,14 +25,10 @@ import { isArray, uuidv4 } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
 import path, { join } from 'path'
 
-// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
-
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
   const userSettingsTab = page.getByRole('radio', { name: 'User' })
   const settingTheme = page.getByTestId('theme') // user tab only
-  const projectIdInput = page.getByTestId('project-id') // project tab only
   switch (tab) {
     case 'user':
       await userSettingsTab.click()
@@ -40,10 +36,9 @@ const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
       break
     case 'proj':
       await projectSettingsTab.click()
-      await expect(projectIdInput).toBeVisible()
+      await expect(projectSettingsTab).toBeChecked()
+      await expect(settingTheme).toHaveCount(0)
       break
-    default:
-      const _: never = tab
   }
 }
 
@@ -461,16 +456,86 @@ test.describe(
     )
 
     test(
+      'Opening and closing settings does not re-execute the code',
+      { tag: ['@macos', '@windows'] },
+      async ({ page, homePage, scene }) => {
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await page.evaluate(() => {
+          window.engineCommandManager?.clearCommandLogs()
+        })
+
+        await test.step('Open settings, switch tabs and close', async () => {
+          // In a file, this link opens settings with ?tab=project, and closing
+          // drops the query again. Both used to reopen the project.
+          await page.getByRole('link', { name: 'settings Settings' }).click()
+          await expect(
+            page.getByRole('heading', { name: 'Settings', exact: true })
+          ).toBeVisible()
+          await settingsSwitchTab(page)('user')
+          await page.getByTestId('settings-close-button').click()
+          await expect(
+            page.getByTestId('settings-dialog-panel')
+          ).not.toBeVisible()
+          await scene.settled()
+        })
+
+        await test.step('Postcondition: The code did not execute again', async () => {
+          const executions = await page.evaluate(
+            () =>
+              window.engineCommandManager?.commandLogs.filter(
+                (log) => log.type === 'execution-done'
+              ).length
+          )
+          expect(executions).toBe(0)
+        })
+      }
+    )
+
+    test(
       'Changing modeling default unit',
       { tag: ['@macos', '@windows'] },
-      async ({ page, homePage }) => {
+      async ({ page, homePage, scene, folderSetupFn }) => {
+        const projectName = 'units-project'
+        let projectSettingsPath = ''
+        let userSettingsPath = ''
+        let mainFilePath = ''
+
         await test.step(`Test setup`, async () => {
+          const projectSettings = settingsToToml({
+            settings: {
+              meta: {
+                id: uuidv4(),
+              },
+              modeling: {
+                base_unit: 'cm',
+              },
+            },
+          })
+
+          await folderSetupFn(async (dir) => {
+            const projectDir = path.join(dir, projectName)
+            projectSettingsPath = path.join(
+              projectDir,
+              PROJECT_SETTINGS_FILE_NAME
+            )
+            userSettingsPath = path.resolve(dir, '..', SETTINGS_FILE_NAME)
+            mainFilePath = path.join(projectDir, 'main.kcl')
+
+            await fsp.mkdir(projectDir, { recursive: true })
+            await Promise.all([
+              fsp.writeFile(
+                mainFilePath,
+                '@settings(defaultLengthUnit = mm)\n',
+                'utf8'
+              ),
+              fsp.writeFile(projectSettingsPath, projectSettings, 'utf8'),
+            ])
+          })
+
           await page.setBodyDimensions({ width: 1200, height: 500 })
-          await homePage.goToModelingScene()
-          const toastMessage = page.getByText(
-            `Successfully created "test-project"`
-          )
-          await expect(toastMessage).not.toBeVisible()
+          await homePage.openProject(projectName)
+          await scene.connectionEstablished()
           await page
             .getByRole('button', { name: 'Start Sketch' })
             .waitFor({ state: 'visible' })
@@ -479,12 +544,13 @@ test.describe(
         // Selectors and constants
         const userSettingsTab = page.getByRole('radio', { name: 'User' })
         const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
-        const defaultUnitSection = page.getByText(
-          'default unitRoll back default unitRoll back to match'
-        )
-        const defaultUnitRollbackButton = page.getByRole('button', {
-          name: 'Roll back default unit',
-        })
+        const defaultUnitInput = page.getByTestId('modeling-defaultUnit')
+        const persistedUnit = async (settingsPath: string) => {
+          const storedSettings = tomlToSettings(
+            await fsp.readFile(settingsPath, 'utf8')
+          )
+          return storedSettings.settings?.modeling?.base_unit
+        }
 
         await test.step(`Open the settings modal`, async () => {
           await page.getByRole('link', { name: 'Settings' }).last().click()
@@ -493,65 +559,27 @@ test.describe(
           ).toBeVisible()
         })
 
-        await test.step(`Reset unit setting`, async () => {
-          await settingsSwitchTab(page)('user')
-          await defaultUnitSection.hover()
-          await defaultUnitRollbackButton.click()
-          await projectSettingsTab.hover()
-          await projectSettingsTab.click()
-          await page.waitForTimeout(1000)
-        })
-
         await test.step('Change modeling default unit within project tab', async () => {
-          const changeUnitOfMeasureInProjectTab = async (
-            unitOfMeasure: string
-          ) => {
-            await test.step(`Set modeling default unit to ${unitOfMeasure}`, async () => {
-              await page
-                .getByTestId('modeling-defaultUnit')
-                .selectOption(`${unitOfMeasure}`)
-              const toastMessage = page.getByText(
-                `Set default unit to "${unitOfMeasure}" for this project`
-              )
-
-              // Assert visibility and disappearance
-              await expect(toastMessage).toBeVisible()
-              await expect(toastMessage).not.toBeVisible()
-            })
-          }
-          await changeUnitOfMeasureInProjectTab('in')
-          await changeUnitOfMeasureInProjectTab('ft')
-          await changeUnitOfMeasureInProjectTab('yd')
-          await changeUnitOfMeasureInProjectTab('cm')
-          await changeUnitOfMeasureInProjectTab('m')
+          await expect(projectSettingsTab).toBeChecked()
+          await expect(defaultUnitInput).toHaveValue('cm')
+          await defaultUnitInput.selectOption('yd')
+          await expect(
+            page.getByText('Set default unit to "yd" for this project')
+          ).toBeVisible()
+          await expect(defaultUnitInput).toHaveValue('yd')
+          await expect.poll(() => persistedUnit(projectSettingsPath)).toBe('yd')
         })
-
-        // Go to the user tab
-        await userSettingsTab.hover()
-        await settingsSwitchTab(page)('user')
-        await page.waitForTimeout(1000)
 
         await test.step('Change modeling default unit within user tab', async () => {
-          const changeUnitOfMeasureInUserTab = async (
-            unitOfMeasure: string
-          ) => {
-            await test.step(`Set modeling default unit to ${unitOfMeasure}`, async () => {
-              await page
-                .getByTestId('modeling-defaultUnit')
-                .selectOption(`${unitOfMeasure}`)
-              const toastMessage = page.getByText(
-                `Set default unit to "${unitOfMeasure}" as a user default`
-              )
-              await expect(toastMessage).toBeVisible()
-              await expect(toastMessage).not.toBeVisible()
-            })
-          }
-          await changeUnitOfMeasureInUserTab('in')
-          await changeUnitOfMeasureInUserTab('ft')
-          await changeUnitOfMeasureInUserTab('yd')
-          await changeUnitOfMeasureInUserTab('mm')
-          await changeUnitOfMeasureInUserTab('cm')
-          await changeUnitOfMeasureInUserTab('m')
+          await userSettingsTab.click()
+          await expect(userSettingsTab).toBeChecked()
+          await expect(defaultUnitInput).toHaveValue('in')
+          await defaultUnitInput.selectOption('ft')
+          await expect(
+            page.getByText('Set default unit to "ft" as a user default')
+          ).toBeVisible()
+          await expect(defaultUnitInput).toHaveValue('ft')
+          await expect.poll(() => persistedUnit(userSettingsPath)).toBe('ft')
         })
 
         // Close settings
@@ -560,131 +588,27 @@ test.describe(
 
         await test.step('Change modeling default unit within command bar', async () => {
           const commands = page.getByRole('button', { name: 'Commands' })
-          const changeUnitOfMeasureInCommandBar = async (
-            unitOfMeasure: string
-          ) => {
-            // Open command bar
-            await commands.click()
-            const settingsModelingDefaultUnitCommand = page.getByText(
-              'Settings · modeling · default unit'
-            )
-            await settingsModelingDefaultUnitCommand.click()
-
-            const commandOption = page.getByRole('option', {
-              name: unitOfMeasure,
-              exact: true,
-            })
-            await commandOption.click()
-
-            const toastMessage = page.getByText(
-              `Set default unit to "${unitOfMeasure}" for this project`
-            )
-            await expect(toastMessage).toBeVisible()
-          }
-          await changeUnitOfMeasureInCommandBar('in')
-          await changeUnitOfMeasureInCommandBar('ft')
-          await changeUnitOfMeasureInCommandBar('yd')
-          await changeUnitOfMeasureInCommandBar('mm')
-          await changeUnitOfMeasureInCommandBar('cm')
-          await changeUnitOfMeasureInCommandBar('m')
+          await commands.click()
+          await page.getByText('Settings · modeling · default unit').click()
+          await page.getByRole('option', { name: 'm', exact: true }).click()
+          await expect(
+            page.getByText('Set default unit to "m" for this project')
+          ).toBeVisible()
+          await expect.poll(() => persistedUnit(projectSettingsPath)).toBe('m')
         })
 
         await test.step('Change modeling default unit within gizmo', async () => {
-          const changeUnitOfMeasureInGizmo = async (
-            unitOfMeasure: string,
-            copy: string
-          ) => {
-            const gizmo = page.getByTestId('units-menu')
-            await gizmo.click()
-            const button = page.locator('ul').getByRole('button', {
-              name: copy,
-              exact: true,
-            })
-            await button.click()
-            const toastMessage = page.getByText(
-              `Updated per-file units to ${unitOfMeasure}.`
-            )
-            await expect(toastMessage).toBeVisible()
-          }
-
-          await changeUnitOfMeasureInGizmo('ft', 'Feet')
-          await changeUnitOfMeasureInGizmo('in', 'Inches')
-          await changeUnitOfMeasureInGizmo('yd', 'Yards')
-          await changeUnitOfMeasureInGizmo('cm', 'Centimeters')
-          await changeUnitOfMeasureInGizmo('m', 'Meters')
-          // Must come after 'm' because 'm' will partially match on 'mm'
-          await changeUnitOfMeasureInGizmo('mm', 'Millimeters')
-        })
-      }
-    )
-
-    test(
-      'Changing theme in sketch mode',
-      { tag: ['@macos', '@windows'] },
-      async ({ context, page, homePage, toolbar, scene, cmdBar }) => {
-        const u = await getUtils(page)
-        await context.addInitScript(() => {
-          localStorage.setItem(
-            'persistCode',
-            `sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [0, 0])
-    |> line(end = [5, 0])
-    |> line(end = [0, 5])
-    |> line(end = [-5, 0])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  extrude001 = extrude(sketch001, length = 5)
-  `
-          )
-        })
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        await homePage.goToModelingScene()
-        await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
-        await scene.settled()
-        await page.waitForTimeout(1000)
-
-        // Selectors and constants
-        const lineToolButton = page.getByTestId('line')
-        const segmentOverlays = page.getByTestId('segment-overlay')
-        const sketchOriginLocation = { x: 600, y: 250 }
-        const darkThemeSegmentColor: [number, number, number] = [249, 249, 249]
-        const lightThemeSegmentColor: [number, number, number] = [28, 28, 28]
-
-        await test.step(`Get into sketch mode`, async () => {
-          await page.mouse.click(700, 200)
-          await toolbar.editSketch()
-
-          // We use the line tool as a proxy for sketch mode
-          await expect(lineToolButton).toBeVisible()
-          await expect(segmentOverlays).toHaveCount(5)
-          // but we allow more time to pass for animating to the sketch
-          await page.waitForTimeout(1000)
-        })
-
-        await test.step(`Check the sketch line color before`, async () => {
+          await page.getByTestId('units-menu').click()
+          await page
+            .locator('ul')
+            .getByRole('button', { name: 'Inches', exact: true })
+            .click()
+          await expect(
+            page.getByText('Updated per-file units to in.')
+          ).toBeVisible()
           await expect
-            .poll(() =>
-              u.getGreatestPixDiff(sketchOriginLocation, darkThemeSegmentColor)
-            )
-            .toBeLessThan(15)
-        })
-
-        await test.step(`Change theme to light using command palette`, async () => {
-          await page.keyboard.press('ControlOrMeta+K')
-          await page.getByRole('option', { name: 'theme' }).click()
-          await page.getByRole('option', { name: 'light' }).click()
-          await expect(page.getByText('theme to "light"')).toBeVisible()
-
-          // Make sure we haven't left sketch mode
-          await expect(lineToolButton).toBeVisible()
-        })
-
-        await test.step(`Check the sketch line color after`, async () => {
-          await expect
-            .poll(() =>
-              u.getGreatestPixDiff(sketchOriginLocation, lightThemeSegmentColor)
-            )
-            .toBeLessThan(15)
+            .poll(() => fsp.readFile(mainFilePath, 'utf8'))
+            .toContain('@settings(defaultLengthUnit = in)')
         })
       }
     )

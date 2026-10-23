@@ -18,12 +18,12 @@ description: Physical properties pipe.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 54858.466573932674
+    "value": 54858.4666203169
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 127.01375253717136
+    "value": 127.01375032027804
   }
 }

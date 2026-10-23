@@ -58,7 +58,7 @@ bigCube
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hole::countersink function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-countersink0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-countersink0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-hole-countersink0.png"
@@ -106,7 +106,7 @@ cube1
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hole::countersink function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-countersink1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-countersink1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-hole-countersink1.png"
@@ -146,7 +146,7 @@ bigCube
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hole::countersink function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-countersink2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-countersink2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-hole-countersink2.png"
@@ -194,7 +194,7 @@ cube1
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hole::countersink function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-countersink3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-countersink3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-hole-countersink3.png"

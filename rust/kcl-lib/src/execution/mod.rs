@@ -1,6 +1,7 @@
 //! The executor for the AST.
 
 use std::collections::BTreeMap;
+use std::future::Future;
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -8,13 +9,17 @@ pub use artifact::ArtifactCommand;
 pub(crate) use artifact::EntityCloneInfo;
 pub(crate) use artifact::named_view_artifact;
 pub(crate) use artifact::sketch_block_constraint_type;
+pub use cache::Cache;
 use cache::GlobalState;
-pub use cache::bust_cache;
-pub use cache::clear_mem_cache;
+use futures::future::BoxFuture;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
+pub use kcl_api::DefaultPlanes;
+use kcl_api::Number;
+use kcl_api::Object;
+use kcl_api::ObjectId;
 pub use kcl_api::Operation;
 pub use kcl_api::artifact::Artifact;
 pub use kcl_api::artifact::ArtifactGraph;
@@ -71,10 +76,13 @@ pub use state::KclVersion;
 pub use state::LegacyAngleRefactorMeta;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub use state::NotYetAdded;
 pub(crate) use state::PendingEdgeRefactorMeta;
 pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
+pub(crate) use state::computed_kcl_version;
+pub(crate) use state::declared_kcl_version;
 
 use crate::CompilationIssue;
 use crate::ExecError;
@@ -93,16 +101,17 @@ use crate::execution::cad_op::OperationExt;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
 use crate::execution::typed_path::TypedPath;
-use crate::front::Number;
-use crate::front::Object;
-use crate::front::ObjectId;
+use crate::front::PointExt;
+use crate::front::SegmentExt;
 use crate::fs::FileManager;
 use crate::fs::FileSystemHandle;
 use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
+use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::modules::ModuleSource;
+use crate::named_views::values as named_views;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::NodeRef;
@@ -169,11 +178,10 @@ pub(crate) mod kcl_value_view;
 pub(crate) mod machine;
 mod memory;
 mod modeling;
-mod named_views;
 mod sketch_solve;
 mod solver_arc;
 mod state;
-pub mod typed_path;
+pub use kcl_api::typed_path;
 pub(crate) mod types;
 
 pub(crate) const SKETCH_BLOCK_PARAM_ON: &str = "on";
@@ -287,7 +295,13 @@ impl KclValueControlFlow {
 
     /// The source ranges of the wrapped value, for error reporting.
     pub(crate) fn source_ranges(&self) -> Vec<SourceRange> {
-        self.value.metadata().iter().map(|m| m.source_range).collect()
+        let deduplicated = self
+            .value
+            .metadata()
+            .into_iter()
+            .map(|m| m.source_range)
+            .collect::<AhashIndexSet<_>>();
+        deduplicated.into_iter().collect()
     }
 
     pub(crate) fn into_value(self) -> KclValue {
@@ -375,6 +389,10 @@ pub struct ExecOutcome {
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
+    /// The engine scene generation when this outcome was produced: the number of
+    /// runs so far that changed the engine scene. Runs answered from the cache
+    /// and mock runs leave it unchanged.
+    pub engine_scene_generation: usize,
     /// Source code of each module, for rendering issues against the module
     /// their source range points into. Not serialized to keep the WASM
     /// payload small; native callers (e.g. the Python bindings) read it
@@ -386,7 +404,7 @@ pub struct ExecOutcome {
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors
-/// [`crate::front::Freedom`] but adds an `Error` variant for when
+/// [`kcl_api::Freedom`] but adds an `Error` variant for when
 /// a point lookup fails.
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum SegmentFreedom {
@@ -397,12 +415,12 @@ enum SegmentFreedom {
     Error,
 }
 
-impl From<crate::front::Freedom> for SegmentFreedom {
-    fn from(f: crate::front::Freedom) -> Self {
+impl From<kcl_api::Freedom> for SegmentFreedom {
+    fn from(f: kcl_api::Freedom) -> Self {
         match f {
-            crate::front::Freedom::Free => Self::Free,
-            crate::front::Freedom::Fixed => Self::Fixed,
-            crate::front::Freedom::Conflict => Self::Conflict,
+            kcl_api::Freedom::Free => Self::Free,
+            kcl_api::Freedom::Fixed => Self::Fixed,
+            kcl_api::Freedom::Conflict => Self::Conflict,
         }
     }
 }
@@ -437,10 +455,11 @@ pub struct SketchConstraintStatus {
     /// - The same name for two sketches, when a function body declares the
     ///   sketch and is called more than once.
     ///
-    /// This name is accepted by [`ExecOutcome::render_sketch_png`]. Because
-    /// the report carries no other sketch identifier, rendering returns an
-    /// ambiguity error when multiple sketches share a name.
+    /// This name is accepted by [`ExecOutcome::render_sketch_png_instance`].
     pub name: String,
+    /// Zero-based creation order among sketches with this name, independent of
+    /// constraint-status grouping. Not stable across edits.
+    pub instance_index: usize,
     /// Overall constraint status derived from per-segment freedom.
     pub status: ConstraintKind,
     /// Number of segments that are under-constrained (free to move).
@@ -474,15 +493,15 @@ pub(crate) fn sketch_constraint_status_for_sketch(
     scene_objects: &[Object],
     sketch_obj: &Object,
 ) -> Option<SketchConstraintStatus> {
-    use crate::front::ObjectKind;
-    use crate::front::Segment;
+    use kcl_api::ObjectKind;
+    use kcl_api::Segment;
 
     let ObjectKind::Sketch(sketch) = &sketch_obj.kind else {
         return None;
     };
 
     // Closure to look up a point's freedom by ObjectId.
-    let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
+    let lookup = |id: ObjectId| -> Option<kcl_api::Freedom> {
         let obj = scene_objects.get(id.0)?;
         if let ObjectKind::Segment {
             segment: Segment::Point(p),
@@ -538,6 +557,7 @@ pub(crate) fn sketch_constraint_status_for_sketch(
 
     Some(SketchConstraintStatus {
         name: sketch_obj.label.clone(),
+        instance_index: 0,
         status,
         free_count,
         conflict_count,
@@ -550,10 +570,14 @@ pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Objec
     let mut under_constrained = Vec::new();
     let mut over_constrained = Vec::new();
     let mut errors = Vec::new();
+    let mut instance_counts = std::collections::HashMap::new();
     for obj in scene_objects {
-        let Some(entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
+        let Some(mut entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
             continue;
         };
+        let count = instance_counts.entry(entry.name.clone()).or_insert(0);
+        entry.instance_index = *count;
+        *count += 1;
         match entry.status {
             ConstraintKind::FullyConstrained => fully_constrained.push(entry),
             ConstraintKind::UnderConstrained => under_constrained.push(entry),
@@ -602,34 +626,71 @@ impl ExecOutcome {
         &self,
         sketch_name: &str,
     ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
-        use crate::front::ObjectKind;
-        use crate::tooling::sketch_visualizer::SketchVisualizationError;
-
-        let sketches = self
-            .scene_objects
-            .iter()
-            .filter_map(|object| match &object.kind {
-                ObjectKind::Sketch(sketch) if object.label == sketch_name => Some(sketch),
-                _ => None,
-            })
-            .collect::<Vec<_>>();
-        let sketch = match sketches.as_slice() {
-            [] => {
-                return Err(SketchVisualizationError::SketchNotFound {
-                    name: sketch_name.to_owned(),
-                });
-            }
-            [sketch] => *sketch,
-            _ => {
-                return Err(SketchVisualizationError::AmbiguousSketchName {
-                    name: sketch_name.to_owned(),
-                    count: sketches.len(),
-                });
-            }
-        };
-
-        crate::tooling::sketch_visualizer::render_sketch_png(&self.scene_objects, sketch)
+        self.render_sketch_png_instance(sketch_name, None)
     }
+
+    /// Render a named sketch using an optional instance index from its report.
+    /// Without an index, the name must be unique.
+    pub fn render_sketch_png_instance(
+        &self,
+        sketch_name: &str,
+        instance_index: Option<usize>,
+    ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        render_sketch_png_from_scene_objects(&self.scene_objects, sketch_name, instance_index)
+    }
+}
+
+pub(crate) fn render_sketch_png_from_scene_objects(
+    scene_objects: &[kcl_api::Object],
+    sketch_name: &str,
+    instance_index: Option<usize>,
+) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+    use kcl_api::ObjectKind;
+
+    use crate::tooling::sketch_visualizer::SketchVisualizationError;
+
+    let sketches_matching_name = scene_objects
+        .iter()
+        .filter_map(|object| match &object.kind {
+            ObjectKind::Sketch(sketch) if object.label == sketch_name => Some(sketch),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+
+    // Select the correct sketch, from all sketches matching the name.
+    let sketch = match (sketches_matching_name.as_slice(), instance_index) {
+        // No sketches matched the name.
+        ([], _) => {
+            return Err(SketchVisualizationError::SketchNotFound {
+                name: sketch_name.to_owned(),
+            });
+        }
+        // At least one sketch matched the name, and the user gave an index.
+        (_nonempty, Some(index)) => {
+            *sketches_matching_name
+                .get(index)
+                .ok_or_else(|| SketchVisualizationError::InstanceNotFound {
+                    name: sketch_name.to_owned(),
+                    index,
+                    count: sketches_matching_name.len(),
+                })?
+        }
+        // Exactly one sketch matched the name, the user didn't need any
+        // index because there is no ambiguity about which sketch.
+        ([sketch], None) => *sketch,
+
+        // More than one sketch matched the name, but there's no index
+        // to disambiguate.
+        (_nonempty, None) => {
+            return Err(SketchVisualizationError::AmbiguousSketchName {
+                name: sketch_name.to_owned(),
+                count: sketches_matching_name.len(),
+            });
+        }
+    };
+
+    // Now that we've selected the right sketch, visualize it.
+    crate::tooling::sketch_visualizer::render_sketch_png(scene_objects, sketch)
 }
 
 /// Configuration for mock execution.
@@ -653,7 +714,7 @@ pub struct MockConfig {
 #[serde(rename_all = "camelCase")]
 pub struct SegmentDragAnchor {
     pub segment_id: ObjectId,
-    pub target: crate::front::Point2d<Number>,
+    pub target: kcl_api::Point2d<Number>,
 }
 
 impl Default for MockConfig {
@@ -683,18 +744,6 @@ impl MockConfig {
         self.freedom_analysis = false;
         self
     }
-}
-
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct DefaultPlanes {
-    pub xy: uuid::Uuid,
-    pub xz: uuid::Uuid,
-    pub yz: uuid::Uuid,
-    pub neg_xy: uuid::Uuid,
-    pub neg_xz: uuid::Uuid,
-    pub neg_yz: uuid::Uuid,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
@@ -874,15 +923,15 @@ impl From<&Expr> for Metadata {
 }
 
 impl Metadata {
-    pub fn to_source_ref(meta: &[Metadata], node_path: Option<NodePath>) -> crate::front::SourceRef {
+    pub fn to_source_ref(meta: &[Metadata], node_path: Option<NodePath>) -> kcl_api::SourceRef {
         if meta.len() == 1 {
             let meta = &meta[0];
-            return crate::front::SourceRef::Simple {
+            return kcl_api::SourceRef::Simple {
                 range: meta.source_range,
                 node_path,
             };
         }
-        crate::front::SourceRef::BackTrace {
+        kcl_api::SourceRef::BackTrace {
             ranges: meta.iter().map(|m| (m.source_range, node_path.clone())).collect(),
         }
     }
@@ -910,18 +959,20 @@ pub enum ContextType {
 #[derive(Clone)]
 pub struct ExecutorContext {
     pub engine: Arc<EngineManager>,
+    /// Shared session cache, also used by associated mock execution.
+    pub cache: Cache,
     pub engine_batch: EngineBatchContext,
     pub fs: FileSystemHandle,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
     pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
-    /// Which executor evaluates KCL. Crate-internal: set before the first
-    /// run and immutable during execution (run methods take &self). Cloned
-    /// contexts (fresh roots, Args) inherit the same executor.
-    pub(crate) executor_kind: machine::ExecutorKind,
     /// Call-depth limit for the machine executor's runaway-recursion guard.
     /// Crate-internal policy, not user configuration.
     pub(crate) machine_call_depth_limit: usize,
+    /// If true, send BeginExecution and EndExecution before/after executing
+    /// KCL. This might need to be false if the engine server is disabling
+    /// rendering because it's in a headless context.
+    pub configure_engine_render: bool,
 }
 
 impl std::fmt::Debug for ExecutorContext {
@@ -932,7 +983,6 @@ impl std::fmt::Debug for ExecutorContext {
             .field("settings", &self.settings)
             .field("context_type", &self.context_type)
             .field("execution_callbacks", &self.execution_callbacks)
-            .field("executor_kind", &self.executor_kind)
             .field("machine_call_depth_limit", &self.machine_call_depth_limit)
             .finish()
     }
@@ -974,6 +1024,17 @@ pub struct ExecutorSettings {
     /// If not, defaults to whatever the engine's default is.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_backface_color: Option<String>,
+    /// If given, sets a custom engine pool.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pool: Option<String>,
+    /// If given, sets the Engine video width in pixels.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub video_res_width: Option<u32>,
+    /// If given, sets the Engine video height in pixels.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub video_res_height: Option<u32>,
+    /// asks the engine for geometry only mode - no video stream
+    pub geometry_only: bool,
 }
 
 fn is_false(b: &bool) -> bool {
@@ -993,6 +1054,10 @@ impl Default for ExecutorSettings {
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: None,
+            pool: None,
+            video_res_width: None,
+            video_res_height: None,
+            geometry_only: false,
         }
     }
 }
@@ -1017,6 +1082,10 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: modeling_settings.backface_color.map(|color| color.0),
+            pool: None,
+            video_res_width: None,
+            video_res_height: None,
+            geometry_only: false,
         }
     }
 }
@@ -1040,6 +1109,10 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: modeling.backface_color.map(|color| color.0),
+            pool: None,
+            video_res_width: None,
+            video_res_height: None,
+            geometry_only: false,
         }
     }
 }
@@ -1057,6 +1130,10 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: None,
+            pool: None,
+            video_res_width: None,
+            video_res_height: None,
+            geometry_only: false,
         }
     }
 }
@@ -1079,7 +1156,28 @@ impl ExecutorSettings {
     }
 }
 
+/// Either reuse a complete outcome or pass owned state into execution.
+/// Keep the execution state boxed when transferring it between phases.
+enum PreparedCachedExecution {
+    Cached(Box<ExecOutcome>),
+    Execute(Box<CachedExecution>),
+}
+
+struct CachedExecution {
+    program: crate::Program,
+    exec_state: Box<ExecState>,
+    universe_info: Option<(Universe, UniverseMap)>,
+    preserve_mem: PreserveMem,
+}
+
 impl ExecutorContext {
+    /// Use an existing cache for another handle to the same session, or for
+    /// associated mock execution. Independent sessions must use independent caches.
+    pub fn with_cache(mut self, cache: Cache) -> Self {
+        self.cache = cache;
+        self
+    }
+
     /// Create a new live executor context from an engine and file manager.
     pub fn new_with_engine_and_fs(
         engine: Arc<EngineManager>,
@@ -1088,28 +1186,28 @@ impl ExecutorContext {
     ) -> Self {
         ExecutorContext {
             engine,
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
     fn clone_with_fresh_execution_batch(&self) -> Self {
         Self {
             engine: self.engine.clone(),
+            cache: self.cache.clone(),
             engine_batch: EngineBatchContext::new(),
             fs: self.fs.clone(),
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
             execution_callbacks: self.execution_callbacks.clone(),
-            // Imported modules execute on this cloned context; keep them on
-            // the executor selected for the run instead of the default.
-            executor_kind: self.executor_kind,
             machine_call_depth_limit: self.machine_call_depth_limit,
+            configure_engine_render: true,
         }
     }
 
@@ -1119,11 +1217,62 @@ impl ExecutorContext {
         Self::new_with_engine_and_fs(engine, crate::fs::new_file_system_handle(FileManager::new()), settings)
     }
 
-    /// Create a new default executor context.
+    /// Toggle on engine graphics.
+    /// Make sure to disable them again when you're done.
+    pub async fn enable_engine_graphics(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        self.engine
+            .send_modeling_cmd(
+                &self.engine_batch,
+                exec_state.next_uuid(),
+                source_range,
+                &ModelingCmd::ToggleGraphics(kcmc::ToggleGraphics::enabled(true)),
+            )
+            .await
+            .map(|_| ())?;
+
+        Ok(())
+    }
+
+    pub async fn enable_engine_graphics_settings(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        let grid_scale_unit = if self.settings.fixed_size_grid {
+            GridScaleBehavior::Fixed(Some(exec_state.length_unit()))
+        } else {
+            GridScaleBehavior::ScaleWithZoom
+        };
+        self.engine
+            .apply_graphics_settings(
+                &self.engine_batch,
+                &self.settings,
+                source_range,
+                exec_state.id_generator(),
+                grid_scale_unit,
+            )
+            .await?;
+        Ok(())
+    }
+
+    pub async fn disable_engine_graphics(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        self.engine
+            .send_modeling_cmd(
+                &self.engine_batch,
+                exec_state.next_uuid(),
+                source_range,
+                &ModelingCmd::ToggleGraphics(kcmc::ToggleGraphics::enabled(false)),
+            )
+            .await
+            .map(|_| ())?;
+        Ok(())
+    }
+
+    /// Open an engine session for the entrypoint's resolved `Program::language_version()`.
+    /// The version is fixed for the lifetime of this connection.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings, kcl_version: KclVersion) -> Result<Self> {
         let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
-        let (ws, _headers) = client
+        let (ws, headers) = client
             .modeling()
             .commands_ws(kittycad::modeling::CommandsWsParams {
                 api_call_id: None,
@@ -1136,18 +1285,33 @@ impl ExecutorContext {
                 },
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },
-                pool: None,
-                geometry_only: None,
-                kcl_version: None,
+                pool: if settings.geometry_only {
+                    Some("cpu".to_string())
+                } else {
+                    settings.pool.clone()
+                },
+                geometry_only: Some(settings.geometry_only),
                 pr,
                 unlocked_framerate: None,
                 webrtc: Some(false),
-                video_res_width: None,
-                video_res_height: None,
+                video_res_width: settings.video_res_width,
+                video_res_height: settings.video_res_height,
+                kcl_version: Some(match kcl_version {
+                    KclVersion::V1 => kittycad::types::KclVersion::One0,
+                    KclVersion::V2 => kittycad::types::KclVersion::Two0,
+                    KclVersion::V3Preview => kittycad::types::KclVersion::Three0Preview,
+                    KclVersion::V3 => kittycad::types::KclVersion::Three0,
+                    KclVersion::V4Preview => kittycad::types::KclVersion::Four0Preview,
+                }),
             })
             .await?;
 
-        let engine_conn = EngineManager::new_websocket_transport(ws, settings.heartbeats).await;
+        let request_id = headers
+            .get("x-request-id")
+            .and_then(|id| id.to_str().ok())
+            .map(str::to_owned);
+        let engine_conn =
+            EngineManager::new_websocket_transport_with_request_id(ws, settings.heartbeats, request_id).await;
         let engine = Arc::new(engine_conn);
 
         Ok(Self::new_with_engine(engine, settings))
@@ -1162,13 +1326,14 @@ impl ExecutorContext {
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -1176,13 +1341,14 @@ impl ExecutorContext {
     pub fn new_mock(engine: Arc<EngineManager>, fs: FileSystemHandle, settings: ExecutorSettings) -> Self {
         ExecutorContext {
             engine,
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -1197,13 +1363,14 @@ impl ExecutorContext {
 
         Ok(ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         })
     }
 
@@ -1211,13 +1378,14 @@ impl ExecutorContext {
     pub fn new_forwarded_mock(engine: Arc<EngineManager>) -> Self {
         ExecutorContext {
             engine,
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(FileManager::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -1231,28 +1399,61 @@ impl ExecutorContext {
         settings: ExecutorSettings,
         token: Option<String>,
         engine_addr: Option<String>,
+        kcl_version: KclVersion,
     ) -> Result<Self> {
         // Create the client.
         let client = crate::engine::new_zoo_client(token, engine_addr)?;
 
-        let ctx = Self::new(&client, settings).await?;
+        let ctx = Self::new(&client, settings, kcl_version).await?;
         Ok(ctx)
     }
 
     /// Create a new default executor context.
-    /// With the default kittycad client.
+    /// With a kittycad client.
     /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
     /// variables.
+    /// But also allows for passing in a token and engine address directly.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_version(kcl_version: KclVersion) -> Result<Self> {
+        Self::new_with_client(Default::default(), None, None, kcl_version).await
+    }
+
+    /// Create a new default executor context.
+    /// With the default kittycad client and the default (unannotated) KCL version.
+    /// For a versioned entrypoint, use `new_with_client` or `new_with_version`
+    /// with `Program::language_version()`.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    #[cfg_attr(not(test), deprecated(note = "use fn new_with_version() instead"))]
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_with_default_client() -> Result<Self> {
-        // Create the client.
-        let ctx = Self::new_with_client(Default::default(), None, None).await?;
-        Ok(ctx)
+        Self::new_with_client(Default::default(), None, None, KclVersion::default()).await
+    }
+
+    /// Create a geometry-only executor context with the default client.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_geometry_only_with_default_client() -> Result<Self> {
+        Self::new_geometry_only_with_version(KclVersion::default()).await
+    }
+
+    /// Create a geometry-only executor context for the entrypoint's KCL version.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_geometry_only_with_version(kcl_version: KclVersion) -> Result<Self> {
+        Self::new_with_client(
+            ExecutorSettings {
+                geometry_only: true,
+                ..Default::default()
+            },
+            None,
+            None,
+            kcl_version,
+        )
+        .await
     }
 
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_for_unit_test(engine_addr: Option<String>) -> Result<Self> {
+    pub async fn new_for_unit_test(engine_addr: Option<String>, kcl_version: KclVersion) -> Result<Self> {
         let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
                 highlight_edges: true,
@@ -1265,9 +1466,14 @@ impl ExecutorContext {
                 skip_artifact_graph: false,
                 heartbeats: None,
                 default_backface_color: None,
+                pool: None,
+                video_res_width: None,
+                video_res_height: None,
+                geometry_only: false,
             },
             None,
             engine_addr,
+            kcl_version,
         )
         .await?;
         Ok(ctx)
@@ -1284,6 +1490,7 @@ impl ExecutorContext {
 
     pub async fn send_clear_scene(
         &self,
+        kcl_version: Option<KclVersion>,
         exec_state: &mut ExecState,
         source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
@@ -1294,11 +1501,16 @@ impl ExecutorContext {
         exec_state.global.artifacts.clear();
 
         self.engine
-            .clear_scene(&self.engine_batch, &mut exec_state.mod_local.id_generator, source_range)
+            .clear_scene(
+                &self.engine_batch,
+                &mut exec_state.mod_local.id_generator,
+                source_range,
+                kcl_version,
+                self.settings.geometry_only,
+            )
             .await?;
-        // The engine errors out if you toggle OIT with SSAO off.
-        // So ignore OIT settings if SSAO is off.
-        if self.settings.enable_ssao {
+        // OIT requires a graphical context with SSAO enabled.
+        if !self.settings.geometry_only && self.settings.enable_ssao {
             let cmd_id = exec_state.next_uuid();
             exec_state
                 .batch_modeling_cmd(
@@ -1310,8 +1522,10 @@ impl ExecutorContext {
         Ok(())
     }
 
+    /// Clear the KCL-lib internal cache and clear the entire engine scene.
+    /// Only executors sharing this session cache are affected.
     pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
-        cache::bust_cache().await;
+        self.cache.bust_cache().await;
 
         // Execute an empty program to clear and reset the scene.
         // We specifically want to be returned the objects after the scene is reset.
@@ -1320,6 +1534,12 @@ impl ExecutorContext {
         let outcome = self.run_with_caching(crate::Program::empty()).await?;
 
         Ok(outcome)
+    }
+
+    /// Clear the KCL-lib internal cache.
+    /// Only executors sharing this session cache are affected.
+    pub async fn bust_cache(&self) {
+        self.cache.bust_cache().await;
     }
 
     async fn prepare_mem(&self, exec_state: &mut ExecState) -> Result<(), KclErrorWithOutputs> {
@@ -1342,6 +1562,8 @@ impl ExecutorContext {
         exec_state.global.module_infos = mem.module_infos;
         exec_state.global.path_to_source_id = mem.path_to_source_id;
         exec_state.global.id_to_source = mem.id_to_source;
+        exec_state.global.never_type_ranges = mem.never_type_ranges;
+        exec_state.global.std_not_yet_added = mem.std_not_yet_added;
         exec_state.mod_local.constraint_state = mem.constraint_state;
         let len = _mock_config
             .sketch_block_id
@@ -1382,8 +1604,11 @@ impl ExecutorContext {
         let module_infos = exec_state.global.module_infos.clone();
         let path_to_source_id = exec_state.global.path_to_source_id.clone();
         let id_to_source = exec_state.global.id_to_source.clone();
+        let never_type_ranges = exec_state.global.never_type_ranges.clone();
         let constraint_state = exec_state.mod_local.constraint_state.clone();
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
+        let std_not_yet_added = exec_state.global.std_not_yet_added.clone();
+        let kcl_version = exec_state.entry_point_kcl_version();
         let outcome = exec_state
             .into_exec_outcome(main_ref, self)
             .await
@@ -1395,10 +1620,13 @@ impl ExecutorContext {
             module_infos,
             path_to_source_id,
             id_to_source,
+            never_type_ranges,
             constraint_state,
             scene_objects,
+            std_not_yet_added,
+            kcl_version,
         };
-        cache::write_old_memory(state).await;
+        self.cache.write_old_memory(state).await;
 
         Ok(outcome)
     }
@@ -1419,10 +1647,20 @@ impl ExecutorContext {
 
         let use_prev_memory = mock_config.use_prev_memory;
         let mut exec_state = ExecState::new_mock(self, mock_config);
+        // Before the prelude runs below, so that `added_in` gating in std sees
+        // the program's version rather than the default.
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         if use_prev_memory {
-            match cache::read_old_memory().await {
-                Some(mem) => Self::restore_mock_memory(&mut exec_state, mem, mock_config)?,
-                None => self.prepare_mem(&mut exec_state).await?,
+            match self.cache.read_old_memory().await {
+                Some(mem) if mem.reusable_for(exec_state.entry_point_kcl_version()) => {
+                    Self::restore_mock_memory(&mut exec_state, mem, mock_config)?
+                }
+                // No memory, or memory from another effective kclVersion, whose
+                // bindings, module outcomes, and prelude this program must not
+                // see.
+                _ => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
             self.prepare_mem(&mut exec_state).await?
@@ -1440,65 +1678,186 @@ impl ExecutorContext {
         Ok((exec_state, main_ref))
     }
 
+    /// Plan, execute, and save in separate phases so cache-management stack
+    /// frames are not held underneath deep KCL execution in debug builds.
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
-        let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
+        let exec_fut = self.run_with_caching_inner(program);
+        let result = if self.configure_engine_render {
+            self.with_engine_execution(Box::pin(exec_fut)).await
         } else {
-            GridScaleBehavior::ScaleWithZoom
+            exec_fut.await
         };
 
+        match result {
+            Ok(outcome) => Ok(outcome),
+            Err(mut err) => {
+                self.cache.bust_cache().await;
+                err.engine_scene_generation = Some(self.cache.engine_scene_generation().await);
+                Err(err)
+            }
+        }
+    }
+
+    async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let original_program = program.clone();
+        let prepared = self.prepare_cached_execution(program).await;
+        if !matches!(prepared, Ok(PreparedCachedExecution::Cached(_))) {
+            // Anything but a cache hit may have changed the engine scene, even
+            // if it went on to fail.
+            self.cache.bump_engine_scene_generation().await;
+        }
+        let CachedExecution {
+            program,
+            mut exec_state,
+            universe_info,
+            preserve_mem,
+        } = *match prepared? {
+            PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
+            PreparedCachedExecution::Execute(execution) => execution,
+        };
+        let result = self
+            .run_concurrent_inner(&program, &mut exec_state, universe_info, preserve_mem)
+            .await;
+        self.finish_cached_execution(original_program, exec_state, result).await
+    }
 
-        let (_program, exec_state, result) = match cache::read_old_ast().await {
-            Some(mut cached_state) => {
-                let old = CacheInformation {
-                    ast: &cached_state.main.ast,
-                    settings: &cached_state.settings,
-                };
-                let new = CacheInformation {
-                    ast: &program.ast,
-                    settings: &self.settings,
-                };
+    // Construct each phase's future here, rather than in run_with_caching,
+    // so the coordinator does not reserve stack for its large temporaries.
+    #[inline(never)]
+    fn prepare_cached_execution(
+        &self,
+        program: crate::Program,
+    ) -> BoxFuture<'_, Result<PreparedCachedExecution, KclErrorWithOutputs>> {
+        Box::pin(async move {
+            let grid_scale = if self.settings.fixed_size_grid {
+                GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
+            } else {
+                GridScaleBehavior::ScaleWithZoom
+            };
 
-                // Get the program that actually changed from the old and new information.
-                let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
-                    CacheResult::ReExecute {
-                        clear_scene,
-                        reapply_settings,
-                        program: changed_program,
-                    } => {
-                        if reapply_settings
-                            && self
-                                .engine
-                                .reapply_settings(
-                                    &self.engine_batch,
-                                    &self.settings,
-                                    Default::default(),
-                                    &mut cached_state.main.exec_state.id_generator,
-                                    grid_scale,
+            let (program, exec_state, universe_info, preserve_mem) = match self.cache.read_old_ast().await {
+                Some(mut cached_state) => {
+                    let old = CacheInformation {
+                        ast: &cached_state.main.ast,
+                        settings: &cached_state.settings,
+                        kcl_version: cached_state.kcl_version,
+                    };
+                    let new = CacheInformation {
+                        ast: &program.ast,
+                        settings: &self.settings,
+                        kcl_version: program.kcl_version,
+                    };
+
+                    // Get the program that actually changed from the old and new information.
+                    let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
+                        CacheResult::ReExecute {
+                            clear_scene,
+                            reapply_settings,
+                            program: changed_program,
+                        } => {
+                            if reapply_settings
+                                && self
+                                    .engine
+                                    .reapply_settings(
+                                        &self.engine_batch,
+                                        &self.settings,
+                                        Default::default(),
+                                        &mut cached_state.main.exec_state.id_generator,
+                                        grid_scale,
+                                    )
+                                    .await
+                                    .is_err()
+                            {
+                                (true, program, None)
+                            } else {
+                                (
+                                    clear_scene,
+                                    crate::Program {
+                                        kcl_version: program.kcl_version,
+                                        ast: changed_program,
+                                        original_file_contents: program.original_file_contents,
+                                    },
+                                    None,
                                 )
-                                .await
-                                .is_err()
-                        {
-                            (true, program, None)
-                        } else {
-                            (
-                                clear_scene,
-                                crate::Program {
-                                    ast: changed_program,
-                                    original_file_contents: program.original_file_contents,
-                                },
-                                None,
-                            )
+                            }
                         }
-                    }
-                    CacheResult::CheckImportsOnly {
-                        reapply_settings,
-                        ast: changed_program,
-                    } => {
-                        let mut reapply_failed = false;
-                        if reapply_settings {
+                        CacheResult::CheckImportsOnly {
+                            reapply_settings,
+                            ast: changed_program,
+                        } => {
+                            let mut reapply_failed = false;
+                            if reapply_settings {
+                                if self
+                                    .engine
+                                    .reapply_settings(
+                                        &self.engine_batch,
+                                        &self.settings,
+                                        Default::default(),
+                                        &mut cached_state.main.exec_state.id_generator,
+                                        grid_scale,
+                                    )
+                                    .await
+                                    .is_ok()
+                                {
+                                    self.cache
+                                        .write_old_ast(GlobalState::with_settings(
+                                            cached_state.clone(),
+                                            self.settings.clone(),
+                                        ))
+                                        .await;
+                                } else {
+                                    reapply_failed = true;
+                                }
+                            }
+
+                            if reapply_failed {
+                                (true, program, None)
+                            } else {
+                                // We need to check our imports to see if they changed.
+                                let mut new_exec_state = ExecState::new(self);
+                                let (new_universe, new_universe_map) =
+                                    self.get_universe(&program, &mut new_exec_state).await?;
+
+                                let clear_scene = new_universe.values().any(|value| {
+                                    let id = value.1;
+                                    match (
+                                        cached_state.exec_state.get_source(id),
+                                        new_exec_state.global.get_source(id),
+                                    ) {
+                                        (Some(s0), Some(s1)) => s0.source != s1.source,
+                                        _ => false,
+                                    }
+                                });
+
+                                if !clear_scene {
+                                    // Return early we don't need to clear the scene.
+                                    self.cache
+                                        .write_old_memory(
+                                            cached_state
+                                                .mock_memory_state()
+                                                .map_err(KclErrorWithOutputs::no_outputs)?,
+                                        )
+                                        .await;
+                                    return cached_state
+                                        .into_exec_outcome(self)
+                                        .await
+                                        .map(|outcome| PreparedCachedExecution::Cached(Box::new(outcome)))
+                                        .map_err(KclErrorWithOutputs::no_outputs);
+                                }
+
+                                (
+                                    true,
+                                    crate::Program {
+                                        kcl_version: program.kcl_version,
+                                        ast: changed_program,
+                                        original_file_contents: program.original_file_contents,
+                                    },
+                                    Some((new_universe, new_universe_map, new_exec_state)),
+                                )
+                            }
+                        }
+                        CacheResult::NoAction(true) => {
                             if self
                                 .engine
                                 .reapply_settings(
@@ -1511,193 +1870,131 @@ impl ExecutorContext {
                                 .await
                                 .is_ok()
                             {
-                                cache::write_old_ast(GlobalState::with_settings(
-                                    cached_state.clone(),
-                                    self.settings.clone(),
-                                ))
-                                .await;
-                            } else {
-                                reapply_failed = true;
+                                // We need to update the old ast state with the new settings!!
+                                self.cache
+                                    .write_old_ast(GlobalState::with_settings(
+                                        cached_state.clone(),
+                                        self.settings.clone(),
+                                    ))
+                                    .await;
+
+                                self.cache
+                                    .write_old_memory(
+                                        cached_state
+                                            .mock_memory_state()
+                                            .map_err(KclErrorWithOutputs::no_outputs)?,
+                                    )
+                                    .await;
+                                return cached_state
+                                    .into_exec_outcome(self)
+                                    .await
+                                    .map(|outcome| PreparedCachedExecution::Cached(Box::new(outcome)))
+                                    .map_err(KclErrorWithOutputs::no_outputs);
                             }
-                        }
-
-                        if reapply_failed {
                             (true, program, None)
-                        } else {
-                            // We need to check our imports to see if they changed.
-                            let mut new_exec_state = ExecState::new(self);
-                            let (new_universe, new_universe_map) =
-                                self.get_universe(&program, &mut new_exec_state).await?;
-
-                            let clear_scene = new_universe.values().any(|value| {
-                                let id = value.1;
-                                match (
-                                    cached_state.exec_state.get_source(id),
-                                    new_exec_state.global.get_source(id),
-                                ) {
-                                    (Some(s0), Some(s1)) => s0.source != s1.source,
-                                    _ => false,
-                                }
-                            });
-
-                            if !clear_scene {
-                                // Return early we don't need to clear the scene.
-                                cache::write_old_memory(
+                        }
+                        CacheResult::NoAction(false) => {
+                            self.cache
+                                .write_old_memory(
                                     cached_state
                                         .mock_memory_state()
                                         .map_err(KclErrorWithOutputs::no_outputs)?,
                                 )
                                 .await;
-                                return cached_state
-                                    .into_exec_outcome(self)
-                                    .await
-                                    .map_err(KclErrorWithOutputs::no_outputs);
-                            }
-
-                            (
-                                true,
-                                crate::Program {
-                                    ast: changed_program,
-                                    original_file_contents: program.original_file_contents,
-                                },
-                                Some((new_universe, new_universe_map, new_exec_state)),
-                            )
-                        }
-                    }
-                    CacheResult::NoAction(true) => {
-                        if self
-                            .engine
-                            .reapply_settings(
-                                &self.engine_batch,
-                                &self.settings,
-                                Default::default(),
-                                &mut cached_state.main.exec_state.id_generator,
-                                grid_scale,
-                            )
-                            .await
-                            .is_ok()
-                        {
-                            // We need to update the old ast state with the new settings!!
-                            cache::write_old_ast(GlobalState::with_settings(
-                                cached_state.clone(),
-                                self.settings.clone(),
-                            ))
-                            .await;
-
-                            cache::write_old_memory(
-                                cached_state
-                                    .mock_memory_state()
-                                    .map_err(KclErrorWithOutputs::no_outputs)?,
-                            )
-                            .await;
                             return cached_state
                                 .into_exec_outcome(self)
                                 .await
+                                .map(|outcome| PreparedCachedExecution::Cached(Box::new(outcome)))
                                 .map_err(KclErrorWithOutputs::no_outputs);
                         }
-                        (true, program, None)
-                    }
-                    CacheResult::NoAction(false) => {
-                        cache::write_old_memory(
-                            cached_state
-                                .mock_memory_state()
-                                .map_err(KclErrorWithOutputs::no_outputs)?,
-                        )
-                        .await;
-                        return cached_state
-                            .into_exec_outcome(self)
-                            .await
-                            .map_err(KclErrorWithOutputs::no_outputs);
-                    }
-                };
+                    };
 
-                let (exec_state, result) = match import_check_info {
-                    Some((new_universe, new_universe_map, mut new_exec_state)) => {
-                        // Clear the scene if the imports changed.
-                        self.send_clear_scene(&mut new_exec_state, Default::default())
-                            .await
-                            .map_err(KclErrorWithOutputs::no_outputs)?;
+                    let (exec_state, universe_info, preserve_mem) = match import_check_info {
+                        Some((new_universe, new_universe_map, mut new_exec_state)) => {
+                            // Clear the scene if the imports changed.
+                            self.send_clear_scene(Some(program.kcl_version), &mut new_exec_state, Default::default())
+                                .await
+                                .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                        let result = self
-                            .run_concurrent(
-                                &program,
-                                &mut new_exec_state,
+                            (
+                                new_exec_state,
                                 Some((new_universe, new_universe_map)),
                                 PreserveMem::Normal,
                             )
-                            .await;
+                        }
+                        None if clear_scene => {
+                            // Pop the execution state, since we are starting fresh.
+                            let mut exec_state = cached_state.reconstitute_exec_state(self);
+                            exec_state.reset(self);
 
-                        (new_exec_state, result)
-                    }
-                    None if clear_scene => {
-                        // Pop the execution state, since we are starting fresh.
-                        let mut exec_state = cached_state.reconstitute_exec_state(self);
-                        exec_state.reset(self);
+                            self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
+                                .await
+                                .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                        self.send_clear_scene(&mut exec_state, Default::default())
-                            .await
-                            .map_err(KclErrorWithOutputs::no_outputs)?;
+                            (exec_state, None, PreserveMem::Normal)
+                        }
+                        None => {
+                            let mut exec_state = cached_state.reconstitute_exec_state(self);
+                            exec_state
+                                .mut_stack()
+                                .restore_env(cached_state.main.result_env)
+                                .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                        let result = self
-                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
-                            .await;
+                            (exec_state, None, PreserveMem::Always)
+                        }
+                    };
 
-                        (exec_state, result)
-                    }
-                    None => {
-                        let mut exec_state = cached_state.reconstitute_exec_state(self);
-                        exec_state
-                            .mut_stack()
-                            .restore_env(cached_state.main.result_env)
-                            .map_err(KclErrorWithOutputs::no_outputs)?;
+                    (program, exec_state, universe_info, preserve_mem)
+                }
+                None => {
+                    let mut exec_state = ExecState::new(self);
+                    self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
+                        .await
+                        .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                        let result = self
-                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Always)
-                            .await;
+                    (program, exec_state, None, PreserveMem::Normal)
+                }
+            };
 
-                        (exec_state, result)
-                    }
-                };
+            Ok(PreparedCachedExecution::Execute(Box::new(CachedExecution {
+                program,
+                exec_state: Box::new(exec_state),
+                universe_info,
+                preserve_mem,
+            })))
+        })
+    }
 
-                (program, exec_state, result)
-            }
-            None => {
-                let mut exec_state = ExecState::new(self);
-                self.send_clear_scene(&mut exec_state, Default::default())
-                    .await
-                    .map_err(KclErrorWithOutputs::no_outputs)?;
+    #[inline(never)]
+    fn finish_cached_execution(
+        &self,
+        original_program: crate::Program,
+        exec_state: Box<ExecState>,
+        result: Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs>,
+    ) -> BoxFuture<'_, Result<ExecOutcome, KclErrorWithOutputs>> {
+        Box::pin(async move {
+            // Throw the error.
+            let result = result?;
 
-                let result = self
-                    .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
-                    .await;
+            // Save this as the last successful execution to the cache.
+            // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
+            // the last-successful AST. Instead, save in the full AST passed in.
+            self.cache
+                .write_old_ast(GlobalState::new(
+                    (*exec_state).clone(),
+                    self.settings.clone(),
+                    original_program.kcl_version,
+                    original_program.ast,
+                    result.0,
+                ))
+                .await;
 
-                (program, exec_state, result)
-            }
-        };
-
-        if result.is_err() {
-            cache::bust_cache().await;
-        }
-
-        // Throw the error.
-        let result = result?;
-
-        // Save this as the last successful execution to the cache.
-        // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
-        // the last-successful AST. Instead, save in the full AST passed in.
-        cache::write_old_ast(GlobalState::new(
-            exec_state.clone(),
-            self.settings.clone(),
-            original_program.ast,
-            result.0,
-        ))
-        .await;
-
-        let outcome = exec_state
-            .into_exec_outcome(result.0, self)
-            .await
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-        Ok(outcome)
+            let outcome = exec_state
+                .into_exec_outcome(result.0, self)
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
+            Ok(outcome)
+        })
     }
 
     /// Perform the execution of a program.
@@ -1723,10 +2020,87 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        let execution_fut = self.run_concurrent_inner(program, exec_state, universe_info, preserve_mem);
+        if self.configure_engine_render {
+            self.with_engine_execution(Box::pin(execution_fut)).await
+        } else {
+            execution_fut.await
+        }
+    }
+
+    /// Enclose the entire execution, including scene setup and cached settings updates.
+    async fn with_engine_execution<T>(
+        &self,
+        execution: impl Future<Output = Result<T, KclErrorWithOutputs>>,
+    ) -> Result<T, KclErrorWithOutputs> {
+        self.send_execution_boundary(ModelingCmd::from(
+            mcmd::BeginExecution::builder().enable_render(true).build(),
+        ))
+        .await
+        .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let exec_res = execution.await;
+        let flush_res = self.engine.ensure_async_commands_completed(&self.engine_batch).await;
+        if flush_res.is_err() {
+            // Do not carry unexecuted commands from a failed flush into the next execution.
+            self.engine.clear_queues(&self.engine_batch).await;
+        }
+        // Always end execution, even when evaluation or the final flush failed.
+        let end_res = self
+            .send_execution_boundary(ModelingCmd::from(mcmd::EndExecution::default()))
+            .await;
+        match (exec_res, flush_res.and(end_res)) {
+            (Ok(res), Ok(())) => Ok(res),
+            (Err(e), _) => Err(e),
+            (Ok(_), Err(e)) => Err(KclErrorWithOutputs::no_outputs(e)),
+        }
+    }
+
+    async fn send_execution_boundary(&self, cmd: ModelingCmd) -> Result<(), KclError> {
+        // A separate, empty queue keeps these commands outside all modeling batches.
+        // Their IDs must not consume or collide with the model's stable artifact IDs.
+        self.engine
+            .send_modeling_cmd(
+                &EngineBatchContext::new(),
+                uuid::Uuid::new_v4(),
+                SourceRange::synthetic(),
+                &cmd,
+            )
+            .await
+            .map(|_| ())
+    }
+
+    fn default_tolerance_command(exec_state: &ExecState) -> Option<ModelingCmd> {
+        exec_state.entry_point_version_is_v3_or_higher().then(|| {
+            let tolerance = kcmc::shared::Tolerance::builder()
+                .point_point_2d_coincident(kcmc::length_unit::LengthUnit(
+                    crate::std::solver::POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM,
+                ))
+                .build();
+            ModelingCmd::from(mcmd::SetDefaultSystemProperties::builder().tolerance(tolerance).build())
+        })
+    }
+
+    async fn run_concurrent_inner(
+        &self,
+        program: &crate::Program,
+        exec_state: &mut ExecState,
+        universe_info: Option<(Universe, UniverseMap)>,
+        preserve_mem: PreserveMem,
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Record the entry point's kclVersion before anything executes;
         // imported modules pre-execute on clones of this state below and must
         // inherit it.
-        exec_state.set_entry_point_kcl_version(program);
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        // Apply the physical tolerance before imported modules send geometry commands.
+        if let Some(cmd) = Self::default_tolerance_command(exec_state) {
+            self.send_execution_boundary(cmd)
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
+        }
 
         // Reuse our cached universe if we have one.
 
@@ -1973,6 +2347,11 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(Universe, UniverseMap), KclErrorWithOutputs> {
+        // Import validation needs the entry point's version even when a fresh
+        // state is created only to check imports in a cached execution.
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         exec_state.add_root_module_contents(program);
 
         let mut universe = std::collections::HashMap::new();
@@ -2005,7 +2384,9 @@ impl ExecutorContext {
         // Record the entry point's kclVersion. Mock execution reaches here
         // without going through run_concurrent; on the engine path this
         // re-assigns the same value, which is harmless.
-        exec_state.set_entry_point_kcl_version(program);
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {
@@ -2052,10 +2433,13 @@ impl ExecutorContext {
                 module_infos: exec_state.global.module_infos.clone(),
                 path_to_source_id: exec_state.global.path_to_source_id.clone(),
                 id_to_source: exec_state.global.id_to_source.clone(),
+                never_type_ranges: exec_state.global.never_type_ranges.clone(),
                 constraint_state: exec_state.mod_local.constraint_state.clone(),
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
+                std_not_yet_added: exec_state.global.std_not_yet_added.clone(),
+                kcl_version: exec_state.entry_point_kcl_version(),
             };
-            cache::write_old_memory(state).await;
+            ctx.cache.write_old_memory(state).await;
             Ok(())
         }
 
@@ -2185,9 +2569,11 @@ impl ExecutorContext {
             let id = self
                 .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
                 .await?;
-            let (module_memory, _) = self.exec_module_for_items(id, exec_state, source_range).await?;
+            let prelude = self.exec_module_for_items(id, exec_state, source_range).await?;
 
-            exec_state.mut_stack().memory.set_std(module_memory)?;
+            exec_state.mut_stack().memory.set_std(prelude.environment)?;
+            // Root environments reach the prelude without an import, so its records live here.
+            exec_state.global.std_not_yet_added = prelude.not_yet_added;
 
             // Operations generated by the prelude are not useful, so clear them
             // out.
@@ -2319,19 +2705,16 @@ pub(crate) async fn parse_execute_with_project_dir(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    // Differential testing: unit tests run under both executors.
-    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::resolve()).await
+    parse_execute_inner(code, project_directory, false).await
 }
 
 /// A mock-engine executor context for tests that need to inspect the context
 /// (e.g. the engine's batch queue) even when execution fails.
 #[cfg(test)]
-pub(crate) fn new_mock_executor_context(
-    project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
-) -> ExecutorContext {
+pub(crate) fn new_mock_executor_context(project_directory: Option<TypedPath>) -> ExecutorContext {
     ExecutorContext {
         engine: Arc::new(EngineManager::new_mock()),
+        cache: Cache::default(),
         engine_batch: EngineBatchContext::default(),
         fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
@@ -2340,21 +2723,33 @@ pub(crate) fn new_mock_executor_context(
         },
         context_type: ContextType::Mock,
         execution_callbacks: Default::default(),
-        executor_kind,
         machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+        configure_engine_render: true,
     }
 }
 
+/// Like [`parse_execute_with_project_dir`], but missing names are explained
+/// for user declarations too, not only std's. Only for tests of the `added_in`
+/// hint itself, which std gives no declaration to exercise yet.
 #[cfg(test)]
-pub(crate) async fn parse_execute_with_executor_kind(
+pub(crate) async fn parse_execute_hinting_all(
     code: &str,
     project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
+) -> Result<ExecTestResults, KclError> {
+    parse_execute_inner(code, project_directory, true).await
+}
+
+#[cfg(test)]
+async fn parse_execute_inner(
+    code: &str,
+    project_directory: Option<TypedPath>,
+    hint_all_not_yet_added: bool,
 ) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
-    let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
+    let exec_ctxt = new_mock_executor_context(project_directory);
     let mut exec_state = ExecState::new(&exec_ctxt);
+    exec_state.global.hint_all_not_yet_added = hint_all_not_yet_added;
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
 
     Ok(ExecTestResults {
@@ -2441,6 +2836,7 @@ mod tests {
     use crate::ModuleId;
     use crate::errors::KclErrorDetails;
     use crate::errors::Severity;
+    use crate::execution::kcl_value::TypeDef;
     use crate::execution::memory::Stack;
     use crate::execution::types::RuntimeType;
 
@@ -2450,15 +2846,175 @@ mod tests {
         };
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    #[tokio::test]
+    async fn native_websocket_sends_entrypoint_kcl_version() {
+        use tokio::io::AsyncReadExt;
+        use tokio::io::AsyncWriteExt;
+
+        for (source, expected) in [
+            ("", "1.0"),
+            ("@settings(defaultLengthUnit = mm)", "1.0"),
+            ("@settings(kclVersion = 2.0)", "2.0"),
+            ("@settings(kclVersion = \"3.0-preview\")", "3.0-preview"),
+            ("@settings(kclVersion = 3.0)", "3.0"),
+            ("@settings(kclVersion = \"3.0\")", "3.0"),
+        ] {
+            let program = crate::Program::parse_no_errs(source).unwrap();
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let address = listener.local_addr().unwrap();
+            let request = tokio::spawn(async move {
+                let (mut socket, _) = listener.accept().await.unwrap();
+                let mut request = Vec::new();
+                let mut buffer = [0; 1024];
+                while !request.windows(4).any(|bytes| bytes == b"\r\n\r\n") {
+                    let count = socket.read(&mut buffer).await.unwrap();
+                    assert_ne!(count, 0, "connection closed before sending HTTP headers");
+                    request.extend_from_slice(&buffer[..count]);
+                }
+                // Inspect the handshake without starting an engine session.
+                socket
+                    .write_all(b"HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
+                    .await
+                    .unwrap();
+                String::from_utf8(request).unwrap()
+            });
+            let mut client = kittycad::Client::new("test-token");
+            client.set_base_url(format!("http://{address}"));
+            let result = tokio::time::timeout(
+                std::time::Duration::from_secs(5),
+                ExecutorContext::new(&client, Default::default(), program.language_version().unwrap()),
+            )
+            .await
+            .unwrap();
+            assert!(result.is_err(), "the test server deliberately rejects the upgrade");
+            let request = tokio::time::timeout(std::time::Duration::from_secs(5), request)
+                .await
+                .unwrap()
+                .unwrap();
+            let target = request.lines().next().unwrap().split_whitespace().nth(1).unwrap();
+            let url = url::Url::parse(&format!("http://localhost{target}")).unwrap();
+            let versions: Vec<_> = url
+                .query_pairs()
+                .filter(|(key, _)| key == "kcl_version")
+                .map(|(_, value)| value.into_owned())
+                .collect();
+            assert_eq!(versions, vec![expected]);
+        }
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    #[tokio::test]
+    async fn scene_reset_sends_entrypoint_kcl_version() {
+        use std::collections::HashMap;
+
+        use kcmc::websocket::WebSocketRequest;
+        use kcmc::websocket::WebSocketResponse;
+        use tokio::sync::RwLock;
+        use uuid::Uuid;
+
+        use crate::engine::engine_manager::EngineTransport;
+        use crate::engine::engine_manager::TransportCloseError;
+
+        struct RecordingTransport {
+            inner: Arc<Box<dyn EngineTransport>>,
+            requests: Arc<RwLock<Vec<WebSocketRequest>>>,
+        }
+
+        #[async_trait::async_trait]
+        impl EngineTransport for RecordingTransport {
+            async fn inner_fire_modeling_cmd(
+                &self,
+                cmd_id: Uuid,
+                source_range: SourceRange,
+                cmd: WebSocketRequest,
+                id_to_source_range: HashMap<Uuid, SourceRange>,
+            ) -> Result<(), KclError> {
+                self.requests.write().await.push(cmd.clone());
+                self.inner
+                    .inner_fire_modeling_cmd(cmd_id, source_range, cmd, id_to_source_range)
+                    .await
+            }
+
+            async fn inner_send_modeling_cmd(
+                &self,
+                cmd_id: Uuid,
+                source_range: SourceRange,
+                cmd: WebSocketRequest,
+                id_to_source_range: HashMap<Uuid, SourceRange>,
+            ) -> Result<WebSocketResponse, KclError> {
+                self.requests.write().await.push(cmd.clone());
+                self.inner
+                    .inner_send_modeling_cmd(cmd_id, source_range, cmd, id_to_source_range)
+                    .await
+            }
+
+            async fn close(&self) -> Result<(), TransportCloseError> {
+                self.inner.close().await
+            }
+        }
+
+        for (source, expected) in [
+            ("", "1.0"),
+            ("@settings(kclVersion = 2.0)", "2.0"),
+            ("@settings(kclVersion = \"3.0-preview\")", "3.0-preview"),
+            ("@settings(kclVersion = 3.0)", "3.0"),
+        ] {
+            let requests = Arc::new(RwLock::new(Vec::new()));
+            let mut engine = EngineManager::new_mock();
+            engine.transport = Arc::new(Box::new(RecordingTransport {
+                inner: engine.transport.clone(),
+                requests: requests.clone(),
+            }));
+            let ctx = ExecutorContext::new_with_engine(
+                Arc::new(engine),
+                ExecutorSettings {
+                    geometry_only: true,
+                    ..Default::default()
+                },
+            );
+            let program = crate::Program::parse_no_errs(source).unwrap();
+            let mut exec_state = ExecState::new(&ctx);
+
+            ctx.send_clear_scene(
+                Some(program.language_version().unwrap()),
+                &mut exec_state,
+                Default::default(),
+            )
+            .await
+            .unwrap();
+
+            let version_commands: Vec<_> = {
+                let requests = requests.read().await;
+                requests
+                    .iter()
+                    .flat_map(|request| match request {
+                        WebSocketRequest::ModelingCmdReq(request) => vec![&request.cmd],
+                        WebSocketRequest::ModelingCmdBatchReq(batch) => {
+                            batch.requests.iter().map(|request| &request.cmd).collect()
+                        }
+                        _ => vec![],
+                    })
+                    .filter_map(|cmd| match cmd {
+                        kcmc::ModelingCmd::SetKclVersion(_) => Some(serde_json::to_value(cmd).unwrap()),
+                        _ => None,
+                    })
+                    .collect()
+            };
+            assert_eq!(
+                version_commands,
+                vec![serde_json::json!({"type": "set_kcl_version", "kcl_version": expected})],
+                "{source}"
+            );
+            ctx.close().await;
+        }
+    }
+
     #[test]
-    fn clone_with_fresh_execution_batch_keeps_executor_selection() {
-        // Imported modules execute on a context created by
-        // clone_with_fresh_execution_batch. They must stay on the executor
-        // selected for the run instead of silently reverting to the default.
-        let mut ctx = new_mock_executor_context(None, machine::ExecutorKind::Machine);
+    fn clone_with_fresh_execution_batch_keeps_call_depth_limit() {
+        let mut ctx = new_mock_executor_context(None);
         ctx.machine_call_depth_limit = 123;
         let cloned = ctx.clone_with_fresh_execution_batch();
-        assert_eq!(cloned.executor_kind, machine::ExecutorKind::Machine);
         assert_eq!(cloned.machine_call_depth_limit, 123);
     }
 
@@ -2470,10 +3026,7 @@ mod tests {
             .unwrap();
 
         let program = crate::Program::parse_no_errs("import \"cube.obj\" as cube\n\nmodel = cube\n").unwrap();
-        let ctx = new_mock_executor_context(
-            Some(crate::TypedPath(tmpdir.path().into())),
-            machine::ExecutorKind::resolve(),
-        );
+        let ctx = new_mock_executor_context(Some(crate::TypedPath(tmpdir.path().into())));
         let mut exec_state = ExecState::new(&ctx);
         let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
         let outcome = exec_state
@@ -2746,6 +3299,7 @@ mod tests {
         let program = crate::Program::parse_no_errs(main_code).unwrap();
         let ctx = ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
@@ -2754,8 +3308,8 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
@@ -2772,16 +3326,12 @@ mod tests {
         backend: memory::MemoryBackendKind,
     ) -> IndexMap<String, KclValueView> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
-        cache::bust_cache().await;
-        clear_mem_cache().await;
 
         let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs(code).unwrap();
         ctx.run_with_caching(program.clone()).await.unwrap();
         let cached = ctx.run_with_caching(program).await.unwrap();
 
-        cache::bust_cache().await;
-        clear_mem_cache().await;
         ctx.close().await;
         cached.variables
     }
@@ -2791,7 +3341,6 @@ mod tests {
         backend: memory::MemoryBackendKind,
     ) -> IndexMap<String, KclValueView> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
-        clear_mem_cache().await;
 
         let ctx = ExecutorContext::new_mock(None).await;
         let first = crate::Program::parse_no_errs("x = 2").unwrap();
@@ -2808,7 +3357,6 @@ mod tests {
         let program = crate::Program::parse_no_errs(code).unwrap();
         let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
 
-        clear_mem_cache().await;
         ctx.close().await;
         outcome.variables
     }
@@ -3371,7 +3919,6 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
   return myBox
 }
 
-
 for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
   const thisBox = box(var[0], var[1], var[2], var[3])
 }"#;
@@ -3426,7 +3973,7 @@ answer = returnX()"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn type_aliases() {
-        let text = r#"@settings(experimentalFeatures = allow)
+        let text = r#"@settings(kclVersion = "3.0-preview")
 type MyTy = [number; 2]
 fn foo(@x: MyTy) {
     return x[0]
@@ -4378,13 +4925,8 @@ forever(1)
 "#;
         let result = parse_execute(ast).await;
         let err = result.unwrap_err();
-        // The recursive executor's native-stack cap and the machine
-        // executor's call-depth guard report differently.
         let msg = err.to_string();
-        assert!(
-            msg.contains("stack size exceeded") || msg.contains("Call depth limit"),
-            "actual: {err:?}"
-        );
+        assert!(msg.contains("Call depth limit"), "actual: {err:?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4462,8 +5004,10 @@ w = f() + f()
 )
 "#;
 
-        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, old_program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         if let Err(err) = ctx.run_with_caching(old_program).await {
@@ -4473,7 +5017,7 @@ w = f() + f()
         }
 
         // Get the id_generator from the first execution.
-        let id_generator = cache::read_old_ast().await.unwrap().main.exec_state.id_generator;
+        let id_generator = ctx.cache.read_old_ast().await.unwrap().main.exec_state.id_generator;
 
         let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfile(at = [62.74, 206.13])
@@ -4494,7 +5038,7 @@ w = f() + f()
         // Execute the program.
         ctx.run_with_caching(program).await.unwrap();
 
-        let new_id_generator = cache::read_old_ast().await.unwrap().main.exec_state.id_generator;
+        let new_id_generator = ctx.cache.read_old_ast().await.unwrap().main.exec_state.id_generator;
 
         assert_eq!(id_generator, new_id_generator);
     }
@@ -4515,13 +5059,15 @@ w = f() + f()
 )
 "#;
 
-        let mut ctx = crate::test_server::new_context(true, None).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
+        let mut ctx = crate::test_server::new_context(true, None, true, old_program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         ctx.run_with_caching(old_program.clone()).await.unwrap();
 
-        let settings_state = cache::read_old_ast().await.unwrap().settings;
+        let settings_state = ctx.cache.read_old_ast().await.unwrap().settings;
 
         // Ensure the settings are as expected.
         assert_eq!(settings_state, ctx.settings);
@@ -4532,7 +5078,7 @@ w = f() + f()
         // Execute the program.
         ctx.run_with_caching(old_program.clone()).await.unwrap();
 
-        let settings_state = cache::read_old_ast().await.unwrap().settings;
+        let settings_state = ctx.cache.read_old_ast().await.unwrap().settings;
 
         // Ensure the settings are as expected.
         assert_eq!(settings_state, ctx.settings);
@@ -4543,7 +5089,7 @@ w = f() + f()
         // Execute the program.
         ctx.run_with_caching(old_program).await.unwrap();
 
-        let settings_state = cache::read_old_ast().await.unwrap().settings;
+        let settings_state = ctx.cache.read_old_ast().await.unwrap().settings;
 
         // Ensure the settings are as expected.
         assert_eq!(settings_state, ctx.settings);
@@ -4553,12 +5099,13 @@ w = f() + f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_after_not_mock() {
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let program = crate::Program::parse_no_errs("x = 2").unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_number_variable(&result.variables, "x", 2.0);
 
-        let ctx2 = ExecutorContext::new_mock(None).await;
+        // Mock execution must explicitly reuse the live session's memory.
+        let ctx2 = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(&program2, &MockConfig::default()).await.unwrap();
         assert_number_variable(&result.variables, "z", 3.0);
@@ -4744,8 +5291,6 @@ solid7 = extrude(r7, length = width)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_memory_restore_preserves_module_maps() {
-        clear_mem_cache().await;
-
         let ctx = ExecutorContext::new_mock(None).await;
         let cold_start = MockConfig {
             use_prev_memory: false,
@@ -4753,37 +5298,202 @@ solid7 = extrude(r7, length = width)
         };
         ctx.run_mock(&crate::Program::empty(), &cold_start).await.unwrap();
 
-        let mut mem = cache::read_old_memory().await.unwrap();
+        let mut mem = ctx.cache.read_old_memory().await.unwrap();
         assert!(
             mem.path_to_source_id.len() > 3,
             "expected prelude imports to populate multiple modules, got {:?}",
             mem.path_to_source_id
         );
         mem.constraint_state.insert(
-            crate::front::ObjectId(1),
+            kcl_api::ObjectId(1),
             indexmap::indexmap! {
                 crate::execution::ConstraintKey::LineCircle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) =>
                     crate::execution::ConstraintState::Tangency(crate::execution::TangencyMode::LineCircle(ezpz::LineSide::Left))
             },
         );
+        let imported_id = ModuleId::from_usize(42);
+        mem.never_type_ranges
+            .insert(imported_id, vec![SourceRange::new(0, 5, imported_id)]);
 
         let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
         ExecutorContext::restore_mock_memory(&mut exec_state, mem.clone(), &MockConfig::default()).unwrap();
 
         assert_eq!(exec_state.global.path_to_source_id, mem.path_to_source_id);
         assert_eq!(exec_state.global.id_to_source, mem.id_to_source);
+        assert_eq!(exec_state.global.never_type_ranges, mem.never_type_ranges);
         assert_eq!(exec_state.global.module_infos, mem.module_infos);
         assert_eq!(exec_state.mod_local.constraint_state, mem.constraint_state);
 
-        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    // These use a live execution context with a mock engine so they exercise
+    // the cache orchestration without a server or API token.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn session_cache_isolates_concurrent_contexts() {
+        let a = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let b = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program_a = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        let program_b = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 7").unwrap();
+        let (outcome_a, outcome_b) = tokio::join!(
+            a.run_with_caching(program_a.clone()),
+            b.run_with_caching(program_b.clone()),
+        );
+        assert_number_variable(&outcome_a.unwrap().variables, "x", 2.0);
+        assert_number_variable(&outcome_b.unwrap().variables, "x", 7.0);
+
+        // Both sessions must retain their own last execution, including when
+        // the next request is a cache hit.
+        assert_eq!(a.cache.read_old_ast().await.unwrap().main.ast, program_a.ast);
+        assert_eq!(b.cache.read_old_ast().await.unwrap().main.ast, program_b.ast);
+        assert_number_variable(&a.run_with_caching(program_a).await.unwrap().variables, "x", 2.0);
+        assert_number_variable(&b.run_with_caching(program_b).await.unwrap().variables, "x", 7.0);
+        a.bust_cache().await;
+        assert!(a.cache.read_old_ast().await.is_none());
+        assert!(b.cache.read_old_ast().await.is_some());
+        a.close().await;
+        b.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn session_cache_shares_clones_and_associated_mock_memory() {
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        ctx.run_with_caching(program).await.unwrap();
+        let clone = ctx.clone();
+        let import_ctx = ctx.clone_with_fresh_execution_batch();
+        assert!(clone.cache.read_old_ast().await.is_some());
+        import_ctx.bust_cache().await;
+        assert!(clone.cache.read_old_ast().await.is_none());
+
+        let mock = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
+        let expression = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\ny = x + 1").unwrap();
+        let outcome = mock.run_mock(&expression, &MockConfig::default()).await.unwrap();
+        assert_number_variable(&outcome.variables, "y", 3.0);
+        assert!(ctx.cache.read_old_memory_var("y").await.is_some());
+
+        // An unrelated mock context cannot see the session's variables.
+        let independent = ExecutorContext::new_mock(None).await;
+        independent
+            .run_mock(&expression, &MockConfig::default())
+            .await
+            .unwrap_err();
+        mock.cache.clear_mem_cache().await;
+        assert!(ctx.cache.read_old_memory().await.is_none());
+        ctx.close().await;
+        mock.close().await;
+        independent.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn session_cache_failure_preserves_partial_mock_memory() {
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2\nbad = missing").unwrap();
+        ctx.run_with_caching(program).await.unwrap_err();
+        assert!(ctx.cache.read_old_ast().await.is_none());
+        let mock = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
+        let expression = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\ny = x + 1").unwrap();
+        let outcome = mock.run_mock(&expression, &MockConfig::default()).await.unwrap();
+        assert_number_variable(&outcome.variables, "y", 3.0);
+        ctx.close().await;
+        mock.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn engine_scene_generation_skips_cache_hits_and_counts_failures() {
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        let first = ctx.run_with_caching(program.clone()).await.unwrap();
+        assert_eq!(first.engine_scene_generation, 1);
+        let cached = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, 1, "a cache hit leaves the scene alone");
+
+        let invalid = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = missing").unwrap();
+        let err = ctx.run_with_caching(invalid).await.unwrap_err();
+        assert_eq!(
+            err.engine_scene_generation,
+            Some(2),
+            "a failed run may still change the scene"
+        );
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_phases_preserve_edits_settings_and_error_recovery() {
+        let mut ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let original = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = 2").unwrap();
+        for _ in 0..2 {
+            let outcome = ctx.run_with_caching(original.clone()).await.unwrap();
+            assert_number_variable(&outcome.variables, "x", 2.0);
+        }
+
+        // Appending a statement reuses the old environment. Finalization must
+        // cache the full program, including the unchanged statement.
+        let extended = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = 2\ny = x + 1").unwrap();
+        for _ in 0..2 {
+            let outcome = ctx.run_with_caching(extended.clone()).await.unwrap();
+            assert_number_variable(&outcome.variables, "x", 2.0);
+            assert_number_variable(&outcome.variables, "y", 3.0);
+            assert_eq!(ctx.cache.read_old_ast().await.unwrap().main.ast.body.len(), 2);
+        }
+
+        // Changing an existing statement requires a fresh execution state.
+        let changed = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = 4\ny = x + 1").unwrap();
+        let outcome = ctx.run_with_caching(changed.clone()).await.unwrap();
+        assert_number_variable(&outcome.variables, "y", 5.0);
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+        let outcome = ctx.run_with_caching(changed).await.unwrap();
+        assert_number_variable(&outcome.variables, "y", 5.0);
+        assert_eq!(ctx.cache.read_old_ast().await.unwrap().settings, ctx.settings);
+
+        let invalid = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = missing").unwrap();
+        ctx.run_with_caching(invalid).await.unwrap_err();
+        assert!(
+            ctx.cache.read_old_ast().await.is_none(),
+            "execution errors must invalidate the cache"
+        );
+        let outcome = ctx.run_with_caching(original).await.unwrap();
+        assert_number_variable(&outcome.variables, "x", 2.0);
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_phases_recheck_changed_imports() {
+        let project = tempfile::TempDir::with_prefix("kcl_cache_phases").unwrap();
+        let imported = project.path().join("values.kcl");
+        tokio::fs::write(&imported, "export x = 2").await.unwrap();
+        let mut ctx = ExecutorContext::new_with_engine(
+            Arc::new(EngineManager::new_mock()),
+            ExecutorSettings {
+                project_directory: Some(crate::TypedPath(project.path().into())),
+                ..Default::default()
+            },
+        );
+        let program =
+            crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nimport x from 'values.kcl'\ny = x + 1")
+                .unwrap();
+        for _ in 0..2 {
+            let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
+            assert_number_variable(&outcome.variables, "y", 3.0);
+        }
+        // Exercise the unchanged-import early return with settings reapplied.
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+        let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
+        assert_number_variable(&outcome.variables, "y", 3.0);
+        assert_eq!(ctx.cache.read_old_ast().await.unwrap().settings, ctx.settings);
+
+        tokio::fs::write(&imported, "export x = 7").await.unwrap();
+        for _ in 0..2 {
+            let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
+            assert_number_variable(&outcome.variables, "y", 8.0);
+        }
+
         ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn run_with_caching_no_action_refreshes_mock_memory() {
-        cache::bust_cache().await;
-        clear_mem_cache().await;
-
         let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs(
             r#"sketch001 = sketch(on = XY) {
@@ -4794,29 +5504,29 @@ solid7 = extrude(r7, length = width)
         .unwrap();
 
         ctx.run_with_caching(program.clone()).await.unwrap();
-        let baseline_memory = cache::read_old_memory().await.unwrap();
+        let baseline_memory = ctx.cache.read_old_memory().await.unwrap();
         assert!(
             !baseline_memory.scene_objects.is_empty(),
             "expected engine execution to persist full-scene mock memory"
         );
 
-        cache::write_old_memory(cache::SketchModeState::new_for_tests()).await;
-        assert_eq!(cache::read_old_memory().await.unwrap().scene_objects.len(), 0);
+        ctx.cache
+            .write_old_memory(cache::SketchModeState::new_for_tests())
+            .await;
+        assert_eq!(ctx.cache.read_old_memory().await.unwrap().scene_objects.len(), 0);
 
         ctx.run_with_caching(program).await.unwrap();
-        let refreshed_memory = cache::read_old_memory().await.unwrap();
+        let refreshed_memory = ctx.cache.read_old_memory().await.unwrap();
         assert_eq!(refreshed_memory.scene_objects, baseline_memory.scene_objects);
         assert_eq!(refreshed_memory.path_to_source_id, baseline_memory.path_to_source_id);
         assert_eq!(refreshed_memory.id_to_source, baseline_memory.id_to_source);
 
-        cache::bust_cache().await;
-        clear_mem_cache().await;
         ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn sim_sketch_mode_real_mock_real() {
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let code = r#"sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0])
@@ -4829,7 +5539,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_eq!(result.operations.get(&ModuleId::default()).unwrap().len(), 1);
 
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let mock_program = crate::Program::parse_no_errs(code).unwrap();
         let mock_result = mock_ctx.run_mock(&mock_program, &MockConfig::default()).await.unwrap();
         assert_eq!(mock_result.operations.get(&ModuleId::default()).unwrap().len(), 1);
@@ -5019,6 +5729,54 @@ startSketchOn(XY)
         }
     }
 
+    /// The attribute name recognized in an imported file follows the effective
+    /// kclVersion: the entry point's when it declares KCL 3.0, otherwise the
+    /// imported file's own (undeclared here, so 1.0). The imported file
+    /// declares no kclVersion because a KCL 3.0 entry point rejects an import
+    /// declaring a different one.
+    ///
+    /// Warnings raised while an imported file runs aren't observable here (it
+    /// runs on a clone of the execution state), so this checks the gate with
+    /// an unknown diagnostic name: a fatal error when the attribute is
+    /// recognized, and an unknown annotation otherwise.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_in_import_uses_effective_kcl_version() {
+        let dep = "@diagnostics(allow = bogus)\nexport x = 1\n";
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let main = format!("@settings(kclVersion = {version})\nimport x from \"dep.kcl\"\n");
+            let result = execute_with_modules(&main, &[("dep.kcl", dep)]).await;
+            if version == "\"3.0-preview\"" {
+                let error = result.unwrap_err();
+                let message = error.message();
+                assert!(
+                    message.starts_with("Unexpected diagnostic value: `bogus`; accepted values: "),
+                    "main={main}, message={message}"
+                );
+            } else {
+                assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0, "main={main}");
+            }
+        }
+
+        // The old `@warnings` name follows the same version: recognized, and
+        // so validated, before KCL 3.0, and an ignored attribute with a
+        // non-fatal error under KCL 3.0.
+        let dep = "@warnings(allow = bogus)\nexport x = 1\n";
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let main = format!("@settings(kclVersion = {version})\nimport x from \"dep.kcl\"\n");
+            let result = execute_with_modules(&main, &[("dep.kcl", dep)]).await;
+            if version == "\"3.0-preview\"" {
+                assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0, "main={main}");
+            } else {
+                let error = result.unwrap_err();
+                let message = error.message();
+                assert!(
+                    message.starts_with("Unexpected warning value: `bogus`; accepted values: "),
+                    "main={main}, message={message}"
+                );
+            }
+        }
+    }
+
     /// The entry point's declared kclVersion is recorded whatever it is, so
     /// that errors can name it. Only KCL 3.0 or later pins the version for the
     /// whole execution; see [`ExecState::kcl_version`].
@@ -5043,6 +5801,34 @@ startSketchOn(XY)
                 result.exec_state.entry_point_version_is_v3_or_higher(),
                 expected == Some(KclVersion::V3Preview),
                 "code={code}"
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn default_tolerance_command_is_sent_only_for_kcl_3() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+
+        for version in [None, Some(KclVersion::V1), Some(KclVersion::V2)] {
+            exec_state.global.entry_point_kcl_version = version;
+            assert!(ExecutorContext::default_tolerance_command(&exec_state).is_none());
+        }
+
+        exec_state.global.entry_point_kcl_version = Some(KclVersion::V3Preview);
+        for unit in [kcl_api::UnitLength::Millimeters, kcl_api::UnitLength::Inches] {
+            exec_state.mod_local.settings.default_length_units = unit;
+            let Some(ModelingCmd::SetDefaultSystemProperties(properties)) =
+                ExecutorContext::default_tolerance_command(&exec_state)
+            else {
+                panic!("expected KCL 3 default system properties command");
+            };
+            let tolerance = properties.tolerance.expect("expected KCL 3 tolerance");
+            approx::assert_relative_eq!(
+                tolerance.point_point_2d_coincident.0,
+                1e-8 * std::f64::consts::SQRT_2,
+                epsilon = 0.0,
+                max_relative = 1e-12
             );
         }
     }
@@ -5077,8 +5863,6 @@ startSketchOn(XY)
     async fn mock_execution_records_entry_point_kcl_version() {
         use futures::FutureExt;
 
-        clear_mem_cache().await;
-
         let ctx = ExecutorContext::new_mock(None).await;
         let fresh_memory = MockConfig {
             use_prev_memory: false,
@@ -5089,7 +5873,7 @@ startSketchOn(XY)
         let v3_program = crate::Program::parse_no_errs("@settings(kclVersion = \"3.0-preview\")\nx = 1\n").unwrap();
         let v2_program = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = 1\n").unwrap();
 
-        // Close the context and clear the cache even if an assertion panics,
+        // Close the context even if an assertion panics,
         // then let the panic continue.
         let test_result = std::panic::AssertUnwindSafe(async {
             let (exec_state, _) = ctx.run_mock_returning_state(&v3_program, &fresh_memory).await.unwrap();
@@ -5117,7 +5901,6 @@ startSketchOn(XY)
         .catch_unwind()
         .await;
 
-        clear_mem_cache().await;
         ctx.close().await;
         if let Err(panic) = test_result {
             std::panic::resume_unwind(panic);
@@ -5130,8 +5913,6 @@ startSketchOn(XY)
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_execution_applies_v3_semantics() {
         use futures::FutureExt;
-
-        clear_mem_cache().await;
 
         let ctx = ExecutorContext::new_mock(None).await;
         let fresh_memory = MockConfig {
@@ -5156,7 +5937,7 @@ y = if true {
         )
         .unwrap();
 
-        // Close the context and clear the cache even if an assertion panics,
+        // Close the context even if an assertion panics,
         // then let the panic continue.
         let test_result = std::panic::AssertUnwindSafe(async {
             let (exec_state, env) = ctx.run_mock_returning_state(&program, &fresh_memory).await.unwrap();
@@ -5168,7 +5949,6 @@ y = if true {
         .catch_unwind()
         .await;
 
-        clear_mem_cache().await;
         ctx.close().await;
         if let Err(panic) = test_result {
             std::panic::resume_unwind(panic);
@@ -5329,6 +6109,7 @@ face = disc()
             .collect();
         ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files)),
             settings: ExecutorSettings {
@@ -5338,8 +6119,8 @@ face = disc()
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -5370,6 +6151,8 @@ face = disc()
 
     const V3_MAIN_IMPORTING_DEP: &str =
         "@settings(kclVersion = \"3.0-preview\")\nimport width from \"dep.kcl\"\nx = width\n";
+    const V3_STABLE_MAIN_IMPORTING_DEP: &str =
+        "@settings(kclVersion = 3.0)\nimport width from \"dep.kcl\"\nx = width\n";
 
     fn dep_declaring(version: &str) -> String {
         format!("@settings(kclVersion = {version})\nexport width = 10\n")
@@ -5394,7 +6177,7 @@ face = disc()
     /// site in the entry point as its outer frame.
     #[tokio::test(flavor = "multi_thread")]
     async fn imported_module_kcl_version_must_match_v3_entry_point() {
-        for dep_version in ["2.0", "1.0"] {
+        for dep_version in ["2.0", "1.0", "3.0"] {
             let dep = dep_declaring(dep_version);
             let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
                 .await
@@ -5428,13 +6211,15 @@ face = disc()
     /// under the entry point's version, as before.
     #[tokio::test(flavor = "multi_thread")]
     async fn imported_module_without_kcl_version_is_allowed_under_v3_entry_point() {
-        for dep in [
-            "export width = 10\n",
-            "@settings(defaultLengthUnit = in)\nexport width = 10\n",
-        ] {
-            run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)])
-                .await
-                .unwrap_or_else(|err| panic!("dep={dep:?}: {err:#?}"));
+        for main in [V3_MAIN_IMPORTING_DEP, V3_STABLE_MAIN_IMPORTING_DEP] {
+            for dep in [
+                "export width = 10\n",
+                "@settings(defaultLengthUnit = in)\nexport width = 10\n",
+            ] {
+                run_versioned_modules(main, &[("dep.kcl", dep)])
+                    .await
+                    .unwrap_or_else(|err| panic!("main={main:?}, dep={dep:?}: {err:#?}"));
+            }
         }
     }
 
@@ -5442,11 +6227,37 @@ face = disc()
     /// a match.
     #[tokio::test(flavor = "multi_thread")]
     async fn imported_module_matching_v3_kcl_version_is_allowed() {
-        for dep_version in ["\"3.0-preview\"", "\"3-preview\"", "\"3.0.0-preview\""] {
+        for (main, dep_versions) in [
+            (
+                V3_MAIN_IMPORTING_DEP,
+                ["\"3.0-preview\"", "\"3-preview\"", "\"3.0.0-preview\""],
+            ),
+            (V3_STABLE_MAIN_IMPORTING_DEP, ["3.0", "3", "\"3.0.0\""]),
+        ] {
+            for dep_version in dep_versions {
+                let dep = dep_declaring(dep_version);
+                run_versioned_modules(main, &[("dep.kcl", &dep)])
+                    .await
+                    .unwrap_or_else(|err| panic!("main={main:?}, dep={dep_version}: {err:#?}"));
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn stable_v3_entry_point_rejects_other_import_versions() {
+        for dep_version in ["1.0", "2.0", "\"3.0-preview\""] {
             let dep = dep_declaring(dep_version);
-            run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
+            let error = run_versioned_modules(V3_STABLE_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
                 .await
-                .unwrap_or_else(|err| panic!("dep={dep_version}: {err:#?}"));
+                .expect_err("mismatched kclVersion should be rejected");
+            assert!(matches!(error, KclError::Semantic { .. }), "{error:#?}");
+            let expected_dep_version = dep_version.trim_matches('"');
+            assert_eq!(
+                error.message(),
+                format!(
+                    "Mixing KCL versions in a single program is not allowed. The entry point `/zma-kcl-version-mismatch/main.kcl` declares kclVersion 3.0, but the imported file `/zma-kcl-version-mismatch/dep.kcl` declares kclVersion {expected_dep_version}. Update the kclVersion setting in one of these files to match the other."
+                )
+            );
         }
     }
 
@@ -5681,6 +6492,296 @@ face = disc()
         run_versioned_modules_mock(main, &[("dep.kcl", "export width = 10\n")])
             .await
             .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_use_keyword_follows_entry_point_version() {
+        let dep = "use = 10\nexport width = use\n";
+        for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
+            let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+            run_versioned_modules(&main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_or_else(|error| panic!("main={main_header:?}: {error:#?}"));
+        }
+
+        let main_v1 = "@settings(kclVersion = 1.0)\nimport width from \"dep.kcl\"\nx = width\n";
+        let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
+        run_versioned_modules(main_v1, &[("dep.kcl", &dep_v2)]).await.unwrap();
+
+        for (main, version) in [
+            (V3_MAIN_IMPORTING_DEP, "\"3.0-preview\""),
+            (V3_STABLE_MAIN_IMPORTING_DEP, "3.0"),
+        ] {
+            for dep in [dep.to_owned(), format!("@settings(kclVersion = {version})\n{dep}")] {
+                let error = run_versioned_modules(main, &[("dep.kcl", &dep)])
+                    .await
+                    .expect_err("V3 imports must reject a use identifier");
+                assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+                assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+                let ranges = error.source_ranges();
+                assert_eq!(ranges.len(), 2, "{ranges:#?}");
+                let start = dep.find("use =").unwrap();
+                assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + 3));
+                assert!(!ranges[0].module_id().is_top_level());
+                assert!(ranges[1].module_id().is_top_level());
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_never_type_follows_entry_point_version() {
+        let dep = "export fn stop(): never {}\n";
+        for version in ["1.0", "2.0"] {
+            let main = format!("@settings(kclVersion = {version})\nimport stop from \"dep.kcl\"\nx = 1\n");
+            for run_mock in [false, true] {
+                let error = if run_mock {
+                    run_versioned_modules_mock(&main, &[("dep.kcl", dep)]).await
+                } else {
+                    run_versioned_modules(&main, &[("dep.kcl", dep)]).await
+                }
+                .expect_err("older KCL versions must reject imported `never` types");
+                assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+                assert_eq!(
+                    error.message(),
+                    format!("The `never` type requires KCL 3.0-preview, but this program uses KCL {version}.")
+                );
+                let ranges = error.source_ranges();
+                assert_eq!(ranges.len(), 2, "{ranges:#?}");
+                let start = dep.find("never").unwrap();
+                assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + "never".len()));
+                assert!(!ranges[0].module_id().is_top_level());
+                assert!(ranges[1].module_id().is_top_level());
+            }
+        }
+
+        let main_v3 = "@settings(kclVersion = \"3.0-preview\")\nimport stop from \"dep.kcl\"\nx = 1\n";
+        run_versioned_modules(main_v3, &[("dep.kcl", dep)]).await.unwrap();
+
+        let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
+        let error = run_versioned_modules(main_v3, &[("dep.kcl", &dep_v2)])
+            .await
+            .expect_err("version mismatch must precede `never` validation");
+        assert_kcl_version_mismatch(&error, "2.0");
+        assert_eq!(
+            error
+                .backtrace()
+                .iter()
+                .map(|frame| frame.fn_name.as_deref())
+                .collect::<Vec<_>>(),
+            [Some("import dep.kcl"), None]
+        );
+
+        let main_v2 = "@settings(kclVersion = 2.0)\nimport stop from \"dep.kcl\"\nx = 1\n";
+        let dep_v3 = format!("@settings(kclVersion = \"3.0-preview\")\n{dep}");
+        let error = run_versioned_modules(main_v2, &[("dep.kcl", &dep_v3)])
+            .await
+            .expect_err("version mismatch must precede `never` validation");
+        assert!(
+            error
+                .message()
+                .starts_with("Mixing KCL versions in a single program is not allowed.")
+        );
+
+        // Mock execution must validate a whole-module import even when it is unused.
+        let unused_import = "@settings(kclVersion = 2.0)\nimport \"dep.kcl\" as dep\nx = 1\n";
+        let error = run_versioned_modules_mock(unused_import, &[("dep.kcl", dep)])
+            .await
+            .expect_err("an unused imported module must not bypass `never` validation");
+        assert_eq!(
+            error.message(),
+            "The `never` type requires KCL 3.0-preview, but this program uses KCL 2.0."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_type_resolution_rejects_an_unvalidated_v2_ast() {
+        let source = "@settings(kclVersion = 2.0)\nfn stop(): never {}\n";
+        let (kcl_version, ast, _) = crate::parsing::parse_str_syntax(source, ModuleId::default()).unwrap();
+        let program = crate::Program {
+            kcl_version,
+            ast,
+            original_file_contents: source.to_owned(),
+        };
+        let ctx = versioned_modules_context(&[]);
+        let mut exec_state = ExecState::new(&ctx);
+        let error = ctx.run(&program, &mut exec_state).await.unwrap_err().error;
+        ctx.close().await;
+
+        assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+        assert_eq!(
+            error.message(),
+            "The `never` type requires KCL 3.0-preview, but this program uses KCL 2.0."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn import_universe_uses_entry_point_version_in_a_fresh_state() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport stop from \"dep.kcl\"\nx = 1\n";
+        let ctx = versioned_modules_context(&[("dep.kcl", "export fn stop(): never {}\n")]);
+        let program = crate::Program::parse_no_errs(main).unwrap();
+        let mut exec_state = ExecState::new(&ctx);
+
+        ctx.get_universe(&program, &mut exec_state).await.unwrap();
+        assert_eq!(exec_state.global.entry_point_kcl_version, Some(KclVersion::V3Preview));
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_enum_identifier_follows_entry_point_version() {
+        let dep = "enum = 10\nexport width = enum\n";
+        for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
+            let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+            run_versioned_modules(&main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_or_else(|error| panic!("main={main_header:?}: {error:#?}"));
+        }
+
+        for run_mock in [false, true] {
+            let error = if run_mock {
+                run_versioned_modules_mock(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)]).await
+            } else {
+                run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)]).await
+            }
+            .expect_err("V3 imports must reject an enum identifier");
+            assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+            assert_eq!(error.message(), crate::parsing::RESERVED_ENUM_MESSAGE);
+            let ranges = error.source_ranges();
+            assert_eq!(ranges.len(), 2, "{ranges:#?}");
+            assert_eq!((ranges[0].start(), ranges[0].end()), (0, "enum".len()));
+            assert!(!ranges[0].module_id().is_top_level());
+            assert!(ranges[1].module_id().is_top_level());
+        }
+
+        let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
+        let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep_v2)])
+            .await
+            .expect_err("version mismatch must precede enum validation");
+        assert_kcl_version_mismatch(&error, "2.0");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_import_modifiers_follow_entry_point_version() {
+        for word in ["template", "lazy", "component"] {
+            let dep = format!("import {word} from \"nested.kcl\"\nexport width = 10\n");
+            let nested = format!("export {word} = 1\n");
+            for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
+                let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+                run_versioned_modules(&main, &[("dep.kcl", &dep), ("nested.kcl", &nested)])
+                    .await
+                    .unwrap_or_else(|error| panic!("main={main_header:?}, word={word}: {error:#?}"));
+            }
+
+            for run_mock in [false, true] {
+                let error = if run_mock {
+                    run_versioned_modules_mock(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep), ("nested.kcl", &nested)])
+                        .await
+                } else {
+                    run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep), ("nested.kcl", &nested)]).await
+                }
+                .expect_err("V3 imports must reject a reserved import modifier");
+                assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+                assert_eq!(
+                    error.message(),
+                    format!(
+                        "`{word}` is reserved as an import modifier in KCL 3.0 and cannot be the first imported item"
+                    )
+                );
+                let ranges = error.source_ranges();
+                assert_eq!(ranges.len(), 2, "{ranges:#?}");
+                let start = dep.find(word).unwrap();
+                assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + word.len()));
+                assert!(!ranges[0].module_id().is_top_level());
+                assert!(ranges[1].module_id().is_top_level());
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn import_version_mismatch_precedes_import_modifier_error() {
+        let dep = "@settings(kclVersion = 2.0)\nimport lazy from \"nested.kcl\"\nexport width = 10\n";
+        let nested = "export lazy = 1\n";
+        for run_mock in [false, true] {
+            let error = if run_mock {
+                run_versioned_modules_mock(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep), ("nested.kcl", nested)]).await
+            } else {
+                run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep), ("nested.kcl", nested)]).await
+            }
+            .expect_err("version mismatch must precede import modifier validation");
+            assert_kcl_version_mismatch(&error, "2.0");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_use_function_name_is_allowed_under_v3() {
+        let dep = "fn use() { return 10 }\nexport width = use()\n";
+        run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)])
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn import_version_mismatch_precedes_use_keyword_error() {
+        let dep_v2 = "@settings(kclVersion = 2.0)\nuse = 10\nexport width = use\n";
+        let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep_v2)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error");
+        assert_kcl_version_mismatch(&error, "2.0");
+
+        let main_v2 = "@settings(kclVersion = 2.0)\nimport width from \"dep.kcl\"\nx = width\n";
+        let dep_v3 = "@settings(kclVersion = \"3.0-preview\")\nuse = 10\nexport width = use\n";
+        let error = run_versioned_modules(main_v2, &[("dep.kcl", dep_v3)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error");
+        assert!(
+            error
+                .message()
+                .starts_with("Mixing KCL versions in a single program is not allowed.")
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unreferenced_whole_module_import_checks_use_keyword_in_mock_execution() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport \"dep.kcl\" as dep\nx = 1\n";
+        let dep = "use = 10\n";
+        let error = run_versioned_modules_mock(main, &[("dep.kcl", dep)])
+            .await
+            .expect_err("mock import must reject a use identifier");
+        assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+        let ranges = error.source_ranges();
+        assert_eq!(ranges.len(), 2, "{ranges:#?}");
+        assert!(!ranges[0].module_id().is_top_level());
+        assert!(ranges[1].module_id().is_top_level());
+
+        let dep_v2 = "@settings(kclVersion = 2.0)\nuse = 10\n";
+        let error = run_versioned_modules_mock(main, &[("dep.kcl", dep_v2)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error in mock execution");
+        assert_kcl_version_mismatch(&error, "2.0");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn transitive_import_checks_use_keyword_under_v3_entry_point() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport doubled from \"a.kcl\"\nx = doubled\n";
+        let a = "import width from \"b.kcl\"\nexport doubled = width * 2\n";
+        let b = "use = 10\nexport width = use\n";
+        let error = run_versioned_modules(main, &[("a.kcl", a), ("b.kcl", b)])
+            .await
+            .expect_err("transitive import must reject a use identifier");
+        assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+        assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+        let ranges = error.source_ranges();
+        assert_eq!(ranges.len(), 3, "{ranges:#?}");
+        assert!(!ranges[0].module_id().is_top_level());
+        assert!(!ranges[1].module_id().is_top_level());
+        assert!(ranges[2].module_id().is_top_level());
+        assert_eq!(
+            error
+                .backtrace()
+                .iter()
+                .map(|frame| frame.fn_name.as_deref())
+                .collect::<Vec<_>>(),
+            [Some("import b.kcl"), Some("import a.kcl"), None]
+        );
     }
 
     /// Standard library modules declare kclVersion 1.0 but are exempt: they
@@ -6052,9 +7153,7 @@ assert(total, isEqualTo = 6, error = "reduce total")
 
     /// unwind_return must decrement the machine call depth like a normal
     /// call completion; otherwise sequential early-return calls would
-    /// accumulate depth until the runaway guard trips. The recursive
-    /// executor doesn't use the counter, so the bound is trivially true
-    /// there.
+    /// accumulate depth until the runaway guard trips.
     #[tokio::test(flavor = "multi_thread")]
     async fn early_returns_do_not_leak_machine_call_depth() {
         let code = r#"@settings(kclVersion = "3.0-preview")
@@ -6460,7 +7559,7 @@ x = if false {{
     #[tokio::test(flavor = "multi_thread")]
     async fn error_inside_if_arm_unwinds_balanced_in_v3() {
         // The user's error surfaces (not an internal environment-imbalance
-        // error), on both executors.
+        // error).
         let code = r#"@settings(kclVersion = "3.0-preview")
 fn f() {
   dummy = if true {
@@ -6932,7 +8031,9 @@ fillet(solid001, radius = 0.1, tags = yoyo)
 
     async fn run_constraint_report(kcl: &str) -> SketchConstraintReport {
         let program = crate::Program::parse_no_errs(kcl).unwrap();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_version(program.language_version().unwrap())
+            .await
+            .unwrap();
         let mut exec_state = ExecState::new(&ctx);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
         let outcome = exec_state
@@ -7171,14 +8272,42 @@ second = makeSketch()
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_enum_declaration_is_experimental() {
-        // Without opting in, executing a program with an enum declaration
-        // fails at the parsing stage with the experimental diagnostic.
-        let code = "type Color { | Red }";
-        assert_eq!(
-            parse_execute(code).await.unwrap_err().message(),
-            "Use of enum declarations is experimental and may change or be removed."
-        );
+    async fn user_aliases_and_enums_require_v3_even_with_experimental_opt_in() {
+        for version in ["1.0", "2.0"] {
+            for opt_in in ["", ", experimentalFeatures = allow"] {
+                for (feature, declaration) in [
+                    ("Type aliases", "type Distance = number(mm)"),
+                    ("Enum declarations", "type Color { | Red }"),
+                ] {
+                    let code = format!("@settings(kclVersion = \"{version}\"{opt_in})\n{declaration}\n");
+                    assert_eq!(
+                        parse_execute(&code).await.unwrap_err().message(),
+                        format!("{feature} require KCL 3.0-preview, but this program uses KCL {version}."),
+                        "code: {code}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn user_aliases_and_enums_execute_in_v3_without_experimental_opt_in() {
+        for code in [
+            "@settings(kclVersion = \"3.0-preview\")\ntype Distance = number(mm)\nx = 1mm: Distance\n",
+            "@settings(kclVersion = \"3.0-preview\")\ntype Color { | Red }\nx = Color::Red\n",
+        ] {
+            let result = parse_execute(code).await.unwrap();
+            assert!(result.exec_state.issues().is_empty(), "code: {code}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn standard_library_type_aliases_remain_available_before_v3() {
+        for version in ["1.0", "2.0"] {
+            let code = format!("@settings(kclVersion = \"{version}\")\nx = 1mm: mm\n");
+            let result = parse_execute(&code).await.unwrap();
+            assert!(result.exec_state.issues().is_empty(), "code: {code}");
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -7186,18 +8315,18 @@ second = makeSketch()
         // Plain and exported declarations both execute. Nothing references the
         // enum yet, so this only asserts that declaring one is no longer an
         // error; constructor use is exercised separately.
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green }
 "#;
         parse_execute(code).await.unwrap();
 
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 export type Color { | Red | Green }
 "#;
         parse_execute(code).await.unwrap();
 
         // A zero-variant enum is a valid declaration.
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Empty { | }
 "#;
         parse_execute(code).await.unwrap();
@@ -7211,7 +8340,7 @@ type Empty { | }
         //
         // The rule is about nesting, not about one kind of block, so all routes
         // to `BodyType::Block` are covered here.
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         for (case, code) in [
             (
                 "function body",
@@ -7244,7 +8373,7 @@ type Empty { | }
         // harmlessly, while two nested `type Color` declarations would be one type
         // with two variant sets. Tightening aliases to match, or relaxing enums,
         // has to break this test first.
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         for (case, code) in [
             (
                 "function body",
@@ -7265,7 +8394,7 @@ type Empty { | }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_declaration_rejects_duplicate() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green | Red }
 "#;
         assert_eq!(
@@ -7282,6 +8411,20 @@ type Color { | Red | Green | Red }
         }
 
         parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
+    }
+
+    /// Like [`execute_with_modules`], with hints enabled for user declarations;
+    /// see [`parse_execute_hinting_all`].
+    async fn execute_with_modules_hinting_all(
+        main: &str,
+        modules: &[(&str, &str)],
+    ) -> Result<ExecTestResults, KclError> {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_added_in").unwrap();
+        for (name, source) in modules {
+            tokio::fs::write(tmpdir.path().join(name), source).await.unwrap();
+        }
+
+        parse_execute_hinting_all(main, Some(crate::TypedPath(tmpdir.path().into()))).await
     }
 
     /// Runs `main` with an empty imported module named `m.kcl` in mock
@@ -7306,6 +8449,7 @@ type Color { | Red | Green | Red }
         let program = crate::Program::parse_no_errs(main).unwrap();
         let ctx = ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files)),
             settings: ExecutorSettings {
@@ -7314,8 +8458,8 @@ type Color { | Red | Green | Red }
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new(&ctx);
         // Close the context even if execution panics, then let the panic
@@ -7425,36 +8569,47 @@ x = m + 1
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_name_clash_with_module() {
-        // One rule reached four ways: by declaring the enum second, by importing
-        // the module second, and by importing the enum itself either by name or
-        // through a glob, which arrive by different code paths because a glob
-        // copies exported keys with their namespace prefix intact.
+        // One rule reached six ways: by declaring the enum or an enum alias
+        // second, by importing the module after either one, and by importing the
+        // enum itself either by name or through a glob. A glob arrives by a
+        // different code path because it copies exported keys with their
+        // namespace prefix intact.
         let plain_module = ("Color.kcl", "export x = 1\n");
         let enum_module = (
             "enums.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red }\n",
         );
 
         for (case, main, modules) in [
             (
                 "module then enum",
-                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\ntype Color { | Red }\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"Color.kcl\"\ntype Color { | Red }\n",
                 vec![plain_module],
             ),
             (
                 "enum then module",
-                "@settings(experimentalFeatures = allow)\ntype Color { | Red }\nimport \"Color.kcl\"\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Color { | Red }\nimport \"Color.kcl\"\n",
                 vec![plain_module],
             ),
             (
                 "named import of an enum",
-                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport Color from 'enums.kcl'\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport Color from 'enums.kcl'\n",
                 vec![plain_module, enum_module],
             ),
             (
                 "glob import of an enum",
-                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport * from 'enums.kcl'\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport * from 'enums.kcl'\n",
                 vec![plain_module, enum_module],
+            ),
+            (
+                "module then enum alias",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Base { | Red }\nimport \"Color.kcl\"\ntype Color = Base\n",
+                vec![plain_module],
+            ),
+            (
+                "enum alias then module",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Base { | Red }\ntype Color = Base\nimport \"Color.kcl\"\n",
+                vec![plain_module],
             ),
         ] {
             let err = execute_with_modules(main, &modules).await.unwrap_err();
@@ -7467,11 +8622,33 @@ x = m + 1
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn enum_alias_can_shadow_module_from_outer_scope() {
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+type Color { | Red }
+import "Shade.kcl"
+
+fn pick(): Color {
+  type Shade = Color
+  return Shade::Red
+}
+
+result = pick()
+"#;
+        let result = execute_with_modules(main, &[("Shade.kcl", "export value = 1\n")])
+            .await
+            .unwrap();
+        let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "result") else {
+            panic!("`result` should hold an enum value");
+        };
+        assert_eq!(value.qualified_name(), "Color::Red");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn enum_constructs_variant() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
         );
 
         for (case, main, modules) in [
@@ -7510,6 +8687,146 @@ x = m + 1
         }
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_aliases_preserve_the_original_declaration() {
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+type Color { | Red | Green }
+type C = Color
+type D = C
+
+original = Color::Red
+directAlias = C::Red
+chainedAlias = D::Red
+directEqualsOriginal = directAlias == original
+chainEqualsOriginal = chainedAlias == original
+
+fn passThroughAlias(@color: C): Color {
+  return color
+}
+
+passed = passThroughAlias(D::Green)
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        let memory = result.exec_state.stack();
+
+        let KclValue::Type {
+            value: TypeDef::Enum(original_def),
+            ..
+        } = mem_get_json(memory, result.mem_env, &format!("{}Color", memory::TYPE_PREFIX))
+        else {
+            panic!("`Color` should hold an enum definition");
+        };
+        for alias in ["C", "D"] {
+            let KclValue::Type {
+                value: TypeDef::Enum(alias_def),
+                ..
+            } = mem_get_json(memory, result.mem_env, &format!("{}{alias}", memory::TYPE_PREFIX))
+            else {
+                panic!("`{alias}` should hold an enum definition");
+            };
+            assert!(Arc::ptr_eq(&original_def, &alias_def), "alias: {alias}");
+        }
+
+        for name in ["directEqualsOriginal", "chainEqualsOriginal"] {
+            let KclValue::Bool { value, .. } = mem_get_json(memory, result.mem_env, name) else {
+                panic!("`{name}` should hold a boolean");
+            };
+            assert!(value, "comparison: {name}");
+        }
+
+        let KclValue::Enum { value: passed } = mem_get_json(memory, result.mem_env, "passed") else {
+            panic!("`passed` should hold an enum value");
+        };
+        assert_eq!(passed.enum_id(), original_def.id());
+        assert_eq!(passed.variant(), "Green");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_aliases_survive_qualified_imports_and_reexports() {
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+import "colors.kcl"
+import "aliases.kcl"
+import "tones.kcl"
+import Paint as Finish from "aliases.kcl"
+import * from "aliases.kcl"
+
+original = colors::Color::Red
+qualifiedAlias = aliases::Paint::Red
+namedImportAlias = Finish::Green
+globImportAlias = Paint::Red
+namedTargetAlias = tones::Tint::Green
+aliasesEqualOriginal = qualifiedAlias == original
+
+fn throughAlias(@color: Finish): colors::Color {
+  return color
+}
+
+fn throughOriginal(@color: colors::Color): Finish {
+  return color
+}
+
+fromAlias = throughAlias(Finish::Green)
+originalIntoAlias = throughAlias(colors::Color::Green)
+fromOriginal = throughOriginal(colors::Color::Red)
+"#;
+        let modules = [
+            (
+                "colors.kcl",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+            ),
+            (
+                "palette.kcl",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"colors.kcl\" as swatches\nexport type Shade = swatches::Color\n",
+            ),
+            (
+                "aliases.kcl",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"palette.kcl\"\nexport type Paint = palette::Shade\n",
+            ),
+            (
+                "tones.kcl",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport Color from \"colors.kcl\"\nexport type Tint = Color\n",
+            ),
+        ];
+
+        let result = execute_with_modules(main, &modules).await.unwrap();
+        let memory = result.exec_state.stack();
+        let KclValue::Enum { value: original } = mem_get_json(memory, result.mem_env, "original") else {
+            panic!("`original` should hold an enum value");
+        };
+        let original_id = original.enum_id();
+
+        for (name, variant) in [
+            ("qualifiedAlias", "Red"),
+            ("namedImportAlias", "Green"),
+            ("globImportAlias", "Red"),
+            ("namedTargetAlias", "Green"),
+            ("fromAlias", "Green"),
+            ("originalIntoAlias", "Green"),
+            ("fromOriginal", "Red"),
+        ] {
+            let KclValue::Enum { value } = mem_get_json(memory, result.mem_env, name) else {
+                panic!("`{name}` should hold an enum value");
+            };
+            assert_eq!(value.enum_id(), original_id, "value: {name}");
+            assert_eq!(value.variant(), variant, "value: {name}");
+        }
+
+        let KclValue::Bool { value, .. } = mem_get_json(memory, result.mem_env, "aliasesEqualOriginal") else {
+            panic!("`aliasesEqualOriginal` should hold a boolean");
+        };
+        assert!(value);
+
+        let KclValue::Type {
+            value: TypeDef::Enum(finish_def),
+            ..
+        } = mem_get_json(memory, result.mem_env, &format!("{}Finish", memory::TYPE_PREFIX))
+        else {
+            panic!("`Finish` should hold an enum definition");
+        };
+        assert_eq!(finish_def.id(), original_id);
+    }
+
     // The next five tests pin lexical resolution of signature types: a type
     // name written in a function signature resolves in the scope where the
     // declaration executes, never in the caller's scope. Before
@@ -7521,12 +8838,11 @@ x = m + 1
     async fn signature_types_resolve_in_declaring_module() {
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
         );
         // The caller can reach `colors::Color` but never binds the bare name
         // `Color`, so resolving the signature in the caller's scope would fail.
-        let main =
-            "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\"\nr = colors::paint(colors::Color::Red)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"colors.kcl\"\nr = colors::paint(colors::Color::Red)\n";
 
         let result = execute_with_modules(main, &[colors]).await.unwrap();
         let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
@@ -7537,7 +8853,7 @@ x = m + 1
 
     #[tokio::test(flavor = "multi_thread")]
     async fn qualified_type_paths_resolve_in_aliases_and_ascriptions() {
-        let main = r#"@settings(experimentalFeatures = allow)
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type ViewOrientation = view::Orientation
 front = view::Orientation::Front: view::Orientation
 "#;
@@ -7560,9 +8876,9 @@ front = view::Orientation::Front: view::Orientation
         // resolve identically under any alias.
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
         );
-        let main = "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\" as painter\nr = painter::paint(painter::Color::Red)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"colors.kcl\" as painter\nr = painter::paint(painter::Color::Red)\n";
 
         let result = execute_with_modules(main, &[colors]).await.unwrap();
         let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
@@ -7579,9 +8895,9 @@ front = view::Orientation::Front: view::Orientation
         // caller's binding.
         let broken = (
             "broken.kcl",
-            "@settings(experimentalFeatures = allow)\nexport fn f(@x: Missing) {\n  return x\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport fn f(@x: Missing) {\n  return x\n}\n",
         );
-        let main = "@settings(experimentalFeatures = allow)\ntype Missing = string\nimport \"broken.kcl\"\nr = broken::f(\"hi\")\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Missing = string\nimport \"broken.kcl\"\nr = broken::f(\"hi\")\n";
 
         let err = execute_with_modules(main, &[broken]).await.unwrap_err();
         assert!(
@@ -7596,7 +8912,7 @@ front = view::Orientation::Front: view::Orientation
         // Resolution happens when the declaration executes, so a type declared
         // later in the file is not visible. The function is never called; the
         // error must surface at the declaration itself.
-        let main = "@settings(experimentalFeatures = allow)\nfn f(@x: Later) {\n  return x\n}\ntype Later = string\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nfn f(@x: Later) {\n  return x\n}\ntype Later = string\n";
 
         let err = parse_execute(main).await.unwrap_err();
         assert!(
@@ -7612,7 +8928,7 @@ front = view::Orientation::Front: view::Orientation
         // module: the anonymous function's signature must see the alias in the
         // enclosing function body. Caller-scope resolution would use the
         // module-level `Width = string` and fail to coerce `42`.
-        let main = "@settings(experimentalFeatures = allow)\ntype Width = string\nfn makeMeasure() {\n  type Width = number(mm)\n  return fn(@w: Width) { return w }\n}\nmeasure = makeMeasure()\nr = measure(42)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Width = string\nfn makeMeasure() {\n  type Width = number(mm)\n  return fn(@w: Width) { return w }\n}\nmeasure = makeMeasure()\nr = measure(42)\n";
 
         let result = parse_execute(main).await.unwrap();
         let KclValue::Number { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
@@ -7687,10 +9003,9 @@ front = view::Orientation::Front: view::Orientation
     async fn signature_types_use_declaring_scope_when_both_scopes_define_the_name() {
         let m1 = (
             "m1.kcl",
-            "@settings(experimentalFeatures = allow)\ntype A = string\n\nexport fn test(@a: A) {\n  return a\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype A = string\n\nexport fn test(@a: A) {\n  return a\n}\n",
         );
-        let main =
-            "@settings(experimentalFeatures = allow)\nimport * from \"m1.kcl\"\ntype A = number(mm)\nx = test(2mm)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport * from \"m1.kcl\"\ntype A = number(mm)\nx = test(2mm)\n";
 
         let err = execute_with_modules(main, &[m1]).await.unwrap_err();
         assert_eq!(
@@ -7701,12 +9016,18 @@ front = view::Orientation::Front: view::Orientation
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_bad_variant_paths() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
 
         for (case, main, modules, message) in [
             (
                 "unknown variant",
                 format!("{allow}type Color {{ | Red | Green }}\nx = Color::Blue\n"),
+                vec![],
+                "`Blue` is not a variant of enum `Color`. Its variants are: Red, Green.",
+            ),
+            (
+                "unknown variant through an alias",
+                format!("{allow}type Color {{ | Red | Green }}\ntype Paint = Color\nx = Paint::Blue\n"),
                 vec![],
                 "`Blue` is not a variant of enum `Color`. Its variants are: Red, Green.",
             ),
@@ -7733,17 +9054,36 @@ front = view::Orientation::Front: view::Orientation
                 format!("{allow}import \"colors.kcl\"\nx = colors::Color::Red\n"),
                 vec![(
                     "colors.kcl",
-                    "@settings(experimentalFeatures = allow)\ntype Color { | Red }\n",
+                    "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Color { | Red }\n",
                 )],
                 "Item Color not found in module's exported items",
             ),
             (
-                // The alias exemption seen from the use site: a type alias is not
-                // an enum, so the segment is resolved as a module and fails.
-                "a type alias cannot head a path",
+                "a non-enum type alias cannot head a path",
                 format!("{allow}type T = number(_)\nx = T::foo\n"),
                 vec![],
-                "`T` is not defined",
+                "`T` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
+            ),
+            (
+                "a chained non-enum type alias cannot head a path",
+                format!("{allow}type T = number(_)\ntype U = T\nx = U::foo\n"),
+                vec![],
+                "`U` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
+            ),
+            (
+                "a qualified non-enum type alias cannot head a path",
+                format!("{allow}import \"types.kcl\"\nx = types::T::foo\n"),
+                vec![(
+                    "types.kcl",
+                    "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type T = number(_)\n",
+                )],
+                "`T` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
+            ),
+            (
+                "an alias containing an enum is not an enum alias",
+                format!("{allow}type Color {{ | Red }}\ntype T = Color | string\nx = T::Red\n"),
+                vec![],
+                "`T` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
             ),
             (
                 // The other half of allowing a value and an enum to share a name:
@@ -7761,7 +9101,7 @@ front = view::Orientation::Front: view::Orientation
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_compares_by_variant() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green }
 sameEq = Color::Red == Color::Red
 sameNeq = Color::Red != Color::Red
@@ -7793,7 +9133,7 @@ otherNeq = Color::Red != Color::Green
         // `assertIs` runs inside the block because block-local bindings live in a
         // child scope that the root environment cannot read afterwards. A wrong
         // comparison therefore fails this test instead of passing unnoticed.
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green }
 sketch(on = XY) {
   c = Color::Red
@@ -7818,7 +9158,7 @@ sketch(on = XY) {
         //
         // `!=` is deliberately absent: the interception tests `Eq` only, so `!=`
         // still compares, which `enum_usable_inside_sketch_block` covers.
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let tail = "  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}\n";
         for (case, declaration, comparison, types) in [
             (
@@ -7844,7 +9184,7 @@ sketch(on = XY) {
         // Two names for one declaration, so they are the same type and compare
         // equal. Identity is the declaration, not the binding, which is what makes
         // this different from two files that each declare a `Color`.
-        let main = r#"@settings(experimentalFeatures = allow)
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 import Color as A from 'colors.kcl'
 import Color as B from 'colors.kcl'
 x = A::Red == B::Red
@@ -7854,7 +9194,7 @@ y = A::Red == B::Green
             main,
             &[(
                 "colors.kcl",
-                "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
             )],
         )
         .await
@@ -7870,14 +9210,14 @@ y = A::Red == B::Green
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_comparison_across_types() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let color = (
             "a.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red }\n",
         );
         let other_color = (
             "b.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red }\n",
         );
 
         for (case, main, modules, message) in [
@@ -7924,10 +9264,10 @@ y = A::Red == B::Green
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_bare_type_name_as_value() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
         );
 
         for (case, main, modules, message) in [
@@ -7944,6 +9284,12 @@ y = A::Red == B::Green
                 format!("{allow}import Color as Shade from 'colors.kcl'\nx = Shade\n"),
                 vec![colors],
                 "`Shade` is a type, not a value. Use one of its variants, such as `Shade::Red`.",
+            ),
+            (
+                "suggestion uses the type alias",
+                format!("{allow}type Color {{ | Red | Green }}\ntype Paint = Color\nx = Paint\n"),
+                vec![],
+                "`Paint` is a type, not a value. Use one of its variants, such as `Paint::Red`.",
             ),
             (
                 "enum with no variants suggests nothing",
@@ -7972,41 +9318,60 @@ y = A::Red == B::Green
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn enum_use_gated_by_consuming_module() {
-        // The declaring module allows experimental features; the consuming one
-        // does not, so using the imported enum is what trips the gate. Pins that
-        // the gate follows the consumer's settings rather than the declaration's.
-        //
-        // Experimental use is reported as a compilation issue rather than by
-        // aborting the run, which is how `RuntimeType::from_alias` reports it too,
-        // so execution succeeds and the diagnostic is what carries the complaint.
-        let main = r#"import "colors.kcl"
-x = colors::Color::Red
-"#;
-        let result = execute_with_modules(
-            main,
-            &[(
-                "colors.kcl",
-                "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
-            )],
-        )
-        .await
-        .unwrap();
-
-        let issues = &result.exec_state.global.issues;
-        assert_eq!(issues.len(), 1, "issues: {issues:?}");
-        assert_eq!(
-            issues[0].message,
-            "Use of the enum `Color` is experimental and may change or be removed."
-        );
-        assert_eq!(issues[0].severity, Severity::Error);
+    async fn imported_user_type_declarations_require_v3_even_with_opt_in() {
+        for version in ["1.0", "2.0"] {
+            for module_settings in [format!("@settings(kclVersion = \"{version}\")\n"), String::new()] {
+                for (feature, declaration, use_type) in [
+                    (
+                        "Type aliases",
+                        "export type Distance = number(mm)",
+                        "x = 1mm: types::Distance",
+                    ),
+                    (
+                        "Enum declarations",
+                        "export type Color { | Red }",
+                        "x = types::Color::Red",
+                    ),
+                ] {
+                    let main = format!(
+                        "@settings(kclVersion = \"{version}\", experimentalFeatures = allow)\nimport \"types.kcl\"\n{use_type}\n"
+                    );
+                    let module = format!("{module_settings}{declaration}\n");
+                    let err = execute_with_modules(&main, &[("types.kcl", &module)])
+                        .await
+                        .unwrap_err();
+                    assert_eq!(
+                        err.message(),
+                        format!("{feature} require KCL 3.0-preview, but this program uses KCL {version}."),
+                        "main: {main}; module: {module}"
+                    );
+                }
+            }
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn enum_use_not_gated_when_consumer_allows_it() {
-        // The other half of the gate: with the setting present, using an enum
-        // raises nothing at all.
-        let code = r#"@settings(experimentalFeatures = allow)
+    async fn named_view_access_in_unversioned_import_uses_entry_point_version() {
+        let dep = "export camera = view::directed([0, 1, -2])\n";
+        for version in ["1.0", "2.0"] {
+            let main = format!("@settings(kclVersion = \"{version}\")\nimport \"dep.kcl\"\nx = dep::camera\n");
+            let err = execute_with_modules(&main, &[("dep.kcl", dep)]).await.unwrap_err();
+            assert!(
+                err.message()
+                    .contains(&format!("added in KCL 3.0, but this program uses KCL {version}")),
+                "error: {}",
+                err.message()
+            );
+        }
+
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport \"dep.kcl\"\nx = dep::camera\n";
+        let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
+        assert!(result.exec_state.issues().is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_use_is_not_experimental_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
 type Color { | Red }
 x = Color::Red
 "#;
@@ -8019,24 +9384,70 @@ x = Color::Red
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn v3_enum_variant_warning_follows_explicit_annotations() {
+        for (case, declarations, binding, expected_warnings) in [
+            ("unannotated enum", "type Color { | Red }", "Color", 0),
+            (
+                "annotated enum",
+                "@(experimental = true)\ntype Color { | Red }",
+                "Color",
+                1,
+            ),
+            (
+                "alias of annotated enum",
+                "@(experimental = true)\ntype Color { | Red }\ntype Shade = Color",
+                "Shade",
+                1,
+            ),
+            (
+                "annotated alias",
+                "type Color { | Red }\n@(experimental = true)\ntype Shade = Color",
+                "Shade",
+                1,
+            ),
+        ] {
+            let code = format!(
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = warn)\n{declarations}\nx = {binding}::Red\n"
+            );
+            let result = parse_execute(&code)
+                .await
+                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+            let variant_warnings: Vec<_> = result
+                .exec_state
+                .issues()
+                .iter()
+                .filter(|issue| {
+                    issue.message == "Use of the enum `Color` is experimental and may change or be removed."
+                })
+                .collect();
+            assert_eq!(variant_warnings.len(), expected_warnings, "case: {case}");
+            assert!(
+                variant_warnings.iter().all(|issue| issue.severity == Severity::Warning),
+                "case: {case}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn enum_allows_name_sharing_outside_modules() {
         // Pins two deliberate exemptions from the clash rule above, so that
         // tightening it later has to be a decision rather than an accident.
         //
-        // Only an enum or a module can head a `Color::Red` path, so only those two
-        // can be ambiguous. A type alias cannot head a `::` path, and an ordinary
-        // value is never looked up for a path head at all.
+        // Only a module or a type binding that resolves to an enum can head a
+        // `Color::Red` path, so only those two can be ambiguous. A non-enum type
+        // alias cannot head a `::` path, and an ordinary value is never looked up
+        // for a path head at all.
         for (case, main, modules) in [
             (
                 // The module arrives second, which is the path carrying the
                 // "only `TypeDef::Enum` conflicts" guard.
                 "an alias may share a name with a module",
-                "@settings(experimentalFeatures = allow)\ntype Temperature = number(_)\nimport \"Temperature.kcl\"\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Temperature = number(_)\nimport \"Temperature.kcl\"\nx = Temperature::x\n",
                 vec![("Temperature.kcl", "export x = 1\n")],
             ),
             (
                 "a value may share a name with an enum",
-                "@settings(experimentalFeatures = allow)\ntype Color { | Red }\nColor = 5\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Color { | Red }\nColor = 5\n",
                 vec![],
             ),
         ] {
@@ -8048,7 +9459,7 @@ x = Color::Red
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_declaration_rejects_redefinition() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red }
 type Color { | Green }
 "#;
@@ -8066,7 +9477,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_projects_to_string() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
             type Label = string
         "#;
@@ -8113,7 +9524,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_ascription_keeps_the_enum() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
             type Paint = Color
         "#;
@@ -8143,7 +9554,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_projection_is_not_implicit() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
         "#;
         let found = "but found a value of enum `Color` (with type `Color`).";
@@ -8199,7 +9610,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_ascription_rejections() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red }
             type Shade { | Red }
         "#;
@@ -8243,12 +9654,21 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_flows_through_declared_types() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
+            type Paint = Color
             type Shade { | Red }
         "#;
 
         for (case, body, expected) in [
+            (
+                "an alias parameter accepts the original enum",
+                r#"
+                    fn paint(@c: Paint) { return c }
+                    x = paint(Color::Red) == Paint::Red
+                "#,
+                None,
+            ),
             (
                 "an unlabeled parameter",
                 r#"
@@ -8310,6 +9730,16 @@ type Color { | Green }
                 None,
             ),
             (
+                "an alias parameter rejects a different enum",
+                r#"
+                    fn paint(@c: Paint) { return c }
+                    x = paint(Shade::Red) == Shade::Red
+                "#,
+                Some(
+                    "The input argument of `paint` requires a value with type `Paint`, but found a value of enum `Shade` (with type `Shade`).",
+                ),
+            ),
+            (
                 "another declaration at the same boundary",
                 r#"
                     fn paint(@c: Color) { return c }
@@ -8339,5 +9769,491 @@ type Color { | Green }
                 ),
             }
         }
+    }
+
+    // ---- `added_in` on whole declarations ----
+
+    /// Runs `body` under `kcl_version` and returns the fatal error message, or
+    /// `None` if it ran without issues. Experimental features are allowed for
+    /// unrelated syntax in the test programs. Hints are enabled for user
+    /// declarations, since in production only std gets them.
+    async fn added_in_error(kcl_version: &str, body: &str) -> Option<String> {
+        let program = format!("@settings(kclVersion = {kcl_version}, experimentalFeatures = allow)\n{body}");
+        match parse_execute_hinting_all(&program, None).await {
+            Ok(result) => {
+                assert!(
+                    result.issues().is_empty(),
+                    "kclVersion {kcl_version}: unexpected issues: {:#?}",
+                    result.issues()
+                );
+                None
+            }
+            Err(err) => Some(err.message().to_owned()),
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_function_is_undefined() {
+        let body = r#"@(added_in = "3.0")
+fn newFn() { return 1 }
+x = newFn()
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+        assert_eq!(added_in_error("\"3.0-preview\"", body).await, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_function_cannot_be_referenced_as_a_value() {
+        // Any reference fails, not only a call: the name is simply not bound.
+        let body = r#"@(added_in = "3.0")
+fn newFn() { return 1 }
+f = newFn
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn added_in_boundary_is_inclusive_and_prerelease_counts_as_release() {
+        for (kcl_version, added_in) in [
+            ("1.0", "1.0"),
+            ("2.0", "1.0"),
+            ("2.0", "2.0"),
+            ("\"3.0-preview\"", "3.0"),
+            ("3.0", "3.0"),
+        ] {
+            let body = format!("@(added_in = \"{added_in}\")\nfn newFn() {{ return 1 }}\nx = newFn()\n");
+            assert_eq!(
+                added_in_error(kcl_version, &body).await,
+                None,
+                "kclVersion {kcl_version}, added_in {added_in}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_error_reports_default_kcl_version() {
+        // No `@settings(kclVersion = ...)`: the message names the default version.
+        let program = r#"@(added_in = "2.0")
+fn newFn() { return 1 }
+x = newFn()
+"#;
+        assert_eq!(
+            parse_execute_hinting_all(program, None).await.unwrap_err().message(),
+            "`newFn` is not defined; it was added in KCL 2.0, but this program uses KCL 1.0"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_constant_is_undefined() {
+        let body = r#"@(added_in = "3.0")
+newConst = 5
+x = newConst
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("`newConst` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+        assert_eq!(added_in_error("\"3.0-preview\"", body).await, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_type_is_unknown() {
+        let body = r#"@(added_in = "3.0")
+type NewT = [number; 2]
+x = [1, 2]: NewT
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("Unknown type: NewT; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+        assert_eq!(added_in_error("\"3.0-preview\"", body).await, None);
+    }
+
+    /// A function naming a later-added type in its signature fails at its
+    /// declaration with the type's error, unless it is gated at or above the type.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn function_using_not_yet_added_type_fails_at_its_declaration() {
+        let ty = "@(added_in = \"3.0\")\ntype NewT = [number; 2]\n";
+        let type_error = Some("Unknown type: NewT; it was added in KCL 3.0, but this program uses KCL 2.0");
+
+        // Ungated function: the type is missing on 2.0.
+        let body = format!("{ty}fn usesNew(@p: NewT) {{ return p }}\n");
+        assert_eq!(added_in_error("2.0", &body).await.as_deref(), type_error);
+        // Gated below the type: same.
+        let body = format!("{ty}@(added_in = \"2.0\")\nfn usesNew(@p: NewT) {{ return p }}\n");
+        assert_eq!(added_in_error("2.0", &body).await.as_deref(), type_error);
+        // The return type is part of the signature too.
+        let body = format!("{ty}fn makesNew(): NewT {{ return [1, 2] }}\n");
+        assert_eq!(added_in_error("2.0", &body).await.as_deref(), type_error);
+
+        // Gated at the type's version: both are skipped.
+        let body = format!("{ty}@(added_in = \"3.0\")\nfn usesNew(@p: NewT) {{ return p }}\n");
+        assert_eq!(added_in_error("2.0", &body).await, None);
+        let body = format!("{body}x = usesNew([1, 2])\n");
+        assert_eq!(
+            added_in_error("2.0", &body).await.as_deref(),
+            Some("`usesNew` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+
+        // On a new enough program, nothing is gated.
+        let body = format!("{ty}fn usesNew(@p: NewT) {{ return p }}\nx = usesNew([1, 2])\n");
+        assert_eq!(added_in_error("\"3.0-preview\"", &body).await, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_declaration_is_absent_from_imports() {
+        // The module runs on a cloned state, so these also cover the record's
+        // trip through the module's execution outcome.
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\nexport fn oldFn() { return 2 }\n";
+
+        // An explicit import fails with the version help.
+        let main = "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "newFn is not defined in module; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        // So does a qualified path.
+        let main = "@settings(kclVersion = 2.0)\nimport \"dep.kcl\"\nx = dep::newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        // A glob import silently omits it while the rest of the module works.
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = oldFn()\ny = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        // On a new enough program the import works.
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport newFn from \"dep.kcl\"\nx = newFn()\n";
+        let result = execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+            .await
+            .unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+    }
+
+    /// In production only std declarations get the version help; user
+    /// declarations keep the plain message.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_user_declarations_get_no_hint() {
+        let program = "@settings(kclVersion = 2.0)\n@(added_in = \"3.0\")\nfn newFn() { return 1 }\nx = newFn()\n";
+        assert_eq!(
+            parse_execute(program).await.unwrap_err().message(),
+            "`newFn` is not defined"
+        );
+
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\n";
+        let main = "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\n";
+        assert_eq!(
+            execute_with_modules(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "newFn is not defined in module"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_records_whether_the_declaration_is_std() {
+        let ctx = new_mock_executor_context(None);
+        let mut exec_state = ExecState::new(&ctx);
+        let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
+
+        exec_state.record_not_yet_added("userFn".to_owned(), version("3.0"), false);
+        exec_state.mod_local.path = ModulePath::Std {
+            value: "solid".to_owned(),
+        };
+        exec_state.record_not_yet_added("stdFn".to_owned(), version("3.0"), true);
+
+        let records = &exec_state.mod_local.not_yet_added;
+        assert!(!records["userFn"].item.is_std);
+        assert!(!records["userFn"].exported);
+        assert!(records["stdFn"].item.is_std);
+        assert!(records["stdFn"].exported);
+        ctx.close().await;
+    }
+
+    /// `export import *` re-exports records along with names.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_records_follow_glob_re_exports() {
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\n";
+        let mid = "export import * from \"dep.kcl\"\n";
+        let modules = [("dep.kcl", dep), ("mid.kcl", mid)];
+
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"mid.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &modules)
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        let main = "@settings(kclVersion = 2.0)\nimport newFn from \"mid.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &modules)
+                .await
+                .unwrap_err()
+                .message(),
+            "newFn is not defined in module; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+    }
+
+    /// A record is as private as its name: no `export`, no hint for importers.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn private_not_yet_added_records_stay_private() {
+        let dep = "@(added_in = \"3.0\")\nfn privateFn() { return 1 }\nexport fn oldFn() { return 2 }\n";
+
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = privateFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`privateFn` is not defined"
+        );
+
+        let main = "@settings(kclVersion = 2.0)\nimport privateFn from \"dep.kcl\"\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "privateFn is not defined in module"
+        );
+
+        // `mid` imports the record without `export`, so it does not pass it on.
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\n";
+        let mid = "import * from \"dep.kcl\"\nexport fn other() { return 2 }\n";
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"mid.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep), ("mid.kcl", mid)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined"
+        );
+    }
+
+    /// The mock memory cache carries std's records, since a run reusing cached
+    /// memory skips the prelude that writes them.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn std_not_yet_added_records_survive_the_mock_memory_cache() {
+        let ctx = new_mock_executor_context(None);
+        let mut exec_state = ExecState::new(&ctx);
+        let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
+        let program = crate::Program::parse_no_errs("x = 1").unwrap();
+        let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        exec_state.global.std_not_yet_added.insert(
+            "cube".to_owned(),
+            NotYetAdded {
+                added_in: version("3.0"),
+                is_std: true,
+            },
+        );
+
+        let cached = cache::GlobalState::new(
+            exec_state,
+            ctx.settings.clone(),
+            program.kcl_version,
+            program.ast.clone(),
+            main_ref,
+        );
+        let mem = cached.mock_memory_state().unwrap();
+        assert_eq!(mem.std_not_yet_added["cube"].added_in, version("3.0"));
+
+        let mock_config = MockConfig::default();
+        let mut restored = ExecState::new_mock(&ctx, &mock_config);
+        ExecutorContext::restore_mock_memory(&mut restored, mem, &mock_config).unwrap();
+        assert!(
+            !restored.stack().memory.requires_std(),
+            "cached memory already has the prelude"
+        );
+        assert_eq!(
+            restored.not_yet_added_in_scope("cube").map(|r| &r.added_in),
+            Some(&version("3.0"))
+        );
+        // A std record explains a failed lookup without any test override.
+        let err = KclError::new_undefined_value(
+            KclErrorDetails::new("`cube` is not defined".to_owned(), Vec::new()),
+            None,
+        );
+        assert_eq!(
+            restored.with_not_yet_added_hint(&["cube"], err).message(),
+            "`cube` is not defined; it was added in KCL 3.0, but this program uses KCL 1.0"
+        );
+        ctx.close().await;
+    }
+
+    // ---- mock memory reuse across settings changes ----
+
+    /// Runs `code` in mock execution reusing the previous memory, as the LSP
+    /// worker does for every execution.
+    async fn run_mock_reusing_memory(ctx: &ExecutorContext, code: &str) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        ctx.run_mock(
+            &program,
+            &MockConfig {
+                use_prev_memory: true,
+                ..Default::default()
+            },
+        )
+        .await
+    }
+
+    #[track_caller]
+    fn outcome_f64(outcome: &ExecOutcome, name: &str) -> f64 {
+        let Some(KclValueView::Number { value, .. }) = outcome.variables.get(name) else {
+            panic!(
+                "expected `{name}` to be a number, got {:?}",
+                outcome.variables.get(name)
+            );
+        };
+        *value
+    }
+
+    /// Memory written under one kclVersion still binds declarations the other
+    /// version skips, so a mock run reusing it must rebuild instead. Nothing
+    /// else invalidates the LSP worker's memory.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_downgrade() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let body = "@(added_in = \"3.0\")\nfn newFn() {\n  return 42\n}\n\nanswer = newFn()\n";
+
+        let outcome = run_mock_reusing_memory(&ctx, &format!("@settings(kclVersion = \"3.0-preview\")\n{body}"))
+            .await
+            .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        // Only the version changes; `newFn` is still bound in the cached memory.
+        let err = run_mock_reusing_memory(&ctx, &format!("@settings(kclVersion = 2.0)\n{body}"))
+            .await
+            .unwrap_err();
+        assert_eq!(err.error.message(), "`newFn` is not defined");
+
+        ctx.close().await;
+    }
+
+    /// A mock execution context whose project directory holds `modules`.
+    async fn mock_context_with_modules(modules: &[(&str, &str)]) -> (ExecutorContext, tempfile::TempDir) {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_mock_memory").unwrap();
+        for (name, source) in modules {
+            tokio::fs::write(tmpdir.path().join(name), source).await.unwrap();
+        }
+        let ctx = ExecutorContext::new_mock(Some(ExecutorSettings {
+            project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+            ..Default::default()
+        }))
+        .await;
+        (ctx, tmpdir)
+    }
+
+    const GATED_DEP: &str =
+        "@(added_in = \"3.0\")\nexport fn newFn() {\n  return 42\n}\nexport fn oldFn() {\n  return 1\n}\n";
+
+    /// A module's cached outcome keeps the exports of the version it ran
+    /// under, so an upgrade must rebuild to see newly available functions.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_upgrade_with_imports() {
+        let (ctx, _tmpdir) = mock_context_with_modules(&[("dep.kcl", GATED_DEP)]).await;
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = oldFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "x"), 1.0);
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = \"3.0-preview\")\nimport * from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_downgrade_with_imports() {
+        let (ctx, _tmpdir) = mock_context_with_modules(&[("dep.kcl", GATED_DEP)]).await;
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = \"3.0-preview\")\nimport newFn from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        let err = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap_err();
+        assert_eq!(err.error.message(), "newFn is not defined in module");
+
+        ctx.close().await;
+    }
+
+    /// Only the version decides reuse. Adding the first spline makes the
+    /// frontend add `experimentalFeatures = allow` and then execute just that
+    /// sketch, which needs the cached memory and cannot rebuild it.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_reused_when_only_other_settings_change() {
+        let ctx = ExecutorContext::new_mock(None).await;
+
+        run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\nx = 2\n")
+            .await
+            .unwrap();
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0, experimentalFeatures = allow)\ny = x\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "y"), 2.0);
+
+        ctx.close().await;
+    }
+
+    /// An undeclared version is the default version, so declaring the default
+    /// explicitly is not a change, while declaring another version is.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_treats_an_undeclared_kcl_version_as_the_default() {
+        let ctx = ExecutorContext::new_mock(None).await;
+
+        run_mock_reusing_memory(&ctx, "x = 2\n").await.unwrap();
+        let outcome = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 1.0)\ny = x\n")
+            .await
+            .unwrap();
+        assert_eq!(outcome_f64(&outcome, "y"), 2.0);
+        let err = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\nz = x\n")
+            .await
+            .unwrap_err();
+        assert_eq!(err.error.message(), "`x` is not defined");
+
+        ctx.close().await;
     }
 }

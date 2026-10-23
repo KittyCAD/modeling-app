@@ -7,6 +7,7 @@ import {
   HOME_KEYMAP_SCOPE,
   type KeymapDocument,
   MODE_MODELING_KEYMAP_SCOPE,
+  MODELING_DIALOG_FOCUSED_KEYMAP_SCOPE,
   MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
@@ -14,7 +15,7 @@ import {
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
-import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
+import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
 
 const BASE_KEYMAP_SOURCE = 'Base'
 const FILE_KEYMAP_SCOPES = [
@@ -86,6 +87,13 @@ export const defaultKeymap: KeymapDocument = {
       command: 'zds.commandPalette.close',
       hidden: true,
       userBindingCommand: 'zds.commandPalette.close',
+    },
+    {
+      id: 'modeling-dialog.submit',
+      title: 'Submit modeling dialog',
+      when: [MODELING_DIALOG_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['enter'],
+      command: 'zds.modelingDialog.submit',
     },
     {
       id: 'settings.open',
@@ -409,7 +417,7 @@ export const defaultKeymap: KeymapDocument = {
     },
     {
       id: 'toolbar.modeling.insert',
-      title: 'Insert',
+      title: 'Import',
       when: [MODE_MODELING_KEYMAP_SCOPE],
       keystrokes: ['i'],
       command: 'code:Insert',

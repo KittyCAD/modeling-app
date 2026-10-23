@@ -12,7 +12,7 @@ import {
   canRevealInFileExplorer,
   revealInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
-import type { Setting } from '@src/lib/settings/initialSettings'
+import type { Setting } from '@src/lib/settings/Setting'
 import type {
   SetEventTypes,
   SettingsLevel,
@@ -33,7 +33,7 @@ import {
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { ForwardedRef } from 'react'
 import { forwardRef, useMemo } from 'react'
-import toast from 'react-hot-toast'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: settings filesystem path and hash-based highlighting (useLocation, useNavigate).
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
@@ -215,9 +215,6 @@ export const AllSettingsFields = forwardRef(
                     type: 'Reset settings',
                     level: searchParamTab,
                   })
-                  toast.success(
-                    `Your ${searchParamTab}-level settings were reset.`
-                  )
                 }}
                 iconStart={{
                   icon: 'refresh',

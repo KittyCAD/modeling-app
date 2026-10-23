@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing patterns_linear_basic_holes.kcl
+---
+circles = startSketchOn(XY)
+  |> circle(center = [5, 5], radius = 1)
+  |> patternLinear2d(axis = [1, 1], instances = 13, distance = 3)
+
+rectangle = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 50])
+  |> line(end = [50, 0])
+  |> line(end = [0, -50])
+  |> close()
+  |> subtract2d(tool = circles)
+  |> extrude(length = 10)

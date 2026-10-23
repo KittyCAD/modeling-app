@@ -1,0 +1,20 @@
+fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> tangentialArc(end = [0, scale], tag = $here)
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+
+  return sg
+}
+part001 = cube(pos = [0, 0], scale = 20)
+  |> close()
+  |> extrude(length = 20)
+
+part002 = startSketchOn(part001, face = part001.sketch.tags.here)
+  |> startProfile(at = [0, 0])
+  |> line(end = [5, 0])
+  |> line(end = [5, 5])
+  |> line(end = [0, 5])
+  |> close()
+  |> extrude(length = 1)

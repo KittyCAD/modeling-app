@@ -37,9 +37,9 @@ import {
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import {
   createSettings,
-  Setting,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
+import { Setting } from '@src/lib/settings/Setting'
 import type {
   SaveSettingsPayload,
   SettingsLevel,
@@ -505,10 +505,6 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
     defineBooleanAppOnlyField(
       { category: 'modeling', field: 'enableTouchControls' },
       'enable_touch_controls'
-    ),
-    defineBooleanAppOnlyField(
-      { category: 'modeling', field: 'useSketchSolveMode' },
-      'use_sketch_solve_mode'
     ),
     defineBooleanAppOnlyField(
       { category: 'modeling', field: 'showSketchGrid' },

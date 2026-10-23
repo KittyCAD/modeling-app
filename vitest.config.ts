@@ -39,6 +39,7 @@ export default defineConfig({
           include: [
             'src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
             'packages/registry/src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'e2e/performance/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
           ],
         },
       },

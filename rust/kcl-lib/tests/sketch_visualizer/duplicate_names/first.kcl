@@ -1,0 +1,6 @@
+export fn makeProfile() {
+  profile = sketch(on = XY) {
+    edge = line(start = [0mm, 0mm], end = [20mm, 6.5mm])
+  }
+  return profile
+}

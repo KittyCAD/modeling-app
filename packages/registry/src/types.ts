@@ -102,19 +102,13 @@ export interface RuntimeRegistryItemDefinition extends RegistryItemDefinition {
  * A runtime registry item factory constructs long-lived registry item instances.
  *
  * Factories are where models usually live. A factory should create a stable
- * service surface and return a registry item definition that exposes it.
+ * service surface and return its contributions and optional cleanup directly.
+ * The registry preserves instances by item key.
  */
-export interface RuntimeRegistryItemHandle<TModel = unknown> {
-  readonly model?: TModel
-  readonly item: RuntimeRegistryItemDefinition
-}
-
-/**
- * A runtime registry item factory. The registry preserves instances by item key.
- */
-export interface RegistryItemFactory<TModel = unknown> {
-  (ctx: RegistryItemContext): RuntimeRegistryItemHandle<TModel>
+export interface RegistryItemFactory {
+  (ctx: RegistryItemContext): RuntimeRegistryItemDefinition
   readonly itemKey?: RegistryItemKey
+  readonly dependencies?: readonly RegistryItem[]
 }
 
 /**
@@ -123,7 +117,7 @@ export interface RegistryItemFactory<TModel = unknown> {
 export type RegistryItem =
   | RegistryItemDefinition
   | RuntimeRegistryItemDefinition
-  | RegistryItemFactory<any>
+  | RegistryItemFactory
   | SlotInstance
 
 /**
@@ -149,8 +143,8 @@ export interface ServiceReader {
 }
 
 /**
- * Registry item factories receive a context that lets them read resolved value specs
- * and services lazily.
+ * Registry item factories receive a context that lets them read resolved value
+ * specs and services lazily, after graph construction.
  */
 export interface RegistryItemContext {
   readonly container: RegistryLike

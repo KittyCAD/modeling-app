@@ -1,0 +1,9 @@
+part = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> patternCircular2d(
+       center = [20, 20],
+       instances = 13,
+       arcDegrees = 210,
+       rotateDuplicates = true,
+     )
+  |> extrude(length = 1)

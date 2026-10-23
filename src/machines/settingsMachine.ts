@@ -347,6 +347,10 @@ export const settingsMachine = setup({
 
       return newSettings
     }),
+    toastSettingsReset: ({ event }) => {
+      if (event.type !== 'Reset settings') return
+      toast.success(`Your ${event.level}-level settings were reset.`)
+    },
     setAllSettings: assign(({ event, context }) => {
       if ('settings' in event) return event.settings
       else if ('output' in event) return event.output || context
@@ -546,6 +550,7 @@ export const settingsMachine = setup({
 
           actions: [
             'resetSettings',
+            'toastSettingsReset',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -596,12 +601,16 @@ export const settingsMachine = setup({
       },
     },
     reloadingSettings: {
+      on: {
+        '*': { actions: ['deferEventUntilSettingsPersist'] },
+      },
       invoke: {
         src: 'reloadSettings',
         onDone: {
           target: 'idle',
           actions: [
             'setAllSettings',
+            'flushDeferredSettingsEvents',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -612,9 +621,12 @@ export const settingsMachine = setup({
         },
         onError: {
           target: 'idle',
-          actions: ({ event }) => {
-            console.error('Error reloading settings', event)
-          },
+          actions: [
+            ({ event }) => {
+              console.error('Error reloading settings', event)
+            },
+            'flushDeferredSettingsEvents',
+          ],
         },
         input: ({ context }) => ({
           fileOperations: context.fileOperations,

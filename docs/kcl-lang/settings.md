@@ -27,7 +27,7 @@ For example:
 
 ```kcl
 // The settings attribute.
-@settings(kclVersion = 2.0, defaultLengthUnit = in)
+@settings(kclVersion = 3.0, defaultLengthUnit = in)
 
 // The rest of your KCL code goes below...
 
@@ -39,36 +39,25 @@ Valid properties are:
 
 - `defaultLengthUnit`: the default length unit to use for numbers declared in this file.
   - Accepted values: `mm`, `cm`, `m`, `in` (inches), `ft` (feet), `yd` (yards).
-- `defaultAngleUnit`: the default angle unit to use for numbers declared in this file.
-  - Accepted values: `deg` (degrees), `rad` (radians).
-  - Deprecated with a warning in KCL 2.0 and earlier, and an error in KCL 3.0-preview and later. Use explicit suffixes for angles, e.g. `180deg` or `3.14rad`, instead.
 - `experimentalFeatures`: how experimental features are handled within this file.
   - Accepted values: `allow` (experimental features can be used freely), `warn` (experimental features
   cause a warning), `deny` (the default, experimental features cause an error).
-- `kclVersion`: the version of the KCL language and standard libary to execute with.
-  - Accepted values: `1.0`, `2.0`, `"3.0-preview"` (experimental).
-  - A file that declares `"3.0-preview"` can only be imported when the file being executed
-    declares it too. Importing it from a file that declares `1.0`, `2.0`, or no `kclVersion`
-    is an error, so KCL 3.0 semantics never apply to only part of a program.
-  - When the file being executed declares `"3.0-preview"`, that version governs the whole
-    execution, including any files it imports. Under `"3.0-preview"`:
-    - `return` immediately exits the enclosing function; statements after an executed
-      `return` do not run.
-    - Each `if`/`else if`/`else` branch body introduces its own scope: a variable declared
-      inside a branch is visible from its declaration to the branch's closing brace, never
-      outside it, and may shadow a variable from an enclosing scope.
-    - A member expression evaluates its object before its property: in `a[b]`, `a` is
-      evaluated before `b`. Earlier versions evaluate `b` first.
-    - `fillet` and `chamfer` are sent to the engine immediately, in order with other
-      modeling commands, instead of being deferred until the end of the file. The engine
-      replaces a cut edge with a new face, so look up an edge (for example with
-      `getOppositeEdge` or `getNextAdjacentEdge`) before the `fillet` or `chamfer` that
-      consumes it, and store the result in a variable.
-    - Every imported file that declares its own `kclVersion` must declare the
-      same version as the file being executed. Mixing versions in one program is
-      an error. Imported files that declare no `kclVersion` use the executed
-      file's version. But it's recommended to specify it in every file so that
-      viewing an imported file doesn't unintentionally change `kclVersion` to
-      the default of `1.0`.
+- `kclVersion`: the version of the KCL language and standard library to execute with.
+  - `1.0`: the original language version, for existing programs.
+  - `2.0`: the previous language version, for existing programs.
+  - `3.0`: the current language version, for new programs.
+  - See [Migrating to KCL 3.0](/docs/kcl-lang/migrating-to-kcl-3) for how to
+    update a program to the newest version.
+  - Point-and-click modeling commands only offer arguments supported by this
+    version. Arguments already present in the code are left alone.
+
+`defaultAngleUnit` is not accepted in KCL 3.0. Use explicit angle suffixes,
+such as `180deg` or `3.14rad`, instead.
+
+The entry point's `kclVersion` selects the language version for the whole
+program, including imported KCL files. For imported files:
+
+- An explicit `kclVersion` must match the entry point's version.
+- A file without `kclVersion` inherits the entry point's version.
 
 These settings override any project-wide settings (configured in project.toml or via the UI).

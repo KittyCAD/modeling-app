@@ -1,0 +1,6 @@
+num = 12
+distance = 5
+part = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> patternLinear2d(axis = [0, 1], instances = num, distance = distance - 1)
+  |> extrude(length = 1)

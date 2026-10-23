@@ -17,7 +17,7 @@ fn main() -> Result<()> {
         1,
     );
     contents.push_str(
-        "\nclass KclError(builtins.Exception):\n    def __new__(cls, _message: typing.Any, retryable: builtins.bool = False) -> KclError: ...\n    def is_retryable(self) -> builtins.bool: ...\n\nclass PanicException(BaseException):\n    r\"\"\"\n    The exception raised when Rust code called from Python panics.\n\n    Like SystemExit, this exception is derived from BaseException so that\n    it will typically propagate all the way through the stack and cause the\n    Python interpreter to exit.\n    \"\"\"\n    ...\n",
+        "\nclass KclError(builtins.Exception):\n    def __new__(cls, _message: typing.Any, retryable: builtins.bool = False) -> KclError: ...\n    @property\n    def sketch_constraint_report(self) -> SketchConstraintReport | None: ...\n    def render_sketch_png(self, sketch_name: builtins.str, *, instance_index: typing.Optional[builtins.int] = None) -> builtins.list[builtins.int]:\n        r\"\"\"Render a sketch created before execution failed as a PNG.\"\"\"\n    def is_retryable(self) -> builtins.bool: ...\n\nclass PanicException(BaseException):\n    r\"\"\"\n    The exception raised when Rust code called from Python panics.\n\n    Like SystemExit, this exception is derived from BaseException so that\n    it will typically propagate all the way through the stack and cause the\n    Python interpreter to exit.\n    \"\"\"\n    ...\n",
     );
     std::fs::write(&stub_path, contents)?;
 

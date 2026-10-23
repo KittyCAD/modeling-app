@@ -13,6 +13,24 @@ export function getHomeProjectDisplayName(project: HomeProjectEntry) {
   return (project.title || project.name).replace(FILE_EXT, '')
 }
 
+export function homeProjectDisplayNameExists({
+  entries,
+  requestedName,
+  projectId,
+}: {
+  entries: readonly HomeProjectEntry[] | undefined
+  requestedName: string
+  projectId: string
+}) {
+  return Boolean(
+    entries?.some(
+      (project) =>
+        project.id !== projectId &&
+        getHomeProjectDisplayName(project) === requestedName
+    )
+  )
+}
+
 export function shouldDeleteRemoteOnHomeProjectDelete(
   project: Pick<HomeProjectEntry, 'deleteRemoteOnDelete' | 'remoteProjectId'>
 ) {

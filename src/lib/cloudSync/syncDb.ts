@@ -1,3 +1,4 @@
+import { withCloudSyncFailureContext } from '@src/lib/cloudSync/failureContext'
 import { normalizePathForSync } from '@src/lib/cloudSync/paths'
 import type {
   CloudSyncProjectMetadataIndexEntry,
@@ -16,7 +17,7 @@ function outboxEntryWithoutId(entry: OutboxEntry) {
   return entryWithoutId
 }
 
-function openSyncDb(): Promise<IDBDatabase> {
+function openSyncDbUncategorized(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     if (typeof indexedDB === 'undefined') {
       reject(new Error('IndexedDB is unavailable for cloud sync metadata.'))
@@ -41,7 +42,14 @@ function openSyncDb(): Promise<IDBDatabase> {
   })
 }
 
-async function withStore<T>(
+function openSyncDb() {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'open-sync-database' },
+    openSyncDbUncategorized
+  )
+}
+
+async function withStoreUncategorized<T>(
   storeName: string,
   mode: IDBTransactionMode,
   callback: (store: IDBObjectStore) => IDBRequest<T> | T
@@ -51,9 +59,11 @@ async function withStore<T>(
     const transaction = db.transaction(storeName, mode)
     const store = transaction.objectStore(storeName)
     let callbackResult: IDBRequest<T> | T
+    let result: T
 
     transaction.oncomplete = () => {
       db.close()
+      resolve(result)
     }
     transaction.onerror = () => {
       db.close()
@@ -77,16 +87,29 @@ async function withStore<T>(
       typeof callbackResult === 'object' &&
       'onsuccess' in callbackResult
     ) {
-      callbackResult.onsuccess = () => resolve(callbackResult.result)
+      callbackResult.onsuccess = () => {
+        result = callbackResult.result
+      }
       callbackResult.onerror = () => reject(callbackResult.error)
       return
     }
 
-    transaction.oncomplete = () => {
-      db.close()
-      resolve(callbackResult)
-    }
+    result = callbackResult
   })
+}
+
+function withStore<T>(
+  storeName: string,
+  mode: IDBTransactionMode,
+  callback: (store: IDBObjectStore) => IDBRequest<T> | T
+) {
+  return withCloudSyncFailureContext(
+    {
+      stage: 'database',
+      point: mode === 'readonly' ? 'read-sync-state' : 'write-sync-state',
+    },
+    () => withStoreUncategorized(storeName, mode, callback)
+  )
 }
 
 export async function getProjectMetadata(projectPath: string) {
@@ -153,7 +176,7 @@ export async function getAllProjectMetadata() {
   )
 }
 
-export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
+async function appendOutboxEntryUncategorized(entry: Omit<OutboxEntry, 'id'>) {
   const normalizedProjectPath = normalizePathForSync(entry.projectPath)
   const nextEntry = {
     ...entry,
@@ -242,13 +265,26 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
       cursor.continue()
     }
     request.onerror = () => reject(request.error)
-    transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () => reject(transaction.error)
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
     transaction.oncomplete = () => {
       db.close()
       resolve()
     }
   })
+}
+
+export function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'write-sync-state' },
+    () => appendOutboxEntryUncategorized(entry)
+  )
 }
 
 export async function getAllOutboxEntries() {
@@ -284,7 +320,7 @@ function pathTouchesProjectRoot(
   )
 }
 
-export async function clearOutboxEntriesForProject(projectPath: string) {
+async function clearOutboxEntriesForProjectUncategorized(projectPath: string) {
   const normalizedProjectPath = normalizePathForSync(projectPath)
   const db = await openSyncDb()
   await new Promise<void>((resolve, reject) => {
@@ -304,8 +340,14 @@ export async function clearOutboxEntriesForProject(projectPath: string) {
       cursor.continue()
     }
     request.onerror = () => reject(request.error)
-    transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () => reject(transaction.error)
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
     transaction.oncomplete = () => {
       db.close()
       resolve()
@@ -313,12 +355,19 @@ export async function clearOutboxEntriesForProject(projectPath: string) {
   })
 }
 
+export function clearOutboxEntriesForProject(projectPath: string) {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'write-sync-state' },
+    () => clearOutboxEntriesForProjectUncategorized(projectPath)
+  )
+}
+
 /**
  * Clear only the mutation generation a sync attempt actually observed. The
  * read and deletes share one IndexedDB transaction, so a newer queued mutation
  * cannot be mistaken for work acknowledged by an older network response.
  */
-export async function clearOutboxEntriesForProjectAtGeneration(
+async function clearOutboxEntriesForProjectAtGenerationUncategorized(
   projectPath: string,
   expectedGeneration: number
 ) {
@@ -353,8 +402,14 @@ export async function clearOutboxEntriesForProjectAtGeneration(
       cursor.continue()
     }
     request.onerror = () => reject(request.error)
-    transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () => reject(transaction.error)
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
     transaction.oncomplete = () => {
       db.close()
       resolve(cleared)
@@ -362,7 +417,23 @@ export async function clearOutboxEntriesForProjectAtGeneration(
   })
 }
 
-export async function clearOutboxEntriesTouchingProject(projectPath: string) {
+export function clearOutboxEntriesForProjectAtGeneration(
+  projectPath: string,
+  expectedGeneration: number
+) {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'write-sync-state' },
+    () =>
+      clearOutboxEntriesForProjectAtGenerationUncategorized(
+        projectPath,
+        expectedGeneration
+      )
+  )
+}
+
+async function clearOutboxEntriesTouchingProjectUncategorized(
+  projectPath: string
+) {
   const normalizedProjectPath = normalizePathForSync(projectPath)
   const db = await openSyncDb()
   await new Promise<void>((resolve, reject) => {
@@ -386,8 +457,14 @@ export async function clearOutboxEntriesTouchingProject(projectPath: string) {
       cursor.continue()
     }
     request.onerror = () => reject(request.error)
-    transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () => reject(transaction.error)
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
     transaction.oncomplete = () => {
       db.close()
       resolve()
@@ -395,7 +472,16 @@ export async function clearOutboxEntriesTouchingProject(projectPath: string) {
   })
 }
 
-export async function clearLegacyConflictCopyReferences(projectPath: string) {
+export function clearOutboxEntriesTouchingProject(projectPath: string) {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'write-sync-state' },
+    () => clearOutboxEntriesTouchingProjectUncategorized(projectPath)
+  )
+}
+
+async function clearLegacyConflictCopyReferencesUncategorized(
+  projectPath: string
+) {
   const normalizedProjectPath = normalizePathForSync(projectPath)
   const db = await openSyncDb()
   await new Promise<void>((resolve, reject) => {
@@ -426,11 +512,24 @@ export async function clearLegacyConflictCopyReferences(projectPath: string) {
       cursor.continue()
     }
     request.onerror = () => reject(request.error)
-    transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () => reject(transaction.error)
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
     transaction.oncomplete = () => {
       db.close()
       resolve()
     }
   })
+}
+
+export function clearLegacyConflictCopyReferences(projectPath: string) {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'write-sync-state' },
+    () => clearLegacyConflictCopyReferencesUncategorized(projectPath)
+  )
 }

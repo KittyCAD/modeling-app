@@ -9,6 +9,7 @@ use serde::Serializer;
 
 use crate::CompilationIssue;
 use crate::KclError;
+use crate::KclVersion;
 use crate::ModuleId;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
@@ -246,23 +247,49 @@ pub(crate) enum ParamUnavailable<'a> {
     Removed(&'a VersionConstraint),
 }
 
+fn param_unavailable_reason<'a>(
+    version: KclVersion,
+    added_in: Option<&'a VersionConstraint>,
+    removed_in: Option<&'a VersionConstraint>,
+) -> Option<ParamUnavailable<'a>> {
+    let version = version.as_str();
+    if let Some(added) = added_in
+        && !annotations::version_ge(version, added)
+    {
+        return Some(ParamUnavailable::NotYetAdded(added));
+    }
+    if let Some(removed) = removed_in
+        && annotations::version_ge(version, removed)
+    {
+        return Some(ParamUnavailable::Removed(removed));
+    }
+    None
+}
+
+/// Whether a parameter is available on this KCL version. `added_in` is inclusive
+/// and `removed_in` is exclusive; preview versions count as their release.
+/// Returns an error for malformed version boundaries.
+pub fn is_kcl_version_available(version: KclVersion, added_in: Option<&str>, removed_in: Option<&str>) -> Result<bool> {
+    let parse = |value: &str| {
+        VersionConstraint::parse(value).ok_or_else(|| {
+            anyhow::anyhow!("Invalid KCL version boundary: `{value}`; expected a dotted integer version")
+        })
+    };
+    let added_in = added_in.map(parse).transpose()?;
+    let removed_in = removed_in.map(parse).transpose()?;
+    Ok(param_unavailable_reason(version, added_in.as_ref(), removed_in.as_ref()).is_none())
+}
+
 impl NamedParam {
     /// Why this parameter cannot be passed on the KCL version governing the
     /// current execution, or `None` if it can. A pre-release version such as
     /// "3.0-preview" counts as the release it precedes.
     pub(crate) fn unavailable_reason(&self, exec_state: &ExecState) -> Option<ParamUnavailable<'_>> {
-        let version = exec_state.kcl_version().as_str();
-        if let Some(added) = &self.added_in
-            && !crate::execution::annotations::version_ge(version, added)
-        {
-            return Some(ParamUnavailable::NotYetAdded(added));
-        }
-        if let Some(removed) = &self.removed_in
-            && crate::execution::annotations::version_ge(version, removed)
-        {
-            return Some(ParamUnavailable::Removed(removed));
-        }
-        None
+        param_unavailable_reason(
+            exec_state.kcl_version(),
+            self.added_in.as_ref(),
+            self.removed_in.as_ref(),
+        )
     }
 
     /// Whether a caller may pass this parameter on the KCL version governing
@@ -472,6 +499,19 @@ pub enum TypeDef {
     Enum(Arc<EnumTypeDef>),
 }
 
+impl TypeDef {
+    /// Converts a stored type definition into the type used for runtime checks.
+    /// Enum definitions reduce to their nominal identity, so callers that need
+    /// constructor metadata must retain the `Enum` definition instead.
+    pub(super) fn into_runtime_type(self) -> RuntimeType {
+        match self {
+            Self::RustRepr(ty, _) => RuntimeType::Primitive(ty),
+            Self::Alias(ty) => ty,
+            Self::Enum(def) => RuntimeType::Enum(def.id().clone()),
+        }
+    }
+}
+
 /// The nominal identity of an enum.
 ///
 /// Two enums are the same type only if they come from the same `type`
@@ -509,6 +549,8 @@ impl EnumTypeId {
 pub struct EnumTypeDef {
     id: EnumTypeId,
     variants: Vec<String>,
+    // The declaration's annotation must remain available through type aliases.
+    experimental: bool,
 }
 
 /// Two variants of one enum declared under the same name, e.g.
@@ -534,8 +576,11 @@ impl EnumTypeDef {
     /// collapsing duplicates would deny the user a diagnostic naming the variant
     /// they typed twice.
     ///
+    /// `experimental` records the declaration's annotation for variant uses
+    /// reached through type aliases.
+    ///
     /// Reports the earliest repeat when a declaration contains several.
-    pub fn new(id: EnumTypeId, variants: Vec<String>) -> Result<Self, DuplicateVariant> {
+    pub fn new(id: EnumTypeId, variants: Vec<String>, experimental: bool) -> Result<Self, DuplicateVariant> {
         for (duplicate_index, variant) in variants.iter().enumerate() {
             if let Some(first_index) = variants[..duplicate_index].iter().position(|v| v == variant) {
                 return Err(DuplicateVariant {
@@ -546,7 +591,11 @@ impl EnumTypeDef {
             }
         }
 
-        Ok(Self { id, variants })
+        Ok(Self {
+            id,
+            variants,
+            experimental,
+        })
     }
 
     pub fn id(&self) -> &EnumTypeId {
@@ -555,6 +604,10 @@ impl EnumTypeDef {
 
     pub fn variants(&self) -> &[String] {
         &self.variants
+    }
+
+    pub fn is_experimental(&self) -> bool {
+        self.experimental
     }
 
     pub fn has_variant(&self, name: &str) -> bool {
@@ -1150,13 +1203,13 @@ impl KclValue {
         }
     }
 
-    pub fn to_sketch_expr(&self) -> Option<crate::front::Expr> {
+    pub fn to_sketch_expr(&self) -> Option<kcl_api::Expr> {
         match self {
-            KclValue::Number { value, ty, .. } => Some(crate::front::Expr::Number(crate::front::Number {
+            KclValue::Number { value, ty, .. } => Some(kcl_api::Expr::Number(kcl_api::Number {
                 value: *value,
                 units: (*ty).try_into().ok()?,
             })),
-            KclValue::SketchVar { value, .. } => Some(crate::front::Expr::Var(crate::front::Number {
+            KclValue::SketchVar { value, .. } => Some(kcl_api::Expr::Var(kcl_api::Number {
                 value: value.initial_value,
                 units: value.ty.try_into().ok()?,
             })),
@@ -1551,6 +1604,7 @@ mod tests {
             EnumTypeDef::new(
                 EnumTypeId::new(ModuleId::default(), "Color"),
                 vec!["Red".to_owned(), "Green".to_owned()],
+                false,
             )
             .unwrap(),
         )
@@ -1619,6 +1673,7 @@ mod tests {
         let def = EnumTypeDef::new(
             EnumTypeId::new(ModuleId::default(), "Color"),
             vec!["Red".to_owned(), "Green".to_owned()],
+            false,
         )
         .unwrap();
 
@@ -1632,6 +1687,7 @@ mod tests {
             EnumTypeDef::new(
                 EnumTypeId::new(ModuleId::from_usize(1), "Color"),
                 vec!["Red".to_owned(), "Green".to_owned()],
+                false,
             )
             .unwrap()
             .id()
@@ -1643,6 +1699,7 @@ mod tests {
         let err = EnumTypeDef::new(
             EnumTypeId::new(ModuleId::default(), "Color"),
             vec!["Red".to_owned(), "Green".to_owned(), "Red".to_owned()],
+            false,
         )
         .unwrap_err();
 
@@ -1669,6 +1726,7 @@ mod tests {
                 "Green".to_owned(),
                 "Red".to_owned(),
             ],
+            false,
         )
         .unwrap_err();
 

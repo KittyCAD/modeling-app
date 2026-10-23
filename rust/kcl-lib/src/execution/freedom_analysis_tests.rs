@@ -1,27 +1,28 @@
 use std::sync::Arc;
 
+use kcl_api::Freedom;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
+
 use crate::ExecutorContext;
 use crate::ExecutorSettings;
 use crate::engine::engine_manager::EngineManager;
 use crate::execution::ContextType;
 use crate::execution::MockConfig;
-use crate::execution::machine::ExecutorKind;
-use crate::front::Freedom;
-use crate::front::ObjectKind;
-use crate::frontend::api::ObjectId;
 
 async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
     let program = crate::Program::parse_no_errs(kcl).unwrap();
 
     let exec_ctxt = ExecutorContext {
         engine: Arc::new(EngineManager::new_mock()),
+        cache: crate::Cache::default(),
         engine_batch: crate::engine::EngineBatchContext::default(),
         fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
         settings: ExecutorSettings::default(),
         context_type: ContextType::Mock,
         execution_callbacks: Default::default(),
-        executor_kind: ExecutorKind::resolve(),
         machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+        configure_engine_render: true,
     };
 
     let mock_config = MockConfig {
@@ -34,7 +35,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
     let mut point_freedoms = Vec::new();
     for obj in &outcome.scene_objects {
         if let ObjectKind::Segment {
-            segment: crate::front::Segment::Point(point),
+            segment: kcl_api::Segment::Point(point),
         } = &obj.kind
         {
             point_freedoms.push((obj.id, point.freedom));

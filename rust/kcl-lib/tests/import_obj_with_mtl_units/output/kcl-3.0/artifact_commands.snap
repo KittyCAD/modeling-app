@@ -1,0 +1,35 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands import_obj_with_mtl_units.kcl
+---
+{
+  "rust/kcl-lib/e2e/executor/inputs/cube.obj": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "import_files",
+        "files": [
+          {
+            "path": "cube.obj",
+            "data": []
+          }
+        ],
+        "format": {
+          "type": "obj",
+          "coords": {
+            "forward": {
+              "axis": "y",
+              "direction": "negative"
+            },
+            "up": {
+              "axis": "z",
+              "direction": "positive"
+            }
+          },
+          "units": "m"
+        }
+      }
+    }
+  ]
+}

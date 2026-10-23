@@ -371,6 +371,46 @@ describe('MeasurementTool helpers', () => {
     ])
   })
 
+  it('measures a Face API edge with a raw UUID and no artifact', () => {
+    const selected: Selections = {
+      graphSelections: [
+        {
+          entityRef: {
+            type: 'edge',
+            side_faces: ['side-face'],
+            end_faces: ['end-face'],
+          },
+          engineEntityId: 'picked-edge',
+          engineTopologyFallback: { parentId: 'pump-body', primitiveIndex: 10 },
+        },
+      ],
+      otherSelections: [],
+    }
+    expect(getMeasurementEntities(selected)).toEqual([
+      { id: 'picked-edge', kind: 'edge' },
+    ])
+    expect(getMeasurementTarget(getMeasurementEntities(selected))).toEqual({
+      type: 'edgeLength',
+      entity: { id: 'picked-edge', kind: 'edge' },
+    })
+  })
+
+  it('does not measure an adjacent face artifact in place of a selected edge', () => {
+    const selected: Selections = {
+      graphSelections: [
+        {
+          entityRef: { type: 'edge', side_faces: ['side-face'] },
+          artifact: artifact({ id: 'side-face', type: 'wall' }),
+          engineEntityId: 'picked-edge',
+        },
+      ],
+      otherSelections: [],
+    }
+    expect(getMeasurementEntities(selected)).toEqual([
+      { id: 'picked-edge', kind: 'edge' },
+    ])
+  })
+
   it('detects graph selections whose artifacts were replaced after regeneration', () => {
     const currentBody = artifact({
       id: 'body-id',

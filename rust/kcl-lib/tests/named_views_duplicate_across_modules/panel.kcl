@@ -1,4 +1,4 @@
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 export panelFront = view::named(
   "Front",

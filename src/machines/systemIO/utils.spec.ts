@@ -1,4 +1,5 @@
 import type { MlToolResult } from '@kittycad/lib'
+import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ZookeeperEditPatch } from '@src/lib/zookeeper/zookeeperEditPatch'
@@ -76,6 +77,21 @@ describe('System IO Utils', () => {
         status_code: 201,
         type: 'edit_kcl_code',
         project_name: 'some-project',
+        zookeeper_edit_patch: {
+          run_id: 'run-paths',
+          changed_files: [
+            '7/main.kcl',
+            '9/main.kcl',
+            '4/main.kcl',
+            '6/main.kcl',
+            '5/main.kcl',
+            'main.kcl',
+            '1/main.kcl',
+            '8/main.kcl',
+            '3/main.kcl',
+            '2/main.kcl',
+          ].map((path) => ({ path, status: 'created' as const, contents: '' })),
+        },
         outputs: {
           '7/main.kcl':
             '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
@@ -176,6 +192,10 @@ describe('System IO Utils', () => {
         status_code: 200,
         type: 'edit_kcl_code',
         project_name: 'some-project',
+        zookeeper_edit_patch: {
+          run_id: 'run-edit',
+          changed_files: [{ path: 'main.kcl', status: 'modified', diff: '' }],
+        },
         outputs: {
           'main.kcl': 'cube = 1',
         },
@@ -191,6 +211,107 @@ describe('System IO Utils', () => {
     ])
     expect(preparedPayload?.filesToDelete).toEqual([])
   })
+
+  it('writes only created and modified outputs listed in the edit patch', () => {
+    const prepared = prepareZookeeperNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      toolOutput: asMlToolResult({
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'main.kcl': 'width = 10',
+          'parts/new.kcl': 'height = 20',
+          'parts/untouched.kcl': 'length = 30',
+          'old.kcl': 'stale output for a deleted file',
+        },
+        zookeeper_edit_patch: {
+          run_id: 'run-filter',
+          changed_files: [
+            { path: 'main.kcl', status: 'modified', diff: '' },
+            {
+              path: 'parts/new.kcl',
+              status: 'created',
+              contents: 'height = 20',
+            },
+            {
+              path: 'old.kcl',
+              status: 'deleted',
+              previous_contents: 'old = 1',
+            },
+            {
+              path: 'missing-output.kcl',
+              status: 'created',
+              contents: 'height = 99',
+            },
+          ],
+        },
+      }),
+    })
+    expect(prepared?.files).toEqual([
+      {
+        requestedProjectName: 'some-project',
+        requestedFileName: 'main.kcl',
+        requestedCode: 'width = 10',
+      },
+      {
+        requestedProjectName: 'some-project',
+        requestedFileName: 'parts/new.kcl',
+        requestedCode: 'height = 20',
+      },
+    ])
+    expect(prepared?.filesToDelete).toEqual([{ requestedFileName: 'old.kcl' }])
+  })
+
+  it('matches normalized patch paths while preserving dotfile names', () => {
+    const prepared = prepareZookeeperNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      toolOutput: asMlToolResult({
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          './parts\\bracket.kcl': 'width = 10',
+          '.gitignore': '*.stl',
+          'untouched.kcl': 'height = 20',
+        },
+        zookeeper_edit_patch: {
+          run_id: 'run-path-normalization',
+          changed_files: [
+            { path: 'parts/bracket.kcl', status: 'modified', diff: '' },
+            { path: './.gitignore', status: 'created', contents: '*.stl' },
+          ],
+        },
+      }),
+    })
+    expect(prepared?.files.map((file) => file.requestedFileName)).toEqual([
+      'parts/bracket.kcl',
+      '.gitignore',
+    ])
+  })
+
+  it.each([
+    undefined,
+    null,
+    { run_id: 'no-list' },
+    { run_id: 'empty-list', changed_files: [] },
+  ])(
+    'does not write outputs without explicit changed-file entries (%j)',
+    (patch) => {
+      const prepared = prepareZookeeperNewFileRequest({
+        projectNameCurrentlyOpened: 'some-project',
+        toolOutput: {
+          type: 'edit_kcl_code',
+          status_code: 200,
+          project_name: 'some-project',
+          outputs: { 'main.kcl': 'width = 10' },
+          zookeeper_edit_patch: patch,
+        } as MlToolResult,
+      })
+      expect(prepared?.files).toEqual([])
+      expect(prepared?.filesToDelete).toEqual([])
+    }
+  )
 
   it('collects project files from disk and excludes .gitignore patterns', async () => {
     const projectPath = `/tmp/opencode/zookeeper-project-${crypto.randomUUID()}`
@@ -260,6 +381,77 @@ describe('System IO Utils', () => {
       await fsZds.rm(projectPath, { recursive: true, force: true })
     }
   })
+
+  it.each([undefined, false])(
+    'handles a file removed after directory listing with skipUnreadableFiles=%s',
+    async (skipUnreadableFiles) => {
+      const projectPath = `/tmp/opencode/zookeeper-project-${crypto.randomUUID()}`
+      const mainPath = fsZds.join(projectPath, 'main.kcl')
+      const removedPath = fsZds.join(projectPath, 'project.toml.crswap')
+      await fsZds.mkdir(projectPath, { recursive: true })
+
+      try {
+        await fsZds.writeFile(mainPath, new TextEncoder().encode('height = 10'))
+        await fsZds.writeFile(
+          fsZds.join(projectPath, 'notes.txt'),
+          new TextEncoder().encode('project notes')
+        )
+        await fsZds.writeFile(
+          removedPath,
+          new TextEncoder().encode('temporary')
+        )
+        const projectFiles = collectProjectFilesWithFileOperations({
+          fileOperations: {
+            ...testFileOperations,
+            readDirectory: async (path) => {
+              const entries = await testFileOperations.readDirectory(path)
+              if (path === projectPath) {
+                await testFileOperations.remove(removedPath)
+              }
+              return entries
+            },
+          },
+          selectedFileContents: 'height = 10',
+          selectedFilePath: mainPath,
+          fileNames: {},
+          skipUnreadableFiles,
+          projectContext: {
+            name: 'zookeeper-project',
+            path: projectPath,
+            children: [],
+            metadata: null,
+            kcl_file_count: 1,
+            directory_count: 0,
+            default_file: mainPath,
+            readWriteAccess: true,
+          },
+        })
+
+        if (skipUnreadableFiles === false) {
+          await expect(projectFiles).rejects.toBeInstanceOf(FileNotFound)
+        } else {
+          const files = await projectFiles
+          expect(files.map((file) => file.relPath).sort()).toEqual([
+            'main.kcl',
+            'notes.txt',
+          ])
+          expect(
+            files.find((file) => file.relPath === 'main.kcl')
+          ).toMatchObject({
+            type: 'kcl',
+            fileContents: 'height = 10',
+          })
+          expect(
+            files.find((file) => file.relPath === 'notes.txt')
+          ).toMatchObject({
+            type: 'other',
+          })
+        }
+      } finally {
+        await fsZds.rm(projectPath, { recursive: true, force: true })
+      }
+    }
+  )
 
   it('returns forward-slash relPaths for nested files', async () => {
     // relPath becomes the `current_files` keys and `source_ranges` file paths
@@ -443,7 +635,7 @@ describe('System IO Utils', () => {
     expect(preparedPayload?.requestedFileNameWithExtension).toBe('main.kcl')
   })
 
-  it('carries only explicit Zookeeper delete signals into edit requests', () => {
+  it('carries only deleted entries from the Zookeeper edit patch into edit requests', () => {
     const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fileFocusedOnInEditor: {
@@ -451,7 +643,6 @@ describe('System IO Utils', () => {
         path: '/some-project/main.kcl',
         children: null,
       },
-      filesToDelete: [{ requestedFileName: 'old.kcl' }],
       toolOutput: {
         status_code: 200,
         type: 'edit_kcl_code',
@@ -459,11 +650,29 @@ describe('System IO Utils', () => {
         outputs: {
           'main.kcl': 'cube = 1',
         },
+        zookeeper_edit_patch: {
+          run_id: 'run-delete',
+          changed_files: [
+            {
+              path: 'old.kcl',
+              status: 'deleted',
+              previous_contents: 'old = 1',
+            },
+            {
+              path: 'notes.txt',
+              status: 'deleted',
+              previous_contents: 'old notes',
+            },
+            { path: 'main.kcl', status: 'modified', diff: '' },
+            { path: 'new.kcl', status: 'created', contents: 'new = 1' },
+          ],
+        },
       },
     })
 
     expect(preparedPayload?.filesToDelete).toEqual([
       { requestedFileName: 'old.kcl' },
+      { requestedFileName: 'notes.txt' },
     ])
   })
 
@@ -538,7 +747,6 @@ describe('System IO Utils', () => {
         path: '/some-project/main.kcl',
         children: null,
       },
-      filesToDelete: [{ requestedFileName: './main.kcl' }],
       toolOutput: asMlToolResult(toolOutput),
     })
 

@@ -1,10 +1,10 @@
 //! Functions related to sketching.
 
 use std::collections::HashMap;
-use std::f64;
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kcl_api::SourceRef;
 use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
@@ -63,7 +63,6 @@ use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
-use crate::front::SourceRef;
 use crate::parsing::ast::types::TagNode;
 use crate::std::CircularDirection;
 use crate::std::EQUAL_POINTS_DIST_EPSILON;
@@ -222,8 +221,8 @@ async fn inner_involute_circular(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let id = exec_state.next_uuid();
-    let angle_deg = angle.to_degrees(exec_state, args.source_range);
-    let angle_rad = angle.to_radians(exec_state, args.source_range);
+    let angle_deg = angle.unwrap_to_degrees(exec_state, args.source_range);
+    let angle_rad = angle.unwrap_to_radians(exec_state, args.source_range);
 
     let longer_args_dot_source_range = args.source_range;
     let start_radius = get_radius_labelled(
@@ -248,8 +247,8 @@ async fn inner_involute_circular(
                 mcmd::ExtendPath::builder()
                     .path(sketch.id.into())
                     .segment(PathSegment::CircularInvolute {
-                        start_radius: LengthUnit(start_radius.to_mm()),
-                        end_radius: LengthUnit(end_radius.to_mm()),
+                        start_radius: LengthUnit(start_radius.unwrap_to_mm()),
+                        end_radius: LengthUnit(end_radius.unwrap_to_mm()),
                         angle: Angle::from_degrees(angle_deg),
                         reverse: reverse.unwrap_or_default(),
                     })
@@ -260,8 +259,8 @@ async fn inner_involute_circular(
 
     let from = sketch.current_pen_position()?;
 
-    let start_radius = start_radius.to_length_units(from.units);
-    let end_radius = end_radius.to_length_units(from.units);
+    let start_radius = start_radius.unwrap_to_length_units(from.units);
+    let end_radius = end_radius.unwrap_to_length_units(from.units);
 
     let mut end: KPoint3d<f64> = Default::default(); // ADAM: TODO impl this below.
     let theta = f64::sqrt(end_radius * end_radius - start_radius * start_radius) / start_radius;
@@ -297,7 +296,7 @@ async fn inner_involute_circular(
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
     Ok(new_sketch)
 }
 
@@ -457,7 +456,7 @@ pub(super) async fn straight_line(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -637,7 +636,7 @@ async fn inner_angled_line_length(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-    let length = length.to_length_units(from.units);
+    let length = length.unwrap_to_length_units(from.units);
 
     //double check me on this one - mike
     let delta: [f64; 2] = [
@@ -689,7 +688,7 @@ async fn inner_angled_line_length(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
     Ok(new_sketch)
 }
 
@@ -753,7 +752,7 @@ async fn inner_angled_line_to_x(
         )));
     }
 
-    let x_component = x_to.to_length_units(from.units) - from.x;
+    let x_component = x_to.unwrap_to_length_units(from.units) - from.x;
     let y_component = x_component * libm::tan(angle_degrees.to_radians());
     let y_to = from.y + y_component;
 
@@ -827,7 +826,7 @@ async fn inner_angled_line_to_y(
         )));
     }
 
-    let y_component = y_to.to_length_units(from.units) - from.y;
+    let y_component = y_to.unwrap_to_length_units(from.units) - from.y;
     let x_component = y_component / libm::tan(angle_degrees.to_radians());
     let x_to = from.x + x_component;
 
@@ -878,8 +877,8 @@ pub async fn inner_angled_line_that_intersects(
             point_to_len_unit(path.get_from(), from.units),
             point_to_len_unit(path.get_to(), from.units),
         ],
-        offset.map(|t| t.to_length_units(from.units)).unwrap_or_default(),
-        angle.to_degrees(exec_state, args.source_range),
+        offset.map(|t| t.unwrap_to_length_units(from.units)).unwrap_or_default(),
+        angle.unwrap_to_degrees(exec_state, args.source_range),
         from.ignore_units(),
     );
     let to = [
@@ -1026,7 +1025,7 @@ async fn inner_start_sketch_on(
                 let plane_of = inner_plane_of(*solid, tag, exec_state, args).await?;
 
                 // plane_of info axis units are Some(UnitLength::Millimeters), see inner_plane_of and PlaneInfo
-                let offset = normal_offset.map_or(0.0, |x| x.to_mm());
+                let offset = normal_offset.map_or(0.0, |x| x.unwrap_to_mm());
                 let (x_axis, y_axis, normal_offset) = match align_axis {
                     Axis2dOrEdgeReference::Axis { direction, origin: _ } => {
                         if (direction[0].n - 1.0).abs() < f64::EPSILON {
@@ -1199,9 +1198,9 @@ pub async fn ensure_sketch_plane_in_engine(
         )
         .await?;
     let plane_object_id = exec_state.next_object_id();
-    let plane_object = crate::front::Object {
+    let plane_object = kcl_api::Object {
         id: plane_object_id,
-        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        kind: kcl_api::ObjectKind::Plane(kcl_api::Plane::Object(plane_object_id)),
         label: Default::default(),
         comments: Default::default(),
         artifact_id: ArtifactId::new(plane.id),
@@ -1350,7 +1349,7 @@ pub(crate) async fn create_sketch(
         artifact_id: path_id.into(),
         origin_sketch_id: None,
         on: sketch_surface,
-        paths: vec![],
+        paths: Default::default(),
         inner_paths: vec![],
         units,
         mirror: Default::default(),
@@ -1467,7 +1466,7 @@ pub(crate) async fn inner_close(
         if let Some(tag) = &tag {
             new_sketch.add_tag(tag, &current_path, exec_state, None);
         }
-        new_sketch.paths.push(current_path);
+        new_sketch.paths.push_back(current_path);
     } else if tag.is_some() {
         exec_state.warn(
             crate::CompilationIssue {
@@ -1569,13 +1568,13 @@ pub async fn absolute_arc(
                     .path(sketch.id.into())
                     .segment(PathSegment::ArcTo {
                         end: kcmc::shared::Point3d {
-                            x: LengthUnit(end_absolute[0].to_mm()),
-                            y: LengthUnit(end_absolute[1].to_mm()),
+                            x: LengthUnit(end_absolute[0].unwrap_to_mm()),
+                            y: LengthUnit(end_absolute[1].unwrap_to_mm()),
                             z: LengthUnit(0.0),
                         },
                         interior: kcmc::shared::Point3d {
-                            x: LengthUnit(interior_absolute[0].to_mm()),
-                            y: LengthUnit(interior_absolute[1].to_mm()),
+                            x: LengthUnit(interior_absolute[0].unwrap_to_mm()),
+                            y: LengthUnit(interior_absolute[1].unwrap_to_mm()),
                             z: LengthUnit(0.0),
                         },
                         relative: false,
@@ -1613,7 +1612,7 @@ pub async fn absolute_arc(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -1632,9 +1631,9 @@ pub async fn relative_arc(
     ctx: &ExecutorContext,
     source_range: SourceRange,
 ) -> Result<Sketch, KclError> {
-    let a_start = Angle::from_degrees(angle_start.to_degrees(exec_state, source_range));
-    let a_end = Angle::from_degrees(angle_end.to_degrees(exec_state, source_range));
-    let radius = radius.to_length_units(from.units);
+    let a_start = Angle::from_degrees(angle_start.unwrap_to_degrees(exec_state, source_range));
+    let a_end = Angle::from_degrees(angle_end.unwrap_to_degrees(exec_state, source_range));
+    let radius = radius.unwrap_to_length_units(from.units);
     let (center, end) = arc_center_and_end(from.ignore_units(), a_start, a_end, radius);
     if a_start == a_end {
         return Err(KclError::new_type(KclErrorDetails::new(
@@ -1691,7 +1690,7 @@ pub async fn relative_arc(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -1795,7 +1794,7 @@ async fn inner_tangential_arc_radius_angle(
     let (center, to, ccw) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
             // KCL stdlib types use degrees.
-            let offset = Angle::from_degrees(offset.to_degrees(exec_state, args.source_range));
+            let offset = Angle::from_degrees(offset.unwrap_to_degrees(exec_state, args.source_range));
 
             // Calculate the end point from the angle and radius.
             // atan2 outputs radians.
@@ -1821,7 +1820,7 @@ async fn inner_tangential_arc_radius_angle(
                 from.ignore_units(),
                 start_angle,
                 end_angle,
-                radius.to_length_units(from.units),
+                radius.unwrap_to_length_units(from.units),
             );
 
             exec_state
@@ -1831,7 +1830,7 @@ async fn inner_tangential_arc_radius_angle(
                         mcmd::ExtendPath::builder()
                             .path(sketch.id.into())
                             .segment(PathSegment::TangentialArc {
-                                radius: LengthUnit(radius.to_mm()),
+                                radius: LengthUnit(radius.unwrap_to_mm()),
                                 offset,
                             })
                             .build(),
@@ -1866,7 +1865,7 @@ async fn inner_tangential_arc_radius_angle(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -1964,7 +1963,7 @@ async fn inner_tangential_arc_to_point(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -2026,17 +2025,17 @@ async fn inner_bezier_curve(
         (Some(control1), Some(control2), Some(end), None, None, None) => {
             let delta = end.clone();
             let to = [
-                from.x + end[0].to_length_units(from.units),
-                from.y + end[1].to_length_units(from.units),
+                from.x + end[0].unwrap_to_length_units(from.units),
+                from.y + end[1].unwrap_to_length_units(from.units),
             ];
             // Calculate absolute control points
             let control1_abs = [
-                from.x + control1[0].to_length_units(from.units),
-                from.y + control1[1].to_length_units(from.units),
+                from.x + control1[0].unwrap_to_length_units(from.units),
+                from.y + control1[1].unwrap_to_length_units(from.units),
             ];
             let control2_abs = [
-                from.x + control2[0].to_length_units(from.units),
-                from.y + control2[1].to_length_units(from.units),
+                from.x + control2[0].unwrap_to_length_units(from.units),
+                from.y + control2[1].unwrap_to_length_units(from.units),
             ];
 
             exec_state
@@ -2059,9 +2058,12 @@ async fn inner_bezier_curve(
         }
         // Absolute
         (None, None, None, Some(control1), Some(control2), Some(end)) => {
-            let to = [end[0].to_length_units(from.units), end[1].to_length_units(from.units)];
-            let control1_abs = control1.clone().map(|v| v.to_length_units(from.units));
-            let control2_abs = control2.clone().map(|v| v.to_length_units(from.units));
+            let to = [
+                end[0].unwrap_to_length_units(from.units),
+                end[1].unwrap_to_length_units(from.units),
+            ];
+            let control1_abs = control1.clone().map(|v| v.unwrap_to_length_units(from.units));
+            let control2_abs = control2.clone().map(|v| v.unwrap_to_length_units(from.units));
             exec_state
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
@@ -2113,7 +2115,7 @@ async fn inner_bezier_curve(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -2174,7 +2176,7 @@ async fn inner_subtract_2d(
         // So if you have circle A, and it has a circular hole cut out (B),
         // then you cut A out of an even bigger circle C, we will lose that info.
         // Not really sure what to do about this.
-        sketch.inner_paths.extend_from_slice(&hole_sketch.paths);
+        sketch.inner_paths.extend(hole_sketch.paths.iter().cloned());
     }
 
     // Returns the input sketch, exactly as it was, zero modifications.
@@ -2313,14 +2315,15 @@ pub(crate) async fn inner_elliptic(
             },
         ],
     };
-    let start_angle = Angle::from_degrees(angle_start.to_degrees(exec_state, args.source_range));
-    let end_angle = Angle::from_degrees(angle_end.to_degrees(exec_state, args.source_range));
-    let major_axis_magnitude = (major_axis[0].to_length_units(from.units) * major_axis[0].to_length_units(from.units)
-        + major_axis[1].to_length_units(from.units) * major_axis[1].to_length_units(from.units))
+    let start_angle = Angle::from_degrees(angle_start.unwrap_to_degrees(exec_state, args.source_range));
+    let end_angle = Angle::from_degrees(angle_end.unwrap_to_degrees(exec_state, args.source_range));
+    let major_axis_magnitude = (major_axis[0].unwrap_to_length_units(from.units)
+        * major_axis[0].unwrap_to_length_units(from.units)
+        + major_axis[1].unwrap_to_length_units(from.units) * major_axis[1].unwrap_to_length_units(from.units))
     .sqrt();
     let to = [
         major_axis_magnitude * libm::cos(end_angle.to_radians()),
-        minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
+        minor_radius.unwrap_to_length_units(from.units) * libm::sin(end_angle.to_radians()),
     ];
     let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
     let major_axis_angle = libm::atan2(major_axis[1].n, major_axis[0].n);
@@ -2330,7 +2333,7 @@ pub(crate) async fn inner_elliptic(
         center_u[1] + to[0] * libm::sin(major_axis_angle) + to[1] * libm::cos(major_axis_angle),
     ];
 
-    let axis = major_axis.map(|x| x.to_mm());
+    let axis = major_axis.map(|x| x.unwrap_to_mm());
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
@@ -2340,7 +2343,7 @@ pub(crate) async fn inner_elliptic(
                     .segment(PathSegment::Ellipse {
                         center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
                         major_axis: axis.map(LengthUnit).into(),
-                        minor_radius: LengthUnit(minor_radius.to_mm()),
+                        minor_radius: LengthUnit(minor_radius.unwrap_to_mm()),
                         start_angle,
                         end_angle,
                     })
@@ -2353,7 +2356,7 @@ pub(crate) async fn inner_elliptic(
         ccw: start_angle < end_angle,
         center: center_u,
         major_axis: axis,
-        minor_radius: minor_radius.to_mm(),
+        minor_radius: minor_radius.unwrap_to_mm(),
         base: BasePath {
             from: from.ignore_units(),
             to: point,
@@ -2373,7 +2376,7 @@ pub(crate) async fn inner_elliptic(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -2497,8 +2500,8 @@ pub(crate) async fn inner_hyperbolic(
     };
     let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
 
-    let semi_major_u = semi_major.to_length_units(from.units);
-    let semi_minor_u = semi_minor.to_length_units(from.units);
+    let semi_major_u = semi_major.unwrap_to_length_units(from.units);
+    let semi_minor_u = semi_minor.unwrap_to_length_units(from.units);
 
     let start_tangent = hyperbolic_tangent(from, semi_major_u, semi_minor_u);
     let end_tangent = hyperbolic_tangent(end_point, semi_major_u, semi_minor_u);
@@ -2542,7 +2545,7 @@ pub(crate) async fn inner_hyperbolic(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -2757,7 +2760,7 @@ pub(crate) async fn inner_parabolic(
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -2912,7 +2915,7 @@ pub(crate) async fn inner_conic(
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -3152,8 +3155,8 @@ async fn inner_region(
                     original_id: region_id,
                     artifact_id: region_id.into(),
                     origin_sketch_id: None,
-                    on: segment.surface.clone(),
-                    paths: vec![first_path],
+                    on: segment.surface,
+                    paths: imbl::vector![first_path],
                     inner_paths: vec![],
                     units,
                     mirror: Default::default(),
@@ -3184,14 +3187,14 @@ async fn inner_region(
     let original_seg_to_region = build_reverse_region_mapping(&region_mapping, &original_segment_ids);
 
     {
-        let mut new_paths = Vec::new();
+        let mut new_paths = imbl::Vector::new();
         for path in &sketch.paths {
             let original_id = path.get_id();
             if let Some(region_ids) = original_seg_to_region.get(&original_id) {
                 for region_id in region_ids {
                     let mut new_path = path.clone();
                     new_path.set_id(*region_id);
-                    new_paths.push(new_path);
+                    new_paths.push_back(new_path);
                 }
             }
         }
@@ -3224,7 +3227,7 @@ async fn inner_region(
     // which is not valid on the region. Update it to a region edge so that
     // do_post_extrude can use it for Solid3dGetExtrusionFaceInfo.
     if sketch.mirror.is_some() {
-        sketch.mirror = sketch.paths.first().map(|p| p.get_id());
+        sketch.mirror = sketch.paths.front().map(|p| p.get_id());
     }
 
     sketch.meta.push(args.source_range.into());

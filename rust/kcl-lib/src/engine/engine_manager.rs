@@ -5,6 +5,7 @@ use std::sync::atomic::Ordering::Relaxed;
 use anyhow::Result;
 pub use engine_transport::EngineTransport;
 use indexmap::IndexMap;
+use kcmc::KclVersion;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::shared::Color;
@@ -75,7 +76,7 @@ pub struct EngineManager {
     // from the original native connection type.
     pub transport: Arc<Box<dyn EngineTransport>>,
     responses: ResponseInformation,
-    pending_errors: Arc<RwLock<Vec<String>>>,
+    pending_errors: Arc<RwLock<Vec<KclError>>>,
     socket_health: Arc<RwLock<SocketHealth>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
 
@@ -84,6 +85,9 @@ pub struct EngineManager {
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
+
+    /// Request ID returned by the HTTP request that upgraded to this WebSocket.
+    websocket_upgrade_request_id: Option<String>,
 
     #[builder(default)]
     stats: EngineStats,
@@ -101,6 +105,7 @@ impl std::fmt::Debug for EngineManager {
             .field("ids_of_async_commands", &self.ids_of_async_commands)
             .field("default_planes", &self.default_planes)
             .field("session_data", &self.session_data)
+            .field("websocket_upgrade_request_id", &self.websocket_upgrade_request_id)
             .field("stats", &self.stats)
             .field("async_tasks", &self.async_tasks)
             .finish()
@@ -127,6 +132,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: None,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -134,6 +140,15 @@ impl EngineManager {
 
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_websocket_transport(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Self {
+        Self::new_websocket_transport_with_request_id(ws, heartbeats, None).await
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub(crate) async fn new_websocket_transport_with_request_id(
+        ws: reqwest::Upgraded,
+        heartbeats: Option<u64>,
+        request_id: Option<String>,
+    ) -> Self {
         use crate::engine::engine_manager::ws_transport::WebSocketTransport;
 
         let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
@@ -151,6 +166,7 @@ impl EngineManager {
             Arc::clone(&session_data),
             Arc::clone(&pending_errors),
             Arc::clone(&socket_health),
+            request_id.clone(),
         )
         .await;
 
@@ -162,6 +178,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: request_id,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -185,6 +202,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: None,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -205,24 +223,36 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        kcl_version: Option<KclVersion>,
+        geometry_only: bool,
     ) -> Result<(), crate::errors::KclError> {
         // Clear any batched commands leftover from previous scenes.
         self.clear_queues(batch_context).await;
 
-        self.batch_modeling_cmd(
-            batch_context,
-            id_generator.next_uuid(),
-            source_range,
-            &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
-        )
-        .await?;
+        if let Some(kcl_version) = kcl_version {
+            self.batch_modeling_cmd(
+                batch_context,
+                id_generator.next_uuid(),
+                source_range,
+                &ModelingCmd::SetKclVersion(mcmd::SetKclVersion::builder().kcl_version(kcl_version).build()),
+            )
+            .await?;
+        } else {
+            self.batch_modeling_cmd(
+                batch_context,
+                id_generator.next_uuid(),
+                source_range,
+                &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
+            )
+            .await?;
+        }
 
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
         self.flush_batch(batch_context, false, source_range).await?;
 
         // Do the after clear scene hook.
-        self.clear_scene_post_hook(batch_context, id_generator, source_range)
+        self.clear_scene_post_hook(batch_context, id_generator, source_range, geometry_only)
             .await?;
 
         Ok(())
@@ -336,8 +366,24 @@ impl EngineManager {
         Ok(())
     }
 
-    /// Re-run the command to apply the settings.
+    /// Apply graphics settings, if the engine is not CPU-only (geometry-only) mode.
     pub async fn reapply_settings(
+        &self,
+        batch_context: &EngineBatchContext,
+        settings: &crate::ExecutorSettings,
+        source_range: SourceRange,
+        id_generator: &mut IdGenerator,
+        grid_scale_unit: GridScaleBehavior,
+    ) -> Result<(), crate::errors::KclError> {
+        if settings.geometry_only {
+            return Ok(());
+        }
+        self.apply_graphics_settings(batch_context, settings, source_range, id_generator, grid_scale_unit)
+            .await
+    }
+
+    /// Unconditionally apply graphics settings.
+    pub async fn apply_graphics_settings(
         &self,
         batch_context: &EngineBatchContext,
         settings: &crate::ExecutorSettings,
@@ -664,24 +710,15 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        geometry_only: bool,
     ) -> Result<DefaultPlanes, KclError> {
         let plane_opacity = 0.1;
+        let plane_color =
+            |red, green, blue| (!geometry_only).then(|| Color::from_rgba(red, green, blue, plane_opacity));
         let plane_settings: Vec<(PlaneName, Uuid, Option<Color>)> = vec![
-            (
-                PlaneName::Xy,
-                id_generator.next_uuid(),
-                Some(Color::from_rgba(0.7, 0.28, 0.28, plane_opacity)),
-            ),
-            (
-                PlaneName::Yz,
-                id_generator.next_uuid(),
-                Some(Color::from_rgba(0.28, 0.7, 0.28, plane_opacity)),
-            ),
-            (
-                PlaneName::Xz,
-                id_generator.next_uuid(),
-                Some(Color::from_rgba(0.28, 0.28, 0.7, plane_opacity)),
-            ),
+            (PlaneName::Xy, id_generator.next_uuid(), plane_color(0.7, 0.28, 0.28)),
+            (PlaneName::Yz, id_generator.next_uuid(), plane_color(0.28, 0.7, 0.28)),
+            (PlaneName::Xz, id_generator.next_uuid(), plane_color(0.28, 0.28, 0.7)),
             (PlaneName::NegXy, id_generator.next_uuid(), None),
             (PlaneName::NegYz, id_generator.next_uuid(), None),
             (PlaneName::NegXz, id_generator.next_uuid(), None),
@@ -922,10 +959,11 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        geometry_only: bool,
     ) -> Result<(), KclError> {
         // Remake the default planes, since they would have been removed after the scene was cleared.
         let new_planes = self
-            .new_default_planes(batch_context, id_generator, source_range)
+            .new_default_planes(batch_context, id_generator, source_range, geometry_only)
             .await?;
         *self.default_planes.write().await = Some(new_planes);
 
@@ -952,6 +990,11 @@ impl EngineManager {
 
     pub async fn get_session_data(&self) -> Option<ModelingSessionData> {
         self.session_data.read().await.clone()
+    }
+
+    /// Request ID returned by the HTTP request that upgraded to this WebSocket.
+    pub fn websocket_upgrade_request_id(&self) -> Option<&str> {
+        self.websocket_upgrade_request_id.as_deref()
     }
 
     pub async fn close(&self) {

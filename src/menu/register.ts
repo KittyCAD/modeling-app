@@ -318,7 +318,7 @@ export function modelingMenuCallbackMostActions({
         type: 'Find and select command',
         data: {
           groupId: 'code',
-          name: 'Insert',
+          name: 'Import',
         },
       })
     }

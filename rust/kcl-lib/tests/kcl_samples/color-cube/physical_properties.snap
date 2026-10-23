@@ -10,7 +10,7 @@ description: Physical properties color-cube.kcl
       "z": 0.5
     },
     "dimensions": {
-      "x": 100.0,
+      "x": 100.00000000000004,
       "y": 100.00000000000004,
       "z": 101.0
     },

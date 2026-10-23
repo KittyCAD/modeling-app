@@ -3,27 +3,20 @@ import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { ToastInsert } from '@src/components/ToastInsert'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   clearActiveTextFile,
-  isEditableTextFile,
   openActiveTextFile,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
-import fsZds from '@src/lib/fs-zds'
+import { FILE_EXT } from '@src/lib/constants'
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
   getOpenPanes,
   togglePaneLayoutNode,
 } from '@src/lib/layout'
-import {
-  isExtensionARelevantExtension,
-  parentPathRelativeToProject,
-} from '@src/lib/paths'
+import { parentPathRelativeToProject } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
 import {
@@ -32,7 +25,6 @@ import {
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { use, useCallback, useEffect, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const { commands, fileOperations, project, systemIOActor, layout } = useApp()
@@ -108,7 +100,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       if (
         !projectRef.current?.value.name ||
         entry.children != null ||
-        (!entry.path.endsWith(FILE_EXT) && !isEditableTextFile(entry.path))
+        !entry.path.endsWith(FILE_EXT)
       ) {
         return
       }
@@ -123,11 +115,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         entry.path,
         projectDirectoryPath
       )
-
-      const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
-      const isRelevantFile = (filename: string): boolean => {
-        return isExtensionARelevantExtension(filename, RELEVANT_FILE_EXTENSIONS)
-      }
 
       // Only open the file if it is a kcl file.
       if (
@@ -174,43 +161,14 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
           // immediately navigate
           navigateAfterFlush()
         }
-      } else if (
-        projectRef.current?.value.name &&
-        entry.children == null &&
-        isEditableTextFile(entry.path)
-      ) {
-        // Open text/markdown files directly in the code editor pane. This must
-        // be checked before the "relevant file" branch below because some text
-        // extensions (e.g. .md) are also importable.
+      } else if (projectRef.current?.value.name && entry.children == null) {
+        // Inspect file contents before allowing edits, regardless of extension.
         openCodeEditorPaneIfClosed()
         openActiveTextFile(fileOperations, entry.path).catch(reportRejection)
-      } else if (isRelevantFile(entry.path) && projectRef.current?.value.path) {
-        // Allow insert if it is a importable file
-        toast.custom(
-          ToastInsert({
-            onInsert: () => {
-              const relativeFilePath = entry.path.replace(
-                projectRef.current?.value.path + fsZds.sep,
-                ''
-              )
-              commands.send({
-                type: 'Find and select command',
-                data: {
-                  name: 'Insert',
-                  groupId: 'code',
-                  argDefaultValues: { path: relativeFilePath },
-                },
-              })
-              toast.dismiss(INSERT_FOREIGN_TOAST_ID)
-            },
-          }),
-          { duration: 30000, id: INSERT_FOREIGN_TOAST_ID }
-        )
       }
     },
     [
       fileOperations,
-      commands,
       kclManager,
       modelingActor,
       modelingMachineState,
@@ -218,7 +176,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       openCodeEditorPaneIfClosed,
       projectDirectoryPath,
       systemIOActor,
-      wasmInstance,
     ]
   )
 

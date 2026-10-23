@@ -1,0 +1,10 @@
+startSketchOn(XY)
+  |> startProfile(at = [10, 0])
+  |> arc(angleStart = 180, angleEnd = 180, radius = 1.5)
+  |> close()
+  |> patternCircular2d(
+       arcDegrees = 360,
+       center = [0, 0],
+       instances = 6,
+       rotateDuplicates = true,
+     )

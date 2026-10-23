@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties linear_pattern3d_filleted_sketch.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 70.0,
+      "y": 10.0,
+      "z": 10.0
+    },
+    "dimensions": {
+      "x": 140.0,
+      "y": 20.0,
+      "z": 20.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 9084.577388488668
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 30.280659774848765
+  }
+}

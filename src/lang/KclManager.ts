@@ -1,4 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -47,10 +48,11 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_EXPERIMENTAL_FEATURES,
-  DEFAULT_KCL_VERSION,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
-import { getOperationKey } from '@src/lib/featureTreeOperationTree'
+import { getOperationKey } from '@src/lib/featureTree/featureTreeOperationTree'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
+import { markdownMessageElement } from '@src/lib/markdown'
 import { markOnce } from '@src/lib/performance'
 import type RustContext from '@src/lib/rustContext'
 import type {
@@ -73,7 +75,7 @@ import {
   type processCodeMirrorRanges as processCodeMirrorRangesFn,
 } from '@src/lib/selections'
 import { err, reportRejection } from '@src/lib/trap'
-import { deferredCallback, uuidv4 } from '@src/lib/utils'
+import { deferredCallback } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
 import type {
@@ -111,14 +113,26 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import type { StateFrom, Subscription } from 'xstate'
+import {
+  createActor,
+  type Actor,
+  type StateFrom,
+  type Subscription,
+} from 'xstate'
 
 import {
   addLineHighlight,
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 
-import { type Signal, computed, signal } from '@preact/signals-core'
+import {
+  batch,
+  computed,
+  effect,
+  signal,
+  untracked,
+  type ReadonlySignal,
+} from '@preact/signals-core'
 import type {
   ApiFile,
   SceneGraphDelta,
@@ -159,36 +173,30 @@ import {
 import { requestWriteToFile } from '@src/editor/plugins/write'
 import { zookeeperHistoryExtension } from '@src/lib/zookeeper/editorPlugin'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import type { App } from '@src/lib/app'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
-import type { FileEntry, Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
-import {
-  type UserFeaturesSettleService,
-  waitForUserFeaturesSettled,
-} from '@src/machines/userFeaturesMachine'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
-import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
+import type { ExecutingEditor } from '@src/registry/contracts/projectSession'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-  type KeymapService,
 } from '@src/registry/contracts/keymap'
 import toast from 'react-hot-toast'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
+import type { ProjectSystemDeps } from '@src/lib/projectSession/project'
+import { File } from '@src/lib/projectSession/file'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -304,19 +312,6 @@ type ExecutionCompletionResult = {
   status: ExecutionCompletionStatus
 }
 
-// Each of our singletons has dependencies on _other_ singletons, so importing
-// can easily become cyclic. Each will have its own Singletons type.
-interface SystemDeps {
-  wasmInstancePromise: Promise<ModuleType>
-  settings: SettingsActorType
-  commandBar: CommandBarActorType
-  projectPath: Signal<string>
-  engineCommandManager: ConnectionManager
-  rustContext: RustContext
-  userFeatures: UserFeaturesSettleService
-  keymap?: KeymapService
-}
-
 export enum KclManagerEvents {
   LongExecution = 'long-execution',
 }
@@ -332,356 +327,6 @@ declare global {
 // page.evaluate) So that's why this exists.
 window.EditorSelection = EditorSelection
 window.EditorView = EditorView
-
-/**
- * A project contains 0 or more editors, one of which is the "executing" one
- * that connects to the geometry engine.
- */
-export class ZDSProject {
-  private nextFileId = 0
-  files: File[] = []
-  get path() {
-    return this.projectIORefSignal.value.path
-  }
-  get name() {
-    return this.projectIORefSignal.value.name
-  }
-  /** Editors are referenced via Signal in case the file name itself is changed. */
-  public editors = new Map<Signal<string>, KclManager>()
-  #executingPath = signal<Signal<string> | null>(null)
-  public executingEditor = computed(() =>
-    this.#executingPath.value
-      ? this.editors.get(this.#executingPath.value)
-      : null
-  )
-  /** The currently-executing file's info as a FileEntry */
-  executingFileEntry = computed<FileEntry>(() => ({
-    name: getStringAfterLastSeparator(this.#executingPath.value?.value ?? ''),
-    path: this.#executingPath.value?.value ?? '',
-    children: [],
-  }))
-
-  private fileWatcherId = uuidv4()
-
-  constructor(
-    public projectIORefSignal: Signal<Project>,
-    private app: App
-  ) {
-    this.files = this.collectProjectFiles(projectIORefSignal.value)
-    window.electron?.watchFileOn(
-      projectIORefSignal.value.path,
-      this.fileWatcherId,
-      this.onUpdateFromDisk
-    )
-  }
-
-  /** Clean up resources and watchers for Project */
-  public close() {
-    this.closeAllEditors()
-    window.electron?.watchFileOff(
-      this.projectIORefSignal.value.path,
-      this.fileWatcherId
-    )
-  }
-
-  /** Open a project, with the option to open an initial editor too */
-  static async open(projectRef: Signal<Project>, app: App) {
-    return new ZDSProject(projectRef, app)
-  }
-
-  get executingPath() {
-    return this.#executingPath.value?.value ?? null
-  }
-  get executingPathSignal() {
-    return this.#executingPath
-  }
-  set executingPath(newPath: string | null) {
-    // TODO: Clear current executing editor's execution status
-
-    if (newPath === null) {
-      return
-    }
-    const foundPathSignal = this.findEditor(newPath)
-    if (!foundPathSignal) {
-      return
-    }
-    const found = foundPathSignal[1]
-    if (found) {
-      // TODO: Reconfigure the editor to be an executing one
-    }
-    this.#executingPath.value = foundPathSignal[0]
-  }
-  findEditor(path: string) {
-    return Array.from(this.editors.entries()).find(([p]) => p.value === path)
-  }
-
-  // Saving some keystrokes
-  private set = this.editors.set.bind(this.editors)
-
-  async openEditor(
-    path: string,
-    /** TODO: Remove providedEditor, replace with options about if the editor is the executing one
-     * once the app can handle not having a KclManager.
-     */
-    providedEditor?: KclManager,
-    /** TODO: Remove `providedCode` once no tests rely on initializing
-     * editor state through localstorage.
-     */
-    providedCode?: string,
-    isExecuting = true,
-    assertCurrent: () => void = () => {}
-  ) {
-    const foundEditor = this.findEditor(path)
-    const found = foundEditor?.[1]
-    if (
-      found &&
-      (!providedEditor || found !== providedEditor || found.path === path)
-    ) {
-      console.warn(`Attempted to overwrite editor with path "${path}"`)
-      return found
-    }
-
-    const systemDeps: SystemDeps = {
-      wasmInstancePromise: this.app.wasmPromise,
-      commandBar: this.app.commands.actor,
-      settings: this.app.settings.actor,
-      engineCommandManager: this.app.engineCommandManager,
-      rustContext: this.app.rustContext,
-      userFeatures: this.app.userFeatures,
-      projectPath: computed(() => this.projectIORefSignal.value.path),
-    }
-
-    if (providedEditor) {
-      providedEditor.systemDeps.projectPath = systemDeps.projectPath
-    }
-
-    const foundFileIndex = this.files.findIndex((f) => f.path === path)
-    if (providedEditor && providedEditor.path !== path) {
-      const previousEditorFileIndex = this.files.findIndex(
-        (file) => file === providedEditor
-      )
-      if (previousEditorFileIndex > -1) {
-        this.files[previousEditorFileIndex] = new File(
-          providedEditor.path,
-          providedEditor.id
-        )
-      }
-    }
-    const newEditor = await KclManager.fromFile(
-      foundFileIndex > -1
-        ? this.files[foundFileIndex]
-        : new File(path, this.nextFileId++),
-      systemDeps,
-      providedEditor,
-      providedCode,
-      // Project-level file opens refresh Rust with the full project snapshot
-      // below. Do not let the reused editor send update_file for a new file ID
-      // before that snapshot has registered the file.
-      {
-        shouldSyncRustOnOpen: !providedEditor,
-        assertCurrent,
-      }
-    )
-    assertCurrent()
-
-    // Splice our new editor into our files array
-    if (foundFileIndex > -1) {
-      this.files[foundFileIndex] = newEditor
-    } else {
-      // We must be opening a new file as an editor
-      this.files = [...this.files, newEditor]
-    }
-
-    if (newEditor.path !== path) {
-      newEditor.path = path
-    }
-
-    // Initialize the editor theme
-    // Subsequent changes are listened for within app.onSettingsUpdate()
-    // TODO: Disassemble onSettingsUpdate, subscribe to changes from subsystems
-    newEditor
-      .updateTheme(
-        getSettingsFromActorContext(this.app.settings.actor).app.theme.current
-      )
-      .catch(reportRejection)
-
-    if (!foundEditor) {
-      this.set(signal(path), newEditor)
-    }
-
-    // Initialize a snapshot of the project for Rust
-    // to have for executions and code mods
-    if (isExecuting) {
-      this.executingPath = path
-    }
-
-    markOnce('project/startCollectFiles')
-    const apiFiles = await this.getAllKclFiles()
-    markOnce('project/endCollectFiles')
-    assertCurrent()
-
-    markOnce('project/startSendProjectToWasm')
-    await newEditor.rustContext
-      .sendOpenProject(path, apiFiles)
-      .catch(reportRejection)
-    markOnce('project/endSendProjectToWasm')
-    assertCurrent()
-
-    if (
-      isExecuting &&
-      providedEditor &&
-      newEditor.engineCommandManager.connection?.connected
-    ) {
-      await newEditor.executeCode(newEditor.code)
-      assertCurrent()
-      await resetCameraPosition({
-        sceneInfra: newEditor.sceneInfra,
-        engineCommandManager: newEditor.engineCommandManager,
-        settingsActor: this.app.settings.actor,
-      })
-    }
-    return newEditor
-  }
-
-  closeEditor(path: string) {
-    const foundPathSignal = this.findEditor(path)
-    if (!foundPathSignal) {
-      console.warn(`Attempted to close nonexistent editor with path "${path}"`)
-      return
-    }
-    foundPathSignal[1].close()
-    this.editors.delete(foundPathSignal[0])
-  }
-
-  closeAllEditors() {
-    for (const editor of this.editors.values()) {
-      editor.close()
-    }
-    this.editors.clear()
-  }
-
-  /** Handle updates from the disk representation of the project */
-  private onUpdateFromDisk = (eventType: string, path: string) => {
-    const foundEditorKey = Array.from(this.editors.keys()).find(
-      (pathSignal) => pathSignal.value === path
-    )
-
-    // We ignore all currently-opened editors. The project watcher is meant
-    // only to notify about the rest of the project's updates, and pass them
-    // into the currently-executing editor.
-    if (foundEditorKey) {
-      return
-    }
-
-    const editor = this.executingEditor.value
-    const foundFile = this.files.find((f) => f.path === path)
-
-    if (path.endsWith('.kcl')) {
-      switch (eventType) {
-        case 'add':
-          const newFile = new File(path, this.nextFileId++)
-          this.files.push(newFile)
-          newFile
-            .asRustApiFile()
-            .then((file) => editor?.rustContext.sendAddFile(file))
-            .catch(reportRejection)
-          break
-        case 'change':
-          if (foundFile && path !== this.executingPath) {
-            foundFile
-              .read()
-              .then((text) =>
-                editor?.rustContext.sendUpdateFile(foundFile.id, text)
-              )
-              .catch(reportRejection)
-          }
-          break
-        case 'unlink':
-          const foundIndex = this.files.findIndex((f) => f.path === path)
-          if (foundIndex >= 0 && path !== this.executingPath && foundFile) {
-            this.files = this.files.filter((_, i) => i !== foundIndex)
-            editor?.rustContext
-              .sendRemoveFile(foundFile.id)
-              .catch(reportRejection)
-          }
-      }
-    }
-  }
-
-  /** Recursively gather KCL files in this project, without reading in their content */
-  private collectProjectFiles = (
-    fileOrDir: FileEntry,
-    files: File[] = []
-  ): File[] => {
-    if (fileOrDir.children) {
-      for (let entry of fileOrDir.children) {
-        if (entry.name.endsWith('.kcl')) {
-          const id = this.nextFileId++
-          const path = entry.path
-          files.push(new File(path, id))
-        } else {
-          this.collectProjectFiles(entry, files)
-        }
-      }
-    }
-
-    return files
-  }
-
-  /** Get all the KCL files in this project as a flat array. */
-  private async getAllKclFiles(): Promise<ApiFile[]> {
-    return Promise.all(this.files.map((file) => file.asRustApiFile()))
-  }
-
-  /**
-   * Keep Rust's project file registry aligned while Zookeeper history replay
-   * applies create/update/delete changes directly to the browser file system.
-   * Normal editor writes only touch the active file, so replay needs this
-   * explicit multi-file synchronization path.
-   */
-  async syncReplayedFilesToRust(
-    replayFiles: readonly {
-      absolutePath: string
-      nextContent: string | null
-    }[]
-  ) {
-    const editor = this.executingEditor.value
-    if (!editor) return
-
-    for (const replayFile of replayFiles) {
-      const foundIndex = this.files.findIndex(
-        (file) => file.path === replayFile.absolutePath
-      )
-      const foundFile = this.files[foundIndex]
-
-      if (replayFile.nextContent === null) {
-        if (!foundFile) continue
-        this.files = this.files.filter((_, index) => index !== foundIndex)
-        await editor.rustContext
-          .sendRemoveFile(foundFile.id)
-          .catch(reportRejection)
-        continue
-      }
-
-      if (foundFile) {
-        await editor.rustContext
-          .sendUpdateFile(foundFile.id, replayFile.nextContent)
-          .catch(reportRejection)
-        continue
-      }
-
-      const newFile = new File(replayFile.absolutePath, this.nextFileId++)
-      this.files.push(newFile)
-      await editor.rustContext
-        .sendAddFile({
-          id: newFile.id,
-          path: newFile.path,
-          text: replayFile.nextContent,
-        })
-        .catch(reportRejection)
-    }
-  }
-}
 
 const PERSIST_CODE_KEY = 'persistCode'
 const RECOVERY_SNAPSHOT_VERSION = 1
@@ -713,92 +358,8 @@ export interface PendingFeatureTreeSourceSelection {
   range: [number, number, number]
 }
 
-export class File extends EventTarget {
-  /** Path to file this editor is operating on */
-  private pathSignal: Signal<string>
-  private fileWatcherKey = uuidv4()
-  public watching: boolean = false
-  /** Array of listeners. TODO: Make this a CodeMirror-style extension point */
-  public onWatchEvent: ((eventType: string, path: string) => void)[] = [
-    () => ({}),
-  ]
-  get path() {
-    return this.pathSignal.value
-  }
-  set path(newPath: string) {
-    const wasWatching = this.watching
-    if (wasWatching) {
-      this.unwatch()
-    }
-
-    // Set pathSignal before calling this.watch() as it uses the path!
-    this.pathSignal.value = newPath
-
-    // Don't watch empty file paths, that's the whole file system!
-    if (wasWatching && newPath.length > 0) {
-      this.watch()
-    }
-  }
-
-  read() {
-    return File.ioImplementations.read(this.pathSignal.value)
-  }
-
-  write(newContent: string) {
-    return File.ioImplementations.write(this.pathSignal.value, newContent)
-  }
-
-  watch() {
-    if (this.watching || this.path.length < 1) {
-      return
-    }
-    File.ioImplementations.watch(this.path, this.fileWatcherKey, (e, p) => {
-      this.onWatchEvent.map((f) => f(e, p))
-    })
-    this.watching = true
-  }
-
-  unwatch() {
-    if (!this.watching) {
-      return
-    }
-    File.ioImplementations.unwatch(this.path, this.fileWatcherKey)
-    this.watching = false
-  }
-
-  constructor(
-    path: string,
-    public id = 0
-  ) {
-    super()
-    this.pathSignal = signal(path)
-  }
-
-  /** Present file data in format that RUST-WASM side needs it */
-  async asRustApiFile(): Promise<ApiFile> {
-    return this.read().then((text) => ({
-      id: this.id,
-      path: this.pathSignal.value,
-      text,
-    }))
-  }
-
-  /** Allows environments to swap their implementation of these IO-interfacing functions */
-  static ioImplementations = {
-    read: (_path: string): Promise<string> =>
-      Promise.reject(new Error('File IO has not been configured')),
-    write: (_path: string, _content: string): Promise<void> =>
-      Promise.reject(new Error('File IO has not been configured')),
-    watch: window.electron?.watchFileOn || (() => {}),
-    unwatch: window.electron?.watchFileOff || (() => {}),
-  }
-}
-
 export class KclManager extends File {
   // SYSTEM DEPENDENCIES
-
-  /** Application storage facade used by workflows owned by this manager. */
-  fileOperations?: FileOperationsRegistryService
 
   private _wasmInstance: ModuleType | null = null
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
@@ -825,9 +386,78 @@ export class KclManager extends File {
     }
     return this._wasmInstance
   }
-  readonly systemDeps: SystemDeps
-  private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
-  private _modelingState: StateFrom<typeof modelingMachine> | null = null
+  readonly systemDeps: ProjectSystemDeps
+  /** Modeling interactions live with this editor, independently of React mounts. */
+  private _modelingActor: Actor<typeof modelingMachine> | undefined
+  private _modelingActorPromise:
+    | Promise<Actor<typeof modelingMachine>>
+    | undefined
+  private modelingSubscription: Subscription | undefined
+  private closed = false
+  private modelingGeneration = 0
+  private readonly _modelingState = signal<StateFrom<
+    typeof modelingMachine
+  > | null>(null)
+
+  /** Resolve current project metadata at use time, including after legacy file reuse. */
+  readonly modelingProjectRef: { readonly current: Project | undefined }
+
+  get modelingStateSignal(): ReadonlySignal<StateFrom<
+    typeof modelingMachine
+  > | null> {
+    return this._modelingState
+  }
+
+  /** Retain a stopped actor for the outgoing view while its replacement loads. */
+  get modelingActor() {
+    return this._modelingActor
+  }
+
+  /** Lazily load the machine to keep editor construction independent of the UI import graph. */
+  get modelingActorPromise(): Promise<Actor<typeof modelingMachine>> {
+    return (this._modelingActorPromise ??= this.initializeModelingActor())
+  }
+
+  private async initializeModelingActor(): Promise<
+    Actor<typeof modelingMachine>
+  > {
+    const generation = this.modelingGeneration
+    const [{ modelingMachine }, wasmInstance] = await Promise.all([
+      import('@src/machines/modelingMachine'),
+      this.wasmInstancePromise,
+    ])
+    if (this.closed || generation !== this.modelingGeneration) {
+      return Promise.reject(
+        new Error('Cannot initialize modeling for a closed editor.')
+      )
+    }
+    const { modeling } = getSettingsFromActorContext(this.systemDeps.settings)
+    const actor = createActor(modelingMachine, {
+      input: {
+        kclManager: this,
+        engineCommandManager: this.engineCommandManager,
+        rustContext: this.rustContext,
+        machineManager: this.systemDeps.machineManager,
+        commandBarActor: this.systemDeps.commandBar,
+        wasmInstance,
+        fileName: getStringAfterLastSeparator(this.path),
+        projectRef: this.modelingProjectRef,
+        store: {
+          cameraProjection: modeling.cameraProjection,
+          defaultUnit: modeling.defaultUnit,
+        },
+      },
+    })
+    this._modelingActor = actor
+    this.modelingSubscription = actor.subscribe((state) => {
+      batch(() => {
+        this.selectionRanges = state.context.selectionRanges
+        this._modelingState.value = state
+      })
+    })
+    actor.start()
+    return actor
+  }
 
   // CORE STATE
 
@@ -896,7 +526,7 @@ export class KclManager extends File {
   get hasEditsSinceLastExecutionSignal() {
     return this._hasEditsSinceLastExecution
   }
-  get executingEditorService(): ExecutingEditorService {
+  get execution(): ExecutingEditor {
     return {
       code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
@@ -924,12 +554,17 @@ export class KclManager extends File {
 
   /** The Abstract Syntax Tree generated from parsing the KCL code */
   private _ast = signal<Node<Program>>(createEmptyAst())
+  /** Effective language version from the last safeParse; null until parsed or on failure. */
+  private _kclProgramVersion = signal<KclVersion | null>(null)
   _lastAst: Node<Program> = createEmptyAst()
   get ast() {
     return this._ast.value
   }
   get astSignal() {
     return this._ast
+  }
+  get kclProgramVersionSignal() {
+    return this._kclProgramVersion
   }
   get lastGoodAst() {
     return this._lastAst
@@ -946,13 +581,16 @@ export class KclManager extends File {
 
   private _execState = signal<ExecState>(emptyExecState())
   /**
-   * Counts the executions that rebuilt the engine scene.
+   * The engine scene generation from the last execution: the number of runs
+   * that changed the engine scene. Runs answered from the cache leave it
+   * unchanged.
    *
    * Sketch-solve syncs and mock executions replace `execState` without sending
    * an engine command.  A consumer that must act only on a rebuilt scene
    * subscribes here rather than to `execStateSignal`.
    */
   private _engineSceneGeneration = signal(0)
+  /** Incremented on every execution completion (success, failure, or cancel). Used so callers can wait for "next" run. */
   private _executionGeneration = 0
   private _lastExecutionCompletion: ExecutionCompletionResult = {
     generation: 0,
@@ -1063,7 +701,7 @@ export class KclManager extends File {
     // a KclManager without a ZDSProject.
     if (
       path !== this.path ||
-      !this.systemDeps.projectPath.value ||
+      !this.systemDeps.project.value?.path ||
       this.path.length < 1
     ) {
       return
@@ -1071,7 +709,7 @@ export class KclManager extends File {
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
     const requestedDocumentVersion = this._documentVersion
-    File.ioImplementations
+    this.textFileIO
       .read(path)
       .then((code) => {
         if (requestedDocumentVersion !== this._documentVersion) {
@@ -1160,7 +798,9 @@ export class KclManager extends File {
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
-  private settingsSubscription: Subscription | undefined = undefined
+  /** Only the executing editor may change the shared engine scene. */
+  private sceneSettingsActive = signal(false)
+  private disposeSettings: (() => void) | undefined
   private _automaticallyRenderEnabled = true
   private _lastKnownFileCode = ''
   private pendingRecoverySnapshot: {
@@ -1313,12 +953,20 @@ export class KclManager extends File {
       pendingFeatureTreeSourceSelection
   }
 
+  /**
+   * If the current code has fillet/chamfer calls with deprecated tags and we have
+   * execution metadata, apply the Z0006 fix (convert to edges), update the
+   * editor, and wait for the next run to complete. Used before opening the edit
+   * flow so P&C works (artifact graph no longer has sweepEdges).
+   * @returns Promise<true> if fix was applied and we waited for run; Promise<false> otherwise.
+   */
   async applyZ0006FixBeforeEdit(): Promise<boolean> {
     const execState = this.execState
     const hasMeta =
       (execState.edgeRefactorMetadata?.length ?? 0) > 0 ||
       (execState.directTagFilletMetadata?.length ?? 0) > 0
-    if (!hasMeta || !this.artifactGraph?.size) return false
+    if (!hasMeta) return false
+    if (!this.artifactGraph?.size) return false
 
     const instance = await this.wasmInstancePromise
     const newSource = refactorZ0006Unified(
@@ -1353,6 +1001,10 @@ export class KclManager extends File {
     )
   }
 
+  /**
+   * Returns a promise that resolves when an execution has completed after the given generation.
+   * Used by applyZ0006FixBeforeEdit to wait for the re-run after dispatching refactored code.
+   */
   private waitForExecutionGenerationAfter(
     afterGeneration: number
   ): Promise<ExecutionCompletionResult> {
@@ -1452,9 +1104,7 @@ export class KclManager extends File {
     const execState = execStateFromRust(sceneGraphDelta.exec_outcome)
 
     this.diagnostics = []
-    if (options.refreshLintDiagnostics !== false) {
-      void this.refreshSketchSolveLintDiagnostics(code, execState)
-    }
+    this.refreshSketchSolveAst(code, execState, options).catch(reportRejection)
 
     this.execState = execState
     this.lastSuccessfulVariables = execState.variables
@@ -1471,13 +1121,27 @@ export class KclManager extends File {
     void this.updateArtifactGraph(execState.artifactGraph)
   }
 
-  private async refreshSketchSolveLintDiagnostics(
+  private async refreshSketchSolveAst(
     code: string,
-    execState: ExecState
+    execState: ExecState,
+    options: { refreshLintDiagnostics?: boolean }
   ): Promise<void> {
     const instance = await this.systemDeps.wasmInstancePromise
+    if (this.code !== code) {
+      return
+    }
     const parseResult = parse(code, instance)
     if (err(parseResult) || !resultIsOk(parseResult)) {
+      return
+    }
+
+    // Sketch tools skip normal execution, so keep the AST used by the feature
+    // tree aligned with the source and operations returned by the sketch API.
+    this.ast = parseResult.program
+    this._kclProgramVersion.value = parseResult.kclVersion
+    this._astParseFailed = false
+
+    if (options.refreshLintDiagnostics === false) {
       return
     }
 
@@ -1485,7 +1149,6 @@ export class KclManager extends File {
       ast: parseResult.program,
       sourceCode: code,
       instance,
-      rustContext: this.rustContext,
       legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
       edgeRefactorMetadata: execState.edgeRefactorMetadata,
       directTagFilletMetadata: execState.directTagFilletMetadata,
@@ -1516,9 +1179,14 @@ export class KclManager extends File {
   set isExecuting(isExecuting) {
     this._isExecuting.value = isExecuting
     this.updateExecutionTimer(isExecuting)
-    // If we have finished executing, but the execute is stale, we should
-    // execute again.
-    if (!isExecuting && this.executeIsStale && this.sceneEntitiesManager) {
+    // If we have finished executing and reconnect is not pending,
+    // but the execute is stale, we should execute again.
+    if (
+      !isExecuting &&
+      this.executeIsStale &&
+      this.sceneEntitiesManager &&
+      !this.engineCommandManager.isReconnectPending
+    ) {
       const args = this.executeIsStale
       this.executeIsStale = null
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -1561,9 +1229,9 @@ export class KclManager extends File {
 
   set executeIsStale(executeIsStale) {
     this._executeIsStale = executeIsStale
-    // Next execution will be flagged as stale or not depending on this value.
+    // During reconnect, queue edits without interrupting the current execution.
     this.systemDeps.engineCommandManager.executionIsStale =
-      executeIsStale !== null
+      executeIsStale !== null && !this.engineCommandManager.isReconnectPending
   }
 
   get wasmInitFailed() {
@@ -1638,7 +1306,7 @@ export class KclManager extends File {
       if (newCode === '') {
         this.sendModelingEvent({
           type: 'Set selection',
-          data: { selection: undefined, selectionType: 'singleCodeCursor' },
+          data: { selection: {}, selectionType: 'singleCodeCursor' },
         })
       }
     }
@@ -1732,12 +1400,14 @@ export class KclManager extends File {
       newCode,
       shouldResetCamera,
       requestedUserDocumentVersion,
+      forceExecution = false,
     }: {
       newCode: string
       shouldResetCamera: boolean
       requestedUserDocumentVersion: number
+      forceExecution?: boolean
     }) => {
-      if (!this._automaticallyRenderEnabled) {
+      if (!forceExecution && !this._automaticallyRenderEnabled) {
         return
       }
 
@@ -1825,11 +1495,6 @@ export class KclManager extends File {
                 checkpointId: directEditCheckpointId,
               },
             })
-          } else {
-            console.debug(
-              'Error when executing after user edit:',
-              setProgramOutcome
-            )
           }
         } else {
           await this.executeCode(newCode)
@@ -1847,6 +1512,15 @@ export class KclManager extends File {
     },
     1000
   )
+
+  scheduleCurrentCodeExecution(shouldResetCamera: boolean) {
+    this.deferredExecution({
+      newCode: this.code,
+      shouldResetCamera,
+      requestedUserDocumentVersion: this._userDocumentVersion,
+      forceExecution: true,
+    })
+  }
 
   /**
    * Finish the latest direct editor execution before a workflow consumes the
@@ -2182,7 +1856,7 @@ export class KclManager extends File {
    */
   static async fromFile(
     file: File,
-    systemDeps: SystemDeps,
+    systemDeps: ProjectSystemDeps,
     providedEditor?: KclManager,
     providedCode?: string,
     options: FromFileOptions = { shouldSyncRustOnOpen: true }
@@ -2204,6 +1878,12 @@ export class KclManager extends File {
       return editor
     }
 
+    // The legacy singleton can be reopened after its previous project disposed it.
+    // Actor ownership still ends at close; reopening creates a fresh actor on demand.
+    if (providedEditor.closed) {
+      providedEditor._modelingActorPromise = undefined
+      providedEditor.closed = false
+    }
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     await providedEditor.flushWriteToFile({ suppressConflictToast: true })
     providedEditor.flushRecoverySnapshot()
@@ -2242,6 +1922,8 @@ export class KclManager extends File {
       })
     }
     providedEditor.markFileCodeAsSynced(diskCode)
+    providedEditor.startWatchingSettings()
+    providedEditor.refreshEditorSettings()
     providedEditor.watch()
     return providedEditor
   }
@@ -2249,13 +1931,18 @@ export class KclManager extends File {
   constructor(
     path: string,
     initialCode: string,
-    systemDeps: SystemDeps,
+    systemDeps: ProjectSystemDeps,
     fileId = 0
   ) {
-    super(path, fileId)
+    super(path, systemDeps.textFileIO, fileId)
     // Register our additional, KclManager-specific watch event handler
     this.onWatchEvent.push(this.#onWatchEvent)
     this.systemDeps = systemDeps
+    this.modelingProjectRef = {
+      get current() {
+        return systemDeps.project.value
+      },
+    }
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)
     this.engineCommandManager = this.systemDeps.engineCommandManager
@@ -2279,10 +1966,6 @@ export class KclManager extends File {
       zookeeperHistoryExtension(),
     ])
     this._editorView = this.createEditorView(initialCode)
-    this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
-      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
-    })
-    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
@@ -2291,6 +1974,8 @@ export class KclManager extends File {
       this._globalHistoryView.subscribeToHistoryChanges(() => {
         this.updateHistoryDepth()
       })
+
+    this.startWatchingSettings()
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
@@ -2316,9 +2001,20 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
+    if (this.closed) return
+    this.closed = true
+    this.modelingGeneration += 1
+    this.modelingSubscription?.unsubscribe()
+    this.modelingSubscription = undefined
+    this._modelingActor?.stop()
+    // The outgoing route can still render while its replacement is loading.
+    // Keep its stopped actor readable until reopening installs the next one.
+    this._modelingState.value = null
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
-    this.settingsSubscription?.unsubscribe()
+    this.sceneSettingsActive.value = false
+    this.disposeSettings?.()
+    this.disposeSettings = undefined
     this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
     this.unwatch()
@@ -2370,6 +2066,7 @@ export class KclManager extends File {
   }
 
   clearAst() {
+    this._kclProgramVersion.value = null
     this.ast = {
       type: 'Program',
       body: [],
@@ -2500,6 +2197,7 @@ export class KclManager extends File {
     this._astParseFailed = false
 
     if (err(result)) {
+      this._kclProgramVersion.value = null
       const kclError: KCLError = result as KCLError
       this.diagnostics = kclErrorsToDiagnostics([kclError], code)
       this._astParseFailed = true
@@ -2514,6 +2212,9 @@ export class KclManager extends File {
     // If we decouple safeParse from execution we need to move this application logic.
     this.errors = []
     this.logs = []
+    this._kclProgramVersion.value = resultIsOk(result)
+      ? result.kclVersion
+      : null
 
     this.addDiagnostics(compilationIssuesToDiagnostics(result.errors, code))
     this.addDiagnostics(compilationIssuesToDiagnostics(result.warnings, code))
@@ -2535,6 +2236,11 @@ export class KclManager extends File {
       console.warn('`executeAst` called before engine connection started')
       return
     }
+    if (this.engineCommandManager.isReconnectPending) {
+      // Keep latest requested execution for after reconnection.
+      this.executeIsStale = args
+      return
+    }
     if (this.isExecuting) {
       this.executeIsStale = args
 
@@ -2547,142 +2253,148 @@ export class KclManager extends File {
       return
     }
 
-    const ast = args.ast || this.ast
-    markOnce('code/startExecuteAst')
+    const finishExecution = this.engineCommandManager.trackExecution()
 
-    const currentExecutionId = args.executionId || Date.now()
-    this._cancelTokens.set(currentExecutionId, false)
+    try {
+      const ast = args.ast || this.ast
+      markOnce('code/startExecuteAst')
 
-    this.isExecuting = true
-    this.errors = []
-    this.logs = []
-    this.setSketchSolveDiagnostics([])
-    this.beginLiveOperationUpdates(currentExecutionId)
+      const currentExecutionId = args.executionId || Date.now()
+      this._cancelTokens.set(currentExecutionId, false)
 
-    const codeThatExecuted = this.code
-    const { logs, errors, execState, isInterrupted } = await executeAst({
-      ast,
-      path: this.path,
-      rustContext: this.rustContext,
-      callbacks: this.createExecutionCallbacks(currentExecutionId),
-    })
+      this.isExecuting = true
+      this.errors = []
+      this.logs = []
+      this.setSketchSolveDiagnostics([])
+      this.beginLiveOperationUpdates(currentExecutionId)
 
-    const livePathsToWatch = Object.values(execState.filenames)
-      .filter((file) => {
-        return file?.type === 'Local'
+      const codeThatExecuted = this.code
+      const { logs, errors, execState, isInterrupted } = await executeAst({
+        ast,
+        path: this.path,
+        rustContext: this.rustContext,
+        callbacks: this.createExecutionCallbacks(currentExecutionId),
       })
-      .map((file) => {
-        return file.value
-      })
-    this.livePathsToWatch.value = livePathsToWatch
 
-    // Program was not interrupted, setup the scene
-    // Do not send send scene commands if the program was interrupted, go to clean up
-    if (!isInterrupted) {
-      this.addDiagnostics(
-        await lintAst({
-          ast,
-          sourceCode: this.code,
-          instance: await this.systemDeps.wasmInstancePromise,
-          rustContext: this.rustContext,
-          legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
-          edgeRefactorMetadata: execState.edgeRefactorMetadata,
-          directTagFilletMetadata: execState.directTagFilletMetadata,
-          artifactGraph: execState.artifactGraph,
+      const livePathsToWatch = Object.values(execState.filenames)
+        .filter((file) => {
+          return file?.type === 'Local'
         })
-      )
-      if (this.sceneEntitiesManager) {
-        setSelectionFilterToDefault({
-          engineCommandManager: this.engineCommandManager,
-          kclManager: this,
-          sceneEntitiesManager: this.sceneEntitiesManager,
-          wasmInstance: await this.systemDeps.wasmInstancePromise,
+        .map((file) => {
+          return file.value
         })
+      this.livePathsToWatch.value = livePathsToWatch
+
+      // Program was not interrupted, setup the scene
+      // Do not send send scene commands if the program was interrupted, go to clean up
+      if (!isInterrupted) {
+        this.addDiagnostics(
+          await lintAst({
+            ast,
+            sourceCode: this.code,
+            instance: await this.systemDeps.wasmInstancePromise,
+            legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+            edgeRefactorMetadata: execState.edgeRefactorMetadata,
+            directTagFilletMetadata: execState.directTagFilletMetadata,
+            artifactGraph: execState.artifactGraph,
+          })
+        )
+        if (this.sceneEntitiesManager) {
+          setSelectionFilterToDefault({
+            engineCommandManager: this.engineCommandManager,
+            kclManager: this,
+            sceneEntitiesManager: this.sceneEntitiesManager,
+            wasmInstance: await this.systemDeps.wasmInstancePromise,
+          })
+        }
       }
-    }
 
-    this.isExecuting = false
+      this.isExecuting = false
 
-    // Check the cancellation token for this execution before applying side effects
-    if (this._cancelTokens.get(currentExecutionId)) {
-      this.endLiveOperationUpdates()
-      this._cancelTokens.delete(currentExecutionId)
-      markOnce('code/endExecuteAst')
-      this.notifyExecutionCompletion('cancelled')
-      return
-    }
-
-    let fileSettings = getSettingsAnnotation(
-      ast,
-      await this.wasmInstancePromise
-    )
-    if (err(fileSettings)) {
-      fileSettings = {}
-    }
-    this.fileSettings = fileSettings
-
-    this.logs = logs
-    this.errors = errors
-    if (!isInterrupted) {
-      this.markCodeAsExecuted(codeThatExecuted)
-    }
-    const code = this.code
-    // Do not add the errors since the program was interrupted and the error is not a real KCL error
-    this.addDiagnostics(
-      isInterrupted ? [] : kclErrorsToDiagnostics(errors, code)
-    )
-    // Add warnings and non-fatal errors
-    this.addDiagnostics(
-      isInterrupted
-        ? []
-        : compilationIssuesToDiagnostics(execState.issues, code)
-    )
-    this.execState = execState
-    if (!errors.length) {
-      this.lastSuccessfulVariables = execState.variables
-      this.lastSuccessfulOperations = execState.operations
-      this.lastSuccessfulCode = codeThatExecuted
-    }
-    this.endLiveOperationUpdates()
-    this.ast = structuredClone(ast)
-    // updateArtifactGraph relies on updated executeState/variables
-    await this.updateArtifactGraph(execState.artifactGraph)
-    this._engineSceneGeneration.value += 1
-    this.dispatchUpdateOperations(
-      getOperationsForCurrentFile({
-        operationsByModule: execState.operations,
-        filenames: execState.filenames,
-        currentPath: this.path,
-      })
-    )
-
-    if (!isInterrupted) {
-      this.sceneInfra.modelingSend({
-        type: 'code edit during sketch',
-      })
-    }
-    EngineDebugger.addLog({
-      label: 'executeAst',
-      message: 'execution done',
-    })
-    this.engineCommandManager.addCommandLog({
-      type: CommandLogType.ExecutionDone,
-      data: null,
-    })
-
-    this._cancelTokens.delete(currentExecutionId)
-    markOnce('code/endExecuteAst')
-    this.notifyExecutionCompletion('completed')
-
-    // Update project thumbnail after successful execution
-    if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
-      if (!this.fileOperations) {
+      // Check the cancellation token for this execution before applying side effects
+      if (this._cancelTokens.get(currentExecutionId)) {
+        this.endLiveOperationUpdates()
+        this._cancelTokens.delete(currentExecutionId)
+        markOnce('code/endExecuteAst')
+        this.notifyExecutionCompletion('cancelled')
         return
       }
-      createThumbnailPNGOnDesktop({
-        fileOperations: this.fileOperations,
-        projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+
+      let fileSettings = getSettingsAnnotation(
+        ast,
+        await this.wasmInstancePromise
+      )
+      if (err(fileSettings)) {
+        fileSettings = {}
+      }
+      this.fileSettings = fileSettings
+
+      this.logs = logs
+      this.errors = errors
+      if (!isInterrupted) {
+        this.markCodeAsExecuted(codeThatExecuted)
+      }
+      const code = this.code
+      // Do not add the errors since the program was interrupted and the error is not a real KCL error
+      this.addDiagnostics(
+        isInterrupted ? [] : kclErrorsToDiagnostics(errors, code)
+      )
+      // Add warnings and non-fatal errors
+      this.addDiagnostics(
+        isInterrupted
+          ? []
+          : compilationIssuesToDiagnostics(execState.issues, code)
+      )
+      this.execState = execState
+      if (!errors.length) {
+        this.lastSuccessfulVariables = execState.variables
+        this.lastSuccessfulOperations = execState.operations
+        this.lastSuccessfulCode = codeThatExecuted
+      }
+      this.endLiveOperationUpdates()
+      this.ast = structuredClone(ast)
+      // updateArtifactGraph relies on updated executeState/variables
+      await this.updateArtifactGraph(execState.artifactGraph)
+      // Failed runs report their generation too. It is null only when no run
+      // reached the engine, which leaves the scene as it was.
+      if (execState.engineSceneGeneration !== null) {
+        this._engineSceneGeneration.value = execState.engineSceneGeneration
+      }
+      this.dispatchUpdateOperations(
+        getOperationsForCurrentFile({
+          operationsByModule: execState.operations,
+          filenames: execState.filenames,
+          currentPath: this.path,
+        })
+      )
+
+      if (!isInterrupted) {
+        this.sceneInfra.modelingSend({
+          type: 'code edit during sketch',
+        })
+      }
+      EngineDebugger.addLog({
+        label: 'executeAst',
+        message: 'execution done',
       })
+      this.engineCommandManager.addCommandLog({
+        type: CommandLogType.ExecutionDone,
+        data: null,
+      })
+
+      this._cancelTokens.delete(currentExecutionId)
+      markOnce('code/endExecuteAst')
+      this.notifyExecutionCompletion('completed')
+
+      // Update project thumbnail after successful execution
+      if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+        createThumbnailPNGOnDesktop({
+          fileOperations: this.systemDeps.fileOperations,
+          projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+        })
+      }
+    } finally {
+      finishExecution()
     }
   }
 
@@ -2695,8 +2407,9 @@ export class KclManager extends File {
    */
   executeAstCleanUp() {
     this.endLiveOperationUpdates()
-    this.isExecuting = false
+    // Discard queued execution before the setter can start it.
     this.executeIsStale = null
+    this.isExecuting = false
     this.notifyExecutionCompletion('cleanup')
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
@@ -3036,7 +2749,7 @@ export class KclManager extends File {
     this._isShiftDown = isShiftDown
   }
   private selectionsWithSafeEnds(
-    selection: Array<Selection['codeRef']['range']>
+    selection: Array<NonNullable<Selection['codeRef']>['range']>
   ): Array<[number, number]> {
     if (!this._editorView) {
       return selection.filter(isTopLevelModule).map((s): [number, number] => {
@@ -3052,30 +2765,23 @@ export class KclManager extends File {
     this._selectionRanges = selectionRanges
     this._selectionRangesSignal.value = selectionRanges
   }
-  set modelingSend(send: (eventInfo: ModelingMachineEvent) => void) {
-    this._modelingSend = send
-  }
-  /**
-   * Send an event to the modeling machine.
-   * Returns false if the modeling machine is not available.
-   */
+  /** Send only while this editor owns a running modeling actor. */
   sendModelingEvent(event: ModelingMachineEvent): boolean {
-    if (this._modelingSend) {
-      this._modelingSend(event)
-      return true
+    if (this.closed || this._modelingActor?.getSnapshot().status !== 'active') {
+      return false
     }
-    return false
+    this._modelingActor.send(event)
+    return true
   }
   get modelingState(): StateFrom<typeof modelingMachine> | null {
-    return this._modelingState
-  }
-  set modelingState(state: StateFrom<typeof modelingMachine>) {
-    this._modelingState = state
+    return this._modelingState.value
   }
   get highlightRange(): Array<[number, number]> {
     return this._highlightRange
   }
-  setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
+  setHighlightRange(
+    range: Array<NonNullable<Selection['codeRef']>['range']>
+  ): void {
     const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range).filter(
       (selection) => {
         // Only keep valid selections.
@@ -3095,13 +2801,13 @@ export class KclManager extends File {
       })
     }
   }
-  async updateTheme(newTheme: Themes) {
+  async updateTheme(newTheme: Themes, updateEngine = true) {
     const resolvedTheme = getResolvedTheme(newTheme)
     const opposingTheme = getOppositeTheme(newTheme)
     this.sceneInfra.theme = opposingTheme
     this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     this.setEditorTheme(resolvedTheme)
-    if (this.engineCommandManager.connection) {
+    if (updateEngine && this.engineCommandManager.connection) {
       return this.engineCommandManager.setTheme(newTheme).catch(reportRejection)
     }
   }
@@ -3130,7 +2836,247 @@ export class KclManager extends File {
       ],
     })
   }
+
+  /** Transfer shared scene settings ownership as a project switches editors. */
+  public setSceneSettingsActive(active: boolean) {
+    if (active) this.startWatchingSettings()
+    this.sceneSettingsActive.value = active
+  }
+
+  private startWatchingSettings() {
+    if (this.disposeSettings) return
+    this.disposeSettings = this.watchSettings()
+  }
+
+  private refreshEditorSettings() {
+    const settings = getSettingsFromActorContext(this.systemDeps.settings)
+    this.setEditorLineWrapping(settings.textEditor.textWrapping.current)
+    this.setCursorBlinking(settings.textEditor.blinkingCursor.current)
+    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    this.updateTheme(settings.app.theme.current, false).catch(reportRejection)
+  }
+
+  private watchSettings() {
+    // Actor snapshots can replace Setting instances. Computed values follow
+    // both those replacements and each Setting's effective value, without
+    // reapplying unchanged values on unrelated actor transitions.
+    const settings = signal(
+      getSettingsFromActorContext(this.systemDeps.settings)
+    )
+    const subscription = this.systemDeps.settings.subscribe(() => {
+      settings.value = getSettingsFromActorContext(this.systemDeps.settings)
+      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    })
+    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    const disposers: Array<() => void> = []
+    const watchValue = <T>(
+      read: () => T,
+      apply: (value: T) => void,
+      scene = false
+    ) => {
+      const value = computed(read)
+      disposers.push(
+        effect(() => {
+          if (scene && !this.sceneSettingsActive.value) return
+          const current = value.value
+          untracked(() => apply(current))
+        })
+      )
+    }
+
+    watchValue(
+      () => settings.value.textEditor.textWrapping.currentSignal.value,
+      (value) => this.setEditorLineWrapping(value)
+    )
+    watchValue(
+      () => settings.value.textEditor.blinkingCursor.currentSignal.value,
+      (value) => this.setCursorBlinking(value)
+    )
+    const theme = computed(() => settings.value.app.theme.currentSignal.value)
+    watchValue(
+      () => theme.value,
+      (value) => {
+        this.updateTheme(value, false).catch(reportRejection)
+        this.sceneEntitiesManager.updateSketchGrid()
+      }
+    )
+    watchValue(
+      () => theme.value,
+      (value) => {
+        if (this.engineCommandManager.connection) {
+          this.engineCommandManager.setTheme(value).catch(reportRejection)
+        }
+      },
+      true
+    )
+    watchValue(
+      () => settings.value.app.allowOrbitInSketchMode.currentSignal.value,
+      (value) => {
+        this.sceneInfra.camControls._setting_allowOrbitInSketchMode = value
+      }
+    )
+    watchValue(
+      () => settings.value.modeling.cameraProjection.currentSignal.value,
+      (value) => {
+        const controls = this.sceneInfra.camControls
+        if (
+          controls.engineCameraProjection !== value &&
+          !this.modelingState?.matches('Sketch') &&
+          !this.modelingState?.matches('sketchSolveMode')
+        ) {
+          controls.engineCameraProjection = value
+        }
+      },
+      true
+    )
+    const highlightEdges = computed(
+      () => settings.value.modeling.highlightEdges.currentSignal.value
+    )
+    const backfaceColor = computed(
+      () => settings.value.modeling.backfaceColor.currentSignal.value
+    )
+    watchValue(
+      () => highlightEdges.value,
+      (value) => {
+        if (this.engineCommandManager.connection) {
+          this.engineCommandManager
+            .setHighlightEdges(value)
+            .catch(reportRejection)
+        }
+      },
+      true
+    )
+    watchValue(
+      () => backfaceColor.value,
+      (value) => {
+        if (this.engineCommandManager.connection?.connected) {
+          this.engineCommandManager
+            .setDefaultSystemProperties(value)
+            .catch(reportRejection)
+        }
+      },
+      true
+    )
+
+    const showSketchGrid = computed(
+      () => settings.value.modeling.showSketchGrid.currentSignal.value
+    )
+    const fixedSizeGrid = computed(
+      () => settings.value.modeling.fixedSizeGrid.currentSignal.value
+    )
+    const majorGridSpacing = computed(
+      () => settings.value.modeling.majorGridSpacing.currentSignal.value
+    )
+    const minorGridsPerMajor = computed(
+      () => settings.value.modeling.minorGridsPerMajor.currentSignal.value
+    )
+    disposers.push(
+      effect(() => {
+        // Read every grid input even when the grid is currently hidden.
+        const gridSettings = [
+          showSketchGrid.value,
+          fixedSizeGrid.value,
+          majorGridSpacing.value,
+          minorGridsPerMajor.value,
+        ]
+        void gridSettings
+        untracked(() => this.sceneEntitiesManager.updateSketchGrid())
+      })
+    )
+
+    const showScaleGrid = computed(
+      () => settings.value.modeling.showScaleGrid.currentSignal.value
+    )
+    // Inactive editors keep their render baseline current without issuing
+    // engine commands. Opening an editor alone does not request a rerender.
+    let previous = {
+      showScaleGrid: showScaleGrid.peek(),
+      fixedSizeGrid: fixedSizeGrid.peek(),
+      highlightEdges: highlightEdges.peek(),
+      backfaceColor: backfaceColor.peek(),
+    }
+    let pendingCacheClear: Promise<boolean> | undefined
+    disposers.push(
+      effect(() => {
+        const active = this.sceneSettingsActive.value
+        const current = {
+          showScaleGrid: showScaleGrid.value,
+          fixedSizeGrid: fixedSizeGrid.value,
+          highlightEdges: highlightEdges.value,
+          backfaceColor: backfaceColor.value,
+        }
+        const backfaceChanged = current.backfaceColor !== previous.backfaceColor
+        const engineSettingsChanged =
+          current.showScaleGrid !== previous.showScaleGrid ||
+          current.fixedSizeGrid !== previous.fixedSizeGrid ||
+          current.highlightEdges !== previous.highlightEdges
+        previous = current
+        let cancelled = false
+        untracked(() => {
+          if (!active || !this.engineCommandManager.connection) return
+          const path = this.path
+          const projectPath = this.systemDeps.project.peek()?.path
+          const isCurrent = () =>
+            !cancelled &&
+            this.sceneSettingsActive.peek() &&
+            this.path === path &&
+            this.systemDeps.project.peek()?.path === projectPath
+          const executeIfCurrent = () => {
+            if (isCurrent()) return this.executeCode()
+          }
+          if (backfaceChanged) {
+            const clearCache = () => {
+              if (!isCurrent()) return Promise.resolve(false)
+              return this.rustContext
+                .clearSceneAndBustCache(jsAppSettings(settings.peek()), path)
+                .then(() => true)
+                .catch((error) => {
+                  reportRejection(error)
+                  return false
+                })
+            }
+            // Serialize cache clears, and let later engine-setting updates
+            // wait for the pending clear before rendering the latest values.
+            const pending = pendingCacheClear
+              ? pendingCacheClear.then(clearCache)
+              : clearCache()
+            pendingCacheClear = pending
+            pending
+              .then((success) => {
+                if (pendingCacheClear === pending) pendingCacheClear = undefined
+                // Closing, switching editors/projects, or a newer settings
+                // update invalidates the continuation's ownership of the scene.
+                if (success) return executeIfCurrent()
+              })
+              .catch(reportRejection)
+          } else if (engineSettingsChanged) {
+            if (pendingCacheClear) {
+              pendingCacheClear
+                .then((success) => {
+                  if (success) return executeIfCurrent()
+                })
+                .catch(reportRejection)
+            } else {
+              this.executeCode().catch(reportRejection)
+            }
+          }
+        })
+        return () => {
+          cancelled = true
+        }
+      })
+    )
+    return () => {
+      subscription.unsubscribe()
+      for (const dispose of disposers) dispose()
+    }
+  }
+
   setCursorBlinking(shouldBlink: boolean) {
+    this._editorView.dom.style.setProperty(
+      '--cursor-color',
+      shouldBlink ? 'auto' : 'transparent'
+    )
     this._editorView.dispatch({
       effects: [
         cursorBlinkingCompartment.reconfigure(
@@ -3168,9 +3114,17 @@ export class KclManager extends File {
       // Clear out any diagnostics that don't fit with the current document
       (d) => d.from <= docLength && d.to <= docLength
     )
-
     this._editorView.dispatch({
-      effects: [setDiagnosticsEffect.of(diagnostics)],
+      effects: [
+        setDiagnosticsEffect.of(
+          diagnostics.map((diagnostic) => ({
+            ...diagnostic,
+            renderMessage:
+              diagnostic.renderMessage ??
+              (() => markdownMessageElement(diagnostic.message)),
+          }))
+        ),
+      ],
       annotations: [
         setDiagnosticsEvent,
         updateOutsideEditorEvent,
@@ -3184,14 +3138,13 @@ export class KclManager extends File {
   scrollToSelection() {
     if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
     const firstSelection = this._selectionRanges.graphSelections[0]
+    const codeRef = firstSelection.codeRef
+    if (!codeRef?.range) return
     this._editorView.focus()
     this._editorView.dispatch({
       effects: [
         EditorView.scrollIntoView(
-          EditorSelection.range(
-            firstSelection.codeRef.range[0],
-            firstSelection.codeRef.range[1]
-          ),
+          EditorSelection.range(codeRef.range[0], codeRef.range[1]),
           { y: 'center' }
         ),
       ],
@@ -3476,17 +3429,24 @@ export class KclManager extends File {
       return EditorSelection.create([defaultCursor], 0)
     }
     for (const selection of selections.graphSelections) {
+      const cr = selection.codeRef
+      if (!cr?.range) continue
       const safeEnd = Math.min(
-        selection.codeRef.range[1],
-        this._editorView?.state.doc.length || selection.codeRef.range[1]
+        cr.range[1],
+        this._editorView?.state.doc.length || cr.range[1]
       )
-      codeBasedSelections.push(
-        EditorSelection.range(selection.codeRef.range[0], safeEnd)
-      )
+      codeBasedSelections.push(EditorSelection.range(cr.range[0], safeEnd))
     }
-    const end =
-      selections.graphSelections[selections.graphSelections.length - 1].codeRef
-        .range[1]
+    const lastSel =
+      selections.graphSelections[selections.graphSelections.length - 1]
+    const lastRange = lastSel?.codeRef?.range
+    if (!lastRange) {
+      const defaultCursor = EditorSelection.cursor(
+        this._editorView?.state.doc.length || 0
+      )
+      return EditorSelection.create([defaultCursor], 0)
+    }
+    const end = lastRange[1]
     const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
     codeBasedSelections.push(EditorSelection.cursor(safeEnd))
     return EditorSelection.create(codeBasedSelections, 1)
@@ -3505,10 +3465,10 @@ export class KclManager extends File {
     if (ranges.length === 0) {
       return
     }
-    if (!this._modelingState || !sceneEntitiesManager) {
+    if (!this.modelingState || !sceneEntitiesManager) {
       return
     }
-    if (this._modelingState.matches({ Sketch: 'Change Tool' })) {
+    if (this.modelingState.matches({ Sketch: 'Change Tool' })) {
       return
     }
     this._isAllTextSelected = viewUpdate.state.selection.ranges.some(
@@ -3552,7 +3512,7 @@ export class KclManager extends File {
       return // don't repeat events
     }
     this._lastEvent = { event: stringEvent, time: Date.now() }
-    this._modelingSend(eventInfo.modelingEvent)
+    this.sendModelingEvent(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.engineCommandManager.sendSceneCommand(event)
@@ -3895,24 +3855,21 @@ export class KclManager extends File {
     this.timeoutWriter = undefined
     this.timeoutRewatch = undefined
 
-    await this.performDelayedWriteToFile({
-      newCode: this.code,
-      requestedDocumentVersion: this._documentVersion,
-      requestedPath: this.path,
-      options,
-    })
+    const flushCurrentBuffer = () =>
+      this.performDelayedWriteToFile({
+        newCode: this.code,
+        requestedDocumentVersion: this._documentVersion,
+        requestedPath: this.path,
+        options,
+      })
+    await flushCurrentBuffer()
 
     // Seeding an empty main.kcl (or an edit that lands during the flush) can
     // schedule one more save. Persist that latest buffer before changing paths.
     if (this.timeoutWriter !== undefined) {
       clearTimeout(this.timeoutWriter)
       this.timeoutWriter = undefined
-      await this.performDelayedWriteToFile({
-        newCode: this.code,
-        requestedDocumentVersion: this._documentVersion,
-        requestedPath: this.path,
-        options,
-      })
+      await flushCurrentBuffer()
     }
 
     return !this.hasUnsavedLocalChanges()
@@ -3956,7 +3913,7 @@ export class KclManager extends File {
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
-        await File.ioImplementations.read(requestedPath)
+        await this.textFileIO.read(requestedPath)
       )
     } catch (err: unknown) {
       if (isPathNotFoundError(err)) {

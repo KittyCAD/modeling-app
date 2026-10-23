@@ -35,7 +35,7 @@ operation::facing(
 ### Examples
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
 
 stockLength = 100mm
 stockWidth = 60mm
@@ -84,7 +84,7 @@ facingOperation = operation::facing(stockBody, toolDiameter = toolDiameter, step
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the operation::facing function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-operation-facing0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-operation-facing0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-operation-facing0.png"

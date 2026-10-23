@@ -5,6 +5,7 @@ import {
   Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import type { ZDSProject } from '@src/lib/projectSession'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   commandsValueSpec,
@@ -19,8 +20,8 @@ import {
   mergeEngineSceneClassNames,
   resolveEngineSceneViewExtensions,
 } from '@src/registry/contracts/engineScene'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { keymapValueSpec } from '@src/registry/contracts/keymap'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import {
@@ -46,20 +47,44 @@ vi.mock('@src/components/UnitsMenu', () => ({
   UnitsMenu: () => null,
 }))
 
-function createExecutingEditorService(
+function createProjectSession(
   isExecuting = signal(false),
-  showExperimentalFeaturesStatusBarItem = signal(true)
-): ExecutingEditorService {
+  showExperimentalFeaturesStatusBarItem = signal(true),
+  selectionStatusLabel = signal('No selection')
+): ProjectSessionService {
+  const project = signal<ZDSProject | undefined>(undefined)
+  const libraryId = signal<string | undefined>(undefined)
   return {
-    code: signal(''),
-    hasEditsSinceLastExecution: signal(false),
-    isExecuting,
-    executionElapsedMs: signal<number | null>(null),
-    selectionStatusLabel: signal('No selection'),
-    showExperimentalFeaturesStatusBarItem,
-    getPendingCommandCount: vi.fn(() => 0),
-    executeCode: vi.fn(),
-    updateCode: vi.fn(),
+    textFileIO: {
+      read: vi.fn(async () => ''),
+      write: vi.fn(async () => {}),
+      watch: vi.fn(),
+      unwatch: vi.fn(),
+    },
+    project,
+    currentProjectLibraryId: libraryId,
+    getProject: () => project.value,
+    setProject: (next) => {
+      project.value = next
+    },
+    clearProject: () => {
+      project.value = undefined
+    },
+    getCurrentProjectLibraryId: () => libraryId.value,
+    setCurrentProjectLibraryId: (next) => {
+      libraryId.value = next
+    },
+    executingEditor: signal({
+      code: signal(''),
+      hasEditsSinceLastExecution: signal(false),
+      isExecuting,
+      executionElapsedMs: signal<number | null>(null),
+      selectionStatusLabel,
+      showExperimentalFeaturesStatusBarItem,
+      getPendingCommandCount: vi.fn(() => 0),
+      executeCode: vi.fn(),
+      updateCode: vi.fn(),
+    }),
   }
 }
 
@@ -105,12 +130,9 @@ describe('engineScene extension', () => {
     const registry = new Registry()
     registry.configure([
       defineRegistryItem({
-        id: 'test-executing-editor-service',
+        id: 'test-project-session',
         providesServices: [
-          provideService(
-            executingEditorService,
-            createExecutingEditorService()
-          ),
+          provideService(projectSession, createProjectSession()),
         ],
       }),
       engineSceneExtension,
@@ -135,6 +157,32 @@ describe('engineScene extension', () => {
         scopes: ['file'],
       },
     ])
+  })
+
+  it('updates the selection status item when its label changes', () => {
+    const registry = new Registry()
+    const selectionStatusLabel = signal('No selection')
+    const executionService = createProjectSession(
+      undefined,
+      undefined,
+      selectionStatusLabel
+    )
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-project-session',
+        providesServices: [provideService(projectSession, executionService)],
+      }),
+      engineSceneExtension,
+    ])
+
+    const before = registry.get(statusBarLocalItemsValueSpec)
+    selectionStatusLabel.value = '1 edge'
+    const after = registry.get(statusBarLocalItemsValueSpec)
+
+    expect(after).not.toBe(before)
+    expect(after.find((item) => item.id === 'selection')).not.toBe(
+      before.find((item) => item.id === 'selection')
+    )
   })
 
   it('contributes a command and modeling keybinding to open the measure tool', () => {
@@ -233,11 +281,11 @@ describe('engineScene extension', () => {
     const registry = new Registry()
     registry.configure([
       defineRegistryItem({
-        id: 'test-executing-editor-service',
+        id: 'test-project-session',
         providesServices: [
           provideService(
-            executingEditorService,
-            createExecutingEditorService(
+            projectSession,
+            createProjectSession(
               signal(false),
               showExperimentalFeaturesStatusBarItem
             )
@@ -282,9 +330,10 @@ describe('engineScene extension', () => {
       }))
     ).toEqual([
       { id: 'engine-scene.toolbar', zone: 'top' },
-      { id: 'engine-scene.sketch-background-opacity', zone: 'bottom-left' },
-      { id: 'engine-scene.sketch-constraints-toggle', zone: 'bottom-left' },
-      { id: 'engine-scene.gizmo', zone: 'bottom-right' },
+      { id: 'engine-scene.sketch-background-opacity', zone: 'bottom' },
+      { id: 'engine-scene.sketch-constraints-toggle', zone: 'bottom' },
+      { id: 'engine-scene.gizmo', zone: 'bottom' },
+      { id: 'engine-scene.modeling-dialog', zone: 'overlay' },
     ])
   })
 
@@ -344,7 +393,11 @@ describe('engineScene extension', () => {
         extensions,
         createEngineSceneViewExtensionContext(false)
       ).map((extension) => extension.id)
-    ).toEqual(['engine-scene.toolbar', 'engine-scene.gizmo'])
+    ).toEqual([
+      'engine-scene.toolbar',
+      'engine-scene.gizmo',
+      'engine-scene.modeling-dialog',
+    ])
 
     expect(
       resolveEngineSceneViewExtensions(
@@ -356,6 +409,7 @@ describe('engineScene extension', () => {
       'engine-scene.sketch-background-opacity',
       'engine-scene.sketch-constraints-toggle',
       'engine-scene.gizmo',
+      'engine-scene.modeling-dialog',
     ])
   })
 })

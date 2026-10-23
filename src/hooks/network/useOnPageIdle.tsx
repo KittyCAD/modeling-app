@@ -101,7 +101,10 @@ export const useOnPageIdle = ({
               message: 'Calling tearDown()',
             })
             // We do a full tear down at the moment.
-            kclManager.engineCommandManager.tearDown()
+            kclManager.engineCommandManager.tearDown({
+              route: 'idle-timeout',
+              initiatedBy: 'client',
+            })
             idleCallbackRef.current()
           }
         }

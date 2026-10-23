@@ -151,8 +151,10 @@ async fn execute_and_observe_open(
     code: &str,
     current_file: Option<std::path::PathBuf>,
 ) -> (ExecutorContext, ObservedIds) {
-    let ctx = crate::test_server::new_context(true, current_file).await.unwrap();
     let program = crate::Program::parse_no_errs(code).unwrap();
+    let ctx = crate::test_server::new_context(true, current_file, true, program.language_version().unwrap())
+        .await
+        .unwrap();
     let mut exec_state = ExecState::new(&ctx);
     ctx.run(&program, &mut exec_state).await.unwrap();
 
@@ -189,9 +191,9 @@ async fn execute_and_observe_open(
         .graph
         .values()
         .filter_map(|artifact| match artifact {
-            Artifact::Sweep(sweep) => Some(SweepIds {
+            Artifact::Sweep(sweep) => sweep.path_id.map(|path_id| SweepIds {
                 sweep_id: sweep.id,
-                path_id: sweep.path_id,
+                path_id,
             }),
             _ => None,
         })

@@ -4,7 +4,7 @@ import {
   newKclFile,
   projectSkeletonCreate,
 } from '@src/lang/project'
-import { DEFAULT_KCL_VERSION } from '@src/lib/constants'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import fsZds from '@src/lib/fs-zds'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'

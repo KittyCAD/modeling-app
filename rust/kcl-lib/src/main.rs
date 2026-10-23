@@ -45,6 +45,13 @@ async fn main() -> ExitCode {
     }
     let program = program.unwrap();
 
+    let kcl_version = match program.language_version() {
+        Ok(version) => version,
+        Err(error) => {
+            eprintln!("{error}");
+            return ExitCode::FAILURE;
+        }
+    };
     let project_directory = filename.rfind('/').map(|i| filename[..i].into());
     let ctx = ExecutorContext::new_with_client(
         ExecutorSettings {
@@ -53,6 +60,7 @@ async fn main() -> ExitCode {
         },
         None,
         None,
+        kcl_version,
     )
     .await
     .unwrap();

@@ -16,7 +16,6 @@ import {
   defaultNodePath,
   errFromErrWithOutputs,
   formatNumberLiteral,
-  kclLint,
   parse,
   rustImplPathToNode,
 } from '@src/lang/wasm'
@@ -90,32 +89,16 @@ beforeEach(async () => {
   }
 
   const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ geometryOnly: true })
+    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
   instanceInThisFile = instance
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
-})
-
-describe('KCL lint options', () => {
-  it('only returns Z0006 when explicitly enabled', async () => {
-    const ast = assertParse(
-      'revolve(profile, axis = getOppositeEdge(seg01))',
-      instanceInThisFile
-    )
-
-    const defaultFindings = await kclLint(ast, instanceInThisFile)
-    expect(
-      defaultFindings.some((finding) => finding.finding.code === 'Z0006')
-    ).toBe(false)
-
-    const optedInFindings = await kclLint(ast, instanceInThisFile, true)
-    expect(
-      optedInFindings.some((finding) => finding.finding.code === 'Z0006')
-    ).toBe(true)
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
   })
 })
 
@@ -219,11 +202,11 @@ it('formats numbers with units', () => {
 describe('test errFromErrWithOutputs', () => {
   it('converts KclErrorWithOutputs to KclError', () => {
     const blob =
-      '{"error":{"kind":"internal","details":{"sourceRanges":[],"backtrace":[],"msg":"Cache busted"}},"nonFatal":[],"variables":{},"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null}'
+      '{"error":{"kind":"internal","details":{"sourceRanges":[],"backtrace":[],"msg":"Cache busted"}},"nonFatal":[],"variables":{},"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null,"engineSceneGeneration":2}'
     const error = errFromErrWithOutputs(blob)
     const errorStr = JSON.stringify(error)
     expect(errorStr).toEqual(
-      '{"kind":"internal","sourceRange":[0,0,0],"msg":"Cache busted","kclBacktrace":[],"nonFatal":[],"variables":{},"operations":[],"artifactGraph":{},"filenames":{},"defaultPlanes":null}'
+      '{"kind":"internal","sourceRange":[0,0,0],"msg":"Cache busted","kclBacktrace":[],"nonFatal":[],"variables":{},"operations":[],"artifactGraph":{},"filenames":{},"defaultPlanes":null,"engineSceneGeneration":2}'
     )
   })
 })

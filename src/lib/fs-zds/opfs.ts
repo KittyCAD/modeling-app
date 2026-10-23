@@ -3,6 +3,7 @@ import { reportClientError } from '@src/lib/clientErrors'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 // The Origin Private File System. Used for browser environments.
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { resolveOPFSHandle as walk } from '@src/lib/fs-zds/opfsHandle'
 import OPFSWriteWorker from '@src/lib/fs-zds/opfsWriteWorker.ts?worker'
 
 // Holds onto directory metadata that is not stored by the File System API.
@@ -101,55 +102,6 @@ const writeFileViaWorker = (
     pendingWorkerWrites.set(id, { resolve, reject })
     worker.postMessage(request)
   })
-}
-
-const walk = async (
-  targetPath: string,
-  onTargetNode?: (part: string) => void
-): Promise<undefined | FileSystemDirectoryHandle | FileSystemFileHandle> => {
-  let current = await navigator.storage.getDirectory()
-  let cwd = ''
-  let looped = true
-  let currentChanged = true
-
-  // '/'.split('/').length === 2 always.
-  if (targetPath.split(path.sep).length === 2) {
-    return current
-  }
-
-  while (looped && currentChanged) {
-    let entries = current.entries()
-    looped = false
-    currentChanged = false
-    for await (let [name, handle] of entries) {
-      looped = true
-      const currentPath = path.resolve(cwd, name)
-
-      if (targetPath.startsWith(currentPath) === false) {
-        continue
-      }
-
-      if (onTargetNode) {
-        onTargetNode(name)
-      }
-
-      if (targetPath === currentPath) {
-        return handle
-      }
-
-      if (handle instanceof FileSystemDirectoryHandle) {
-        cwd = currentPath
-        current = handle
-        currentChanged = true
-        break
-      }
-
-      return undefined
-    }
-  }
-
-  // We never found it. The result should be found in the loop.
-  return undefined
 }
 
 // Similar to walk, but more powerful, scan will visit every single edge

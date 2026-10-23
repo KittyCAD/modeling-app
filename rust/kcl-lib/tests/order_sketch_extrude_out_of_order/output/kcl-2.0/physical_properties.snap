@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties order_sketch_extrude_out_of_order.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0003727860277950848,
+      "y": 0.004032079269921994,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 0.01074557205559017,
+      "y": 0.01193584146015601,
+      "z": 0.01
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 0.0005999999663774958
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.0000000009999998977483751
+  }
+}

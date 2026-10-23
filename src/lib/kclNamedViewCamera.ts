@@ -7,8 +7,12 @@ import type {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { AxisNames } from '@src/lib/constants'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { engineStreamZoomToFit, engineViewIsometric } from '@src/lib/utils'
-import { uuidv4 } from '@src/lib/utils'
+import { err } from '@src/lib/trap'
+import {
+  engineStreamZoomToFit,
+  engineViewIsometric,
+  uuidv4,
+} from '@src/lib/utils'
 
 const ORIENTATION_AXES = {
   front: AxisNames.NEG_Y,
@@ -54,6 +58,21 @@ export async function applyNamedViewCamera({
     if (axis === null) {
       // `view_isometric` frames the model itself.
       await engineViewIsometric({ engineCommandManager, padding: FIT_PADDING })
+
+      if (target === undefined && distance === undefined) {
+        return
+      }
+
+      const fittedView = await sceneInfra.camControls.getCameraView()
+      if (err(fittedView)) {
+        return
+      }
+
+      await sceneInfra.camControls.setCameraView({
+        ...fittedView,
+        pivot_position: target ?? fittedView.pivot_position,
+        eye_offset: distance ?? fittedView.eye_offset,
+      })
       return
     }
 

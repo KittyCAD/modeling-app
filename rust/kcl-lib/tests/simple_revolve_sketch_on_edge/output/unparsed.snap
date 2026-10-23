@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing simple_revolve_sketch_on_edge.kcl
+---
+part001 = startSketchOn(XY)
+  |> startProfile(at = [4, 12])
+  |> line(end = [2, 0])
+  |> line(end = [0, -6])
+  |> line(end = [4, -6])
+  |> line(end = [0, -6])
+  |> line(end = [-3.75, -4.5])
+  |> line(end = [0, -5.5])
+  |> line(end = [-2, 0])
+  |> close()
+  |> revolve(axis = Y, angle = 180)
+
+part002 = startSketchOn(part001, face = END)
+  |> startProfile(at = [4.5, -5])
+  |> line(end = [0, 5])
+  |> line(end = [5, 0])
+  |> line(end = [0, -5])
+  |> close()
+  |> extrude(length = 5)

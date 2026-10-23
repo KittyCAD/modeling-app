@@ -1,4 +1,3 @@
-import { BillingDialog } from '@kittycad/ui-components'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
@@ -26,7 +25,6 @@ import {
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -96,9 +94,13 @@ import type { HTMLProps } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useLocation).
   useLocation,
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useNavigate).
   useNavigate,
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useParams).
   useParams,
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useSearchParams).
   useSearchParams,
 } from 'react-router-dom'
 
@@ -290,7 +292,7 @@ function useProjectLibraryDrag({
 const Home = () => {
   useSignals()
   const app = useApp()
-  const { auth, billing, commands, settings, registry, userFeatures } = app
+  const { auth, billing, commands, settings, registry } = app
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
@@ -315,8 +317,6 @@ const Home = () => {
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
-  const hasUnlimitedCredits = billingContext.balance === Infinity
-  const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
@@ -342,10 +342,6 @@ const Home = () => {
     .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)
   const session = registry.get(projectSession)
-  const hasCloudSyncFeature = userFeatures.useHas(
-    OPFS_CLOUD_FEATURE_FLAG,
-    false
-  )
   const { libraryId } = useParams()
   const routeSelectedProjectLibrary = libraryId
     ? projectLibraries.find((library) => library.id === libraryId)
@@ -613,7 +609,7 @@ const Home = () => {
           className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between"
         >
           <ul className="flex flex-col">
-            {needsToOnboard(location, onboardingStatus) && (
+            {needsToOnboard(onboardingStatus) && (
               <li className="flex group">
                 <ActionButton
                   Element="button"
@@ -705,21 +701,6 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
-            {!hasUnlimitedCredits && (
-              <li className="contents">
-                <div className="my-2">
-                  <BillingDialog
-                    upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-                    accountHref={withSiteBaseURL('/account/billing')}
-                    billingClick={openBillingLinkExternally}
-                    error={billingContext.error}
-                    balance={billingContext.balance}
-                    allowance={billingContext.allowance}
-                    userPaymentBalance={billingContext.userPaymentBalance}
-                  />
-                </div>
-              </li>
-            )}
             <li className="contents">
               <Announcements token={apiToken} />
             </li>
@@ -774,7 +755,7 @@ const Home = () => {
             projectStatuses={projectStatuses}
             projectActions={homeProjectActions}
             fileOperations={app.fileOperations}
-            showCloudSyncUi={hasCloudSyncFeature}
+            showCloudSyncUi
             showSourceStatusBadges={false}
             onMoveToLibrary={moveProjectToLibrary}
             projectLibraryEmptyTestId="project-library-empty"
@@ -791,7 +772,7 @@ const Home = () => {
             projectStatuses={projectStatuses}
             projectActions={homeProjectActions}
             fileOperations={app.fileOperations}
-            showCloudSyncUi={hasCloudSyncFeature}
+            showCloudSyncUi
             onMoveToLibrary={moveProjectToLibrary}
             projectLibraryDrag={projectLibraryDrag}
             projectLibraryTypes={projectLibraryTypes}

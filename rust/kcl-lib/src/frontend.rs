@@ -5,7 +5,46 @@ use std::collections::VecDeque;
 use std::ops::ControlFlow;
 
 use indexmap::IndexMap;
+use kcl_api::Angle;
+use kcl_api::ArcCtor;
+use kcl_api::ArcDirection;
+use kcl_api::CapSource;
+use kcl_api::CircleCtor;
+use kcl_api::Coincident;
+use kcl_api::Constraint;
+use kcl_api::ConstraintSegment;
+use kcl_api::ControlPointSplineCtor;
+use kcl_api::Diameter;
+use kcl_api::Distance;
+use kcl_api::EqualRadius;
+use kcl_api::Expr;
+use kcl_api::FixedPoint;
+use kcl_api::Freedom;
+use kcl_api::Horizontal;
+use kcl_api::LineCtor;
+use kcl_api::LinesEqualLength;
+use kcl_api::Midpoint;
+use kcl_api::Number;
+use kcl_api::NumericSuffix;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
+use kcl_api::Parallel;
+use kcl_api::Perpendicular;
+use kcl_api::Plane;
+use kcl_api::Point2d;
+use kcl_api::PointCtor;
+use kcl_api::Radius;
+use kcl_api::Segment;
+use kcl_api::SegmentCtor;
+use kcl_api::SketchCtor;
+use kcl_api::SourceRef;
+use kcl_api::SourceRefRange;
+use kcl_api::Symmetric;
+use kcl_api::Tangent;
 use kcl_api::UnitLength;
+use kcl_api::Vertical;
+use kcl_api::WallSource;
 use kcl_error::CompilationIssue;
 use kcl_error::SourceRange;
 use serde::Serialize;
@@ -28,72 +67,34 @@ use crate::execution::MockConfig;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
 use crate::execution::annotations::WarningLevel;
 use crate::execution::cache::SketchModeState;
-use crate::execution::cache::clear_mem_cache;
-use crate::execution::cache::read_old_memory;
-use crate::execution::cache::write_old_memory;
 use crate::execution::types::adjust_length;
 use crate::fmt::format_number_literal;
 use crate::fmt::format_number_literal_full_precision;
-use crate::front::Angle;
-use crate::front::ArcCtor;
-use crate::front::ArcDirection;
-use crate::front::CircleCtor;
-use crate::front::ControlPointSplineCtor;
-use crate::front::Distance;
-use crate::front::EqualRadius;
+use crate::front::CoincidentExt;
+use crate::front::DistanceExt;
 use crate::front::Error;
 use crate::front::ExecResult;
-use crate::front::FixedPoint;
-use crate::front::Freedom;
-use crate::front::LinesEqualLength;
-use crate::front::Midpoint;
-use crate::front::Object;
-use crate::front::Parallel;
-use crate::front::Perpendicular;
-use crate::front::PointCtor;
-use crate::front::Symmetric;
-use crate::front::Tangent;
-use crate::frontend::api::CapSource;
-use crate::frontend::api::Expr;
+use crate::front::ObjectKindExt;
+use crate::front::SegmentExt;
 use crate::frontend::api::FileId;
-use crate::frontend::api::Number;
-use crate::frontend::api::ObjectId;
-use crate::frontend::api::ObjectKind;
-use crate::frontend::api::Plane;
 use crate::frontend::api::ProjectId;
 use crate::frontend::api::RestoreSketchCheckpointOutcome;
 use crate::frontend::api::SceneGraph;
 use crate::frontend::api::SceneGraphDelta;
 use crate::frontend::api::SketchCheckpointId;
 use crate::frontend::api::SourceDelta;
-use crate::frontend::api::SourceRef;
-use crate::frontend::api::SourceRefRange;
 use crate::frontend::api::Version;
-use crate::frontend::api::WallSource;
 use crate::frontend::modify::find_defined_names;
 use crate::frontend::modify::next_free_name;
 use crate::frontend::modify::next_free_name_with_padding;
-use crate::frontend::sketch::Coincident;
-use crate::frontend::sketch::Constraint;
 use crate::frontend::sketch::ConstraintLabelPositionEdit;
-use crate::frontend::sketch::ConstraintSegment;
-use crate::frontend::sketch::Diameter;
 use crate::frontend::sketch::ExistingSegmentCtor;
-use crate::frontend::sketch::Horizontal;
-use crate::frontend::sketch::LineCtor;
-use crate::frontend::sketch::Point2d;
-use crate::frontend::sketch::Radius;
-use crate::frontend::sketch::Segment;
-use crate::frontend::sketch::SegmentCtor;
 use crate::frontend::sketch::SketchApi;
-use crate::frontend::sketch::SketchCtor;
-use crate::frontend::sketch::Vertical;
 use crate::id::IncIdGenerator;
 use crate::parsing::ast::types as ast;
 use crate::parsing::ast::types::BoxNode;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::NodePathExt;
-use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
 use crate::walk::NodeMut;
 use crate::walk::Visitable;
@@ -344,7 +345,11 @@ impl FrontendState {
             .unwrap_or(UnitLength::Millimeters)
     }
 
-    pub async fn create_sketch_checkpoint(&mut self, exec_outcome: ExecOutcome) -> api::Result<SketchCheckpointId> {
+    pub async fn create_sketch_checkpoint(
+        &mut self,
+        cache: &crate::Cache,
+        exec_outcome: ExecOutcome,
+    ) -> api::Result<SketchCheckpointId> {
         let checkpoint_id = SketchCheckpointId::new(self.sketch_checkpoint_id_gen.next_id());
 
         let checkpoint = SketchCheckpoint {
@@ -356,7 +361,7 @@ impl FrontendState {
             scene_graph: self.scene_graph.clone(),
             exec_outcome,
             point_freedom_cache: self.point_freedom_cache.clone(),
-            mock_memory: read_old_memory().await,
+            mock_memory: cache.read_old_memory().await,
         };
 
         self.sketch_checkpoints.push_back(checkpoint);
@@ -544,6 +549,7 @@ impl FrontendState {
 
     pub async fn restore_sketch_checkpoint(
         &mut self,
+        cache: &crate::Cache,
         checkpoint_id: SketchCheckpointId,
     ) -> api::Result<RestoreSketchCheckpointOutcome> {
         let checkpoint = self
@@ -565,9 +571,9 @@ impl FrontendState {
         self.next_edit_commits_solver_solutions = None;
 
         if let Some(mock_memory) = checkpoint.mock_memory {
-            write_old_memory(mock_memory).await;
+            cache.write_old_memory(mock_memory).await;
         } else {
-            clear_mem_cache().await;
+            cache.clear_mem_cache().await;
         }
 
         Ok(RestoreSketchCheckpointOutcome {
@@ -576,7 +582,12 @@ impl FrontendState {
                 new_graph: self.scene_graph_for_ui(),
                 new_objects: Vec::new(),
                 invalidates_ids: true,
-                exec_outcome: checkpoint.exec_outcome,
+                // Restoring leaves the engine as it is, so report its current
+                // generation rather than the one stored with the checkpoint.
+                exec_outcome: ExecOutcome {
+                    engine_scene_generation: cache.engine_scene_generation().await,
+                    ..checkpoint.exec_outcome
+                },
             },
         })
     }
@@ -1965,6 +1976,12 @@ impl SketchApi for FrontendState {
 }
 
 impl FrontendState {
+    /// Evaluate an input expression using the current model's settings and cached variables.
+    pub async fn evaluate_expression(&self, ctx: &ExecutorContext, mut program: Program) -> ExecResult<ExecOutcome> {
+        program.ast.inner_attrs.clone_from(&self.program.ast.inner_attrs);
+        ctx.run_mock(&program, &MockConfig::default()).await
+    }
+
     pub async fn hack_set_program(&mut self, ctx: &ExecutorContext, program: Program) -> ExecResult<SetProgramOutcome> {
         self.program = program.clone();
 
@@ -1983,7 +2000,7 @@ impl FrontendState {
             Ok(outcome) => {
                 let outcome = self.update_state_after_exec(outcome, true);
                 let checkpoint_id = self
-                    .create_sketch_checkpoint(outcome.clone())
+                    .create_sketch_checkpoint(&ctx.cache, outcome.clone())
                     .await
                     .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.msg)))?;
                 Ok(SetProgramOutcome::Success {
@@ -2059,6 +2076,7 @@ impl FrontendState {
             filenames,
             source_files,
             default_planes,
+            engine_scene_generation,
             ..
         } = err;
 
@@ -2069,6 +2087,10 @@ impl FrontendState {
             #[cfg(test)]
             test_program_memory: Default::default(),
             filenames,
+            // Errors from run_with_caching always carry the generation, and
+            // update_state_after_exec doesn't read it anyway. TODO: return a
+            // narrower type than ExecOutcome so this doesn't need to be filled in?
+            engine_scene_generation: engine_scene_generation.unwrap_or_default(),
             operations,
             artifact_graph,
             scene_objects,
@@ -4924,7 +4946,7 @@ impl FrontendState {
             self.point_freedom_cache.clear();
             for new_obj in &new_objects {
                 if let ObjectKind::Segment {
-                    segment: crate::front::Segment::Point(point),
+                    segment: kcl_api::Segment::Point(point),
                 } = &new_obj.kind
                 {
                     self.point_freedom_cache.insert(new_obj.id, point.freedom);
@@ -4938,7 +4960,7 @@ impl FrontendState {
             // Before replacing objects, extract and store freedom values from old objects
             for old_obj in &self.scene_graph.objects {
                 if let ObjectKind::Segment {
-                    segment: crate::front::Segment::Point(point),
+                    segment: kcl_api::Segment::Point(point),
                 } = &old_obj.kind
                 {
                     self.point_freedom_cache.insert(old_obj.id, point.freedom);
@@ -4950,7 +4972,7 @@ impl FrontendState {
             for new_obj in new_objects {
                 let mut obj = new_obj;
                 if let ObjectKind::Segment {
-                    segment: crate::front::Segment::Point(point),
+                    segment: kcl_api::Segment::Point(point),
                 } = &mut obj.kind
                 {
                     let new_freedom = point.freedom;
@@ -5279,7 +5301,7 @@ fn solid_expr_for_engine_id(solid_references: &HashMap<Uuid, SolidAstReference>,
 
 fn sketch_face_of_scene_object_ast_expr(
     ast: &mut ast::Node<ast::Program>,
-    on_object: &crate::front::Object,
+    on_object: &kcl_api::Object,
 ) -> Result<Option<ast::Expr>, KclError> {
     match &on_object.kind {
         ObjectKind::Wall(wall) => {
@@ -5356,8 +5378,8 @@ fn sketch_face_of_scene_object_ast_expr(
             );
             // TODO: change this to explicit tag references with tagStart/tagEnd mutations
             let face_expr = match cap.kind {
-                crate::frontend::api::CapKind::Start => ast_name_expr("START".to_owned()),
-                crate::frontend::api::CapKind::End => ast_name_expr("END".to_owned()),
+                kcl_api::CapKind::Start => ast_name_expr("START".to_owned()),
+                kcl_api::CapKind::End => ast_name_expr("END".to_owned()),
             };
 
             Ok(Some(create_face_of_ast(solid_expr, face_expr)))
@@ -5510,7 +5532,7 @@ fn solid_output_index_for_sweep(
         .position(|sibling_sweep| sibling_sweep.id == sweep_id)
 }
 
-fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, artifact_graph: &ArtifactGraph) {
+fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<kcl_api::Object>, artifact_graph: &ArtifactGraph) {
     let mut existing_artifact_ids = scene_objects
         .iter()
         .map(|object| object.artifact_id)
@@ -5547,7 +5569,7 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     downstream_composite_code_ref_for_source(artifact_graph, wall.sweep_id).unwrap_or(&sweep.code_ref);
                 let path_code_ref = artifact_graph
                     .get(&segment.path_id)
-                    .or_else(|| artifact_graph.get(&sweep.path_id))
+                    .or_else(|| sweep.path_id.and_then(|path_id| artifact_graph.get(&path_id)))
                     .and_then(|artifact| match artifact {
                         Artifact::Path(path) => Some(&path.code_ref),
                         _ => None,
@@ -5564,9 +5586,9 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     .flatten();
                 let object_source = source_ref_from_source_ref_range(&source.solid);
                 let id = ObjectId(scene_objects.len());
-                scene_objects.push(crate::front::Object {
+                scene_objects.push(kcl_api::Object {
                     id,
-                    kind: ObjectKind::Wall(crate::frontend::api::Wall {
+                    kind: ObjectKind::Wall(kcl_api::Wall {
                         id,
                         source,
                         solid_output_index,
@@ -5591,8 +5613,8 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                 };
                 let id = ObjectId(scene_objects.len());
                 let kind = match cap.sub_type {
-                    CapSubType::Start => crate::frontend::api::CapKind::Start,
-                    CapSubType::End => crate::frontend::api::CapKind::End,
+                    CapSubType::Start => kcl_api::CapKind::Start,
+                    CapSubType::End => kcl_api::CapKind::End,
                 };
                 let solid_code_ref =
                     downstream_composite_code_ref_for_source(artifact_graph, cap.sweep_id).unwrap_or(&sweep.code_ref);
@@ -5605,9 +5627,9 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     .then(|| solid_output_index_for_sweep(artifact_graph, sweep.id, &sweep.code_ref))
                     .flatten();
                 let object_source = source_ref_from_source_ref_range(&source.solid);
-                scene_objects.push(crate::front::Object {
+                scene_objects.push(kcl_api::Object {
                     id,
-                    kind: ObjectKind::Cap(crate::frontend::api::Cap {
+                    kind: ObjectKind::Cap(kcl_api::Cap {
                         id,
                         kind,
                         source,
@@ -7283,23 +7305,21 @@ fn issue_source_range(error: &KclError) -> SourceRange {
 mod tests {
     use std::sync;
 
+    use kcl_api::Distance;
+    use kcl_api::Fixed;
+    use kcl_api::FixedPoint;
+    use kcl_api::Midpoint;
+    use kcl_api::NumericSuffix;
+    use kcl_api::Object;
+    use kcl_api::Plane;
+    use kcl_api::Sketch;
+    use kcl_api::Tangent;
+    use kcl_api::Vertical;
+
     use super::*;
     use crate::engine::PlaneName;
     use crate::engine::engine_manager::EngineManager;
     use crate::execution::cache::SketchModeState;
-    use crate::execution::cache::clear_mem_cache;
-    use crate::execution::cache::read_old_memory;
-    use crate::execution::cache::write_old_memory;
-    use crate::front::Distance;
-    use crate::front::Fixed;
-    use crate::front::FixedPoint;
-    use crate::front::Midpoint;
-    use crate::front::Object;
-    use crate::front::Plane;
-    use crate::front::Sketch;
-    use crate::front::Tangent;
-    use crate::frontend::sketch::Vertical;
-    use crate::pretty::NumericSuffix;
 
     fn find_first_sketch_object(scene_graph: &SceneGraph) -> Option<&Object> {
         for object in &scene_graph.objects {
@@ -7330,7 +7350,7 @@ mod tests {
 
     fn find_cap_object_id_with_solid_output_index(
         scene_graph: &SceneGraph,
-        cap_kind: crate::frontend::api::CapKind,
+        cap_kind: kcl_api::CapKind,
         solid_output_index: usize,
     ) -> Option<ObjectId> {
         for object in &scene_graph.objects {
@@ -7382,7 +7402,7 @@ mod tests {
             Artifact::Sweep(Sweep {
                 id,
                 sub_type: SweepSubType::Extrusion,
-                path_id: ArtifactId::new(Uuid::new_v4()),
+                path_id: Some(ArtifactId::new(Uuid::new_v4())),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref: code_ref.clone(),
@@ -7792,8 +7812,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_checkpoint_round_trip_restores_state() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let (sketch_id, line_id, source_delta, scene_graph_delta) =
@@ -7805,7 +7825,7 @@ sketch(on = XY) {
         let expected_point_freedom_cache = frontend.point_freedom_cache.clone();
 
         let checkpoint_id = frontend
-            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .create_sketch_checkpoint(&ctx.cache, scene_graph_delta.exec_outcome.clone())
             .await
             .unwrap();
 
@@ -7819,7 +7839,10 @@ sketch(on = XY) {
             .unwrap();
         assert_ne!(edited_source.text, expected_source);
 
-        let restored = frontend.restore_sketch_checkpoint(checkpoint_id).await.unwrap();
+        let restored = frontend
+            .restore_sketch_checkpoint(&ctx.cache, checkpoint_id)
+            .await
+            .unwrap();
 
         assert_eq!(restored.source_delta.text, expected_source);
         assert_eq!(restored.scene_graph_delta.new_graph, expected_scene_graph);
@@ -7834,8 +7857,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_checkpoints_prune_oldest_entries() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let (_sketch_id, _line_id, _source_delta, scene_graph_delta) =
@@ -7845,7 +7868,7 @@ sketch(on = XY) {
         for _ in 0..(MAX_SKETCH_CHECKPOINTS + 3) {
             checkpoint_ids.push(
                 frontend
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&ctx.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .unwrap(),
             );
@@ -7860,12 +7883,12 @@ sketch(on = XY) {
             Some(oldest_retained)
         );
 
-        let evicted_restore = frontend.restore_sketch_checkpoint(checkpoint_ids[0]).await;
+        let evicted_restore = frontend.restore_sketch_checkpoint(&ctx.cache, checkpoint_ids[0]).await;
         assert!(evicted_restore.is_err());
         assert!(evicted_restore.unwrap_err().msg.contains("Sketch checkpoint not found"));
 
         frontend
-            .restore_sketch_checkpoint(*checkpoint_ids.last().unwrap())
+            .restore_sketch_checkpoint(&ctx.cache, *checkpoint_ids.last().unwrap())
             .await
             .unwrap();
 
@@ -7873,12 +7896,33 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_checkpoint_uses_explicit_session_cache() {
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
+        let other = ExecutorContext::new_mock(None).await;
+        let program = Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        let outcome = ctx.run_with_caching(program).await.unwrap();
+        let checkpoint = frontend.create_sketch_checkpoint(&ctx.cache, outcome).await.unwrap();
+        ctx.cache.clear_mem_cache().await;
+        assert!(ctx.cache.read_old_memory_var("x").await.is_none());
+        frontend
+            .restore_sketch_checkpoint(&ctx.cache, checkpoint)
+            .await
+            .unwrap();
+        assert!(ctx.cache.read_old_memory_var("x").await.is_some());
+        assert!(other.cache.read_old_memory_var("x").await.is_none());
+        ctx.close().await;
+        other.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_restore_sketch_checkpoint_missing_id_returns_error() {
         let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_mock(None).await;
         let missing_checkpoint = SketchCheckpointId::new(999);
 
         let err = frontend
-            .restore_sketch_checkpoint(missing_checkpoint)
+            .restore_sketch_checkpoint(&ctx.cache, missing_checkpoint)
             .await
             .expect_err("Expected restore to fail for missing checkpoint");
 
@@ -7888,27 +7932,33 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_clear_sketch_checkpoints_removes_all_restore_points() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let (_sketch_id, _line_id, _source_delta, scene_graph_delta) =
             create_sketch_with_single_line(&mut frontend, &ctx, &mock_ctx, version).await;
 
         let checkpoint_a = frontend
-            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .create_sketch_checkpoint(&ctx.cache, scene_graph_delta.exec_outcome.clone())
             .await
             .unwrap();
         let checkpoint_b = frontend
-            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .create_sketch_checkpoint(&ctx.cache, scene_graph_delta.exec_outcome.clone())
             .await
             .unwrap();
         assert_eq!(frontend.sketch_checkpoints.len(), 2);
 
         frontend.clear_sketch_checkpoints();
         assert!(frontend.sketch_checkpoints.is_empty());
-        frontend.restore_sketch_checkpoint(checkpoint_a).await.unwrap_err();
-        frontend.restore_sketch_checkpoint(checkpoint_b).await.unwrap_err();
+        frontend
+            .restore_sketch_checkpoint(&ctx.cache, checkpoint_a)
+            .await
+            .unwrap_err();
+        frontend
+            .restore_sketch_checkpoint(&ctx.cache, checkpoint_b)
+            .await
+            .unwrap_err();
 
         ctx.close().await;
     }
@@ -7916,15 +7966,15 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_hack_set_program_keeps_old_checkpoints_and_adds_fresh_baseline() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let (_sketch_id, _line_id, source_delta, scene_graph_delta) =
             create_sketch_with_single_line(&mut frontend, &ctx, &mock_ctx, version).await;
         let old_source = source_delta.text.clone();
         let old_checkpoint = frontend
-            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .create_sketch_checkpoint(&ctx.cache, scene_graph_delta.exec_outcome.clone())
             .await
             .unwrap();
         let initial_checkpoint_count = frontend.sketch_checkpoints.len();
@@ -7945,10 +7995,16 @@ sketch(on = XY) {
 
         assert_eq!(frontend.sketch_checkpoints.len(), initial_checkpoint_count + 1);
 
-        let old_restore = frontend.restore_sketch_checkpoint(old_checkpoint).await.unwrap();
+        let old_restore = frontend
+            .restore_sketch_checkpoint(&ctx.cache, old_checkpoint)
+            .await
+            .unwrap();
         assert_eq!(old_restore.source_delta.text, old_source);
 
-        let new_restore = frontend.restore_sketch_checkpoint(new_checkpoint).await.unwrap();
+        let new_restore = frontend
+            .restore_sketch_checkpoint(&ctx.cache, new_checkpoint)
+            .await
+            .unwrap();
         assert!(new_restore.source_delta.text.contains("point(at = [1mm, 2mm])"));
 
         ctx.close().await;
@@ -7957,14 +8013,14 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_hack_set_program_exec_failure_does_not_add_checkpoint() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let (_sketch_id, _line_id, _source_delta, scene_graph_delta) =
             create_sketch_with_single_line(&mut frontend, &ctx, &mock_ctx, version).await;
         let old_checkpoint = frontend
-            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .create_sketch_checkpoint(&ctx.cache, scene_graph_delta.exec_outcome.clone())
             .await
             .unwrap();
         let checkpoint_count_before = frontend.sketch_checkpoints.len();
@@ -7979,7 +8035,10 @@ sketch(on = XY) {
         let result = frontend.hack_set_program(&ctx, failing_program).await.unwrap();
         assert!(matches!(result, SetProgramOutcome::ExecFailure { .. }));
         assert_eq!(frontend.sketch_checkpoints.len(), checkpoint_count_before);
-        frontend.restore_sketch_checkpoint(old_checkpoint).await.unwrap();
+        frontend
+            .restore_sketch_checkpoint(&ctx.cache, old_checkpoint)
+            .await
+            .unwrap();
 
         ctx.close().await;
     }
@@ -7987,7 +8046,7 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_restore_sketch_checkpoint_restores_and_clears_mock_memory() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
 
         let program = Program::parse(
             "width = 2mm\nsketch001 = sketch(on = offsetPlane(XY, offset = width)) {\n  line1 = line(start = [var 0, var 0], end = [var 1mm, var 0])\n  distance([line1.start, line1.end]) == width\n}\n",
@@ -8000,36 +8059,36 @@ sketch(on = XY) {
             panic!("Expected successful baseline program execution");
         };
 
-        clear_mem_cache().await;
-        assert!(read_old_memory().await.is_none());
+        ctx.cache.clear_mem_cache().await;
+        assert!(ctx.cache.read_old_memory().await.is_none());
 
         let checkpoint_without_mock_memory = frontend
-            .create_sketch_checkpoint((*exec_outcome).clone())
+            .create_sketch_checkpoint(&ctx.cache, (*exec_outcome).clone())
             .await
             .unwrap();
 
-        write_old_memory(SketchModeState::new_for_tests()).await;
-        assert!(read_old_memory().await.is_some());
+        ctx.cache.write_old_memory(SketchModeState::new_for_tests()).await;
+        assert!(ctx.cache.read_old_memory().await.is_some());
 
         let checkpoint_with_mock_memory = frontend
-            .create_sketch_checkpoint((*exec_outcome).clone())
+            .create_sketch_checkpoint(&ctx.cache, (*exec_outcome).clone())
             .await
             .unwrap();
 
-        clear_mem_cache().await;
-        assert!(read_old_memory().await.is_none());
-
-        frontend
-            .restore_sketch_checkpoint(checkpoint_with_mock_memory)
-            .await
-            .unwrap();
-        assert!(read_old_memory().await.is_some());
+        ctx.cache.clear_mem_cache().await;
+        assert!(ctx.cache.read_old_memory().await.is_none());
 
         frontend
-            .restore_sketch_checkpoint(checkpoint_without_mock_memory)
+            .restore_sketch_checkpoint(&ctx.cache, checkpoint_with_mock_memory)
             .await
             .unwrap();
-        assert!(read_old_memory().await.is_none());
+        assert!(ctx.cache.read_old_memory().await.is_some());
+
+        frontend
+            .restore_sketch_checkpoint(&ctx.cache, checkpoint_without_mock_memory)
+            .await
+            .unwrap();
+        assert!(ctx.cache.read_old_memory().await.is_none());
 
         ctx.close().await;
     }
@@ -8047,8 +8106,8 @@ bad = missing_name
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
         let project_id = ProjectId(0);
         let file_id = FileId(0);
@@ -8080,8 +8139,8 @@ bad = missing_name
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let sketch_args = SketchCtor {
@@ -8169,8 +8228,8 @@ bad = missing_name
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let sketch_args = SketchCtor {
@@ -8281,8 +8340,8 @@ bad = missing_name
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let sketch_args = SketchCtor {
@@ -8418,8 +8477,8 @@ bad = missing_name
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let sketch_args = SketchCtor {
@@ -8516,8 +8575,8 @@ bad = missing_name
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -8553,8 +8612,8 @@ bad = missing_name
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -8620,8 +8679,8 @@ bad = missing_name
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -8671,8 +8730,8 @@ bad = missing_name
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let sketch_args = SketchCtor {
@@ -8853,8 +8912,8 @@ sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -8889,8 +8948,8 @@ sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -8928,8 +8987,8 @@ sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -8977,8 +9036,8 @@ sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -9020,8 +9079,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -9071,8 +9130,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -9130,8 +9189,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -9370,6 +9429,7 @@ cylinder = startSketchOn(XY)
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
+            engine_scene_generation: 0,
             source_files: Default::default(),
             default_planes: Default::default(),
         };
@@ -9526,6 +9586,7 @@ sketch(on = XY) {
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
+            engine_scene_generation: 0,
             source_files: Default::default(),
             default_planes: Default::default(),
         }
@@ -9728,8 +9789,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -9765,8 +9826,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -9802,8 +9863,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -9842,8 +9903,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -9879,8 +9940,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -9922,8 +9983,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -10156,8 +10217,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -10375,8 +10436,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -10418,8 +10479,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -10469,8 +10530,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -10511,8 +10572,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -10547,8 +10608,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -10699,8 +10760,8 @@ sketch(on = XY) {
 
             let mut frontend = FrontendState::new();
 
-            let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-            let mock_ctx = ExecutorContext::new_mock(None).await;
+            let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+            let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
             let version = Version(0);
 
             frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -10754,8 +10815,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -10866,8 +10927,8 @@ sketch(on = XY) {
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let sketch_args = SketchCtor {
@@ -11021,8 +11082,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -11790,8 +11851,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -11865,8 +11926,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -12023,8 +12084,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -12088,8 +12149,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -12154,8 +12215,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -12212,8 +12273,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -12337,8 +12398,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -12598,8 +12659,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -12656,8 +12717,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -12729,8 +12790,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -12776,8 +12837,8 @@ sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_radius_error_cases() {
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         // Test: Single point should error
@@ -12852,8 +12913,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -13034,8 +13095,8 @@ sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_diameter_error_cases() {
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         // Test: Single point should error
@@ -13110,8 +13171,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -13154,8 +13215,8 @@ splineSketch = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -13221,8 +13282,8 @@ splineSketch = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -13322,8 +13383,8 @@ splineSketch = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
 
@@ -13380,8 +13441,8 @@ splineSketch = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -13500,8 +13561,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -13540,8 +13601,8 @@ sketch001 = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -13585,8 +13646,8 @@ sketch001 = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -13629,8 +13690,8 @@ sketch001 = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -13671,8 +13732,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -13714,8 +13775,8 @@ sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -13769,8 +13830,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -13813,8 +13874,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -13864,8 +13925,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -13907,8 +13968,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14001,11 +14062,11 @@ sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
   angleDimension(
-  lines = [line1, line2],
-  sector = 1,
-  inverse = true,
-  labelPosition = [-0.73mm, 0.75mm],
-) == 270deg
+    lines = [line1, line2],
+    sector = 1,
+    inverse = true,
+    labelPosition = [-0.73mm, 0.75mm],
+  ) == 270deg
 }
 "
         );
@@ -14026,8 +14087,8 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14340,8 +14401,8 @@ face = faceOf(cube, face = side)
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14401,7 +14462,7 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
             &mut ast,
             &scene_graph,
             &solid_references,
-            &Plane::PrimitiveFace(crate::frontend::api::PrimitiveFacePlane { solid_id, index: 6 }),
+            &Plane::PrimitiveFace(kcl_api::PrimitiveFacePlane { solid_id, index: 6 }),
         )
         .unwrap();
         let face_decl = ast::VariableDeclaration::new(
@@ -14437,7 +14498,7 @@ extrude001 = extrude(region001, length = 5)
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14480,7 +14541,7 @@ extrude001 = extrude(region001, length = 5)
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14514,7 +14575,7 @@ extrude001 = extrude([region001, region002], length = 5)
 ";
 
         let program = Program::parse(initial_source).unwrap().0.unwrap();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         for (solid_output_index, expected_face) in [
@@ -14525,7 +14586,7 @@ extrude001 = extrude([region001, region002], length = 5)
             frontend.hack_set_program(&ctx, program.clone()).await.unwrap();
             let cap_object_id = find_cap_object_id_with_solid_output_index(
                 &frontend.scene_graph,
-                crate::frontend::api::CapKind::End,
+                kcl_api::CapKind::End,
                 solid_output_index,
             )
             .unwrap_or_else(|| panic!("expected an end cap object for solid output index {solid_output_index}"));
@@ -14578,7 +14639,7 @@ extrude001 = extrude([region001, region002], length = 5)
 
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14658,7 +14719,6 @@ part = subtract(boxSolid, tools = [cutSolid])
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_on_subtracted_sweep_cap_uses_composite_solid() {
-        clear_mem_cache().await;
         let source = "\
 boxSolid = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -14679,7 +14739,7 @@ part = subtract(boxSolid, tools = [cutSolid])
 ";
         let program = Program::parse(source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         match frontend.hack_set_program(&ctx, program).await.unwrap() {
             SetProgramOutcome::Success { .. } => {}
             SetProgramOutcome::ExecFailure { error } => panic!("KCL fixture failed to execute: {error:?}"),
@@ -14699,8 +14759,8 @@ part = subtract(boxSolid, tools = [cutSolid])
             .find(|object| {
                 matches!(
                     &object.kind,
-                    ObjectKind::Cap(crate::frontend::api::Cap {
-                        kind: crate::frontend::api::CapKind::End,
+                    ObjectKind::Cap(kcl_api::Cap {
+                        kind: kcl_api::CapKind::End,
                         source,
                         ..
                     }) if source.solid.range == composite_range && source.sweep.range == sweep_range
@@ -14765,8 +14825,8 @@ plane = planeOf(cube, face = side)
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14823,7 +14883,7 @@ sketch1 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14851,7 +14911,7 @@ sketch1 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14881,8 +14941,8 @@ sketch(on = offsetPlane(XY, offset = width)) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
         let project_id = ProjectId(0);
         let file_id = FileId(0);
@@ -14912,7 +14972,6 @@ sketch(on = offsetPlane(XY, offset = width)) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_sketch_nested_in_pipe() {
-        clear_mem_cache().await;
         let source = r#"
 profile = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
@@ -14943,13 +15002,12 @@ profile = sketch(on = XY) {
             "Expected the piped sketch's segments to be present in sketch mode"
         );
 
-        clear_mem_cache().await;
+        mock_ctx.cache.clear_mem_cache().await;
         mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_issue_9409_edit_sketch_nested_in_if_with_var_feedback() {
-        clear_mem_cache().await;
         let source = r#"
 useFirstProfile = true
 
@@ -15018,7 +15076,7 @@ profile = if useFirstProfile {
             source_delta.text
         );
 
-        clear_mem_cache().await;
+        mock_ctx.cache.clear_mem_cache().await;
         mock_ctx.close().await;
     }
 
@@ -15063,8 +15121,8 @@ sketch2 = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
         let project_id = ProjectId(0);
         let file_id = FileId(0);
@@ -15193,8 +15251,6 @@ sketch2 = sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_exit_sketch_without_changes_allows_entering_next_sketch() {
-        clear_mem_cache().await;
-
         let source = r#"sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var -1.96mm, var 2.77mm], center = [var -2.69mm, var 3.44mm])
 }
@@ -15218,7 +15274,7 @@ sketch002 = sketch(on = XY) {
         let program = Program::parse(source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
         let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
         let project_id = ProjectId(0);
         let file_id = FileId(0);
@@ -15247,7 +15303,7 @@ sketch002 = sketch(on = XY) {
             .unwrap();
         assert_eq!(scene_delta.new_graph.sketch_mode, Some(sketch2_id));
 
-        clear_mem_cache().await;
+        ctx.cache.clear_mem_cache().await;
         ctx.close().await;
         mock_ctx.close().await;
     }
@@ -15269,8 +15325,8 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
         let project_id = ProjectId(0);
         let file_id = FileId(0);
@@ -15340,8 +15396,8 @@ s = sketch(on = XY) {}
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -15403,8 +15459,8 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
         let project_id = ProjectId(0);
         let file_id = FileId(0);
@@ -15493,8 +15549,8 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -15536,8 +15592,8 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -15607,8 +15663,8 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -15722,8 +15778,8 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -15785,8 +15841,8 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
         let project_id = ProjectId(0);
         let file_id = FileId(0);
@@ -15863,8 +15919,8 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();

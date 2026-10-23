@@ -1,4 +1,5 @@
 import { type ClientErrorReport, users } from '@kittycad/lib'
+import type { ReadonlySignal } from '@preact/signals-core'
 import { EngineDebugger } from '@src/lib/debugger'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 
@@ -31,8 +32,8 @@ export enum ClientErrorCode {
   EngineBackendDisconnect = 'engine_backend_disconnect',
   EngineDisconnect = 'engine_disconnect',
   EngineUnsupportedVideoCodec = 'engine_unsupported_video_codec',
+  EngineWebrtcDisconnect = 'engine_webrtc_disconnect',
   FileOperationsError = 'file_operations_error',
-  LegacySketchMode = 'legacy_sketch_mode',
   SystemIOError = 'system_io_error',
   ToolbarDropdownAnchorPositioningError = 'toolbar_dropdown_anchor_positioning_error',
   UnsupportedBrowserFeature = 'unsupported_browser_feature',
@@ -42,9 +43,13 @@ export enum ClientErrorCode {
   ZookeeperWebsocketBinaryDecodeError = 'zookeeper_websocket_binary_decode_error',
   ZookeeperWebsocketJsonParseError = 'zookeeper_websocket_json_parse_error',
   EngineTeardown = 'engine_teardown',
+  EnginePingPongTiming = 'engine_ping_pong_timing',
 }
 
 const reportedClientErrors = new Set<string>()
+const pendingReports: { body: ClientErrorReport; dedupeKey?: string }[] = []
+let authReady = false
+let hasAuthenticated = false
 const FALLBACK_APP_RELEASE = 'unknown'
 // Match the API's stack limit in Unicode characters.
 const MAX_STACK_LENGTH = 8192
@@ -182,6 +187,9 @@ const buildClientErrorReport = (
 }
 
 export const reportClientError = async (params: ReportClientErrorParams) => {
+  // Buffer startup errors only, with a cap if authentication never succeeds.
+  if (!authReady && (hasAuthenticated || pendingReports.length >= 100)) return
+
   const dedupeKey = params.dedupeKey
   if (dedupeKey && reportedClientErrors.has(dedupeKey)) {
     return
@@ -190,11 +198,23 @@ export const reportClientError = async (params: ReportClientErrorParams) => {
     reportedClientErrors.add(dedupeKey)
   }
 
+  const body = buildClientErrorReport(params)
+  if (!authReady) {
+    pendingReports.push({ body, dedupeKey })
+    return
+  }
+  await sendClientErrorReport(body, dedupeKey)
+}
+
+async function sendClientErrorReport(
+  body: ClientErrorReport,
+  dedupeKey?: string
+) {
   const client = createKCClient(getAuthToken())
   const result = await kcCall(() =>
     users.report_user_client_error({
       client,
-      body: buildClientErrorReport(params),
+      body,
     })
   )
 
@@ -206,6 +226,24 @@ export const reportClientError = async (params: ReportClientErrorParams) => {
   }
 }
 
+export function initializeClientErrorReporting(
+  isLoggedIn: ReadonlySignal<boolean>
+) {
+  return isLoggedIn.subscribe((ready) => {
+    authReady = ready
+    if (!ready) return
+    hasAuthenticated = true
+    for (const { body, dedupeKey } of pendingReports.splice(0)) {
+      void sendClientErrorReport(body, dedupeKey).catch((error: unknown) => {
+        console.warn('Failed to report client error', error)
+      })
+    }
+  })
+}
+
 export const resetReportedClientErrorsForTests = () => {
   reportedClientErrors.clear()
+  pendingReports.length = 0
+  authReady = false
+  hasAuthenticated = false
 }

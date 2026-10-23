@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { signal } from '@preact/signals-core'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockState = vi.hoisted(() => ({
   createKCClient: vi.fn(() => ({ mocked: true })),
@@ -23,15 +24,20 @@ vi.mock('@kittycad/lib', () => ({
 
 import {
   ClientErrorCode,
+  initializeClientErrorReporting,
   reportClientError,
   resetReportedClientErrorsForTests,
 } from '@src/lib/clientErrors'
 import { EngineDebugger } from '@src/lib/debugger'
 
 describe('reportClientError', () => {
+  const isLoggedIn = signal(true)
+  let stopReporting: () => void
   beforeEach(() => {
     vi.clearAllMocks()
     resetReportedClientErrorsForTests()
+    isLoggedIn.value = true
+    stopReporting = initializeClientErrorReporting(isLoggedIn)
     EngineDebugger.logs = []
     Object.defineProperty(globalThis, '__APP_VERSION__', {
       configurable: true,
@@ -53,6 +59,50 @@ describe('reportClientError', () => {
         },
       },
     }
+  })
+
+  afterEach(() => stopReporting())
+
+  it('defers startup reports until auth is ready, preserving context and using the restored token', async () => {
+    stopReporting()
+    resetReportedClientErrorsForTests()
+    isLoggedIn.value = false
+    const report = { message: 'startup error', dedupeKey: 'startup' }
+    await reportClientError(report)
+    stopReporting = initializeClientErrorReporting(isLoggedIn)
+    await reportClientError(report)
+    expect(mockState.createKCClient).not.toHaveBeenCalled()
+    expect(mockState.reportUserClientError).not.toHaveBeenCalled()
+
+    window.history.replaceState({}, '', '/after-login')
+    vi.spyOn(window.app.auth.actor, 'getSnapshot').mockReturnValue({
+      context: { token: 'restored-token' },
+    } as ReturnType<typeof window.app.auth.actor.getSnapshot>)
+    isLoggedIn.value = true
+    await vi.waitFor(() =>
+      expect(mockState.reportUserClientError).toHaveBeenCalledTimes(1)
+    )
+    expect(mockState.createKCClient).toHaveBeenCalledWith('restored-token')
+    expect(mockState.reportUserClientError.mock.calls[0][0].body).toMatchObject(
+      {
+        route: '/modeling?foo=1#editor',
+      }
+    )
+
+    isLoggedIn.value = false
+    await reportClientError({ message: 'logout error' })
+    isLoggedIn.value = true
+    expect(mockState.reportUserClientError).toHaveBeenCalledTimes(1)
+  })
+
+  it('bounds the startup queue if authentication never completes', async () => {
+    resetReportedClientErrorsForTests()
+    isLoggedIn.value = false
+    for (let i = 0; i < 101; i++)
+      await reportClientError({ message: String(i) })
+    expect(mockState.reportUserClientError).not.toHaveBeenCalled()
+    isLoggedIn.value = true
+    expect(mockState.reportUserClientError).toHaveBeenCalledTimes(100)
   })
 
   it('posts a normalized client error through the kittycad client', async () => {

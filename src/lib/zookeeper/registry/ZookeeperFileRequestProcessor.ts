@@ -1,13 +1,14 @@
-import type { MlToolResult } from '@kittycad/lib'
+import { signal, type ReadonlySignal } from '@preact/signals-core'
+import type { MlCopilotServerMessage, MlToolResult } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
 import fsZds from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
+  type BulkFileWriteProgress,
   normalizeKCLFileDeletePath,
   prepareZookeeperNewFileRequest,
-  type RequestedKCLFileDelete,
   type SystemIOActor,
   SystemIOMachineEvents,
   waitForIdleState,
@@ -20,14 +21,23 @@ interface ZookeeperFileRequestProcessorDependencies {
   isSessionCurrent: () => boolean
   kclManager: KclManager
   systemIOActor: SystemIOActor
+  onEditApplied: (response: MlCopilotServerMessage) => void
+  onQueueIdle?: () => void
 }
 
-type ZookeeperNewFileRequest = {
+export type ZookeeperNewFileRequest = {
+  // This only ensures the order of the edits received; there is no guarantee the server is sending us edits in-order.
+  orderedId: number
   toolOutput: MlToolResult
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
-  filesToDelete?: RequestedKCLFileDelete[]
   exchangeId: number
+}
+
+type QueuedZookeeperFileRequest = {
+  request: ZookeeperNewFileRequest
+  run: () => Promise<void>
+  completed: Promise<void>
 }
 
 /**
@@ -39,7 +49,23 @@ export class ZookeeperFileRequestProcessor {
   private disposed = false
   private generation = 0
   private lastMessageId: number | undefined
-  private queue: Promise<void> = Promise.resolve()
+  // IDs stay monotonic when reset() replaces the conversation.
+  private nextOrderedId = 0
+  private activeOrderedId: number | undefined
+  private activeRequest: QueuedZookeeperFileRequest | undefined
+  private queue: QueuedZookeeperFileRequest[] = []
+  private processingQueue = false
+  private pendingRequestCount = 0
+  private readonly fileWriteProgressSignal = signal<
+    BulkFileWriteProgress | undefined
+  >(undefined)
+  readonly fileWriteProgress: ReadonlySignal<
+    BulkFileWriteProgress | undefined
+  > = this.fileWriteProgressSignal
+
+  get hasPendingRequests() {
+    return this.pendingRequestCount > 0
+  }
 
   constructor(
     private readonly deps: ZookeeperFileRequestProcessorDependencies
@@ -48,20 +74,22 @@ export class ZookeeperFileRequestProcessor {
   dispose() {
     if (!this.disposed) {
       this.disposed = true
+      this.fileWriteProgressSignal.value = undefined
       this.abortController.abort()
     }
-    return this.queue
+    return this.waitForQueuedRequests()
   }
 
   reset() {
     if (this.disposed) {
-      return this.queue
+      return this.waitForQueuedRequests()
     }
     this.generation += 1
+    this.fileWriteProgressSignal.value = undefined
     this.abortController.abort()
     this.abortController = new AbortController()
     this.lastMessageId = undefined
-    return this.queue
+    return this.waitForQueuedRequests()
   }
 
   handleActorSnapshot(
@@ -94,38 +122,71 @@ export class ZookeeperFileRequestProcessor {
       return
     }
 
-    const filesToDelete = new Set(
-      lastExchange.responses.flatMap((response) => {
-        if (!('reasoning' in response)) {
-          return []
-        }
-        if (
-          response.reasoning.type !== 'deleted_kcl_file' &&
-          response.reasoning.type !== 'deleted_project_file'
-        ) {
-          return []
-        }
-        return response.reasoning.file_name
-      })
+    this.nextOrderedId += 1
+    this.enqueue(
+      {
+        orderedId: this.nextOrderedId,
+        toolOutput: lastResponse.tool_output.result,
+        projectNameCurrentlyOpened: projectName,
+        fileFocusedOnInEditor: snapshot.context.fileFocusedOnInEditor,
+        exchangeId: exchanges.length - 1,
+      },
+      () => this.deps.onEditApplied(lastResponse)
     )
-
-    this.enqueue({
-      toolOutput: lastResponse.tool_output.result,
-      projectNameCurrentlyOpened: projectName,
-      fileFocusedOnInEditor: snapshot.context.fileFocusedOnInEditor,
-      filesToDelete: Array.from(filesToDelete, (requestedFileName) => ({
-        requestedFileName,
-      })),
-      exchangeId: exchanges.length - 1,
-    })
 
     this.deps.kclManager.engineCommandManager.modelingSend({
       type: 'Set selection',
-      data: { selection: undefined, selectionType: 'singleCodeCursor' },
+      data: { selection: {}, selectionType: 'singleCodeCursor' },
     })
   }
 
-  private enqueue(request: ZookeeperNewFileRequest) {
+  private async waitForQueuedRequests() {
+    const requests = this.activeRequest
+      ? [this.activeRequest, ...this.queue]
+      : [...this.queue]
+    await Promise.all(requests.map((request) => request.completed))
+  }
+
+  private async processQueue() {
+    if (this.processingQueue) {
+      return
+    }
+    this.processingQueue = true
+    try {
+      while (this.queue.length > 0) {
+        const queuedEdit = this.queue.shift()
+        if (!queuedEdit) {
+          break
+        }
+        this.activeRequest = queuedEdit
+        this.activeOrderedId = queuedEdit.request.orderedId
+        try {
+          await queuedEdit.run()
+        } catch (error: unknown) {
+          console.error('Failed to process Zookeeper file request.', error)
+        } finally {
+          this.activeRequest = undefined
+          if (this.activeOrderedId === queuedEdit.request.orderedId) {
+            this.activeOrderedId = undefined
+          }
+          this.pendingRequestCount -= 1
+          if (!this.hasPendingRequests) {
+            this.fileWriteProgressSignal.value = undefined
+            this.deps.onQueueIdle?.()
+          }
+        }
+      }
+    } finally {
+      this.processingQueue = false
+    }
+  }
+
+  /** Queues an edit whose orderedId was assigned when it was received. */
+  enqueue(request: ZookeeperNewFileRequest, onApplied: () => void) {
+    // Re-ordering of the queue happens at the end of this function
+    if (this.disposed) {
+      return
+    }
     const project = this.deps.getProject()
     const { kclManager, systemIOActor } = this.deps
     const abortSignal = this.abortController.signal
@@ -146,6 +207,10 @@ export class ZookeeperFileRequestProcessor {
     })
 
     if (!payload) {
+      return
+    }
+    if (payload.files.length === 0 && payload.filesToDelete.length === 0) {
+      onApplied()
       return
     }
 
@@ -184,27 +249,65 @@ export class ZookeeperFileRequestProcessor {
       })
     }
 
-    this.queue = this.queue.then(
-      () =>
+    this.pendingRequestCount += 1
+    const previousProgress = this.fileWriteProgressSignal.peek()
+    this.fileWriteProgressSignal.value = {
+      written: previousProgress?.written ?? 0,
+      total: (previousProgress?.total ?? 0) + payload.files.length,
+    }
+    let writtenCount = 0
+    const updateWriteProgress = (written: number) => {
+      if (!requestIsCurrent()) return
+      const progress = this.fileWriteProgressSignal.peek()
+      if (!progress) return
+      const nextWritten = Math.min(
+        payload.files.length,
+        Math.max(writtenCount, written)
+      )
+      if (nextWritten === writtenCount) return
+      this.fileWriteProgressSignal.value = {
+        ...progress,
+        written: progress.written + nextWritten - writtenCount,
+      }
+      writtenCount = nextWritten
+    }
+
+    const { promise: completed, resolve: finish } =
+      Promise.withResolvers<undefined>()
+    this.queue.push({
+      request,
+      completed,
+      run: () =>
         new Promise<void>((resolve) => {
           let historyCanceled = false
           let dispatched = false
           let settled = false
           let fileSystemCompleted = false
+          let fileSystemSucceeded = false
           let historyCompleted = !shouldRecordHistory
+          let historySucceeded = !shouldRecordHistory
           let postWriteCompleted = !shouldRefreshActiveEditor
           const requestCanFinish = () =>
-            dispatched
+            this.activeOrderedId === request.orderedId &&
+            (dispatched
               ? requestProjectIsCurrent() && this.deps.isEditorCurrent()
-              : requestIsCurrent()
+              : requestIsCurrent())
 
-          function settle() {
+          const settle = () => {
             if (settled || !historyCompleted || !postWriteCompleted) {
               return
             }
             settled = true
+            if (this.activeOrderedId === request.orderedId) {
+              this.activeOrderedId = undefined
+            }
             abortSignal.removeEventListener('abort', cancelPostWrite)
             resolve()
+            // The queued request and undo history now own everything needed
+            // for the edit. The transcript may release its redundant copy.
+            if (fileSystemSucceeded && historySucceeded && requestIsCurrent()) {
+              onApplied()
+            }
           }
           function cancelPostWrite() {
             postWriteCompleted = true
@@ -222,6 +325,9 @@ export class ZookeeperFileRequestProcessor {
           }: {
             fileSystemWriteFinished?: boolean
           } = {}) => {
+            if (settled) {
+              return true
+            }
             if (requestCanFinish()) {
               return false
             }
@@ -270,6 +376,7 @@ export class ZookeeperFileRequestProcessor {
             systemIOActor.send({
               type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
               data: {
+                orderedId: request.orderedId,
                 files: payload.files,
                 filesToDelete: payload.filesToDelete,
                 override: true,
@@ -277,7 +384,22 @@ export class ZookeeperFileRequestProcessor {
                 requestedProjectPath: requestProjectPath,
                 requestedFileNameWithExtension:
                   payload.requestedFileNameWithExtension ?? '',
+                onFileWriteProgress: ({ written }) => {
+                  if (!settled && requestCanFinish())
+                    updateWriteProgress(written)
+                },
                 onFileSystemError: () => {
+                  if (settled || this.activeOrderedId !== request.orderedId) {
+                    console.warn(
+                      'Ignoring Zookeeper filesystem error callback for a settled or inactive edit.',
+                      {
+                        orderedId: request.orderedId,
+                        activeOrderedId: this.activeOrderedId,
+                        settled,
+                      }
+                    )
+                    return
+                  }
                   if (fileSystemCompleted) {
                     cancelPostWrite()
                     return
@@ -292,7 +414,11 @@ export class ZookeeperFileRequestProcessor {
                   settle()
                 },
                 onFileSystemSuccess: () => {
-                  if (fileSystemCompleted) {
+                  if (
+                    fileSystemCompleted ||
+                    settled ||
+                    this.activeOrderedId !== request.orderedId
+                  ) {
                     return
                   }
                   fileSystemCompleted = true
@@ -303,6 +429,8 @@ export class ZookeeperFileRequestProcessor {
                   ) {
                     return
                   }
+                  fileSystemSucceeded = true
+                  updateWriteProgress(payload.files.length)
                   if (!postWriteCompleted) {
                     if (
                       abortSignal.aborted ||
@@ -348,6 +476,9 @@ export class ZookeeperFileRequestProcessor {
                         patch: payload.zookeeperEditPatch,
                         projectPath: requestProjectPath,
                       })
+                      .then(() => {
+                        historySucceeded = true
+                      })
                       .catch((error: unknown) => {
                         console.error(
                           'Failed to complete Zookeeper history write.',
@@ -386,7 +517,7 @@ export class ZookeeperFileRequestProcessor {
                                 shouldAddToHistory: false,
                                 shouldClearHistory:
                                   !shouldRecordHistory || !requestCanFinish(),
-                                shouldExecute: true,
+                                shouldExecute: false,
                                 shouldResetCamera: true,
                                 shouldWriteToDisk: !shouldRecordHistory,
                               }
@@ -411,7 +542,15 @@ export class ZookeeperFileRequestProcessor {
             postWriteCompleted = true
             settle()
           })
-        })
+        }).finally(() => finish(undefined)),
+    })
+    // Reorder waiting edits on arrival. The active edit finishes before the
+    // worker takes the next request from this sorted queue.
+    this.queue.sort(
+      (left, right) => left.request.orderedId - right.request.orderedId
     )
+    void this.processQueue().catch((error: unknown) => {
+      console.error('Failed to process Zookeeper file queue.', error)
+    })
   }
 }

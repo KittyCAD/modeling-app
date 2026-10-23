@@ -38,7 +38,7 @@ swept along the same path.
 |----------|------|-------------|----------|
 | `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The sketch or set of sketches that should be swept in space. | Yes |
 | `path` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Helix`](/docs/kcl-std/types/std-types-Helix) or [[`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The path to sweep the sketch along. | Yes |
-| `sectional` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
+| `sectional` | [`bool`](/docs/kcl-std/types/std-types-bool) | In KCL 2, if true, the sweep is broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. Sectional sweeps are not supported in KCL 3, so this argument has no effect and produces a warning. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | **Deprecated.** **Removed in KCL 3.0.** Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. | No |
 | `translateProfileToPath` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the profile being swept will be moved to the path being swept along, before the sweep starts. If false, the profile stays where it is, and the sweep starts from there. Defaults to false. On KCL 2.0 and earlier, explicitly setting this option, even to false, requires `version = 2`. | No |
@@ -56,7 +56,7 @@ swept along the same path.
 ### Examples
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 sweepPath = sketch(on = XZ) {
   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -83,7 +83,7 @@ sweepSketch = sweep(pipeRegion, path = sweepPath)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep0.png"
@@ -117,7 +117,7 @@ springSketch = startSketchOn(XZ)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep1.png"
@@ -154,7 +154,7 @@ sweep([rectangleSketch, circleSketch], path = sweepPath)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep2.png"
@@ -184,7 +184,7 @@ sweep(circleSketch, path = sweepPath, sectional = true)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep3.png"
@@ -216,7 +216,7 @@ sweep(square, path, bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep4.png"
@@ -245,7 +245,7 @@ sweep(segment, path, bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep5_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep5_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep5.png"
@@ -279,7 +279,7 @@ sweep(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep6_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep6_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep6.png"
@@ -316,7 +316,7 @@ swept = sweep(profileRegion, path)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep7_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep7_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep7.png"
@@ -362,7 +362,7 @@ sweep(mySquare, path = sketch002.line1)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep8_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep8_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep8.png"
@@ -408,7 +408,7 @@ sweep(mySquare, path)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep9_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep9_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep9.png"
@@ -456,7 +456,7 @@ sweep(sketch001.line2, path, bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep10_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep10_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep10.png"
@@ -507,7 +507,7 @@ sweep(capFace, path = sketch002)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the sweep function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep11_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep11_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep11.png"

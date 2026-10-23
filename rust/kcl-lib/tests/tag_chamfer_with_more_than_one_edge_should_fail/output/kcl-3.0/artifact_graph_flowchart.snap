@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart tag_chamfer_with_more_than_one_edge_should_fail.kcl
+extension: md
+snapshot_kind: binary
+---

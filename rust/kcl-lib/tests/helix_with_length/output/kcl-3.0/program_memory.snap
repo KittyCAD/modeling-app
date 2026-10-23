@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing helix_with_length.kcl
+---
+{
+  "part001": {
+    "type": "Helix",
+    "value": {
+      "value": "[uuid]",
+      "artifactId": "[uuid]",
+      "revolutions": 16.0,
+      "angleStart": 0.0,
+      "ccw": false,
+      "cylinderId": "[uuid]",
+      "units": "mm"
+    }
+  }
+}

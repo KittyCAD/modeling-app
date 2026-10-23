@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing cylinder.kcl
+---
+cylinder = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 22)
+  |> extrude(length = 14)

@@ -54,7 +54,8 @@ export default class RustContext {
     public readonly wasmInstancePromise: Promise<ModuleType>,
     private readonly engineCommandManager: ConnectionManager,
     public readonly settingsActor: SettingsActorType,
-    private projectId = 0
+    private projectId = 0,
+    private readonly geometryOnly = false
   ) {
     wasmInstancePromise
       .then((instance) => this.createFromInstance(instance))
@@ -68,7 +69,8 @@ export default class RustContext {
     const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
       projectFsManager,
-      undefined
+      undefined,
+      this.geometryOnly
     )
 
     return ctxInstance
@@ -80,7 +82,8 @@ export default class RustContext {
     const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
       projectFsManager,
-      undefined
+      undefined,
+      this.geometryOnly
     )
 
     this.ctxInstance = ctxInstance
@@ -181,6 +184,24 @@ export default class RustContext {
         path,
         JSON.stringify(settings),
         usePrevMemory
+      )
+      const outcome = execStateFromRust(result)
+      this.setDefaultPlanes(outcome.defaultPlanes)
+      return outcome
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      this.setDefaultPlanes(err.defaultPlanes)
+      return Promise.reject(err)
+    }
+  }
+
+  /** Evaluate an input expression with the current Rust model's settings. */
+  async evaluateExpression(node: Node<Program>): Promise<ExecState> {
+    const instance = await this._checkContextInstance()
+    try {
+      const result = await instance.evaluateExpression(
+        JSON.stringify(node),
+        JSON.stringify(jsAppSettings(this.settingsActor))
       )
       return execStateFromRust(result)
     } catch (e: any) {

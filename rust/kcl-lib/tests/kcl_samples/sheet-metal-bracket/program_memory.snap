@@ -390,12 +390,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3832,
-            "end": 3838,
+            "commentStart": 3957,
+            "end": 3963,
             "moduleId": 0,
-            "start": 3832,
+            "start": 3957,
             "type": "TagDeclarator",
-            "value": "line20"
+            "value": "line21"
           },
           "type": "extrudePlane"
         },
@@ -957,16 +957,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.11235520515119028
             ],
             "tag": {
-              "commentStart": 3832,
-              "end": 3838,
+              "commentStart": 3957,
+              "end": 3963,
               "moduleId": 0,
-              "start": 3832,
+              "start": 3957,
               "type": "TagDeclarator",
-              "value": "line20"
+              "value": "line21"
             },
             "to": [
-              -4.25,
-              0.11235520515119028
+              -4.202124928454492,
+              0.000759031009168551
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4741,16 +4741,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             0.11235520515119028
           ],
           "tag": {
-            "commentStart": 3832,
-            "end": 3838,
+            "commentStart": 3957,
+            "end": 3963,
             "moduleId": 0,
-            "start": 3832,
+            "start": 3957,
             "type": "TagDeclarator",
-            "value": "line20"
+            "value": "line21"
           },
           "to": [
-            -4.25,
-            0.11235520515119028
+            -4.202124928454492,
+            0.000759031009168551
           ],
           "type": "ToPoint",
           "units": "in"
@@ -13357,12 +13357,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3832,
-            "end": 3838,
+            "commentStart": 3957,
+            "end": 3963,
             "moduleId": 0,
-            "start": 3832,
+            "start": 3957,
             "type": "TagDeclarator",
-            "value": "line20"
+            "value": "line21"
           },
           "type": "extrudePlane"
         },
@@ -13924,16 +13924,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.11235520515119028
             ],
             "tag": {
-              "commentStart": 3832,
-              "end": 3838,
+              "commentStart": 3957,
+              "end": 3963,
               "moduleId": 0,
-              "start": 3832,
+              "start": 3957,
               "type": "TagDeclarator",
-              "value": "line20"
+              "value": "line21"
             },
             "to": [
-              -4.25,
-              0.11235520515119028
+              -4.202124928454492,
+              0.000759031009168551
             ],
             "type": "ToPoint",
             "units": "in"
@@ -14087,72 +14087,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.5,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "in",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.5,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "in",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.5,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "in",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.5,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "in",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "in",
       "sectional": false
     }

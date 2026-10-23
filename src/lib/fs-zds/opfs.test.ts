@@ -63,8 +63,11 @@ class MockFileSystemDirectoryHandle {
     if (existing instanceof MockFileSystemDirectoryHandle) {
       return existing
     }
+    if (existing) {
+      throw new DOMException('Not a directory', 'TypeMismatchError')
+    }
     if (!options?.create) {
-      throw new Error('NotFoundError')
+      throw new DOMException('Directory not found', 'NotFoundError')
     }
 
     const next = new MockFileSystemDirectoryHandle(name)
@@ -76,6 +79,9 @@ class MockFileSystemDirectoryHandle {
     const existing = this.children.get(name)
     if (existing instanceof MockFileSystemFileHandle) {
       return existing
+    }
+    if (existing) {
+      throw new DOMException('Not a file', 'TypeMismatchError')
     }
     if (!options?.create) {
       throw new DOMException('File not found', 'NotFoundError')
@@ -105,7 +111,7 @@ class MockFileSystemDirectoryHandle {
 
 describe('opfs', () => {
   let root: MockFileSystemDirectoryHandle
-  const projectPath = path.resolve('projects', 'project')
+  const projectPath = path.resolve('/', 'projects', 'project')
   const metaPath = path.resolve(projectPath, '._meta')
 
   beforeEach(() => {
@@ -245,8 +251,8 @@ describe('opfs', () => {
     projects.addDirectory('target')
 
     const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
+    const sourcePath = path.resolve('/', 'projects', 'source')
+    const targetPath = path.resolve('/', 'projects', 'target')
     const nestedPath = path.join('nested', 'deep', 'main.kcl')
 
     await opfs.impl.cp(sourcePath, targetPath, {
@@ -268,8 +274,8 @@ describe('opfs', () => {
 
     await expect(
       opfs.impl.cp(
-        path.resolve('projects', 'source'),
-        path.resolve('projects', 'target')
+        path.resolve('/', 'projects', 'source'),
+        path.resolve('/', 'projects', 'target')
       )
     ).rejects.toBe('EISDIR')
   })
@@ -283,8 +289,8 @@ describe('opfs', () => {
     target.addFile('existing.kcl', 'target contents')
 
     const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
+    const sourcePath = path.resolve('/', 'projects', 'source')
+    const targetPath = path.resolve('/', 'projects', 'target')
 
     await opfs.impl.cp(sourcePath, targetPath, {
       recursive: true,

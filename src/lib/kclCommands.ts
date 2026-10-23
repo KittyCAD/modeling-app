@@ -21,6 +21,7 @@ import {
   recast,
 } from '@src/lang/wasm'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { clearActiveTextFile } from '@src/lib/activeTextFile'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -191,11 +192,13 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     },
     {
       scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
-      name: 'Insert',
-      description: 'Insert from a file in the current project directory',
+      // Keep the persisted shortcut identity stable across the display rename.
+      id: 'code:Insert',
+      name: 'Import',
+      description:
+        'Import from a file in the current project directory (formerly Insert)',
       icon: 'import',
       groupId: 'code',
-      hide: 'web',
       needsReview: true,
       reviewValidation: async () => {
         if (commandProps.kclManager.isExecuting) {
@@ -305,6 +308,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           localName,
           representation,
         })
+        clearActiveTextFile()
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,

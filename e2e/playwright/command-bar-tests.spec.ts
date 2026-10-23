@@ -1,19 +1,11 @@
-import path, { join } from 'path'
-import {
-  KCL_DEFAULT_LENGTH,
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
-  OPFS_CLOUD_FEATURE_FLAG,
-} from '@src/lib/constants'
-import * as fsp from 'fs/promises'
-
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import * as fsp from 'fs/promises'
+import path, { join } from 'path'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
-  // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
-
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
@@ -78,6 +70,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
         Profiles: '1 profile',
         Length: '5',
       },
+      reviewValidationError: undefined,
     })
     await cmdBar.progressCmdBar()
     await expect(page.locator('.cm-activeLine')).toHaveText(
@@ -259,7 +252,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await expect(cmdSearchBar).toBeVisible()
 
     // Search for extrude command and choose it
-    await cmdBar.cmdOptions.getByText('Extrude').click()
+    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
 
     // Assert that we're on the selection step
     await cmdBar.expectState({
@@ -298,7 +291,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     )
     await cmdBar.progressCmdBar()
 
-    // Review step and argument hotkeys
+    // Closed profiles use KCL's solid default and skip the body type step.
     await cmdBar.expectState({
       stage: 'review',
       commandName: 'Extrude',
@@ -306,13 +299,22 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
         Profiles: '1 profile',
         Length: '5',
       },
+      reviewValidationError: undefined,
     })
     await page.keyboard.press('Meta+Backspace')
 
-    // Assert we're back on the distance step
-    await expect(
-      page.getByRole('button', { name: 'length', exact: false })
-    ).toBeDisabled()
+    // Step back returns to the preceding length argument.
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+      highlightedHeaderArg: 'length',
+    })
 
     await cmdBar.progressCmdBar()
 
@@ -379,91 +381,6 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await editor.expectEditor.toContain(
       'extrude001 = extrude(sketch001, length = length001)'
     )
-  })
-
-  test('Can switch between sketch tools via command bar', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    toolbar,
-    context,
-  }) => {
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, `sketch001 = startSketchOn(XZ)`)
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    const cmdBarButton = page.getByRole('button', { name: 'Commands' })
-    const rectangleToolCommand = page.getByRole('option', {
-      name: 'rectangle',
-    })
-    const rectangleToolButton = page.getByRole('button', {
-      name: 'rectangle Corner rectangle',
-    })
-    const lineToolCommand = page.getByRole('option', {
-      name: 'line Line Start drawing',
-    })
-    const lineToolButton = page.getByRole('button', {
-      name: 'line Line',
-      exact: true,
-    })
-    const arcToolCommand = page.getByRole('option', { name: 'Tangential Arc' })
-    const arcToolButton = page.getByRole('button', {
-      name: 'arc Tangential Arc',
-    })
-
-    // Enter a sketch
-    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
-    await op.dblclick()
-    await toolbar.waitUntilSketchingReady()
-
-    await page.mouse.click(700, 200)
-    await expect(toolbar.exitSketchBtn).toBeVisible()
-    await rectangleToolButton.click()
-    await expect(rectangleToolButton).toHaveAttribute('aria-pressed', 'true')
-
-    await page.keyboard.press('ControlOrMeta+K')
-    await expect(page.getByPlaceholder('Search commands')).toBeFocused()
-    await expect(
-      page.getByRole('option', { name: 'Reset view', exact: false })
-    ).toBeVisible()
-    await expect(
-      page.getByRole('option', {
-        name: 'Pull a sketch into 3D',
-        exact: false,
-      })
-    ).toHaveCount(0)
-    await page.keyboard.press('Escape')
-    await expect(page.getByPlaceholder('Search commands')).not.toBeVisible()
-    await page.keyboard.press('l')
-    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
-
-    // Switch between sketch tools via the command bar
-    if ((await lineToolButton.getAttribute('aria-pressed')) !== 'true') {
-      await cmdBarButton.click()
-      await lineToolCommand.click()
-    }
-    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
-    await cmdBarButton.click()
-    await rectangleToolCommand.click()
-    await expect(rectangleToolButton).toHaveAttribute('aria-pressed', 'true')
-    await cmdBarButton.click()
-    await lineToolCommand.click()
-    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
-
-    // Click in the scene a couple times to draw a line
-    // so tangential arc is valid
-    await page.mouse.click(700, 200)
-    await page.mouse.move(700, 300, { steps: 5 })
-    await page.mouse.click(700, 300)
-
-    // switch to tangential arc via command bar
-    await cmdBarButton.click()
-    await arcToolCommand.click()
-    await expect(arcToolButton).toHaveAttribute('aria-pressed', 'true')
   })
 
   test(`Reacts to query param to open "import from URL" command`, async ({
@@ -800,6 +717,20 @@ export exported = 2`,
     })
   })
 
+  test(
+    'Command palette can be opened via query parameter - web',
+    { tag: '@web' },
+    async ({ page, cmdBar }) => {
+      await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+      await expect(page).toHaveURL(
+        (url) =>
+          !url.searchParams.has('cmd') && !url.searchParams.has('groupId'),
+        { timeout: 15_000 }
+      )
+      await cmdBar.expectCommandName('Settings · app · theme')
+    }
+  )
+
   test('Step back works on non-required and required arguments and closes', async ({
     page,
     homePage,
@@ -821,7 +752,7 @@ export exported = 2`,
     await scene.settled()
 
     await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('Extrude')
+    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
@@ -934,22 +865,4 @@ export exported = 2`,
     await cmdBar.stepBack()
     await cmdBar.expectState({ stage: 'commandBarClosed' })
   })
-})
-
-test.describe('Command bar tests', () => {
-  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
-
-  test(
-    'Command palette can be opened via query parameter - web',
-    { tag: '@web' },
-    async ({ page, cmdBar }) => {
-      await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
-      await expect(page).toHaveURL(
-        (url) =>
-          !url.searchParams.has('cmd') && !url.searchParams.has('groupId'),
-        { timeout: 15_000 }
-      )
-      await cmdBar.expectCommandName('Settings · app · theme')
-    }
-  )
 })

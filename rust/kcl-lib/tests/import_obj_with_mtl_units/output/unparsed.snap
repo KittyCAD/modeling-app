@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing import_obj_with_mtl_units.kcl
+---
+@(format = obj, lengthUnit = m)
+import "../../e2e/executor/inputs/cube.obj"
+model = cube

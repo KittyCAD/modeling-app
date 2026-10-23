@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tangential_arc_to.kcl
+---
+boxSketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 10])
+  |> tangentialArc(endAbsolute = [-5, 15])
+  |> line(end = [5, -15])
+  |> extrude(length = 10)

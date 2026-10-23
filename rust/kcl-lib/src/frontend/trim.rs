@@ -2,22 +2,24 @@ use std::f64::consts::TAU;
 
 use indexmap::IndexMap;
 use indexmap::IndexSet;
+use kcl_api::ArcDirection;
+use kcl_api::Constraint;
+use kcl_api::ConstraintSegment;
+use kcl_api::Horizontal;
+use kcl_api::Number;
+use kcl_api::NumericSuffix;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
+use kcl_api::Segment;
+use kcl_api::SegmentCtor;
 use kcl_api::UnitLength;
+use kcl_api::Vertical;
 
 use crate::execution::ArtifactId;
 use crate::execution::types::adjust_length;
-use crate::front::Horizontal;
-use crate::front::Vertical;
-use crate::frontend::api::Number;
-use crate::frontend::api::Object;
-use crate::frontend::api::ObjectId;
-use crate::frontend::api::ObjectKind;
-use crate::frontend::sketch::ArcDirection;
-use crate::frontend::sketch::Constraint;
-use crate::frontend::sketch::ConstraintSegment;
-use crate::frontend::sketch::Segment;
-use crate::frontend::sketch::SegmentCtor;
-use crate::pretty::NumericSuffix;
+use crate::front::CoincidentExt;
+use crate::front::DistanceExt;
 use crate::util::MathExt;
 
 #[cfg(test)]
@@ -356,23 +358,21 @@ fn rewrite_object_id(id: ObjectId, rewrite_map: &std::collections::HashMap<Objec
 }
 
 fn rewrite_constraint_segment(
-    segment: crate::frontend::sketch::ConstraintSegment,
+    segment: kcl_api::ConstraintSegment,
     rewrite_map: &std::collections::HashMap<ObjectId, ObjectId>,
-) -> crate::frontend::sketch::ConstraintSegment {
+) -> kcl_api::ConstraintSegment {
     match segment {
-        crate::frontend::sketch::ConstraintSegment::Segment(id) => {
-            crate::frontend::sketch::ConstraintSegment::Segment(rewrite_object_id(id, rewrite_map))
+        kcl_api::ConstraintSegment::Segment(id) => {
+            kcl_api::ConstraintSegment::Segment(rewrite_object_id(id, rewrite_map))
         }
-        crate::frontend::sketch::ConstraintSegment::Origin(origin) => {
-            crate::frontend::sketch::ConstraintSegment::Origin(origin)
-        }
+        kcl_api::ConstraintSegment::Origin(origin) => kcl_api::ConstraintSegment::Origin(origin),
     }
 }
 
 fn rewrite_constraint_segments(
-    segments: &[crate::frontend::sketch::ConstraintSegment],
+    segments: &[kcl_api::ConstraintSegment],
     rewrite_map: &std::collections::HashMap<ObjectId, ObjectId>,
-) -> Vec<crate::frontend::sketch::ConstraintSegment> {
+) -> Vec<kcl_api::ConstraintSegment> {
     segments
         .iter()
         .copied()
@@ -381,12 +381,12 @@ fn rewrite_constraint_segments(
 }
 
 fn constraint_segments_reference_any(
-    segments: &[crate::frontend::sketch::ConstraintSegment],
+    segments: &[kcl_api::ConstraintSegment],
     ids: &std::collections::HashSet<ObjectId>,
 ) -> bool {
     segments.iter().any(|segment| match segment {
-        crate::frontend::sketch::ConstraintSegment::Segment(id) => ids.contains(id),
-        crate::frontend::sketch::ConstraintSegment::Origin(_) => false,
+        kcl_api::ConstraintSegment::Segment(id) => ids.contains(id),
+        kcl_api::ConstraintSegment::Origin(_) => false,
     })
 }
 
@@ -398,62 +398,58 @@ fn rewrite_constraint_with_map(
     // unexpected ways; try trimming sketches that use the new constraint and ask
     // Kurt, Max, or a mechanical engineer when the expected behavior is unclear.
     match constraint {
-        Constraint::Coincident(coincident) => Some(Constraint::Coincident(crate::frontend::sketch::Coincident {
+        Constraint::Coincident(coincident) => Some(Constraint::Coincident(kcl_api::Coincident {
             segments: rewrite_constraint_segments(&coincident.segments, rewrite_map),
         })),
-        Constraint::Distance(distance) => Some(Constraint::Distance(crate::frontend::sketch::Distance {
+        Constraint::Distance(distance) => Some(Constraint::Distance(kcl_api::Distance {
             segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
             distance: distance.distance,
             label_position: distance.label_position.clone(),
             source: distance.source.clone(),
         })),
-        Constraint::HorizontalDistance(distance) => {
-            Some(Constraint::HorizontalDistance(crate::frontend::sketch::Distance {
-                segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
-                distance: distance.distance,
-                label_position: distance.label_position.clone(),
-                source: distance.source.clone(),
-            }))
-        }
-        Constraint::VerticalDistance(distance) => {
-            Some(Constraint::VerticalDistance(crate::frontend::sketch::Distance {
-                segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
-                distance: distance.distance,
-                label_position: distance.label_position.clone(),
-                source: distance.source.clone(),
-            }))
-        }
-        Constraint::Radius(radius) => Some(Constraint::Radius(crate::frontend::sketch::Radius {
+        Constraint::HorizontalDistance(distance) => Some(Constraint::HorizontalDistance(kcl_api::Distance {
+            segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
+            distance: distance.distance,
+            label_position: distance.label_position.clone(),
+            source: distance.source.clone(),
+        })),
+        Constraint::VerticalDistance(distance) => Some(Constraint::VerticalDistance(kcl_api::Distance {
+            segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
+            distance: distance.distance,
+            label_position: distance.label_position.clone(),
+            source: distance.source.clone(),
+        })),
+        Constraint::Radius(radius) => Some(Constraint::Radius(kcl_api::Radius {
             arc: rewrite_object_id(radius.arc, rewrite_map),
             radius: radius.radius,
             label_position: radius.label_position.clone(),
             source: radius.source.clone(),
         })),
-        Constraint::Diameter(diameter) => Some(Constraint::Diameter(crate::frontend::sketch::Diameter {
+        Constraint::Diameter(diameter) => Some(Constraint::Diameter(kcl_api::Diameter {
             arc: rewrite_object_id(diameter.arc, rewrite_map),
             diameter: diameter.diameter,
             label_position: diameter.label_position.clone(),
             source: diameter.source.clone(),
         })),
-        Constraint::EqualRadius(equal_radius) => Some(Constraint::EqualRadius(crate::frontend::sketch::EqualRadius {
+        Constraint::EqualRadius(equal_radius) => Some(Constraint::EqualRadius(kcl_api::EqualRadius {
             input: equal_radius
                 .input
                 .iter()
                 .map(|id| rewrite_object_id(*id, rewrite_map))
                 .collect(),
         })),
-        Constraint::Midpoint(midpoint) => Some(Constraint::Midpoint(crate::frontend::sketch::Midpoint {
+        Constraint::Midpoint(midpoint) => Some(Constraint::Midpoint(kcl_api::Midpoint {
             point: rewrite_constraint_segment(midpoint.point, rewrite_map),
             segment: rewrite_object_id(midpoint.segment, rewrite_map),
         })),
-        Constraint::Tangent(tangent) => Some(Constraint::Tangent(crate::frontend::sketch::Tangent {
+        Constraint::Tangent(tangent) => Some(Constraint::Tangent(kcl_api::Tangent {
             input: tangent
                 .input
                 .iter()
                 .map(|id| rewrite_object_id(*id, rewrite_map))
                 .collect(),
         })),
-        Constraint::Symmetric(symmetric) => Some(Constraint::Symmetric(crate::frontend::sketch::Symmetric {
+        Constraint::Symmetric(symmetric) => Some(Constraint::Symmetric(kcl_api::Symmetric {
             input: symmetric
                 .input
                 .iter()
@@ -461,58 +457,48 @@ fn rewrite_constraint_with_map(
                 .collect(),
             axis: rewrite_object_id(symmetric.axis, rewrite_map),
         })),
-        Constraint::Parallel(parallel) => Some(Constraint::Parallel(crate::frontend::sketch::Parallel {
+        Constraint::Parallel(parallel) => Some(Constraint::Parallel(kcl_api::Parallel {
             lines: parallel
                 .lines
                 .iter()
                 .map(|id| rewrite_object_id(*id, rewrite_map))
                 .collect(),
         })),
-        Constraint::Perpendicular(perpendicular) => {
-            Some(Constraint::Perpendicular(crate::frontend::sketch::Perpendicular {
-                lines: perpendicular
-                    .lines
-                    .iter()
-                    .map(|id| rewrite_object_id(*id, rewrite_map))
-                    .collect(),
-            }))
-        }
+        Constraint::Perpendicular(perpendicular) => Some(Constraint::Perpendicular(kcl_api::Perpendicular {
+            lines: perpendicular
+                .lines
+                .iter()
+                .map(|id| rewrite_object_id(*id, rewrite_map))
+                .collect(),
+        })),
         Constraint::Horizontal(horizontal) => match horizontal {
-            crate::front::Horizontal::Line { line } => {
-                Some(Constraint::Horizontal(crate::frontend::sketch::Horizontal::Line {
-                    line: rewrite_object_id(*line, rewrite_map),
-                }))
-            }
-            crate::front::Horizontal::Points { points } => Some(Constraint::Horizontal(Horizontal::Points {
+            kcl_api::Horizontal::Line { line } => Some(Constraint::Horizontal(kcl_api::Horizontal::Line {
+                line: rewrite_object_id(*line, rewrite_map),
+            })),
+            kcl_api::Horizontal::Points { points } => Some(Constraint::Horizontal(Horizontal::Points {
                 points: points
                     .iter()
                     .map(|point| match point {
-                        crate::frontend::sketch::ConstraintSegment::Segment(point) => {
-                            crate::frontend::sketch::ConstraintSegment::from(rewrite_object_id(*point, rewrite_map))
+                        kcl_api::ConstraintSegment::Segment(point) => {
+                            kcl_api::ConstraintSegment::from(rewrite_object_id(*point, rewrite_map))
                         }
-                        crate::frontend::sketch::ConstraintSegment::Origin(origin) => {
-                            crate::frontend::sketch::ConstraintSegment::Origin(*origin)
-                        }
+                        kcl_api::ConstraintSegment::Origin(origin) => kcl_api::ConstraintSegment::Origin(*origin),
                     })
                     .collect(),
             })),
         },
         Constraint::Vertical(vertical) => match vertical {
-            crate::front::Vertical::Line { line } => {
-                Some(Constraint::Vertical(crate::frontend::sketch::Vertical::Line {
-                    line: rewrite_object_id(*line, rewrite_map),
-                }))
-            }
-            crate::front::Vertical::Points { points } => Some(Constraint::Vertical(Vertical::Points {
+            kcl_api::Vertical::Line { line } => Some(Constraint::Vertical(kcl_api::Vertical::Line {
+                line: rewrite_object_id(*line, rewrite_map),
+            })),
+            kcl_api::Vertical::Points { points } => Some(Constraint::Vertical(Vertical::Points {
                 points: points
                     .iter()
                     .map(|point| match point {
-                        crate::frontend::sketch::ConstraintSegment::Segment(point) => {
-                            crate::frontend::sketch::ConstraintSegment::from(rewrite_object_id(*point, rewrite_map))
+                        kcl_api::ConstraintSegment::Segment(point) => {
+                            kcl_api::ConstraintSegment::from(rewrite_object_id(*point, rewrite_map))
                         }
-                        crate::frontend::sketch::ConstraintSegment::Origin(origin) => {
-                            crate::frontend::sketch::ConstraintSegment::Origin(*origin)
-                        }
+                        kcl_api::ConstraintSegment::Origin(origin) => kcl_api::ConstraintSegment::Origin(*origin),
                     })
                     .collect(),
             })),
@@ -3628,37 +3614,27 @@ pub async fn execute_trim_loop_with_context(
 fn segment_ctor_units(ctor: &SegmentCtor) -> NumericSuffix {
     match ctor {
         SegmentCtor::Line(line_ctor) => match &line_ctor.start.x {
-            crate::frontend::api::Expr::Var(v)
-            | crate::frontend::api::Expr::VarExact(v)
-            | crate::frontend::api::Expr::Number(v) => v.units,
+            kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
             _ => NumericSuffix::Mm,
         },
         SegmentCtor::Arc(arc_ctor) => match &arc_ctor.start.x {
-            crate::frontend::api::Expr::Var(v)
-            | crate::frontend::api::Expr::VarExact(v)
-            | crate::frontend::api::Expr::Number(v) => v.units,
+            kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
             _ => NumericSuffix::Mm,
         },
         SegmentCtor::Circle(circle_ctor) => match &circle_ctor.start.x {
-            crate::frontend::api::Expr::Var(v)
-            | crate::frontend::api::Expr::VarExact(v)
-            | crate::frontend::api::Expr::Number(v) => v.units,
+            kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
             _ => NumericSuffix::Mm,
         },
         SegmentCtor::ControlPointSpline(spline_ctor) => spline_ctor
             .points
             .first()
             .and_then(|point| match &point.x {
-                crate::frontend::api::Expr::Var(v)
-                | crate::frontend::api::Expr::VarExact(v)
-                | crate::frontend::api::Expr::Number(v) => Some(v.units),
+                kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => Some(v.units),
                 _ => None,
             })
             .unwrap_or(NumericSuffix::Mm),
         SegmentCtor::Point(point_ctor) => match &point_ctor.position.x {
-            crate::frontend::api::Expr::Var(v)
-            | crate::frontend::api::Expr::VarExact(v)
-            | crate::frontend::api::Expr::Number(v) => v.units,
+            kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
             _ => NumericSuffix::Mm,
         },
     }
@@ -3668,10 +3644,10 @@ fn coords_to_expr_point(
     coords: Coords2d,
     default_unit: UnitLength,
     units: NumericSuffix,
-) -> crate::frontend::sketch::Point2d<crate::frontend::api::Expr> {
-    crate::frontend::sketch::Point2d {
-        x: crate::frontend::api::Expr::Var(unit_to_number(coords.x, default_unit, units)),
-        y: crate::frontend::api::Expr::Var(unit_to_number(coords.y, default_unit, units)),
+) -> kcl_api::Point2d<kcl_api::Expr> {
+    kcl_api::Point2d {
+        x: kcl_api::Expr::Var(unit_to_number(coords.x, default_unit, units)),
+        y: kcl_api::Expr::Var(unit_to_number(coords.y, default_unit, units)),
     }
 }
 
@@ -3724,19 +3700,17 @@ fn build_trimmed_control_point_spline_ctor(
         end_parameter,
         spline.controls.len(),
     );
-    Ok(SegmentCtor::ControlPointSpline(
-        crate::frontend::sketch::ControlPointSplineCtor {
-            points: resampled
-                .into_iter()
-                .map(|coords| coords_to_expr_point(coords, default_unit, units))
-                .collect(),
-            construction: spline_ctor.construction,
-        },
-    ))
+    Ok(SegmentCtor::ControlPointSpline(kcl_api::ControlPointSplineCtor {
+        points: resampled
+            .into_iter()
+            .map(|coords| coords_to_expr_point(coords, default_unit, units))
+            .collect(),
+        construction: spline_ctor.construction,
+    }))
 }
 
 fn spline_constraint_ids_to_delete(
-    spline: &crate::frontend::sketch::ControlPointSpline,
+    spline: &kcl_api::ControlPointSpline,
     trimmed_endpoint_id: Option<ObjectId>,
     objects: &[Object],
 ) -> Vec<ObjectId> {
@@ -4363,18 +4337,18 @@ fn build_trim_plan(
         let new_ctor = match ctor {
             SegmentCtor::Line(line_ctor) => {
                 // Convert to segment units only; rounding happens at final conversion to output if needed.
-                let new_point = crate::frontend::sketch::Point2d {
-                    x: crate::frontend::api::Expr::Var(unit_to_number(intersection_coords.x, default_unit, units)),
-                    y: crate::frontend::api::Expr::Var(unit_to_number(intersection_coords.y, default_unit, units)),
+                let new_point = kcl_api::Point2d {
+                    x: kcl_api::Expr::Var(unit_to_number(intersection_coords.x, default_unit, units)),
+                    y: kcl_api::Expr::Var(unit_to_number(intersection_coords.y, default_unit, units)),
                 };
                 if endpoint_to_change == EndpointChanged::Start {
-                    SegmentCtor::Line(crate::frontend::sketch::LineCtor {
+                    SegmentCtor::Line(kcl_api::LineCtor {
                         start: new_point,
                         end: line_ctor.end.clone(),
                         construction: line_ctor.construction,
                     })
                 } else {
-                    SegmentCtor::Line(crate::frontend::sketch::LineCtor {
+                    SegmentCtor::Line(kcl_api::LineCtor {
                         start: line_ctor.start.clone(),
                         end: new_point,
                         construction: line_ctor.construction,
@@ -4383,12 +4357,12 @@ fn build_trim_plan(
             }
             SegmentCtor::Arc(arc_ctor) => {
                 // Convert to segment units only; rounding happens at final conversion to output if needed.
-                let new_point = crate::frontend::sketch::Point2d {
-                    x: crate::frontend::api::Expr::Var(unit_to_number(intersection_coords.x, default_unit, units)),
-                    y: crate::frontend::api::Expr::Var(unit_to_number(intersection_coords.y, default_unit, units)),
+                let new_point = kcl_api::Point2d {
+                    x: kcl_api::Expr::Var(unit_to_number(intersection_coords.x, default_unit, units)),
+                    y: kcl_api::Expr::Var(unit_to_number(intersection_coords.y, default_unit, units)),
                 };
                 if endpoint_to_change == EndpointChanged::Start {
-                    SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
+                    SegmentCtor::Arc(kcl_api::ArcCtor {
                         start: new_point,
                         end: arc_ctor.end.clone(),
                         center: arc_ctor.center.clone(),
@@ -4396,7 +4370,7 @@ fn build_trim_plan(
                         construction: arc_ctor.construction,
                     })
                 } else {
-                    SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
+                    SegmentCtor::Arc(kcl_api::ArcCtor {
                         start: arc_ctor.start.clone(),
                         end: new_point,
                         center: arc_ctor.center.clone(),
@@ -5434,10 +5408,11 @@ pub(crate) async fn execute_trim_operations_simple(
     version: crate::frontend::api::Version,
     sketch_id: ObjectId,
 ) -> Result<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta), String> {
+    use kcl_api::Constraint;
+    use kcl_api::SegmentCtor;
+
     use crate::frontend::SketchApi;
-    use crate::frontend::sketch::Constraint;
     use crate::frontend::sketch::ExistingSegmentCtor;
-    use crate::frontend::sketch::SegmentCtor;
 
     let default_unit = frontend.default_length_unit();
 
@@ -5501,15 +5476,15 @@ pub(crate) async fn execute_trim_operations_simple(
                                 .ok_or_else(|| format!("Failed to find segment {} for tail-cut batch", segment_id.0))?;
 
                             let endpoint_point_id = match &edited_segment.kind {
-                                crate::frontend::api::ObjectKind::Segment { segment } => match segment {
-                                    crate::frontend::sketch::Segment::Line(line) => {
+                                kcl_api::ObjectKind::Segment { segment } => match segment {
+                                    kcl_api::Segment::Line(line) => {
                                         if *endpoint_changed == EndpointChanged::Start {
                                             line.start
                                         } else {
                                             line.end
                                         }
                                     }
-                                    crate::frontend::sketch::Segment::Arc(arc) => {
+                                    kcl_api::Segment::Arc(arc) => {
                                         if *endpoint_changed == EndpointChanged::Start {
                                             arc.start
                                         } else {
@@ -5534,7 +5509,7 @@ pub(crate) async fn execute_trim_operations_simple(
                                 ]
                             };
 
-                            let constraint = Constraint::Coincident(crate::frontend::sketch::Coincident {
+                            let constraint = Constraint::Coincident(kcl_api::Coincident {
                                 segments: coincident_segments,
                             });
 
@@ -5621,22 +5596,22 @@ pub(crate) async fn execute_trim_operations_simple(
 
                 // Get the endpoint ID after editing
                 let new_segment_endpoint_point_id = match &edited_segment.kind {
-                    crate::frontend::api::ObjectKind::Segment { segment } => match segment {
-                        crate::frontend::sketch::Segment::Line(line) => {
+                    kcl_api::ObjectKind::Segment { segment } => match segment {
+                        kcl_api::Segment::Line(line) => {
                             if *endpoint_changed == EndpointChanged::Start {
                                 line.start
                             } else {
                                 line.end
                             }
                         }
-                        crate::frontend::sketch::Segment::Arc(arc) => {
+                        kcl_api::Segment::Arc(arc) => {
                             if *endpoint_changed == EndpointChanged::Start {
                                 arc.start
                             } else {
                                 arc.end
                             }
                         }
-                        crate::frontend::sketch::Segment::ControlPointSpline(spline) => {
+                        kcl_api::Segment::ControlPointSpline(spline) => {
                             if *endpoint_changed == EndpointChanged::Start {
                                 spline
                                     .controls
@@ -5670,7 +5645,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     ]
                 };
 
-                let constraint = Constraint::Coincident(crate::frontend::sketch::Coincident {
+                let constraint = Constraint::Coincident(kcl_api::Coincident {
                     segments: coincident_segments,
                 });
 
@@ -5710,8 +5685,8 @@ pub(crate) async fn execute_trim_operations_simple(
                     .ok_or_else(|| format!("Failed to find original circle {}", circle_id.0))?;
 
                 let (original_circle_start_id, original_circle_center_id, circle_ctor) = match &original_circle.kind {
-                    crate::frontend::api::ObjectKind::Segment { segment } => match segment {
-                        crate::frontend::sketch::Segment::Circle(circle) => match &circle.ctor {
+                    kcl_api::ObjectKind::Segment { segment } => match segment {
+                        kcl_api::Segment::Circle(circle) => match &circle.ctor {
                             SegmentCtor::Circle(circle_ctor) => (circle.start, circle.center, circle_ctor.clone()),
                             _ => return Err("Circle does not have a Circle ctor".to_string()),
                         },
@@ -5721,20 +5696,18 @@ pub(crate) async fn execute_trim_operations_simple(
                 };
 
                 let units = match &circle_ctor.start.x {
-                    crate::frontend::api::Expr::Var(v)
-                    | crate::frontend::api::Expr::VarExact(v)
-                    | crate::frontend::api::Expr::Number(v) => v.units,
-                    _ => crate::pretty::NumericSuffix::Mm,
+                    kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
+                    _ => kcl_api::NumericSuffix::Mm,
                 };
 
-                let coords_to_point_expr = |coords: Coords2d| crate::frontend::sketch::Point2d {
-                    x: crate::frontend::api::Expr::Var(unit_to_number(coords.x, default_unit, units)),
-                    y: crate::frontend::api::Expr::Var(unit_to_number(coords.y, default_unit, units)),
+                let coords_to_point_expr = |coords: Coords2d| kcl_api::Point2d {
+                    x: kcl_api::Expr::Var(unit_to_number(coords.x, default_unit, units)),
+                    y: kcl_api::Expr::Var(unit_to_number(coords.y, default_unit, units)),
                 };
 
                 // Circles always sweep counterclockwise, so the replacement
                 // arc does too.
-                let arc_ctor = SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
+                let arc_ctor = SegmentCtor::Arc(kcl_api::ArcCtor {
                     start: coords_to_point_expr(*arc_start_coords),
                     end: coords_to_point_expr(*arc_end_coords),
                     center: circle_ctor.center.clone(),
@@ -5760,8 +5733,8 @@ pub(crate) async fn execute_trim_operations_simple(
                             .is_some_and(|obj| {
                                 matches!(
                                     &obj.kind,
-                                    crate::frontend::api::ObjectKind::Segment { segment }
-                                        if matches!(segment, crate::frontend::sketch::Segment::Arc(_))
+                                    kcl_api::ObjectKind::Segment { segment }
+                                        if matches!(segment, kcl_api::Segment::Arc(_))
                                 )
                             })
                     })
@@ -5774,32 +5747,31 @@ pub(crate) async fn execute_trim_operations_simple(
                     .find(|obj| obj.id == new_arc_id)
                     .ok_or_else(|| format!("New arc segment not found {}", new_arc_id.0))?;
                 let (new_arc_start_id, new_arc_end_id, new_arc_center_id) = match &new_arc_obj.kind {
-                    crate::frontend::api::ObjectKind::Segment { segment } => match segment {
-                        crate::frontend::sketch::Segment::Arc(arc) => (arc.start, arc.end, arc.center),
+                    kcl_api::ObjectKind::Segment { segment } => match segment {
+                        kcl_api::Segment::Arc(arc) => (arc.start, arc.end, arc.center),
                         _ => return Err("New segment is not an arc".to_string()),
                     },
                     _ => return Err("New arc object is not a segment".to_string()),
                 };
 
-                let constraint_segments_for =
-                    |arc_endpoint_id: ObjectId,
-                     term: &TrimTermination|
-                     -> Result<Vec<crate::frontend::sketch::ConstraintSegment>, String> {
-                        match term {
-                            TrimTermination::Intersection {
-                                intersecting_seg_id, ..
-                            } => Ok(vec![arc_endpoint_id.into(), (*intersecting_seg_id).into()]),
-                            TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                                other_segment_point_id,
-                                ..
-                            } => Ok(vec![arc_endpoint_id.into(), (*other_segment_point_id).into()]),
-                            TrimTermination::SegEndPoint { .. } => {
-                                Err("Circle replacement endpoint cannot terminate at seg endpoint".to_string())
-                            }
+                let constraint_segments_for = |arc_endpoint_id: ObjectId,
+                                               term: &TrimTermination|
+                 -> Result<Vec<kcl_api::ConstraintSegment>, String> {
+                    match term {
+                        TrimTermination::Intersection {
+                            intersecting_seg_id, ..
+                        } => Ok(vec![arc_endpoint_id.into(), (*intersecting_seg_id).into()]),
+                        TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                            other_segment_point_id,
+                            ..
+                        } => Ok(vec![arc_endpoint_id.into(), (*other_segment_point_id).into()]),
+                        TrimTermination::SegEndPoint { .. } => {
+                            Err("Circle replacement endpoint cannot terminate at seg endpoint".to_string())
                         }
-                    };
+                    }
+                };
 
-                let start_constraint = Constraint::Coincident(crate::frontend::sketch::Coincident {
+                let start_constraint = Constraint::Coincident(kcl_api::Coincident {
                     segments: constraint_segments_for(new_arc_start_id, arc_start_termination)?,
                 });
                 let (_c1_source_delta, c1_scene_graph_delta) = frontend
@@ -5808,7 +5780,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     .map_err(|e| format!("Failed to add start coincident on replaced arc: {}", e.error.message()))?;
                 invalidates_ids = invalidates_ids || c1_scene_graph_delta.invalidates_ids;
 
-                let end_constraint = Constraint::Coincident(crate::frontend::sketch::Coincident {
+                let end_constraint = Constraint::Coincident(kcl_api::Coincident {
                     segments: constraint_segments_for(new_arc_end_id, arc_end_termination)?,
                 });
                 let (_c2_source_delta, c2_scene_graph_delta) = frontend
@@ -5840,7 +5812,7 @@ pub(crate) async fn execute_trim_operations_simple(
 
                 let mut migrated_constraints: Vec<Constraint> = Vec::new();
                 for obj in &current_scene_graph_delta.new_graph.objects {
-                    let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                    let kcl_api::ObjectKind::Constraint { constraint } = &obj.kind else {
                         continue;
                     };
 
@@ -5877,8 +5849,8 @@ pub(crate) async fn execute_trim_operations_simple(
                                 .segments
                                 .iter()
                                 .filter_map(|segment| match segment {
-                                    crate::frontend::sketch::ConstraintSegment::Segment(id) => Some(*id),
-                                    crate::frontend::sketch::ConstraintSegment::Origin(_) => None,
+                                    kcl_api::ConstraintSegment::Segment(id) => Some(*id),
+                                    kcl_api::ConstraintSegment::Origin(_) => None,
                                 })
                                 .collect();
                             if migrated_ids.contains(&new_arc_id)
@@ -5991,11 +5963,9 @@ pub(crate) async fn execute_trim_operations_simple(
                 // Extract point IDs from original segment
                 let (original_segment_start_point_id, original_segment_end_point_id, original_segment_center_point_id) =
                     match &original_segment.kind {
-                        crate::frontend::api::ObjectKind::Segment { segment } => match segment {
-                            crate::frontend::sketch::Segment::Line(line) => (Some(line.start), Some(line.end), None),
-                            crate::frontend::sketch::Segment::Arc(arc) => {
-                                (Some(arc.start), Some(arc.end), Some(arc.center))
-                            }
+                        kcl_api::ObjectKind::Segment { segment } => match segment {
+                            kcl_api::Segment::Line(line) => (Some(line.start), Some(line.end), None),
+                            kcl_api::Segment::Arc(arc) => (Some(arc.start), Some(arc.end), Some(arc.center)),
                             _ => (None, None, None),
                         },
                         _ => (None, None, None),
@@ -6005,7 +5975,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 let mut center_point_constraints_to_migrate: Vec<(Constraint, ObjectId)> = Vec::new();
                 if let Some(original_center_id) = original_segment_center_point_id {
                     for obj in &current_scene_graph_delta.new_graph.objects {
-                        let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                        let kcl_api::ObjectKind::Constraint { constraint } = &obj.kind else {
                             continue;
                         };
 
@@ -6027,9 +5997,9 @@ pub(crate) async fn execute_trim_operations_simple(
 
                 // Extract segment and ctor
                 let (_segment_type, original_ctor) = match &original_segment.kind {
-                    crate::frontend::api::ObjectKind::Segment { segment } => match segment {
-                        crate::frontend::sketch::Segment::Line(line) => ("Line", line.ctor.clone()),
-                        crate::frontend::sketch::Segment::Arc(arc) => ("Arc", arc.ctor.clone()),
+                    kcl_api::ObjectKind::Segment { segment } => match segment {
+                        kcl_api::Segment::Line(line) => ("Line", line.ctor.clone()),
+                        kcl_api::Segment::Arc(arc) => ("Arc", arc.ctor.clone()),
                         _ => {
                             return Err("Original segment is not a Line or Arc".to_string());
                         }
@@ -6042,46 +6012,41 @@ pub(crate) async fn execute_trim_operations_simple(
                 // Extract units from the existing ctor
                 let units = match &original_ctor {
                     SegmentCtor::Line(line_ctor) => match &line_ctor.start.x {
-                        crate::frontend::api::Expr::Var(v)
-                        | crate::frontend::api::Expr::VarExact(v)
-                        | crate::frontend::api::Expr::Number(v) => v.units,
-                        _ => crate::pretty::NumericSuffix::Mm,
+                        kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
+                        _ => kcl_api::NumericSuffix::Mm,
                     },
                     SegmentCtor::Arc(arc_ctor) => match &arc_ctor.start.x {
-                        crate::frontend::api::Expr::Var(v)
-                        | crate::frontend::api::Expr::VarExact(v)
-                        | crate::frontend::api::Expr::Number(v) => v.units,
-                        _ => crate::pretty::NumericSuffix::Mm,
+                        kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
+                        _ => kcl_api::NumericSuffix::Mm,
                     },
-                    _ => crate::pretty::NumericSuffix::Mm,
+                    _ => kcl_api::NumericSuffix::Mm,
                 };
 
                 // Helper to convert Coords2d (current trim unit) to Point2d in segment units.
                 // No rounding here; rounding happens at final conversion to output if needed.
-                let coords_to_point =
-                    |coords: Coords2d| -> crate::frontend::sketch::Point2d<crate::frontend::api::Number> {
-                        crate::frontend::sketch::Point2d {
-                            x: unit_to_number(coords.x, default_unit, units),
-                            y: unit_to_number(coords.y, default_unit, units),
-                        }
-                    };
+                let coords_to_point = |coords: Coords2d| -> kcl_api::Point2d<kcl_api::Number> {
+                    kcl_api::Point2d {
+                        x: unit_to_number(coords.x, default_unit, units),
+                        y: unit_to_number(coords.y, default_unit, units),
+                    }
+                };
 
                 // Convert Point2d<Number> to Point2d<Expr> for SegmentCtor
-                let point_to_expr = |point: crate::frontend::sketch::Point2d<crate::frontend::api::Number>| -> crate::frontend::sketch::Point2d<crate::frontend::api::Expr> {
-                    crate::frontend::sketch::Point2d {
-                        x: crate::frontend::api::Expr::Var(point.x),
-                        y: crate::frontend::api::Expr::Var(point.y),
+                let point_to_expr = |point: kcl_api::Point2d<kcl_api::Number>| -> kcl_api::Point2d<kcl_api::Expr> {
+                    kcl_api::Point2d {
+                        x: kcl_api::Expr::Var(point.x),
+                        y: kcl_api::Expr::Var(point.y),
                     }
                 };
 
                 // Step 2: Create new segment (right side) first to get its IDs
                 let new_segment_ctor = match &original_ctor {
-                    SegmentCtor::Line(line_ctor) => SegmentCtor::Line(crate::frontend::sketch::LineCtor {
+                    SegmentCtor::Line(line_ctor) => SegmentCtor::Line(kcl_api::LineCtor {
                         start: point_to_expr(coords_to_point(*right_trim_coords)),
                         end: point_to_expr(coords_to_point(*original_end_coords)),
                         construction: line_ctor.construction,
                     }),
-                    SegmentCtor::Arc(arc_ctor) => SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
+                    SegmentCtor::Arc(arc_ctor) => SegmentCtor::Arc(kcl_api::ArcCtor {
                         start: point_to_expr(coords_to_point(*right_trim_coords)),
                         end: point_to_expr(coords_to_point(*original_end_coords)),
                         center: arc_ctor.center.clone(),
@@ -6106,8 +6071,8 @@ pub(crate) async fn execute_trim_operations_simple(
                         if let Some(obj) = add_scene_graph_delta.new_graph.objects.iter().find(|o| o.id == *id) {
                             matches!(
                                 &obj.kind,
-                                crate::frontend::api::ObjectKind::Segment { segment }
-                                    if matches!(segment, crate::frontend::sketch::Segment::Line(_) | crate::frontend::sketch::Segment::Arc(_))
+                                kcl_api::ObjectKind::Segment { segment }
+                                    if matches!(segment, kcl_api::Segment::Line(_) | kcl_api::Segment::Arc(_))
                             )
                         } else {
                             false
@@ -6125,9 +6090,9 @@ pub(crate) async fn execute_trim_operations_simple(
                 // Extract endpoint IDs
                 let (new_segment_start_point_id, new_segment_end_point_id, new_segment_center_point_id) =
                     match &new_segment.kind {
-                        crate::frontend::api::ObjectKind::Segment { segment } => match segment {
-                            crate::frontend::sketch::Segment::Line(line) => (line.start, line.end, None),
-                            crate::frontend::sketch::Segment::Arc(arc) => (arc.start, arc.end, Some(arc.center)),
+                        kcl_api::ObjectKind::Segment { segment } => match segment {
+                            kcl_api::Segment::Line(line) => (line.start, line.end, None),
+                            kcl_api::Segment::Arc(arc) => (arc.start, arc.end, Some(arc.center)),
                             _ => {
                                 return Err("New segment is not a Line or Arc".to_string());
                             }
@@ -6139,12 +6104,12 @@ pub(crate) async fn execute_trim_operations_simple(
 
                 // Step 4: Edit the original segment (trim left side)
                 let edited_ctor = match &original_ctor {
-                    SegmentCtor::Line(line_ctor) => SegmentCtor::Line(crate::frontend::sketch::LineCtor {
+                    SegmentCtor::Line(line_ctor) => SegmentCtor::Line(kcl_api::LineCtor {
                         start: line_ctor.start.clone(),
                         end: point_to_expr(coords_to_point(*left_trim_coords)),
                         construction: line_ctor.construction,
                     }),
-                    SegmentCtor::Arc(arc_ctor) => SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
+                    SegmentCtor::Arc(arc_ctor) => SegmentCtor::Arc(kcl_api::ArcCtor {
                         start: arc_ctor.start.clone(),
                         end: point_to_expr(coords_to_point(*left_trim_coords)),
                         center: arc_ctor.center.clone(),
@@ -6192,7 +6157,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         vec![left_side_endpoint_point_id.into(), left_intersecting_seg_id.into()]
                     }
                 };
-                batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
+                batch_constraints.push(Constraint::Coincident(kcl_api::Coincident {
                     segments: left_coincident_segments,
                 }));
 
@@ -6221,9 +6186,9 @@ pub(crate) async fn execute_trim_operations_simple(
                         let endpoint_epsilon = 1e-3; // In current trim unit
                         let right_trim_coords_value = *right_trim_coords;
 
-                        if let crate::frontend::api::ObjectKind::Segment { segment } = &seg.kind {
+                        if let kcl_api::ObjectKind::Segment { segment } = &seg.kind {
                             match segment {
-                                crate::frontend::sketch::Segment::Line(_) => {
+                                kcl_api::Segment::Line(_) => {
                                     if let (Some(start_coords), Some(end_coords)) = (
                                         crate::frontend::trim::get_position_coords_for_line(
                                             seg,
@@ -6244,7 +6209,7 @@ pub(crate) async fn execute_trim_operations_simple(
                                                 * (right_trim_coords_value.y - start_coords.y))
                                             .sqrt();
                                         if dist_to_start < endpoint_epsilon {
-                                            if let crate::frontend::sketch::Segment::Line(line) = segment {
+                                            if let kcl_api::Segment::Line(line) = segment {
                                                 intersection_point_id = Some(line.start);
                                             }
                                         } else {
@@ -6254,14 +6219,14 @@ pub(crate) async fn execute_trim_operations_simple(
                                                     * (right_trim_coords_value.y - end_coords.y))
                                                 .sqrt();
                                             if dist_to_end < endpoint_epsilon
-                                                && let crate::frontend::sketch::Segment::Line(line) = segment
+                                                && let kcl_api::Segment::Line(line) = segment
                                             {
                                                 intersection_point_id = Some(line.end);
                                             }
                                         }
                                     }
                                 }
-                                crate::frontend::sketch::Segment::Arc(_) => {
+                                kcl_api::Segment::Arc(_) => {
                                     if let (Some(start_coords), Some(end_coords)) = (
                                         crate::frontend::trim::get_position_coords_from_arc(
                                             seg,
@@ -6282,7 +6247,7 @@ pub(crate) async fn execute_trim_operations_simple(
                                                 * (right_trim_coords_value.y - start_coords.y))
                                             .sqrt();
                                         if dist_to_start < endpoint_epsilon {
-                                            if let crate::frontend::sketch::Segment::Arc(arc) = segment {
+                                            if let kcl_api::Segment::Arc(arc) = segment {
                                                 intersection_point_id = Some(arc.start);
                                             }
                                         } else {
@@ -6292,7 +6257,7 @@ pub(crate) async fn execute_trim_operations_simple(
                                                     * (right_trim_coords_value.y - end_coords.y))
                                                 .sqrt();
                                             if dist_to_end < endpoint_epsilon
-                                                && let crate::frontend::sketch::Segment::Arc(arc) = segment
+                                                && let kcl_api::Segment::Arc(arc) = segment
                                             {
                                                 intersection_point_id = Some(arc.end);
                                             }
@@ -6316,7 +6281,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 } else {
                     vec![new_segment_start_point_id.into(), right_intersecting_seg_id.into()]
                 };
-                batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
+                batch_constraints.push(Constraint::Coincident(kcl_api::Coincident {
                     segments: right_coincident_segments,
                 }));
 
@@ -6360,22 +6325,22 @@ pub(crate) async fn execute_trim_operations_simple(
                         };
                         vec![target_endpoint_id.into(), constraint_to_migrate.other_entity_id.into()]
                     };
-                    batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
+                    batch_constraints.push(Constraint::Coincident(kcl_api::Coincident {
                         segments: constraint_segments,
                     }));
                 }
 
                 // Find distance constraints that reference both endpoints of the original segment
                 let mut distance_constraints_to_re_add: Vec<(
-                    crate::frontend::api::Number,
-                    Option<crate::frontend::sketch::Point2d<crate::frontend::api::Number>>,
-                    crate::frontend::sketch::ConstraintSource,
+                    kcl_api::Number,
+                    Option<kcl_api::Point2d<kcl_api::Number>>,
+                    kcl_api::ConstraintSource,
                 )> = Vec::new();
                 if let (Some(original_start_id), Some(original_end_id)) =
                     (original_segment_start_point_id, original_segment_end_point_id)
                 {
                     for obj in &edit_scene_graph_delta.new_graph.objects {
-                        let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                        let kcl_api::ObjectKind::Constraint { constraint } = &obj.kind else {
                             continue;
                         };
 
@@ -6399,7 +6364,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 // Re-add distance constraints
                 if let Some(original_start_id) = original_segment_start_point_id {
                     for (distance_value, label_position, source) in distance_constraints_to_re_add {
-                        batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
+                        batch_constraints.push(Constraint::Distance(kcl_api::Distance {
                             segments: vec![original_start_id.into(), new_segment_end_point_id.into()],
                             distance: distance_value,
                             label_position,
@@ -6426,7 +6391,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     angle_rewrite_map.insert(original_end_id, new_segment_end_point_id);
                 }
                 for obj in &edit_scene_graph_delta.new_graph.objects {
-                    let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                    let kcl_api::ObjectKind::Constraint { constraint } = &obj.kind else {
                         continue;
                     };
 
@@ -6515,8 +6480,8 @@ pub(crate) async fn execute_trim_operations_simple(
                     .ok_or_else(|| format!("Failed to find original control point spline {}", segment_id.0))?;
 
                 let (_original_start_id, original_end_id) = match &original_segment.kind {
-                    crate::frontend::api::ObjectKind::Segment {
-                        segment: crate::frontend::sketch::Segment::ControlPointSpline(spline),
+                    kcl_api::ObjectKind::Segment {
+                        segment: kcl_api::Segment::ControlPointSpline(spline),
                     } => (
                         spline
                             .controls
@@ -6550,8 +6515,8 @@ pub(crate) async fn execute_trim_operations_simple(
                             .is_some_and(|obj| {
                                 matches!(
                                     obj.kind,
-                                    crate::frontend::api::ObjectKind::Segment {
-                                        segment: crate::frontend::sketch::Segment::ControlPointSpline(_)
+                                    kcl_api::ObjectKind::Segment {
+                                        segment: kcl_api::Segment::ControlPointSpline(_)
                                     }
                                 )
                             })
@@ -6565,8 +6530,8 @@ pub(crate) async fn execute_trim_operations_simple(
                     .find(|obj| obj.id == new_right_segment_id)
                     .ok_or_else(|| format!("New split spline {} not found", new_right_segment_id.0))?;
                 let (new_right_start_id, new_right_end_id) = match &new_right_segment.kind {
-                    crate::frontend::api::ObjectKind::Segment {
-                        segment: crate::frontend::sketch::Segment::ControlPointSpline(spline),
+                    kcl_api::ObjectKind::Segment {
+                        segment: kcl_api::Segment::ControlPointSpline(spline),
                     } => (
                         spline.controls.first().copied().ok_or_else(|| {
                             format!("New split spline {} has no start control point", new_right_segment_id.0)
@@ -6599,8 +6564,8 @@ pub(crate) async fn execute_trim_operations_simple(
                     .find(|obj| obj.id == *segment_id)
                     .ok_or_else(|| format!("Edited split spline {} not found", segment_id.0))?;
                 let edited_left_end_id = match &edited_left_segment.kind {
-                    crate::frontend::api::ObjectKind::Segment {
-                        segment: crate::frontend::sketch::Segment::ControlPointSpline(spline),
+                    kcl_api::ObjectKind::Segment {
+                        segment: kcl_api::Segment::ControlPointSpline(spline),
                     } => spline
                         .controls
                         .last()
@@ -6609,30 +6574,29 @@ pub(crate) async fn execute_trim_operations_simple(
                     _ => return Err("Edited split segment is not a control point spline".to_string()),
                 };
 
-                let constraint_segments_for =
-                    |endpoint_id: ObjectId,
-                     term: &TrimTermination|
-                     -> Result<Vec<crate::frontend::sketch::ConstraintSegment>, String> {
-                        match term {
-                            TrimTermination::Intersection {
-                                intersecting_seg_id, ..
-                            } => Ok(vec![endpoint_id.into(), (*intersecting_seg_id).into()]),
-                            TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                                other_segment_point_id,
-                                ..
-                            } => Ok(vec![endpoint_id.into(), (*other_segment_point_id).into()]),
-                            TrimTermination::SegEndPoint { .. } => {
-                                Err("Split spline termination cannot be a segment endpoint".to_string())
-                            }
+                let constraint_segments_for = |endpoint_id: ObjectId,
+                                               term: &TrimTermination|
+                 -> Result<Vec<kcl_api::ConstraintSegment>, String> {
+                    match term {
+                        TrimTermination::Intersection {
+                            intersecting_seg_id, ..
+                        } => Ok(vec![endpoint_id.into(), (*intersecting_seg_id).into()]),
+                        TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                            other_segment_point_id,
+                            ..
+                        } => Ok(vec![endpoint_id.into(), (*other_segment_point_id).into()]),
+                        TrimTermination::SegEndPoint { .. } => {
+                            Err("Split spline termination cannot be a segment endpoint".to_string())
                         }
-                    };
+                    }
+                };
 
                 let (_left_source_delta, left_scene_graph_delta) = frontend
                     .add_constraint(
                         ctx,
                         version,
                         sketch_id,
-                        Constraint::Coincident(crate::frontend::sketch::Coincident {
+                        Constraint::Coincident(kcl_api::Coincident {
                             segments: constraint_segments_for(edited_left_end_id, left_side)?,
                         }),
                     )
@@ -6645,7 +6609,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         ctx,
                         version,
                         sketch_id,
-                        Constraint::Coincident(crate::frontend::sketch::Coincident {
+                        Constraint::Coincident(kcl_api::Coincident {
                             segments: constraint_segments_for(new_right_start_id, right_side)?,
                         }),
                     )
@@ -6658,7 +6622,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     .objects
                     .iter()
                     .filter_map(|obj| match &obj.kind {
-                        crate::frontend::api::ObjectKind::Constraint {
+                        kcl_api::ObjectKind::Constraint {
                             constraint: Constraint::Coincident(coincident),
                         } if coincident.contains_segment(original_end_id) => coincident.segment_ids().find_map(|id| {
                             if id == original_end_id {
@@ -6670,8 +6634,8 @@ pub(crate) async fn execute_trim_operations_simple(
                                     .iter()
                                     .find(|candidate| candidate.id == id)
                                     .and_then(|candidate| match &candidate.kind {
-                                        crate::frontend::api::ObjectKind::Segment {
-                                            segment: crate::frontend::sketch::Segment::Point(point),
+                                        kcl_api::ObjectKind::Segment {
+                                            segment: kcl_api::Segment::Point(point),
                                         } => point.owner,
                                         _ => Some(id),
                                     })
@@ -6682,7 +6646,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     .collect();
 
                 for obj in &current_scene_graph_delta.new_graph.objects {
-                    let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                    let kcl_api::ObjectKind::Constraint { constraint } = &obj.kind else {
                         continue;
                     };
                     if !constraint_ids_to_delete.contains(&obj.id) {
@@ -6695,10 +6659,8 @@ pub(crate) async fn execute_trim_operations_simple(
                                 .segments
                                 .iter()
                                 .map(|segment| match segment {
-                                    crate::frontend::sketch::ConstraintSegment::Segment(id)
-                                        if *id == original_end_id =>
-                                    {
-                                        crate::frontend::sketch::ConstraintSegment::Segment(new_right_end_id)
+                                    kcl_api::ConstraintSegment::Segment(id) if *id == original_end_id => {
+                                        kcl_api::ConstraintSegment::Segment(new_right_end_id)
                                     }
                                     _ => *segment,
                                 })
@@ -6708,7 +6670,7 @@ pub(crate) async fn execute_trim_operations_simple(
                                     ctx,
                                     version,
                                     sketch_id,
-                                    Constraint::Coincident(crate::frontend::sketch::Coincident {
+                                    Constraint::Coincident(kcl_api::Coincident {
                                         segments: migrated_segments,
                                     }),
                                 )
@@ -6731,7 +6693,7 @@ pub(crate) async fn execute_trim_operations_simple(
                                         ctx,
                                         version,
                                         sketch_id,
-                                        Constraint::Tangent(crate::frontend::sketch::Tangent {
+                                        Constraint::Tangent(kcl_api::Tangent {
                                             input: tangent
                                                 .input
                                                 .iter()

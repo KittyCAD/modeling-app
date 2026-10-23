@@ -21,25 +21,31 @@ Compared to other CAD software, getting Zoo Design Studio up and running is quic
 
 ## Linux
 
-1. Download the [Zoo Design Studio installer](https://zoo.dev/design-studio/download) for Linux and for your processor type.
+1. Download the [Zoo Design Studio AppImage](https://zoo.dev/design-studio/download) for your processor: x86-64 for Intel/AMD, or ARM64 for ARM.
 
-2. Install the dependencies needed to run the [AppImage format](https://appimage.org/).
-    -  On Ubuntu, install the FUSE library with these commands in a terminal.
-       ```bash
-       sudo apt update
-       sudo apt install libfuse2
-       ```
+2. Install the FUSE 2 library. On Ubuntu 24.04 and later:
 
-       Note that on ARM, `zlib1g-dev` may also be required and installable with `sudo apt install zlib1g-dev`
-    - Optionally, follow [these steps](https://github.com/probonopd/go-appimage/blob/master/src/appimaged/README.md#initial-setup) to install `appimaged`. It is a daemon that makes interacting with AppImage files more seamless.
-    - Once installed, copy the downloaded `Zoo Design Studio-{version}-{arch}-linux.AppImage` to the directory of your choice, for instance `~/Applications`.
-
-   - `appimaged` should automatically find it and make it executable. If not, run:
-     ```bash
-     chmod a+x ~/Applications/Zoo\ Modeling\ App-{version}-{arch}-linux.AppImage
-     ```
-
-3. You can double-click on the AppImage to run it, or in a terminal with this command:
    ```bash
-    ~/Applications/Zoo\ Modeling\ App-{version}-{arch}-linux.AppImage
+   sudo apt update
+   sudo apt install libfuse2t64
    ```
+
+   On Ubuntu 22.04, use `sudo apt install libfuse2` instead. FUSE 2 can coexist with FUSE 3; you do not need to remove FUSE 3. See the [AppImage FUSE guide](https://docs.appimage.org/user-guide/troubleshooting/fuse.html) for other distributions.
+
+   On ARM, `zlib1g-dev` may also be required and can be installed with `sudo apt install zlib1g-dev`.
+
+3. Copy the AppImage to a directory of your choice, such as `~/Applications` (create it if needed). In the commands below, replace `your-download.AppImage` with the exact downloaded filename. Keep the quotes so filenames containing spaces work:
+
+   ```bash
+   appimage="$HOME/Applications/your-download.AppImage"
+   chmod +x "$appimage"
+   "$appimage"
+   ```
+
+   After making it executable, you can also double-click the AppImage to launch it. For optional application-menu integration, see the [appimaged setup instructions](https://github.com/probonopd/go-appimage/blob/master/src/appimaged/README.md#initial-setup).
+
+### Ubuntu sandbox startup errors
+
+Ubuntu 24.04 and later [restrict unprivileged user namespaces](https://discourse.ubuntu.com/t/understanding-apparmor-user-namespace-restriction/58007), which can prevent Electron's sandbox from starting. Installing FUSE and making the AppImage executable do not configure this permission.
+
+If startup still fails with an error mentioning `chrome-sandbox` or `No usable sandbox`, see [the tracked Ubuntu startup issue](https://github.com/KittyCAD/modeling-app/issues/7319). Include your Ubuntu release, Zoo version, CPU architecture, and the full terminal error when reporting it. Avoid disabling the sandbox with `--no-sandbox` or turning off AppArmor restrictions globally.

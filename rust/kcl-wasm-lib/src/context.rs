@@ -45,10 +45,12 @@ impl ExecutionCallbacks for JsExecutionCallbacks {
 
 #[wasm_bindgen]
 pub struct Context {
+    pub(crate) cache: kcl_lib::Cache,
     engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: kcl_lib::FileSystemHandle,
     mock_engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
+    geometry_only: bool,
     execution_callbacks: Option<JsExecutionCallbacks>,
     pub(crate) project_manager: ProjectManager,
     pub(crate) frontend: Arc<tokio::sync::RwLock<FrontendState>>,
@@ -61,6 +63,7 @@ impl Context {
         engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
         fs_manager: kcl_lib::wasm_engine::FileSystemManager,
         execution_callbacks: Option<JsExecutionCallbacks>,
+        geometry_only: Option<bool>,
     ) -> Result<Self, JsValue> {
         console_error_panic_hook::set_once();
         // Initialize the thread pool for rayon. For some reason, this wasn't
@@ -73,12 +76,14 @@ impl Context {
 
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
+            cache: kcl_lib::Cache::default(),
             engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_wasm_transport(
                 engine_manager,
                 response_context.clone(),
             )),
             fs: kcl_lib::new_file_system_handle(FileManager::new(fs_manager)),
             mock_engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_mock()),
+            geometry_only: geometry_only.unwrap_or_default(),
             execution_callbacks,
             response_context,
             project_manager: ProjectManager,
@@ -89,10 +94,12 @@ impl Context {
     #[wasm_bindgen(js_name = cloneWithExecuteCallbacks)]
     pub fn clone_with_execute_callbacks(&self, execution_callbacks: JsExecutionCallbacks) -> Self {
         Self {
+            cache: self.cache.clone(),
             engine: self.engine.clone(),
             response_context: self.response_context.clone(),
             fs: self.fs.clone(),
             mock_engine: self.mock_engine.clone(),
+            geometry_only: self.geometry_only,
             execution_callbacks: Some(execution_callbacks),
             project_manager: self.project_manager.clone(),
             frontend: self.frontend.clone(),
@@ -107,6 +114,9 @@ impl Context {
     ) -> Result<kcl_lib::ExecutorContext, String> {
         let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
         let mut settings: kcl_lib::ExecutorSettings = config.into();
+        if !is_mock {
+            settings.geometry_only = self.geometry_only;
+        }
         if let Some(path_src) = path {
             settings.with_current_file(kcl_lib::TypedPath::from(&path_src));
         }
@@ -115,7 +125,8 @@ impl Context {
             kcl_lib::ExecutorContext::new_mock(self.mock_engine.clone(), self.fs.clone(), settings)
         } else {
             kcl_lib::ExecutorContext::new_with_engine_and_fs(self.engine.clone(), self.fs.clone(), settings)
-        };
+        }
+        .with_cache(self.cache.clone());
 
         ctx.execution_callbacks = self
             .execution_callbacks

@@ -1,6 +1,6 @@
-use std::fmt;
-
 use anyhow::Result;
+use indexmap::IndexMap;
+pub use kcl_api::modules::ModulePath;
 pub use kcl_error::ModuleId;
 use serde::Deserialize;
 use serde::Serialize;
@@ -11,6 +11,7 @@ use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
 use crate::execution::EnvironmentRef;
 use crate::execution::ModuleArtifactState;
+use crate::execution::NotYetAdded;
 use crate::execution::PreImportedGeometry;
 use crate::execution::typed_path::TypedPath;
 use crate::fs::FileSystemHandle;
@@ -150,38 +151,74 @@ pub struct ModuleExecutionOutcome {
     pub environment: EnvironmentRef,
     pub exports: Vec<String>,
     pub artifacts: ModuleArtifactState,
+    /// Exported declarations skipped as not yet added; see [`crate::execution::NotYetAdded`].
+    pub not_yet_added: IndexMap<String, NotYetAdded>,
 }
 
-#[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash, ts_rs::TS)]
-#[serde(tag = "type")]
-pub enum ModulePath {
-    // The main file of the project.
-    Main,
-    Local {
-        value: TypedPath,
-        original_import_path: Option<TypedPath>,
-    },
-    Std {
-        value: String,
-    },
+impl ModuleExecutionOutcome {
+    /// What importers and qualified paths see of the module.
+    pub(crate) fn items(&self) -> ModuleItems {
+        ModuleItems {
+            environment: self.environment,
+            exports: self.exports.clone(),
+            not_yet_added: self.not_yet_added.clone(),
+        }
+    }
 }
 
-impl ModulePath {
+/// A module's environment, exports, and exported not-yet-added records.
+#[derive(Debug, Clone)]
+pub(crate) struct ModuleItems {
+    pub environment: EnvironmentRef,
+    pub exports: Vec<String>,
+    /// See [`ModuleExecutionOutcome::not_yet_added`].
+    pub not_yet_added: IndexMap<String, NotYetAdded>,
+}
+
+/// Methods for the ModulePath type.
+pub trait ModulePathExt: Sized {
     /// Returns true if this is a path to the solver module that should only be
     /// accessible from sketch blocks. This is how we create a kind of DSL.
-    pub(crate) fn is_solver_module(&self) -> bool {
+    fn is_solver_module(&self) -> bool;
+
+    fn expect_path(&self) -> &TypedPath;
+
+    fn is_local(&self) -> bool;
+
+    async fn source(&self, fs: &FileSystemHandle, source_range: SourceRange) -> Result<ModuleSource, KclError>;
+
+    fn from_import_path(
+        path: &ImportPath,
+        project_directory: &Option<TypedPath>,
+        import_from: &ModulePath,
+    ) -> Result<Self, KclError>;
+
+    /// The path as written in the import statement where available, falling
+    /// back to the resolved path. Used to label backtrace frames.
+    fn import_name(&self) -> String;
+
+    fn from_std_import_path(path: &[String]) -> Result<Self, KclError>;
+
+    /// If we have std path, return the fully qualified name of the given item
+    /// in the module.
+    fn build_std_fully_qualified_name(&self, local_item_name: &str) -> Option<String>;
+}
+
+impl ModulePathExt for ModulePath {
+    /// Returns true if this is a path to the solver module that should only be
+    /// accessible from sketch blocks. This is how we create a kind of DSL.
+    fn is_solver_module(&self) -> bool {
         matches!(self, ModulePath::Std { value } if value == "solver")
     }
 
-    pub(crate) fn expect_path(&self) -> &TypedPath {
+    fn expect_path(&self) -> &TypedPath {
         match self {
             ModulePath::Local { value: p, .. } => p,
             _ => unreachable!(),
         }
     }
 
-    pub(crate) fn is_local(&self) -> bool {
+    fn is_local(&self) -> bool {
         match self {
             ModulePath::Main => false,
             ModulePath::Local { .. } => true,
@@ -189,11 +226,7 @@ impl ModulePath {
         }
     }
 
-    pub(crate) async fn source(
-        &self,
-        fs: &FileSystemHandle,
-        source_range: SourceRange,
-    ) -> Result<ModuleSource, KclError> {
+    async fn source(&self, fs: &FileSystemHandle, source_range: SourceRange) -> Result<ModuleSource, KclError> {
         match self {
             ModulePath::Local { value: p, .. } => Ok(ModuleSource {
                 source: fs.read_to_string(p, source_range).await?,
@@ -214,7 +247,7 @@ impl ModulePath {
         }
     }
 
-    pub(crate) fn from_import_path(
+    fn from_import_path(
         path: &ImportPath,
         project_directory: &Option<TypedPath>,
         import_from: &ModulePath,
@@ -256,7 +289,7 @@ impl ModulePath {
 
     /// The path as written in the import statement where available, falling
     /// back to the resolved path. Used to label backtrace frames.
-    pub(crate) fn import_name(&self) -> String {
+    fn import_name(&self) -> String {
         match self {
             ModulePath::Local {
                 original_import_path: Some(original),
@@ -266,7 +299,7 @@ impl ModulePath {
         }
     }
 
-    pub(crate) fn from_std_import_path(path: &[String]) -> Result<Self, KclError> {
+    fn from_std_import_path(path: &[String]) -> Result<Self, KclError> {
         // For now we only support importing from singly-nested modules inside std.
         if path.len() > 2 || path[0] != "std" {
             let message = format!("Invalid std import path: {path:?}.");
@@ -285,21 +318,11 @@ impl ModulePath {
 
     /// If we have std path, return the fully qualified name of the given item
     /// in the module.
-    pub(crate) fn build_std_fully_qualified_name(&self, local_item_name: &str) -> Option<String> {
+    fn build_std_fully_qualified_name(&self, local_item_name: &str) -> Option<String> {
         match self {
             ModulePath::Main => None,
             ModulePath::Local { .. } => None,
             ModulePath::Std { .. } => Some(format!("{self}::{local_item_name}")),
-        }
-    }
-}
-
-impl fmt::Display for ModulePath {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ModulePath::Main => write!(f, "main"),
-            ModulePath::Local { value: path, .. } => path.fmt(f),
-            ModulePath::Std { value: s } => write!(f, "std::{s}"),
         }
     }
 }

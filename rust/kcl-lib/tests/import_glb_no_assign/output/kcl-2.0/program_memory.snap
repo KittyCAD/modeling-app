@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing import_glb_no_assign.kcl
+---
+{
+  "__mod_cube": {
+    "type": "Module",
+    "value": 1
+  }
+}

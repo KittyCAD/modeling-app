@@ -1375,15 +1375,10 @@ export const getUser = async (token: string): Promise<UserResponse> => {
 
 export const writeProjectThumbnailFile = async (
   fileOperations: FileOperationsRegistryService,
-  dataUrl: string,
+  pngBytes: Uint8Array,
   projectDirectoryPath: string
 ) => {
   const filePath = fsZds.join(projectDirectoryPath, PROJECT_IMAGE_NAME)
-  const data = atob(dataUrl.substring('data:image/png;base64,'.length))
-  const asArray = new Uint8Array(data.length)
-  for (let i = 0, len = data.length; i < len; ++i) {
-    asArray[i] = data.charCodeAt(i)
-  }
 
   // Configure Git to ignore the generated thumbnail
   const gitignorePath = fsZds.join(projectDirectoryPath, '.gitignore')
@@ -1393,7 +1388,7 @@ export const writeProjectThumbnailFile = async (
     await fileOperations.writeFile(gitignorePath, `${PROJECT_IMAGE_NAME}\n`)
   }
 
-  return fileOperations.writeFile(filePath, asArray)
+  return fileOperations.writeFile(filePath, pngBytes)
 }
 
 export function getPathFilenameInVariableCase(targetPath: string) {

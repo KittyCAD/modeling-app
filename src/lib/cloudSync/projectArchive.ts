@@ -1,3 +1,4 @@
+import { withCloudSyncFailureContext } from '@src/lib/cloudSync/failureContext'
 import { normalizeRelativePath } from '@src/lib/cloudSync/paths'
 import type {
   ProjectArchiveFile,
@@ -302,14 +303,19 @@ export function projectManifestsEqual(
 }
 
 export async function projectManifestFromFiles(files: ProjectArchiveFile[]) {
-  const manifest: ProjectManifest = { files: {} }
-  for (const file of files) {
-    manifest.files[normalizeRelativePath(file.relativePath)] = {
-      byteSize: file.data.byteLength,
-      sha256: await sha256Hex(file.data),
+  return withCloudSyncFailureContext(
+    { stage: 'manifest', point: 'hash-project-manifest' },
+    async () => {
+      const manifest: ProjectManifest = { files: {} }
+      for (const file of files) {
+        manifest.files[normalizeRelativePath(file.relativePath)] = {
+          byteSize: file.data.byteLength,
+          sha256: await sha256Hex(file.data),
+        }
+      }
+      return manifest
     }
-  }
-  return manifest
+  )
 }
 
 async function sha256Hex(data: Uint8Array) {
@@ -338,16 +344,21 @@ export function toArrayBuffer(data: Uint8Array): ArrayBuffer {
 }
 
 export async function parseProjectArchive(archive: ArrayBuffer) {
-  try {
-    return await parseZipProjectArchive(archive)
-  } catch (zipError) {
-    const jsonProject = parseJsonProjectArchive(archive)
-    if (jsonProject) {
-      return jsonProject
+  return withCloudSyncFailureContext(
+    { stage: 'archive', point: 'parse-project-archive' },
+    async () => {
+      try {
+        return await parseZipProjectArchive(archive)
+      } catch (zipError) {
+        const jsonProject = parseJsonProjectArchive(archive)
+        if (jsonProject) {
+          return jsonProject
+        }
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw zipError
+      }
     }
-    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw zipError
-  }
+  )
 }
 
 async function parseZipProjectArchive(archive: ArrayBuffer) {

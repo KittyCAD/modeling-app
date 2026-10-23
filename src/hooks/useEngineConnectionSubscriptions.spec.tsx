@@ -4,21 +4,18 @@ import { beforeEach, expect, test, vi } from 'vitest'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 
 const useModelingContext = vi.hoisted(() => vi.fn())
-const getEventForSelectWithPoint = vi.hoisted(() => vi.fn())
+const getEventForQueryEntityTypeWithPoint = vi.hoisted(() => vi.fn())
+const normalizeEntityReference = vi.hoisted(() => vi.fn())
 const selectSketchPlane = vi.hoisted(() => vi.fn())
 
 vi.mock('@src/hooks/useModelingContext', () => ({ useModelingContext }))
-vi.mock('@src/lib/boot', () => ({
-  useApp: () => ({
-    userFeatures: {
-      useHas: () => false,
-    },
-  }),
-}))
 vi.mock('@src/lib/selections', () => ({
-  getEventForSelectWithPoint,
-  selectSketchPlane,
+  engineTopologyFallbackFromReference: vi.fn(() => null),
+  getEventForQueryEntityTypeWithPoint,
+  normalizeEntityReference,
+  showSketchOnImportForFace: vi.fn(() => false),
 }))
+vi.mock('@src/lib/selectSketchPlane', () => ({ selectSketchPlane }))
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -39,9 +36,12 @@ test('stores a post-selected primitive before starting a sketch', async () => {
     },
   }
   const engineEvent = {
-    type: 'select_with_point',
+    type: 'query_entity_type_with_point',
     data: {
-      entity_id: 'face-id',
+      reference: {
+        type: 'face',
+        face_id: 'face-id',
+      },
     },
   }
   const unsubscribe = vi.fn()
@@ -74,14 +74,11 @@ test('stores a post-selected primitive before starting a sketch', async () => {
       kclManager,
       rustContext,
       wasmInstance: {},
-      store: {
-        useSketchSolveMode: {
-          current: true,
-        },
-      },
+      store: {},
     },
   })
-  getEventForSelectWithPoint.mockResolvedValue(selectionEvent)
+  getEventForQueryEntityTypeWithPoint.mockResolvedValue(selectionEvent)
+  normalizeEntityReference.mockReturnValue(engineEvent.data.reference)
   selectSketchPlane.mockResolvedValue(undefined)
 
   const { unmount } = renderHook(() => useEngineConnectionSubscriptions())
@@ -95,7 +92,7 @@ test('stores a post-selected primitive before starting a sketch', async () => {
 
   await waitFor(() => {
     expect(send).toHaveBeenCalledWith(selectionEvent)
-    expect(selectSketchPlane).toHaveBeenCalledWith('face-id', true, kclManager)
+    expect(selectSketchPlane).toHaveBeenCalledWith('face-id', kclManager)
   })
   expect(send.mock.invocationCallOrder[0]).toBeLessThan(
     selectSketchPlane.mock.invocationCallOrder[0]

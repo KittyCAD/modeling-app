@@ -5,9 +5,9 @@ excerpt: "The uninhabited type of computations that never complete normally."
 layout: manual
 ---
 
-**WARNING:** This type is experimental and may change or be removed.
-
 The uninhabited type of computations that never complete normally.
+
+**Added in KCL 3.0.**
 
 [`never`](/docs/kcl-std/types/std-types-never) has no values and is a subtype of every type. Use it as the return
 type of a function that always stops evaluation by raising an error. A

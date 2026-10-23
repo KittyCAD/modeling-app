@@ -17,7 +17,7 @@ export default function lspHoverExt(
       )
     }),
     tooltips({
-      position: 'absolute',
+      position: 'fixed',
       parent: document.body,
     }),
     EditorView.baseTheme({

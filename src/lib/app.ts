@@ -1,22 +1,19 @@
 import {
   defineRegistryItem,
   pluginsValueSpec,
-  provideService,
   Registry,
   type RegistryItem,
   Slot,
 } from '@kittycad/registry'
-import { effect, type Signal, signal } from '@preact/signals-core'
+import { computed, effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
+import { KclManager } from '@src/lang/KclManager'
+import { ZDSProject } from '@src/lib/projectSession'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import type { Debugger } from '@src/lib/debugger'
 import { isPlaywright } from '@src/lib/isPlaywright'
-import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
@@ -27,13 +24,7 @@ import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
-import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
-import {
-  getAllCurrentSettings,
-  jsAppSettings,
-} from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import {
@@ -41,7 +32,6 @@ import {
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
-import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   type SystemIOActor,
   SystemIOMachineEvents,
@@ -62,7 +52,6 @@ import {
 } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   type FileOperationsRegistryService,
   fileOperationsService,
@@ -71,6 +60,10 @@ import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import {
+  type InteractionPerformanceService,
+  interactionPerformanceService,
+} from '@src/registry/contracts/interactionPerformance'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
@@ -97,11 +90,9 @@ import {
 } from '@src/registry/createZdsPlugin'
 import {
   appRegistryOverridesSlot,
-  appRegistryServicesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
 import type { SnapshotFrom, Subscription } from 'xstate'
-import { createActor } from 'xstate'
 
 const appCommandsSlot = new Slot()
 
@@ -131,19 +122,10 @@ function getZookeeperReplayFallbackFilePath(
   return candidates.find((path) => path && !deletedPaths.has(path))
 }
 
-// We set some of our singletons on the window for debugging and E2E tests
+// The boot layer exposes the app for debugging and E2E tests.
 declare global {
   interface Window {
     app: App
-    engineCommandManager: ConnectionManager
-    rustContext: RustContext
-    engineDebugger: Debugger
-    /** Dev helper: on each click, logs two `makeMouseHelpers` lines (see buildSingletons). */
-    enableMousePositionLogs?: () => void
-    enableFillet?: () => void
-    zoomToFit?: () => void
-    /** Dev flag read by fillet debugging paths */
-    _enableFillet?: boolean
   }
 }
 
@@ -180,6 +162,9 @@ export class App implements AppSubsystems {
   public get fileOperations(): FileOperationsRegistryService {
     return this.registry.get(fileOperationsService)
   }
+
+  declare readonly interactionPerformance?: InteractionPerformanceService
+
   private get projectSession(): ProjectSessionService {
     return this.registry.get(projectSession)
   }
@@ -228,10 +213,10 @@ export class App implements AppSubsystems {
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
    */
-  systemIOActor: SystemIOActor
+  get systemIOActor(): SystemIOActor {
+    return this.registry.get(systemIOService).actor
+  }
 
-  // TODO: refactor this to not require keeping around the last settings to compare to
-  private lastSettings: SaveSettingsPayload
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
 
@@ -246,14 +231,12 @@ export class App implements AppSubsystems {
     this.settings = subsystems.settings
     this.layout = subsystems.layout
     this.registry = subsystems.registry
+    if (import.meta.env.VITE_INTERACTION_PERFORMANCE === '1') {
+      this.interactionPerformance = this.registry.get(
+        interactionPerformanceService
+      )
+    }
     this.userFeatures = subsystems.userFeatures
-    this.systemIOActor = createActor(systemIOMachineImpl, {
-      input: {
-        wasmInstancePromise: this.wasmPromise,
-        app: this,
-      },
-    }).start()
-
     this.syncAppCommands()
     this.commands.actor.send({
       type: 'Set userFeatures',
@@ -272,9 +255,6 @@ export class App implements AppSubsystems {
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
     this.singletons = this.buildSingletons()
-    this.lastSettings = getAllCurrentSettings(
-      getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
-    )
     this.settings.actor.subscribe(this.syncPluginSettings)
     this.syncPluginSettingsFromCurrent()
   }
@@ -290,7 +270,6 @@ export class App implements AppSubsystems {
     appRegistry.configure([
       appRegistryOverridesSlot.of(...registryOverrides),
       appCommandsSlot.of(),
-      appRegistryServicesSlot.of(),
       engineSceneRuntimeExtensionsSlot.of(),
       ...coreRegistryItems,
     ])
@@ -374,6 +353,8 @@ export class App implements AppSubsystems {
     }
   }
 
+  private unsubscribeSystemIO: Subscription | undefined
+
   async openProject(
     projectIORef: Project,
     assertCurrent: () => void = () => {}
@@ -385,10 +366,14 @@ export class App implements AppSubsystems {
     assertCurrent()
 
     const projectIORefSignal = signal(ownedProject)
+
     const nextProject = await ZDSProject.open(projectIORefSignal, this)
     assertCurrent()
 
     this.disposeProjectHistoryExtensions?.()
+    // We only ever allow one project to be open at a time in the app,
+    // so we gotta clean up after ourselves and close any open project.
+    this.project?.close()
     this.project = nextProject
     this.setCloudSyncOpenedProject(ownedProject)
 
@@ -447,7 +432,8 @@ export class App implements AppSubsystems {
 
     // TODO: Rework the systemIOActor to fit into the system better,
     // so that the project doesn't need to subscribe to it.
-    this.systemIOActor.subscribe(({ context }) => {
+    this.unsubscribeSystemIO?.unsubscribe()
+    this.unsubscribeSystemIO = this.systemIOActor.subscribe(({ context }) => {
       const foundProject = (context.folders ?? []).find(
         (p) =>
           p.name === projectIORefSignal.value.name &&
@@ -466,16 +452,8 @@ export class App implements AppSubsystems {
       }
     })
 
-    this.lastSettings = getAllCurrentSettings(
-      getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
-    )
-    this.unsubscribeFromSettings = this.settings.actor.subscribe(
-      this.onSettingsUpdate
-    )
-
     return this.project
   }
-  private unsubscribeFromSettings: Subscription | undefined = undefined
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
   private hasStoppedSubsystems = false
 
@@ -483,9 +461,9 @@ export class App implements AppSubsystems {
     if (this.hasStoppedSubsystems) return
     this.hasStoppedSubsystems = true
     this.closeProject()
+    this.singletons.kclManager.close()
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
-    this.systemIOActor.stop()
     this.settings.actor.stop()
     this.commands.actor.stop()
     this.auth.actor.stop()
@@ -507,8 +485,8 @@ export class App implements AppSubsystems {
   closeProject() {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
-    this.unsubscribeFromSettings?.unsubscribe()
-    this.unsubscribeFromSettings = undefined
+    this.unsubscribeSystemIO?.unsubscribe()
+    this.unsubscribeSystemIO = undefined
     this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
@@ -573,15 +551,6 @@ export class App implements AppSubsystems {
   }
 
   syncAppCommands = () => {
-    const enableProjectDirectoryCommands =
-      typeof window !== 'undefined' &&
-      (Boolean(window.electron) ||
-        userFeaturesContextHas(
-          this.userFeatures.actor.getSnapshot().context,
-          OPFS_CLOUD_FEATURE_FLAG,
-          false
-        ))
-
     this.registry.reconfigure(appCommandsSlot, [
       defineRegistryItem({
         id: 'app.global-commands',
@@ -591,11 +560,16 @@ export class App implements AppSubsystems {
           ),
           ...createProjectCommands({
             systemIOActor: this.systemIOActor,
-            enableProjectDirectoryCommands,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
+            getCurrentProjectPath: () =>
+              this.settings.actor.getSnapshot().context.currentProject?.path,
             getCurrentProjectLibraryId: () =>
               this.currentProjectLibraryIdSignal.value,
+            getProjectLibraries: () =>
+              projectLibrariesFromSettings(
+                this.settings.actor.getSnapshot().context.app.libraries.current
+              ),
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
             getHomeProjectActions: () =>
               this.registry.get(homeProjectActionsService),
@@ -689,6 +663,9 @@ export class App implements AppSubsystems {
         platform !== undefined &&
         featurePolicy.forceEnabledOnPlatform === platform &&
         !isPlaywright()
+      if (isPlaywright() && !forceEnabled) {
+        continue
+      }
       if (!forceEnabled && settingValue.user !== undefined) {
         continue
       }
@@ -780,219 +757,26 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    File.ioImplementations.read = async (path) =>
-      new TextDecoder().decode(await this.fileOperations.readFile(path))
-    File.ioImplementations.write = (path, content) =>
-      this.fileOperations.writeFile(path, content)
-
     // TODO: Remove this and make the app handle no executing editor,
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
+      machineManager: this.machineManager,
+      project: computed(() => this.project?.projectIORefSignal.value),
+      fileOperations: this.fileOperations,
+      textFileIO: this.projectSession.textFileIO,
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
-      projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
       userFeatures: this.userFeatures,
       keymap: this.registry.get(keymapService),
     })
-    kclManager.fileOperations = this.fileOperations
 
-    this.registry.reconfigure(appRegistryServicesSlot, [
-      defineRegistryItem({
-        id: 'app.runtime-services',
-        providesServices: [
-          provideService(
-            executingEditorService,
-            kclManager.executingEditorService
-          ),
-          provideService(systemIOService, {
-            actor: this.systemIOActor,
-          }),
-        ],
-      }),
-    ])
     this.registry.get(lspService).attachKclManager(kclManager)
-
-    if (typeof window !== 'undefined') {
-      window.engineCommandManager = kclManager.engineCommandManager
-      window.rustContext = kclManager.rustContext
-      window.engineDebugger = EngineDebugger
-
-      /**
-       * On each click, logs two lines for `SceneFixture.makeMouseHelpers` /
-       * `convertPagePositionToStream` (e2e/playwright/fixtures/sceneFixture.ts).
-       * Adds a document listener per call.
-       */
-      window.enableMousePositionLogs = () => {
-        const onClick = (e: MouseEvent) => {
-          const streamEl = document.querySelector('[data-testid="stream"]')
-          const vw = document.documentElement.clientWidth
-          const vh = document.documentElement.clientHeight
-          if (!streamEl || vw <= 0 || vh <= 0) {
-            return
-          }
-          const r = streamEl.getBoundingClientRect()
-          if (r.width <= 0 || r.height <= 0) {
-            return
-          }
-          const cx = e.clientX
-          const cy = e.clientY
-          const ratioX = (cx - r.left) / r.width
-          const ratioY = (cy - r.top) / r.height
-          const pixelX = ratioX * vw
-          const pixelY = ratioY * vh
-          console.log(
-            `[mouse→e2e] makeMouseHelpers(${ratioX.toFixed(4)}, ${ratioY.toFixed(4)}, { format: 'ratio' })`
-          )
-          console.log(
-            `[mouse→e2e] makeMouseHelpers(${Math.round(pixelX)}, ${Math.round(pixelY)}, { steps: 20, format: 'pixels' })`
-          )
-        }
-        document.addEventListener('click', onClick, true)
-      }
-
-      window.enableFillet = () => {
-        window._enableFillet = true
-      }
-      window.zoomToFit = () => {
-        void kclManager.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [],
-            padding: 0.2,
-            animated: false,
-          },
-        })
-      }
-    }
-
-    this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
 
     return {
       kclManager,
     }
-  }
-
-  /**
-   * Until we update these dependents of the settings to take settings
-   * as a dependency input, we must subscribe to updates from the outside.
-   */
-  onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
-    if (!this.project) {
-      return // Everything in here only matters inside a project.
-    }
-    const { context } = snapshot
-    const sketchGridSettingsChanged =
-      this.lastSettings.modeling.showSketchGrid !==
-        context.modeling.showSketchGrid.current ||
-      this.lastSettings.modeling.fixedSizeGrid !==
-        context.modeling.fixedSizeGrid.current ||
-      this.lastSettings.modeling.majorGridSpacing !==
-        context.modeling.majorGridSpacing.current ||
-      this.lastSettings.modeling.minorGridsPerMajor !==
-        context.modeling.minorGridsPerMajor.current
-
-    if (sketchGridSettingsChanged) {
-      this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
-    }
-
-    // Update line wrapping
-    this.singletons.kclManager.setEditorLineWrapping(
-      context.textEditor.textWrapping.current
-    )
-
-    // Update engine highlighting
-    const newHighlighting = context.modeling.highlightEdges.current
-    if (
-      newHighlighting !== this.lastSettings.modeling.highlightEdges &&
-      this.singletons.kclManager.engineCommandManager.connection
-    ) {
-      this.singletons.kclManager.engineCommandManager
-        .setHighlightEdges(newHighlighting)
-        .catch(reportRejection)
-    }
-
-    // Update cursor blinking
-    const newBlinking = context.textEditor.blinkingCursor.current
-    document.documentElement.style.setProperty(
-      '--cursor-color',
-      newBlinking ? 'auto' : 'transparent'
-    )
-    this.singletons.kclManager.setCursorBlinking(newBlinking)
-
-    // Update theme
-    const newTheme = context.app.theme.current
-    const themeChanged = this.lastSettings.app.theme !== newTheme
-    const newBackfaceColor = context.modeling.backfaceColor.current
-    const themeUpdate = this.singletons.kclManager
-      .updateTheme(newTheme)
-      .then(() => {
-        if (themeChanged) {
-          this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
-        }
-      })
-    Promise.all([
-      themeUpdate,
-      ...(this.singletons.kclManager.engineCommandManager.connection?.connected
-        ? [
-            this.singletons.kclManager.engineCommandManager.setDefaultSystemProperties(
-              newBackfaceColor
-            ),
-          ]
-        : []),
-    ]).catch(reportRejection)
-
-    // Reapply settings to the engine
-    try {
-      const engineSettingsChanged =
-        this.lastSettings.modeling.showScaleGrid !==
-          context.modeling.showScaleGrid.current ||
-        this.lastSettings.modeling.fixedSizeGrid !==
-          context.modeling.fixedSizeGrid.current ||
-        this.lastSettings.modeling.highlightEdges !==
-          context.modeling.highlightEdges.current
-      const backfaceColorChanged =
-        this.lastSettings.modeling.backfaceColor !==
-        context.modeling.backfaceColor.current
-      const engineConnection =
-        this.singletons.kclManager.engineCommandManager.connection
-
-      if (backfaceColorChanged && engineConnection) {
-        this.singletons.kclManager.rustContext
-          .clearSceneAndBustCache(
-            jsAppSettings(this.settings.actor),
-            this.singletons.kclManager.path
-          )
-          .then(() => this.singletons.kclManager.executeCode())
-          .catch(reportRejection)
-      } else if (engineSettingsChanged && engineConnection) {
-        this.singletons.kclManager.executeCode().catch(reportRejection)
-      }
-    } catch (e) {
-      console.error('Error executing AST after settings change', e)
-    }
-
-    this.singletons.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode =
-      context.app.allowOrbitInSketchMode.current
-
-    const newCurrentProjection = context.modeling.cameraProjection.current
-    if (
-      this.singletons.kclManager.sceneInfra.camControls &&
-      !this.singletons.kclManager.modelingState?.matches('Sketch') &&
-      !this.singletons.kclManager.modelingState?.matches('sketchSolveMode')
-    ) {
-      this.singletons.kclManager.sceneInfra.camControls.engineCameraProjection =
-        newCurrentProjection
-    }
-
-    // TODO: Migrate settings to not be an XState actor so we don't need to save a snapshot
-    // of the last settings to know if they've changed.
-    this.lastSettings = getAllCurrentSettings(
-      getOnlySettingsFromContext(context)
-    )
   }
 }

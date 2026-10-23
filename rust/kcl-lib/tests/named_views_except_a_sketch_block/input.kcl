@@ -2,7 +2,7 @@
 // rather than a region taken from it. The two are different artifacts, so the
 // choice decides what a consumer will act on, and the flowchart snapshot is
 // where that is visible: the view's edge points at the node it stored.
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 plateSketch = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])

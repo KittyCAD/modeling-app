@@ -6,7 +6,7 @@
 // The rendered diagnostic is the whole point of this test: the interpreter adds
 // a source range per frame as the error unwinds, so the snapshot shows whether
 // an author can see which call produced the collision.
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 fn frontView() {
   return view::named(

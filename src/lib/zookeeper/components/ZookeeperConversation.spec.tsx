@@ -18,6 +18,7 @@ const bootMockState = vi.hoisted<{
 vi.mock('@src/routes/utils', () => ({
   getAppVersion: () => 'test',
   isPlaywrightTestEnv: false,
+  IS_STAGING_OR_DEBUG: true,
 }))
 
 vi.mock('@src/lib/desktop', () => ({

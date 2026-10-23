@@ -1,8 +1,4 @@
-import {
-  defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
-  provide,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import {
   computed,
   effect,
@@ -12,7 +8,8 @@ import {
 import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { Spinner } from '@src/components/Spinner'
-import type { KclManager, ZDSProject } from '@src/lang/KclManager'
+import type { KclManager } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 import type { BillingRegistryService } from '@src/lib/billing'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
@@ -21,7 +18,7 @@ import type {
   ZookeeperSessionController,
   ZookeeperSessionControllerDependencies,
 } from '@src/lib/zookeeper/registry/controller'
-import { makeZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import { makeProjectZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   type AuthRegistryService,
@@ -49,6 +46,7 @@ import {
   systemIOService,
 } from '@src/registry/contracts/systemIO'
 import { lazy, Suspense } from 'react'
+import env, { getEnvironmentNameFromEnv } from '@src/env'
 
 const ZookeeperConversationPaneWrapper = lazy(async () => {
   const { ZookeeperConversationPaneWrapper } = await import(
@@ -303,7 +301,11 @@ export function createZookeeperRuntime(
         const controller = createZookeeperSessionController({
           apiToken: next.apiToken,
           billing,
-          conversationStore: makeZookeeperConversationStore(fileOperations),
+          conversationStore: makeProjectZookeeperConversationStore(
+            fileOperations,
+            next.projectPath,
+            getEnvironmentNameFromEnv(env())
+          ),
           fileOperations,
           kclManager: next.kclManager,
           project: next.project,
@@ -449,10 +451,8 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
   })
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'zookeeper.runtime',
-      provides: [provide(layoutAreaLibraryValueSpec, areaLibrary)],
-      dispose: () => runtime.dispose(),
-    }),
+    id: 'zookeeper.runtime',
+    provides: [provide(layoutAreaLibraryValueSpec, areaLibrary)],
+    dispose: () => runtime.dispose(),
   }
 }, 'zookeeper.runtime')

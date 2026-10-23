@@ -108,7 +108,7 @@ export const playwrightLayoutConfig = {
         },
         {
           id: 'export',
-          label: 'Export part',
+          label: 'Export',
           icon: 'floppyDiskArrow',
           actionType: 'export',
         },

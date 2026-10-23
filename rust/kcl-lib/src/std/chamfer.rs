@@ -174,8 +174,8 @@ async fn inner_chamfer(
         Default::default()
     };
 
-    let second_distance = second_length.map(|x| LengthUnit(x.to_mm()));
-    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
+    let second_distance = second_length.map(|x| LengthUnit(x.unwrap_to_mm()));
+    let angle = angle.map(|x| Angle::from_degrees(x.unwrap_to_degrees(exec_state, args.source_range)));
     if let Some(angle) = angle
         && (angle.ge(&Angle::quarter_circle()) || angle.le(&Angle::zero()))
     {
@@ -203,7 +203,7 @@ async fn inner_chamfer(
         }
     } else {
         CutTypeV2::Chamfer {
-            distance: LengthUnit(length.to_mm()),
+            distance: LengthUnit(length.unwrap_to_mm()),
             second_distance,
             angle,
             swap: false,
@@ -217,8 +217,7 @@ async fn inner_chamfer(
             EdgeReference::Uuid(u) => *u,
             EdgeReference::Tag(t) => args.get_tag_engine_info(exec_state, t)?.id,
         };
-        if crate::runtime_flags::z0006_refactor_metadata_enabled()
-            && let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+        if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
             && let [a, b] = face_ids.as_slice()
         {
             let tag_identifier = match edge_ref {
@@ -333,8 +332,8 @@ async fn inner_chamfer_v2(
         Default::default()
     };
 
-    let second_distance = second_length.map(|x| LengthUnit(x.to_mm()));
-    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
+    let second_distance = second_length.map(|x| LengthUnit(x.unwrap_to_mm()));
+    let angle = angle.map(|x| Angle::from_degrees(x.unwrap_to_degrees(exec_state, args.source_range)));
     if let Some(angle) = angle
         && (angle.ge(&Angle::quarter_circle()) || angle.le(&Angle::zero()))
     {
@@ -362,7 +361,7 @@ async fn inner_chamfer_v2(
         }
     } else {
         CutTypeV2::Chamfer {
-            distance: LengthUnit(length.to_mm()),
+            distance: LengthUnit(length.unwrap_to_mm()),
             second_distance,
             angle,
             swap: false,
@@ -380,8 +379,7 @@ async fn inner_chamfer_v2(
             EdgeReference::Uuid(_) => String::new(),
         };
         for edge_id in ids {
-            if crate::runtime_flags::z0006_refactor_metadata_enabled()
-                && let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
                 && let [a, b] = face_ids.as_slice()
             {
                 if !tag_identifier.is_empty() {
@@ -485,8 +483,8 @@ async fn inner_chamfer_with_engine_refs(
         Default::default()
     };
 
-    let second_distance = second_length.map(|x| LengthUnit(x.to_mm()));
-    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
+    let second_distance = second_length.map(|x| LengthUnit(x.unwrap_to_mm()));
+    let angle = angle.map(|x| Angle::from_degrees(x.unwrap_to_degrees(exec_state, args.source_range)));
     if let Some(angle) = angle
         && (angle.ge(&Angle::quarter_circle()) || angle.le(&Angle::zero()))
     {
@@ -497,7 +495,7 @@ async fn inner_chamfer_with_engine_refs(
     }
 
     let cut_type = CutTypeV2::Chamfer {
-        distance: LengthUnit(length.to_mm()),
+        distance: LengthUnit(length.unwrap_to_mm()),
         second_distance,
         angle,
         swap: false,

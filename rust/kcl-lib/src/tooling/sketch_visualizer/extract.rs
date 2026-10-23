@@ -3,6 +3,13 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
+use kcl_api::ArcDirection;
+use kcl_api::Freedom;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
+use kcl_api::Segment;
+
 use super::model::InternalPoint;
 use super::model::InternalSegment;
 use super::render::render_png;
@@ -17,12 +24,8 @@ use super::types::CONTACT_TOLERANCE;
 use super::types::SketchVisualizationBounds;
 use super::types::SketchVisualizationError;
 use super::types::SketchVisualizationPoint;
-use crate::front::ArcDirection;
-use crate::front::Freedom;
-use crate::front::Object;
-use crate::front::ObjectId;
-use crate::front::ObjectKind;
-use crate::front::Segment;
+use crate::front::PointExt;
+use crate::front::SegmentExt;
 
 #[derive(Debug)]
 pub(super) struct Extraction<'a> {
@@ -42,7 +45,7 @@ impl<'a> Extraction<'a> {
 
     pub(super) fn collect_points_and_segments(
         &mut self,
-        sketch: &crate::front::Sketch,
+        sketch: &kcl_api::Sketch,
     ) -> Result<(), SketchVisualizationError> {
         for &object_id in &sketch.segments {
             let object = object_by_id(self.scene_objects, object_id)?;
@@ -127,12 +130,11 @@ impl<'a> Extraction<'a> {
         render_png(&self.segments, &self.points, &contact_point_ids, bounds)
     }
 
-    fn insert_point(&mut self, id: ObjectId, point: &crate::front::Point) {
+    fn insert_point(&mut self, id: ObjectId, point: &kcl_api::Point) {
         self.points.insert(
             id.0,
             InternalPoint {
                 position: position_to_point(&point.position),
-                owner: point.owner.map(|owner| owner.0),
                 freedom: point.freedom(),
             },
         );
@@ -142,7 +144,7 @@ impl<'a> Extraction<'a> {
         self.points.get(&id.0).map(|point| point.freedom)
     }
 
-    fn line_polyline(&self, line: &crate::front::Line) -> Option<Vec<SketchVisualizationPoint>> {
+    fn line_polyline(&self, line: &kcl_api::Line) -> Option<Vec<SketchVisualizationPoint>> {
         Some(vec![
             self.points.get(&line.start.0)?.position,
             self.points.get(&line.end.0)?.position,

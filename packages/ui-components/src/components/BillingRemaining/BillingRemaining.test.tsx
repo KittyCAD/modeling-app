@@ -15,7 +15,8 @@ const userPaymentBalance = {
   monthly_api_credits_remaining_monetary_value: 0,
   stable_api_credits_remaining: 0,
   stable_api_credits_remaining_monetary_value: 0,
-  total_due: 0,
+  total_due: 14.75,
+  amount_due_after_credits: 0,
   updated_at: '2026-01-02T21:57:20.048Z',
 } satisfies CustomerBalance
 
@@ -116,7 +117,7 @@ test('Shows infinite balance for Pro subscription data', async () => {
   expect(queryByTestId('billing-remaining-error-indicator')).toBeNull()
 })
 
-test('Hides overrun when total due is zero', async () => {
+test('Hides overrun when credits cover the recorded charges', async () => {
   const { queryByText } = render(
     <BillingRemaining
       mode={BillingRemainingMode.ProgressBarFixed}
@@ -127,13 +128,13 @@ test('Hides overrun when total due is zero', async () => {
   expect(queryByText('Overrun')).toBeNull()
 })
 
-test('Shows total due with two decimal places', async () => {
+test('Shows the amount due after credits with two decimal places', async () => {
   const { queryByText } = render(
     <BillingRemaining
       mode={BillingRemainingMode.ProgressBarFixed}
       userPaymentBalance={{
         ...userPaymentBalance,
-        total_due: 1.3,
+        amount_due_after_credits: 1.3,
       }}
     />
   )

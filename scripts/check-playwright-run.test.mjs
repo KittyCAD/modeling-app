@@ -39,6 +39,9 @@ const attempt = attempts[count];
 fs.writeFileSync('calls', String(count + 1));
 fs.writeFileSync('last-invocation', process.argv.slice(2).join(' '));
 if (!attempt) process.exit(99);
+fs.rmSync('test-results', { recursive: true, force: true });
+fs.mkdirSync('test-results/attempt-' + count, { recursive: true });
+fs.writeFileSync('test-results/attempt-' + count + '/trace.zip', 'attempt-' + count);
 fs.writeFileSync('test-results/.last-run.json', JSON.stringify({ status: attempt.status, failedTests: attempt.status === 'failed' ? ['test-id'] : [] }));
 fs.writeFileSync('test-results/report.json', JSON.stringify({ suites: [], errors: attempt.errors }));
 process.exit(attempt.exitCode ?? (attempt.status === 'failed' ? 1 : 0));
@@ -80,6 +83,11 @@ process.exit(attempt.exitCode ?? (attempt.status === 'failed' ? 1 : 0));
     run,
     calls: () => Number(readFileSync(path.join(dir, 'calls'), 'utf8')),
     lastInvocation: () => readFileSync(path.join(dir, 'last-invocation'), 'utf8'),
+    firstFailureTrace: () =>
+      readFileSync(
+        path.join(dir, 'test-results/first-failure/attempt-0/trace.zip'),
+        'utf8'
+      ),
   }
 }
 
@@ -102,6 +110,15 @@ test('retains the one retry for individual test failures', (t) => {
   assert.equal(f.run().status, 0)
   assert.equal(f.calls(), 2)
   assert.ok(f.lastInvocation().includes('--last-failed'))
+  assert.equal(f.firstFailureTrace(), 'attempt-0')
+})
+
+test('keeps the first failure through an outer retry', (t) => {
+  const f = fixture(t, [testFailure, testFailure, passed])
+  assert.equal(f.run().status, 1)
+  assert.equal(f.run().status, 0)
+  assert.equal(f.calls(), 3)
+  assert.equal(f.firstFailureTrace(), 'attempt-0')
 })
 
 test('reruns the full shard after a global error', (t) => {
@@ -114,6 +131,7 @@ test('reruns the full shard after a global error', (t) => {
   assert.equal(f.calls(), 2)
   assert.ok(f.lastInvocation().includes('--shard=1/6'))
   assert.ok(!f.lastInvocation().includes('--last-failed'))
+  assert.equal(f.firstFailureTrace(), 'attempt-0')
 })
 
 test('reruns the full shard after a last-failed global error', (t) => {

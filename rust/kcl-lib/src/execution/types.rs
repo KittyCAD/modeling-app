@@ -3,6 +3,7 @@ use std::str::FromStr;
 
 use anyhow::Result;
 use async_recursion::async_recursion;
+use kcl_api::NumericSuffix;
 pub use kcl_api::NumericType;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
@@ -15,7 +16,6 @@ use crate::KclError;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::exec::PlaneKind;
-use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::Plane;
@@ -29,13 +29,14 @@ use crate::execution::kcl_value::KclValue;
 use crate::execution::kcl_value::TypeDef;
 use crate::execution::memory::{self};
 use crate::fmt;
+use crate::modules::ModuleItems;
+use crate::modules::ModulePath;
 use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
 use crate::parsing::ast::types::Identifier;
 use crate::parsing::ast::types::Name;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::PrimitiveType as AstPrimitiveType;
 use crate::parsing::ast::types::Type;
-use crate::parsing::token::NumericSuffix;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 
@@ -56,23 +57,102 @@ pub enum RuntimeType {
 pub(super) fn type_value_named_by_segment(
     exec_state: &ExecState,
     segment: &Node<Identifier>,
-    within: Option<&(EnvironmentRef, Vec<String>)>,
+    within: Option<&ModuleItems>,
 ) -> Option<KclValue> {
     let key = format!("{}{}", memory::TYPE_PREFIX, segment.name);
     match within {
-        Some((env, exports)) => {
-            if !exports.contains(&key) {
+        Some(items) => {
+            if !items.exports.contains(&key) {
                 return None;
             }
 
             exec_state
                 .stack()
                 .memory
-                .get_from_owned(&key, *env, segment.as_source_range(), 0)
+                .get_from_owned(&key, items.environment, segment.as_source_range(), 0)
                 .ok()
         }
         None => exec_state.stack().get(&key, segment.as_source_range()).ok(),
     }
+}
+
+/// Resolves a named type to the definition stored in the type environment.
+///
+/// Keeping the definition available lets a type alias preserve an enum's
+/// declaration handle rather than reducing it to an `EnumTypeId` and later
+/// attempting to recover declaration data from that identity.
+pub(super) async fn resolve_named_type_def(
+    name: &Node<Name>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
+    suppress_warnings: bool,
+) -> Result<TypeDef, KclError> {
+    if name.abs_path {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            ABSOLUTE_PATHS_NOT_SUPPORTED.to_owned(),
+            vec![source_range],
+        )));
+    }
+
+    let unknown_type = || {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!("Unknown type: {name}"),
+            vec![source_range],
+        ))
+    };
+
+    let mut within: Option<ModuleItems> = None;
+    for segment in &name.path {
+        let key = format!("{}{}", memory::MODULE_PREFIX, segment.name);
+        let module = match &within {
+            Some(items) => {
+                if !items.exports.contains(&key) {
+                    return Err(unknown_type());
+                }
+                exec_state
+                    .stack()
+                    .memory
+                    .get_from_owned(&key, items.environment, segment.as_source_range(), 0)
+                    .map_err(|_| unknown_type())?
+            }
+            None => exec_state
+                .stack()
+                .get(&key, segment.as_source_range())
+                .map_err(|_| exec_state.with_not_yet_added_hint(&[&key], unknown_type()))?,
+        };
+        let KclValue::Module { value: module_id, .. } = module else {
+            return Err(unknown_type());
+        };
+        within = Some(
+            ctx.exec_module_for_items(module_id, exec_state, segment.as_source_range())
+                .await?,
+        );
+    }
+
+    let type_value = type_value_named_by_segment(exec_state, &name.name, within.as_ref()).ok_or_else(|| {
+        // The type may be a declaration skipped as not yet added.
+        let key = format!("{}{}", memory::TYPE_PREFIX, name.name.name);
+        match &within {
+            Some(items) => exec_state.with_not_yet_added_hint_from(&items.not_yet_added, &[&key], unknown_type()),
+            None => exec_state.with_not_yet_added_hint(&[&key], unknown_type()),
+        }
+    })?;
+    let KclValue::Type {
+        value, experimental, ..
+    } = type_value
+    else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            format!("Type environment entry for `{name}` does not contain a type."),
+            vec![source_range],
+        )));
+    };
+
+    if experimental && !suppress_warnings {
+        exec_state.warn_experimental(&format!("the type `{name}`"), source_range);
+    }
+
+    Ok(value)
 }
 
 impl RuntimeType {
@@ -271,7 +351,18 @@ impl RuntimeType {
         suppress_warnings: bool,
     ) -> Result<Self, KclError> {
         match value {
-            Type::Primitive(pt) => Ok(Self::from_parsed_primitive(pt, exec_state)),
+            Type::Primitive(pt) => {
+                if matches!(pt, AstPrimitiveType::Never)
+                    && !matches!(exec_state.mod_local.path, ModulePath::Std { .. })
+                    && !exec_state.entry_point_version_is_v3_or_higher()
+                {
+                    return Err(crate::parsing::never_type_error(
+                        source_range,
+                        exec_state.entry_point_kcl_version(),
+                    ));
+                }
+                Ok(Self::from_parsed_primitive(pt, exec_state))
+            }
             Type::Named { name } => Self::from_alias(&name, exec_state, ctx, source_range, suppress_warnings).await,
             Type::Array { ty, len } => Ok(RuntimeType::Array(
                 Box::new(
@@ -342,66 +433,11 @@ impl RuntimeType {
         source_range: SourceRange,
         suppress_warnings: bool,
     ) -> Result<Self, KclError> {
-        if name.abs_path {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                ABSOLUTE_PATHS_NOT_SUPPORTED.to_owned(),
-                vec![source_range],
-            )));
-        }
-
-        let unknown_type = || {
-            KclError::new_semantic(KclErrorDetails::new(
-                format!("Unknown type: {name}"),
-                vec![source_range],
-            ))
-        };
-
-        let mut within: Option<(EnvironmentRef, Vec<String>)> = None;
-        for segment in &name.path {
-            let key = format!("{}{}", memory::MODULE_PREFIX, segment.name);
-            let module = match &within {
-                Some((env, exports)) => {
-                    if !exports.contains(&key) {
-                        return Err(unknown_type());
-                    }
-                    exec_state
-                        .stack()
-                        .memory
-                        .get_from_owned(&key, *env, segment.as_source_range(), 0)
-                        .map_err(|_| unknown_type())?
-                }
-                None => exec_state
-                    .stack()
-                    .get(&key, segment.as_source_range())
-                    .map_err(|_| unknown_type())?,
-            };
-            let KclValue::Module { value: module_id, .. } = module else {
-                return Err(unknown_type());
-            };
-            within = Some(
-                ctx.exec_module_for_items(module_id, exec_state, segment.as_source_range())
-                    .await?,
-            );
-        }
-
-        let ty_val = type_value_named_by_segment(exec_state, &name.name, within.as_ref()).ok_or_else(unknown_type)?;
-
-        Ok(match ty_val {
-            KclValue::Type {
-                value, experimental, ..
-            } => {
-                let result = match value {
-                    TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty),
-                    TypeDef::Alias(ty) => ty,
-                    TypeDef::Enum(def) => RuntimeType::Enum(def.id().clone()),
-                };
-                if experimental && !suppress_warnings {
-                    exec_state.warn_experimental(&format!("the type `{name}`"), source_range);
-                }
-                result
-            }
-            _ => unreachable!(),
-        })
+        Ok(
+            resolve_named_type_def(name, exec_state, ctx, source_range, suppress_warnings)
+                .await?
+                .into_runtime_type(),
+        )
     }
 
     pub fn human_friendly_type(&self) -> String {
@@ -1264,40 +1300,6 @@ impl NumericTypeExt for NumericType {
 impl From<NumericType> for RuntimeType {
     fn from(t: NumericType) -> RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Number(t))
-    }
-}
-
-impl From<UnitLength> for NumericSuffix {
-    fn from(value: UnitLength) -> Self {
-        match value {
-            UnitLength::Millimeters => NumericSuffix::Mm,
-            UnitLength::Centimeters => NumericSuffix::Cm,
-            UnitLength::Meters => NumericSuffix::M,
-            UnitLength::Inches => NumericSuffix::Inch,
-            UnitLength::Feet => NumericSuffix::Ft,
-            UnitLength::Yards => NumericSuffix::Yd,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
-pub struct NumericSuffixTypeConvertError;
-
-impl TryFrom<NumericType> for NumericSuffix {
-    type Error = NumericSuffixTypeConvertError;
-
-    fn try_from(value: NumericType) -> Result<Self, Self::Error> {
-        match value {
-            NumericType::Known(UnitType::Count) => Ok(NumericSuffix::Count),
-            NumericType::Known(UnitType::Length(unit_length)) => Ok(NumericSuffix::from(unit_length)),
-            NumericType::Known(UnitType::GenericLength) => Ok(NumericSuffix::Length),
-            NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => Ok(NumericSuffix::Deg),
-            NumericType::Known(UnitType::Angle(UnitAngle::Radians)) => Ok(NumericSuffix::Rad),
-            NumericType::Known(UnitType::GenericAngle) => Ok(NumericSuffix::Angle),
-            NumericType::Default { .. } => Ok(NumericSuffix::None),
-            NumericType::Unknown => Ok(NumericSuffix::Unknown),
-            NumericType::Any => Err(NumericSuffixTypeConvertError),
-        }
     }
 }
 
@@ -2672,6 +2674,7 @@ mod test {
             EnumTypeDef::new(
                 EnumTypeId::new(ModuleId::from_usize(module_id as usize), name),
                 variants.iter().map(|v| (*v).to_owned()).collect(),
+                false,
             )
             .unwrap(),
         )
@@ -2764,7 +2767,9 @@ mod test {
             .add(
                 format!("{}Color", memory::TYPE_PREFIX),
                 KclValue::Type {
-                    value: TypeDef::Enum(Arc::new(EnumTypeDef::new(id.clone(), vec!["Red".to_owned()]).unwrap())),
+                    value: TypeDef::Enum(Arc::new(
+                        EnumTypeDef::new(id.clone(), vec!["Red".to_owned()], false).unwrap(),
+                    )),
                     experimental: false,
                     meta: vec![],
                 },

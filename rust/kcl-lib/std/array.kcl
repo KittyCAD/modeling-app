@@ -1,7 +1,7 @@
 /// Functions for manipulating arrays of values.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 /// Apply a function to every element of a list.
 ///

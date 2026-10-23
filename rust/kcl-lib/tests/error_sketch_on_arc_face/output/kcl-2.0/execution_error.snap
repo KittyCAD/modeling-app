@@ -1,0 +1,33 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing error_sketch_on_arc_face.kcl
+---
+KCL Semantic error
+
+  × semantic: could not sketch tangential arc, because its center would be
+  │ infinitely far away in the X direction
+   ╭─[4:8]
+ 3 │     |> startProfile(at = pos)
+ 4 │     |> tangentialArc(end = [0, scale], tag = $here)
+   ·        ──────────────────────┬─────────────────────
+   ·                              ╰── tests/error_sketch_on_arc_face/input.kcl
+ 5 │     |> line(end = [scale, 0])
+   ╰────
+    ╭─[10:11]
+  9 │ }
+ 10 │ part001 = cube(pos = [0, 0], scale = 20)
+    ·           ───────────────┬──────────────
+    ·                          ╰── tests/error_sketch_on_arc_face/input.kcl
+ 11 │   |> close()
+    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: could not sketch tangential arc, because its center would
+        │ be infinitely far away in the X direction
+         ╭─[4:8]
+       3 │     |> startProfile(at = pos)
+       4 │     |> tangentialArc(end = [0, scale], tag = $here)
+         ·        ──────────────────────┬─────────────────────
+         ·                              ╰── in cube()
+       5 │     |> line(end = [scale, 0])
+         ╰────

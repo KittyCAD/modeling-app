@@ -1,3 +1,5 @@
+// Must stay first: points typescript-eslint at TS 5 before the parser loads.
+import './scripts/register-typescript-eslint-typescript.cjs'
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
 import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
@@ -13,6 +15,8 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 import noCodemirrorPrintableKeymapKeystrokes from './src/eslint/rules/no-codemirror-printable-keymap-keystrokes.mjs'
 import noDirectFsZdsIo from './src/eslint/rules/no-direct-fszds-io.mjs'
 import noInternalFileSystemImports from './src/eslint/rules/no-internal-file-system-imports.mjs'
+import noReactRouterHooks from './src/eslint/rules/no-react-router-hooks.mjs'
+import interactionExpectations from './src/eslint/rules/interaction-expectations.mjs'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -51,10 +55,12 @@ export default defineConfig([
       '@typescript-eslint': typescriptEslint,
       zds: {
         rules: {
+          'interaction-expectations': interactionExpectations,
           'no-codemirror-printable-keymap-keystrokes':
             noCodemirrorPrintableKeymapKeystrokes,
           'no-direct-fszds-io': noDirectFsZdsIo,
           'no-internal-file-system-imports': noInternalFileSystemImports,
+          'no-react-router-hooks': noReactRouterHooks,
         },
       },
     },
@@ -127,6 +133,7 @@ export default defineConfig([
       '@typescript-eslint/prefer-namespace-keyword': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/restrict-plus-operands': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
       '@typescript-eslint/unbound-method': 'error',
       'jsx-a11y/click-events-have-key-events': 'off',
       'jsx-a11y/no-autofocus': 'off',
@@ -195,6 +202,8 @@ export default defineConfig([
       'react-hooks/exhaustive-deps': 'error',
       'suggest-no-throw/suggest-no-throw': 'error',
       'zds/no-codemirror-printable-keymap-keystrokes': 'error',
+      'zds/interaction-expectations': 'error',
+      'zds/no-react-router-hooks': 'error',
     },
   },
   {

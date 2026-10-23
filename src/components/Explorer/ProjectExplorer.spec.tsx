@@ -3,6 +3,7 @@ import {
   type FileExplorerEntry,
   addPlaceHoldersForNewFileAndFolder,
 } from '@src/components/Explorer/utils'
+import { app } from '@src/lib/boot'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -11,6 +12,7 @@ import {
   defaultKeymap,
 } from '@src/registry/extensions/keymap/defaultKeymap'
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -39,8 +41,7 @@ beforeAll(async () => {
 const projectName = 'project-001'
 const applicationDirectory = 'applicationDirectory'
 
-// Actual wasmInstance not used by these tests, only when drag and dropping external files,
-// so no real wasmInstance used here as it would make these tests unnecessarily heavier -
+// These tests do not exercise external file drops, which need Wasm.
 const wasmInstance = {} as ModuleType
 const createFile = (name: string, parent?: string): FileEntry => {
   return {
@@ -543,6 +544,9 @@ describe('ProjectExplorer', () => {
         'outline-primary'
       )
     })
+
+    // Background feature loading refreshes app commands while the tree is focused.
+    act(() => app.syncAppCommands())
 
     fireEvent.keyDown(window, { key: 'ArrowLeft' })
 

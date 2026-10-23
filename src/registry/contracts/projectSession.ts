@@ -1,6 +1,29 @@
 import { defineContract, defineService } from '@kittycad/registry'
-import type { Signal } from '@preact/signals-core'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { ReadonlySignal, Signal } from '@preact/signals-core'
+import type { ZDSProject } from '@src/lib/projectSession'
+import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
+
+export interface ExecutingEditorUpdateOptions {
+  shouldExecute?: boolean
+  shouldResetCamera?: boolean
+  shouldWriteToDisk?: boolean
+  shouldAddToHistory?: boolean
+  shouldClearHistory?: boolean
+}
+
+/** Narrow execution and status capabilities of the session's current editor. */
+export interface ExecutingEditor {
+  readonly code: ReadonlySignal<string>
+  readonly hasEditsSinceLastExecution: ReadonlySignal<boolean>
+  readonly isExecuting: ReadonlySignal<boolean>
+  /** Null before the first execution; retains the final duration afterward. */
+  readonly executionElapsedMs: ReadonlySignal<number | null>
+  readonly selectionStatusLabel: ReadonlySignal<string>
+  readonly showExperimentalFeaturesStatusBarItem: ReadonlySignal<boolean>
+  getPendingCommandCount(): number
+  executeCode(code?: string): Promise<void>
+  updateCode(code: string, options?: ExecutingEditorUpdateOptions): void
+}
 
 /**
  * Owns the currently opened project session.
@@ -10,6 +33,9 @@ import type { ZDSProject } from '@src/lang/KclManager'
  * fields delegate to this service while call sites are migrated.
  */
 export interface ProjectSessionService {
+  readonly textFileIO: TextFileIO
+  /** The current editor capability; absent when the session has no executing editor. */
+  readonly executingEditor: ReadonlySignal<ExecutingEditor | undefined>
   readonly project: Signal<ZDSProject | undefined>
   readonly currentProjectLibraryId: Signal<string | undefined>
   getProject: () => ZDSProject | undefined

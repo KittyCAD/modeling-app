@@ -1,0 +1,356 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints lsystem.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Not'",
+    "pos": [
+      168,
+      171,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Not' to 'not'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'And'",
+    "pos": [
+      233,
+      236,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'And' to 'and'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn and(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Or'",
+    "pos": [
+      344,
+      346,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Or' to 'or'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Eq'",
+    "pos": [
+      451,
+      453,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Eq' to 'eq'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\neq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Lt'",
+    "pos": [
+      483,
+      485,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Lt' to 'lt'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nlt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Gt'",
+    "pos": [
+      515,
+      517,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Gt' to 'gt'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\ngt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Lte'",
+    "pos": [
+      551,
+      554,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Lte' to 'lte'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Gte'",
+    "pos": [
+      599,
+      602,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Gte' to 'gte'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Gt2'",
+    "pos": [
+      1704,
+      1707,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Gt2' to 'gt2'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Lt2'",
+    "pos": [
+      1789,
+      1792,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Lt2' to 'lt2'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Add'",
+    "pos": [
+      1874,
+      1877,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Add' to 'add'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> add(%)\n      |> add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> add(%)\n      |> add(%)\n      |> F(%, F = F)\n      |> add(%)\n      |> add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Sub'",
+    "pos": [
+      1976,
+      1979,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Sub' to 'sub'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'F'",
+    "pos": [
+      2136,
+      2137,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'F' to 'f'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn f(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn LSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nLSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> f(%, F = f)\n      |> Add(%)\n      |> Add(%)\n      |> f(%, F = f)\n      |> Add(%)\n      |> Add(%)\n      |> f(%, F = f)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'LSystem'",
+    "pos": [
+      2733,
+      2740,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'LSystem' to 'lSystem'",
+      "insert": "// L-System KCL\n// Zoo Corporation ⓒ 2024\n\n// Comparators\n\nfn cond(@bools) {\n  return fn(a, b) {\n    x = min([max([-1, a - b]), 1]) + 1\n    return bools[x]\n  }\n}\n\nfn Not(@b) {\n  return if b {\n    false\n  } else {\n    true\n  }\n}\nfn And(a, b) {\n  return if a {\n    if b {\n      true\n    } else {\n      false\n    }\n  } else {\n    false\n  }\n}\nfn Or(a, b) {\n  return if a {\n    true\n  } else {\n    if b {\n      true\n    } else {\n      false\n    }\n  }\n}\n\nEq = cond([false, true, false])\nLt = cond([true, false, false])\nGt = cond([false, false, true])\n\nfn Lte(a, b) {\n  return Not(Gt(a = a, b = b))\n}\nfn Gte(a, b) {\n  return Not(Lt(a = a, b = b))\n}\n\n// L-system\n// Note: it was most concise to encode productions directly in axioms.\n// Change them as you need.\n\n\nfn setSketch(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth + 1,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = q\n  }\n}\n\nfn setDepth(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = q,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setAngle(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = state.currentLength,\n    factor = state.factor,\n    currentAngle = q,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn setLength(@state, q) {\n  return {\n    depthMax = state.depthMax,\n    depth = state.depth,\n    currentLength = q,\n    factor = state.factor,\n    currentAngle = state.currentAngle,\n    angle = state.angle,\n    q = state.q\n  }\n}\n\nfn Gt2(@state) {\n  return setLength(state, q = state.currentLength * state.factor)\n}\nfn Lt2(@state) {\n  return setLength(state, q = state.currentLength / state.factor)\n}\nfn Add(@state) {\n  return setAngle(state, q = rem(state.currentAngle - state.angle, divisor = 360))\n}\nfn Sub(@state) {\n  return setAngle(state, q = rem(state.currentAngle + state.angle, divisor = 360))\n}\n\n// Only necessary to get around recursion limitations...\nfn F(@state, F) {\n  return if   Lt(a = state.depth, b = state.depthMax) {\n    stateNext = state\n      |> setDepth(%, q = state.depth + 1)\n\n    // Produce\n    // Note:if you need [ and ], just save state to a variable.\n    stateNext\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Sub(%)\n      |> F(%, F = F)\n      |> setDepth(%, q = stateNext.depth - 1)\n  } else {\n    // Pass onto the next instruction\n    state\n      |> setSketch(%, q = angledLine(state.q, angle = state.currentAngle, length = state.currentLength))\n  }\n}\n\nfn lSystem(@args, axioms) {\n  myThing = startSketchOn(XY)\n    |> startProfile(at = [0, 0])\n  return axioms({\n    depthMax = args.iterations,\n    depth = 0,\n    currentLength = 1.0,\n    factor = args.factor,\n    currentAngle = 0,\n    angle = args.angle,\n    q = myThing\n  })\n}\n\nlSystem(\n  {\n    iterations = 1,\n    factor = 1.36,\n    angle = 60\n  },\n  axioms = fn(@q) {\n    result = q\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n      |> Add(%)\n      |> Add(%)\n      |> F(%, F = F)\n    return result.q\n  },\n)\n",
+      "source_range": [
+        0,
+        3268,
+        0
+      ]
+    }
+  }
+]

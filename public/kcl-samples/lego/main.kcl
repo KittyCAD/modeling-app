@@ -63,13 +63,13 @@ pegSeedSketch = sketch(on = pegSketchPlane) {
   coincident([pegCenterGuide.end, ORIGIN])
   radius(pegCircle) == bumpDiam / 2
   horizontalDistance([
-  pegCenterGuide.start,
-  pegCenterGuide.end
-]) == -pegCenterX
+    pegCenterGuide.start,
+    pegCenterGuide.end
+  ]) == -pegCenterX
   verticalDistance([
-  pegCenterGuide.start,
-  pegCenterGuide.end
-]) == -pegCenterY
+    pegCenterGuide.start,
+    pegCenterGuide.end
+  ]) == -pegCenterY
 }
 pegRegion = region(segments = [pegSeedSketch.pegCircle])
 pegSeed = extrude(pegRegion, length = bumpHeight, method = NEW)
@@ -94,13 +94,13 @@ tubeSeedSketch = sketch(on = tubeSketchPlane) {
   coincident([tubeCenterGuide.end, ORIGIN])
   radius(tubeCircle) == bumpDiam / 2
   horizontalDistance([
-  tubeCenterGuide.start,
-  tubeCenterGuide.end
-]) == -tubeCenterX
+    tubeCenterGuide.start,
+    tubeCenterGuide.end
+  ]) == -tubeCenterX
   verticalDistance([
-  tubeCenterGuide.start,
-  tubeCenterGuide.end
-]) == -tubeCenterY
+    tubeCenterGuide.start,
+    tubeCenterGuide.end
+  ]) == -tubeCenterY
 }
 tubeRegion = region(segments = [tubeSeedSketch.tubeCircle])
 tubeSeed = extrude(tubeRegion, length = bumpHeight, method = NEW)

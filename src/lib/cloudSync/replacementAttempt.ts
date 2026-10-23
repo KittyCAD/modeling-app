@@ -6,6 +6,7 @@ import type {
   ProjectManifest,
   RemoteProject,
 } from '@src/lib/cloudSync/types'
+import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 
 /**
  * One immutable, guarded whole-project replacement decision.
@@ -53,7 +54,13 @@ export async function createProjectReplacementAttempt({
     entrypointPath,
     deletedPaths: Object.keys(syncBase.manifest.files)
       .map(normalizeRelativePath)
-      .filter((path) => Boolean(path) && !uploadedPaths.has(path))
+      // Older bases can include the preview, which the API excludes from deletions.
+      .filter(
+        (path) =>
+          Boolean(path) &&
+          path !== PROJECT_IMAGE_NAME &&
+          !uploadedPaths.has(path)
+      )
       .sort(),
   }
 }
