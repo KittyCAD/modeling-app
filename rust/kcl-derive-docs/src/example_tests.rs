@@ -305,7 +305,6 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-region-2",
     "std-sketch-planarSurface-0",
     "std-sketch-planarSurface-1",
-    "std-sketch-planarSurface-2",
     "std-sketch-subtract2d-0",
     "std-sketch-subtract2d-1",
     "std-sketch-conic-0",

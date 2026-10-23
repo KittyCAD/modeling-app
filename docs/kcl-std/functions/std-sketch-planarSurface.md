@@ -11,20 +11,20 @@ Fills one closed region to make a single planar surface contained by its boundar
 
 ```kcl
 planarSurface(
-  @curves: Sketch | [TaggedEdge; 1+] | [Edge; 1+] | [Segment; 1+],
+  @curves: Sketch | [TaggedEdge; 1+] | [Edge; 1+],
   tolerance?: number(Length),
 ): Solid
 ```
 
-Pass one region created with `region(...)`, or a non-empty list of edges
-or sketch segments which form one closed, connected, coplanar region.
-List items must be provided in the order they connect.
+Pass one region created with `region(...)`, or a non-empty list of swept-body
+edges which form one closed, connected, coplanar boundary.
+Edges must be provided in the order they connect.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `curves` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [[`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge); 1+] or [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] or [[`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | One region created with `region(...)`, or a list of edges or sketch segments enclosing a planar surface. | Yes |
+| `curves` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [[`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge); 1+] or [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | One region created with `region(...)`, or a list of swept-body edges enclosing a planar surface. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 
 ### Returns
@@ -33,34 +33,6 @@ List items must be provided in the order they connect.
 
 
 ### Examples
-
-```kcl
-@settings(kclVersion = 3.0, experimentalFeatures = allow)
-
-// Sketch a closed quadrilateral
-sketch001 = sketch(on = XY) {
-  line1 = line(start = [var -3.33mm, var 2.33mm], end = [var -3.28mm, var -3.27mm])
-  line2 = line(start = [var -3.28mm, var -3.27mm], end = [var 3.97mm, var -2.69mm])
-  line3 = line(start = [var 3.97mm, var -2.69mm], end = [var 3.94mm, var 1.55mm])
-  line4 = line(start = [var 3.94mm, var 1.55mm], end = [var -3.33mm, var 2.33mm])
-  coincident([line1.end, line2.start])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line4.start])
-  coincident([line4.end, line1.start])
-}
-
-// Fill the single closed region with one surface.
-mySurface = planarSurface([
-  sketch001.line1,
-  sketch001.line2,
-  sketch001.line3,
-  sketch001.line4
-])
-
-```
-
-
-![Rendered example of planarSurface 0](/kcl-test-outputs/serial_test_example_fn_std-sketch-planarSurface0.png)
 
 ```kcl
 // Select a closed region explicitly before filling it.
@@ -84,7 +56,7 @@ mySurface = planarSurface(region001)
 ```
 
 
-![Rendered example of planarSurface 1](/kcl-test-outputs/serial_test_example_fn_std-sketch-planarSurface1.png)
+![Rendered example of planarSurface 0](/kcl-test-outputs/serial_test_example_fn_std-sketch-planarSurface0.png)
 
 ```kcl
 @settings(kclVersion = 3.0, experimentalFeatures = allow)
@@ -105,10 +77,10 @@ cap = planarSurface([extrude001.sketch.tags.circle1])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the planarSurface function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-planarSurface2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-planarSurface1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-planarSurface2.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-planarSurface1.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

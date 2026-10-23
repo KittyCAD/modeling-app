@@ -14,7 +14,6 @@ use kittycad_modeling_cmds::shared::SurfaceEdgeReference;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
-use crate::ExecutorContext;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
@@ -35,10 +34,8 @@ use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::edge;
 use crate::std::extrude::after_surface_creation;
-use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::sketch::FaceTag;
 use crate::std::solid_consumption::record_consumed_solids;
-use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
 pub async fn flip_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -480,12 +477,6 @@ enum CurveType {
     Edge(uuid::Uuid),
 }
 
-impl From<Sketch> for CurveType {
-    fn from(value: Sketch) -> Self {
-        Self::Sketch(Box::new(value))
-    }
-}
-
 impl<'a> FromKclValue<'a> for CurveType {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         Box::<Sketch>::from_kcl_val(arg)
@@ -500,9 +491,9 @@ impl CurveType {
         match self {
             Self::Sketch(sketch) => Ok(sketch.id),
             Self::EdgeTag(edge_tag) => match edge_tag.get_cur_info() {
-                Some(info) => Ok(info.id),
-                None => Err(KclError::new_type(KclErrorDetails::new(
-                    "Could not find a valid curve id for creating a planar surface".to_owned(),
+                Some(info) if info.surface.is_some() => Ok(info.id),
+                _ => Err(KclError::new_type(KclErrorDetails::new(
+                    "Expected an edge from a swept body for creating a planar surface".to_owned(),
                     vec![args.source_range],
                 ))),
             },
@@ -511,7 +502,7 @@ impl CurveType {
     }
 }
 
-/// Used the provided segments or edges to create a planar surface
+/// Fill one region or a closed boundary of swept-body edges with a planar surface.
 pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let curve_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "curves",
@@ -522,12 +513,11 @@ pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<Kc
                 Box::new(RuntimeType::Primitive(PrimitiveType::Edge)),
                 ArrayLen::Minimum(1),
             ),
-            RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Minimum(1)),
         ]),
         exec_state,
     )?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
-    let curves = coerce_planar_surface_target(curve_values, exec_state, &args.ctx, args.source_range).await?;
+    let curves = coerce_planar_surface_target(curve_values, args.source_range)?;
 
     let result = inner_planar_surface(curves, tolerance, exec_state, args).await?;
 
@@ -536,142 +526,34 @@ pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<Kc
     })
 }
 
-async fn coerce_planar_surface_target(
-    sketch_values: Vec<KclValue>,
-    exec_state: &mut ExecState,
-    ctx: &ExecutorContext,
+fn coerce_planar_surface_target(
+    values: Vec<KclValue>,
     source_range: crate::SourceRange,
 ) -> Result<Vec<CurveType>, KclError> {
-    let mut curves = Vec::new();
-    let mut segments = Vec::new();
-
-    for value in sketch_values {
-        if let Some(segment) = value.clone().into_segment() {
-            segments.push(segment);
-            continue;
-        }
-
+    let mut curves = Vec::with_capacity(values.len());
+    for value in values {
         let Some(curve) = CurveType::from_kcl_val(&value) else {
             return Err(KclError::new_type(KclErrorDetails::new(
-                "Expected a region, edges, or solved sketch segments for creating a planar surface.".to_owned(),
+                "Expected a region or a list of swept-body edges for creating a planar surface.".to_owned(),
                 vec![source_range],
             )));
         };
         if matches!(&curve, CurveType::Sketch(sketch) if sketch.origin_sketch_id.is_none()) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Select a region with `region(...)`, or pass a list of edges or sketch segments to `planarSurface`."
-                    .to_owned(),
+                "Select a region with `region(...)`, or pass a list of swept-body edges to `planarSurface`.".to_owned(),
                 vec![source_range],
             )));
         }
         curves.push(curve);
     }
 
-    if !segments.is_empty() {
-        let synthetic_sketch = build_segment_surface_sketch(segments, exec_state, ctx, source_range).await?;
-        curves.push(CurveType::from(synthetic_sketch));
+    if curves.len() != 1 && curves.iter().any(|curve| matches!(curve, CurveType::Sketch(_))) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Provide either one region or one list of swept-body edges when creating a planar surface.".to_owned(),
+            vec![source_range],
+        )));
     }
-
-    prepare_single_closed_region(&mut curves, source_range)?;
-
     Ok(curves)
-}
-
-fn prepare_single_closed_region(curves: &mut Vec<CurveType>, source_range: crate::SourceRange) -> Result<(), KclError> {
-    let sketches = curves
-        .iter()
-        .filter_map(|curve| match curve {
-            CurveType::Sketch(sketch) => Some(sketch.as_ref()),
-            CurveType::EdgeTag(_) | CurveType::Edge(_) => None,
-        })
-        .collect::<Vec<_>>();
-
-    if sketches.is_empty() {
-        return Ok(());
-    }
-
-    if curves.len() != 1 || sketches.len() != 1 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Provide either one region or one list of edges or segments when creating a planar surface.".to_owned(),
-            vec![source_range],
-        )));
-    }
-
-    let sketch = sketches[0];
-    // The engine has already traced this region. Its paths retain coordinates
-    // and pen-jump metadata from the source sketch, not the trimmed boundary.
-    if sketch.origin_sketch_id.is_some() {
-        return Ok(());
-    }
-
-    // Pen jumps describe replay order, not connectivity. Check the real edges
-    // as an undirected cycle so declaration order and edge direction do not
-    // reject a closed boundary. The engine still validates the resulting faces.
-    let mut vertices: Vec<[f64; 2]> = Vec::new();
-    let mut neighbors: Vec<Vec<(usize, usize)>> = Vec::new();
-    let mut path_ids = Vec::new();
-    for path in &sketch.paths {
-        if sketch.synthetic_jump_path_ids.contains(&path.get_id()) {
-            continue;
-        }
-        let [from, to] = [path.get_from(), path.get_to()].map(|point| {
-            let point = point.map(|coordinate| coordinate.unwrap_to_mm());
-            if let Some(index) = vertices.iter().position(|vertex| {
-                libm::hypot(vertex[0] - point[0], vertex[1] - point[1]) <= SOLVER_CONVERGENCE_TOLERANCE
-            }) {
-                index
-            } else {
-                vertices.push(point);
-                neighbors.push(Vec::new());
-                vertices.len() - 1
-            }
-        });
-        // A straight edge collapsed by endpoint tolerance adds no boundary.
-        // Keep closed curves: a circle still contributes two incidences.
-        if from == to && matches!(path, crate::execution::Path::ToPoint { .. }) {
-            continue;
-        }
-        let path_index = path_ids.len();
-        path_ids.push(path.get_id());
-        // A closed circle contributes both ends to the same vertex.
-        neighbors[from].push((to, path_index));
-        neighbors[to].push((from, path_index));
-    }
-
-    if neighbors.is_empty() || neighbors.iter().any(|edges| edges.len() != 2) {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "A segment list passed to `planarSurface` must form one closed region.".to_owned(),
-            vec![source_range],
-        )));
-    }
-
-    let mut ordered_path_ids = Vec::with_capacity(path_ids.len());
-    let mut vertex = 0;
-    let mut previous_path = None;
-    while let Some(&(next_vertex, path_index)) = neighbors[vertex]
-        .iter()
-        .find(|(_, path_index)| Some(*path_index) != previous_path)
-    {
-        ordered_path_ids.push(path_ids[path_index]);
-        previous_path = Some(path_index);
-        vertex = next_vertex;
-        if vertex == 0 {
-            break;
-        }
-    }
-    if ordered_path_ids.len() != path_ids.len() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "A segment list passed to `planarSurface` must contain exactly one region.".to_owned(),
-            vec![source_range],
-        )));
-    }
-    if !sketch.synthetic_jump_path_ids.is_empty() {
-        // Submit the original curves in boundary order, excluding pen jumps.
-        // Do not trace a region: that could trim a self-intersecting boundary
-        // to one face instead of letting the engine validate the whole input.
-        *curves = ordered_path_ids.into_iter().map(CurveType::Edge).collect();
-    }
-    Ok(())
 }
 
 fn require_single_surface(
@@ -782,45 +664,6 @@ surface = planarSurface(selected, tolerance = 0.01mm)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_accepts_a_closed_boundary_in_any_declaration_order() {
-        let result = parse_execute(
-            r#"
-@settings(kclVersion = 3.0, experimentalFeatures = allow)
-profile = sketch(on = XY) {
-  bottom = line(start = [0mm, 0mm], end = [2mm, 0mm])
-  top = line(start = [2mm, 2mm], end = [0mm, 2mm])
-  right = line(start = [2mm, 0mm], end = [2mm, 2mm])
-  left = line(start = [0mm, 2mm], end = [0mm, 0mm])
-}
-surface = planarSurface([profile.bottom, profile.top, profile.right, profile.left])
-"#,
-        )
-        .await
-        .unwrap();
-
-        assert!(result.root_module_artifact_commands().iter().any(|artifact_command| {
-            matches!(&artifact_command.command, ModelingCmd::CreatePlanarSurface(command) if command.curve_ids.len() == 4)
-        }));
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_rejects_a_closed_loop_with_an_open_branch() {
-        let err = parse_execute(
-            r#"
-@settings(kclVersion = 3.0, experimentalFeatures = allow)
-profile = sketch(on = XY) {
-  circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
-  branch = line(start = [2mm, 0mm], end = [4mm, 0mm])
-}
-surface = planarSurface([profile.circle1, profile.branch])
-"#,
-        )
-        .await
-        .unwrap_err();
-        assert!(err.message().contains("must form one closed region"), "{err:?}");
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn planar_surface_accepts_tagged_and_raw_edge_lists_in_mock_execution() {
         let result = parse_execute(
             r#"
@@ -852,22 +695,21 @@ rawEdgeSurface = planarSurface([rawEdge])
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_rejects_a_whole_sketch() {
-        let error = parse_execute(
-            r#"
+    async fn planar_surface_rejects_sketches_and_sketch_curves() {
+        for input in ["profile", "[profile.circle1]"] {
+            let error = parse_execute(&format!(
+                r#"
 @settings(kclVersion = 3.0, experimentalFeatures = allow)
-profile = sketch(on = XY) {
+profile = sketch(on = XY) {{
   circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
-}
-surface = planarSurface(profile)
+}}
+surface = planarSurface({input})
 "#,
-        )
-        .await
-        .unwrap_err();
-        assert!(
-            error.message().contains("Select a region with `region(...)`"),
-            "{error:?}"
-        );
+            ))
+            .await
+            .unwrap_err();
+            assert!(error.message().contains("planarSurface"), "{error:?}");
+        }
     }
 
     #[test]

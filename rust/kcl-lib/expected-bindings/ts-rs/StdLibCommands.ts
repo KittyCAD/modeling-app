@@ -7549,8 +7549,8 @@ export default {
     "args": [
       {
         "name": "curves",
-        "ty": "Sketch | [TaggedEdge; 1+] | [Edge; 1+] | [Segment; 1+]",
-        "docs": "One region created with `region(...)`, or a list of edges or sketch segments enclosing a planar surface.",
+        "ty": "Sketch | [TaggedEdge; 1+] | [Edge; 1+]",
+        "docs": "One region created with `region(...)`, or a list of swept-body edges enclosing a planar surface.",
         "required": true,
         "special": true,
         "experimental": false,
