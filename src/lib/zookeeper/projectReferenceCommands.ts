@@ -735,7 +735,7 @@ export function createProjectReferenceCommands(deps: {
         new ProjectReferenceCommandError('Project could not be duplicated.')
       )
     }
-    return { name: result.name, title: result.title }
+    return { title: result.title }
   }
 
   function execute(request: ClientCommandRequest): Promise<unknown> {

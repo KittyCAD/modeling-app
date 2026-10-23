@@ -266,7 +266,7 @@ describe('Zookeeper project reference commands', () => {
         expect.objectContaining({
           request_id: 'duplicate-once',
           status: 'succeeded',
-          result: { name: 'TRUCK-copy', title: 'TRUCK-copy' },
+          result: { title: 'TRUCK-copy' },
         })
       )
     })
@@ -386,13 +386,14 @@ describe('Zookeeper project reference commands', () => {
     })
     expect(copied).toMatchObject({
       status: 'succeeded',
-      result: { name: 'cloud-copy-id', title: 'propeller-copy' },
+      result: { title: 'propeller-copy' },
     })
     expect(duplicate).toHaveBeenCalledWith(
       expect.objectContaining({ remoteProjectId: 'cloud-456' }),
       { notify: false }
     )
     expect(JSON.stringify(copied.result)).not.toContain('cloud-456')
+    expect(JSON.stringify(copied.result)).not.toContain('cloud-copy-id')
   })
 
   it('finds Personal Cloud projects before the Home remote index loads', async () => {
