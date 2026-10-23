@@ -11,7 +11,7 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
     command: 'npm exec -- vite --config browser-tests/vite.config.ts',
-    url: 'http://127.0.0.1:6010/browser-tests/fixture.html',
+    url: 'http://127.0.0.1:6010/browser-tests/feature-tree.fixture.html',
     reuseExistingServer: !process.env.CI,
   },
 })

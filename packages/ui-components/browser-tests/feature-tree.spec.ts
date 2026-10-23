@@ -7,7 +7,7 @@ const row = (page: import('@playwright/test').Page, id: string) =>
 test('Tab enters once, actions cycle with F2, and Escape returns to the row', async ({
   page,
 }) => {
-  await page.goto('/browser-tests/fixture.html')
+  await page.goto('/browser-tests/feature-tree.fixture.html')
   await page.locator('#before').focus()
   await page.keyboard.press('Tab')
   await expect(row(page, 'sketch')).toBeFocused()
@@ -28,7 +28,7 @@ test('Tab enters once, actions cycle with F2, and Escape returns to the row', as
 test('inherited RTL inside an enclosing shadow root reverses horizontal navigation', async ({
   page,
 }) => {
-  await page.goto('/browser-tests/fixture.html?rtl&shadow')
+  await page.goto('/browser-tests/feature-tree.fixture.html?rtl&shadow')
   await page.locator('#before').focus()
   await page.keyboard.press('Tab')
   await page.keyboard.press('Home')
@@ -48,7 +48,7 @@ test('inherited RTL inside an enclosing shadow root reverses horizontal navigati
 test('collapse and removal recover focus without stealing focus from outside', async ({
   page,
 }) => {
-  await page.goto('/browser-tests/fixture.html?shadow')
+  await page.goto('/browser-tests/feature-tree.fixture.html?shadow')
   await page.locator('#before').focus()
   await page.keyboard.press('Tab')
   await page.keyboard.press('ArrowDown')
@@ -69,7 +69,7 @@ test('collapse and removal recover focus without stealing focus from outside', a
 test('context requests cross the enclosing shadow root exactly once', async ({
   page,
 }) => {
-  await page.goto('/browser-tests/fixture.html?shadow')
+  await page.goto('/browser-tests/feature-tree.fixture.html?shadow')
   await page.evaluate(() => {
     const requests: unknown[] = []
     Object.assign(window, { requests })
@@ -97,7 +97,7 @@ test('context requests cross the enclosing shadow root exactly once', async ({
 test('removing a focused slotted action restores focus to its row', async ({
   page,
 }) => {
-  await page.goto('/browser-tests/fixture.html?shadow')
+  await page.goto('/browser-tests/feature-tree.fixture.html?shadow')
   await row(page, 'sketch').focus()
   await page.keyboard.press('F2')
   await expect(page.locator('#visibility')).toBeFocused()
@@ -108,7 +108,7 @@ test('removing a focused slotted action restores focus to its row', async ({
 test('disabled rows remain reachable but cannot request selection', async ({
   page,
 }) => {
-  await page.goto('/browser-tests/fixture.html')
+  await page.goto('/browser-tests/feature-tree.fixture.html')
   await row(page, 'line').evaluate((element) =>
     element.setAttribute('disabled', '')
   )
@@ -140,7 +140,7 @@ test('disabled rows remain reachable but cannot request selection', async ({
 test('reordering a focused subtree preserves focus and its single Tab stop', async ({
   page,
 }) => {
-  await page.goto('/browser-tests/fixture.html?shadow')
+  await page.goto('/browser-tests/feature-tree.fixture.html?shadow')
   await page.locator('#before').focus()
   await page.keyboard.press('Tab')
   await page.keyboard.press('ArrowDown')
@@ -166,7 +166,7 @@ test('reordering a focused subtree preserves focus and its single Tab stop', asy
 test('slotted form controls keep native text editing when optional shortcuts use letters', async ({
   page,
 }) => {
-  await page.goto('/browser-tests/fixture.html?shadow')
+  await page.goto('/browser-tests/feature-tree.fixture.html?shadow')
   await row(page, 'sketch').evaluate((element) => {
     const input = document.createElement('input')
     input.id = 'rename'
@@ -191,7 +191,7 @@ test('slotted form controls keep native text editing when optional shortcuts use
 test('consumers can remap or disable shortcuts and invoke semantic actions', async ({
   page,
 }) => {
-  await page.goto('/browser-tests/fixture.html')
+  await page.goto('/browser-tests/feature-tree.fixture.html')
   const tree = page.locator('zoo-feature-tree')
   await tree.evaluate((element) => {
     ;(element as ZooFeatureTree).shortcuts = {
