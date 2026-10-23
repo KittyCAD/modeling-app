@@ -11,6 +11,10 @@ export interface FileOperationsRegistryService {
   readonly pending: () => Promise<number>
   /** Observe one path while coordinated mutations of it are excluded. */
   readonly stat: (path: string) => Promise<FileStat>
+  /** Observe a path without repairing missing backing metadata. */
+  readonly statReadOnly: (path: string) => Promise<FileStat>
+  /** Resolve a path through symbolic links before reading it. */
+  readonly realpath: (path: string) => Promise<string>
   /** Check whether the current platform grant allows reading and writing. */
   readonly canReadWrite: (path: string) => Promise<boolean>
   /**
