@@ -4,14 +4,6 @@ export const TOOLBAR_COMMAND_IDS = {
   },
   sketching: {
     exit: 'zds.toolbar.sketchLegacy.exit',
-    cancelTool: 'zds.toolbar.sketchLegacy.cancelTool',
-    line: 'zds.toolbar.sketchLegacy.line',
-    threePointArc: 'zds.toolbar.sketchLegacy.threePointArc',
-    tangentialArc: 'zds.toolbar.sketchLegacy.tangentialArc',
-    circleCenter: 'zds.toolbar.sketchLegacy.circleCenter',
-    circleThreePoints: 'zds.toolbar.sketchLegacy.circleThreePoints',
-    cornerRectangle: 'zds.toolbar.sketchLegacy.cornerRectangle',
-    centerRectangle: 'zds.toolbar.sketchLegacy.centerRectangle',
   },
   sketchSolve: {
     exit: 'zds.toolbar.sketch.exit',
