@@ -7,11 +7,13 @@ import { computed, effect, signal } from '@preact/signals-core'
 import type { Layout, LayoutService } from '@src/lib/layout/types'
 import {
   applyLayoutContribution,
+  applyPaneOpenBehavior,
   createLayoutWithMetadata,
   defaultLayout,
   loadLayout,
   saveLayout,
   setLayoutSaveHandler,
+  togglePaneLayoutNode,
 } from '@src/lib/layout/utils'
 import {
   layoutContributionsValueSpec,
@@ -46,8 +48,13 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       contributions
     ) => {
       const rootLayout = structuredClone(layoutSignal.peek())
+      const paneOpenBehavior = settings.get().layout.paneOpenBehavior.current
       const results = contributions.map((contribution) =>
-        applyLayoutContribution({ rootLayout, contribution })
+        applyLayoutContribution({
+          rootLayout,
+          contribution,
+          config: { paneOpenBehavior },
+        })
       )
 
       if (results.some((result) => result.applied)) {
@@ -56,18 +63,47 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
 
       return results
     }
+    const get = () => layoutSignal.value
+    const set = (nextLayout: Layout) => {
+      layoutSignal.value = structuredClone(nextLayout)
+      return layoutSignal.value
+    }
+
+    function openPane(paneId: string) {
+      return set(
+        togglePaneLayoutNode({
+          rootLayout: structuredClone(get()),
+          targetNodeId: paneId,
+          shouldExpand: true,
+          paneOpenBehavior: settings.get().layout.paneOpenBehavior.current,
+        })
+      )
+    }
+
+    function togglePane(paneId: string) {
+      const rootLayout = structuredClone(get())
+      const paneOpenBehavior = settings.get().layout.paneOpenBehavior.current
+      return set(
+        togglePaneLayoutNode({
+          rootLayout,
+          targetNodeId: paneId,
+          paneOpenBehavior,
+        })
+      )
+    }
+
     const coreLayoutService: LayoutService = {
       signal: layoutSignal,
-      get: () => layoutSignal.value,
-      set: (nextLayout) => {
-        layoutSignal.value = structuredClone(nextLayout)
-      },
+      get,
+      set,
       reset: () => {
         layoutSignal.value = structuredClone(defaultLayout)
         lastUserFeatureValues.clear()
         syncUserFeatureLayout()
       },
       applyContributions,
+      openPane,
+      togglePane,
     }
     const applyRegistryLayoutContributions = () =>
       coreLayoutService.applyContributions(
@@ -168,6 +204,12 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         coreLayoutService.applyContributions(contributions)
       }
     })
+    // Settings reactions belong to the layout service, which also owns their lifetime.
+    const stopPanePreferenceEffect = effect(() => {
+      const behavior =
+        settings.current.value.layout.paneOpenBehavior.currentSignal.value
+      layoutSignal.value = applyPaneOpenBehavior(layoutSignal.peek(), behavior)
+    })
     const saveEffectUnsubscribeFn = effect(() =>
       saveLayout({
         layout: layoutSignal.value,
@@ -178,6 +220,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     layout = coreLayoutService
     disposeLayout = () => {
       settingsSubscription.unsubscribe()
+      stopPanePreferenceEffect()
       stopUserFeatureLayoutEffect()
       stopLayoutContributionsEffect()
       saveEffectUnsubscribeFn()
@@ -193,6 +236,8 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     reset: () => ensureLayout().reset(),
     applyContributions: (contributions) =>
       ensureLayout().applyContributions(contributions),
+    togglePane: (layoutId) => ensureLayout().togglePane(layoutId),
+    openPane: (layoutId) => ensureLayout().openPane(layoutId),
   }
 
   return {

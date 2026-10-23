@@ -6,10 +6,7 @@ import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isMobile } from '@src/lib/isMobile'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { LayoutType } from '@src/lib/layout/types'
-import {
-  findLayoutParentNode,
-  togglePaneLayoutNode,
-} from '@src/lib/layout/utils'
+import { findLayoutParentNode } from '@src/lib/layout/utils'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { layoutService } from '@src/registry/contracts/layout'
@@ -35,14 +32,7 @@ export function ZookeeperHeaderButton({ app }: AppHeaderItemProps) {
     )
   const isRunning = !isOpen && zookeeperPromptRunningSignal.value
   const toggle = () => {
-    if (!layout) return
-    layout.set(
-      togglePaneLayoutNode({
-        rootLayout: structuredClone(layout.get()),
-        targetNodeId: DefaultLayoutPaneID.Zookeeper,
-        shouldExpand: !isOpen,
-      })
-    )
+    layout?.togglePane(DefaultLayoutPaneID.Zookeeper)
   }
   useHotkeys('Ctrl + T', toggle, { scopes: ['modeling'], enabled: isVisible })
 
