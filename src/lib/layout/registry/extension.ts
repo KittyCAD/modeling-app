@@ -4,7 +4,6 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
-import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import type { Layout, LayoutService } from '@src/lib/layout/types'
 import {
   applyLayoutContribution,
@@ -21,13 +20,11 @@ import {
 } from '@src/lib/layout/registry/contract'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
-import { runtimeService } from '@src/registry/contracts/runtime'
 import { settingsService } from '@src/registry/contracts/settings'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import type { SnapshotFrom } from 'xstate'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
-const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 
 export const layoutExtension = defineRegistryItemFactory((ctx) => {
   let layout: LayoutService | undefined
@@ -38,18 +35,10 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       return layout
     }
 
-    const runtime = ctx.services.get(runtimeService)
     const settings = ctx.services.get(settingsService)
     const userFeatures = ctx.services.get(userFeaturesService)
     const settingsActor = settings.actor
-    const usePlaywrightLayout = runtime.get().isPlaywright
-    const layoutConfigName = usePlaywrightLayout
-      ? PLAYWRIGHT_LAYOUT_CONFIG_NAME
-      : DEFAULT_LAYOUT_CONFIG_NAME
-    const runtimeDefaultLayout = usePlaywrightLayout
-      ? playwrightLayoutConfig
-      : defaultLayout
-    const layoutSignal = signal<Layout>(runtimeDefaultLayout)
+    const layoutSignal = signal<Layout>(defaultLayout)
     let hasHydratedLayout = false
     let lastUserFeatureValues = new Map<string, boolean>()
 
@@ -74,7 +63,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         layoutSignal.value = structuredClone(nextLayout)
       },
       reset: () => {
-        layoutSignal.value = structuredClone(runtimeDefaultLayout)
+        layoutSignal.value = structuredClone(defaultLayout)
         lastUserFeatureValues.clear()
         syncUserFeatureLayout()
       },
@@ -149,20 +138,13 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       })
 
       const settingsSnapshot = getOnlySettingsFromContext(snapshot.context)
-      const settingsLayout =
-        settingsSnapshot.layout.configs.current[layoutConfigName] ??
-        settingsSnapshot.layout.configs.current.default
+      const settingsLayout = settingsSnapshot.layout.configs.current.default
       if (settingsLayout) {
         layoutSignal.value = structuredClone(settingsLayout.layout)
       } else {
-        const legacyLayout = loadLayout(layoutConfigName)
-        const fallbackLegacyLayout =
-          legacyLayout instanceof Error &&
-          layoutConfigName !== DEFAULT_LAYOUT_CONFIG_NAME
-            ? loadLayout(DEFAULT_LAYOUT_CONFIG_NAME)
-            : legacyLayout
-        if (!(fallbackLegacyLayout instanceof Error)) {
-          layoutSignal.value = structuredClone(fallbackLegacyLayout)
+        const legacyLayout = loadLayout(DEFAULT_LAYOUT_CONFIG_NAME)
+        if (!(legacyLayout instanceof Error)) {
+          layoutSignal.value = structuredClone(legacyLayout)
         }
       }
 
@@ -187,7 +169,10 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       }
     })
     const saveEffectUnsubscribeFn = effect(() =>
-      saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
+      saveLayout({
+        layout: layoutSignal.value,
+        layoutName: DEFAULT_LAYOUT_CONFIG_NAME,
+      })
     )
 
     layout = coreLayoutService

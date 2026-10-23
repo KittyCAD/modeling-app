@@ -66,23 +66,9 @@ import {
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import { createLayoutWithMetadata } from '@src/lib/layout'
-import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
-
-export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 
 export const PLAYWRIGHT_TEST_SCOPE_KEY = 'playwrightTestScope'
 export const PLAYWRIGHT_STORAGE_SCOPE_KEY = 'playwrightStorageScope'
-
-export const PLAYWRIGHT_LAYOUT_SETTINGS = {
-  layout: {
-    configs: {
-      [PLAYWRIGHT_LAYOUT_CONFIG_NAME]: JSON.stringify(
-        createLayoutWithMetadata(playwrightLayoutConfig)
-      ),
-    },
-  },
-} as const
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -1101,7 +1087,6 @@ export async function setup(
             cloudSyncEnabled,
             zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),
           }),
-          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             appearance: {
               ...TEST_SETTINGS.app?.appearance,

@@ -11,7 +11,6 @@ import {
   DefaultLayoutToolbarID,
   defaultLayoutConfig,
 } from '@src/lib/layout/configs/default'
-import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import type { Layout } from '@src/lib/layout/types'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import {
@@ -187,7 +186,7 @@ describe('layout extension', () => {
     registry = undefined
   })
 
-  it('provides the app layout service from runtime, settings, and feature services', () => {
+  it('uses the standard app layout when Playwright is enabled', () => {
     registry = new Registry()
     registry.configure([
       defineRegistryItem({
@@ -213,8 +212,8 @@ describe('layout extension', () => {
 
     const layout = registry.get(layoutService)
 
-    expect(layout.get()).toEqual(playwrightLayoutConfig)
-    expect(layout.signal.value).toEqual(playwrightLayoutConfig)
+    expect(layout.get()).toEqual(defaultLayoutConfig)
+    expect(layout.signal.value).toEqual(defaultLayoutConfig)
     expect(layout).toMatchObject({
       applyContributions: expect.any(Function),
     })

@@ -1,8 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import {
-  DefaultLayoutPaneID,
-  defaultLayoutConfig,
-} from '@src/lib/layout/configs/default'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // See zookeeper/text_to_cad/zookeeper_magic_bypass.py
 const ZK_MOCK_REPLY_MARKER =
@@ -15,10 +12,6 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     homePage,
     scene,
   }) => {
-    await page.evaluate(
-      (layout) => window.app.layout.set(layout),
-      defaultLayoutConfig
-    )
     await homePage.goToModelingScene()
     await scene.settled()
 
