@@ -23,7 +23,7 @@ export interface CodeChangesPreviewController {
   dispose(): void
 }
 
-/** A project owns this controller; a preview belongs to its active editor. */
+/** The registry owns this controller; previews belong to the current project/editor. */
 export function createCodeChangesPreview(
   getEditor: () => PreviewEditor | null | undefined
 ): CodeChangesPreviewController {

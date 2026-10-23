@@ -2,7 +2,7 @@ import { CodeDiffView } from '@src/components/CodeDiffView'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import type { CodeChangesPreview as Preview } from '@src/lib/codeChangesPreview'
 
-/** Read-only code proposed by the active modeling dialog. */
+/** Read-only code proposed for the active editor. */
 export function CodeChangesPreview({
   preview,
   onClose,

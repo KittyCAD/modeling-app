@@ -2,7 +2,7 @@ import { lazy, Suspense, useRef } from 'react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useDialogReset } from '@src/components/ModelingDialog/useDialogReset'
 import { useApp } from '@src/lib/boot'
-import { projectSession } from '@src/registry/contracts/projectSession'
+import { codeChangesPreviewService } from '@src/registry/contracts/codeChangesPreview'
 import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import { commandScopeService } from '@src/registry/contracts/commands'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
@@ -17,7 +17,7 @@ export function ModelingDialogViewExtension({
 }: EngineSceneViewExtensionProps) {
   useSignals()
   const containerRef = useRef<HTMLDivElement>(null)
-  const { commands, settings, layout, wasmPromise, registry } = useApp()
+  const { commands, settings, wasmPromise, registry } = useApp()
   const state = commands.useState()
   const resetting = useDialogReset(commands.actor)
   if (
@@ -37,10 +37,7 @@ export function ModelingDialogViewExtension({
           kclManager={modelingState.context.kclManager}
           commands={commands}
           settings={settings}
-          layout={layout}
-          codeChangesPreview={
-            registry.get(projectSession).project.value?.codeChangesPreview
-          }
+          codeChangesPreview={registry.get(codeChangesPreviewService)}
           wasmPromise={wasmPromise}
           commandScopes={registry.optional(commandScopeService)}
           selectionRanges={modelingState.context.selectionRanges}

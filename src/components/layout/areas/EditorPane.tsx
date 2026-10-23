@@ -35,6 +35,7 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { getResolvedTheme } from '@src/lib/theme'
 import { reportRejection, trap } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { codeChangesPreviewService } from '@src/registry/contracts/codeChangesPreview'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -78,11 +79,11 @@ export const EditorPane = (props: AreaTypeComponentProps) => {
 
 export const EditorPaneContents = () => {
   useSignals()
-  const { projectSignal } = useApp()
+  const { registry } = useApp()
   const { kclManager } = useSingletons()
   const activeTextFile = activeTextFileSignal.value
-  const codeChangesPreview = projectSignal.value?.codeChangesPreview
-  const preview = codeChangesPreview?.current.value
+  const codeChangesPreview = registry.get(codeChangesPreviewService)
+  const preview = codeChangesPreview.current.value
   const editorParent = useRef<HTMLDivElement>(null)
 
   // When this pane unmounts (e.g. the Code pane is closed), stop showing the
@@ -93,7 +94,7 @@ export const EditorPaneContents = () => {
     }
   }, [])
 
-  useEffect(() => () => codeChangesPreview?.clear(), [codeChangesPreview])
+  useEffect(() => () => codeChangesPreview.clear(), [codeChangesPreview])
 
   useEffect(() => {
     if (activeTextFile) {
@@ -119,7 +120,7 @@ export const EditorPaneContents = () => {
         <div className="absolute inset-0">
           <CodeChangesPreview
             preview={preview}
-            onClose={() => codeChangesPreview?.clear(preview.owner)}
+            onClose={() => codeChangesPreview.clear(preview.owner)}
           />
         </div>
       )}
@@ -296,12 +297,12 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 
 export const KclEditorMenu = () => {
   useSignals()
-  const { projectSignal } = useApp()
+  const { registry } = useApp()
   // The KCL-specific menu items (format, convert to variable, KCL docs, add KCL
   // file) don't apply when a plain text/markdown file is open in the pane.
   if (
     activeTextFileSignal.value ||
-    projectSignal.value?.codeChangesPreview.current.value
+    registry.get(codeChangesPreviewService).current.value
   ) {
     return null
   }

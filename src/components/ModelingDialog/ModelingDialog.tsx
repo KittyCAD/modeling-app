@@ -12,18 +12,14 @@ import { MarkdownText } from '@src/components/MarkdownText'
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
 import Tooltip from '@src/components/Tooltip'
 import type { KclManager } from '@src/lang/KclManager'
-import type { CodeChangesPreviewController } from '@src/lib/codeChangesPreview'
-import type {
-  AppCommandSystem,
-  AppLayoutSystem,
-  AppSettingsSystem,
-} from '@src/lib/app'
+import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
 import { getSelectionTypeDisplayText, isSelections } from '@src/lib/selections'
 import { isErr, trap } from '@src/lib/trap'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { CommandScopeService } from '@src/registry/contracts/commands'
+import type { CodeChangesPreviewService } from '@src/registry/contracts/codeChangesPreview'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 import {
   fieldText,
@@ -43,7 +39,6 @@ export default function ModelingDialog({
   kclManager,
   commands,
   settings,
-  layout,
   codeChangesPreview,
   wasmPromise,
   commandScopes,
@@ -54,8 +49,7 @@ export default function ModelingDialog({
   kclManager: KclManager
   commands: AppCommandSystem
   settings: AppSettingsSystem
-  layout: AppLayoutSystem
-  codeChangesPreview?: CodeChangesPreviewController
+  codeChangesPreview?: CodeChangesPreviewService
   wasmPromise: Promise<ModuleType>
   commandScopes?: CommandScopeService
   selectionRanges: Selections
@@ -135,8 +129,8 @@ export default function ModelingDialog({
     values: selection.draft,
     incomplete: initializing || invalid,
     kclManager,
-    layout,
     preview: codeChangesPreview,
+    commandBar: commands.actor,
   })
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {

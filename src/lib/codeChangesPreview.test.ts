@@ -14,7 +14,8 @@ it('isolates projects and rejects pending results after leaving a file or closin
   }
   const otherEditor = { path: '/project/main.kcl' }
   const activeEditor = signal<{ readonly path: string } | undefined>(editor)
-  const first = createCodeChangesPreview(() => activeEditor.value)
+  const project = signal({ editor: activeEditor })
+  const first = createCodeChangesPreview(() => project.value.editor.value)
   const second = createCodeChangesPreview(() => otherEditor)
   const pending: CodeChangesPreview = {
     owner: {},
@@ -49,6 +50,11 @@ it('isolates projects and rejects pending results after leaving a file or closin
 
     publishCurrent(ready)
     expect(first.current.value).toBe(ready)
+    // A project switch must invalidate results even if its editor is reused.
+    project.value = { editor: activeEditor }
+    expect(first.current.value).toBeNull()
+    publishCurrent(ready)
+    expect(first.current.value).toBeNull()
     activeEditor.value = undefined
     expect(first.current.value).toBeNull()
     expect(first.open(editor, pending)).toBeUndefined()
