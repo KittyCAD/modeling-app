@@ -26,6 +26,7 @@ horizontal and a 10 mm length dimension. Then try these selections:
 | --- | --- |
 | One nearly horizontal or vertical line | Horizontal or vertical |
 | Two lines of similar length | Equal length |
+| Two nearly parallel or perpendicular lines | Parallel or perpendicular |
 | Two arcs or circles of similar radius | Equal radius |
 | A line and a near-tangent circle or arc | Tangent |
 | Two nearly externally tangent circles | Tangent |
@@ -34,7 +35,8 @@ horizontal and a 10 mm length dimension. Then try these selections:
 
 For an arc, the tangent contact must be near an arc endpoint. For symmetry,
 the axis is the selected line. Three-line symmetry and internal circle
-tangency are outside this experiment.
+tangency are outside this experiment. Coincident and midpoint suggestions are
+not generated yet, though the modeling app supports those manual tools.
 Owned support lines are ignored.
 
 The candidate generator uses geometric thresholds. It ranks passing

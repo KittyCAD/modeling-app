@@ -25,6 +25,7 @@ import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constra
 
 const MAX_AXIS_RESIDUAL = 0.15
 const MAX_EQUAL_SIZE_RESIDUAL = 0.08
+const MAX_LINE_ANGLE_RESIDUAL = 0.08
 const MAX_TANGENT_RESIDUAL = 0.08
 const MAX_SYMMETRY_RESIDUAL = 0.08
 const MAX_DIMENSION_RESIDUAL = 0.025
@@ -35,6 +36,8 @@ type SuggestedToolName = Extract<
   | 'horizontalConstraintTool'
   | 'verticalConstraintTool'
   | 'equalLengthConstraintTool'
+  | 'parallelConstraintTool'
+  | 'perpendicularConstraintTool'
 >
 
 export type ConstraintSuggestion = {
@@ -146,6 +149,12 @@ function hasEquivalentConstraint(
           current.type === 'LinesEqualLength' &&
           constraint.lines.every((id) => current.lines.includes(id))
         )
+      case 'Parallel':
+      case 'Perpendicular':
+        return (
+          (current.type === 'Parallel' || current.type === 'Perpendicular') &&
+          constraint.lines.every((id) => current.lines.includes(id))
+        )
       case 'EqualRadius':
         return (
           current.type === 'EqualRadius' &&
@@ -178,8 +187,6 @@ function hasEquivalentConstraint(
       case 'HorizontalDistance':
       case 'VerticalDistance':
       case 'Midpoint':
-      case 'Parallel':
-      case 'Perpendicular':
       case 'Angle':
       case 'Fixed':
         return false
@@ -550,18 +557,47 @@ export function generateConstraintCandidates(
         const firstSize = distance(firstPoints[0], firstPoints[1])
         const secondSize = distance(secondPoints[0], secondPoints[1])
         const scale = Math.max(firstSize, secondSize)
-        candidates.push(
-          makeCandidate(
-            toolPayload('equalLengthConstraintTool', selectionIds, objects),
-            'Make equal length',
-            'Selected lines are nearly equal',
-            Math.abs(firstSize - secondSize) / scale,
-            MAX_EQUAL_SIZE_RESIDUAL,
-            scale,
-            sketchId,
-            objects
+        if (firstSize > 0 && secondSize > 0) {
+          const firstDx = firstPoints[1][0] - firstPoints[0][0]
+          const firstDy = firstPoints[1][1] - firstPoints[0][1]
+          const secondDx = secondPoints[1][0] - secondPoints[0][0]
+          const secondDy = secondPoints[1][1] - secondPoints[0][1]
+          const lengthsProduct = firstSize * secondSize
+          candidates.push(
+            makeCandidate(
+              toolPayload('equalLengthConstraintTool', selectionIds, objects),
+              'Make equal length',
+              'Selected lines are nearly equal',
+              Math.abs(firstSize - secondSize) / scale,
+              MAX_EQUAL_SIZE_RESIDUAL,
+              scale,
+              sketchId,
+              objects
+            ),
+            makeCandidate(
+              toolPayload('parallelConstraintTool', selectionIds, objects),
+              'Make parallel',
+              'Selected lines are nearly parallel',
+              Math.abs(firstDx * secondDy - firstDy * secondDx) /
+                lengthsProduct,
+              MAX_LINE_ANGLE_RESIDUAL,
+              scale,
+              sketchId,
+              objects
+            ),
+            makeCandidate(
+              toolPayload('perpendicularConstraintTool', selectionIds, objects),
+              'Make perpendicular',
+              'Selected lines are nearly perpendicular',
+              Math.abs(firstDx * secondDx + firstDy * secondDy) /
+                lengthsProduct,
+              MAX_LINE_ANGLE_RESIDUAL,
+              scale,
+              sketchId,
+              objects
+            )
           )
-        )
+        }
       }
     } else if (selectedObjects.every(isArcLikeSegment)) {
       const firstPoints = getArcPoints(selectedObjects[0], [...objects])

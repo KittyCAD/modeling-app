@@ -153,8 +153,12 @@ describe('constraint suggestions', () => {
       createLineApiObject({ id: 6, start: 4, end: 5 }),
       sketch(),
     ])
-    expect(generateConstraintCandidates([3, 6], sketchId, lines)).toMatchObject(
-      [{ payload: { type: 'LinesEqualLength' } }]
+    expect(generateConstraintCandidates([3, 6], sketchId, lines)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          payload: expect.objectContaining({ type: 'LinesEqualLength' }),
+        }),
+      ])
     )
 
     const circles = objectArray([
@@ -173,6 +177,52 @@ describe('constraint suggestions', () => {
         payload: { type: 'EqualRadius' },
       },
     ])
+  })
+
+  it('suggests parallel and perpendicular relationships for nearly aligned line pairs', () => {
+    const objects = objectArray([
+      createPointApiObject({ id: 1, x: 0, y: 0 }),
+      createPointApiObject({ id: 2, x: 10, y: 0.1 }),
+      createLineApiObject({ id: 3, start: 1, end: 2 }),
+      createPointApiObject({ id: 4, x: 0, y: 5 }),
+      createPointApiObject({ id: 5, x: 10, y: 5.2 }),
+      createLineApiObject({ id: 6, start: 4, end: 5 }),
+      createPointApiObject({ id: 7, x: 5, y: -4 }),
+      createPointApiObject({ id: 8, x: 5.1, y: 4 }),
+      createLineApiObject({ id: 9, start: 7, end: 8 }),
+      createPointApiObject({ id: 11, x: 0, y: 0 }),
+      createPointApiObject({ id: 12, x: 8, y: 8 }),
+      createLineApiObject({ id: 13, start: 11, end: 12 }),
+      sketch(),
+    ])
+
+    expect(
+      generateConstraintCandidates([3, 6], sketchId, objects).some(
+        ({ payload }) => payload.type === 'Parallel'
+      )
+    ).toBe(true)
+    expect(
+      generateConstraintCandidates([3, 9], sketchId, objects).some(
+        ({ payload }) => payload.type === 'Perpendicular'
+      )
+    ).toBe(true)
+    expect(
+      generateConstraintCandidates([3, 13], sketchId, objects).some(
+        ({ payload }) =>
+          payload.type === 'Parallel' || payload.type === 'Perpendicular'
+      )
+    ).toBe(false)
+
+    const withParallel = objectArray([
+      ...objects.filter(Boolean),
+      sketch([14]),
+      constraintObject(14, { type: 'Parallel', lines: [3, 6] }),
+    ])
+    expect(
+      generateConstraintCandidates([6, 3], sketchId, withParallel).some(
+        ({ payload }) => payload.type === 'Parallel'
+      )
+    ).toBe(false)
   })
 
   it('suggests tangency only when the contact is close to the selected segments', () => {

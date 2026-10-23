@@ -71,4 +71,83 @@ sketch001 = sketch(on = XY) {
     await horizontal.click()
     await editor.expectEditor.toContain('horizontal(')
   })
+
+  for (const { relation, secondLine } of [
+    {
+      relation: 'parallel',
+      secondLine:
+        'line(start = [var 0mm, var 5mm], end = [var 10mm, var 5.15mm])',
+    },
+    {
+      relation: 'perpendicular',
+      secondLine:
+        'line(start = [var 8mm, var -6mm], end = [var 8.1mm, var 2mm])',
+    },
+  ] as const) {
+    test(`suggests ${relation} for two nearly aligned lines`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+    }) => {
+      const code = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0.25mm])
+  line2 = ${secondLine}
+}
+`
+      await page.setBodyDimensions({ width: 1200, height: 600 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await editor.openPane()
+      await editor.replaceCode('', code)
+      await scene.settled()
+
+      await toolbar.openFeatureTreePane()
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10_000,
+      })
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
+      await sketchOperation.dblclick()
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+
+      const handles = page.locator('[data-handle="sketch-point-handle"]')
+      await expect(handles).toHaveCount(4)
+      const boxes = await Promise.all(
+        [0, 1, 2, 3].map((index) => handles.nth(index).boundingBox())
+      )
+      if (boxes.some((box) => box === null)) {
+        throw new Error('Sketch point handles are missing from the scene')
+      }
+      const point = (index: number) => {
+        const box = boxes[index]
+        if (!box) {
+          throw new Error('Sketch point handle is missing from the scene')
+        }
+        return { x: box.x + box.width / 2, y: box.y + box.height / 2 }
+      }
+      const firstStart = point(0)
+      const firstEnd = point(1)
+      const secondStart = point(2)
+      const secondEnd = point(3)
+      await page.mouse.click(
+        (firstStart.x + firstEnd.x) / 2,
+        (firstStart.y + firstEnd.y) / 2
+      )
+      await page.mouse.click(
+        (secondStart.x + secondEnd.x) / 2,
+        (secondStart.y + secondEnd.y) / 2
+      )
+
+      const suggest = page.getByRole('button', { name: 'Suggest', exact: true })
+      await expect(suggest).toBeEnabled()
+      await suggest.click()
+      await page.getByRole('button', { name: `Make ${relation}` }).click()
+      await editor.expectEditor.toContain(`${relation}([line1, line2])`)
+    })
+  }
 })
