@@ -4,6 +4,7 @@ import {
   defineValueSpec,
 } from '@kittycad/registry'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import type { DuplicateProjectResult } from '@src/lib/projectDuplication'
 import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 import type { CloudProjectDuplicateRisk } from '@src/registry/contracts/cloudSync'
@@ -121,7 +122,10 @@ export interface HomeProjectActionsService {
   open: (
     project: HomeProjectEntry
   ) => Promise<HomeProjectOpenResult | undefined>
-  duplicate: (project: HomeProjectEntry) => Promise<void>
+  duplicate: (
+    project: HomeProjectEntry,
+    options?: { notify?: boolean }
+  ) => Promise<DuplicateProjectResult | undefined>
   rename: (
     project: HomeProjectEntry,
     requestedName: string,

@@ -34,7 +34,9 @@ import {
   fileOperationsService,
 } from '@src/registry/contracts/fileOperations'
 import {
+  type HomeProjectActionsService,
   type HomeProjectEntry,
+  homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import {
@@ -69,6 +71,7 @@ type ZookeeperRuntimeServices = {
   auth: ReadonlySignal<AuthRegistryService | undefined>
   billing: ReadonlySignal<BillingRegistryService | undefined>
   fileOperations: ReadonlySignal<FileOperationsRegistryService | undefined>
+  homeProjectActions?: ReadonlySignal<HomeProjectActionsService | undefined>
   libraryProjects?: ReadonlySignal<readonly HomeProjectEntry[]>
   projectSession: ReadonlySignal<ProjectSessionService | undefined>
   settings: ReadonlySignal<SettingsRegistryService | undefined>
@@ -314,6 +317,7 @@ export function createZookeeperRuntime(
             getEnvironmentNameFromEnv(env())
           ),
           fileOperations,
+          getHomeProjectActions: () => services.homeProjectActions?.value,
           libraryProjects: services.libraryProjects,
           includePersonalCloud: () =>
             projectLibrariesFromSettings(
@@ -430,6 +434,7 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
     auth: ctx.services.signal(authService),
     billing: ctx.services.signal(billingService),
     fileOperations: ctx.services.signal(fileOperationsService),
+    homeProjectActions: ctx.services.signal(homeProjectActionsService),
     libraryProjects: ctx.valueSpecs.signal(homeProjectEntriesValueSpec),
     projectSession: ctx.services.signal(projectSession),
     settings: ctx.services.signal(settingsService),
