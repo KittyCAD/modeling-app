@@ -1892,7 +1892,11 @@ export const modelingMachine = setup({
           setSelections.selectionType === 'axisSelection' ||
           setSelections.selectionType === 'defaultPlaneSelection'
         ) {
-          if (kclManager.isShiftDown) {
+          const isShiftDown =
+            (setSelections.selectionType === 'defaultPlaneSelection'
+              ? setSelections.isShiftDown
+              : undefined) ?? kclManager.isShiftDown
+          if (isShiftDown) {
             selections = {
               graphSelections: selectionRanges.graphSelections || [],
               otherSelections: [setSelections.selection],

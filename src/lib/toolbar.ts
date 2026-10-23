@@ -18,6 +18,8 @@ import type { HotkeySequence } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import { getSelectedDefaultPlane } from '@src/lib/selections'
+import { inferReferencePlane } from '@src/lib/referencePlanes'
+import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -1026,65 +1028,29 @@ export function buildToolbarConfig(
         },
         'break',
         {
-          id: 'planes',
-          array: [
-            {
-              id: 'plane-offset',
-              command: 'modeling:Offset plane',
-              onClick: () => {
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Offset plane', groupId: 'modeling' },
-                })
-              },
-              icon: 'plane',
-              status: 'available',
-              title: 'Offset Plane',
-              description: 'Create a plane parallel to an existing plane.',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-offsetPlane'
-                  ),
+          id: 'plane',
+          command: 'modeling:Construction plane',
+          onClick: ({ modelingState }) => {
+            const selection = modelingState.context.selectionRanges
+            const hasSelection = !isErr(inferReferencePlane(selection))
+            commands.send({
+              type: 'Find and select command',
+              data: {
+                name: 'Construction plane',
+                groupId: 'modeling',
+                argDefaultValues: {
+                  method: 'References',
+                  ...(hasSelection ? { references: selection } : {}),
                 },
-              ],
-            },
-            {
-              id: 'plane-construction',
-              command: 'modeling:Construction plane',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Construction plane', groupId: 'modeling' },
-                }),
-              icon: 'plane',
-              status: 'available',
-              title: 'Construction Plane',
-              description:
-                'Create a plane from axes, a normal, three points, or an equation.',
-              links: [],
-            },
-            {
-              id: 'plane-points',
-              command: 'modeling:Construction plane',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: {
-                    name: 'Construction plane',
-                    groupId: 'modeling',
-                    argDefaultValues: { method: 'Points', pointSource: 'Pick' },
-                  },
-                }),
-              icon: 'plane',
-              status: 'available',
-              title: '3-Point Plane',
-              description:
-                'Create a plane through three corner points on a part.',
-              links: [],
-            },
-          ],
+              },
+            })
+          },
+          icon: 'plane',
+          status: 'available',
+          title: 'Plane',
+          showTitle: true,
+          description: 'Create a plane from selected faces, planes, or points.',
+          links: [],
         },
         {
           id: 'helix',

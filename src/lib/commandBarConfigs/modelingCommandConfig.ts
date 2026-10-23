@@ -12,6 +12,7 @@ import { planeMethodArgs } from '@src/lang/modifyAst/planes'
 import { validatePlanePoints } from '@src/lib/vertexPicking'
 import type { PickedPoint } from '@src/lib/vertexPicking'
 import type { PlaneMethod } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+import { inferReferencePlane } from '@src/lib/referencePlanes'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
@@ -1146,9 +1147,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'Construction plane': {
     description:
-      'Create a plane from axes, a normal, three points, or an equation.',
+      'Create a plane from selected references or enter coordinates.',
     icon: 'plane',
     needsReview: true,
+    reviewMessage: (context) => {
+      if (context.argumentsToSubmit.method !== 'References')
+        return 'Create plane'
+      const kind = inferReferencePlane(
+        context.argumentsToSubmit.references as Selections | undefined
+      )
+      return isErr(kind)
+        ? kind.message
+        : `${kind}. References are saved at their current positions.`
+    },
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods['Construction plane']
     ),
@@ -1157,15 +1168,62 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     >('Construction plane', {
       overrides: {
         method: {
+          displayName: 'Definition',
           inputType: 'options',
           required: true,
           defaultValue: 'Normal',
           options: [
+            { name: 'From selected geometry', value: 'References' },
             { name: 'Point and normal', value: 'Normal' },
             { name: 'Axes and origin', value: 'Axes' },
             { name: 'Three points', value: 'Points' },
             { name: 'Equation', value: 'Equation' },
           ],
+        },
+        references: {
+          inputType: 'selection',
+          displayName: 'References',
+          description:
+            'Select one plane or planar face for an offset, two parallel faces for a midplane, a plane and point for a parallel plane, two points for a perpendicular bisector, or three points for a plane through them. Hold Shift to add references. Change Definition for manual coordinates.',
+          selectionTypes: [
+            'vertex',
+            'plane',
+            'planeOfFace',
+            'cap',
+            'wall',
+            'edgeCut',
+            'enginePrimitiveFace',
+            'primitiveFace',
+          ],
+          selectionFilter: ['vertex', 'face', 'plane'],
+          multiple: true,
+          required: (context) =>
+            context.argumentsToSubmit.method === 'References',
+          hidden: (context) =>
+            context.argumentsToSubmit.method !== 'References',
+          validation: async ({
+            data,
+          }: {
+            data: { references: Selections }
+          }) => {
+            const kind = inferReferencePlane(data.references)
+            return isErr(kind) ? kind.message : true
+          },
+        },
+        offset: {
+          inputType: 'kcl',
+          displayName: 'Distance',
+          defaultValue: '0mm',
+          required: (context) =>
+            context.argumentsToSubmit.method === 'References' &&
+            inferReferencePlane(
+              context.argumentsToSubmit.references as Selections | undefined
+            ) === 'Offset',
+          hidden: (context) =>
+            context.argumentsToSubmit.method !== 'References' ||
+            inferReferencePlane(
+              context.argumentsToSubmit.references as Selections | undefined
+            ) !== 'Offset',
         },
         pointSource: {
           inputType: 'options',

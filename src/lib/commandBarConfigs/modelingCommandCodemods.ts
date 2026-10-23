@@ -38,7 +38,10 @@ import {
   addSpurGear,
 } from '@src/lang/modifyAst/gears'
 import { addHelix } from '@src/lang/modifyAst/geometry'
-import { addConstructionPlane } from '@src/lang/modifyAst/planes'
+import {
+  addConstructionPlane,
+  addReferencePlane,
+} from '@src/lang/modifyAst/planes'
 import {
   defineModelingCodemod,
   type ModelingCodemod,
@@ -271,7 +274,14 @@ export const modelingCommandCodemods = {
   'Boolean Intersect': withArtifactGraph('Boolean Intersect', addIntersect),
   'Boolean Split': withArtifactGraph('Boolean Split', addSplit),
   'Offset plane': withArtifactGraphAndVariables('Offset plane', addOffsetPlane),
-  'Construction plane': withAst('Construction plane', addConstructionPlane),
+  'Construction plane': defineModelingCodemod<
+    CommandArgsByName['Construction plane']
+  >({
+    run: ({ args, ast, kclManager, wasmInstance }) =>
+      args.method === 'References'
+        ? addReferencePlane({ ...args, ast, kclManager, wasmInstance })
+        : addConstructionPlane({ ...args, ast, wasmInstance }),
+  }),
   Helix: withArtifactGraph('Helix', addHelix),
   'Helical Gear': withAst('Helical Gear', addHelicalGear),
   'Herringbone Gear': withAst('Herringbone Gear', addHerringboneGear),

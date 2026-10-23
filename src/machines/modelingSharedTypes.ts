@@ -113,6 +113,7 @@ export type SetSelections =
     }
   | {
       selectionType: 'defaultPlaneSelection'
+      isShiftDown?: boolean
       selection: DefaultPlaneSelection
     }
   | {

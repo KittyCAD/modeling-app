@@ -287,9 +287,17 @@ export const modelingCommandStdLibDriftConfig = {
   'Construction plane': {
     stdLibName: 'plane',
     editFlow: true,
-    uiOnlyArgs: ['method', 'pointSource', 'pickedPoints'],
+    uiOnlyArgs: [
+      'method',
+      'references',
+      'offset',
+      'pointSource',
+      'pickedPoints',
+    ],
     flowArgOrder: [
       'method',
+      'references',
+      'offset',
       'pointSource',
       'pickedPoints',
       'origin',

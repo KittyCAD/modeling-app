@@ -1,7 +1,165 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 
+for (const kind of [
+  'Offset',
+  'Midplane',
+  'Parallel through point',
+  'Perpendicular bisector',
+] as const) {
+  test(
+    `Plane infers ${kind} from viewport references`,
+    { tag: '@web' },
+    async ({ page, homePage, scene, editor, toolbar, cmdBar }) => {
+      await homePage.goToModelingScene()
+      await editor.openPane()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode(
+          '',
+          `@settings(kclVersion = 2.0)
+outline = sketch(on = XY) {
+  bottom = line(start = [0mm, 0mm], end = [40mm, 0mm])
+  right = line(start = [40mm, 0mm], end = [40mm, 40mm])
+  top = line(start = [40mm, 40mm], end = [0mm, 40mm])
+  left = line(start = [0mm, 40mm], end = [0mm, 0mm])
+}
+face = region(point = [10mm, 10mm], sketch = outline)
+body = extrude(face, length = 20mm)`
+        )
+      )
+      const camera = async (back = false) => {
+        await scene.moveCameraTo(
+          { x: 80, y: back ? 100 : -100, z: 100 },
+          { x: 20, y: 20, z: 10 }
+        )
+        await page.evaluate(async () => {
+          await window.engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: crypto.randomUUID(),
+            cmd: { type: 'default_camera_get_settings' },
+          })
+        })
+      }
+      await scene.settled()
+      await camera()
+      await page.getByTestId('plane').click()
+      await expect
+        .poll(async () => {
+          const state = await cmdBar.getState()
+          return state.stage === 'arguments' ? state.currentArgKey : undefined
+        })
+        .toBe('references')
+      const pick = async (point: number[], count: number) => {
+        const projected = await page.evaluate((point) => {
+          const camera =
+            window.app.singletons.kclManager.sceneInfra.camControls.camera.clone()
+          camera.updateMatrixWorld(true)
+          const p = camera.position
+            .clone()
+            .set(point[0], point[1], point[2])
+            .project(camera)
+          return { x: (p.x + 1) / 2, y: (1 - p.y) / 2 }
+        }, point)
+        const [click] = scene.makeMouseHelpers(projected.x, projected.y, {
+          format: 'ratio',
+          debugLabel: 'reference',
+        })
+        await click()
+        await expect
+          .poll(async () => {
+            const selection = JSON.parse(
+              await cmdBar.currentArgumentInput.inputValue()
+            )
+            return (
+              selection.graphSelections.length +
+              selection.otherSelections.length
+            )
+          })
+          .toBe(count)
+      }
+      await pick(
+        kind === 'Midplane'
+          ? [20, 0, 10]
+          : kind === 'Perpendicular bisector'
+            ? [0, 0, 20]
+            : [20, 20, 20],
+        1
+      )
+      if (kind !== 'Offset') {
+        await page.keyboard.down('Shift')
+        if (kind === 'Midplane') await camera(true)
+        await pick(
+          kind === 'Midplane'
+            ? [20, 40, 10]
+            : kind === 'Parallel through point'
+              ? [40, 0, 0]
+              : [40, 0, 20],
+          2
+        )
+        await page.keyboard.up('Shift')
+      }
+      await cmdBar.progressCmdBar()
+      if (kind === 'Offset') {
+        await expect
+          .poll(async () => {
+            const state = await cmdBar.getState()
+            return state.stage === 'arguments' ? state.currentArgKey : undefined
+          })
+          .toBe('offset')
+        await cmdBar.argumentInput.locator('[contenteditable]').fill('5mm')
+        await expect(page.locator('#arg-form')).toHaveAttribute(
+          'data-can-submit',
+          'true'
+        )
+        await cmdBar.progressCmdBar()
+      }
+      await expect
+        .poll(async () => (await cmdBar.getState()).stage)
+        .toBe('review')
+      await expect(page.getByTestId('command-bar-submit')).toBeEnabled()
+      await cmdBar.submit()
+      await scene.settled()
+      const result = await page.evaluate(() => {
+        const p = window.app.singletons.kclManager.variables.plane001
+        return p?.type === 'Plane'
+          ? { origin: p.value.origin, normal: p.value.zAxis }
+          : undefined
+      })
+      const origin =
+        kind === 'Offset'
+          ? [0, 0, 25]
+          : kind === 'Midplane'
+            ? [0, 20, 0]
+            : kind === 'Parallel through point'
+              ? [40, 0, 0]
+              : [20, 0, 20]
+      // Plane origins on faces may differ tangentially; check the defining equation.
+      if (kind === 'Offset') expect(result?.origin.z).toBeCloseTo(25)
+      else if (kind === 'Midplane') expect(result?.origin.y).toBeCloseTo(20)
+      else
+        for (const [i, axis] of (['x', 'y', 'z'] as const).entries())
+          expect(result?.origin[axis]).toBeCloseTo(origin[i])
+      const normal =
+        kind === 'Midplane'
+          ? [0, -1, 0]
+          : kind === 'Perpendicular bisector'
+            ? [1, 0, 0]
+            : [0, 0, 1]
+      for (const [i, axis] of (['x', 'y', 'z'] as const).entries())
+        expect(
+          kind === 'Midplane'
+            ? Math.abs(result?.normal[axis] ?? NaN)
+            : result?.normal[axis]
+        ).toBeCloseTo(Math.abs(normal[i]))
+      await toolbar.startSketchBtn.click()
+      await (await toolbar.getFeatureTreeOperation('plane001', 0)).click()
+      await expect(toolbar.exitSketchBtn).toBeVisible()
+      await editor.expectEditor.toContain('sketch(on = plane001)')
+    }
+  )
+}
+
 test(
-  '3-Point Plane picks actual corners on a solid',
+  'Plane infers three points from actual corners on a solid',
   { tag: '@web' },
   async ({ page, homePage, scene, editor, toolbar, cmdBar }) => {
     await homePage.goToModelingScene()
@@ -63,14 +221,13 @@ body = extrude(face, length = 20mm)`
       )
       .toEqual(['vertex'])
 
-    await page.getByRole('button', { name: /planes: open menu/ }).click()
-    await page.getByTestId('dropdown-plane-points').click()
+    await page.getByTestId('plane').click()
     await expect
       .poll(async () => {
         const state = await cmdBar.getState()
         return state.stage === 'arguments' ? state.currentArgKey : undefined
       })
-      .toBe('pickedPoints')
+      .toBe('references')
     // First click replaces selection; Shift adds the remaining corners.
     await clickCorner([0, 0, 20])
     await expect
@@ -104,7 +261,7 @@ body = extrude(face, length = 20mm)`
       .toBe('review')
     await cmdBar.submit()
     await editor.expectEditor.toContain(
-      'plane001 = plane(points = [[0mm, 0mm, 20mm], [40mm, 0mm, 20mm], [40mm, 40mm, 20mm]])',
+      'plane001 = plane(origin = [0mm, 0mm, 20mm], normal = [0, 0, 1], xAxis = [1, 0, 0])',
       { shouldNormalise: true }
     )
     await scene.settled()

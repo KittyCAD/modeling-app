@@ -1278,6 +1278,17 @@ function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
 
 /** Compare two entityReferences (for shift+multi-select). Uses entityRef when present, else codeRef.range. */
 export function selectionV2Equals(a: Selection, b: Selection): boolean {
+  if (
+    a.entityRef?.type === 'vertex' &&
+    b.entityRef?.type === 'vertex' &&
+    a.engineTopologyFallback &&
+    b.engineTopologyFallback
+  )
+    return (
+      a.engineTopologyFallback.parentId === b.engineTopologyFallback.parentId &&
+      a.engineTopologyFallback.primitiveIndex ===
+        b.engineTopologyFallback.primitiveIndex
+    )
   if (a.entityRef && b.entityRef)
     return entityRefEquals(a.entityRef, b.entityRef)
   const aRange = a.codeRef?.range

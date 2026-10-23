@@ -1,6 +1,7 @@
 import type { WebSocketResponse } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
 import { assertParse } from '@src/lang/wasm'
+import { selectionV2Equals } from '@src/lang/queryAst'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   getEventForQueryEntityTypeWithPoint,
@@ -11,6 +12,19 @@ import { PerspectiveCamera } from 'three'
 import { beforeAll, expect, it, vi } from 'vitest'
 
 let world: Awaited<ReturnType<typeof buildTheWorldAndNoEngineConnection>>
+it('keeps different corners sharing adjacent faces distinct in multi-selection', () => {
+  const corner = {
+    entityRef: { type: 'vertex' as const, side_faces: ['a', 'b'] },
+    engineTopologyFallback: { parentId: 'body', primitiveIndex: 1 },
+  }
+  expect(
+    selectionV2Equals(corner, {
+      ...corner,
+      engineTopologyFallback: { parentId: 'body', primitiveIndex: 2 },
+    })
+  ).toBe(false)
+  expect(selectionV2Equals(corner, { ...corner })).toBe(true)
+})
 beforeAll(async () => {
   world = await buildTheWorldAndNoEngineConnection()
 })

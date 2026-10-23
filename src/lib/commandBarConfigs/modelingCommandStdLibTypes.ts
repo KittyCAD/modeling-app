@@ -181,11 +181,18 @@ export type ChamferCommandArgs = Override<
 
 export type OffsetPlaneCommandArgs = PointAndClickCommandArgs<'Offset plane'>
 
-export type PlaneMethod = 'Axes' | 'Normal' | 'Points' | 'Equation'
+export type PlaneMethod =
+  | 'References'
+  | 'Axes'
+  | 'Normal'
+  | 'Points'
+  | 'Equation'
 export type ConstructionPlaneCommandArgs = {
   method: PlaneMethod
   pointSource?: 'Pick' | 'Coordinates'
   pickedPoints?: Selections
+  references?: Selections
+  offset?: KclCommandValue
   origin?: KclCommandValue
   normal?: KclCommandValue
   xAxis?: KclCommandValue

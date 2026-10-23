@@ -572,7 +572,9 @@ openSketch = startSketchOn(XY)
     await scene.settled()
 
     await test.step(`Go through the command bar flow`, async () => {
-      await toolbar.offsetPlaneButton.click()
+      await cmdBar.openCmdBar()
+      await cmdBar.cmdSearchInput.fill('Offset plane')
+      await cmdBar.chooseCommand('Offset plane')
       await expect
         .poll(() => page.getByText('Please select one').count())
         .toBe(1)

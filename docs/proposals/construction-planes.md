@@ -6,15 +6,23 @@ This draft implements `plane(...): Plane` in this repository's KCL stdlib and ad
 
 ## Try it in the preview
 
-1. Open a project and find **Construction plane** in the command palette or planes toolbar dropdown.
-2. Choose Point and normal, Axes and origin, Three points, or Equation.
-3. Enter the fields and continue to review. The defaults for all methods create the same plane 20 units above XY. Invalid frames are rejected during review before source is committed.
+1. Open a project and click **Plane** in the toolbar. Existing selected references are used automatically, or select them after opening the tool. Hold Shift to add references.
+2. The selection determines the definition below. Continue to review; only a single plane or face asks for an offset distance, initially zero.
+3. For manual inputs, change **Definition** to Point and normal, Axes and origin, Three points, or Equation. Invalid frames are rejected before source is committed.
 4. Create the plane. Click Start sketch and select its feature-tree entry or the plane in the viewport.
 5. Double-click its feature-tree entry to edit the inputs or change methods. Cancel leaves source unchanged; existing app history handles undo/redo.
 
-The **3-Point Plane** toolbar tool selects corner vertices on a part. Click the first corner, then hold Shift to add two more and continue to review. The tool enables the Points selection filter automatically; this filter is also available in the status bar for ordinary point selection. Construction plane's Three points method offers either picking or entering coordinates. Picked coordinates are stored as explicit millimeter literals, preserving their world positions in projects using other units. Editing opens those coordinates; choose picking to replace them.
+| References | Definition |
+| --- | --- |
+| One plane or planar face | Offset, including zero distance |
+| Two parallel planes or planar faces | Midplane |
+| A plane or planar face and one corner point | Parallel through point |
+| Two distinct corner points | Perpendicular bisector |
+| Three non-collinear corner points | Through three points |
 
-These are coordinate snapshots, so subsequent edits to the source part do not update the plane. Picking uses existing engine topology and curve queries, rejects ambiguous/unresolvable corners, and requires three distinct non-collinear points. Arbitrary points within faces, associative point/line references, object-form coordinates, and parallel/angled/midplane helpers remain follow-up work. Existing Offset plane and planar-face workflows remain available.
+The tool enables face, plane, and corner selection together. The public Points filter remains available for preselecting corners. Manual Three points also offers entering coordinates. Reference coordinates are stored as explicit millimeter literals, preserving their world positions in projects using other units. Editing opens the saved coordinates; choose From selected geometry to replace the references. Offset distance remains an editable KCL expression.
+
+These are coordinate snapshots, so subsequent edits to the source part do not update the plane. Picking uses existing engine topology and curve queries and rejects ambiguous/unresolvable corners. Midplanes require parallel faces and reject curved or non-parallel references. Reversing the first plane's normal changes orientation without moving the midplane. Arbitrary points within faces, associative references, edge-based and angled planes remain follow-up work. Existing Offset plane commands and existing KCL retain their behavior.
 
 ## KCL forms
 

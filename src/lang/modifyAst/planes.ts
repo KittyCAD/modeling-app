@@ -17,8 +17,14 @@ import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { validatePlanePoints } from '@src/lib/vertexPicking'
 import type { PickedPoint } from '@src/lib/vertexPicking'
+import {
+  inferReferencePlane,
+  resolveReferencePlane,
+} from '@src/lib/referencePlanes'
+import type { KclManager } from '@src/lang/KclManager'
 
 export const planeMethodArgs = {
+  References: [],
   Axes: ['origin', 'xAxis', 'yAxis'],
   Normal: ['origin', 'normal', 'xAxis'],
   Points: ['points'],
@@ -32,6 +38,8 @@ export function addConstructionPlane({
   method,
   pointSource,
   pickedPoints,
+  references: _references,
+  offset: _offset,
   ...values
 }: ConstructionPlaneCommandArgs & {
   ast: Node<Program>
@@ -87,4 +95,73 @@ export function addConstructionPlane({
   })
   if (isErr(pathToNode)) return pathToNode
   return { modifiedAst, pathToNode }
+}
+
+export async function addReferencePlane({
+  ast,
+  wasmInstance,
+  kclManager,
+  references,
+  offset,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  wasmInstance: ModuleType
+  kclManager: KclManager
+  references?: ConstructionPlaneCommandArgs['references']
+  offset?: ConstructionPlaneCommandArgs['offset']
+  nodeToEdit?: PathToNode
+}) {
+  const kind = inferReferencePlane(references)
+  if (isErr(kind)) return kind
+  if (!references) return new Error('Select reference geometry.')
+  const sourceAst = kclManager.ast
+  const graph = kclManager.artifactGraph
+  const frame = await resolveReferencePlane(
+    references,
+    kclManager.variables,
+    kclManager.engineCommandManager,
+    kclManager.sceneInfra.baseUnitMultiplier
+  )
+  if (kclManager.ast !== sourceAst || kclManager.artifactGraph !== graph)
+    return new Error(
+      'The model changed while reading the references. Select them again.'
+    )
+  if (isErr(frame)) return frame
+  const modifiedAst = structuredClone(ast)
+  const editPath = structuredClone(nodeToEdit)
+  const coordinates = (values: PickedPoint, length = false) =>
+    createArrayExpression(
+      values.map((value) =>
+        createLiteral(value, wasmInstance, length ? 'Mm' : undefined)
+      )
+    )
+  const base = createCallExpressionStdLibKw('plane', null, [
+    createLabeledArg('origin', coordinates(frame.origin, true)),
+    createLabeledArg('normal', coordinates(frame.normal)),
+    createLabeledArg('xAxis', coordinates(frame.xAxis)),
+  ])
+  if (kind === 'Offset' && !offset)
+    return new Error('Enter the plane offset distance.')
+  if (
+    kind === 'Offset' &&
+    offset &&
+    'variableName' in offset &&
+    offset.variableName
+  )
+    insertVariableAndOffsetPathToNode(offset, modifiedAst, editPath)
+  const call =
+    kind === 'Offset' && offset
+      ? createCallExpressionStdLibKw('offsetPlane', base, [
+          createLabeledArg('offset', valueOrVariable(offset)),
+        ])
+      : base
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: editPath,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PLANE,
+    wasmInstance,
+  })
+  return isErr(pathToNode) ? pathToNode : { modifiedAst, pathToNode }
 }

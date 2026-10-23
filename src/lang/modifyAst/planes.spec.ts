@@ -1,4 +1,8 @@
-import { addConstructionPlane } from '@src/lang/modifyAst/planes'
+import {
+  addConstructionPlane,
+  addReferencePlane,
+} from '@src/lang/modifyAst/planes'
+import type { KclManager } from '@src/lang/KclManager'
 import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import {
   assertParse,
@@ -11,7 +15,7 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { isErr } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 
 let world: Awaited<ReturnType<typeof buildTheWorldAndNoEngineConnection>>
 beforeAll(async () => {
@@ -19,6 +23,78 @@ beforeAll(async () => {
 })
 
 describe('construction planes', () => {
+  it.each(['midplane', 'parallel', 'bisector', 'offset'] as const)(
+    'creates a sketchable %s from selected references in inch projects',
+    async (kind) => {
+      const ast = assertParse(
+        `@settings(kclVersion = 2.0, defaultLengthUnit = in)
+p0 = plane(origin = [0mm, 0mm, 0mm], normal = [0, 0, 1], xAxis = [1, 0, 0])
+p40 = plane(origin = [0mm, 0mm, 40mm], normal = [0, 0, -1], xAxis = [1, 0, 0])`,
+        world.instance
+      )
+      const execution = await enginelessExecutor(ast, world.rustContext)
+      const plane = (name: string) => {
+        const value = execution.variables[name]
+        if (value?.type !== 'Plane') throw new Error('Missing source plane')
+        return {
+          entityRef: {
+            type: 'plane' as const,
+            plane_id: value.value.artifactId,
+          },
+        }
+      }
+      const point = (z: number) => ({
+        entityRef: { type: 'vertex' as const, side_faces: [] },
+        vertexPosition: [0, 0, z] as [number, number, number],
+      })
+      const references: Selections = {
+        otherSelections: [],
+        graphSelections:
+          kind === 'midplane'
+            ? [plane('p0'), plane('p40')]
+            : kind === 'parallel'
+              ? [point(20), plane('p0')]
+              : kind === 'bisector'
+                ? [point(0), point(40)]
+                : [plane('p0')],
+      }
+      const offset = await stringToKclExpression('20mm', world.rustContext)
+      if (isErr(offset) || 'errors' in offset) throw new Error('Invalid offset')
+      const sendSceneCommand = vi.fn().mockResolvedValue(null)
+      const kclManager = {
+        ast,
+        artifactGraph: execution.artifactGraph,
+        variables: execution.variables,
+        engineCommandManager: { sendSceneCommand },
+        sceneInfra: { baseUnitMultiplier: 25.4 },
+      } as unknown as KclManager
+      const result = await addReferencePlane({
+        ast,
+        wasmInstance: world.instance,
+        kclManager,
+        references,
+        offset,
+      })
+      if (isErr(result)) throw result
+      const code = recast(result.modifiedAst, world.instance)
+      if (isErr(code)) throw code
+      const next = await enginelessExecutor(
+        assertParse(`${code}\ns = sketch(on = plane001) {}`, world.instance),
+        world.rustContext
+      )
+      const value = next.variables.plane001
+      if (value?.type !== 'Plane') throw new Error('Missing reference plane')
+      expect(value.value.origin).toMatchObject({
+        x: 0,
+        y: 0,
+        z: 20,
+        units: 'mm',
+      })
+      expect(value.value.zAxis.z).toBeCloseTo(1)
+      expect(sendSceneCommand).not.toHaveBeenCalled()
+      expect(recast(ast, world.instance)).not.toContain('plane001')
+    }
+  )
   it('writes picked corners with explicit millimeters, independent of project units', async () => {
     const ast = assertParse(
       '@settings(kclVersion = 2.0, defaultLengthUnit = in)',

@@ -1791,6 +1791,7 @@ export async function getEventForQueryEntityTypeWithPoint(
       type: 'Set selection',
       data: {
         selectionType: 'defaultPlaneSelection',
+        isShiftDown: data?.isShiftDown,
         selection: {
           name: defaultPlaneNameToKcl(foundDefaultPlane[0] as PlaneName),
           id: entityId!,
@@ -1931,6 +1932,7 @@ export async function getEventForQueryEntityTypeWithPoint(
     data: {
       selectionType: 'singleCodeCursor',
       selection,
+      isShiftDown: data?.isShiftDown,
     },
   }
 }

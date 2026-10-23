@@ -28,7 +28,6 @@ export class ToolbarFixture {
   shellButton!: Locator
   holeButton!: Locator
   revolveButton!: Locator
-  offsetPlaneButton!: Locator
   helixButton!: Locator
   splitButton!: Locator
   translateButton!: Locator
@@ -80,7 +79,6 @@ export class ToolbarFixture {
     this.shellButton = page.getByTestId('shell')
     this.holeButton = page.getByTestId('hole')
     this.revolveButton = page.getByTestId('revolve')
-    this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
     this.splitButton = page.getByTestId('split')
     this.translateButton = page.getByTestId('translate')
