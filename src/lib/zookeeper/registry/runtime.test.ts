@@ -3,6 +3,10 @@ import type { KclManager } from '@src/lang/KclManager'
 import type { ZDSProject } from '@src/lib/projectSession'
 import type { BillingRegistryService } from '@src/lib/billing'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import {
+  getDefaultCloudProjectLibrarySetting,
+  type ProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import type { FileEntry, Project } from '@src/lib/project'
 import type {
   ZookeeperSessionController,
@@ -110,6 +114,12 @@ function createServices({
         },
       } as SettingsRegistryService['current']['value']
     },
+    setLibraries: (libraries: ProjectLibrarySetting[]) => {
+      currentSettings.value = {
+        ...currentSettings.value,
+        app: { libraries: { current: libraries } },
+      } as SettingsRegistryService['current']['value']
+    },
     token,
   }
 }
@@ -167,6 +177,25 @@ describe('Zookeeper runtime', () => {
     expect(createZookeeperSessionController.mock.calls[0]?.[0]).toEqual(
       expect.objectContaining({ libraryProjects })
     )
+
+    await runtime.dispose()
+  })
+
+  it('includes the configured Personal Cloud library in project searches', async () => {
+    const { services, setLibraries } = createServices()
+    const { createZookeeperSessionController, loadController } =
+      createControllerLoader()
+    const runtime = createZookeeperRuntime(services, loadController)
+
+    await vi.waitFor(() => {
+      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+    })
+    const includePersonalCloud =
+      createZookeeperSessionController.mock.calls[0]?.[0].includePersonalCloud
+    expect(includePersonalCloud?.()).toBe(false)
+
+    setLibraries([getDefaultCloudProjectLibrarySetting()])
+    expect(includePersonalCloud?.()).toBe(true)
 
     await runtime.dispose()
   })
