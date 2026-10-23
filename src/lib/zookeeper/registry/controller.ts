@@ -36,6 +36,7 @@ import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPrompt
 import {
   collectProjectFiles,
   waitForIdleState,
+  SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
@@ -540,7 +541,7 @@ class SessionController implements ZookeeperSessionController {
         new CurrentProjectCopyError('The current project changed. Try again.')
       )
     }
-    return copyLibraryFilesIntoCurrentProject({
+    const result = await copyLibraryFilesIntoCurrentProject({
       files,
       sourceTitle,
       sourcePath,
@@ -552,6 +553,20 @@ class SessionController implements ZookeeperSessionController {
         this.getReadyZdsProject() === project &&
         !this.fileRequestProcessor.hasPendingRequests,
     })
+    await waitForIdleState({
+      abortSignal: this.clientCommandAbortController.signal,
+      systemIOActor: this.deps.systemIO.actor,
+    })
+    if (this.active && this.getZdsProject() === project) {
+      this.deps.systemIO.actor.send({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+      await waitForIdleState({
+        abortSignal: this.clientCommandAbortController.signal,
+        systemIOActor: this.deps.systemIO.actor,
+      })
+    }
+    return result
   }
 
   private async process(
