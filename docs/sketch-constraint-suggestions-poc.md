@@ -1,7 +1,9 @@
 # Sketch constraint suggestions POC
 
 This local experiment adds sketch constraint suggestions behind the
-`sketch_experimental_features` flag. Selecting geometry starts a check after
+`sketch_experimental_features` flag. The draft PR's Vercel preview also
+enables the POC automatically so reviewers can try it without an account flag.
+Selecting geometry starts a check after
 350 ms; **Suggest** refreshes it manually. Click a suggestion to apply it.
 Nothing is applied without that click.
 

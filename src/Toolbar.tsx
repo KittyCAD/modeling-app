@@ -8,6 +8,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip, {
   RICH_TOOLTIP_SURFACE_CLASS_NAME,
 } from '@src/components/Tooltip'
+import { viteEnv } from '@src/env'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
@@ -104,10 +105,15 @@ const Toolbar_ = memo(
       app.registry.signal(projectSession).value?.executingEditor.value
     const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
     const toolbarConfig = useToolbarConfig()
-    const showExperimentalSuggestions = app.userFeatures.useHas(
+    const hasExperimentalSketchFeatures = app.userFeatures.useHas(
       EXPERIMENTAL_POINT_AND_CLICK_FLAG,
       false
     )
+    const showExperimentalSuggestions =
+      hasExperimentalSketchFeatures ||
+      (viteEnv().VERCEL_ENV === 'preview' &&
+        viteEnv().MODELING_APP_GIT_REF ===
+          'codex/sketch-constraint-suggestions-poc')
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
       'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'

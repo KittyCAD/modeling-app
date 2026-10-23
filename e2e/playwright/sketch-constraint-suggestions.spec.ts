@@ -1,8 +1,15 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 
+const testingPocPreview =
+  process.env.VERCEL_ENV === 'preview' &&
+  process.env.VERCEL_GIT_COMMIT_REF ===
+    'codex/sketch-constraint-suggestions-poc'
+
 test.describe('Sketch constraint suggestions', { tag: '@web' }, () => {
-  test.use({ userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG] })
+  test.use({
+    userFeatures: testingPocPreview ? [] : [EXPERIMENTAL_POINT_AND_CLICK_FLAG],
+  })
 
   test('previews and applies a horizontal constraint to the selected line', async ({
     page,
