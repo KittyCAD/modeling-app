@@ -38,9 +38,3 @@
   width: 1rem;
   height: 1rem;
 }
-
-.scene-browser
-  zoo-feature-tree-row[node-id^="browser-section:"]
-  > .feature-tree-divider {
-  margin-inline-start: calc(-1 * var(--zoo-tree-divider-outset));
-}

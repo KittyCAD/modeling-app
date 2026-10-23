@@ -1,5 +1,7 @@
 import {
   registerFeatureTree,
+  buildFeatureTreeModel,
+  type FeatureTreeNode,
   type FeatureTreeSelectionDetail,
   type ZooFeatureTree,
   type ZooFeatureTreeRow,
@@ -10,6 +12,7 @@ import { ContextMenu } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { ReactNode } from 'react'
 import {
+  Fragment,
   createContext,
   createElement,
   useContext,
@@ -21,12 +24,26 @@ import {
 
 registerFeatureTree()
 
-/** React supplies operation content/actions; the custom element owns tree interaction. */
-const TreeContext = createContext<{
-  register: (id: string, selected: boolean, open: boolean) => void
+/** React supplies row data/content; the custom element owns tree interaction. */
+type RegisteredRow = {
+  node: FeatureTreeNode
+  element: ZooFeatureTreeRow
+}
+
+type TreeController = {
+  register: (row: RegisteredRow, selected: boolean, open: boolean) => void
   unregister: (id: string) => void
-} | null>(null)
-const DepthContext = createContext(false)
+  registerDecoration: (
+    element: HTMLElement,
+    parentId: string | undefined
+  ) => void
+  unregisterDecoration: (element: HTMLElement) => void
+  sync: () => void
+  scheduleSync: () => void
+}
+
+const TreeContext = createContext<TreeController | null>(null)
+const ParentIdContext = createContext<string | undefined>(undefined)
 
 export function FeatureTree({
   children,
@@ -40,6 +57,8 @@ export function FeatureTree({
   appearance?: ZooFeatureTree['appearance']
 }) {
   const ref = useRef<ZooFeatureTree>(null)
+  const rows = useRef(new Map<string, RegisteredRow>())
+  const decorations = useRef(new Map<HTMLElement, string | undefined>())
   const selected = useRef(new Map<string, boolean>())
   const initialized = useRef(new Map<string, boolean>())
   const expanded = useRef(new Set<string>())
@@ -55,9 +74,47 @@ export function FeatureTree({
       ? [preferredSelection.current]
       : ids.slice(0, 1)
   }, [])
-  const controller = useMemo(
-    () => ({
-      register(id: string, isSelected: boolean, open: boolean) {
+  const controller = useMemo<TreeController>(() => {
+    let scheduled = false
+    const sync = () => {
+      const tree = ref.current
+      if (!tree) return
+      // React effects run child-first. DOM order supplies sibling order only;
+      // node props and React context supply the complete logical hierarchy.
+      const ordered = [...rows.current.values()].sort((a, b) => {
+        const position = a.element.compareDocumentPosition(b.element)
+        if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1
+        if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1
+        return 0
+      })
+      const nodes = ordered.map(({ node }) => node)
+      const expandedIds = [...expanded.current]
+      const model = buildFeatureTreeModel(nodes, expandedIds)
+      const visible = new Set(model.visible.map(({ id }) => id))
+      tree.nodes = nodes
+      tree.selectedIds = selectedIds()
+      tree.expandedIds = expandedIds
+      for (const [element, parentId] of decorations.current) {
+        element.hidden =
+          parentId !== undefined &&
+          (!visible.has(parentId) || !expanded.current.has(parentId))
+      }
+    }
+    const scheduleSync = () => {
+      if (scheduled) return
+      scheduled = true
+      // Publish after the entire React commit registers parents and children.
+      queueMicrotask(() => {
+        scheduled = false
+        sync()
+      })
+    }
+    return {
+      sync,
+      scheduleSync,
+      register(row, isSelected, open) {
+        const id = row.node.id
+        rows.current.set(id, row)
         const changed =
           !initialized.current.has(id) || initialized.current.get(id) !== open
         initialized.current.set(id, open)
@@ -66,48 +123,56 @@ export function FeatureTree({
           if (open) expanded.current.add(id)
           else expanded.current.delete(id)
         }
-        if (ref.current) {
-          ref.current.selectedIds = selectedIds()
-          ref.current.expandedIds = [...expanded.current]
-        }
+        scheduleSync()
       },
-      unregister(id: string) {
+      unregister(id) {
+        rows.current.delete(id)
         selected.current.delete(id)
         initialized.current.delete(id)
         expanded.current.delete(id)
-        if (ref.current) {
-          ref.current.selectedIds = selectedIds()
-          ref.current.expandedIds = [...expanded.current]
-        }
+        scheduleSync()
       },
-    }),
-    [selectedIds]
-  )
+      registerDecoration(element, parentId) {
+        decorations.current.set(element, parentId)
+        scheduleSync()
+      },
+      unregisterDecoration(element) {
+        decorations.current.delete(element)
+        scheduleSync()
+      },
+    }
+  }, [selectedIds])
+  // Memoized rows may move without rerendering. Publish after each root commit;
+  // the observer below also handles reorders inside opaque child components.
+  useLayoutEffect(() => controller.scheduleSync())
   useLayoutEffect(() => {
     const tree = ref.current!
     tree.shortcuts = false
-    tree.selectedIds = selectedIds()
-    tree.expandedIds = [...expanded.current]
+    controller.sync()
     const expand = (event: Event) => {
       const { nodeId, expanded: open } = (
         event as CustomEvent<{ nodeId: string; expanded: boolean }>
       ).detail
       if (open) expanded.current.add(nodeId)
       else expanded.current.delete(nodeId)
-      tree.expandedIds = [...expanded.current]
+      controller.sync()
     }
     tree.addEventListener('zoo-expand', expand)
     const select = () => {
       tree.selectedIds = selectedIds()
     }
     tree.addEventListener('zoo-select', select)
+    // Keyed React reorders need not rerender individual rows.
+    const observer = new MutationObserver(controller.scheduleSync)
+    observer.observe(tree, { childList: true })
     onMount?.(tree)
     return () => {
+      observer.disconnect()
       tree.removeEventListener('zoo-expand', expand)
       tree.removeEventListener('zoo-select', select)
       onMount?.(null)
     }
-  }, [onMount, selectedIds])
+  }, [controller, onMount, selectedIds])
   return (
     <TreeContext.Provider value={controller}>
       {createElement(
@@ -164,11 +229,18 @@ export function FeatureTreeRow({
 }) {
   const ref = useRef<ZooFeatureTreeRow>(null)
   const menuRef = useRef<HTMLSpanElement>(null)
-  const nested = useContext(DepthContext)
+  const parentId = useContext(ParentIdContext)
   const tree = useContext(TreeContext)
   useLayoutEffect(() => {
-    tree?.register(nodeId, selected, defaultOpen)
-  }, [tree, nodeId, selected, defaultOpen])
+    tree?.register(
+      {
+        node: { id: nodeId, parentId, label, disabled },
+        element: ref.current!,
+      },
+      selected,
+      defaultOpen
+    )
+  })
   useLayoutEffect(() => () => tree?.unregister(nodeId), [tree, nodeId])
   useLayoutEffect(() => {
     const row = ref.current!
@@ -222,14 +294,13 @@ export function FeatureTreeRow({
       row.removeEventListener('dblclick', doubleClick)
     }
   }, [disabled, nodeId, onSelect, onDoubleClick])
-  return createElement(
+  const rowElement = createElement(
     'zoo-feature-tree-row',
     {
       ref,
       'node-id': nodeId,
       label,
       disabled: disabled || undefined,
-      slot: nested ? 'children' : undefined,
       'data-testid': 'feature-tree-operation-item',
       'data-module-branch': moduleId,
     },
@@ -267,26 +338,44 @@ export function FeatureTreeRow({
           />
         </>
       )}
-    </span>,
-    <DepthContext.Provider value={true}>{children}</DepthContext.Provider>
+    </span>
+  )
+  return (
+    <Fragment>
+      {rowElement}
+      <ParentIdContext.Provider value={nodeId}>
+        {children}
+      </ParentIdContext.Provider>
+    </Fragment>
   )
 }
 
-/** Native separators are decorative: they never enter the tree's keyboard row model. */
+/** Decorative content shares branch visibility, without becoming keyboard rows. */
+function useTreeDecoration<T extends HTMLElement>() {
+  const ref = useRef<T>(null)
+  const tree = useContext(TreeContext)
+  const parentId = useContext(ParentIdContext)
+  useLayoutEffect(() => {
+    if (ref.current) tree?.registerDecoration(ref.current, parentId)
+  })
+  useLayoutEffect(() => {
+    const element = ref.current
+    return () => {
+      if (element) tree?.unregisterDecoration(element)
+    }
+  }, [tree])
+  return ref
+}
+
 export function FeatureTreeDivider() {
-  const nested = useContext(DepthContext)
-  return (
-    <hr
-      slot={nested ? 'children' : undefined}
-      className="feature-tree-divider"
-    />
-  )
+  const ref = useTreeDecoration<HTMLHRElement>()
+  return <hr ref={ref} className="feature-tree-divider" />
 }
 
 export function FeatureTreeNotice({ children }: { children: ReactNode }) {
-  const nested = useContext(DepthContext)
+  const ref = useTreeDecoration<HTMLDivElement>()
   return (
-    <div slot={nested ? 'children' : undefined} className="feature-tree-notice">
+    <div ref={ref} className="feature-tree-notice">
       {children}
     </div>
   )

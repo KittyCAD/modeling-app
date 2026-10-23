@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/components/ContextMenu', () => ({ ContextMenu: () => null }))
 
-import { useState } from 'react'
+import { memo, StrictMode, useState } from 'react'
 import { flushSync } from 'react-dom'
 import {
   Registry,
@@ -37,10 +37,154 @@ import type { ZooFeatureTree } from '@kittycad/ui-components/web-components'
 import {
   FeatureTree,
   FeatureTreeRow,
+  FeatureTreeDivider,
+  FeatureTreeNotice,
 } from '@src/lib/featureTree/FeatureTreeView'
 
 afterEach(cleanup)
 describe('ZDS feature tree adapter', () => {
+  it('publishes explicit hierarchy while rows and decorations render as flat siblings', async () => {
+    function ChildContents() {
+      return (
+        <>
+          <FeatureTreeRow nodeId="branch" label="Branch" defaultOpen>
+            <FeatureTreeRow nodeId="child" label="Child" disabled />
+            <FeatureTreeNotice>Branch notice</FeatureTreeNotice>
+            <FeatureTreeDivider />
+          </FeatureTreeRow>
+        </>
+      )
+    }
+    const view = render(
+      <FeatureTree>
+        <FeatureTreeRow nodeId="parent" label="Parent" defaultOpen>
+          <ChildContents />
+        </FeatureTreeRow>
+        <FeatureTreeRow nodeId="sibling" label="Sibling" />
+      </FeatureTree>
+    )
+    const tree =
+      view.container.querySelector<ZooFeatureTree>('zoo-feature-tree')!
+    await waitFor(() =>
+      expect(tree.nodes).toEqual([
+        { id: 'parent', parentId: undefined, label: 'Parent', disabled: false },
+        { id: 'branch', parentId: 'parent', label: 'Branch', disabled: false },
+        { id: 'child', parentId: 'branch', label: 'Child', disabled: true },
+        {
+          id: 'sibling',
+          parentId: undefined,
+          label: 'Sibling',
+          disabled: false,
+        },
+      ])
+    )
+    expect(
+      [...tree.querySelectorAll('zoo-feature-tree-row')].every(
+        (row) => row.parentElement === tree
+      )
+    ).toBe(true)
+    const notice = view.getByText('Branch notice')
+    const divider = view.container.querySelector<HTMLHRElement>(
+      '.feature-tree-divider'
+    )!
+    expect(notice.parentElement).toBe(tree)
+    expect(divider.parentElement).toBe(tree)
+    expect(notice.hidden).toBe(false)
+    expect(divider.hidden).toBe(false)
+    const expand = (nodeId: string, expanded: boolean) =>
+      tree.dispatchEvent(
+        new CustomEvent('zoo-expand', { detail: { nodeId, expanded } })
+      )
+    expand('parent', false)
+    expect(notice.hidden).toBe(true)
+    expect(divider.hidden).toBe(true)
+    expand('parent', true)
+    expect(notice.hidden).toBe(false)
+    expect(divider.hidden).toBe(false)
+    expand('branch', false)
+    expect(notice.hidden).toBe(true)
+    expect(divider.hidden).toBe(true)
+    expand('branch', true)
+    expect(notice.hidden).toBe(false)
+    expect(divider.hidden).toBe(false)
+    expect(tree.nodes.map(({ id }) => id)).toEqual([
+      'parent',
+      'branch',
+      'child',
+      'sibling',
+    ])
+  })
+
+  it('updates model order after keyed memoized rows move without losing focus', async () => {
+    const MemoRow = memo(({ id }: { id: string }) => (
+      <FeatureTreeRow nodeId={id} label={id} />
+    ))
+    const content = (ids: string[]) => (
+      <FeatureTree>
+        {ids.map((id) => (
+          <MemoRow key={id} id={id} />
+        ))}
+      </FeatureTree>
+    )
+    const view = render(content(['a', 'b']))
+    const tree =
+      view.container.querySelector<ZooFeatureTree>('zoo-feature-tree')!
+    const b = view.container.querySelector<HTMLElement>('[node-id="b"]')!
+    await waitFor(() => expect(b.getAttribute('role')).toBe('treeitem'))
+    b.focus()
+    view.rerender(content(['b', 'a']))
+    await waitFor(() =>
+      expect(tree.nodes.map(({ id }) => id)).toEqual(['b', 'a'])
+    )
+    expect(tree.focusedNodeId).toBe('b')
+    expect(document.activeElement).toBe(b)
+    fireEvent.keyDown(b, { key: 'End' })
+    expect(document.activeElement?.getAttribute('node-id')).toBe('a')
+    fireEvent.keyDown(document.activeElement!, { key: 'Home' })
+    expect(document.activeElement).toBe(b)
+  })
+
+  it('cleans removed branches and registers remounted branches once in StrictMode', async () => {
+    const content = (show: boolean) => (
+      <StrictMode>
+        <FeatureTree>
+          {show && (
+            <FeatureTreeRow nodeId="parent" label="Parent" defaultOpen>
+              <FeatureTreeRow nodeId="child" label="Child" />
+              <FeatureTreeNotice>Notice</FeatureTreeNotice>
+            </FeatureTreeRow>
+          )}
+          <FeatureTreeRow nodeId="sibling" label="Sibling" />
+        </FeatureTree>
+      </StrictMode>
+    )
+    const view = render(content(true))
+    const tree =
+      view.container.querySelector<ZooFeatureTree>('zoo-feature-tree')!
+    await waitFor(() =>
+      expect(tree.nodes.map(({ id }) => id)).toEqual([
+        'parent',
+        'child',
+        'sibling',
+      ])
+    )
+    view.rerender(content(false))
+    await waitFor(() =>
+      expect(tree.nodes.map(({ id }) => id)).toEqual(['sibling'])
+    )
+    expect(tree.expandedIds).toEqual([])
+    expect(view.queryByText('Notice')).toBeNull()
+    view.rerender(content(true))
+    await waitFor(() =>
+      expect(tree.nodes.map(({ id }) => id)).toEqual([
+        'parent',
+        'child',
+        'sibling',
+      ])
+    )
+    expect(tree.expandedIds).toEqual(['parent'])
+  })
+
   it('selects focused rows with Space or Enter without editing', async () => {
     const parentSelect = vi.fn()
     const select = vi.fn()
@@ -234,7 +378,8 @@ describe('ZDS feature tree adapter', () => {
     const rendered = render(view(false))
     await waitFor(() => expect(tree?.expandedIds).toEqual(['parent']))
     const row = rendered.container.querySelector('[node-id="child"]')!
-    expect(row.getAttribute('slot')).toBe('children')
+    expect(row.parentElement).toBe(tree)
+    expect(row.hasAttribute('slot')).toBe(false)
     row.dispatchEvent(
       new CustomEvent('zoo-select', {
         bubbles: true,
