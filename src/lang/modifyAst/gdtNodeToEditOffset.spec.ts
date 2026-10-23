@@ -87,7 +87,7 @@ describe('GDT datum edit path offsets', () => {
       }
       const ast = assertParse(
         `source001 = extrude(profile001, length = 1)\n` +
-          `gdt001 = gdt::${callee}(faces = [oldFace], tolerance = 0.1)`,
+          `gdt001 = gdt::${callee}(faces = [oldFace], tolerance = 0.1, leaderType = gdt::LeaderType::Arrow)`,
         wasmInstance
       )
 
@@ -109,6 +109,7 @@ describe('GDT datum edit path offsets', () => {
       expect(code).toContain('source001 = extrude(profile001, length = 1)')
       expect(code).toContain(`gdt001 = gdt::${callee}(`)
       expect(code).toContain('datums = datums001')
+      expect(code).toContain('leaderType = gdt::LeaderType::Arrow')
     }
   )
 })

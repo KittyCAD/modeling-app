@@ -6,6 +6,21 @@
 
 import Edge, Face, GdtAnnotation, Plane, Point2d, TaggedFace from "std::types"
 
+/// The endpoint marker for an attached GD&T annotation.
+///
+/// When leaderType is omitted, face attachments use dots and edge attachments
+/// use arrows, including annotations created by point and click.
+/// Set `leaderType = gdt::LeaderType::Arrow` to override the automatic marker.
+/// Explicit enum values require `@settings(experimentalFeatures = allow)`.
+export type LeaderType {
+  /// Keep the leader line without an endpoint marker.
+  | None
+  /// A dot at the attachment point.
+  | Dot
+  /// An arrowhead at the attachment point.
+  | Arrow
+}
+
 /// GD&T datum feature.
 ///
 /// This is part of model-based definition (MBD).
@@ -70,7 +85,9 @@ export fn datum(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -159,7 +176,9 @@ export fn flatness(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -268,7 +287,9 @@ export fn straightness(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -345,7 +366,9 @@ export fn circularity(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -423,7 +446,9 @@ export fn cylindricity(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -514,7 +539,9 @@ export fn concentricity(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -639,7 +666,9 @@ export fn symmetry(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -735,7 +764,9 @@ export fn runout(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -878,7 +909,9 @@ export fn angularity(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -950,7 +983,9 @@ export fn perpendicularity(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -1022,7 +1057,9 @@ export fn parallelism(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -1094,7 +1131,9 @@ export fn position(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -1159,7 +1198,9 @@ export fn annotation(
   /// The plane in which to display the annotation. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The annotation may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -1409,7 +1450,9 @@ export fn profile(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -1487,7 +1530,9 @@ export fn profileLine(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
@@ -1531,7 +1576,9 @@ export fn profileSurface(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  /// The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.
+  leaderType?: LeaderType,
+  /// Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.
   leaderScale?: number(Count),
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
