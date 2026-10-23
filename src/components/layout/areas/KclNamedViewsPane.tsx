@@ -101,6 +101,10 @@ export function viewRows(views: KclNamedView[]): ViewRow[] {
 export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
+  const commandState = app.commands.useState()
+  const isEditingNamedView =
+    commandState.context.selectedCommand?.name === 'Named View' &&
+    Boolean(commandState.context.argumentsToSubmit.nodeToEdit)
   const canManageViews = app.userFeatures.useHas(
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
@@ -120,7 +124,8 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   })
   const rows = viewRows(views)
   const active = activeViewSignal.value
-  const actionsDisabled = cannotReachEngine || inSketchMode || isChangingSource
+  const actionsDisabled =
+    cannotReachEngine || inSketchMode || isChangingSource || isEditingNamedView
 
   const editView = (view: KclNamedView) => {
     prepareNamedViewEditCommand({
@@ -211,6 +216,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 ? row.target.view
                 : undefined
             const isActive = isSameView(row.identity, active)
+            const editDisabled = actionsDisabled || isActive
 
             return (
               <li
@@ -256,8 +262,9 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 <button
                   type="button"
                   className="reset flex min-w-0 flex-1 items-center gap-2 self-stretch text-left !text-xs"
+                  disabled={!manageableView || editDisabled}
                   onDoubleClick={(event) => {
-                    if (!manageableView || actionsDisabled) return
+                    if (!manageableView || editDisabled) return
                     event.preventDefault()
                     editView(manageableView)
                   }}
@@ -275,10 +282,11 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                     data-testid="named-view-actions"
                     disabled={actionsDisabled}
                   >
-                    <Menu.Item disabled={actionsDisabled}>
+                    <Menu.Item disabled={editDisabled}>
                       <button
                         type="button"
                         className="menuButton"
+                        disabled={editDisabled}
                         onClick={() => editView(manageableView)}
                       >
                         Edit
