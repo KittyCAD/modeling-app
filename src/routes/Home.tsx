@@ -36,7 +36,7 @@ import {
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { shouldShowFreeCloudProjectTrainingDisclosure } from '@src/lib/projectLibraries/trainingDisclosure'
-import { getSortFunction } from '@src/lib/sorting'
+import { getSortFunction, type ProjectSort } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -69,6 +69,7 @@ import {
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { projectSortingService } from '@src/lib/sorting/registry/contract'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -94,14 +95,12 @@ import type { HTMLProps } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
-  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useLocation).
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation and library selection (useLocation).
   useLocation,
-  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useNavigate).
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation and library selection (useNavigate).
   useNavigate,
-  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useParams).
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation and library selection (useParams).
   useParams,
-  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useSearchParams).
-  useSearchParams,
 } from 'react-router-dom'
 
 const HOME_PROJECT_CARD_DRAG_MIME = 'application/x-zoo-home-project'
@@ -361,7 +360,7 @@ const Home = () => {
     : libraryId
       ? []
       : homeProjectEntries
-  const [searchParams, setSearchParams] = useSearchParams()
+  const projectSorting = registry.get(projectSortingService)
   const { searchResults, query, setQuery } = useProjectSearch(
     scopedHomeProjectEntries
   )
@@ -376,7 +375,7 @@ const Home = () => {
       : undefined,
     platform()
   )
-  const sort = searchParams.get('sort_by') ?? 'modified:desc'
+  const sort = projectSorting.sort.value
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
   const moveProjectToLibrary = useCallback(
@@ -593,7 +592,7 @@ const Home = () => {
           }
           setQuery={setQuery}
           sort={sort}
-          setSearchParams={setSearchParams}
+          onSort={projectSorting.toggle}
           readWriteProjectDir={readWriteProjectDir}
           projectSearchKeybinding={projectSearchKeybinding}
           showFreeCloudProjectTrainingDisclosure={shouldShowFreeCloudProjectTrainingDisclosure(
@@ -813,7 +812,7 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   projects: HomeProjectEntry[]
   localProjectsLoaded: boolean
   query: string
-  sort: string
+  sort: ProjectSort
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
   fileOperations: FileOperationsRegistryService
@@ -959,7 +958,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projects: HomeProjectEntry[]
   localProjectsLoaded: boolean
   query: string
-  sort: string
+  sort: ProjectSort
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
   fileOperations: FileOperationsRegistryService
