@@ -710,12 +710,29 @@ test.describe(
               ),
               fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
             ])
+            // Valid trailing whitespace pushes the STEP file beyond the editor's size limit.
+            await fsp.appendFile(
+              path.join(bracketDir, 'cube.step'),
+              ' '.repeat(1024 * 1024)
+            )
           })
           await homePage.openProject(projectName)
           await scene.settled()
         })
 
         await test.step('Import step part as module', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.Files)
+          await toolbar.openFile('cube.step')
+          await expect(
+            page.getByText('Text files larger than 1 MiB cannot be edited.', {
+              exact: false,
+            })
+          ).toBeVisible()
+          await expect(
+            page
+              .locator('#code-pane')
+              .getByRole('button', { name: 'Import', exact: true })
+          ).toBeVisible()
           await insertPartIntoAssembly(
             'cube.step',
             'cube',

@@ -258,16 +258,15 @@ function TextFileEditor({
         isFake: false,
       },
     }
-    const importAction =
-      activeTextFile.errorReason === 'unsupported-text'
-        ? registry
-            .signal(projectExplorerRowContextMenuItemsValueSpec)
-            .value.find(
-              (item) =>
-                item.id === 'import-in-current-file' &&
-                item.isVisible?.(importContext)
-            )
-        : undefined
+    const importAction = activeTextFile.errorReason
+      ? registry
+          .signal(projectExplorerRowContextMenuItemsValueSpec)
+          .value.find(
+            (item) =>
+              item.id === 'import-in-current-file' &&
+              item.isVisible?.(importContext)
+          )
+      : undefined
 
     return (
       <div className="h-full p-3 text-sm">

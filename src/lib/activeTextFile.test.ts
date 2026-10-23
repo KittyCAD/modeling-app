@@ -121,6 +121,7 @@ describe('text file detection', () => {
     expect(mod.activeTextFileSignal.value).toMatchObject({
       status: 'error',
       error: 'Text files larger than 1 MiB cannot be edited.',
+      errorReason: 'too-large',
     })
   })
 
@@ -132,6 +133,7 @@ describe('text file detection', () => {
     expect(mod.activeTextFileSignal.value).toMatchObject({
       status: 'error',
       error: 'Text files larger than 1 MiB cannot be edited.',
+      errorReason: 'too-large',
     })
   })
 
