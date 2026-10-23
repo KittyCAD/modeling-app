@@ -23,7 +23,7 @@ impl IdGenerator {
     }
 
     /// Follow-up commands must not reuse IDs allocated by the remote interpreter.
-    #[cfg(all(feature = "remote-execution", not(target_arch = "wasm32")))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub(super) fn remote_session() -> Self {
         Self {
             namespace: Some(uuid::Uuid::new_v4()),
