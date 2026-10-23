@@ -16,4 +16,10 @@ export type KclErrorWithOutputs = { error: KclError, nonFatal: Array<Compilation
  * Variables in the top-level of the root module. Note that functions will
  * have an invalid env ref.
  */
-variables: { [key in string]: KclValueView }, operations: OperationsByModule, artifactCommands: Array<ArtifactCommand>, artifactGraph: ArtifactGraph, refactorMetadata: Array<RefactorMetadata>, sceneGraph: SceneGraph | null, filenames: { [key in ModuleId]: ModulePath }, sourceFiles: { [key in ModuleId]: ModuleSource }, defaultPlanes: DefaultPlanes | null, };
+variables: { [key in string]: KclValueView }, operations: OperationsByModule, artifactCommands: Array<ArtifactCommand>, artifactGraph: ArtifactGraph, refactorMetadata: Array<RefactorMetadata>, sceneGraph: SceneGraph | null, filenames: { [key in ModuleId]: ModulePath }, sourceFiles: { [key in ModuleId]: ModuleSource }, defaultPlanes: DefaultPlanes | null, 
+/**
+ * The engine scene generation after the run that failed, since a failed
+ * run may still have changed the engine scene. Not set when the error did
+ * not come from a run.
+ */
+engineSceneGeneration: number | null, };

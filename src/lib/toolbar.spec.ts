@@ -332,9 +332,7 @@ describe('toolbar state helpers', () => {
           ],
           otherSelections: [],
         },
-        store: {
-          useSketchSolveMode: { current: true },
-        },
+        store: {},
       },
     } as unknown as StateFrom<typeof modelingMachine>
 
@@ -370,9 +368,7 @@ describe('toolbar state helpers', () => {
           graphSelections: [],
           otherSelections: [{ id: 'default-plane-xy', name: 'XY' }],
         },
-        store: {
-          useSketchSolveMode: { current: true },
-        },
+        store: {},
       },
     } as unknown as StateFrom<typeof modelingMachine>
 

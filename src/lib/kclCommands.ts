@@ -21,6 +21,7 @@ import {
   recast,
 } from '@src/lang/wasm'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { clearActiveTextFile } from '@src/lib/activeTextFile'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -307,6 +308,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           localName,
           representation,
         })
+        clearActiveTextFile()
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,

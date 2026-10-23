@@ -112,7 +112,7 @@ export function createNamedViewsCommand(
   const createNamedViewCommand: Command = {
     scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Create named view',
-    displayName: `Create named view`,
+    displayName: `Create named view (Legacy)`,
     description:
       'Saves a named view based on your current view to load again later',
     groupId: 'namedViews',
@@ -196,7 +196,7 @@ export function createNamedViewsCommand(
   const deleteNamedViewCommand: Command = {
     scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Delete named view',
-    displayName: `Delete named view`,
+    displayName: `Delete named view (Legacy)`,
     description: 'Deletes the named view from settings',
     groupId: 'namedViews',
     icon: 'settings',
@@ -261,7 +261,7 @@ export function createNamedViewsCommand(
   const loadNamedViewCommand: Command = {
     scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Load named view',
-    displayName: `Load named view`,
+    displayName: `Load named view (Legacy)`,
     description: 'Loads your camera to the named view',
     groupId: 'namedViews',
     icon: 'settings',

@@ -72,6 +72,7 @@ function createSceneGraphDelta(
       filenames: {},
       defaultPlanes: null,
       refactorMetadata: [],
+      engineSceneGeneration: 0,
     },
   }
 }

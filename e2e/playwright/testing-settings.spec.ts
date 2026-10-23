@@ -456,6 +456,43 @@ test.describe(
     )
 
     test(
+      'Opening and closing settings does not re-execute the code',
+      { tag: ['@macos', '@windows'] },
+      async ({ page, homePage, scene }) => {
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await page.evaluate(() => {
+          window.engineCommandManager?.clearCommandLogs()
+        })
+
+        await test.step('Open settings, switch tabs and close', async () => {
+          // In a file, this link opens settings with ?tab=project, and closing
+          // drops the query again. Both used to reopen the project.
+          await page.getByRole('link', { name: 'settings Settings' }).click()
+          await expect(
+            page.getByRole('heading', { name: 'Settings', exact: true })
+          ).toBeVisible()
+          await settingsSwitchTab(page)('user')
+          await page.getByTestId('settings-close-button').click()
+          await expect(
+            page.getByTestId('settings-dialog-panel')
+          ).not.toBeVisible()
+          await scene.settled()
+        })
+
+        await test.step('Postcondition: The code did not execute again', async () => {
+          const executions = await page.evaluate(
+            () =>
+              window.engineCommandManager?.commandLogs.filter(
+                (log) => log.type === 'execution-done'
+              ).length
+          )
+          expect(executions).toBe(0)
+        })
+      }
+    )
+
+    test(
       'Changing modeling default unit',
       { tag: ['@macos', '@windows'] },
       async ({ page, homePage, scene, folderSetupFn }) => {

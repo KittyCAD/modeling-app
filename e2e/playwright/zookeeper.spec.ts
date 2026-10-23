@@ -1,5 +1,8 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { MlCopilotServerMessage } from '@kittycad/lib'
+import { decode } from '@msgpack/msgpack'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { createTwoFilesPatch } from 'diff'
 
 // See zookeeper/text_to_cad/zookeeper_magic_bypass.py
 const ZK_MOCK_REPLY_MARKER =
@@ -82,6 +85,7 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     copilot,
   }) => {
     let holdResponses = false
+    let originalCode = ''
     let zookeeperConnectionCount = 0
     let releaseResponses: () => void = () => {
       throw new Error('Zookeeper WebSocket was not intercepted')
@@ -91,6 +95,38 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       const bufferedMessages: Parameters<typeof client.send>[0][] = []
       const server = client.connectToServer()
       server.onMessage((message) => {
+        const response = (
+          typeof message === 'string' ? JSON.parse(message) : decode(message)
+        ) as MlCopilotServerMessage
+        const result = 'tool_output' in response && response.tool_output.result
+        if (
+          result &&
+          result.type === 'edit_kcl_code' &&
+          !result.zookeeper_edit_patch
+        ) {
+          // The backend's magic reply predates patch-listed writes. Give this
+          // test response a real modification patch for the existing main.kcl.
+          const code = result.outputs?.['main.kcl']
+          if (typeof code !== 'string') {
+            throw new Error('Canned Zookeeper reply must include main.kcl')
+          }
+          result.zookeeper_edit_patch = {
+            run_id: '00000000-0000-4000-8000-000000000001',
+            changed_files: [
+              {
+                path: 'main.kcl',
+                status: 'modified',
+                diff: createTwoFilesPatch(
+                  'a/main.kcl',
+                  'b/main.kcl',
+                  originalCode,
+                  code
+                ),
+              },
+            ],
+          }
+          message = JSON.stringify(response)
+        }
         if (holdResponses) {
           bufferedMessages.push(message)
           return
@@ -111,6 +147,7 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     await test.step('Submit basic prompt', async () => {
       const prompt = `make a 10x10x10cm cube centered on the origin, name the last variable "cube" [${ZK_MOCK_REPLY_MARKER}]`
 
+      originalCode = await editor.getCurrentCode()
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await copilot.setMode('fast')
