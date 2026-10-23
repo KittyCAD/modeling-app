@@ -173,6 +173,21 @@ view001 = view::named(
       except: undefined,
     })
 
+    const renamed = addNamedView({
+      ast,
+      artifactGraph: execState.artifactGraph,
+      ...defaults,
+      name: 'Renamed view',
+      wasmInstance: instance,
+    })
+    if (err(renamed)) throw renamed
+    const renamedCode = recast(renamed.modifiedAst, instance)
+    if (err(renamedCode)) throw renamedCode
+    expect(renamedCode).toContain('"Renamed view"')
+    expect(renamedCode).toContain('    orientation,')
+    expect(renamedCode).toContain('projection = projection')
+    expect(renamedCode).toContain('baseline = baseline')
+
     const result = addNamedView({
       ast,
       artifactGraph: execState.artifactGraph,

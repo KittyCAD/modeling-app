@@ -21,9 +21,11 @@ import { STD_LIB_ENUMS } from '@src/lib/commandBarConfigs/modelingCommandStdLibC
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { activeViewSignal, moduleKeyOf } from '@src/lib/kclNamedViewActivation'
+import { applyNamedViewCamera } from '@src/lib/kclNamedViewCamera'
 import type RustContext from '@src/lib/rustContext'
 import { isErr } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
+import isEqual from 'react-fast-compare'
 
 const submitNamedView = createModelingCodemodActor(
   modelingCommandCodemods['Named View']
@@ -35,7 +37,7 @@ export const submitNamedViewCommand: typeof submitNamedView = async (
   const { input } = options
   const data = input?.data
   const active = activeViewSignal.peek()
-  if (!input || !data?.nodeToEdit || !active || data.name === active.name) {
+  if (!input || !data?.nodeToEdit || !active) {
     return submitNamedView(options)
   }
 
@@ -57,13 +59,31 @@ export const submitNamedViewCommand: typeof submitNamedView = async (
   }
 
   // Execution reapplies the active view by name, so keep its identity in sync.
-  const renamed = { ...active, name: data.name }
-  activeViewSignal.value = renamed
+  const nextActive = { ...active, name: data.name }
+  activeViewSignal.value = nextActive
   try {
     await submitNamedView(options)
   } catch (error) {
-    if (activeViewSignal.peek() === renamed) activeViewSignal.value = active
+    if (activeViewSignal.peek() === nextActive) activeViewSignal.value = active
     return Promise.reject(error)
+  }
+
+  const updatedView = [...input.kclManager.artifactGraph.values()].find(
+    (artifact) =>
+      artifact.type === 'namedView' &&
+      artifact.name === data.name &&
+      artifact.codeRef.range[2] === ROOT_MODULE_ID
+  )
+  if (
+    activeViewSignal.peek() === nextActive &&
+    updatedView?.type === 'namedView' &&
+    !isEqual(view.camera, updatedView.camera)
+  ) {
+    await applyNamedViewCamera({
+      camera: updatedView.camera,
+      sceneInfra: input.kclManager.sceneInfra,
+      engineCommandManager: input.kclManager.engineCommandManager,
+    })
   }
 }
 

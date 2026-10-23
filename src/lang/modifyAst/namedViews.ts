@@ -20,6 +20,7 @@ import {
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import { getArtifactsMatchingPathToNode } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -80,6 +81,9 @@ export function addNamedView({
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
   const namedCall = modelingStdLibCall('Named View')
+  let orientationExpr: Expr = viewEnum('Orientation', orientation)
+  let projectionExpr: Expr | undefined = viewEnum('Projection', projection)
+  let baselineExpr: Expr = viewEnum('Visibility', baseline)
 
   if (mNodeToEdit) {
     const result = getNodeFromPath<CallExpressionKw>(
@@ -95,17 +99,49 @@ export function addNamedView({
     if (!isOrientedCameraCall(existingCamera)) {
       return new Error('Editing custom cameras is not supported yet.')
     }
+
+    const previousView = getArtifactsMatchingPathToNode(
+      mNodeToEdit,
+      artifactGraph
+    ).find(
+      (artifact) =>
+        artifact.type === 'namedView' &&
+        artifact.codeRef.range[2] === ast.moduleId
+    )
+    // Preserve authored bindings (and omitted defaults) for unchanged fields.
+    if (previousView?.type === 'namedView') {
+      const look = previousView.camera.look
+      if (
+        look.type === 'oriented' &&
+        look.orientation === orientation.toLowerCase()
+      ) {
+        orientationExpr = existingCamera.unlabeled ?? orientationExpr
+      }
+      if (previousView.camera.projection === projection.toLowerCase()) {
+        projectionExpr = existingCamera.arguments.find(
+          (argument) => argument.label?.name === 'projection'
+        )?.arg
+      }
+      if (previousView.baseline === baseline.toLowerCase()) {
+        baselineExpr =
+          result.node.arguments.find(
+            (argument) => argument.label?.name === 'baseline'
+          )?.arg ?? baselineExpr
+      }
+    }
   }
 
   const camera = createCallExpressionStdLibKw(
     'oriented',
-    viewEnum('Orientation', orientation),
+    orientationExpr,
     [
       ...(target ? [createLabeledArg('target', valueOrVariable(target))] : []),
       ...(distance
         ? [createLabeledArg('distance', valueOrVariable(distance))]
         : []),
-      createLabeledArg('projection', viewEnum('Projection', projection)),
+      ...(projectionExpr
+        ? [createLabeledArg('projection', projectionExpr)]
+        : []),
     ],
     undefined,
     [createIdentifier('view')]
@@ -137,7 +173,7 @@ export function addNamedView({
     createLiteral(name, wasmInstance),
     [
       createLabeledArg('camera', camera),
-      createLabeledArg('baseline', viewEnum('Visibility', baseline)),
+      createLabeledArg('baseline', baselineExpr),
       ...(exceptVars.exprs.length > 0
         ? [createLabeledArg('except', createArrayExpression(exceptVars.exprs))]
         : []),
