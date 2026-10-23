@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import asyncio
 import os
+import shutil
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from urllib.parse import parse_qs, urlsplit
 
-import kcl
 import pytest
+
+import kcl
 from kcl import Point3d
 
 # Get the path to this script's parent directory.
@@ -98,8 +100,7 @@ async def test_engine_execution_uploads_parent_relative_assets(tmp_path):
         '@settings(kclVersion = 3.0)\nimport "../cube.step" as cube\n'
     )
     asset = tmp_path / "cube.step"
-    with open(cube_step_file, "rb") as source:
-        asset.write_bytes(source.read())
+    await asyncio.to_thread(shutil.copyfile, cube_step_file, asset)
     async with await kcl.new_kcl_session(str(entrypoint)) as session:
         entrypoint.unlink()
         asset.unlink()
@@ -113,7 +114,7 @@ async def test_engine_execution_uploads_parent_relative_assets(tmp_path):
 @pytest.mark.asyncio
 async def test_engine_execution_rejects_absolute_imports(tmp_path):
     dependency = tmp_path / "dependency.kcl"
-    dependency.write_text("@settings(kclVersion = 2.0)\nexport value = 42\n")
+    dependency.write_text("@settings(kclVersion = 3.0)\nexport value = 42\n")
     with pytest.raises(
         kcl.KclError,
         match="Absolute import paths are not supported|import path may not start",
