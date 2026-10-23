@@ -1567,9 +1567,8 @@ impl ExecutorContext {
     /// Bind the evaluated right-hand side of a variable declaration: segment
     /// tag attachment, name binding, sketch-block segment tags, feature-tree
     /// operation, and export tracking. The evaluation-free second half of
-    /// variable-declaration execution. Returns the
-    /// bound value (which becomes the module result when this is the last
-    /// Root statement).
+    /// variable-declaration execution. Returns the bound value (which becomes
+    /// the module result when this is the last Root statement).
     pub(super) fn bind_variable_declaration(
         &self,
         variable_declaration: &Node<VariableDeclaration>,
@@ -1932,9 +1931,8 @@ impl ExecutorContext {
         }
     }
 
-    /// Evaluate a single expression on the CEK machine as a
-    /// fresh root. For bounded internal evaluations (e.g. GD&T's constant
-    /// plane lookup).
+    /// Evaluate a single expression on the CEK machine as a fresh root. For
+    /// bounded internal evaluations (e.g. GD&T's constant plane lookup).
     pub(crate) async fn eval_expr_fresh_root(
         &self,
         expr: &Expr,
@@ -2054,8 +2052,8 @@ impl ExecutorContext {
 }
 
 /// Skip a declaration whose `added_in` the program predates, recording it under
-/// `key` so a failed lookup can explain why. `key` is
-/// only computed on a skip, so declarations without attributes cost nothing.
+/// `key` so a failed lookup can explain why. `key` is only computed on a skip,
+/// so declarations without attributes cost nothing.
 pub(super) fn skip_if_not_yet_added(
     annotations: &[Node<Annotation>],
     key: impl FnOnce() -> String,

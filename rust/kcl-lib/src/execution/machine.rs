@@ -433,9 +433,8 @@ enum Kont {
     },
 
     // ---- access / control / pipes ----
-    /// Pre-KCL-3.0 member access order: a computed property is evaluated
-    /// before the object, preserving historical
-    /// evaluation order.
+    /// Pre-KCL-3.0 member access order: a computed property is evaluated before
+    /// the object, preserving historical evaluation order.
     LegacyMemberPropDone {
         node: Arc<Node<MemberExpression>>,
     },
@@ -1322,8 +1321,7 @@ async fn step_apply(
         }),
         Kont::RangeStartDone { node } => apply_sync(|| {
             let start = applied.expect_value()?;
-            // A bad start is reported before
-            // the end element is ever evaluated.
+            // A bad start is reported before the end element is ever evaluated.
             node.validate_range_start(&start)?;
             let end = EvalRequest::expr(&node.end_element);
             konts.push(Kont::RangeEndDone { node, start });
@@ -1542,9 +1540,9 @@ fn apply_async<F: Future>(make_future: impl FnOnce() -> F) -> impl Future<Output
     debug_boxed_future!(make_future())
 }
 
-/// Route a control-flow value produced by a native helper
-/// to the matching machine unwind: a KCL 3.0 `Return` unwinds to the nearest
-/// call boundary, anything else is an `Exit`.
+/// Route a control-flow value produced by a native helper to the matching
+/// machine unwind: a KCL 3.0 `Return` unwinds to the nearest call boundary,
+/// anything else is an `Exit`.
 fn unwind_control(cf: KclValueControlFlow) -> Control {
     if cf.is_return() {
         Control::Return(cf)
@@ -1835,9 +1833,9 @@ fn pipe_advance(
     Ok(Control::Eval(Box::new(req)))
 }
 
-/// Begin a call: resolve the callee (before evaluating arguments, exactly
-/// as required by KCL), then start evaluating arguments -- or
-/// dispatch immediately for zero-argument calls.
+/// Begin a call: resolve the callee (before evaluating arguments, exactly as
+/// required by KCL), then start evaluating arguments -- or dispatch immediately
+/// for zero-argument calls.
 async fn start_call(
     node: Arc<Node<CallExpressionKw>>,
     konts: &mut Vec<Kont>,
@@ -2725,14 +2723,14 @@ mod tests {
 "#;
 
     /// Execute a program's root block directly through exec_block -- the
-    /// boundary responsible for flushing queued commands. This
-    /// deliberately bypasses run(): its end-of-run sweep
-    /// (ensure_async_commands_completed) flushes whatever the root left
-    /// queued and clear_queues() then empties the rest, masking exactly the
-    /// difference under test. Returns the block result, whether the batch
-    /// queue is empty afterwards, and how many batches were sent. Counts and
-    /// emptiness rather than command sequences: imported modules execute
-    /// concurrently, so command order is nondeterministic in general.
+    /// boundary responsible for flushing queued commands. This deliberately
+    /// bypasses run(): its end-of-run sweep (ensure_async_commands_completed)
+    /// flushes whatever the root left queued and clear_queues() then empties
+    /// the rest, masking exactly the difference under test. Returns the block
+    /// result, whether the batch queue is empty afterwards, and how many
+    /// batches were sent. Counts and emptiness rather than command sequences:
+    /// imported modules execute concurrently, so command order is
+    /// nondeterministic in general.
     async fn exec_root_block(code: &str) -> (Result<Option<KclValueControlFlow>, KclError>, bool, usize) {
         let program = crate::Program::parse_no_errs(code).unwrap();
         let ctx = crate::execution::new_mock_executor_context(None);
