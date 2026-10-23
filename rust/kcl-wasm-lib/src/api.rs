@@ -601,6 +601,41 @@ impl Context {
             .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
     }
 
+    /// Try a constraint against an isolated copy of the sketch. The caller may
+    /// inspect the solved geometry without changing the live frontend or its
+    /// checkpoint history.
+    #[wasm_bindgen]
+    pub async fn preview_constraint(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        constraint_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        let version: Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let constraint: kcl_api::Constraint =
+            serde_json::from_str(constraint_json).map_err(|e| format!("Could not deserialize Constraint: {e}"))?;
+        let mut ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+            format!("Could not create KCL executor context for constraint preview. {TRUE_BUG} Details: {e}")
+        })?;
+        ctx.execution_callbacks = None;
+        ctx.cache = kcl_lib::Cache::default();
+        ctx.engine = Arc::new(kcl_lib::wasm_engine::EngineConnection::new_mock());
+
+        // Drop the lock before the independent mock execution.
+        let mut preview = self.frontend.read().await.clone();
+        let scene_graph_delta = preview
+            .preview_constraint(&ctx, version, sketch, constraint)
+            .await
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+
+        JsValue::from_serde(&scene_graph_delta)
+            .map_err(|e| format!("Could not serialize constraint preview. {TRUE_BUG} Details: {e}").into())
+    }
+
     /// Edit a constraint value in a sketch.
     #[wasm_bindgen]
     pub async fn edit_constraint_value(

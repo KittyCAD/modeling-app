@@ -1,4 +1,5 @@
 import type {
+  ApiConstraint,
   ApiObject,
   Expr,
   SceneGraphDelta,
@@ -119,6 +120,14 @@ export type SketchSolveMachineEvent =
   | { type: 'escape' }
   | { type: 'pick hovered tool' }
   | { type: 'unequip tool' }
+  | {
+      type: 'apply suggested constraint'
+      data: {
+        payload: ApiConstraint
+        selectedIds: SketchSolveSelectionId[]
+        sceneGraphDelta: SceneGraphDelta
+      }
+    }
   | {
       type: 'equip tool'
       data: { tool: EquipTool }
