@@ -93,9 +93,3 @@
   max-height: calc(100dvh - 2rem);
   overflow: auto;
 }
-.scene-browser {
-  --zoo-tree-divider-outset: 0.25rem;
-}
-.scene-browser[data-appearance="hud"] {
-  --zoo-tree-divider-outset: 0.625rem;
-}
