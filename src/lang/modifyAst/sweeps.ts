@@ -907,7 +907,7 @@ export function addRevolve({
       mNodeToEdit
     )
     if (err(getAxisResult)) {
-      return new Error('Generated axis selection is missing.')
+      return getAxisResult
     }
     modifiedAst = getAxisResult.modifiedAst
     axisExpr.push(createLabeledArg('axis', getAxisResult.generatedAxis))
