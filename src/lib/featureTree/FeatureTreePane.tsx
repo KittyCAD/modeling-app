@@ -78,8 +78,6 @@ import {
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
-  getOpenPanes,
-  type Layout,
 } from '@src/lib/layout'
 import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
@@ -173,10 +171,6 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
       <FeatureTreePaneContents />
     </LayoutPanel>
   )
-}
-
-function isCodePaneOpen(layout: Layout) {
-  return getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.Code)
 }
 
 export const FeatureTreePaneContents = memo(() => {
@@ -285,10 +279,7 @@ export const FeatureTreePaneContents = memo(() => {
   const liveLatestOperationKey = kclManager.liveLatestOperationKey
 
   function goToError() {
-    const l = layout.signal.value
-    if (!isCodePaneOpen(l)) {
-      layout.togglePane(DefaultLayoutPaneID.Code)
-    }
+    layout.openPane(DefaultLayoutPaneID.Code)
     kclManager.scrollToFirstErrorDiagnosticIfExists()
   }
 
@@ -1060,9 +1051,7 @@ const OperationItem = ({
           : (providedSourceRange?.[2] ?? item.sourceRange[2])
       const targetModulePath = kclManager.execState.filenames[targetModuleId]
 
-      if (!isCodePaneOpen(layout.get())) {
-        layout.togglePane(DefaultLayoutPaneID.Code)
-      }
+      layout.openPane(DefaultLayoutPaneID.Code)
 
       if (targetModulePath?.type === 'Local' && app.project) {
         const targetPath = targetModulePath.value

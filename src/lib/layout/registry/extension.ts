@@ -80,6 +80,17 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       return layoutSignal.value
     }
 
+    function openPane(paneId: string) {
+      return set(
+        togglePaneLayoutNode({
+          rootLayout: structuredClone(get()),
+          targetNodeId: paneId,
+          shouldExpand: true,
+          paneOpenBehavior: settings.get().layout.paneOpenBehavior.current,
+        })
+      )
+    }
+
     function togglePane(paneId: string) {
       const rootLayout = structuredClone(get())
       const paneOpenBehavior = settings.get().layout.paneOpenBehavior.current
@@ -102,6 +113,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         syncUserFeatureLayout()
       },
       applyContributions,
+      openPane,
       togglePane,
     }
     const applyRegistryLayoutContributions = () =>
@@ -240,6 +252,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     applyContributions: (contributions) =>
       ensureLayout().applyContributions(contributions),
     togglePane: (layoutId) => ensureLayout().togglePane(layoutId),
+    openPane: (layoutId) => ensureLayout().openPane(layoutId),
   }
 
   return {
