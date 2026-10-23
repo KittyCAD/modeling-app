@@ -1,3 +1,4 @@
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addNamedView,
   updateNamedViewCamera,
@@ -257,16 +258,9 @@ view001 = view::named(
 
   it('replaces only the camera with the current directed camera', async () => {
     const ast = assertParse(code, instance)
-    const execState = await enginelessExecutor(ast, rustContext)
-    const artifact = [...execState.artifactGraph.values()].find(
-      (candidate) => candidate.type === 'namedView'
-    )
-    if (!artifact || artifact.type !== 'namedView') {
-      throw new Error('Expected a named view artifact')
-    }
     const modifiedAst = updateNamedViewCamera({
       ast,
-      pathToNode: artifact.codeRef.pathToNode,
+      pathToNode: createPathToNodeForLastVariable(ast, false),
       camera: {
         direction: [0.25, -0.5, -0.75],
         up: [0, 0, 1],
