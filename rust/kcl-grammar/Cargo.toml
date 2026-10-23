@@ -1,0 +1,26 @@
+[package]
+name = "kcl-grammar"
+description = "Sentence grammars and a reference membership recognizer for KCL"
+version = "0.2.193"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/KittyCAD/modeling-app"
+authors = ["KittyCAD, Inc"]
+publish = false
+
+[dependencies]
+kcl-syntax = { version = "=0.2.193", path = "../kcl-syntax" }
+lalrpop-util = { version = "=0.23.2", default-features = false, features = ["std"] }
+
+[build-dependencies]
+lalrpop = { version = "=0.23.2", default-features = false }
+
+[dev-dependencies]
+datatest-stable = "0.3.3"
+
+[[test]]
+name = "membership"
+harness = false
+
+[lints]
+workspace = true
