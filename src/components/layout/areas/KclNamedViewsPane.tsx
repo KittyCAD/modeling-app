@@ -29,7 +29,6 @@ import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { reportRejection, trap } from '@src/lib/trap'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
-import { useState } from 'react'
 import toast from 'react-hot-toast'
 
 export type ViewRow = {
@@ -110,7 +109,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     false
   )
   const { kclManager } = useSingletons()
-  const [isChangingSource, setIsChangingSource] = useState(false)
   const execState = kclManager.execStateSignal.value
   const cannotReachEngine = useReliesOnEngine(
     kclManager.isExecutingSignal.value ?? false
@@ -125,7 +123,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   const rows = viewRows(views)
   const active = activeViewSignal.value
   const actionsDisabled =
-    cannotReachEngine || inSketchMode || isChangingSource || isEditingNamedView
+    cannotReachEngine || inSketchMode || isEditingNamedView
 
   const editView = (view: KclNamedView) => {
     prepareNamedViewEditCommand({
@@ -148,7 +146,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
       toast.error(`Could not find “${view.artifact.name}”.`)
       return
     }
-    setIsChangingSource(true)
     try {
       await sendDeleteCommand({
         artifact,
@@ -165,8 +162,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
           ? reason.message
           : `Could not remove “${view.artifact.name}”.`
       )
-    } finally {
-      setIsChangingSource(false)
     }
   }
 
