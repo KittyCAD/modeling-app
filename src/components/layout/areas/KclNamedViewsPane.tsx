@@ -14,11 +14,7 @@ import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { listNamedViews } from '@src/lang/std/kclNamedViews'
 import { ROOT_MODULE_ID } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
-import {
-  EXECUTION_TYPE_REAL,
-  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-  FILE_EXT,
-} from '@src/lib/constants'
+import { EXECUTION_TYPE_REAL, FILE_EXT } from '@src/lib/constants'
 import { sendDeleteCommand } from '@src/lib/featureTree'
 import type {
   ActivationTarget,
@@ -111,16 +107,9 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   const isEditingNamedView =
     commandState.context.selectedCommand?.name === 'Named View' &&
     Boolean(commandState.context.argumentsToSubmit.nodeToEdit)
-  const canManageViews = app.userFeatures.useHas(
-    EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-    false
+  const canManageViews = commandState.context.commands.some(
+    (command) => command.groupId === 'modeling' && command.name === 'Named View'
   )
-  const canCreateView = app.commands
-    .useState()
-    .context.commands.some(
-      (command) =>
-        command.groupId === 'modeling' && command.name === 'Named View'
-    )
   const { kclManager } = useSingletons()
   const execState = kclManager.execStateSignal.value
   const cannotReachEngine = useReliesOnEngine(
@@ -221,7 +210,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
         icon="namedView"
         title={props.layout.label}
         Menu={
-          canCreateView ? (
+          canManageViews ? (
             <ActionButton
               Element="button"
               aria-label="Create named view"

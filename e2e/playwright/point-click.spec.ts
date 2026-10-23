@@ -5881,7 +5881,7 @@ hole001 = hole::hole(
 
 test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
   test.use({
-    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG, 'modeling_dialogs'],
+    userFeatures: ['modeling_dialogs'],
   })
 
   test('Creates, edits visibility, and removes a Named View from the pane', async ({
