@@ -729,7 +729,6 @@ test.describe(
             'background-color',
             lightBackgroundCss
           )
-          await u.openKclCodePanel()
           await expect(codeMirrorContent).toBeVisible()
           codeMirrorLightThemeColors = await getCodeMirrorThemeColors()
           await expect

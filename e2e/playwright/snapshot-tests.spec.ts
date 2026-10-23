@@ -1,5 +1,9 @@
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
-import { settingsToToml } from '@e2e/playwright/test-utils'
+import {
+  playwrightLayoutSettings,
+  settingsToToml,
+} from '@e2e/playwright/test-utils'
+import { playwrightPluginSettings } from '@e2e/playwright/storageStates'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { Themes } from '@src/lib/theme'
@@ -31,13 +35,13 @@ async function waitForThemeApplied(page: Page, mode: Themes) {
 
 test(
   'Create a sketch in a new project: light theme',
-  { tag: '@snapshot' },
+  { tag: ['@snapshot', '@zookeeper'] },
   runTestForTheme(Themes.Light)
 )
 
 test(
   'Create a sketch in a new project: dark theme',
-  { tag: '@snapshot' },
+  { tag: ['@snapshot', '@zookeeper'] },
   runTestForTheme(Themes.Dark)
 )
 
@@ -64,6 +68,8 @@ function runTestForTheme(mode: Themes) {
   }: SnapshotTestContext) => {
     const tomlStr = settingsToToml({
       settings: {
+        ...playwrightLayoutSettings(),
+        plugins: playwrightPluginSettings({ zookeeperEnabled: true }),
         app: {
           onboarding_status: 'dismissed',
           appearance: {
@@ -102,6 +108,21 @@ function runTestForTheme(mode: Themes) {
     await test.step('Create a project', async () => {
       await toolbar.openFeatureTreePane()
       await editor.openPane()
+      await expect(
+        page
+          .getByTestId('app-header')
+          .getByRole('button', { name: 'Zookeeper', exact: true })
+      ).toBeVisible()
+      await expect
+        .poll(async () =>
+          Math.abs(
+            (await page
+              .locator('[data-panel-id="left-toolbar"]')
+              .boundingBox())!.width -
+              SCREENSHOT_SIZE.width * 0.46
+          )
+        )
+        .toBeLessThan(2)
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'project-created', mode),

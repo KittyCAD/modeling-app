@@ -180,7 +180,6 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await scene.settled()
 
     // Put the cursor in the code editor
-    await toolbar.openPane(DefaultLayoutPaneID.Code)
     await page.locator('.cm-content').click()
 
     // Now try the same, but with the keyboard shortcut, check focus

@@ -1,6 +1,5 @@
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { openPane } from '@e2e/playwright/test-utils'
 import type { Page } from '@playwright/test'
 import { isArray } from '@src/lib/utils'
 
@@ -24,7 +23,6 @@ async function waitForCodeChange(
   page: Page,
   previousCode: string
 ): Promise<string> {
-  await openPane(page, 'code-pane-button')
   await expect(page.locator('.cm-content')).not.toHaveText(previousCode)
   return await page.locator('.cm-content').innerText()
 }

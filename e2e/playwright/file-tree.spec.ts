@@ -1358,7 +1358,6 @@ test.describe(
         await scene.settled()
 
         // Get the text in the code locator.
-        await u.openKclCodePanel()
         const originalText = await u.codeLocator.innerText()
         // Click in the editor and add some new lines.
         await u.codeLocator.click()
@@ -1384,7 +1383,6 @@ test.describe(
 
       await test.step('hit undo', async () => {
         // Get the original content of the file.
-        await u.openKclCodePanel()
         const originalText = await u.codeLocator.innerText()
         // Now hit undo
         await page.keyboard.down('ControlOrMeta')
@@ -1430,7 +1428,6 @@ test.describe(
         await scene.settled()
 
         // Get the text in the code locator.
-        await u.openKclCodePanel()
         const originalText = await u.codeLocator.innerText()
         // Click in the editor and add some new lines.
         await u.codeLocator.click()
@@ -1484,7 +1481,6 @@ test.describe(
 
       await test.step('hit redo', async () => {
         // Get the original content of the file.
-        await u.openKclCodePanel()
         const originalText = await u.codeLocator.innerText()
         // Now hit redo
         await page.keyboard.down('Shift')

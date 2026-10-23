@@ -1168,7 +1168,6 @@ test(
     await page.getByText(projectName).click()
     await u.waitForPageLoad()
 
-    await u.openKclCodePanel()
     await expect(u.codeLocator).toContainText('routerDiameter')
     await expect(u.codeLocator).toContainText('templateGap')
     await expect(u.codeLocator).toContainText('minClampingDistance')
@@ -1779,7 +1778,6 @@ test(
     await closeOnboardingModalIfPresent(page)
 
     await test.step('select all in code editor, check its length', async () => {
-      await u.openKclCodePanel()
       await u.codeLocator.click()
       // expect u.codeLocator to have some text
       await expect(u.codeLocator).toContainText('line(')

@@ -177,7 +177,6 @@ export class EditorFixture {
       })
   }
   replaceCode = async (findCode: string, replaceCode: string) => {
-    await this.openPane()
     const lines = await this.page.locator('.cm-line').all()
 
     let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')

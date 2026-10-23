@@ -203,7 +203,6 @@ extrude001 = extrude(sketch001, length = 50)
       )
     })
     await homePage.goToModelingScene()
-    await u.openKclCodePanel()
     await scene.connectionEstablished()
 
     await expect(async () => {
@@ -374,7 +373,6 @@ extrude002 = extrude(profile002, length = 150)`
       await expect(exportingToastMessage).not.toBeVisible()
 
       // Click the code editor
-      await page.getByTestId('code-pane-button').click()
       await page.locator('.cm-content').click()
 
       await page.waitForTimeout(2000)
