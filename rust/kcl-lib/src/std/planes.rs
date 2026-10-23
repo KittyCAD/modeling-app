@@ -2,10 +2,10 @@
 
 use kcl_api::SourceRef;
 use kcl_api::UnitLength;
-use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
 use kcmc::shared::Color;
+use kcmc::ModelingCmd;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
@@ -14,6 +14,8 @@ use super::args::TyF64;
 use super::sketch::PlaneData;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
 use crate::execution::ArtifactId;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
@@ -23,11 +25,9 @@ use crate::execution::Plane;
 use crate::execution::PlaneInfo;
 use crate::execution::PlaneKind;
 use crate::execution::Point3d;
-use crate::execution::types::ArrayLen;
-use crate::execution::types::RuntimeType;
-use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::faces::FaceSpecifier;
+use crate::std::Args;
 
 /// Construct a typed plane using the existing custom-plane engine lifecycle.
 pub async fn plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -46,6 +46,13 @@ pub async fn plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let c: Option<TyF64> = args.get_kw_arg_opt("c", &RuntimeType::count(), exec_state)?;
     let d: Option<TyF64> = args.get_kw_arg_opt("d", &RuntimeType::length(), exec_state)?;
     let diagnostic = |message: String| KclError::new_semantic(KclErrorDetails::new(message, vec![args.source_range]));
+    let length_to_mm = |n: TyF64| {
+        n.to_mm()
+            .ok_or_else(|| diagnostic("Plane coordinates and equation offsets must have length units".to_owned()))
+    };
+    let point_to_mm = |[x, y, z]: [TyF64; 3]| -> Result<[f64; 3], KclError> {
+        Ok([length_to_mm(x)?, length_to_mm(y)?, length_to_mm(z)?])
+    };
     let fields = [
         origin.is_some(),
         x.is_some(),
@@ -60,14 +67,14 @@ pub async fn plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let definition = match (fields, origin, x, y, normal, points, a, b, c, d) {
         ([true, true, true, false, false, false, false, false, false], Some(o), Some(x), Some(y), ..) => {
             PlaneDefinition::Axes {
-                origin: o.map(|n| n.to_mm()),
+                origin: point_to_mm(o)?,
                 x: x.map(|n| n.n),
                 y: y.map(|n| n.n),
             }
         }
         ([true, true, false, true, false, false, false, false, false], Some(o), Some(x), _, Some(n), ..) => {
             PlaneDefinition::Normal {
-                origin: o.map(|n| n.to_mm()),
+                origin: point_to_mm(o)?,
                 x: x.map(|n| n.n),
                 normal: n.map(|n| n.n),
             }
@@ -75,9 +82,12 @@ pub async fn plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         ([false, false, false, false, true, false, false, false, false], _, _, _, _, Some(points), ..) => {
             let points = points
                 .iter()
-                .map(|p| <[TyF64; 3]>::from_kcl_val(p).map(|p| p.map(|n| n.to_mm())))
-                .collect::<Option<Vec<_>>>()
-                .ok_or_else(|| diagnostic("Expected three 3D points".to_owned()))?;
+                .map(|p| {
+                    let point = <[TyF64; 3]>::from_kcl_val(p)
+                        .ok_or_else(|| diagnostic("Expected three 3D points".to_owned()))?;
+                    point_to_mm(point)
+                })
+                .collect::<Result<Vec<_>, _>>()?;
             let points: [[f64; 3]; 3] = points
                 .try_into()
                 .map_err(|_| diagnostic("Expected exactly three points".to_owned()))?;
@@ -96,7 +106,7 @@ pub async fn plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             Some(d),
         ) => PlaneDefinition::Equation {
             normal: [a.n, b.n, c.n],
-            d: d.to_mm(),
+            d: length_to_mm(d)?,
             x: x.map(|n| n.n),
         },
         _ => {
