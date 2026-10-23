@@ -381,7 +381,6 @@ impl WebSocketTransport {
                                     cmd_id: _,
                                 })
                             );
-                            #[cfg(feature = "remote-execution")]
                             let binary = binary || matches!(&req, WebSocketRequest::ExecKclProject { .. });
                             let res = if binary {
                                 Self::inner_send_to_engine_binary(req, &mut tcp_write).await

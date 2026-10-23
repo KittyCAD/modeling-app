@@ -178,7 +178,7 @@ pub(crate) mod kcl_value_view;
 pub(crate) mod machine;
 mod memory;
 mod modeling;
-#[cfg(all(feature = "remote-execution", not(target_arch = "wasm32")))]
+#[cfg(not(target_arch = "wasm32"))]
 mod remote;
 mod sketch_solve;
 mod solver_arc;
