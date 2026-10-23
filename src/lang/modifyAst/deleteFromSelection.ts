@@ -237,9 +237,7 @@ export async function deleteFromSelection(
   const isSweepLikePathSelection =
     selection.artifact?.type === 'path' &&
     selectedCallName !== null &&
-    ['extrude', 'revolve', 'sweep', 'loft', 'blend', 'planarSurface'].includes(
-      selectedCallName
-    )
+    ['extrude', 'revolve', 'sweep', 'loft', 'blend'].includes(selectedCallName)
   const isSelectedCallExpression =
     selectedAstNode.node.type === 'CallExpressionKw'
   if (varDecNodeInit?.type === 'PipeExpression') {

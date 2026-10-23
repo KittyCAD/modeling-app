@@ -496,7 +496,7 @@ surface001 = planarSurface(region001)`
     expect(kclManagerInThisFile.errors).toEqual([])
   })
 
-  it('keeps an original sketch curve as a singleton after moving its extrusion', async () => {
+  it('rejects a sketch curve even after moving its extrusion', async () => {
     const { ast, artifactGraph } = await setup(`${circle}
 extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)
   |> translate(x = 25mm)`)
@@ -513,36 +513,8 @@ extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)
       curves: createSelectionFromArtifacts([circleArtifact], artifactGraph),
       wasmInstance: instanceInThisFile,
     })
-    if (err(result)) throw result
-    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      'surface001 = planarSurface([sketch001.circle1])'
-    )
-    expect(
-      await mockExecAstAndReportErrors(
-        result.modifiedAst,
-        rustContextInThisFile
-      )
-    ).toBeUndefined()
-  })
-
-  it('keeps sketch curve selections without validating closure', async () => {
-    const { ast, artifactGraph } = await setup(triangle)
-    const segments = [...artifactGraph.values()].filter(
-      (artifact) => artifact.type === 'segment'
-    )
-    expect(segments).toHaveLength(3)
-    const result = addPlanarSurface({
-      ast,
-      artifactGraph,
-      curves: createSelectionFromArtifacts(
-        [segments[1], segments[0]],
-        artifactGraph
-      ),
-      wasmInstance: instanceInThisFile,
-    })
-    if (err(result)) throw result
-    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      'surface001 = planarSurface([sketch001.line2, sketch001.line1])'
+    expect(result).toEqual(
+      new Error('Select a region or edges from a swept body.')
     )
   })
 

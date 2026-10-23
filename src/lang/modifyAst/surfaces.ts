@@ -256,13 +256,13 @@ export function addPlanarSurface({
   const selectionCount =
     curves.graphSelections.length + curves.otherSelections.length
   if (selectionCount === 0) {
-    return new Error('Select one sketch region, sketch curves, or body edges.')
+    return new Error('Select one sketch region or swept-body edges.')
   }
   if (
     engineRegions.length + primitiveEdges.length !==
     curves.otherSelections.length
   ) {
-    return new Error('Planar Surface requires a region or edges.')
+    return new Error('Planar Surface requires a region or swept-body edges.')
   }
 
   const exprs: Expr[] = []
@@ -309,7 +309,7 @@ export function addPlanarSurface({
       artifact?.type !== 'segment' &&
       artifact?.type !== 'primitiveEdge'
     ) {
-      return new Error('Planar Surface requires a region or edges.')
+      return new Error('Planar Surface requires a region or swept-body edges.')
     }
 
     if (artifact.type === 'primitiveEdge') {
@@ -341,26 +341,23 @@ export function addPlanarSurface({
       continue
     }
 
-    const segmentPath =
-      artifact.type === 'segment'
-        ? artifactGraph.get(artifact.pathId)
-        : undefined
-    const isSolvedSegment =
-      artifact.type === 'segment' &&
-      !artifact.sourceSegmentId &&
-      !(segmentPath?.type === 'path' && segmentPath.sweepId) &&
-      getSketchVariableNameForSegment(
-        modifiedAst,
-        artifact.id,
-        artifactGraph,
-        wasmInstance
-      ) !== null
-    const isSurfaceEdge =
-      artifact.type === 'segment' &&
-      !isSolvedSegment &&
-      !isErr(getSweepArtifactFromSelection(selection, artifactGraph))
-
-    if (isSurfaceEdge) {
+    if (artifact.type === 'segment') {
+      const segmentPath = artifactGraph.get(artifact.pathId)
+      const isSketchCurve =
+        !artifact.sourceSegmentId &&
+        !(segmentPath?.type === 'path' && segmentPath.sweepId) &&
+        getSketchVariableNameForSegment(
+          modifiedAst,
+          artifact.id,
+          artifactGraph,
+          wasmInstance
+        ) !== null
+      if (
+        isSketchCurve ||
+        isErr(getSweepArtifactFromSelection(selection, artifactGraph))
+      ) {
+        return new Error('Select a region or edges from a swept body.')
+      }
       const result = getPlanarSegmentEdgeExpression({
         selection,
         modifiedAst,
@@ -372,30 +369,26 @@ export function addPlanarSurface({
       const pipeResult = recordCurvePipe(result.pathIfPipe)
       if (isErr(pipeResult)) return pipeResult
       exprs.push(result.expr)
-    } else {
-      if (artifact.type === 'segment' && !isSolvedSegment) {
-        return new Error(
-          'Select a region or sketch curves from a sketch block.'
-        )
-      }
-      isRegion ||= artifact.type === 'path'
-      const result = getVariableExprsFromSelection(
-        { graphSelections: [selection], otherSelections: [] },
-        artifactGraph,
-        modifiedAst,
-        wasmInstance
-      )
-      if (isErr(result)) return result
-      if (result.exprs.length !== 1) {
-        return new Error('Could not resolve the selected curve in code.')
-      }
-      pathIfPipe = structuredClone(result.pathIfPipe) ?? pathIfPipe
-      exprs.push(...result.exprs)
+      continue
     }
+
+    isRegion = true
+    const result = getVariableExprsFromSelection(
+      { graphSelections: [selection], otherSelections: [] },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance
+    )
+    if (isErr(result)) return result
+    if (result.exprs.length !== 1) {
+      return new Error('Could not resolve the selected region in code.')
+    }
+    pathIfPipe = structuredClone(result.pathIfPipe) ?? pathIfPipe
+    exprs.push(...result.exprs)
   }
 
   if (isRegion && selectionCount !== 1) {
-    return new Error('Select one sketch region, or a list of curves or edges.')
+    return new Error('Select one sketch region or a list of swept-body edges.')
   }
 
   if (engineRegions.length > 0) {
@@ -417,8 +410,7 @@ export function addPlanarSurface({
     exprs.push(...regionResult)
   }
 
-  // The stdlib takes one region directly, but requires arrays for curves,
-  // including a single closed curve such as a circle.
+  // The stdlib takes one region directly, or an array of swept-body edges.
   const curvesExpr = isRegion
     ? createVariableExpressionsArray(exprs)
     : createArrayExpression(exprs)
