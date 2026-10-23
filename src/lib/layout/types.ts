@@ -172,6 +172,9 @@ export type LayoutService = {
   applyContributions: (
     contributions: readonly LayoutContribution[]
   ) => LayoutContributionResult[]
+  /** Ensure a pane is open; repeated calls leave it open. */
+  openPane: (paneId: string) => Layout
+  togglePane: (paneId: string) => Layout
 }
 
 type LayoutVersion = `v${number}`
