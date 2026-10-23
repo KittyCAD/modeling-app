@@ -304,6 +304,9 @@ export function FeatureTreeRow({
       'data-testid': 'feature-tree-operation-item',
       'data-module-branch': moduleId,
     },
+    <span slot="disclosure-icon" aria-hidden="true">
+      <CustomIcon name="caretDown" className="w-5 h-5" />
+    </span>,
     icon && <span slot="icon">{icon}</span>,
     <span slot="label">
       {label}
