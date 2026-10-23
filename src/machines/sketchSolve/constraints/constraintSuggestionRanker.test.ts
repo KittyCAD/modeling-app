@@ -11,7 +11,7 @@ describe('local sketch constraint ranker', () => {
     const weights = Array(CONSTRAINT_SUGGESTION_FEATURE_NAMES.length).fill(0)
     expect(
       parseConstraintSuggestionRankerModel({
-        schema_version: 1,
+        schema_version: 2,
         feature_names: [...CONSTRAINT_SUGGESTION_FEATURE_NAMES].reverse(),
         weights,
       })
@@ -19,7 +19,7 @@ describe('local sketch constraint ranker', () => {
     weights[0] = Number.NaN
     expect(
       parseConstraintSuggestionRankerModel({
-        schema_version: 1,
+        schema_version: 2,
         feature_names: CONSTRAINT_SUGGESTION_FEATURE_NAMES,
         weights,
       })
@@ -30,7 +30,7 @@ describe('local sketch constraint ranker', () => {
     const weights = Array(CONSTRAINT_SUGGESTION_FEATURE_NAMES.length).fill(0)
     weights[5] = 2
     const model = parseConstraintSuggestionRankerModel({
-      schema_version: 1,
+      schema_version: 2,
       feature_names: CONSTRAINT_SUGGESTION_FEATURE_NAMES,
       weights,
     })

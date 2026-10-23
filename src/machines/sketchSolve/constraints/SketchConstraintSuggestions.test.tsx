@@ -242,7 +242,7 @@ describe('SketchConstraintSuggestions', () => {
     sessionStorage.setItem(
       SUGGESTION_RANKER_MODEL_KEY,
       JSON.stringify({
-        schema_version: 1,
+        schema_version: 2,
         feature_names: CONSTRAINT_SUGGESTION_FEATURE_NAMES,
         weights,
       })

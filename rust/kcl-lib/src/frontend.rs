@@ -13896,10 +13896,13 @@ sketch(on = XY) {
         let circle_start = point_position(&edited.new_graph, circle.start);
         let dx = end.x.value - start.x.value;
         let dy = end.y.value - start.y.value;
-        let line_length = dx.hypot(dy);
+        let line_length = libm::hypot(dx, dy);
         let center_to_line =
             ((center.x.value - start.x.value) * dy - (center.y.value - start.y.value) * dx).abs() / line_length;
-        let radius = (circle_start.x.value - center.x.value).hypot(circle_start.y.value - center.y.value);
+        let radius = libm::hypot(
+            circle_start.x.value - center.x.value,
+            circle_start.y.value - center.y.value,
+        );
         assert!((radius - 15.0).abs() < 1e-5);
         assert!((center_to_line - radius).abs() < 1e-5);
 
@@ -13988,13 +13991,13 @@ sketch(on = XY) {
         let axis_end = point_position(&edited.new_graph, axis.end);
         let dx = axis_end.x.value - axis_start.x.value;
         let dy = axis_end.y.value - axis_start.y.value;
-        let axis_length = dx.hypot(dy);
+        let axis_length = libm::hypot(dx, dy);
         let midpoint_x = (first.x.value + second.x.value) / 2.0 - axis_start.x.value;
         let midpoint_y = (first.y.value + second.y.value) / 2.0 - axis_start.y.value;
         let midpoint_to_axis = (midpoint_x * dy - midpoint_y * dx).abs() / axis_length;
         let pair_dx = second.x.value - first.x.value;
         let pair_dy = second.y.value - first.y.value;
-        assert!((pair_dx.hypot(pair_dy) - 15.0).abs() < 1e-5);
+        assert!((libm::hypot(pair_dx, pair_dy) - 15.0).abs() < 1e-5);
         assert!(midpoint_to_axis < 1e-5);
         assert!((pair_dx * dx + pair_dy * dy).abs() / axis_length < 1e-5);
 

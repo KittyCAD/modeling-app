@@ -3,6 +3,9 @@
 This local experiment adds sketch constraint suggestions behind the
 `sketch_experimental_features` flag. The draft PR's Vercel preview also
 enables the POC automatically so reviewers can try it without an account flag.
+The preview ranks solver-safe candidates with a small model trained on internal
+KCL test fixtures; other builds use the rules order unless a local model is
+loaded.
 Selecting geometry starts a check after
 350 ms; **Suggest** refreshes it manually. Click a suggestion to apply it.
 Nothing is applied without that click.
@@ -39,8 +42,8 @@ tangency are outside this experiment. Coincident and midpoint suggestions are
 not generated yet, though the modeling app supports those manual tools.
 Owned support lines are ignored.
 
-The candidate generator uses geometric thresholds. It ranks passing
-candidates by normalized geometric residual, then previews each constraint
+The candidate generator uses geometric thresholds. It orders candidates by
+normalized geometric residual, then previews each constraint
 with the Rust sketch solver on a cloned frontend state and independent mock
 engine and cache. The current program is rerun in that mock context for each
 candidate, so preview latency may grow with project size. A failed solve,
@@ -50,10 +53,11 @@ One-click acceptance sends the exact previewed payload to the sketch
 machine, which checks that the selection and scene still match before using
 the normal checkpoint and sketch outcome flow.
 
-The app uses this rules baseline by default. A separate weak-label ranker was
-trained offline; the result is not enabled in the app because its held-out
-ranking was worse than the rules baseline. Reviewed design-intent labels are
-still needed before evaluating a model for use in the UI.
+The POC preview uses the trained ranker to reorder the candidates that pass
+the solver checks. The model does not construct constraint payloads or recover
+candidate types the generator missed. It is a weak-label experiment, not a
+validated design-intent model. CAD-reviewed labels are still needed before
+using it outside the draft preview.
 
 ## Review source sketches
 
@@ -99,13 +103,14 @@ To try a reviewed model locally, paste the generated JSON into the app
 developer console as `model`, then run:
 
 ```js
-sessionStorage.setItem('sketch-constraint-ranker-poc-v1', JSON.stringify(model))
+sessionStorage.setItem('sketch-constraint-ranker-poc-v2', JSON.stringify(model))
 ```
 
 The next check will use its probabilities to order solver-safe suggestions.
 It does not hide candidates by probability. Clear the key to return to the
-rules order. Invalid model schemas produce an error and use the rules order.
-No model or reviewed examples are loaded by the app by default.
+bundled model in this draft preview or the rules order in other builds. Invalid
+model schemas produce an error and fall back to the preview model when present.
+No reviewed examples are loaded by the app by default.
 
 The text-to-cad POC checkout has a pinned inventory of 183 modeling-app KCL
 test fixtures that can be used as source material. The inventory has no CAD
@@ -141,6 +146,35 @@ ambiguous selections); the learned ranker did so in 20/40 (0/20 ambiguous).
 The in-sample learned result was 40/40, showing how easily this small model
 memorizes fixture types. The report sets `enable_in_app` to `false`.
 
+## Experimental trained ranker in the preview
+
+The new `data/sketch_constraint_corpus/` manifest pins 18 internal KCL test
+files and groups related sketches into source families. The capture removes
+one existing constraint expression at a time, runs the resulting program, and
+records the app's candidates and native Rust solver previews. It captured 36
+selections; the original synthetic capture contributes 40 more. Only 56 of
+the combined 76 selections had a solver-safe candidate matching the removed
+constraint. The other 20 are recorded as candidate-generation misses and are
+excluded from ranker training.
+
+The model is a regularized pairwise linear ranker with the geometry score as
+its prior. Training weighs each sketch family equally, and evaluation holds
+out entire families. On those weak-label holdouts, the model ranked the hidden
+constraint first in 56/56 usable selections, compared with 55/56 for the
+rules order. Of 34 selections with more than one candidate, the model got
+34/34 and the rules order got 33/34. These are fixture-recovery scores, not
+user acceptance or design-intent scores. The training labels include no CAD
+reviews and some non-target candidates may also be valid design choices.
+
+To reproduce the capture and training after building the native example:
+
+```sh
+SKETCH_CORPUS_MANIFEST=data/sketch_constraint_corpus/manifest.jsonl \
+SKETCH_CORPUS_OUTPUT=data/sketch_constraint_corpus/samples.jsonl \
+node_modules/.bin/vitest run --mode=development --project=unit src/machines/sketchSolve/constraints/constraintSuggestionCorpusCapture.test.ts
+node scripts/sketch-constraint-pairwise-train.mjs data/sketch_constraint_weak_poc/samples.jsonl data/sketch_constraint_corpus/samples.jsonl src/machines/sketchSolve/constraints/sketchConstraintRankerModel.json data/sketch_constraint_corpus/report.json
+```
+
 The next data step is to collect CAD-reviewed accept/reject labels and
 dimension-edit outcomes across independent project families, including
 selections whose correct action is no suggestion. The reviewed evaluator
@@ -156,8 +190,8 @@ JSON.parse(sessionStorage.getItem('sketch-constraint-suggestions-poc-v1'))
 ```
 
 `requested` counts automatic and manual checks, with `autoRequested` and
-`manualRequested` splitting them. `modelRanked` counts checks ordered by a
-locally loaded ranker. `candidate` counts generated
+`manualRequested` splitting them. `modelRanked` counts checks ordered by the
+bundled preview model or a locally loaded ranker. `candidate` counts generated
 candidates. `solverRejected` counts failed solver previews, and
 `geometryRejected` counts solved candidates hidden by the conflict or
 movement check. `previewPassed` counts solver-approved candidates;
@@ -182,9 +216,9 @@ reason, solver result, point movement, and outcome after changing a driving
 dimension. Hold out entire projects or part families when training.
 Do not use an ignored suggestion as a negative label without review.
 
-The first learned ranker can be a regularized logistic regression over
-constraint type, normalized geometric residual, maximum preview movement,
-and selected-point freedom. Compare it with the rules baseline using
+The trained ranker uses constraint type, normalized geometric residual,
+maximum preview movement, and selected-point freedom. Compare it with the
+rules baseline using
 precision at one suggestion, unsafe suggestion rate, acceptance, and
 dimension-edit success on held-out families. Keep the solver and movement
 gate after ranking; the ranker does not replace either check.

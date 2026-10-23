@@ -1,4 +1,6 @@
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import bundledTrainedModel from '@src/machines/sketchSolve/constraints/sketchConstraintRankerModel.json'
+import { viteEnv } from '@src/env'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
@@ -7,6 +9,7 @@ import {
   recordSuggestionPreviewTime,
 } from '@src/machines/sketchSolve/constraints/constraintSuggestionMetrics'
 import {
+  parseConstraintSuggestionRankerModel,
   rankConstraintSuggestionsWithModel,
   readLocalConstraintSuggestionRankerModel,
 } from '@src/machines/sketchSolve/constraints/constraintSuggestionRanker'
@@ -21,11 +24,20 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ActorRefFrom } from 'xstate'
 
 const AUTO_SUGGEST_DELAY_MS = 350
+const previewModel = parseConstraintSuggestionRankerModel(bundledTrainedModel)
+
+function isSuggestionPocPreview() {
+  return (
+    viteEnv().VERCEL_ENV === 'preview' &&
+    viteEnv().MODELING_APP_GIT_REF === 'codex/sketch-constraint-suggestions-poc'
+  )
+}
 
 type SuggestionResult = {
   sceneGraphDelta: SceneGraphDelta
   selectionKey: string
   suggestions: ConstraintSuggestion[]
+  rankedByModel: boolean
 }
 
 export function SketchConstraintSuggestions({
@@ -130,11 +142,18 @@ export function SketchConstraintSuggestions({
         if (localModel instanceof Error) {
           reportRejection(localModel)
         }
-        const rankedSuggestions =
-          localModel && !(localModel instanceof Error)
-            ? rankConstraintSuggestionsWithModel(suggestions, localModel)
-            : suggestions
-        if (localModel && !(localModel instanceof Error)) {
+        let model = localModel instanceof Error ? null : localModel
+        if (!model && isSuggestionPocPreview()) {
+          if (previewModel instanceof Error) {
+            reportRejection(previewModel)
+          } else {
+            model = previewModel
+          }
+        }
+        const rankedSuggestions = model
+          ? rankConstraintSuggestionsWithModel(suggestions, model)
+          : suggestions
+        if (model) {
           recordSuggestionMetric('modelRanked')
         }
         for (const suggestion of rankedSuggestions) {
@@ -144,6 +163,7 @@ export function SketchConstraintSuggestions({
           sceneGraphDelta: currentDelta,
           selectionKey: currentSelectionKey,
           suggestions: rankedSuggestions,
+          rankedByModel: Boolean(model),
         })
       } catch (error) {
         reportRejection(error)
@@ -218,6 +238,11 @@ export function SketchConstraintSuggestions({
       </button>
       {visibleResult && (
         <div className="absolute top-full right-0 mt-2 z-30 min-w-48 p-2 rounded border border-chalkboard-30 dark:border-chalkboard-70 bg-chalkboard-10 dark:bg-chalkboard-90 shadow-lg">
+          {visibleResult.rankedByModel && (
+            <p className="text-xs m-0 mb-1">
+              Ranked by trained model · experimental
+            </p>
+          )}
           {visibleResult.suggestions.length === 0 ? (
             <p className="text-xs m-0">No safe suggestions.</p>
           ) : (

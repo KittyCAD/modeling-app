@@ -20,7 +20,7 @@ test.describe('Sketch constraint suggestions', { tag: '@web' }, () => {
   }, testInfo) => {
     const code = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
-  line(start = [var 0mm, var 0mm], end = [var 9.9mm, var 0.1mm])
+  line(start = [var 0mm, var 0mm], end = [var 10.01mm, var 0.1mm])
 }
 `
     await page.setBodyDimensions({ width: 1200, height: 600 })
@@ -57,8 +57,17 @@ sketch001 = sketch(on = XY) {
     const suggest = page.getByRole('button', { name: 'Suggest', exact: true })
     await expect(suggest).toBeEnabled()
     await suggest.click()
+    await expect(
+      page.getByText('Ranked by trained model · experimental')
+    ).toBeVisible()
     const horizontal = page.getByRole('button', { name: 'Make horizontal' })
     await expect(horizontal).toBeVisible()
+    await expect(
+      page
+        .getByRole('group', { name: 'Constraint suggestions' })
+        .getByRole('button')
+        .first()
+    ).toHaveText('Make horizontal')
     const bounds = await horizontal.boundingBox()
     expect(bounds).not.toBeNull()
     if (bounds) {

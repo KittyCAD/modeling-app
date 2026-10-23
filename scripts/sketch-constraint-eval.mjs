@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url'
 const TYPES = [
   'Horizontal',
   'Vertical',
+  'Parallel',
+  'Perpendicular',
   'LinesEqualLength',
   'EqualRadius',
   'Tangent',
@@ -180,7 +182,7 @@ export function fitRanker(records) {
       weights[index] -= 0.15 * gradient[index]
     }
   }
-  return { schema_version: 1, feature_names: FEATURE_NAMES, weights }
+  return { schema_version: 2, feature_names: FEATURE_NAMES, weights }
 }
 
 export function evaluate(records, score, threshold = -Infinity) {

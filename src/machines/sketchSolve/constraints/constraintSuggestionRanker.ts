@@ -1,11 +1,13 @@
 import type { ConstraintSuggestion } from '@src/machines/sketchSolve/constraints/constraintSuggestions'
 import { isArray } from '@src/lib/utils'
 
-export const SUGGESTION_RANKER_MODEL_KEY = 'sketch-constraint-ranker-poc-v1'
+export const SUGGESTION_RANKER_MODEL_KEY = 'sketch-constraint-ranker-poc-v2'
 
 const constraintTypes = [
   'Horizontal',
   'Vertical',
+  'Parallel',
+  'Perpendicular',
   'LinesEqualLength',
   'EqualRadius',
   'Tangent',
@@ -24,7 +26,7 @@ export const CONSTRAINT_SUGGESTION_FEATURE_NAMES = [
 ] as const
 
 export type ConstraintSuggestionRankerModel = {
-  schema_version: 1
+  schema_version: 2
   feature_names: string[]
   weights: number[]
 }
@@ -36,7 +38,7 @@ export function parseConstraintSuggestionRankerModel(
     typeof value !== 'object' ||
     value === null ||
     !('schema_version' in value) ||
-    value.schema_version !== 1 ||
+    value.schema_version !== 2 ||
     !('feature_names' in value) ||
     !isArray(value.feature_names) ||
     value.feature_names.length !== CONSTRAINT_SUGGESTION_FEATURE_NAMES.length ||
