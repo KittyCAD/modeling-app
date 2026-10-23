@@ -5,7 +5,7 @@ import {
   untracked,
 } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
-import { type ZDSProject } from '@src/lib/projectSession'
+import type { ZDSProject } from '@src/lib/projectSession'
 import { BillingTransition } from '@src/lib/billing'
 import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
 import { getParentAbsolutePath } from '@src/lib/paths'
@@ -13,6 +13,10 @@ import {
   createProjectReferenceCommands,
   type ProjectReferenceCommandTransport,
 } from '@src/lib/zookeeper/projectReferenceCommands'
+import {
+  copyLibraryFilesIntoCurrentProject,
+  CurrentProjectCopyError,
+} from '@src/lib/zookeeper/copyIntoCurrentProject'
 import type { Project } from '@src/lib/project'
 import { reportRejection, trap } from '@src/lib/trap'
 import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
@@ -29,7 +33,11 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
-import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import {
+  collectProjectFiles,
+  waitForIdleState,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -110,6 +118,7 @@ class SessionController implements ZookeeperSessionController {
 
   private apiToken: string
   private active = true
+  private readonly clientCommandAbortController = new AbortController()
   private readonly projectId: string | undefined
   private actorSubscription: Subscription | undefined
   private clearSubscription: Subscription | undefined
@@ -147,6 +156,8 @@ class SessionController implements ZookeeperSessionController {
           fileOperations: deps.fileOperations,
           getApiToken: () => this.apiToken,
           getHomeProjectActions: deps.getHomeProjectActions,
+          copyIntoCurrentProject: (files, sourceTitle, sourcePath) =>
+            this.copyIntoCurrentProject(files, sourceTitle, sourcePath),
           isSessionActive: () =>
             this.active && this.getZdsProject() !== undefined,
           includePersonalCloud: deps.includePersonalCloud,
@@ -449,6 +460,7 @@ class SessionController implements ZookeeperSessionController {
     }
 
     this.active = false
+    this.clientCommandAbortController.abort()
     this.clearOperationGeneration += 1
     this.continueCheckGeneration += 1
     this.clearReconnectTimer()
@@ -507,6 +519,54 @@ class SessionController implements ZookeeperSessionController {
 
   private getProject(): Project | undefined {
     return this.getZdsProject()?.projectIORefSignal.value
+  }
+
+  private async copyIntoCurrentProject(
+    files: readonly { path: string; data: Uint8Array }[],
+    sourceTitle: string,
+    sourcePath?: string
+  ) {
+    if (this.fileRequestProcessor.hasPendingRequests) {
+      return Promise.reject(
+        new CurrentProjectCopyError('Wait for current project edits to finish.')
+      )
+    }
+    await waitForIdleState({
+      abortSignal: this.clientCommandAbortController.signal,
+      systemIOActor: this.deps.systemIO.actor,
+    })
+    const project = this.getReadyZdsProject()
+    if (!project || this.fileRequestProcessor.hasPendingRequests) {
+      return Promise.reject(
+        new CurrentProjectCopyError('The current project changed. Try again.')
+      )
+    }
+    const result = await copyLibraryFilesIntoCurrentProject({
+      files,
+      sourceTitle,
+      sourcePath,
+      fileOperations: this.deps.fileOperations,
+      project,
+      kclManager: this.deps.kclManager,
+      isCurrent: () =>
+        this.active &&
+        this.getReadyZdsProject() === project &&
+        !this.fileRequestProcessor.hasPendingRequests,
+    })
+    await waitForIdleState({
+      abortSignal: this.clientCommandAbortController.signal,
+      systemIOActor: this.deps.systemIO.actor,
+    })
+    if (this.active && this.getZdsProject() === project) {
+      this.deps.systemIO.actor.send({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+      await waitForIdleState({
+        abortSignal: this.clientCommandAbortController.signal,
+        systemIOActor: this.deps.systemIO.actor,
+      })
+    }
+    return result
   }
 
   private async process(
