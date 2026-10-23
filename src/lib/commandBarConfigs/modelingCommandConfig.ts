@@ -20,11 +20,16 @@ import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import {
+  STD_LIB_ENUMS,
+  stdLibEnumOptions,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
+import { isKclCommandValue } from '@src/lib/commandUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   KCL_AXIS_X,
@@ -53,7 +58,7 @@ import {
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { err, isErr } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -65,7 +70,7 @@ import type {
 
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { capitaliseFC, isArray } from '@src/lib/utils'
+import { capitaliseFC } from '@src/lib/utils'
 import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
@@ -111,12 +116,16 @@ const FRAME_PLANE_OPTIONS = Object.freeze([
 ] as const)
 
 // For all transforms and boolean commands
-const objectsTypesAndFilters: {
+const objectSelection: {
+  inputType: 'selection'
   selectionTypes: Artifact['type'][]
   selectionFilter: EntityType[]
+  allowCodeReferences: boolean
 } = {
+  inputType: 'selection',
   selectionTypes: ['path', 'sweep', 'compositeSolid'],
   selectionFilter: ['object'],
+  allowCodeReferences: true,
 }
 
 // For all surface modeling commands
@@ -124,29 +133,6 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   name: capitaliseFC(value.toLowerCase()),
   value,
 }))
-
-function isSelections(value: unknown): value is Selections {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'graphSelections' in value &&
-    isArray(value.graphSelections) &&
-    'otherSelections' in value &&
-    isArray(value.otherSelections)
-  )
-}
-
-function isExtrudeRequirementKclCommandValue(
-  value: unknown
-): value is KclCommandValue {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'valueAst' in value &&
-    'valueText' in value &&
-    'valueCalculated' in value
-  )
-}
 
 export function profileSelectionRequiresBodyType({
   argumentsToSubmit,
@@ -188,7 +174,7 @@ export function profileSelectionRequiresBodyType({
 export function extrudeSelectionRequiresBodyType(context: {
   argumentsToSubmit: Record<string, unknown>
 }): boolean {
-  if (!isExtrudeRequirementKclCommandValue(context.argumentsToSubmit.length)) {
+  if (!isKclCommandValue(context.argumentsToSubmit.length)) {
     return false
   }
 
@@ -200,7 +186,7 @@ export function extrudeSelectionRequiresMethod({
 }: {
   argumentsToSubmit: Record<string, unknown>
 }): boolean {
-  if (!isExtrudeRequirementKclCommandValue(argumentsToSubmit.length)) {
+  if (!isKclCommandValue(argumentsToSubmit.length)) {
     return false
   }
 
@@ -313,7 +299,9 @@ const datumInputToKclArray = (value: string) => {
   return `[${datumRefs.map((datumRef) => JSON.stringify(datumRef)).join(', ')}]`
 }
 
-const isKclCommandValue = (value: unknown): value is KclCommandValue =>
+const isKclValueSummary = (
+  value: unknown
+): value is Pick<KclCommandValue, 'valueText' | 'valueCalculated'> =>
   Boolean(
     value &&
       typeof value === 'object' &&
@@ -322,7 +310,7 @@ const isKclCommandValue = (value: unknown): value is KclCommandValue =>
   )
 
 const summarizeDatumKclValue = (value: unknown) =>
-  isKclCommandValue(value)
+  isKclValueSummary(value)
     ? kclDatumArrayToInput(
         value.valueCalculated === 'NAN'
           ? value.valueText
@@ -341,7 +329,7 @@ export const getDefaultGdtTolerance = (
 }
 
 const summarizeGdtToleranceKclValue = (value: unknown) =>
-  isKclCommandValue(value) ? value.valueText : ''
+  isKclValueSummary(value) ? value.valueText : ''
 
 const gdtToleranceProps = {
   inputType: 'kcl',
@@ -392,6 +380,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   ModelingCommandSchema
 > = {
   'Enter sketch': {
+    forceCommandBar: true,
     description: 'Enter sketch mode.',
     icon: 'sketch',
   },
@@ -401,6 +390,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       description: 'Start drawing straight lines.',
       icon: 'line',
       displayName: 'Line',
+      forceCommandBar: true,
       args: {
         tool: {
           defaultValue: 'line',
@@ -415,6 +405,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       description: 'Start drawing an arc tangent to the current segment.',
       icon: 'arc',
       displayName: 'Tangential Arc',
+      forceCommandBar: true,
       args: {
         tool: {
           defaultValue: 'tangentialArc',
@@ -429,6 +420,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       description: 'Start drawing a rectangle.',
       icon: 'rectangle',
       displayName: 'Rectangle',
+      forceCommandBar: true,
       args: {
         tool: {
           defaultValue: 'rectangle',
@@ -440,6 +432,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   ],
   Export: {
+    forceCommandBar: true,
     description: 'Export the current model.',
     icon: 'floppyDiskArrow',
     needsReview: true,
@@ -510,6 +503,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
                   value: 'binary_little_endian',
                 },
               ]
+            case undefined:
+            case 'step':
+            case 'obj':
+            case 'fbx':
             default:
               return []
           }
@@ -638,8 +635,73 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'Named View': {
+    icon: 'namedView',
+    status: 'experimental',
+    needsReview: true,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Named View']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Named View']>(
+      'Named View',
+      {
+        overrides: {
+          orientation: {
+            inputType: 'options',
+            defaultValue: 'Isometric',
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Orientation'],
+              'Isometric'
+            ),
+          },
+          projection: {
+            inputType: 'options',
+            required: true,
+            defaultValue: 'Orthographic',
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Projection'],
+              'Orthographic'
+            ),
+          },
+          baseline: {
+            inputType: 'options',
+            defaultValue: 'Show',
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Visibility'],
+              'Show',
+              {
+                Show: 'Show all',
+                Hide: 'Hide all',
+              }
+            ),
+          },
+          except: {
+            inputType: 'selection',
+            displayName: 'Exceptions',
+            selectionTypes: [
+              'path',
+              'pathRegion',
+              'sketchBlock',
+              'sweep',
+              'compositeSolid',
+              'gdtAnnotation',
+              'helix',
+              'plane',
+              'importedGeometry',
+            ],
+            multiple: true,
+          },
+          target: {
+            dialog: { advanced: true },
+          },
+          distance: {
+            dialog: { advanced: true },
+          },
+        },
+      }
+    ),
+  },
   Extrude: {
-    description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -680,12 +742,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isEditingNodeSelection,
           },
           tagStart: {
+            dialog: { advanced: true },
             // TODO: add validation like for Clone command
           },
           twistCenter: {
+            dialog: { advanced: true },
             defaultValue: KCL_DEFAULT_ORIGIN_2D,
           },
           direction: {
+            dialog: { advanced: true },
             inputType: 'selection',
             selectionTypes: [
               'segment',
@@ -697,6 +762,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             clearSelectionFirst: true,
             hidden: isEditingNodeSelection,
           },
+          tagEnd: { dialog: { advanced: true } },
+          draftAngle: { dialog: { advanced: true } },
+          twistAngle: { dialog: { advanced: true } },
+          twistAngleStep: { dialog: { advanced: true } },
+          hideSeams: { dialog: { advanced: true } },
           method: {
             inputType: 'options',
             required: extrudeSelectionRequiresMethod,
@@ -715,8 +785,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Sweep: {
-    description:
-      'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -746,6 +814,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           hidden: isEditingNodeSelection,
         },
         relativeTo: {
+          dialog: { advanced: true },
           inputType: 'options',
           options: [
             { name: 'Sketch Plane', value: 'SKETCH_PLANE' },
@@ -766,17 +835,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           options: kclBodyTypeOptions,
         },
         version: {
+          dialog: { advanced: true },
           inputType: 'kcl',
           description:
             'Sweep algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
           defaultValue: '2',
           required: false,
         },
+        sectional: { dialog: { advanced: true } },
+        tolerance: { dialog: { advanced: true } },
+        tagStart: { dialog: { advanced: true } },
+        tagEnd: { dialog: { advanced: true } },
       },
     }),
   },
   Loft: {
-    description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -796,11 +869,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           required: profileSelectionRequiresBodyType,
           options: kclBodyTypeOptions,
         },
+        vDegree: { dialog: { advanced: true } },
+        bezApproximateRational: { dialog: { advanced: true } },
+        baseCurveIndex: { dialog: { advanced: true } },
+        tolerance: { dialog: { advanced: true } },
+        tagStart: { dialog: { advanced: true } },
+        tagEnd: { dialog: { advanced: true } },
       },
     }),
   },
   Revolve: {
-    description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -830,11 +908,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
               { name: 'Edge', isCurrent: false, value: 'Edge' },
             ],
-            hidden: isEditingNodeSelection,
+            hidden: isEditingNode,
           },
           axis: {
             required: (context) =>
               ['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
+            hidden: (context: {
+              argumentsToSubmit: Record<string, unknown>
+              selectedCommand?: { useModelingDialog?: boolean }
+            }) =>
+              context.selectedCommand?.useModelingDialog === true &&
+              context.argumentsToSubmit.axisOrEdge === 'Edge',
             inputType: 'options',
             displayName: 'Sketch Axis',
             options: [
@@ -858,6 +942,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             defaultValue: KCL_DEFAULT_DEGREE,
             required: true,
           },
+          tolerance: { dialog: { advanced: true } },
+          tagStart: { dialog: { advanced: true } },
+          tagEnd: { dialog: { advanced: true } },
           bodyType: {
             inputType: 'options',
             required: profileSelectionRequiresBodyType,
@@ -868,7 +955,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Shell: {
-    description: 'Hollow out a 3D solid.',
     icon: 'shell',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -889,7 +975,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Hole: {
-    description: 'Standard holes that could be drilled or cut into a 3D solid.',
     icon: 'hole',
     needsReview: true,
     reviewMessage:
@@ -1013,7 +1098,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Boolean Subtract': {
-    description: 'Subtract one solid from another.',
     icon: 'booleanSubtract',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1024,14 +1108,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
           tools: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             clearSelectionFirst: true,
             multiple: true,
             hidden: isEditingNodeSelection,
@@ -1041,7 +1123,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Union': {
-    description: 'Union multiple solids into a single solid.',
     icon: 'booleanUnion',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1052,8 +1133,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             skip: false,
             hidden: isEditingNodeSelection,
@@ -1063,7 +1143,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Intersect': {
-    description: 'Create a solid from the intersection of two solids.',
     icon: 'booleanIntersect',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1074,8 +1153,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             skip: false,
             hidden: isEditingNodeSelection,
@@ -1085,8 +1163,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Split': {
-    description:
-      "Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.",
     icon: 'split',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1097,14 +1173,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           targets: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
           tools: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             clearSelectionFirst: true,
             multiple: true,
             hidden: isEditingNodeSelection,
@@ -1114,8 +1188,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Offset plane': {
-    description: 'Offset a plane.',
     icon: 'plane',
+    displayName: 'Offset Plane',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods['Offset plane']
@@ -1313,7 +1387,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Helix: {
-    description: 'Create a helix or spiral in 3D about an axis.',
     icon: 'helix',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1330,7 +1403,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             { name: 'Edge', isCurrent: false, value: 'Edge' },
             { name: 'Cylinder', isCurrent: false, value: 'Cylinder' },
           ],
-          hidden: isEditingNodeSelection,
+          hidden: isEditingNode,
         },
         axis: {
           inputType: 'options',
@@ -1355,11 +1428,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             !['Edge'].includes(context.argumentsToSubmit.mode as string),
         },
         cylinder: {
-          ...objectsTypesAndFilters,
-          selectionTypes: [
-            ...objectsTypesAndFilters.selectionTypes,
-            'pathRegion',
-          ],
+          selectionTypes: ['path', 'sweep', 'compositeSolid', 'pathRegion'],
+          selectionFilter: ['object'],
           inputType: 'selection',
           multiple: false,
           required: (context) =>
@@ -1394,7 +1464,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Helical Gear': {
-    description: 'Create a helical gear.',
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Helical Gear'),
@@ -1425,7 +1494,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Herringbone Gear': {
-    description: 'Create a herringbone gear.',
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Herringbone Gear'),
@@ -1456,7 +1524,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Spur Gear': {
-    description: 'Create a spur gear.',
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Spur Gear'),
@@ -1484,7 +1551,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Ring Gear': {
-    description: 'Create a ring gear.',
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Ring Gear'),
@@ -1515,7 +1581,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Fillet: {
-    description: 'Fillet edge',
     icon: 'fillet3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1548,7 +1613,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Chamfer: {
-    description: 'Chamfer edge',
     icon: 'chamfer3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1590,6 +1654,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Constrain length': {
+    forceCommandBar: true,
     scopes: [MODE_SKETCHING_COMMAND_SCOPE],
     description: 'Constrain the length of one or more segments.',
     icon: 'dimension',
@@ -1677,8 +1742,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   Appearance: {
-    description:
-      'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
     icon: 'extrude',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1689,10 +1752,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           objects: {
-            // selectionMixed allows for feature tree selection of module imports
-            inputType: 'selectionMixed',
-            selectionTypes: ['path', 'sweep', 'compositeSolid'],
-            selectionFilter: ['object'],
+            ...objectSelection,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1704,7 +1764,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Delete: {
-    description: 'Delete selected bodies from the scene.',
     icon: 'trash',
     needsReview: true,
     status: modelingStdLibCommandStatus('Delete'),
@@ -1714,15 +1773,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Delete']>('Delete', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          inputType: 'selectionMixed',
+          ...objectSelection,
           multiple: true,
         },
       },
     }),
   },
   Translate: {
-    description: 'Set translation on a solid, sketch, or helix.',
     icon: 'move',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1733,9 +1790,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           objects: {
-            ...objectsTypesAndFilters,
-            selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
-            inputType: 'selectionMixed',
+            ...objectSelection,
+            selectionTypes: [...objectSelection.selectionTypes, 'helix'],
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1758,7 +1814,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Rotate: {
-    description: 'Set rotation on a solid, sketch, or helix.',
     icon: 'rotate',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1767,9 +1822,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Rotate']>('Rotate', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
-          inputType: 'selectionMixed',
+          ...objectSelection,
+          selectionTypes: [...objectSelection.selectionTypes, 'helix'],
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1800,7 +1854,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Scale: {
-    description: 'Set scale on a solid, sketch, or helix.',
     icon: 'scale',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1809,9 +1862,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Scale']>('Scale', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
-          inputType: 'selectionMixed',
+          ...objectSelection,
+          selectionTypes: [...objectSelection.selectionTypes, 'helix'],
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1832,7 +1884,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Clone: {
-    description: 'Clone a solid or sketch.',
     icon: 'clone',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1841,8 +1892,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Clone']>('Clone', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          inputType: 'selectionMixed',
+          ...objectSelection,
           multiple: false, // only one object can be cloned at this time
           hidden: isEditingNodeSelection,
         },
@@ -1881,7 +1931,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Mirror 3D': {
-    description: 'Mirror solids across a plane or edge.',
     icon: 'mirror3d',
     displayName: 'Mirror',
     needsReview: true,
@@ -1893,8 +1942,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           bodies: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
           },
           across: {
@@ -1917,7 +1965,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Pattern Circular 3D': {
-    description: 'Create a circular pattern of 3D solids around an axis.',
     icon: 'patternCircular3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1928,8 +1975,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     >('Pattern Circular 3D', {
       overrides: {
         solids: {
-          ...objectsTypesAndFilters,
-          inputType: 'selectionMixed',
+          ...objectSelection,
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1956,7 +2002,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Pattern Linear 3D': {
-    description: 'Create a linear pattern of 3D solids along an axis.',
     icon: 'patternLinear3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1967,8 +2012,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1992,8 +2036,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Flatness': {
-    description:
-      'Add flatness geometric dimensioning & tolerancing annotation to faces.',
     icon: 'gdtFlatness',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2016,8 +2058,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Straightness': {
-    description:
-      'Add straightness geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtStraightness',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2041,8 +2081,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Circularity': {
-    description:
-      'Add circularity geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtCircularity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2066,8 +2104,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Cylindricity': {
-    description:
-      'Add cylindricity geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtCylindricity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2091,8 +2127,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Datum': {
-    description:
-      'Add datum geometric dimensioning & tolerancing annotation to a face.',
     icon: 'gdtDatum',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2120,8 +2154,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Position': {
-    description:
-      'Add position geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtPosition',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2146,6 +2178,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Profile': {
+    // Keep a shared description: edge selections create profileLine,
+    // while face selections create profileSurface.
     description:
       'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
     icon: 'gdtProfile',
@@ -2172,8 +2206,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Distance': {
-    description:
-      'Add an MBD distance annotation to an edge length or between two faces or edges.',
     icon: 'dimension',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2197,8 +2229,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Perpendicularity': {
-    description:
-      'Add perpendicularity geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'perpendicular',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2222,8 +2252,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'GDT Angularity': {
-    description:
-      'Add angularity geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'angle',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2248,8 +2276,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Concentricity': {
-    description:
-      'Add concentricity geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtConcentricity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2277,8 +2303,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Symmetry': {
-    description:
-      'Add symmetry geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtSymmetry',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2306,8 +2330,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Runout': {
-    description:
-      'Add runout geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtRunout',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2335,8 +2357,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Parallelism': {
-    description:
-      'Add parallelism geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'parallel',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2361,7 +2381,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Annotation': {
-    description: 'Add model-based definition annotation to faces and edges.',
+    forceCommandBar: true,
     icon: 'text',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2388,7 +2408,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Note': {
-    description: 'Add a free-floating model-based definition note on a plane.',
+    forceCommandBar: true,
     icon: 'note',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2410,8 +2430,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Flip Surface': {
-    description:
-      'Flips the orientation of a surface, swapping which side is the front and which is the reverse.',
     icon: 'flipSurface',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2422,8 +2440,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           surface: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
           },
         },
@@ -2431,7 +2448,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Join Surfaces': {
-    description: 'Join selected surfaces into one polysurface.',
     icon: 'joinSurfaces',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2442,8 +2458,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           selection: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
           },
         },
@@ -2451,7 +2466,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Delete Face': {
-    description: 'Delete a face from a body, leaving an open surface.',
     icon: 'deleteFace',
     needsReview: true,
     status: 'experimental',
@@ -2479,7 +2493,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Blend: {
-    description: 'Blend two selected surface edges into a new surface.',
     icon: 'blend',
     needsReview: true,
     status: 'experimental',

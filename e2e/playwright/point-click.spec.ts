@@ -350,7 +350,6 @@ sketch001 = extrude(region001, length = -12)`
 
     // Locators
     const faceLocation = { x: 630, y: 290 }
-    const timeout = 150
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -369,16 +368,14 @@ sketch001 = extrude(region001, length = -12)`
     await test.step('Select the face (Shift-click)', async () => {
       await page.keyboard.down('Shift')
       await clickOnFace()
-      await page.waitForTimeout(timeout)
-      await page.keyboard.up('Shift')
       await expect(toolbar.selectionStatus).toContainText('1 face')
+      await page.keyboard.up('Shift')
     })
     await test.step('Deselect the face (Shift-click)', async () => {
       await page.keyboard.down('Shift')
       await clickOnFace()
-      await page.waitForTimeout(timeout)
-      await page.keyboard.up('Shift')
       await expect(toolbar.selectionStatus).not.toContainText('1 face')
+      await page.keyboard.up('Shift')
     })
   })
 
@@ -403,7 +400,7 @@ sketch001 = extrude(region001, length = -12)`
           currentArgValue: '',
           headerArguments: { Plane: '', Offset: '' },
           highlightedHeaderArg: 'plane',
-          commandName: 'Offset plane',
+          commandName: 'Offset Plane',
         })
         await toolbar.selectDefaultPlane('Front plane')
         await cmdBar.progressCmdBar()
@@ -413,14 +410,14 @@ sketch001 = extrude(region001, length = -12)`
           currentArgValue: '5',
           headerArguments: { Plane: '1 plane', Offset: '' },
           highlightedHeaderArg: 'offset',
-          commandName: 'Offset plane',
+          commandName: 'Offset Plane',
         })
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: { Plane: '1 plane', Offset: '5' },
           reviewValidationError: undefined,
-          commandName: 'Offset plane',
+          commandName: 'Offset Plane',
         })
         await cmdBar.submit()
       })
@@ -1110,6 +1107,7 @@ extrude001 = extrude(region001, length = -12)`
       oldValue: string,
       newValue: string
     ) {
+      await scene.settled()
       // await scene.waitForExecutionDoneAfter(async () =>
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       // )
@@ -2271,6 +2269,7 @@ extrude001 = extrude(profile001, length = 500)`
         commandName: 'Shell',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -2374,6 +2373,7 @@ extrude001 = extrude(profile001, length = 500)`
       })
 
       await clickOnDebugCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -2451,6 +2451,7 @@ extrude001 = extrude(region001, length = 30)`
         commandName: 'Delete Face',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -2519,6 +2520,7 @@ chamfer001 = chamfer(
     })
     await toolbar.selectSurface('delete-face')
     await clickChamferFace()
+    await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -2578,6 +2580,7 @@ hide(sketch001)`
     })
     await toolbar.selectSurface('delete-face')
     await clickChamferFace()
+    await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -2639,6 +2642,7 @@ hide(sketch001)`
     })
     await toolbar.selectSurface('delete-face')
     await clickFilletFace()
+    await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -4184,6 +4188,7 @@ extrude001 = extrude(region001, length = 30)`
             highlightedHeaderArg: 'faces',
           })
           await clickOnCap()
+          await toolbar.expectSelection('1 face')
         })
 
         await test.step('Configure tolerance', async () => {
@@ -4642,6 +4647,7 @@ extrude001 = extrude(region001, length = 30)`
             highlightedHeaderArg: 'faces',
           })
           await clickOnCap()
+          await toolbar.expectSelection('1 face')
         })
 
         await test.step('Configure name', async () => {
@@ -4991,6 +4997,7 @@ extrude001 = extrude(region001, length = 10)`
         highlightedHeaderArg: 'face',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',

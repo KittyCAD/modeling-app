@@ -34,7 +34,7 @@ strings:
 String equality is exact and case-sensitive. It does not perform Unicode
 normalization.
 
-Arithmetics and logic expressions can be arbitrairly combined with the usual rules of associativity and precedence, e.g.,
+Arithmetic and logic expressions can be arbitrarily combined with the usual rules of associativity and precedence, e.g.,
 
 ```
 myMathExpression = 3 + 1 * 2 / 3 - 7

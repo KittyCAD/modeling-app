@@ -59,9 +59,11 @@ async function withStoreUncategorized<T>(
     const transaction = db.transaction(storeName, mode)
     const store = transaction.objectStore(storeName)
     let callbackResult: IDBRequest<T> | T
+    let result: T
 
     transaction.oncomplete = () => {
       db.close()
+      resolve(result)
     }
     transaction.onerror = () => {
       db.close()
@@ -85,15 +87,14 @@ async function withStoreUncategorized<T>(
       typeof callbackResult === 'object' &&
       'onsuccess' in callbackResult
     ) {
-      callbackResult.onsuccess = () => resolve(callbackResult.result)
+      callbackResult.onsuccess = () => {
+        result = callbackResult.result
+      }
       callbackResult.onerror = () => reject(callbackResult.error)
       return
     }
 
-    transaction.oncomplete = () => {
-      db.close()
-      resolve(callbackResult)
-    }
+    result = callbackResult
   })
 }
 
@@ -264,8 +265,14 @@ async function appendOutboxEntryUncategorized(entry: Omit<OutboxEntry, 'id'>) {
       cursor.continue()
     }
     request.onerror = () => reject(request.error)
-    transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () => reject(transaction.error)
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
     transaction.oncomplete = () => {
       db.close()
       resolve()
@@ -333,8 +340,14 @@ async function clearOutboxEntriesForProjectUncategorized(projectPath: string) {
       cursor.continue()
     }
     request.onerror = () => reject(request.error)
-    transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () => reject(transaction.error)
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
     transaction.oncomplete = () => {
       db.close()
       resolve()
@@ -389,8 +402,14 @@ async function clearOutboxEntriesForProjectAtGenerationUncategorized(
       cursor.continue()
     }
     request.onerror = () => reject(request.error)
-    transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () => reject(transaction.error)
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
     transaction.oncomplete = () => {
       db.close()
       resolve(cleared)
@@ -438,8 +457,14 @@ async function clearOutboxEntriesTouchingProjectUncategorized(
       cursor.continue()
     }
     request.onerror = () => reject(request.error)
-    transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () => reject(transaction.error)
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
     transaction.oncomplete = () => {
       db.close()
       resolve()
@@ -487,8 +512,14 @@ async function clearLegacyConflictCopyReferencesUncategorized(
       cursor.continue()
     }
     request.onerror = () => reject(request.error)
-    transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () => reject(transaction.error)
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
     transaction.oncomplete = () => {
       db.close()
       resolve()

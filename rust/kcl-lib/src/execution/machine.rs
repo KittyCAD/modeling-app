@@ -1,10 +1,8 @@
 //! The CEK machine executor: evaluates KCL on an explicit, heap-allocated
 //! continuation stack instead of the native call stack.
 //!
-//! The recursive executor (`execute_expr` and friends in `exec_ast.rs`) grows
-//! the native stack proportionally to KCL nesting depth, which overflows in
-//! wasm. This module re-expresses evaluation as a CEK abstract machine with an
-//! ambient mutable store:
+//! Evaluation uses a CEK abstract machine with an ambient mutable store to
+//! avoid growing the native stack with KCL nesting depth, including in wasm:
 //!
 //! - C (control): [`Control`] -- either descend into an expression
 //!   ([`Control::Eval`]), hand a finished value to the innermost continuation
@@ -12,9 +10,8 @@
 //!   boundary ([`Control::Return`]), or unwind an `exit()`
 //!   ([`Control::Exit`]).
 //! - E (environment): already reified as `EnvironmentRef` plus the mutable
-//!   env-stack arena, exactly as the recursive executor uses it.
-//! - K (continuations): a `Vec<Kont>`, one defunctionalized variant per
-//!   recursion site of the recursive executor.
+//!   env-stack arena.
+//! - K (continuations): a `Vec<Kont>`, one variant per pending evaluation step.
 //!
 //! The store (artifacts, operations log, id generators, engine connection) is
 //! ambient `&mut ExecState`, threaded through every step -- so this is a CEK
@@ -25,25 +22,15 @@
 //! depth. Only recursion on evaluating KCL expressions moved onto the explicit
 //! stack.
 //!
-//! Semantics contract: this machine replicates the recursive executor
-//! byte-for-byte -- including evaluation order (ids and engine commands are
-//! order-dependent), the operations log, ambient-state save/restore, error
-//! paths (including their historical asymmetries), and the version-gated
-//! semantics: `return` (write-and-continue before KCL 3.0; early return under
-//! it), if-arm scoping (KCL 3.0 only), and member-expression evaluation order
-//! (object before property under KCL 3.0; property first before it). The
-//! simulation-test suite runs under both executors and requires identical
-//! snapshots.
+//! Evaluation order, operations, ambient-state cleanup, and diagnostics preserve
+//! KCL's version-gated semantics: `return` writes and continues before KCL 3.0
+//! and returns early under it; if-arm scoping starts in KCL 3.0; member access
+//! evaluates the object first in KCL 3.0 and the property first before it.
 //!
-//! Bounded native re-entry still exists in two places, by design:
-//! - Module execution (imports, module-value results) runs the module body in
-//!   a fresh machine root via `exec_module_body`, adding O(1) native frames
-//!   per module nesting level.
-//! - Until the resumable-callback phase lands, higher-order stdlib functions
-//!   (`map`, `reduce`, `patternTransform`) call back into KCL through
-//!   `call_kw`, which fresh-roots a machine run per callback, adding O(1)
-//!   native frames per callback nesting level (bounded by the recursive
-//!   executor's call-stack cap, which still guards that path).
+//! Module execution runs each module body in a fresh machine root. Native
+//! stdlib callbacks through `call_kw` also create fresh roots; their nesting
+//! remains bounded by the native call-stack guard. Resumable builtins keep
+//! their callbacks on this machine's continuation stack.
 //!
 //! # State transitions under KCL 3.0
 //!
@@ -154,11 +141,11 @@
 //! PipeSeq save and restore `pipe_value` around each element, which is why
 //! the unwind rules must run cleanup on them.
 
-use std::env;
 use std::future::Future;
 use std::sync::Arc;
 
 use indexmap::IndexMap;
+use kcl_api::ObjectId;
 
 use crate::SourceRange;
 use crate::errors::KclError;
@@ -183,8 +170,6 @@ use crate::execution::kcl_value::KclObjectFields;
 use crate::execution::state::SketchBlockState;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
-use crate::front::ObjectId;
-use crate::kcl_runtime_flags;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::ArrayRangeExpression;
@@ -206,8 +191,6 @@ use crate::parsing::ast::types::PipeExpression;
 use crate::parsing::ast::types::Program;
 use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::UnaryExpression;
-use crate::runtime_flags::RuntimeFlagResolve;
-use crate::runtime_flags::resolve_from_sources;
 
 /// Keep large executor futures pointer-sized in debug builds without paying
 /// for heap allocation in optimized builds.
@@ -224,125 +207,9 @@ macro_rules! debug_boxed_future {
     }};
 }
 
-/// Environment variable selecting which executor implementation to use.
-const KCL_EXECUTOR_ENV_VAR: &str = "KCL_EXECUTOR";
-
-/// Which executor evaluates KCL. Crate-internal: set on
-/// [`ExecutorContext`] at construction time and immutable during a run.
-/// Cloning the context (fresh roots, `Args`) inherits the same kind, so every
-/// module and callback runs on the same executor.
-///
-/// Precedence: runtime flags > `KCL_EXECUTOR` >
-/// [`ExecutorKind::resolve_default()`]. The shared resolver's test-override
-/// slot is deliberately unused here: tests pin a kind by passing it to the
-/// `ExecutorContext` they construct, and everything else must keep following
-/// `KCL_EXECUTOR` so the CI matrix genuinely runs the suite under both
-/// executors.
-///
-/// Selection is deliberately a process-global runtime flag rather than an
-/// `ExecutorSettings` field: TS reaches executor settings only through the
-/// user-settings `Configuration` schema (TOML / JsonSchema / generated docs),
-/// and settings participate in execution-cache comparison, so a transient
-/// rollout flag does not belong there. The app rebuilds the context per wasm
-/// call, so the global still yields per-execution capture.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum ExecutorKind {
-    /// The historical recursive tree-walking evaluator.
-    Recursive,
-    /// The CEK machine in this module.
-    Machine,
-}
-
-impl std::fmt::Display for ExecutorKind {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ExecutorKind::Recursive => write!(f, "recursive"),
-            ExecutorKind::Machine => write!(f, "machine"),
-        }
-    }
-}
-
-impl RuntimeFlagResolve for ExecutorKind {
-    fn on() -> Self {
-        Self::Machine
-    }
-
-    fn off() -> Self {
-        Self::Recursive
-    }
-
-    fn resolve_default() -> Self {
-        Self::Machine
-    }
-
-    /// Select the executor from the `KCL_EXECUTOR` environment variable:
-    /// `machine` or `recursive`, ASCII case-insensitive, surrounding whitespace
-    /// ignored. Setting the variable is an explicit opt-in and applies to any
-    /// context construction that consults it; unset or empty means
-    /// [`ExecutorKind::default`]. Any other value is a configuration error that
-    /// warns and then uses the default. (Wasm builds have no environment, so
-    /// this is always the default there.)
-    fn parse_env_var(value: &str) -> Self {
-        let value = value.trim();
-        if value.is_empty() {
-            Self::resolve_default()
-        } else if value.eq_ignore_ascii_case("machine") {
-            ExecutorKind::Machine
-        } else if value.eq_ignore_ascii_case("recursive") {
-            ExecutorKind::Recursive
-        } else {
-            let def = Self::resolve_default();
-            // A mistyped value should not crash the process: warn and fall back
-            // to the default (the conservative choice for a misconfiguration).
-            Self::warn_once(|| {
-                format!(
-                    "Unsupported {KCL_EXECUTOR_ENV_VAR} value `{value}`; expected `recursive` or `machine`. Defaulting to `{def}`."
-                )
-            });
-            def
-        }
-    }
-}
-
-impl ExecutorKind {
-    /// Resolve the active executor (see precedence on [`ExecutorKind`]).
-    pub(crate) fn resolve() -> Self {
-        let env_value = match env::var(KCL_EXECUTOR_ENV_VAR) {
-            Ok(value) => Some(value),
-            Err(env::VarError::NotPresent) => None,
-            Err(env::VarError::NotUnicode(value)) => {
-                // Invalid-unicode env var: warn and fall back rather than crash.
-                Self::warn_once(|| {
-                    let def = Self::resolve_default();
-                    format!(
-                        "{KCL_EXECUTOR_ENV_VAR} must be valid unicode; got `{}`. Defaulting to `{def}`.",
-                        value.to_string_lossy()
-                    )
-                });
-                None
-            }
-        };
-
-        // The `None` is the test-override slot: unlike `LexerMode`, the
-        // executor never supplies one (see the type-level docs).
-        resolve_from_sources(kcl_runtime_flags().use_cek_executor, None, env_value.as_deref())
-    }
-
-    /// Emit a one-time configuration warning through `crate::log` (gated on
-    /// `ZOO_LOG`). `resolve`/`parse` run on every executor creation, so a
-    /// misconfigured `KCL_EXECUTOR` must not warn -- or allocate the message --
-    /// on every call. One guard suffices: only one kind of misconfiguration can
-    /// occur per process, since the env var holds a single value.
-    fn warn_once(make_message: impl FnOnce() -> String) {
-        static WARNED: std::sync::Once = std::sync::Once::new();
-        WARNED.call_once(|| crate::log::log(make_message()));
-    }
-}
-
-/// Default limit for the machine executor's call-depth guard. This replaces
-/// the recursive executor's native-stack-motivated cap for machine-native
-/// calls: depth is heap-bounded, so the limit is purely a runaway-recursion
-/// policy. It must remain correct when internally raised to 50,000 or more.
+/// Default call-depth limit. Machine-native calls are heap-bounded, so this
+/// is a runaway-recursion policy rather than a native-stack limit. It must
+/// remain correct when internally raised to 50,000 or more.
 pub(crate) const DEFAULT_MACHINE_CALL_DEPTH_LIMIT: usize = 1000;
 
 /// Convert an entry block into an owned handle the machine can keep in a
@@ -408,15 +275,12 @@ enum EvalNode {
     BinaryPart(BinaryPart),
 }
 
-/// One evaluation request: the node plus the context the recursive executor
-/// passed as parameters to `execute_expr`.
+/// One evaluation request: the node and its declaration context.
 #[derive(Debug)]
 struct EvalRequest {
     node: EvalNode,
     metadata: Metadata,
-    /// `Some(name)` when this is the top-level init of `name = ...`, i.e. the
-    /// recursive executor's `StatementKind::Declaration`. Everything else is
-    /// `StatementKind::Expression`.
+    /// `Some(name)` when this is the top-level initializer of `name = ...`.
     decl_name: Option<String>,
     /// Outer annotations of the enclosing declaration; consumed by function
     /// expressions. Empty everywhere else.
@@ -479,8 +343,7 @@ enum Control {
 enum Applied {
     /// An expression's value.
     Value(KclValue),
-    /// A completed block's result: the recursive executor's
-    /// `exec_block` return value (`last_expr`).
+    /// A completed block's trailing value.
     Block(Option<KclValueControlFlow>),
 }
 
@@ -521,12 +384,11 @@ enum InFlight {
     Return,
 }
 
-/// The defunctionalized continuation: one variant per recursion site of the
-/// recursive executor. Every variant holds owned handles (Arcs or values), no
-/// lifetimes.
+/// A pending evaluation step. Each variant holds owned handles (Arcs or
+/// values), without lifetimes.
 #[derive(Debug)]
 enum Kont {
-    /// Statement sequencing: replaces `exec_block`'s `for` loop.
+    /// Statement sequencing within a block.
     BlockSeq {
         block: BlockRef,
         body_type: BodyType,
@@ -571,9 +433,8 @@ enum Kont {
     },
 
     // ---- access / control / pipes ----
-    /// Pre-KCL-3.0 member access order: a computed property is evaluated
-    /// before the object, replicating the recursive executor's historical
-    /// evaluation order.
+    /// Pre-KCL-3.0 member access order: a computed property is evaluated before
+    /// the object, preserving historical evaluation order.
     LegacyMemberPropDone {
         node: Arc<Node<MemberExpression>>,
     },
@@ -682,7 +543,7 @@ struct PatternTransformResume {
     source_range: SourceRange,
     node_path: Option<crate::NodePath>,
     /// The builtin's own (desugared) arguments; the final engine application
-    /// reads its metadata exactly like the recursive executor does.
+    /// reads the metadata from the call site.
     args: Args,
 }
 
@@ -740,8 +601,7 @@ enum BoundaryCompletion {
     CallExpr { fn_meta: Vec<Metadata> },
     /// A callback invoked by a resumable builtin (map/reduce/
     /// patternTransform): the finished result feeds the builtin's resume
-    /// continuation, and -- like the recursive executor's call_kw callers --
-    /// errors get no extra backtrace entry.
+    /// continuation; errors get no extra backtrace entry.
     Callback,
 }
 
@@ -767,19 +627,10 @@ struct SketchBodyState {
     child_env_pushed: bool,
 }
 
-impl ExecutorContext {
-    pub(crate) fn is_machine_executor(&self) -> bool {
-        self.executor_kind == ExecutorKind::Machine
-    }
-}
-
-/// Run a block to completion on the machine. This is the machine's fresh-root
-/// entry, with `exec_block`'s exact contract: the returned value is the
-/// block's `last_expr` (which the module wrapper, call protocol, and sketch
-/// handling consume exactly as they do for the recursive executor). An
-/// `exit()` unwinds to this root and is returned as an `Exit`-flavored
-/// control-flow value. A root block flushes the engine's batched commands on
-/// both completion and exit -- never on error -- matching `exec_block`.
+/// Run a block to completion on a fresh machine root. The returned value is
+/// the block's trailing expression. An `exit()` unwinds to this root and is
+/// returned as control flow. Root blocks flush engine commands on completion
+/// and exit, but leave them queued on error.
 pub(super) async fn run_block(
     ctx: &ExecutorContext,
     block: BlockRef,
@@ -804,8 +655,8 @@ pub(super) async fn run_block(
     let result = run_loop(ctx, control, konts, exec_state).await?;
     // A Return can reach a root block only by escaping an expression
     // evaluated at the top level (e.g. an if-arm); a `return` statement here
-    // is rejected in step_block before it evaluates. Match the recursive
-    // executor: error, skipping the flush.
+    // is rejected in step_block before it evaluates. Report an error and
+    // skip the flush.
     if matches!(body_type, BodyType::Root)
         && let RootResult::Exited(cf) = &result
         && cf.is_return()
@@ -816,12 +667,8 @@ pub(super) async fn run_block(
         )));
     }
     if matches!(body_type, BodyType::Root) {
-        // Flush the batch queue for the root, whether it completed or was
-        // terminated by an exit(): the recursive executor's flush sits after
-        // its statement loop, which its exit `break` still reaches. Errors
-        // skip the flush (the `?` above), also matching. This must run after
-        // unwinding, so that any sketch-block state has been restored, and it
-        // cannot live in step_block, which an exit never re-enters.
+        // Flush after unwinding so sketch-block state has been restored.
+        // Errors return above and skip this flush.
         exec_state
             .flush_batch(
                 ModelingCmdMeta::new(exec_state, ctx, block_range),
@@ -1022,8 +869,7 @@ fn unwind_exit(
             Kont::SketchBody(sb) => {
                 sketch_body_cleanup(*sb, exec_state);
                 // Balance the GroupBegin operation pushed by scene_setup so
-                // the feature tree stays well-formed (matches the recursive
-                // executor's exit path; its error path deliberately skips
+                // the feature tree stays well-formed (the error path skips
                 // this).
                 exec_state.push_op(Operation::GroupEnd);
             }
@@ -1040,8 +886,7 @@ fn unwind_exit(
 /// Unwind every continuation for an error: cleanups on non-boundaries,
 /// `call_finish` with the error on call boundaries (which finalizes the
 /// operation with `is_error = true`), and per-boundary backtrace decoration
-/// via `add_unwind_location`, innermost first -- exactly like errors bubbling
-/// out of the recursive executor's nested calls.
+/// via `add_unwind_location`, innermost first.
 fn unwind_error(mut e: KclError, konts: &mut Vec<Kont>, exec_state: &mut ExecState) -> KclError {
     while let Some(kont) = konts.pop() {
         match kont {
@@ -1050,7 +895,7 @@ fn unwind_error(mut e: KclError, konts: &mut Vec<Kont>, exec_state: &mut ExecSta
                 match b.fn_src.call_finish(b.state, Err(e), exec_state) {
                     Err(finished) => {
                         // Callback boundaries get no backtrace entry, matching
-                        // the recursive executor (call_kw callers do not call
+                        // native callbacks (call_kw callers do not call
                         // add_unwind_location).
                         e = match &b.completion {
                             BoundaryCompletion::CallExpr { .. } => {
@@ -1068,8 +913,7 @@ fn unwind_error(mut e: KclError, konts: &mut Vec<Kont>, exec_state: &mut ExecSta
                 }
             }
             Kont::SketchBody(sb) => {
-                // The recursive executor's error path restores ambient sketch
-                // state and pops both envs but does NOT push the balancing
+                // Restore ambient sketch state and pop both envs without the balancing
                 // GroupEnd (a historical asymmetry with the exit path).
                 sketch_body_cleanup(*sb, exec_state);
             }
@@ -1139,7 +983,7 @@ fn cleanup(kont: Kont, exec_state: &mut ExecState) -> Result<(), KclError> {
 }
 
 /// Restore the ambient state wrapped around a sketch-block body, in the
-/// recursive executor's exact order: pop the body's child environment (if it
+/// required order: pop the body's child environment (if it
 /// was pushed), restore sketch_mode, take the sketch-block state back out,
 /// pop the sketch2 alias environment. Finalization is skipped entirely --
 /// that's the point on unwind paths.
@@ -1152,8 +996,7 @@ fn sketch_body_cleanup(sb: SketchBodyState, exec_state: &mut ExecState) {
     let _ = exec_state.mut_stack().pop_env();
 }
 
-/// One eval step: the recursive executor's `execute_expr` dispatch, pushing a
-/// continuation and descending instead of awaiting recursively. Leaves
+/// Evaluate one node, pushing a continuation for its children. Leaves
 /// produce `Apply` directly (some via flat awaits).
 async fn step_eval(
     req: EvalRequest,
@@ -1361,8 +1204,8 @@ async fn step_eval(
             let inner = EvalRequest {
                 node: EvalNode::Expr(node.expr.clone()),
                 metadata,
-                // The recursive executor forwards its statement_kind to the
-                // labelled inner expression, so `x = label: fn() {}` still
+                // Forward the declaration context to the labelled expression
+                // so `x = label: fn() {}` still
                 // sees the declaration name.
                 decl_name,
                 annotations: Vec::new(),
@@ -1401,8 +1244,7 @@ async fn step_eval(
     }
 }
 
-/// One apply step: hand a finished value to the innermost continuation. The
-/// recursive executor's post-await code for each recursion site.
+/// Hand a finished value to the innermost continuation.
 // Keep each arm's temporaries out of this dispatcher's debug stack frame.
 // In debug builds, async helpers construct their boxes behind non-inlined call
 // boundaries; optimized builds inline the unboxed futures instead.
@@ -1479,8 +1321,7 @@ async fn step_apply(
         }),
         Kont::RangeStartDone { node } => apply_sync(|| {
             let start = applied.expect_value()?;
-            // Match the recursive executor: a bad start is reported before
-            // the end element is ever evaluated.
+            // A bad start is reported before the end element is ever evaluated.
             node.validate_range_start(&start)?;
             let end = EvalRequest::expr(&node.end_element);
             konts.push(Kont::RangeEndDone { node, start });
@@ -1699,9 +1540,9 @@ fn apply_async<F: Future>(make_future: impl FnOnce() -> F) -> impl Future<Output
     debug_boxed_future!(make_future())
 }
 
-/// Route a control-flow value produced by shared (recursive-style) helper code
-/// to the matching machine unwind: a KCL 3.0 `Return` unwinds to the nearest
-/// call boundary, anything else is an `Exit`.
+/// Route a control-flow value produced by a native helper to the matching
+/// machine unwind: a KCL 3.0 `Return` unwinds to the nearest call boundary,
+/// anything else is an `Exit`.
 fn unwind_control(cf: KclValueControlFlow) -> Control {
     if cf.is_return() {
         Control::Return(cf)
@@ -1992,9 +1833,9 @@ fn pipe_advance(
     Ok(Control::Eval(Box::new(req)))
 }
 
-/// Begin a call: resolve the callee (before evaluating arguments, exactly
-/// like the recursive executor), then start evaluating arguments -- or
-/// dispatch immediately for zero-argument calls.
+/// Begin a call: resolve the callee (before evaluating arguments, exactly as
+/// required by KCL), then start evaluating arguments -- or dispatch immediately
+/// for zero-argument calls.
 async fn start_call(
     node: Arc<Node<CallExpressionKw>>,
     konts: &mut Vec<Kont>,
@@ -2764,8 +2605,8 @@ async fn sketch_block_body_setup(
     };
 
     // Load `sketch2::*` into the sketch block's parent scope, so calls like
-    // `line(...)` resolve to sketch2 functions. On failure, unwind exactly
-    // like the recursive executor: restore ambient state and pop the alias
+    // `line(...)` resolve to sketch2 functions. On failure, restore ambient
+    // state and pop the alias
     // env, skipping the body and finalization.
     if let Err(e) = node.load_sketch2_into_current_scope(exec_state, ctx, range).await {
         sketch_body_cleanup(body_state, exec_state);
@@ -2805,7 +2646,7 @@ async fn sketch_body_finish(
     let block_result = applied.expect_block()?;
 
     // Collect the block's variables before popping its env; a failure here
-    // still unwinds ambient state like the recursive executor.
+    // still unwinds ambient state.
     let variables = match exec_state.stack().find_all_in_current_env() {
         Ok(block_variables) => block_variables.into_iter().collect::<IndexMap<_, _>>(),
         Err(e) => {
@@ -2864,103 +2705,11 @@ async fn sketch_body_finish(
 #[cfg(test)]
 mod tests {
 
-    #[test]
-    fn executor_kind_from_env_value_parses_explicit_selections() {
-        assert_eq!(ExecutorKind::parse_env_var("machine"), ExecutorKind::Machine);
-        assert_eq!(ExecutorKind::parse_env_var("recursive"), ExecutorKind::Recursive);
-        assert_eq!(ExecutorKind::parse_env_var(" Machine\t"), ExecutorKind::Machine);
-        assert_eq!(ExecutorKind::parse_env_var("RECURSIVE"), ExecutorKind::Recursive);
-    }
-
-    #[test]
-    fn executor_kind_from_env_value_defaults_when_empty() {
-        assert_eq!(ExecutorKind::parse_env_var(""), ExecutorKind::resolve_default());
-        assert_eq!(ExecutorKind::parse_env_var(" \t "), ExecutorKind::resolve_default());
-    }
-
-    #[test]
-    fn executor_kind_from_env_value_defaults_when_unknown_value() {
-        assert_eq!(ExecutorKind::parse_env_var("machin"), ExecutorKind::resolve_default());
-    }
-
-    fn set_runtime_executor_flag(flag: RuntimeFlag) {
-        crate::set_kcl_runtime_flags(KclRuntimeFlags {
-            use_cek_executor: flag,
-            ..Default::default()
-        });
-    }
-
-    fn reset_runtime_executor_flags() {
-        crate::set_kcl_runtime_flags(KclRuntimeFlags::DEFAULT);
-    }
-
-    /// Flags are process-global; setting them is race-free under nextest's
-    /// process-per-test isolation.
-    #[test]
-    fn runtime_flag_on_selects_machine_executor() {
-        set_runtime_executor_flag(RuntimeFlag::On);
-        assert_eq!(ExecutorKind::resolve(), ExecutorKind::Machine);
-        reset_runtime_executor_flags();
-    }
-
-    /// Must hold even on the CI machine leg (`KCL_EXECUTOR=machine`): the
-    /// runtime flag outranks the env var.
-    #[test]
-    fn runtime_flag_off_selects_recursive_executor() {
-        set_runtime_executor_flag(RuntimeFlag::Off);
-        assert_eq!(ExecutorKind::resolve(), ExecutorKind::Recursive);
-        reset_runtime_executor_flags();
-    }
-
-    #[test]
-    fn runtime_flag_takes_priority_over_env() {
-        assert_eq!(
-            resolve_from_sources::<ExecutorKind>(RuntimeFlag::Off, None, Some("machine")),
-            ExecutorKind::Recursive
-        );
-        assert_eq!(
-            resolve_from_sources::<ExecutorKind>(RuntimeFlag::On, None, Some("recursive")),
-            ExecutorKind::Machine
-        );
-    }
-
-    #[test]
-    fn unset_runtime_flag_allows_env_to_select_executor() {
-        assert_eq!(
-            resolve_from_sources::<ExecutorKind>(RuntimeFlag::Unset, None, Some("machine")),
-            ExecutorKind::Machine
-        );
-        assert_eq!(
-            resolve_from_sources::<ExecutorKind>(RuntimeFlag::Unset, None, Some("recursive")),
-            ExecutorKind::Recursive
-        );
-    }
-
-    #[test]
-    fn unset_runtime_flag_and_missing_env_selects_default_executor() {
-        assert_eq!(
-            resolve_from_sources::<ExecutorKind>(RuntimeFlag::Unset, None, None),
-            ExecutorKind::Machine
-        );
-    }
-
-    /// The ZDS feature flag controls exactly this: a context built through a
-    /// public constructor picks up the flag as its kind.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn runtime_flag_on_threads_machine_kind_into_mock_context() {
-        set_runtime_executor_flag(RuntimeFlag::On);
-        let ctx = ExecutorContext::new_mock(None).await;
-        assert_eq!(ctx.executor_kind, ExecutorKind::Machine);
-        reset_runtime_executor_flags();
-    }
-
     use super::*;
-    use crate::KclRuntimeFlags;
-    use crate::RuntimeFlag;
-    use crate::execution::parse_execute_with_executor_kind;
+    use crate::execution::parse_execute;
 
     async fn run_machine(code: &str) -> Result<crate::execution::ExecTestResults, KclError> {
-        parse_execute_with_executor_kind(code, None, ExecutorKind::Machine).await
+        parse_execute(code).await
     }
 
     /// A program whose trailing modeling commands are still sitting in the
@@ -2974,20 +2723,17 @@ mod tests {
 "#;
 
     /// Execute a program's root block directly through exec_block -- the
-    /// boundary whose flush behavior the two executors must agree on. This
-    /// deliberately bypasses run(): its end-of-run sweep
-    /// (ensure_async_commands_completed) flushes whatever the root left
-    /// queued and clear_queues() then empties the rest, masking exactly the
-    /// difference under test. Returns the block result, whether the batch
-    /// queue is empty afterwards, and how many batches were sent. Counts and
-    /// emptiness rather than command sequences: imported modules execute
-    /// concurrently, so command order is nondeterministic in general.
-    async fn exec_root_block(
-        kind: ExecutorKind,
-        code: &str,
-    ) -> (Result<Option<KclValueControlFlow>, KclError>, bool, usize) {
+    /// boundary responsible for flushing queued commands. This deliberately
+    /// bypasses run(): its end-of-run sweep (ensure_async_commands_completed)
+    /// flushes whatever the root left queued and clear_queues() then empties
+    /// the rest, masking exactly the difference under test. Returns the block
+    /// result, whether the batch queue is empty afterwards, and how many
+    /// batches were sent. Counts and emptiness rather than command sequences:
+    /// imported modules execute concurrently, so command order is
+    /// nondeterministic in general.
+    async fn exec_root_block(code: &str) -> (Result<Option<KclValueControlFlow>, KclError>, bool, usize) {
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let ctx = crate::execution::new_mock_executor_context(None, kind);
+        let ctx = crate::execution::new_mock_executor_context(None);
         let mut exec_state = crate::execution::ExecState::new(&ctx);
         ctx.eval_prelude(&mut exec_state, SourceRange::synthetic())
             .await
@@ -3008,31 +2754,21 @@ mod tests {
     }
 
     /// exit() terminating the program must flush queued modeling commands to
-    /// the engine exactly like running to completion does. (The recursive
-    /// executor's root flush sits after its statement loop, which the exit's
-    /// `break` still reaches; the machine must match.)
+    /// the engine exactly like running to completion does.
     #[tokio::test(flavor = "multi_thread")]
     async fn exit_at_root_flushes_queued_commands() {
         let completed = format!("@settings(experimentalFeatures = allow)\n{QUEUED_TAIL}");
         let exited = format!("@settings(experimentalFeatures = allow)\n{QUEUED_TAIL}exit()\n");
-        let mut counts = Vec::new();
-        for kind in [ExecutorKind::Recursive, ExecutorKind::Machine] {
-            let (result, queue_empty, n_completed) = exec_root_block(kind, &completed).await;
-            assert!(result.is_ok(), "{kind:?}: {result:?}");
-            assert!(queue_empty, "{kind:?}: completing the root must flush the batch queue");
-            assert!(n_completed >= 1, "{kind:?}: expected at least one batch sent");
+        let (result, queue_empty, n_completed) = exec_root_block(&completed).await;
+        assert!(result.is_ok(), "{result:?}");
+        assert!(queue_empty, "completing the root must flush the batch queue");
+        assert!(n_completed >= 1, "expected at least one batch sent");
 
-            let (result, queue_empty, n_exited) = exec_root_block(kind, &exited).await;
-            let cf = result.unwrap().unwrap();
-            assert!(cf.is_some_return(), "{kind:?}: expected an exit control-flow value");
-            assert!(queue_empty, "{kind:?}: exit() must flush the batch queue");
-            assert_eq!(
-                n_exited, n_completed,
-                "{kind:?}: exit() must flush exactly like completion"
-            );
-            counts.push((n_completed, n_exited));
-        }
-        assert_eq!(counts[0], counts[1], "executors disagree on batches sent");
+        let (result, queue_empty, n_exited) = exec_root_block(&exited).await;
+        let cf = result.unwrap().unwrap();
+        assert!(cf.is_some_return(), "expected an exit control-flow value");
+        assert!(queue_empty, "exit() must flush the batch queue");
+        assert_eq!(n_exited, n_completed, "exit() must flush exactly like completion");
     }
 
     /// exit() from inside a function unwinds every call boundary and must
@@ -3042,27 +2778,19 @@ mod tests {
         let fn_def = "@settings(experimentalFeatures = allow)\nfn quit() {\n  exit()\n  return 0\n}\n";
         let completed = format!("{fn_def}{QUEUED_TAIL}");
         let exited = format!("{fn_def}{QUEUED_TAIL}quit()\n");
-        let mut counts = Vec::new();
-        for kind in [ExecutorKind::Recursive, ExecutorKind::Machine] {
-            let (result, queue_empty, n_completed) = exec_root_block(kind, &completed).await;
-            assert!(result.is_ok(), "{kind:?}: {result:?}");
-            assert!(queue_empty, "{kind:?}: completing the root must flush the batch queue");
-            assert!(n_completed >= 1, "{kind:?}: expected at least one batch sent");
+        let (result, queue_empty, n_completed) = exec_root_block(&completed).await;
+        assert!(result.is_ok(), "{result:?}");
+        assert!(queue_empty, "completing the root must flush the batch queue");
+        assert!(n_completed >= 1, "expected at least one batch sent");
 
-            let (result, queue_empty, n_exited) = exec_root_block(kind, &exited).await;
-            let cf = result.unwrap().unwrap();
-            assert!(cf.is_some_return(), "{kind:?}: expected an exit control-flow value");
-            assert!(
-                queue_empty,
-                "{kind:?}: exit() from a function must flush the batch queue"
-            );
-            assert_eq!(
-                n_exited, n_completed,
-                "{kind:?}: exit() from a function must flush exactly like completion"
-            );
-            counts.push((n_completed, n_exited));
-        }
-        assert_eq!(counts[0], counts[1], "executors disagree on batches sent");
+        let (result, queue_empty, n_exited) = exec_root_block(&exited).await;
+        let cf = result.unwrap().unwrap();
+        assert!(cf.is_some_return(), "expected an exit control-flow value");
+        assert!(queue_empty, "exit() from a function must flush the batch queue");
+        assert_eq!(
+            n_exited, n_completed,
+            "exit() from a function must flush exactly like completion"
+        );
     }
 
     /// A fatal error must NOT flush the root: queued commands are left in
@@ -3071,30 +2799,20 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn error_does_not_flush_queued_commands() {
         let errored = format!("{QUEUED_TAIL}assert(1, isEqualTo = 2)\n");
-        let mut counts = Vec::new();
-        for kind in [ExecutorKind::Recursive, ExecutorKind::Machine] {
-            let (result, queue_empty, n_completed) = exec_root_block(kind, QUEUED_TAIL).await;
-            assert!(result.is_ok(), "{kind:?}: {result:?}");
-            assert!(queue_empty, "{kind:?}: completing the root must flush the batch queue");
-            assert!(n_completed >= 1, "{kind:?}: expected at least one batch sent");
+        let (result, queue_empty, n_completed) = exec_root_block(QUEUED_TAIL).await;
+        assert!(result.is_ok(), "{result:?}");
+        assert!(queue_empty, "completing the root must flush the batch queue");
+        assert!(n_completed >= 1, "expected at least one batch sent");
 
-            let (result, queue_empty, n_errored) = exec_root_block(kind, &errored).await;
-            assert!(result.is_err(), "{kind:?}: expected an error");
-            assert!(!queue_empty, "{kind:?}: an error must leave queued commands unflushed");
-            assert_eq!(
-                n_errored,
-                n_completed - 1,
-                "{kind:?}: an error must skip exactly the final flush"
-            );
-            counts.push((n_completed, n_errored));
-        }
-        assert_eq!(counts[0], counts[1], "executors disagree on batches sent");
+        let (result, queue_empty, n_errored) = exec_root_block(&errored).await;
+        assert!(result.is_err(), "expected an error");
+        assert!(!queue_empty, "an error must leave queued commands unflushed");
+        assert_eq!(n_errored, n_completed - 1, "an error must skip exactly the final flush");
     }
 
-    /// The machine's whole point: recursion depth well past the recursive
-    /// executor's native-stack cap runs fine on the heap.
+    /// Deep KCL recursion runs on the heap without overflowing the native stack.
     #[tokio::test(flavor = "multi_thread")]
-    async fn deep_recursion_well_past_recursive_cap() {
+    async fn deep_recursion_uses_heap_stack() {
         let code = r#"fn countdown(@n) {
   return if n == 0 {
     0
@@ -3130,27 +2848,6 @@ forever(1)
         assert!(err.to_string().contains("Call depth limit"), "actual: {err:?}");
     }
 
-    /// Compare wall time of the two executors on a large, engine-free
-    /// workload (mock engine). Not a gate: the machine merges regardless of
-    /// speed; a <=10% overhead gates the default flip later. Run manually:
-    /// cargo nextest run -p kcl-lib --run-ignored all -E 'test(perf_compare_executors)' --no-capture
-    #[tokio::test(flavor = "multi_thread")]
-    #[ignore = "manual perf measurement, prints timings"]
-    async fn perf_compare_executors() {
-        let code = include_str!("../../tests/mike_stress_test/input.kcl");
-        const RUNS: usize = 5;
-        for kind in [ExecutorKind::Recursive, ExecutorKind::Machine] {
-            // Warm up once.
-            parse_execute_with_executor_kind(code, None, kind).await.unwrap();
-            let start = std::time::Instant::now();
-            for _ in 0..RUNS {
-                parse_execute_with_executor_kind(code, None, kind).await.unwrap();
-            }
-            let avg = start.elapsed() / RUNS as u32;
-            println!("{kind:?}: {avg:?} per run over {RUNS} runs");
-        }
-    }
-
     /// The design must hold at a much higher call depth with the limit raised
     /// internally (the production default stays at
     /// DEFAULT_MACHINE_CALL_DEPTH_LIMIT): depth is heap-bounded, so the limit
@@ -3169,12 +2866,12 @@ result = countdown(9000)
         let program = crate::Program::parse_no_errs(code).unwrap();
         let exec_ctxt = ExecutorContext {
             engine: std::sync::Arc::new(crate::engine::engine_manager::EngineManager::new_mock()),
+            cache: crate::Cache::default(),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: crate::execution::ExecutorSettings::default(),
             context_type: crate::execution::ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: ExecutorKind::Machine,
             machine_call_depth_limit: 10_000,
             configure_engine_render: true,
         };

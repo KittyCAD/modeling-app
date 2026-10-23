@@ -9,18 +9,7 @@ test.describe('Electron app header tests', { tag: '@desktop' }, () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     // No space before the shortcut since it checks textContent.
-    let text
-    switch (process.platform) {
-      case 'darwin':
-        text = 'Commands⌘K'
-        break
-      case 'win32':
-        text = 'CommandsCtrl+K'
-        break
-      default: // 'linux' etc.
-        text = 'CommandsCtrl+K'
-        break
-    }
+    const text = process.platform === 'darwin' ? 'Commands⌘K' : 'CommandsCtrl+K'
     const commandsButton = page.getByRole('button', { name: 'Commands' })
     await expect(commandsButton).toBeVisible()
     await expect(commandsButton).toHaveText(text)

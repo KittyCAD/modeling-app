@@ -14,7 +14,6 @@ import { resolveVertexPosition } from '@src/lib/vertexPicking'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 
-import type { EntityReference as SdkEntityReference } from '@kittycad/lib'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -37,6 +36,7 @@ import {
   createMemberExpression,
   nonCodeMetaEmpty,
 } from '@src/lang/create'
+import { programTextEqual } from '@src/lang/programTextEqual'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   findAllChildrenAndOrderByPlaceInCode,
@@ -51,7 +51,13 @@ import {
   isEnginePrimitiveSelection,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
-import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
+import {
+  artifactToEntityRef,
+  entityReferenceKey,
+  getEntityRefId,
+  resolveToCodeRef,
+  selectionV2Equals,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type {
@@ -101,6 +107,10 @@ import {
 import { defaultPlaneNameToKcl } from '@src/lib/planes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  getEngineTopologyFallbackNormalized,
+} from '@src/lib/primitiveBodySelection'
 import { err, isErr } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
@@ -123,6 +133,7 @@ import type {
 import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import type {
   EngineTopologyFallback,
+  NonCodeSelection,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
@@ -131,6 +142,17 @@ import toast from 'react-hot-toast'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
+
+export function isSelections(value: unknown): value is Selections {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'graphSelections' in value &&
+    isArray(value.graphSelections) &&
+    'otherSelections' in value &&
+    isArray(value.otherSelections)
+  )
+}
 
 type NormalizableEdgeReference = Partial<
   Extract<EntityReference, { type: 'edge' }>
@@ -316,46 +338,49 @@ async function getSketchIdForEngineRegionEntity(
   return sketch?.id ?? null
 }
 
-export async function getEngineRegionSelectionFromEntity(
+export async function getEngineRegionSelectionFromPoint(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   engineCommandManager: ConnectionManager,
-  wasmInstance: ModuleType,
-  useSegmentsBasedRegions = false
+  wasmInstance: ModuleType
 ): Promise<EngineRegionSelection | null> {
-  if (!useSegmentsBasedRegions) {
-    const queryPointMm = await getRegionQueryPointForRegion(
-      regionEntityId,
-      engineCommandManager
-    )
-    if (!queryPointMm) return null
-    const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
-    const settings = getSettingsAnnotation(ast, wasmInstance)
-    const lengthUnit =
-      !isErr(settings) && settings.defaultLengthUnit
-        ? settings.defaultLengthUnit
-        : DEFAULT_DEFAULT_LENGTH_UNIT
-    const point: Point2d = {
-      x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
-      y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
-    }
-
-    const sketchId = await getSketchIdForEngineRegionEntity(
-      regionEntityId,
-      artifactGraph,
-      engineCommandManager
-    )
-    if (!sketchId) return null
-
-    return {
-      type: 'engineRegion',
-      id: regionEntityId,
-      point,
-      sketchId,
-    }
+  const queryPointMm = await getRegionQueryPointForRegion(
+    regionEntityId,
+    engineCommandManager
+  )
+  if (!queryPointMm) return null
+  const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
+  const settings = getSettingsAnnotation(ast, wasmInstance)
+  const lengthUnit =
+    !isErr(settings) && settings.defaultLengthUnit
+      ? settings.defaultLengthUnit
+      : DEFAULT_DEFAULT_LENGTH_UNIT
+  const point: Point2d = {
+    x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
+    y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
   }
 
+  const sketchId = await getSketchIdForEngineRegionEntity(
+    regionEntityId,
+    artifactGraph,
+    engineCommandManager
+  )
+  if (!sketchId) return null
+
+  return {
+    type: 'engineRegion',
+    id: regionEntityId,
+    point,
+    sketchId,
+  }
+}
+
+async function getEngineRegionSelectionFromSegments(
+  regionEntityId: string,
+  artifactGraph: ArtifactGraph,
+  engineCommandManager: ConnectionManager
+): Promise<EngineRegionSelection | null> {
   const regionInfo = await getResolvableIntersectionInfoForRegion(
     regionEntityId,
     engineCommandManager
@@ -492,84 +517,6 @@ function recastExpr(expr: Expr, wasmInstance: ModuleType) {
   return err(code) ? null : code.trim()
 }
 
-export function getBodySelectionFromPrimitiveParentEntityId(
-  parentEntityId: string,
-  artifactGraph: ArtifactGraph,
-  {
-    bodyArtifactTypes = ['sweep', 'compositeSolid'],
-    codeRefLookup = 'last',
-    lookUpPatternCopies = false,
-  }: {
-    bodyArtifactTypes?: Artifact['type'][]
-    codeRefLookup?: 'first' | 'last'
-    lookUpPatternCopies?: boolean
-  } = {}
-): Selection | null {
-  const parentArtifact =
-    artifactGraph.get(parentEntityId) ??
-    (lookUpPatternCopies
-      ? getPatternArtifactForCopyId(parentEntityId, artifactGraph)
-      : undefined)
-  if (!parentArtifact) {
-    return null
-  }
-
-  if (
-    bodyArtifactTypes.includes(parentArtifact.type) &&
-    'codeRef' in parentArtifact
-  ) {
-    return {
-      artifact: parentArtifact,
-      codeRef: parentArtifact.codeRef,
-      engineEntityId:
-        parentArtifact.id === parentEntityId ? undefined : parentEntityId,
-    }
-  }
-
-  if (parentArtifact.type === 'path' && parentArtifact.sweepId) {
-    const parentSweep = getArtifactOfTypes(
-      { key: parentArtifact.sweepId, types: ['sweep'] },
-      artifactGraph
-    )
-    if (!err(parentSweep)) {
-      return {
-        artifact: parentSweep as Artifact,
-        codeRef: parentSweep.codeRef,
-      }
-    }
-  }
-
-  if (
-    parentArtifact.type === 'cap' ||
-    parentArtifact.type === 'wall' ||
-    parentArtifact.type === 'edgeCut'
-  ) {
-    const parentSweep = getSweepFromSuspectedSweepSurface(
-      parentArtifact.id,
-      artifactGraph
-    )
-    if (!err(parentSweep)) {
-      return {
-        artifact: parentSweep as Artifact,
-        codeRef: parentSweep.codeRef,
-      }
-    }
-  }
-
-  const parentCodeRefs = getCodeRefsByArtifactId(parentEntityId, artifactGraph)
-  if (!parentCodeRefs || parentCodeRefs.length === 0) {
-    return null
-  }
-
-  return {
-    artifact: parentArtifact,
-    codeRef:
-      codeRefLookup === 'first'
-        ? parentCodeRefs[0]
-        : parentCodeRefs[parentCodeRefs.length - 1],
-  }
-}
-
 type SelectionExpressionBuilderContext = {
   primitiveSelection: ReferenceablePrimitiveSelection
   artifactGraph: ArtifactGraph
@@ -585,16 +532,61 @@ type SelectionExpressionValidationContext =
   }
 
 type SelectionExpressionApproach = {
-  create: (context: SelectionExpressionBuilderContext) => Expr | null
+  create: (
+    context: SelectionExpressionBuilderContext
+  ) => Expr | null | Promise<Expr | null>
   validate: (context: SelectionExpressionValidationContext) => Promise<boolean>
 }
 
-function createFaceApiReferenceExpr() {
-  return null
+/**
+ * Face API edge snippets are copied as-is. Accept one only when every face is
+ * already expressible, so copying does not depend on tags that are not in the
+ * file. When a face would need a new tag, or an end face would be dropped,
+ * this returns null and the primitive index fallback (`edgeId`) is used instead.
+ */
+async function createFaceApiReferenceExpr({
+  primitiveSelection,
+  artifactGraph,
+  kclManager,
+  wasmInstance,
+}: SelectionExpressionBuilderContext): Promise<Expr | null> {
+  const entityRef = primitiveSelection.graphSelection?.entityRef
+  if (entityRef?.type !== 'edge' || entityRef.side_faces.length === 0) {
+    return null
+  }
+
+  // Loaded on demand so unit tests that import this module do not pull in
+  // edges.ts, which depends on generated KCL command bindings.
+  const { createEdgeRefObjectExpression, entityReferenceToEdgeRefPayload } =
+    await import('@src/lang/modifyAst/edges')
+
+  let result: ReturnType<typeof createEdgeRefObjectExpression>
+  try {
+    result = createEdgeRefObjectExpression(
+      entityReferenceToEdgeRefPayload(entityRef),
+      wasmInstance,
+      kclManager.ast,
+      artifactGraph,
+      undefined,
+      primitiveSelection.graphSelection?.codeRef,
+      undefined,
+      undefined,
+      { requireEveryFace: true }
+    )
+  } catch {
+    return null
+  }
+  if (isErr(result)) {
+    return null
+  }
+
+  return result.expr
 }
 
-async function validateFaceApiReferenceExpr() {
-  return false
+async function validateFaceApiReferenceExpr({
+  code,
+}: SelectionExpressionValidationContext) {
+  return code.length > 0
 }
 
 function getTaggableEdgeArtifact(
@@ -764,6 +756,57 @@ function getDirectTagExprFromSourceSurface({
     : null
 }
 
+function createExistingFaceReferenceExpr(
+  context: SelectionExpressionBuilderContext
+): Expr | null {
+  const { primitiveSelection, artifactGraph, kclManager, wasmInstance } =
+    context
+  if (primitiveSelection.primitiveType !== 'face') {
+    return null
+  }
+
+  const graphSelection = primitiveSelection.graphSelection
+  const artifact = graphSelection?.artifact
+  if (
+    !artifact ||
+    (artifact.type !== 'wall' &&
+      artifact.type !== 'cap' &&
+      artifact.type !== 'edgeCut') ||
+    !graphSelection.codeRef
+  ) {
+    return null
+  }
+
+  const astClone = structuredClone(kclManager.ast)
+  let result: ReturnType<typeof modifyAstWithTagsForSelection>
+  try {
+    result = modifyAstWithTagsForSelection(
+      astClone,
+      {
+        artifact,
+        codeRef: graphSelection.codeRef,
+      },
+      artifactGraph,
+      wasmInstance
+    )
+  } catch {
+    return null
+  }
+  if (isErr(result) || result.exprs.length === 0) {
+    return null
+  }
+  if (!programTextEqual(kclManager.ast, result.modifiedAst, wasmInstance)) {
+    return null
+  }
+  if (result.exprs.length !== 1) {
+    // modifyAstWithTagsForSelection can return multiple expressions since edges are made up of multiple tags
+    // but because we've already narrowed this down to a face we're only expecting 1
+    return null
+  }
+
+  return result.exprs[0]
+}
+
 function createDirectTaggedFaceReferenceExpr(
   context: SelectionExpressionBuilderContext
 ): Expr | null {
@@ -904,6 +947,7 @@ function createTagReferenceExpr(
   context: SelectionExpressionBuilderContext
 ): Expr | null {
   return (
+    createExistingFaceReferenceExpr(context) ??
     createDirectTaggedFaceReferenceExpr(context) ??
     createDirectTaggedEdgeReferenceExpr(context) ??
     createAdjacentOrOppositeEdgeReferenceExpr(context)
@@ -984,7 +1028,7 @@ async function createPrimitiveReferenceCode(
   context: SelectionExpressionBuilderContext
 ): Promise<string | null> {
   for (const approach of selectionExpressionApproaches) {
-    const expr = approach.create(context)
+    const expr = await approach.create(context)
     if (!expr) {
       continue
     }
@@ -1051,6 +1095,51 @@ function createExpressionReferences({
   })
 }
 
+function selectionIndexKeys(selection: Selection): string[] {
+  const keys = new Set<string>()
+  if (selection.artifact?.id) {
+    keys.add(selection.artifact.id)
+  }
+  if (selection.engineEntityId) {
+    keys.add(selection.engineEntityId)
+  }
+  const entityRef = selection.entityRef
+  if (entityRef && entityRef.type !== 'edge' && entityRef.type !== 'vertex') {
+    const entityId = getEntityRefId(entityRef)
+    if (entityId) {
+      keys.add(entityId)
+    }
+  }
+  return [...keys]
+}
+
+function edgeEntityRefKey(
+  entityRef: Extract<EntityReference, { type: 'edge' }>
+): string {
+  return entityReferenceKey(entityRef) ?? ''
+}
+
+function primitiveSelectionForEntityRef({
+  selection,
+  primitiveType,
+  entityId,
+  graphSelection,
+}: {
+  selection: Selection
+  primitiveType: 'face' | 'edge'
+  entityId: string
+  graphSelection: Selection
+}): ReferenceablePrimitiveSelection {
+  return {
+    type: 'enginePrimitive',
+    entityId,
+    parentEntityId: selection.engineTopologyFallback?.parentId,
+    primitiveIndex: selection.engineTopologyFallback?.primitiveIndex ?? 0,
+    primitiveType,
+    graphSelection,
+  }
+}
+
 export async function getSelectionReferences({
   graphSelections,
   defaultPlaneSelections,
@@ -1081,13 +1170,100 @@ export async function getSelectionReferences({
   )
   const primitiveSelections: ReferenceablePrimitiveSelection[] = []
   const graphSelectionByEntityId = new Map<string, Selection>(
-    graphSelections.flatMap((selection): [string, Selection][] => {
-      const entityId = selection.artifact?.id || selection.engineEntityId
-      return entityId ? [[entityId, selection]] : []
-    })
+    graphSelections.flatMap((selection): [string, Selection][] =>
+      selectionIndexKeys(selection).map((entityId) => [entityId, selection])
+    )
   )
 
+  const queueEntityRefSelection = (selection: Selection): boolean => {
+    const entityRef = selection.entityRef
+    // Viewport and feature-tree offset planes both carry a plane entityRef.
+    // Feature-tree rows also have an artifact, so this runs before that skip.
+    // Default XY/XZ/YZ stay on defaultPlaneSelections.
+    if (entityRef?.type === 'plane') {
+      references.push(
+        ...createExpressionReferences({
+          label: 'Plane',
+          selection,
+          artifactGraph,
+          kclManager,
+          wasmInstance,
+        })
+      )
+      return true
+    }
+
+    // Artifact-bearing rows (pattern copies, feature-tree picks) keep the
+    // existing path. Point-and-click rows are entityRef only.
+    if (!entityRef || selection.artifact) {
+      return false
+    }
+
+    if (entityRef.type === 'solid3d' || entityRef.type === 'helix') {
+      references.push(
+        ...createExpressionReferences({
+          label: entityRef.type === 'helix' ? 'Helix' : 'Body',
+          selection,
+          artifactGraph,
+          kclManager,
+          wasmInstance,
+          options: {
+            lastChildLookup: true,
+            artifactTypeFilter: BODY_REFERENCE_ARTIFACT_TYPES,
+          },
+        })
+      )
+      return true
+    }
+
+    if (entityRef.type === 'segment' || entityRef.type === 'solid2d_edge') {
+      references.push(
+        ...createExpressionReferences({
+          label: 'Segment',
+          selection,
+          artifactGraph,
+          kclManager,
+          wasmInstance,
+        })
+      )
+      return true
+    }
+
+    if (entityRef.type === 'face') {
+      const faceArtifact = artifactGraph.get(entityRef.face_id)
+      primitiveSelections.push(
+        primitiveSelectionForEntityRef({
+          selection,
+          primitiveType: 'face',
+          entityId: entityRef.face_id,
+          graphSelection: faceArtifact
+            ? { ...selection, artifact: faceArtifact }
+            : selection,
+        })
+      )
+      return true
+    }
+
+    if (entityRef.type === 'edge') {
+      primitiveSelections.push(
+        primitiveSelectionForEntityRef({
+          selection,
+          primitiveType: 'edge',
+          entityId: edgeEntityRefKey(entityRef),
+          graphSelection: selection,
+        })
+      )
+      return true
+    }
+
+    return false
+  }
+
   for (const selection of graphSelections) {
+    if (queueEntityRefSelection(selection)) {
+      continue
+    }
+
     if (isBodyReferenceArtifact(selection.artifact)) {
       references.push(
         ...createExpressionReferences({
@@ -1119,6 +1295,28 @@ export async function getSelectionReferences({
     }
 
     if (!isPrimitiveReferenceArtifact(selection.artifact)) {
+      const artifact = resolveToCodeRef(selection, artifactGraph)?.artifact
+      const label =
+        artifact?.type === 'sketchBlock'
+          ? 'Sketch'
+          : artifact?.type === 'solid2d'
+            ? 'Profile'
+            : artifact?.type === 'path'
+              ? artifact.subType === 'region'
+                ? 'Region'
+                : 'Profile'
+              : undefined
+      if (label) {
+        references.push(
+          ...createExpressionReferences({
+            label,
+            selection,
+            artifactGraph,
+            kclManager,
+            wasmInstance,
+          })
+        )
+      }
       continue
     }
 
@@ -1219,6 +1417,10 @@ function isSameCodeRange(left: Selection, right: Selection) {
 }
 
 function isSameGraphSelection(left: Selection, right: Selection) {
+  if (left.entityRef && right.entityRef) {
+    return selectionV2Equals(left, right)
+  }
+
   if (left.artifact?.id && right.artifact?.id) {
     return left.artifact.id === right.artifact.id
   }
@@ -1263,47 +1465,57 @@ export function removeEnginePrimitiveSelectionFromSelections(
   }
 }
 
+export function selectionMatchesReference(
+  selection: Selection | NonCodeSelection,
+  reference: SelectionReference
+): boolean {
+  if (typeof selection === 'string') return false
+
+  if ('name' in selection) {
+    return Boolean(
+      reference.defaultPlaneSelection &&
+        isSameDefaultPlaneSelection(selection, reference.defaultPlaneSelection)
+    )
+  }
+
+  if ('type' in selection) {
+    return Boolean(
+      reference.enginePrimitiveSelection &&
+        isEnginePrimitiveSelection(selection) &&
+        isSameEnginePrimitiveSelection(
+          selection,
+          reference.enginePrimitiveSelection
+        )
+    )
+  }
+
+  return Boolean(
+    reference.graphSelection &&
+      isSameGraphSelection(selection, reference.graphSelection)
+  )
+}
+
 export function removeReferenceFromSelections(
   selections: Selections,
   reference: SelectionReference
 ): Selections {
-  const graphSelectionToRemove = reference.graphSelection
-  const defaultPlaneSelectionToRemove = reference.defaultPlaneSelection
-  const enginePrimitiveSelectionToRemove = reference.enginePrimitiveSelection
-
   return {
-    graphSelections: graphSelectionToRemove
+    graphSelections: reference.graphSelection
       ? selections.graphSelections.filter(
-          (selection) =>
-            !isSameGraphSelection(selection, graphSelectionToRemove)
+          (selection) => !selectionMatchesReference(selection, reference)
         )
       : selections.graphSelections,
-    otherSelections: selections.otherSelections.filter((selection) => {
-      if (
-        defaultPlaneSelectionToRemove &&
-        isDefaultPlaneSelection(selection) &&
-        isSameDefaultPlaneSelection(selection, defaultPlaneSelectionToRemove)
-      ) {
-        return false
-      }
-
-      if (
-        enginePrimitiveSelectionToRemove &&
-        isEnginePrimitiveSelection(selection) &&
-        isSameEnginePrimitiveSelection(
-          selection,
-          enginePrimitiveSelectionToRemove
-        )
-      ) {
-        return false
-      }
-
-      return true
-    }),
+    otherSelections: selections.otherSelections.filter(
+      (selection) => !selectionMatchesReference(selection, reference)
+    ),
   }
 }
 
 export { isEnginePrimitiveSelection }
+export {
+  getBodySelectionFromPrimitiveParentEntityId,
+  getEngineTopologyFallbackNormalized,
+} from '@src/lib/primitiveBodySelection'
 
 export function isEngineRegionSelection(
   selection: Selections['otherSelections'][number]
@@ -1425,34 +1637,6 @@ export function engineTopologyFallbackFromReference(
   return { parentId, primitiveIndex }
 }
 
-/** Normalize topology_fallback whether it came from TS (camelCase) or engine JSON (snake_case). */
-export function getEngineTopologyFallbackNormalized(v2: Selection): {
-  parentId: string
-  primitiveIndex: number
-} | null {
-  const raw =
-    v2.engineTopologyFallback ??
-    (v2 as { engine_topology_fallback?: unknown }).engine_topology_fallback
-  if (!raw || typeof raw !== 'object') return null
-  const o = raw as Record<string, unknown>
-  const parentId =
-    typeof o.parentId === 'string'
-      ? o.parentId
-      : typeof o.parent_id === 'string'
-        ? o.parent_id
-        : ''
-  let primitiveIndex = NaN
-  if (typeof o.primitiveIndex === 'number') primitiveIndex = o.primitiveIndex
-  else if (typeof o.primitiveIndex === 'string')
-    primitiveIndex = parseInt(String(o.primitiveIndex), 10)
-  else if (typeof o.primitive_index === 'number')
-    primitiveIndex = o.primitive_index
-  else if (typeof o.primitive_index === 'string')
-    primitiveIndex = parseInt(String(o.primitive_index), 10)
-  if (!parentId || !Number.isFinite(primitiveIndex)) return null
-  return { parentId, primitiveIndex }
-}
-
 /**
  * Match command-bar vs live graph rows when merging topology (index alone can pair incorrectly).
  */
@@ -1566,13 +1750,11 @@ export async function getEventForQueryEntityTypeWithPoint(
     kclManager,
     rustContext,
     wasmInstance,
-    useSegmentsBasedRegions,
   }: {
     engineCommandManager: ConnectionManager
     kclManager: KclManager
     rustContext: RustContext
     wasmInstance: ModuleType
-    useSegmentsBasedRegions: boolean
   }
 ): Promise<ModelingMachineEvent | null> {
   // Engine may return reference under data (e.g. { type, data: { reference } }) or at top level (e.g. { type, reference })
@@ -1835,14 +2017,12 @@ export async function getEventForQueryEntityTypeWithPoint(
   const skipRegionSelectionForTopologyEdge =
     entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
 
+  // Try segment references first, then the point fallback below.
   if (entityRef.type === 'region') {
-    const regionSelection = await getEngineRegionSelectionFromEntity(
+    const regionSelection = await getEngineRegionSelectionFromSegments(
       entityRef.region_id,
       artifactGraph,
-      ast,
-      engineCommandManager,
-      wasmInstance,
-      useSegmentsBasedRegions
+      engineCommandManager
     )
     if (regionSelection) {
       return {
@@ -1855,13 +2035,16 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
+  // The engine can return a region reference without a separate entity_id.
+  const regionEntityId =
+    entityRef.type === 'region' ? entityRef.region_id : clickEntityId
   if (
     !artifactByEventId &&
-    clickEntityId &&
+    regionEntityId &&
     !skipRegionSelectionForTopologyEdge
   ) {
-    const regionSelection = await getEngineRegionSelectionFromEntity(
-      clickEntityId,
+    const regionSelection = await getEngineRegionSelectionFromPoint(
+      regionEntityId,
       artifactGraph,
       ast,
       engineCommandManager,
@@ -2415,8 +2598,7 @@ function setEngineEntitySelectionV2(
       type: 'modeling_cmd_req',
       cmd: {
         type: 'select_entity',
-        // Remove this cast once @kittycad/lib includes the Helix schema variant.
-        entities: entityReferences as SdkEntityReference[],
+        entities: entityReferences,
       },
       cmd_id: uuidv4(),
     },
@@ -2429,24 +2611,6 @@ function getEngineEntityIdForSelection(
 ): string | undefined {
   if (selection.engineEntityId) {
     return selection.engineEntityId
-  }
-
-  const entityRef = selection.entityRef
-  if (entityRef) {
-    switch (entityRef.type) {
-      case 'solid3d':
-        return entityRef.solid3d_id
-      case 'solid2d':
-        return entityRef.solid2d_id
-      case 'face':
-        return entityRef.face_id
-      case 'plane':
-        return entityRef.plane_id
-      case 'solid2d_edge':
-        return entityRef.edge_id
-      case 'segment':
-        return entityRef.segment_id
-    }
   }
 
   return resolveToCodeRef(selection, artifactGraph)?.artifact?.id
@@ -2683,9 +2847,19 @@ export function getSelectionTypeDisplayText(
 export function canSubmitSelectionArg(
   selectionsByType: 'none' | Map<ResolvedSelectionType, number>,
   argument: CommandArgument<unknown> & {
-    inputType: 'selection' | 'selectionMixed'
-  }
+    inputType: 'selection'
+  },
+  selection?: Selections
 ) {
+  // Preserve the former mixed input's acceptance of non-empty code selections.
+  if (
+    argument.allowCodeReferences &&
+    selection?.graphSelections.some(
+      ({ codeRef }) => codeRef && codeRef.range[0] !== codeRef.range[1]
+    )
+  )
+    return true
+
   return (
     selectionsByType !== 'none' &&
     [...selectionsByType.entries()].every(([type, count]) => {

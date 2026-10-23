@@ -39,6 +39,7 @@ import {
   useRef,
   useState,
 } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project-menu navigation (useNavigate).
 import { Link, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 

@@ -107,7 +107,7 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -118,7 +118,7 @@ jobs:
       - name: Download browser cache
         uses: actions/cache@v6.1.0
         with:
-          path: ~/.cache/ms-playwright/
+          path: ~/Library/Caches/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install browsers
@@ -271,7 +271,7 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -336,13 +336,17 @@ jobs:
           - namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
         shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
         shardTotal: [8]
+        playwright_cache_path:
+          - ~/.cache/ms-playwright
         include:
           - os: namespace-profile-macos-8-cores
             shardIndex: 1
             shardTotal: 1
+            playwright_cache_path: ~/Library/Caches/ms-playwright
           - os: namespace-profile-windows-8-cores
             shardIndex: 1
             shardTotal: 1
+            playwright_cache_path: ~/AppData/Local/ms-playwright
     runs-on: ${{ matrix.os }}
     name: e2e:desktop (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}, shard ${{ matrix.shardIndex }})
     env:
@@ -378,7 +382,7 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -389,7 +393,7 @@ jobs:
       - name: Download browser cache
         uses: actions/cache@v6.1.0
         with:
-          path: ~/.cache/ms-playwright/
+          path: ${{ matrix.playwright_cache_path }}
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install browsers
@@ -475,7 +479,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -486,7 +490,7 @@ jobs:
       - name: Download browser cache
         uses: actions/cache@v6.1.0
         with:
-          path: ~/.cache/ms-playwright/
+          path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install browsers

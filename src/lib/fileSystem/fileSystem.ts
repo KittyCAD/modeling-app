@@ -197,6 +197,7 @@ export function fileSystemError(
     case 'EOPNOTSUPP':
     case 'NotSupportedError':
       return new FileOperationUnsupported(details)
+    case undefined:
     default:
       return new FileIoFailure(details)
   }

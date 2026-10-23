@@ -88,8 +88,8 @@ async fn inner_rectangle(
             (
                 center[0].ty,
                 [
-                    center[0].n - width.to_length_units(units) / 2.0,
-                    center[1].n - height.to_length_units(units) / 2.0,
+                    center[0].n - width.unwrap_to_length_units(units) / 2.0,
+                    center[1].n - height.unwrap_to_length_units(units) / 2.0,
                 ],
             )
         }
@@ -111,8 +111,8 @@ async fn inner_rectangle(
     let corner_t = [TyF64::new(corner[0], ty), TyF64::new(corner[1], ty)];
     // The rectangle is drawn in the units of `center` or `corner`, which can
     // differ from the units of `width` and `height`.
-    let width = width.to_length_units(units);
-    let height = height.to_length_units(units);
+    let width = width.unwrap_to_length_units(units);
+    let height = height.unwrap_to_length_units(units);
 
     // Start the sketch then draw the 4 lines.
     let sketch = crate::std::sketch::inner_start_profile(
@@ -226,7 +226,7 @@ pub(super) async fn inner_circle(
     let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
 
     let radius = get_radius(radius, diameter, args.source_range)?;
-    let from = [center_u[0] + radius.to_length_units(units), center_u[1]];
+    let from = [center_u[0] + radius.unwrap_to_length_units(units), center_u[1]];
     let from_t = [TyF64::new(from[0], ty), TyF64::new(from[1], ty)];
 
     let sketch =
@@ -248,7 +248,7 @@ pub(super) async fn inner_circle(
                         start: angle_start,
                         end: angle_end,
                         center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
-                        radius: LengthUnit(radius.to_mm()),
+                        radius: LengthUnit(radius.unwrap_to_mm()),
                         relative: false,
                     })
                     .build(),
@@ -267,7 +267,7 @@ pub(super) async fn inner_circle(
                 metadata: args.source_range.into(),
             },
         },
-        radius: radius.to_length_units(units),
+        radius: radius.unwrap_to_length_units(units),
         center: center_u,
         ccw: angle_start < angle_end,
     };
@@ -641,8 +641,8 @@ async fn inner_ellipse(
     };
 
     let from = [
-        center_u[0] + major_axis[0].to_length_units(units),
-        center_u[1] + major_axis[1].to_length_units(units),
+        center_u[0] + major_axis[0].unwrap_to_length_units(units),
+        center_u[1] + major_axis[1].unwrap_to_length_units(units),
     ];
     let from_t = [TyF64::new(from[0], ty), TyF64::new(from[1], ty)];
 
@@ -665,7 +665,7 @@ async fn inner_ellipse(
                     .segment(PathSegment::Ellipse {
                         center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
                         major_axis: axis,
-                        minor_radius: LengthUnit(minor_radius.to_mm()),
+                        minor_radius: LengthUnit(minor_radius.unwrap_to_mm()),
                         start_angle: Angle::from_degrees(angle_start.to_degrees()),
                         end_angle: Angle::from_degrees(angle_end.to_degrees()),
                     })
@@ -685,8 +685,8 @@ async fn inner_ellipse(
                 metadata: args.source_range.into(),
             },
         },
-        major_axis: major_axis.map(|x| x.to_length_units(units)),
-        minor_radius: minor_radius.to_length_units(units),
+        major_axis: major_axis.map(|x| x.unwrap_to_length_units(units)),
+        minor_radius: minor_radius.unwrap_to_length_units(units),
         center: center_u,
         ccw: angle_start < angle_end,
     };
@@ -773,7 +773,7 @@ mod tests {
             .iter()
             .map(|path| {
                 let [x, y] = path.get_to();
-                [x.to_mm(), y.to_mm()]
+                [x.unwrap_to_mm(), y.unwrap_to_mm()]
             })
             .collect();
 

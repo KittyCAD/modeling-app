@@ -58,7 +58,7 @@ way (i.e. scaled differently along each axis).
 ### Examples
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 sweepPath = sketch(on = XZ) {
   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -192,7 +192,7 @@ button2 = startSketchOn(XY)
 
 ```kcl
 // Resize a 1 mm seed cube to exact physical dimensions.
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 seedSize = 1mm
 targetWidth = 40mm

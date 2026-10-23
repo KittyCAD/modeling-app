@@ -27,7 +27,7 @@ These are coordinate snapshots, so subsequent edits to the source part do not up
 ## KCL forms
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 axesPlane = plane(origin = [0mm, 0mm, 20mm], xAxis = [1, 0, 0], yAxis = [0, 1, 0])
 normalPlane = plane(origin = [0mm, 0mm, 20mm], normal = [0, 0, 1], xAxis = [1, 0, 0])
@@ -44,7 +44,7 @@ Duplicate/collinear points, zero or nonfinite directions, skew axes, mixed defin
 Paste this into an empty file to exercise a plane that cannot be made by merely offsetting a default plane:
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 support = plane(origin = [0mm, 0mm, 20mm], normal = [0, -1, 1], xAxis = [1, 0, 0])
 outline = sketch(on = support) {
   bottom = line(start = [0mm, 0mm], end = [20mm, 0mm])

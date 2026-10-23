@@ -3,6 +3,7 @@ use std::str::FromStr;
 
 use anyhow::Result;
 use async_recursion::async_recursion;
+use kcl_api::NumericSuffix;
 pub use kcl_api::NumericType;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
@@ -36,7 +37,6 @@ use crate::parsing::ast::types::Name;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::PrimitiveType as AstPrimitiveType;
 use crate::parsing::ast::types::Type;
-use crate::parsing::token::NumericSuffix;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 
@@ -1300,40 +1300,6 @@ impl NumericTypeExt for NumericType {
 impl From<NumericType> for RuntimeType {
     fn from(t: NumericType) -> RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Number(t))
-    }
-}
-
-impl From<UnitLength> for NumericSuffix {
-    fn from(value: UnitLength) -> Self {
-        match value {
-            UnitLength::Millimeters => NumericSuffix::Mm,
-            UnitLength::Centimeters => NumericSuffix::Cm,
-            UnitLength::Meters => NumericSuffix::M,
-            UnitLength::Inches => NumericSuffix::Inch,
-            UnitLength::Feet => NumericSuffix::Ft,
-            UnitLength::Yards => NumericSuffix::Yd,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
-pub struct NumericSuffixTypeConvertError;
-
-impl TryFrom<NumericType> for NumericSuffix {
-    type Error = NumericSuffixTypeConvertError;
-
-    fn try_from(value: NumericType) -> Result<Self, Self::Error> {
-        match value {
-            NumericType::Known(UnitType::Count) => Ok(NumericSuffix::Count),
-            NumericType::Known(UnitType::Length(unit_length)) => Ok(NumericSuffix::from(unit_length)),
-            NumericType::Known(UnitType::GenericLength) => Ok(NumericSuffix::Length),
-            NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => Ok(NumericSuffix::Deg),
-            NumericType::Known(UnitType::Angle(UnitAngle::Radians)) => Ok(NumericSuffix::Rad),
-            NumericType::Known(UnitType::GenericAngle) => Ok(NumericSuffix::Angle),
-            NumericType::Default { .. } => Ok(NumericSuffix::None),
-            NumericType::Unknown => Ok(NumericSuffix::Unknown),
-            NumericType::Any => Err(NumericSuffixTypeConvertError),
-        }
     }
 }
 

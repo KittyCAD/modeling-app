@@ -18,6 +18,7 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: query-driven prompt initialization (useSearchParams).
 import { useSearchParams } from 'react-router-dom'
 
 export const ZookeeperConversationPane = (props: {

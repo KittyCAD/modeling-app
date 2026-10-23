@@ -23,12 +23,14 @@ export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
           matchMemoryAccessOutOfBoundsErrorCrash(event.message) ||
           matchGenericWasmRuntimeHeuristicErrorCrash(event)
         ) {
-          // do global singleton cleanup
-          kclManager.executeAstCleanUp()
-          toast.error(
-            'You have hit a KCL execution bug! Put your KCL code in a github issue to help us resolve this bug.'
-          )
+          const finishFailedExecutions =
+            kclManager.engineCommandManager.captureFailedExecutionCleanup()
+
           try {
+            kclManager.executeAstCleanUp()
+            toast.error(
+              'You have hit a KCL execution bug! Put your KCL code in a github issue to help us resolve this bug.'
+            )
             const newModulePromise = restartWasmModule()
             // Refresh kclManager singleton's reference to the current WASM module.
             kclManager.wasmInstancePromise = newModulePromise
@@ -49,6 +51,9 @@ export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
           } catch (e) {
             console.error('Failed to initialize wasm_lib')
             console.error(e)
+          } finally {
+            // Release abandoned execution tracking whether recovery succeeds or not.
+            finishFailedExecutions()
           }
         }
       })().catch(reportRejection)

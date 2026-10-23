@@ -35,7 +35,6 @@ import {
 } from '@src/lang/modifyAst/sweeps'
 import {
   artifactToEntityRef,
-  findOperationArtifact,
   getNodeFromPath,
   getVariableNameFromNodePath,
   retrieveSelectionsFromOpArg,
@@ -65,7 +64,6 @@ import {
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeBodyType,
   type KclPreludeExtrudeMethod,
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
   LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
 } from '@src/lib/constants'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
@@ -111,13 +109,6 @@ interface StdLibCallInfo {
   supportsTranslate?: boolean
   supportsRotate?: boolean
   supportsScale?: boolean
-}
-
-function hasLegacySketchMode(): boolean {
-  return (
-    window.app?.userFeatures.has(LEGACY_SKETCH_MODE_FEATURE_FLAG, false) ??
-    false
-  )
 }
 
 function retrieveUnlabeledSelectionsForEdit(
@@ -339,6 +330,11 @@ function retrieveFaceSelectionsForEdit(
     artifactGraph
   )
   return isErr(result) ? emptySelections() : result.faces
+}
+
+function extractBooleanArgument(operation: StdLibCallOp, name: string) {
+  const value = operation.labeledArgs[name]?.value
+  return value?.type === 'Bool' ? value.value : undefined
 }
 
 function extractStringArgument(
@@ -886,6 +882,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Fillet'] = {
+    tangentChain: extractBooleanArgument(operation, 'tangentChain'),
     selection,
     radius,
     tolerance,
@@ -962,6 +959,7 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Chamfer'] = {
+    tangentChain: extractBooleanArgument(operation, 'tangentChain'),
     selection,
     length,
     secondLength,
@@ -3640,25 +3638,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   startSketchOn: {
     label: 'Sketch',
     icon: 'sketch',
-    async prepareToEdit({ operation, artifact, artifactGraph }) {
-      if (!hasLegacySketchMode()) {
-        return { reason: LEGACY_SKETCH_MODE_REMOVED_MESSAGE }
-      }
-      const resolvedArtifact =
-        artifact ??
-        (operation.type === 'StdLibCall'
-          ? (findOperationArtifact(operation, artifactGraph) ?? undefined)
-          : undefined)
-      if (resolvedArtifact) {
-        return {
-          name: 'Enter sketch',
-          groupId: 'modeling',
-        }
-      }
-      return {
-        reason:
-          'Editing sketches on faces or offset planes through the feature tree is not yet supported. Please double-click the path in the scene for now.',
-      }
+    async prepareToEdit() {
+      return { reason: LEGACY_SKETCH_MODE_REMOVED_MESSAGE }
     },
   },
   subtract: {
@@ -3704,16 +3685,17 @@ export function getOperationLabel(op: Operation): string {
     case 'VariableDeclaration':
       return 'Parameter'
     case 'GroupBegin':
-      if (op.group.type === 'FunctionCall') {
-        return op.group.name ?? 'anonymous'
+      switch (op.group.type) {
+        case 'FunctionCall':
+          return op.group.name ?? 'anonymous'
+        case 'SketchBlock':
+          return 'Sketch'
       }
-      return 'Solve Sketch'
     case 'ModuleInstance':
       return op.name
     case 'GroupEnd':
       return 'Group end'
     default:
-      const _exhaustiveCheck: never = op
       return '' // unreachable
   }
 }
@@ -3735,6 +3717,8 @@ export function getOpTypeLabel(opType: Operation['type']): string {
       return 'Parameter'
     case 'ModuleInstance':
       return 'Module'
+    case 'GroupBegin':
+    case 'GroupEnd':
     default:
       return 'Function'
   }
@@ -3759,7 +3743,6 @@ export function getOperationIcon(op: Operation): CustomIconName {
     case 'GroupEnd':
       return 'questionMark'
     default:
-      const _exhaustiveCheck: never = op
       return 'questionMark' // unreachable
   }
 }
@@ -3789,6 +3772,21 @@ export function getOperationCalculatedDisplay(op: OpKclValue): string {
       return String(op.value)
     case 'Number':
       return isNonNullable(op.value) ? op.value.toPrecision(5) : ''
+    case 'Helix':
+    case 'Sketch':
+    case 'Solid':
+    case 'Face':
+    case 'Plane':
+    case 'GdtAnnotation':
+    case 'BoundedEdge':
+    case 'Segment':
+    case 'CameraView':
+    case 'KclNone':
+    case 'Uuid':
+    case 'ImportedGeometry':
+    case 'Function':
+    case 'Module':
+    case 'Type':
     default:
       return op.type
   }
@@ -4234,6 +4232,13 @@ async function prepareToEditAppearance({
   }
 
   const color = getStringValue(code, operation.labeledArgs.color.sourceRange)
+  let backfaceColor: string | undefined
+  if (operation.labeledArgs.backfaceColor) {
+    backfaceColor = getStringValue(
+      code,
+      operation.labeledArgs.backfaceColor.sourceRange
+    )
+  }
 
   let metalness: KclCommandValue | undefined
   if (operation.labeledArgs.metalness) {
@@ -4283,6 +4288,7 @@ async function prepareToEditAppearance({
   const argDefaultValues: ModelingCommandSchema['Appearance'] = {
     objects,
     color,
+    backfaceColor,
     metalness,
     roughness,
     opacity,
@@ -4306,7 +4312,7 @@ export type HideOperation = Operation & { type: 'StdLibCall'; name: 'hide' }
  * itself. Reading only the nested shape made hidden planes, GD&T annotations and
  * imported geometry invisible to every caller below.
  *
- * Every variant is listed so that adding one to `OpKclValue` fails to compile
+ * Every variant is listed so that adding one to `OpKclValue` fails lint
  * here rather than silently dropping its id.
  */
 function artifactIdsInOpValue(value: OpKclValue): string[] {
@@ -4351,11 +4357,6 @@ function artifactIdsInOpValue(value: OpKclValue): string[] {
     case 'KclNone':
     case 'BoundedEdge':
       return []
-
-    default: {
-      const _exhaustiveCheck: never = value
-      return _exhaustiveCheck
-    }
   }
 }
 

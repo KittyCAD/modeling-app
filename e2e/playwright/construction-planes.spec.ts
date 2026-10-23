@@ -15,7 +15,7 @@ for (const kind of [
       await scene.waitForExecutionDoneAfter(() =>
         editor.replaceCode(
           '',
-          `@settings(kclVersion = 2.0)
+          `@settings(kclVersion = 3.0)
 outline = sketch(on = XY) {
   bottom = line(start = [0mm, 0mm], end = [40mm, 0mm])
   right = line(start = [40mm, 0mm], end = [40mm, 40mm])
@@ -167,7 +167,7 @@ test(
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode(
         '',
-        `@settings(kclVersion = 2.0)
+        `@settings(kclVersion = 3.0)
 outline = sketch(on = XY) {
   bottom = line(start = [0mm, 0mm], end = [40mm, 0mm])
   right = line(start = [40mm, 0mm], end = [40mm, 40mm])

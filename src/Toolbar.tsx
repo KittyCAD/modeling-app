@@ -20,6 +20,7 @@ import {
   shouldDisableModelingForUnrenderedChanges,
 } from '@src/lib/automaticRendering'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { commandKey, isModelingDialogCommand } from '@src/lib/commandUtils'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -34,6 +35,7 @@ import type {
 import {
   getDefaultRecentToolbarItemIds,
   getToolbarDropdownDisplay,
+  getToolbarItemDescription,
   isSketchToolbarTransitioning,
   isToolbarItemResolvedDropdown,
   modelingMachineStateToToolbarModeName,
@@ -49,13 +51,13 @@ import { isArray, type Platform } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getSymmetricToolSelectionStep } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useSelector } from '@xstate/react'
 import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
@@ -80,11 +82,24 @@ const Toolbar_ = memo(
   (props: ToolbarProps) => {
     useSignals()
     const app = useApp()
+    const registeredCommands = useSelector(
+      app.commands.actor,
+      (state) => state.context.commands
+    )
+    const activeDialogCommandKey = useSelector(app.commands.actor, (state) => {
+      const command = state.context.selectedCommand
+      return !state.matches('Closed') &&
+        command &&
+        isModelingDialogCommand(command)
+        ? commandKey(command)
+        : undefined
+    })
     const keymap = app.registry.get(keymapService)
     const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
     const platform = usePlatform()
-    const executionService = app.registry.signal(executingEditorService).value
+    const executionService =
+      app.registry.signal(projectSession).value?.executingEditor.value
     const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -262,7 +277,10 @@ const Toolbar_ = memo(
         )
 
         // Calculate the isActive state for this specific item
-        const itemIsActive = maybeIconConfig.isActive?.(props.state) || false
+        const itemIsActive =
+          maybeIconConfig.isActive?.(props.state) ||
+          (activeDialogCommandKey !== undefined &&
+            maybeIconConfig.command === activeDialogCommandKey)
 
         // Create item-specific callback props with the correct isActive value
         const itemCallbackProps = {
@@ -299,7 +317,10 @@ const Toolbar_ = memo(
           title,
           tooltipTitle,
           iconColor,
-          description: maybeIconConfig.description,
+          description: getToolbarItemDescription(
+            maybeIconConfig,
+            registeredCommands
+          ),
           links: maybeIconConfig.links || [],
           isActive: itemIsActive,
           hotkey: getToolbarItemHotkey(maybeIconConfig.command),
@@ -338,6 +359,8 @@ const Toolbar_ = memo(
       showNonVisualConstraints,
       sketchSolveSelectedIdsKey,
       keymapTree,
+      registeredCommands,
+      activeDialogCommandKey,
     ])
 
     // To remember the last selected item in a standard ActionButtonDropdown
@@ -790,9 +813,8 @@ const Toolbar_ = memo(
               <p className="text-xs">{symmetricToolPrompt}</p>
             </div>
           )}
-          {props.state.context.store.useSketchSolveMode?.current === true &&
-            modelingMachineStateToToolbarModeName(props.state) ===
-              'sketching' && <LegacySketchModeBanner />}
+          {modelingMachineStateToToolbarModeName(props.state) ===
+            'sketching' && <LegacySketchModeBanner />}
         </div>
       </menu>
     )

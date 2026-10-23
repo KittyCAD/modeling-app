@@ -166,6 +166,14 @@ export function throttle<T>(
     latestArgs = args
 
     if (!latestTimestamp || currentTimestamp - latestTimestamp >= wait) {
+      // The wait is over
+
+      if (timeout) {
+        // The wait is over but a delayed call is still pending. That would
+        // send these same args a second time, so cancel it.
+        clearTimeout(timeout)
+        timeout = null
+      }
       latestTimestamp = currentTimestamp
       func(latestArgs)
     } else if (!timeout) {
@@ -393,8 +401,7 @@ export function baseUnitToMm(baseUnit: BaseUnit): number {
       return 914.4
   }
 
-  const _exhaustiveCheck: never = baseUnit
-  console.error(`Unsupported base unit: ${String(_exhaustiveCheck)}`)
+  console.error(`Unsupported base unit: ${String(baseUnit)}`)
   return Number.NaN
 }
 

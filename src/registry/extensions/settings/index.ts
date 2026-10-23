@@ -1,12 +1,10 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { getAppSettingsFilePath } from '@src/lib/desktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -94,18 +92,15 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
       useSelector(ensureActor(), (state) => {
         return getOnlySettingsFromContext(state.context)
       }),
-    userFilePath: async () => getAppSettingsFilePath(),
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'settings-extension',
-      providesServices: [provideService(settingsService, serviceImpl)],
-      dispose: () => {
-        settingsSubscription?.unsubscribe()
-        settingsActor?.stop()
-      },
-    }),
+    id: 'settings-extension',
+    providesServices: [provideService(settingsService, serviceImpl)],
+    dispose: () => {
+      settingsSubscription?.unsubscribe()
+      settingsActor?.stop()
+    },
   }
 }, 'settings-extension')
 

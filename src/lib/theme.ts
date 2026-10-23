@@ -25,6 +25,7 @@ export function appThemeToTheme(
       return Themes.Dark
     case 'system':
       return Themes.System
+    case undefined:
     default:
       return undefined
   }

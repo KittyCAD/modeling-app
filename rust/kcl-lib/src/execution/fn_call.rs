@@ -1,4 +1,3 @@
-use async_recursion::async_recursion;
 use indexmap::IndexMap;
 use kcl_api::Group;
 use kcl_api::OpArg;
@@ -17,13 +16,11 @@ use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
 use crate::execution::Metadata;
 use crate::execution::Solid;
-use crate::execution::StatementKind;
 use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::annotations;
 use crate::execution::cad_op::Operation;
 use crate::execution::cad_op::op_from_kcl_value;
-use crate::execution::control_continue;
 use crate::execution::kcl_value::FunctionBody;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::NamedParam;
@@ -31,8 +28,6 @@ use crate::execution::kcl_value::ParamUnavailable;
 use crate::execution::memory;
 use crate::execution::types::CoercionMode;
 use crate::execution::types::RuntimeType;
-use crate::parsing::ast::types::CallExpressionKw;
-use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Type;
 use crate::std::ConsumedSolidArgCheck;
 use crate::std::RegionBehavior;
@@ -165,103 +160,6 @@ impl Arg {
     }
 }
 
-impl Node<CallExpressionKw> {
-    #[async_recursion]
-    pub(super) async fn execute(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        let fn_name = &self.callee;
-        let callsite: SourceRange = self.into();
-
-        // Resolve the function before evaluating arguments so calls can mutate
-        // exec_state without holding a memory borrow.
-        let func: KclValue = fn_name.get_result(exec_state, ctx).await?;
-
-        let Some(fn_src) = func.as_function() else {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "cannot call this because it isn't a function".to_string(),
-                vec![callsite],
-            )));
-        };
-
-        // Build a hashmap from argument labels to the final evaluated values.
-        let mut fn_args = IndexMap::with_capacity(self.arguments.len());
-        let mut unlabeled = Vec::new();
-
-        // Evaluate the unlabeled first param, if any exists.
-        if let Some(ref arg_expr) = self.unlabeled {
-            let source_range = SourceRange::from(arg_expr.clone());
-            let metadata = Metadata { source_range };
-            let value_cf = ctx
-                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
-                .await?;
-            let value = control_continue!(value_cf);
-
-            let label = arg_expr.ident_name().map(str::to_owned);
-
-            unlabeled.push((label, Arg::new(value, source_range)))
-        }
-
-        for arg_expr in &self.arguments {
-            let source_range = SourceRange::from(arg_expr.arg.clone());
-            let metadata = Metadata { source_range };
-            let value_cf = ctx
-                .execute_expr(&arg_expr.arg, exec_state, &metadata, &[], StatementKind::Expression)
-                .await?;
-            let value = control_continue!(value_cf);
-            let arg = Arg::new(value, source_range);
-            match &arg_expr.label {
-                Some(l) => {
-                    fn_args.insert(l.name.clone(), arg);
-                }
-                None => {
-                    unlabeled.push((arg_expr.arg.ident_name().map(str::to_owned), arg));
-                }
-            }
-        }
-
-        let args = Args::new(
-            fn_args,
-            unlabeled,
-            callsite,
-            self.node_path.clone(),
-            exec_state,
-            ctx.clone(),
-            Some(fn_name.name.name.clone()),
-        );
-
-        let return_value = fn_src
-            .call_kw(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
-            .await
-            .map_err(|e| {
-                // Add the call expression to the source ranges.
-                //
-                // TODO: Use the name that the function was defined
-                // with, not the identifier it was used with.
-                e.add_unwind_location(Some(fn_name.to_string()), callsite)
-            })?;
-
-        let result = return_value.ok_or_else(move || {
-            let mut source_ranges: Vec<SourceRange> = vec![callsite];
-            // We want to send the source range of the original function.
-            if let KclValue::Function { meta, .. } = func {
-                source_ranges = meta.iter().map(|m| m.source_range).collect();
-            };
-            KclError::new_undefined_value(
-                KclErrorDetails::new(
-                    format!("Result of user-defined function {fn_name} is undefined"),
-                    source_ranges,
-                ),
-                None,
-            )
-        })?;
-
-        Ok(result)
-    }
-}
-
 /// Guidance included in deprecation warnings for sketch v1 stdlib functions.
 /// The warning must stand on its own: a human or AI agent reading it should
 /// learn what replaces the function and where to find conversion examples
@@ -329,9 +227,8 @@ impl FunctionSource {
     /// ambient-flag tracking. After this succeeds, the callee environment is
     /// pushed and the ambient flags are set, so every path must reach
     /// [`Self::call_finish`] (or [`Self::call_abort_on_arg_binding_failure`])
-    /// to balance them. The recursive executor keeps the returned [`CallState`]
-    /// across the body await; the machine executor parks it in a call-boundary
-    /// continuation.
+    /// to balance them. The machine parks the returned [`CallState`] in a
+    /// call-boundary continuation; native callbacks keep it across the body await.
     pub(super) fn call_setup(
         &self,
         fn_name: &Option<String>,
@@ -538,7 +435,7 @@ impl FunctionSource {
     ///
     /// NOTE: under a pre-KCL-3.0 entry point, a `return` statement does NOT
     /// stop the body -- it records `__return` and execution continues to the
-    /// following statements (see exec_block's ReturnStatement arm). The block's
+    /// following statements (see the machine's return handling). The block's
     /// own trailing value is deliberately ignored here; only `__return` counts.
     /// Under KCL 3.0, `return` stops the body and arrives here as a `Return`
     /// control flow instead; `__return` is never written.
@@ -567,8 +464,7 @@ impl FunctionSource {
     /// the body ran: restore `inside_stdlib` and pop the callee environment.
     /// Deliberately asymmetric with [`Self::call_finish`] -- it does not
     /// restore `stdlib_entry_source_range` and does not finalize the
-    /// operation -- preserving the recursive executor's historical behavior
-    /// exactly.
+    /// operation, preserving historical behavior.
     pub(super) fn call_abort_on_arg_binding_failure(
         state: CallState,
         e: KclError,
@@ -944,7 +840,10 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
                 let sketch_tags: Vec<_> = sketch.tags.values().cloned().collect();
                 let sketches_to_update: Vec<_> = exec_state.stack().find_keys_in_current_env(|v| match v {
-                    KclValue::Sketch { value: sk } => sk.original_id == sketch.original_id,
+                    KclValue::Sketch { value: sk } => match value.tag_update_source_artifact_id {
+                        Some(source) => sk.artifact_id == source,
+                        None => sk.original_id == sketch.original_id,
+                    },
                     _ => false,
                 })?;
 
@@ -1449,6 +1348,7 @@ mod test {
     use crate::parsing::ast::types::DefaultParamVal;
     use crate::parsing::ast::types::FunctionExpression;
     use crate::parsing::ast::types::Identifier;
+    use crate::parsing::ast::types::Node;
     use crate::parsing::ast::types::Parameter;
     use crate::parsing::ast::types::Program;
 
@@ -1651,12 +1551,12 @@ mod test {
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(EngineManager::new_mock()),
+                cache: crate::Cache::default(),
                 engine_batch: crate::engine::EngineBatchContext::default(),
                 fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
                 execution_callbacks: Default::default(),
-                executor_kind: crate::execution::machine::ExecutorKind::resolve(),
                 machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
                 configure_engine_render: true,
             };
@@ -2855,12 +2755,12 @@ plane = startSketchOn(XY)
         .unwrap();
         let exec_ctxt = ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: crate::Cache::default(),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: Default::default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: crate::execution::machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
         };

@@ -13,8 +13,8 @@ use std::sync::atomic::Ordering;
 
 pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
-pub use kcl_api::PlaneName;
 use kcl_api::UnitLength;
+pub use kcl_api::artifact::PlaneName;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::websocket::WebSocketRequest;

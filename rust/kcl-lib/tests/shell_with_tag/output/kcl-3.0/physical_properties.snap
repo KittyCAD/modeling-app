@@ -18,12 +18,12 @@ description: Physical properties shell_with_tag.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 418118.47280769143
+    "value": 418118.4728658991
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 653.0420678245719
+    "value": 653.0420629739334
   }
 }

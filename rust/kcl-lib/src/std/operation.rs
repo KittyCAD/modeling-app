@@ -186,7 +186,7 @@ pub async fn facing(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         let moves = s_curve(
             part_width as f32,
             part_height as f32,
-            tool_diameter.to_mm() as f32,
+            tool_diameter.unwrap_to_mm() as f32,
             origin,
             direction,
             step_over.n as f32,

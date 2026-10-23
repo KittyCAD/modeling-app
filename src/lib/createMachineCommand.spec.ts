@@ -72,6 +72,7 @@ const commandBarConfig = {
       availableArg: {
         inputType: 'string',
         required: false,
+        documentation: 'Reference documentation.',
       },
       experimentalArg: {
         inputType: 'string',
@@ -106,6 +107,42 @@ describe('createMachineCommand', () => {
       args: { points: { allowArrays: true, allowNestedArrays: true } },
     })
   })
+  test('defaults missing descriptions while preserving overrides, including command arrays', () => {
+    const actor = createActor(testMachine).start()
+    const configs = {
+      Available: {},
+      ManyCommands: [{}, { description: 'Custom' }, { description: '' }],
+    } satisfies StateMachineCommandSetConfig<
+      typeof testMachine,
+      TestCommandSchema
+    >
+    const props = {
+      groupId: testMachine.id,
+      state: actor.getSnapshot(),
+      send: vi.fn(),
+      actor,
+      commandBarConfig: configs,
+      defaultScopes: GLOBAL_COMMAND_SCOPES,
+      getDefaultDescription: (type: string) => `Default ${type}`,
+    }
+
+    const command = createMachineCommand<typeof testMachine, TestCommandSchema>(
+      { ...props, type: 'Available' }
+    )
+    const commands = createMachineCommand<
+      typeof testMachine,
+      TestCommandSchema
+    >({ ...props, type: 'ManyCommands' })
+    actor.stop()
+
+    expect(command).toMatchObject({ description: 'Default Available' })
+    expect(commands).toMatchObject([
+      { description: 'Default ManyCommands' },
+      { description: 'Custom' },
+      { description: '' },
+    ])
+  })
+
   test('hides experimental commands by default', () => {
     const actor = createActor(testMachine).start()
 
@@ -201,7 +238,7 @@ describe('createMachineCommand', () => {
     ])
   })
 
-  test('hides experimental arguments by default', () => {
+  test('preserves metadata while hiding experimental arguments by default', () => {
     const actor = createActor(testMachine).start()
 
     const command = createMachineCommand<typeof testMachine, TestCommandSchema>(
@@ -222,6 +259,8 @@ describe('createMachineCommand', () => {
       args: {
         availableArg: {
           hidden: undefined,
+          documentation:
+            commandBarConfig.WithArguments.args.availableArg.documentation,
         },
         deprecatedArg: {
           hidden: undefined,

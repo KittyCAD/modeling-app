@@ -245,6 +245,22 @@ function createCallWrapper(
         case 'xLineTo':
         case 'yLineTo':
           return createLabeledArg(ARG_END_ABSOLUTE, val)
+        case 'angledLine':
+        case 'angledLineThatIntersects':
+        case 'arc':
+        case 'circle':
+        case 'circleThreePoint':
+        case 'line':
+        case 'startProfile':
+        case 'tangentialArc':
+        case 'lineTo':
+        case 'angledLineOfXLength':
+        case 'angledLineOfYLength':
+        case 'angledLineToX':
+        case 'angledLineToY':
+        case 'tangentialArcTo':
+        case 'arcTo':
+          break
       }
     })()
     if (arg !== undefined) {
@@ -2100,8 +2116,6 @@ export function transformAstSketchLines({
           break
         case undefined:
           break
-        default:
-          const _exhaustiveCheck: never = a?.argPosition
       }
     })
 
@@ -2378,7 +2392,6 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     case 'SketchBlock':
       return false
     default:
-      const _exhaustiveCheck: never = expr
       return false // unreachable
   }
 }

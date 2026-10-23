@@ -7,6 +7,7 @@ import {
   HOME_KEYMAP_SCOPE,
   type KeymapDocument,
   MODE_MODELING_KEYMAP_SCOPE,
+  MODELING_DIALOG_FOCUSED_KEYMAP_SCOPE,
   MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
@@ -86,6 +87,13 @@ export const defaultKeymap: KeymapDocument = {
       command: 'zds.commandPalette.close',
       hidden: true,
       userBindingCommand: 'zds.commandPalette.close',
+    },
+    {
+      id: 'modeling-dialog.submit',
+      title: 'Submit modeling dialog',
+      when: [MODELING_DIALOG_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['enter'],
+      command: 'zds.modelingDialog.submit',
     },
     {
       id: 'settings.open',

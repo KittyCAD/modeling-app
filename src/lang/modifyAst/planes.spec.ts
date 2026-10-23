@@ -27,7 +27,7 @@ describe('construction planes', () => {
     'creates a sketchable %s from selected references in inch projects',
     async (kind) => {
       const ast = assertParse(
-        `@settings(kclVersion = 2.0, defaultLengthUnit = in)
+        `@settings(kclVersion = 3.0, defaultLengthUnit = in)
 p0 = plane(origin = [0mm, 0mm, 0mm], normal = [0, 0, 1], xAxis = [1, 0, 0])
 p40 = plane(origin = [0mm, 0mm, 40mm], normal = [0, 0, -1], xAxis = [1, 0, 0])`,
         world.instance
@@ -97,7 +97,7 @@ p40 = plane(origin = [0mm, 0mm, 40mm], normal = [0, 0, -1], xAxis = [1, 0, 0])`,
   )
   it('writes picked corners with explicit millimeters, independent of project units', async () => {
     const ast = assertParse(
-      '@settings(kclVersion = 2.0, defaultLengthUnit = in)',
+      '@settings(kclVersion = 3.0, defaultLengthUnit = in)',
       world.instance
     )
     const pickedPoints: Selections = {
@@ -156,7 +156,7 @@ p40 = plane(origin = [0mm, 0mm, 40mm], normal = [0, 0, -1], xAxis = [1, 0, 0])`,
   ])(
     'returns a selectable typed plane and supports a sketch: %s',
     async (args) => {
-      const code = `@settings(kclVersion = 2.0)
+      const code = `@settings(kclVersion = 3.0)
 p = plane(${args})
 s = sketch(on = p) { edge = line(start = [0mm, 0mm], end = [10mm, 0mm]) }`
       const result = await enginelessExecutor(
@@ -205,7 +205,7 @@ s = sketch(on = p) { edge = line(start = [0mm, 0mm], end = [10mm, 0mm]) }`
 
   it('converts mixed explicit length units', async () => {
     const code =
-      '@settings(kclVersion = 2.0)\np = plane(origin = [1in, 2cm, 30mm], normal = [0, 0, 1], xAxis = [1, 0, 0])\ns = sketch(on = p) {}'
+      '@settings(kclVersion = 3.0)\np = plane(origin = [1in, 2cm, 30mm], normal = [0, 0, 1], xAxis = [1, 0, 0])\ns = sketch(on = p) {}'
     const result = await enginelessExecutor(
       assertParse(code, world.instance),
       world.rustContext

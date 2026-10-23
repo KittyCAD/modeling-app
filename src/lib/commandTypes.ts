@@ -29,7 +29,6 @@ const _INPUT_TYPES = [
   'text',
   'kcl',
   'selection',
-  'selectionMixed',
   'boolean',
   'vector3d',
 ] as const
@@ -149,6 +148,10 @@ export type Command<
   /** App contexts where the command palette and keymap may expose this command. */
   scopes: CommandScopes
   disabled?: boolean
+  /** Keep unsupported modeling flows in the command bar instead of a dialog. */
+  forceCommandBar?: boolean
+  /** Resolved from forceCommandBar and the modeling_dialogs feature gate. */
+  useModelingDialog?: boolean
   status?: CommandStatus
 }
 
@@ -166,6 +169,7 @@ export type CommandConfig<
   | 'args'
   | 'needsReview'
   | 'scopes'
+  | 'useModelingDialog'
 > & {
   needsReview?: boolean
   status?: CommandStatus
@@ -182,8 +186,12 @@ export type CommandArgumentConfig<
   OutputType,
   C = ContextFrom<AnyStateMachine>,
 > = {
+  /** Whether to offer this argument in the current machine context. */
+  available?: (context: C) => boolean
   displayName?: string
   description?: string
+  /** Reference documentation shown on demand, separate from command-bar hints. */
+  documentation?: string
   status?: CommandArgumentStatus
   statusMessage?: string
   required: CommandArgumentRequired<C>
@@ -197,6 +205,8 @@ export type CommandArgumentConfig<
   skip?: boolean
   /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
   prepopulate?: boolean
+  /** Collapse this field under Advanced; its value is still submitted. */
+  dialog?: { advanced?: boolean }
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
@@ -228,6 +238,8 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selection'
       selectionTypes: CommandSelectionType[]
+      /** Accept non-empty code selections for codemod resolution. */
+      allowCodeReferences?: boolean
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -236,23 +248,6 @@ export type CommandArgumentConfig<
         context: CommandBarContext
         machineContext?: C
       }) => Promise<boolean | string>
-    }
-  | {
-      inputType: 'selectionMixed'
-      selectionTypes: CommandSelectionType[]
-      selectionFilter?: EntityType[]
-      multiple: boolean
-      clearSelectionFirst?: boolean
-      allowNoSelection?: boolean
-      validation?: (props: {
-        data: any
-        context: CommandBarContext
-        machineContext?: C
-      }) => Promise<boolean | string>
-      selectionSource?: {
-        allowSceneSelection?: boolean
-        allowCodeSelection?: boolean
-      }
     }
   | {
       inputType: 'kcl'
@@ -374,6 +369,8 @@ export type CommandArgument<
 > = {
   displayName?: string
   description?: string
+  /** Reference documentation shown on demand, separate from command-bar hints. */
+  documentation?: string
   status?: CommandArgumentStatus
   statusMessage?: string
   required:
@@ -391,6 +388,8 @@ export type CommandArgument<
       ) => boolean)
   /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
   prepopulate?: boolean
+  /** Collapse this field under Advanced; its value is still submitted. */
+  dialog?: { advanced?: boolean }
   skip?: boolean
   machineActor?: Actor<T>
   /** For showing a summary display of the current value, such as in
@@ -424,6 +423,7 @@ export type CommandArgument<
   | {
       inputType: 'selection'
       selectionTypes: CommandSelectionType[]
+      allowCodeReferences?: boolean
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -432,23 +432,6 @@ export type CommandArgument<
         context: CommandBarContext
         machineContext?: ContextFrom<T>
       }) => Promise<boolean | string>
-    }
-  | {
-      inputType: 'selectionMixed'
-      selectionTypes: CommandSelectionType[]
-      selectionFilter?: EntityType[]
-      multiple: boolean
-      clearSelectionFirst?: boolean
-      allowNoSelection?: boolean
-      validation?: (props: {
-        data: any
-        context: CommandBarContext
-        machineContext?: ContextFrom<T>
-      }) => Promise<boolean | string>
-      selectionSource?: {
-        allowSceneSelection?: boolean
-        allowCodeSelection?: boolean
-      }
     }
   | {
       inputType: 'kcl'

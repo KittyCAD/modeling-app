@@ -168,15 +168,19 @@ flipperBlank = extrude(flipperRegion, length = flipperThickness)
 flipper = fillet(
   flipperBlank,
   radius = flipperFilletRadius,
-  tags = [
-    getCommonEdge(faces = [
-      flipperRegion.tags.line1,
-      flipperRegion.tags.line2
-    ]),
-    getCommonEdge(faces = [
-      flipperRegion.tags.line2,
-      flipperRegion.tags.line3
-    ])
+  edges = [
+    {
+      sideFaces = [
+        flipperRegion.tags.line1,
+        flipperRegion.tags.line2
+      ]
+    },
+    {
+      sideFaces = [
+        flipperRegion.tags.line2,
+        flipperRegion.tags.line3
+      ]
+    }
   ],
 )
 
@@ -199,15 +203,19 @@ handleBlank = extrude(handleRegion, length = handleWidth)
 handle = fillet(
   handleBlank,
   radius = 4,
-  tags = [
-    getCommonEdge(faces = [
-      handleRegion.tags.line1,
-      handleRegion.tags.line2
-    ]),
-    getCommonEdge(faces = [
-      handleRegion.tags.line4,
-      handleRegion.tags.line5
-    ])
+  edges = [
+    {
+      sideFaces = [
+        handleRegion.tags.line1,
+        handleRegion.tags.line2
+      ]
+    },
+    {
+      sideFaces = [
+        handleRegion.tags.line4,
+        handleRegion.tags.line5
+      ]
+    }
   ],
 )
 

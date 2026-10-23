@@ -18,6 +18,7 @@ const KCL_LIB_DEPS: [&str; 5] = [
     "kcl-error",
     "kcl-syntax",
 ];
+const KCL_LIB_DEV_DEPS: [&str; 1] = ["kcl-derive-docs"];
 const KCL_TEST_SERVER_DEPS: [&str; 1] = ["kcl-lib"];
 
 fn main() -> Result<()> {
@@ -59,7 +60,7 @@ fn run_on_manifest(manifest_path: std::path::PathBuf, args: &Args) -> Result<()>
                 update_dependency_versions(&crate_name, &KCL_API_DEPS, &[], &mut doc, next_version);
             }
             "kcl-lib" => {
-                update_dependency_versions(&crate_name, &KCL_LIB_DEPS, &[], &mut doc, next_version);
+                update_dependency_versions(&crate_name, &KCL_LIB_DEPS, &KCL_LIB_DEV_DEPS, &mut doc, next_version);
             }
             "kcl-language-server" => {
                 update_dependency_versions(
@@ -131,7 +132,7 @@ fn update_dependency_versions(
     }
     for dependency in dev_dependencies {
         if !update_dependency_version(cargo_dot_toml, true, dependency, next_version) {
-            eprintln!("Warning: could not find dependency `{dependency}` in {crate_name} [dependencies]");
+            eprintln!("Warning: could not find dependency `{dependency}` in {crate_name} [dev dependencies]");
         }
     }
 }

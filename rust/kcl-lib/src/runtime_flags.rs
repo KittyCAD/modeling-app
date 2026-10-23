@@ -27,19 +27,22 @@ pub enum RuntimeFlag {
 /// Fields missing from a deserialized payload become [`RuntimeFlag::Unset`],
 /// so a sender built before a flag existed falls back to Rust-side defaults
 /// instead of failing to parse.
+///
+/// `use_new_parser` is a placeholder while the new parser is being implemented:
+///
+/// - It has no corresponding Admin portal flag yet.
+/// - It defaults to [`RuntimeFlag::Off`] when omitted.
+/// - The current parser does not read it.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[serde(default)]
 #[ts(export)]
 pub struct KclRuntimeFlags {
-    #[serde(default)]
-    pub use_cek_executor: RuntimeFlag,
-    #[serde(default)]
-    pub use_new_lexer_parser: RuntimeFlag,
+    pub use_new_parser: RuntimeFlag,
 }
 
 impl KclRuntimeFlags {
     pub const DEFAULT: Self = Self {
-        use_cek_executor: RuntimeFlag::Unset,
-        use_new_lexer_parser: RuntimeFlag::Unset,
+        use_new_parser: RuntimeFlag::Off,
     };
 }
 
@@ -68,6 +71,7 @@ pub fn kcl_runtime_flags() -> KclRuntimeFlags {
     }
 }
 
+#[allow(dead_code, reason = "Retained for future runtime flag consumers.")]
 pub(crate) trait RuntimeFlagResolve {
     fn on() -> Self;
     fn off() -> Self;
@@ -77,6 +81,7 @@ pub(crate) trait RuntimeFlagResolve {
     fn parse_env_var(value: &str) -> Self;
 }
 
+#[allow(dead_code, reason = "Retained for future runtime flag consumers.")]
 pub(crate) fn resolve_from_sources<T: RuntimeFlagResolve>(
     runtime_flag: RuntimeFlag,
     test_override: Option<T>,
@@ -100,20 +105,85 @@ mod tests {
     use super::*;
 
     #[test]
-    fn deserializing_empty_flags_defaults_to_unset() {
+    fn deserializing_empty_flags_preserves_rust_defaults() {
         let flags: KclRuntimeFlags = serde_json::from_str("{}").unwrap();
-        assert_eq!(flags, KclRuntimeFlags::DEFAULT);
+        assert_eq!(flags.use_new_parser, RuntimeFlag::Off);
     }
 
     #[test]
-    fn deserializing_partial_flags_defaults_missing_fields_to_unset() {
-        let flags: KclRuntimeFlags = serde_json::from_str(r#"{"use_new_lexer_parser":"On"}"#).unwrap();
-        assert_eq!(
-            flags,
-            KclRuntimeFlags {
-                use_cek_executor: RuntimeFlag::Unset,
-                use_new_lexer_parser: RuntimeFlag::On,
+    fn deserializing_explicit_parser_flag_preserves_its_value() {
+        let flags: KclRuntimeFlags = serde_json::from_str(r#"{"use_new_parser":"On"}"#).unwrap();
+        assert_eq!(flags.use_new_parser, RuntimeFlag::On);
+    }
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    enum TestMode {
+        Current,
+        New,
+    }
+
+    impl RuntimeFlagResolve for TestMode {
+        fn on() -> Self {
+            Self::New
+        }
+
+        fn off() -> Self {
+            Self::Current
+        }
+
+        fn resolve_default() -> Self {
+            Self::Current
+        }
+
+        fn parse_env_var(value: &str) -> Self {
+            match value {
+                "new" => Self::New,
+                _ => Self::Current,
             }
+        }
+    }
+
+    #[test]
+    fn runtime_flag_takes_priority_over_test_override_and_env() {
+        assert_eq!(
+            resolve_from_sources(RuntimeFlag::Off, Some(TestMode::New), Some("new")),
+            TestMode::Current
+        );
+        assert_eq!(
+            resolve_from_sources(RuntimeFlag::On, Some(TestMode::Current), Some("current")),
+            TestMode::New
+        );
+    }
+
+    #[test]
+    fn test_override_takes_priority_over_env() {
+        assert_eq!(
+            resolve_from_sources(RuntimeFlag::Unset, Some(TestMode::Current), Some("new")),
+            TestMode::Current
+        );
+        assert_eq!(
+            resolve_from_sources(RuntimeFlag::Unset, Some(TestMode::New), Some("current")),
+            TestMode::New
+        );
+    }
+
+    #[test]
+    fn unset_runtime_flag_allows_env_to_select_mode() {
+        assert_eq!(
+            resolve_from_sources::<TestMode>(RuntimeFlag::Unset, None, Some("new")),
+            TestMode::New
+        );
+        assert_eq!(
+            resolve_from_sources::<TestMode>(RuntimeFlag::Unset, None, Some("current")),
+            TestMode::Current
+        );
+    }
+
+    #[test]
+    fn unset_runtime_flag_and_missing_env_select_default_mode() {
+        assert_eq!(
+            resolve_from_sources::<TestMode>(RuntimeFlag::Unset, None, None),
+            TestMode::Current
         );
     }
 }

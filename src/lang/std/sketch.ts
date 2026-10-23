@@ -3556,6 +3556,12 @@ export function tooltipToFnName(tooltip: ToolTip): string | Error {
     case 'angledLineOfXLength':
     case 'angledLineOfYLength':
       return 'angledLine'
+    case 'angledLineThatIntersects':
+    case 'arc':
+    case 'circle':
+    case 'circleThreePoint':
+    case 'startProfile':
+    case 'arcTo':
     default:
       return new Error(`Unknown tooltip function ${tooltip}`)
   }

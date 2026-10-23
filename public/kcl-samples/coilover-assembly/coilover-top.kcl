@@ -23,11 +23,13 @@ region010 = region(segments = [upperStopperProfile.circle1])
 upperStopperExtrude = extrude(region010, length = -upperPistonRodStopLength, tagStart = $upperCapStart001)
   |> chamfer(
        length = 6mm,
-       tags = [
-         getCommonEdge(faces = [
-           region010.tags.circle1,
-           upperCapStart001
-         ])
+       edges = [
+         {
+           sideFaces = [
+             region010.tags.circle1,
+             upperCapStart001
+           ]
+         }
        ],
      )
 
@@ -71,8 +73,10 @@ region012 = region(segments = [upperMountPlateProfile.circle1])
 upperMountPlateExtrude = extrude(region012, length = upperMountPlateThickness, tagEnd = $upperCapEnd002)
   |> chamfer(
        length = 19mm,
-       tags = [
-         getCommonEdge(faces = [region012.tags.circle1, upperCapEnd002])
+       edges = [
+         {
+           sideFaces = [region012.tags.circle1, upperCapEnd002]
+         }
        ],
      )
 
@@ -95,8 +99,10 @@ region013 = region(segments = [upperEyeEndProfile.circle1])
 upperEyeEndExtrude = extrude(region013, length = eyeEndMountLength, tagEnd = $upperCapEnd003)
   |> fillet(
        radius = eyeEndTipFillet,
-       tags = [
-         getCommonEdge(faces = [region013.tags.circle1, upperCapEnd003])
+       edges = [
+         {
+           sideFaces = [region013.tags.circle1, upperCapEnd003]
+         }
        ],
      )
 

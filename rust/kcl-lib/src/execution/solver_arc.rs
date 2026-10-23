@@ -20,11 +20,11 @@
 )]
 use ezpz::datatypes::inputs::DatumCircularArc;
 use ezpz::datatypes::inputs::DatumPoint;
+use kcl_api::ArcDirection;
 use kcl_error::SourceRange;
 
 use crate::KclError;
 use crate::execution::SketchVarId;
-use crate::front::ArcDirection;
 
 /// An arc in the solver's counterclockwise convention. Constructing one from
 /// an arc's declared endpoints and direction is the only way to build arc

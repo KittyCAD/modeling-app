@@ -18,12 +18,12 @@ description: Physical properties gas-impeller.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 125592.16387864684
+    "value": 125592.0990566864
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 266.45495286736764
+    "value": 266.4492963309802
   }
 }

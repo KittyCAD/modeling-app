@@ -120,7 +120,13 @@ pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let edge_index: Option<u32> = args.get_kw_arg_opt("index", &RuntimeType::count(), exec_state)?;
     let closest_to: Option<[TyF64; 3]> = args.get_kw_arg_opt("closestTo", &RuntimeType::point3d(), exec_state)?;
     let closest_to = closest_to
-        .map(|point| [point[0].to_mm(), point[1].to_mm(), point[2].to_mm()])
+        .map(|point| {
+            [
+                point[0].unwrap_to_mm(),
+                point[1].unwrap_to_mm(),
+                point[2].unwrap_to_mm(),
+            ]
+        })
         .map(|[x, y, z]| Point3d { x, y, z });
     match (edge_index, closest_to) {
         (None, None) => Err(KclError::new_semantic(KclErrorDetails::new(
