@@ -307,6 +307,44 @@ export fn offsetPlane(
   offset: number(Length),
 ): Plane {}
 
+/// Create a validated construction plane with an explicit sketch coordinate frame.
+///
+/// Choose exactly one definition: origin/X/Y axes, origin/normal/X direction,
+/// three ordered points, or equation coefficients/X direction. Directions are
+/// dimensionless. Points and equation offset `d` are lengths.
+/// Three points use the first as origin and the first-to-second direction as X.
+/// The equation form uses `a*x + b*y + c*z + d = 0` and the closest point to the
+/// world origin. Normal/equation forms project the X direction into the plane.
+///
+/// ```kcl,norun,sketchSyntaxAgnostic
+/// @settings(kclVersion = 2.0)
+/// p = plane(origin = [0mm, 0mm, 20mm], normal = [0, 0, 1], xAxis = [1, 0, 0])
+/// s = sketch(on = p) {
+///   edge = line(start = [0mm, 0mm], end = [10mm, 0mm])
+/// }
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn plane(
+  /// Sketch origin for axes and normal definitions.
+  origin?: Point3d,
+  /// X axis, or orientation hint projected into the plane.
+  xAxis?: [number(Count); 3],
+  /// Y axis; must be perpendicular to X.
+  yAxis?: [number(Count); 3],
+  /// Plane normal, with direction specifying the positive side.
+  normal?: [number(Count); 3],
+  /// Three noncollinear points, in origin/X/Y-side order.
+  points?: [Point3d; 3],
+  /// X coefficient of the plane equation.
+  a?: number(Count),
+  /// Y coefficient of the plane equation.
+  b?: number(Count),
+  /// Z coefficient of the plane equation.
+  c?: number(Count),
+  /// Constant length in the plane equation.
+  d?: number(Length),
+): Plane {}
+
 /// Clone a sketch or solid.
 ///
 /// This works essentially like a copy-paste operation. It creates a perfect replica

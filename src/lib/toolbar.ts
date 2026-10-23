@@ -25,6 +25,8 @@ import {
 import type { HotkeySequence } from '@src/lib/hotkeys'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import { getSelectedDefaultPlane } from '@src/lib/selections'
+import { inferReferencePlane } from '@src/lib/referencePlanes'
+import { isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -804,21 +806,29 @@ export function buildToolbarConfig(
         },
         'break',
         {
-          id: 'planes',
-          array: [
-            modelingCommand('Offset plane', {
-              id: 'plane-offset',
-            }),
-            {
-              id: 'plane-points',
-              onClick: () =>
-                console.error('Plane through points not yet implemented'),
-              status: 'unavailable',
-              title: '3-Point Plane',
-              description: 'Create a plane from three points.',
-              links: [],
-            },
-          ],
+          id: 'plane',
+          command: 'modeling:Construction plane',
+          onClick: ({ modelingState }) => {
+            const selection = modelingState.context.selectionRanges
+            const hasSelection = !isErr(inferReferencePlane(selection))
+            commands.send({
+              type: 'Find and select command',
+              data: {
+                name: 'Construction plane',
+                groupId: 'modeling',
+                argDefaultValues: {
+                  method: 'References',
+                  ...(hasSelection ? { references: selection } : {}),
+                },
+              },
+            })
+          },
+          icon: 'plane',
+          status: 'available',
+          title: 'Plane',
+          showTitle: true,
+          description: 'Create a plane from selected faces, planes, or points.',
+          links: [],
         },
         modelingCommand('Helix', {
           id: 'helix',

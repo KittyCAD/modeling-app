@@ -187,9 +187,10 @@ export function CommandKclInput({
 
   const allowArrays = arg.allowArrays ?? false
   const allowStringArrays = arg.allowStringArrays ?? false
+  const allowNestedArrays = arg.allowNestedArrays ?? false
   const options = useMemo(
-    () => ({ allowArrays, allowStringArrays }),
-    [allowArrays, allowStringArrays]
+    () => ({ allowArrays, allowStringArrays, allowNestedArrays }),
+    [allowArrays, allowStringArrays, allowNestedArrays]
   )
 
   const {
