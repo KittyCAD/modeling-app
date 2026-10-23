@@ -18,7 +18,10 @@ import { initializeElectronLifecycleClientReporting } from '@src/lib/electronLif
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 import { markOnce } from '@src/lib/performance'
+import { isDesktop } from '@src/lib/isDesktop'
 import { reportRejection } from '@src/lib/trap'
+import { urlService } from '@src/registry/contracts/url'
+import { createBrowserUrlAdapter } from '@src/registry/extensions/url'
 import reportWebVitals from '@src/reportWebVitals'
 
 // Here's the entry-point for the whole app 🚀
@@ -26,6 +29,10 @@ launchApp(app)
 
 /** The initialization sequence for this app */
 function launchApp(app: App) {
+  void app.registry
+    .get(urlService)
+    .start(createBrowserUrlAdapter(window, isDesktop()))
+    .catch(reportRejection)
   initSingletonBehavior(app)
   if (window.electron) {
     initElectronBehavior(window.electron, app)
