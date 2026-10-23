@@ -76,9 +76,9 @@ type ViewRoleLabel =
   | 'Reset View'
   | 'Center View on Selection'
   | 'Named Views'
-  | 'Create Named View'
-  | 'Load Named View'
-  | 'Delete Named View'
+  | 'Create Named View (Legacy)'
+  | 'Load Named View (Legacy)'
+  | 'Delete Named View (Legacy)'
 
 type DesignRoleLabel =
   | 'Design'

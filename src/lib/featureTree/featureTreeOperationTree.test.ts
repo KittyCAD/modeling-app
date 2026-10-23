@@ -1,13 +1,13 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import {
+  defaultNodePath,
   type OperationsByModule,
   type SourceRange,
-  defaultNodePath,
 } from '@src/lang/wasm'
 import {
   buildOperationTree,
   findSameVisibleStdLibOperationAfterSourceChange,
-} from '@src/lib/featureTreeOperationTree'
+} from '@src/lib/featureTree/featureTreeOperationTree'
 import { describe, expect, it } from 'vitest'
 
 type StdLibCallOperation = Extract<Operation, { type: 'StdLibCall' }>
