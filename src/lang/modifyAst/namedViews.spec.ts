@@ -176,9 +176,11 @@ view001 = view::named(
     const renamedCode = recast(renamed.modifiedAst, instance)
     if (err(renamedCode)) throw renamedCode
     expect(renamedCode).toContain('"Renamed view"')
-    expect(renamedCode).toContain('    orientation,')
-    expect(renamedCode).toContain('projection = projection')
-    expect(renamedCode).toContain('baseline = baseline')
+    expect(renamedCode).toContain('    view::Orientation::Front,')
+    expect(renamedCode).toContain(
+      '    projection = view::Projection::Perspective,'
+    )
+    expect(renamedCode).toContain('  baseline = view::Visibility::Show,')
 
     const result = addNamedView({
       ast,
