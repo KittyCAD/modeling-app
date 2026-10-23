@@ -47,6 +47,8 @@ impl ExecutorContext {
             std::mem::take(&mut project.request.files),
             project.request.entrypoint.clone(),
         );
+        self.cache.bump_engine_scene_generation().await;
+        let engine_scene_generation = self.cache.engine_scene_generation().await;
         let response = self
             .engine
             .transport
@@ -70,7 +72,7 @@ impl ExecutorContext {
                 "Engine did not return an ExecKclProject response; update the engine to support remote KCL execution.",
             )));
         };
-        let outcome = project.outcome(*result)?;
+        let outcome = project.outcome(*result, engine_scene_generation)?;
 
         state.mod_local.settings = program
             .meta_settings()
@@ -294,7 +296,11 @@ impl UploadedProject {
         sources
     }
 
-    fn outcome(&self, result: Result<ExecKclProjectOk, ExecKclProjectErr>) -> Result<ExecOutcome, KclErrorWithOutputs> {
+    fn outcome(
+        &self,
+        result: Result<ExecKclProjectOk, ExecKclProjectErr>,
+        engine_scene_generation: usize,
+    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let mut response = match result {
             Ok(response) => response,
             Err(response) => {
@@ -314,6 +320,7 @@ impl UploadedProject {
                     error.filenames = response.filenames;
                     error.source_files = self.sources(&mut error.filenames);
                     error.default_planes = response.default_planes.map(|planes| *planes);
+                    error.engine_scene_generation = Some(engine_scene_generation);
                     return Err(error);
                 }
                 // Completed execution with non-fatal errors still returns an
@@ -346,6 +353,7 @@ impl UploadedProject {
             refactor_metadata: Default::default(),
             issues: response.issues,
             filenames,
+            engine_scene_generation,
             source_files,
             default_planes: response.default_planes.map(|planes| *planes),
             #[cfg(test)]
@@ -452,7 +460,7 @@ mod tests {
     async fn reconstructs_sources_from_uploaded_bytes_after_files_change() {
         let (dir, project) = project().await;
         std::fs::write(dir.path().join("main.kcl"), "changed").unwrap();
-        let outcome = project.outcome(Ok(response())).unwrap();
+        let outcome = project.outcome(Ok(response()), 1).unwrap();
         assert_eq!(outcome.source_files[&ModuleId::default()].source, ROOT);
         assert_eq!(
             outcome.filenames[&ModuleId::default()].to_string(),
@@ -467,10 +475,13 @@ mod tests {
         let program = Program::parse_no_errs("@settings(kclVersion = 3.0)\nvalue = 1").unwrap();
         let project = UploadedProject::collect(&ctx, &program).await.unwrap();
         let error = project
-            .outcome(Err(ExecKclProjectErr::error_before_execution(remote_error(format!(
-                "The entry point `{}` failed",
-                project.request.entrypoint
-            )))))
+            .outcome(
+                Err(ExecKclProjectErr::error_before_execution(remote_error(format!(
+                    "The entry point `{}` failed",
+                    project.request.entrypoint
+                )))),
+                1,
+            )
             .unwrap_err();
         assert_eq!(error.error.message(), "The entry point `main` failed");
     }
@@ -482,30 +493,38 @@ mod tests {
         let mut warning = crate::CompilationIssue::err(SourceRange::synthetic(), "keep warning");
         warning.severity = crate::errors::Severity::Warning;
         let error = project
-            .outcome(Err(ExecKclProjectErr::builder()
-                .error(remote_error("failed"))
-                .non_fatal(vec![warning.clone()])
-                .variables(success.variables)
-                .operations(success.operations)
-                .artifact_graph(success.artifact_graph)
-                .scene_objects(success.scene_objects)
-                .filenames(success.filenames)
-                .build()))
+            .outcome(
+                Err(ExecKclProjectErr::builder()
+                    .error(remote_error("failed"))
+                    .non_fatal(vec![warning.clone()])
+                    .variables(success.variables)
+                    .operations(success.operations)
+                    .artifact_graph(success.artifact_graph)
+                    .scene_objects(success.scene_objects)
+                    .filenames(success.filenames)
+                    .build()),
+                1,
+            )
             .unwrap_err();
         assert_eq!(error.non_fatal, [warning.clone()]);
+        assert_eq!(error.engine_scene_generation, Some(1));
         assert_eq!(error.source_files.len(), 2);
         let response = response();
         let outcome = project
-            .outcome(Err(ExecKclProjectErr::builder()
-                .non_fatal(vec![warning.clone()])
-                .variables(response.variables)
-                .operations(response.operations)
-                .artifact_graph(response.artifact_graph)
-                .scene_objects(response.scene_objects)
-                .filenames(response.filenames)
-                .build()))
+            .outcome(
+                Err(ExecKclProjectErr::builder()
+                    .non_fatal(vec![warning.clone()])
+                    .variables(response.variables)
+                    .operations(response.operations)
+                    .artifact_graph(response.artifact_graph)
+                    .scene_objects(response.scene_objects)
+                    .filenames(response.filenames)
+                    .build()),
+                1,
+            )
             .unwrap();
         assert_eq!(outcome.issues, [warning]);
+        assert_eq!(outcome.engine_scene_generation, 1);
     }
 
     #[test]
@@ -628,12 +647,13 @@ mod tests {
             },
         );
         let mut state = ExecState::new(&ctx);
-        ctx.execute_remote_project(
-            &Program::parse_no_errs("@settings(kclVersion = 3.0)\nvalue = 1").unwrap(),
-            &mut state,
-        )
-        .await
-        .unwrap();
+        let outcome = ctx
+            .execute_remote_project(
+                &Program::parse_no_errs("@settings(kclVersion = 3.0)\nvalue = 1").unwrap(),
+                &mut state,
+            )
+            .await
+            .unwrap();
         ctx.engine
             .send_modeling_cmd(
                 &ctx.engine_batch,
@@ -645,6 +665,8 @@ mod tests {
             )
             .await
             .unwrap();
+        assert_eq!(outcome.engine_scene_generation, 1);
+        assert_eq!(ctx.cache.engine_scene_generation().await, 1);
         let requests = requests.lock().await;
         assert_eq!(requests.len(), 2);
         assert!(matches!(requests[0], WebSocketRequest::ExecKclProject { .. }));
