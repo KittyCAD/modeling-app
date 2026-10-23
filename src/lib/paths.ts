@@ -46,7 +46,7 @@ function getProjectDirectorySetting(
   return typeof directory === 'string' ? directory : undefined
 }
 
-function getRelativePathIfContained(
+export function getRelativePathIfContained(
   parentDirectory: string,
   targetPath: string
 ): string | undefined {
