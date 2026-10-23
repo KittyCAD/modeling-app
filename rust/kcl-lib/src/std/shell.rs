@@ -301,6 +301,9 @@ surface = extrude([profile.line1, profile.arc1, profile.line2, profile.line3], l
             include_str!("../../examples/thicken/02-centered-rounded-guard.kcl"),
             include_str!("../../examples/thicken/03-sharp-z-bracket.kcl"),
             include_str!("../../examples/thicken/04-overlap-experiment.kcl"),
+            include_str!("../../examples/thicken/06-aurora-turbine.kcl"),
+            include_str!("../../examples/thicken/07-lotus-ribbon-lamp.kcl"),
+            include_str!("../../examples/thicken/08-wave-roof-pavilion.kcl"),
         ] {
             let program = crate::Program::parse_no_errs(code).unwrap();
             let ctx = crate::ExecutorContext::new_mock(None).await;
