@@ -66,6 +66,11 @@ export interface FileOperationsService {
   readonly pendingChanges: Stream.Stream<number>
   /** Observe one path while coordinated mutations of it are excluded. */
   readonly stat: (path: string) => Effect.Effect<FileStat, FileSystemError>
+  /** Observe a path without repairing missing backing metadata. */
+  readonly statReadOnly: (
+    path: string
+  ) => Effect.Effect<FileStat, FileSystemError>
+  readonly realpath: (path: string) => Effect.Effect<string, FileSystemError>
   /** Check read/write access while coordinated mutations of this path wait. */
   readonly canReadWrite: (
     path: string
@@ -417,6 +422,9 @@ const makeFileOperations = (
       pending: SubscriptionRef.get(pending),
       pendingChanges: pending.changes,
       stat: (path) => coordinateRead(path, fileSystem.stat(path)),
+      statReadOnly: (path) =>
+        coordinateRead(path, fileSystem.statReadOnly(path)),
+      realpath: (path) => coordinateRead(path, fileSystem.realpath(path)),
       canReadWrite: (path) =>
         coordinateRead(path, fileSystem.canReadWrite(path)),
       exists: (path) => coordinateRead(path, fileSystem.exists(path)),
@@ -502,6 +510,14 @@ export const fileOperationChanges = FileOperations.pipe(
 
 export const stat = (path: string) =>
   FileOperations.pipe(Effect.flatMap((operations) => operations.stat(path)))
+
+export const statReadOnly = (path: string) =>
+  FileOperations.pipe(
+    Effect.flatMap((operations) => operations.statReadOnly(path))
+  )
+
+export const realpath = (path: string) =>
+  FileOperations.pipe(Effect.flatMap((operations) => operations.realpath(path)))
 
 export const canReadWrite = (path: string) =>
   FileOperations.pipe(

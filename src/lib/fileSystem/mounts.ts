@@ -60,6 +60,8 @@ export function createMountedFileOperations(
         )
       ).reduce((a, b) => a + b, 0),
     stat: (path) => find(path).stat(path),
+    statReadOnly: (path) => find(path).statReadOnly(path),
+    realpath: (path) => find(path).realpath(path),
     canReadWrite: (path) => find(path).canReadWrite(path),
     exists: (path) => find(path).exists(path),
     readDirectory: (path) => find(path).readDirectory(path),

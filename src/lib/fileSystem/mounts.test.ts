@@ -31,6 +31,60 @@ describe('project storage routing', () => {
     expect(localRead).toHaveBeenCalledTimes(2)
   })
 
+  it('routes read-only path checks to the local backing for library projects', async () => {
+    const localRealpath = vi.fn(async (path: string) => path)
+    const cloudRealpath = vi.fn(async (path: string) => path)
+    const localStatReadOnly = vi.fn(async () => ({
+      kind: 'file' as const,
+      size: 1,
+      device: 0,
+      inode: 0,
+      accessedAt: 0,
+      changedAt: 0,
+      modifiedAt: 0,
+      createdAt: 0,
+    }))
+    const cloudStatReadOnly = vi.fn(async () => ({
+      kind: 'file' as const,
+      size: 2,
+      device: 0,
+      inode: 0,
+      accessedAt: 0,
+      changedAt: 0,
+      modifiedAt: 0,
+      createdAt: 0,
+    }))
+    const router = createMountedFileOperations(
+      {
+        ...testFileOperations,
+        realpath: localRealpath,
+        statReadOnly: localStatReadOnly,
+      },
+      posix
+    )
+    router.mount({
+      root: '/cloud',
+      operations: {
+        ...testFileOperations,
+        realpath: cloudRealpath,
+        statReadOnly: cloudStatReadOnly,
+      },
+    })
+
+    expect(await router.operations.realpath('/local/main.kcl')).toBe(
+      '/local/main.kcl'
+    )
+    expect(
+      await router.operations.statReadOnly('/local/main.kcl')
+    ).toMatchObject({
+      size: 1,
+    })
+    expect(localRealpath).toHaveBeenCalledOnce()
+    expect(localStatReadOnly).toHaveBeenCalledOnce()
+    expect(cloudRealpath).not.toHaveBeenCalled()
+    expect(cloudStatReadOnly).not.toHaveBeenCalled()
+  })
+
   it('never removes a transfer source when destination persistence fails', async () => {
     const remove = vi.fn()
     const router = createMountedFileOperations(

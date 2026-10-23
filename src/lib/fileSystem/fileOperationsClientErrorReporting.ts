@@ -12,6 +12,7 @@ export type FileOperationsOperation =
   | 'move'
   | 'read-directory'
   | 'read-file'
+  | 'realpath'
   | 'remove'
   | 'rename'
   | 'stat'
