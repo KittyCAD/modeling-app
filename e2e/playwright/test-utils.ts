@@ -66,44 +66,8 @@ import {
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import {
-  DefaultLayoutPaneID,
-  defaultLayoutConfig,
-} from '@src/lib/layout/configs/default'
-import {
-  createLayoutWithMetadata,
-  findAndUpdateSplitSizes,
-  setOpenPanes,
-} from '@src/lib/layout/utils'
-
 export const PLAYWRIGHT_TEST_SCOPE_KEY = 'playwrightTestScope'
 export const PLAYWRIGHT_STORAGE_SCOPE_KEY = 'playwrightStorageScope'
-
-/** Save test pane preferences using the same layout and settings as the app. */
-export function playwrightLayoutSettings(zookeeperEnabled = false) {
-  const layout = structuredClone(defaultLayoutConfig)
-  if (!zookeeperEnabled) {
-    setOpenPanes(layout, [DefaultLayoutPaneID.Code])
-    // Keep the visible editor/scene split at 46/54, retaining 30% for Zookeeper when reopened.
-    findAndUpdateSplitSizes({
-      rootLayout: layout,
-      targetNodeId: layout.id,
-      newSizes: [46 * 0.7, 54 * 0.7, 30],
-    })
-    findAndUpdateSplitSizes({
-      rootLayout: layout,
-      targetNodeId: DefaultLayoutPaneID.FeatureTree,
-      newSizes: [75, 25],
-    })
-  }
-  return {
-    layout: {
-      configs: {
-        default: JSON.stringify(createLayoutWithMetadata(layout)),
-      },
-    },
-  }
-}
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -1118,7 +1082,6 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
-          ...playwrightLayoutSettings(testInfo?.tags.includes('@zookeeper')),
           plugins: playwrightPluginSettings({
             cloudSyncEnabled,
             zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),

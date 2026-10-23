@@ -39,7 +39,6 @@ import {
 import {
   PLAYWRIGHT_TEST_SCOPE_KEY,
   getUtils,
-  playwrightLayoutSettings,
   settingsToToml,
   setup,
 } from '@e2e/playwright/test-utils'
@@ -119,27 +118,6 @@ export class AuthenticatedApp {
     await this.page.setViewportSize(this.viewPortSize)
 
     await u.waitForAuthSkipAppStart()
-
-    // Web reads settings from OPFS, so its localStorage seed does not hydrate pane preferences.
-    await this.page.waitForFunction(() =>
-      window.app?.settings.actor.getSnapshot().matches('idle')
-    )
-    await this.page.evaluate(
-      (layout) => {
-        window.app.settings.actor.send({
-          type: 'set.layout.configs',
-          data: { level: 'user', value: { default: layout } },
-        })
-        window.app.layout.set(layout.layout)
-      },
-      JSON.parse(
-        playwrightLayoutSettings(this.testInfo.tags.includes('@zookeeper'))
-          .layout.configs.default
-      )
-    )
-    await this.page.waitForFunction(() =>
-      window.app.settings.actor.getSnapshot().matches('idle')
-    )
   }
   getInputFile = (fileName: string) => {
     return fsp.readFile(
@@ -488,7 +466,6 @@ export class ElectronZoo {
     settingsOverridesToml = settingsToToml({
       settings: {
         ...TEST_SETTINGS,
-        ...playwrightLayoutSettings(appSettingsPlugins.zookeeper === true),
         ...appSettings,
         plugins: {
           ...playwrightPluginSettings(),
