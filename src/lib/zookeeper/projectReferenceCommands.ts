@@ -6,9 +6,12 @@ import {
   RemoteProjectArchiveLimitError,
 } from '@src/lib/cloudSync/cloudApi'
 import { readProjectArchiveFile } from '@src/lib/cloudSync/projectArchive'
+import { CurrentProjectCopyError } from '@src/lib/zookeeper/copyIntoCurrentProject'
 import type { CloudSyncConfig } from '@src/lib/cloudSync/types'
+import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import { getProjectDefaultFileFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
 import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import { isArray, isRecord } from '@src/lib/utils'
@@ -24,6 +27,8 @@ const MAX_FILE_BYTES = 256 * 1024
 const READ_CHARS = 8_000
 const MAX_LIST_PAGE_BYTES = 32 * 1024
 const MAX_ARCHIVE_BYTES = 32 * 1024 * 1024
+const MAX_CURRENT_PROJECT_COPY_FILES = 128
+const MAX_CURRENT_PROJECT_COPY_BYTES = 32 * 1024 * 1024
 const MAX_DEPTH = 16
 
 class ProjectReferenceCommandError extends Error {}
@@ -66,11 +71,15 @@ const commands = [
     id: 'projects.duplicate',
     title: 'Duplicate library project',
     description:
-      'Create an exact copy of a complete local or cloud library project as a new project. Use this when the user asks to copy or recreate a whole project exactly. The current project stays unchanged. If the connection drops, search for the copy before retrying.',
+      'Copy a local or cloud library project. Omit destination or use new_project to create a separate exact copy. Use current_project when the user asks to put a KCL-only model in the currently open blank project; this copies its KCL files while preserving the current project identity and settings. If the connection drops, check whether the copy completed before retrying.',
     input_schema: {
       type: 'object',
       properties: {
         project_id: { type: 'string' },
+        destination: {
+          type: 'string',
+          enum: ['new_project', 'current_project'],
+        },
       },
       required: ['project_id'],
       additionalProperties: false,
@@ -183,6 +192,11 @@ export function createProjectReferenceCommands(deps: {
   getHomeProjectActions?: () =>
     | Pick<HomeProjectActionsService, 'canDuplicate' | 'duplicate'>
     | undefined
+  copyIntoCurrentProject?: (
+    files: readonly { path: string; data: Uint8Array }[],
+    sourceTitle: string,
+    sourcePath?: string
+  ) => Promise<{ title: string }>
   isSessionActive?: () => boolean
   includePersonalCloud?: () => boolean
 }): ProjectReferenceCommandTransport {
@@ -505,7 +519,10 @@ export function createProjectReferenceCommands(deps: {
     return resolved
   }
 
-  async function localFiles(root: string): Promise<string[]> {
+  async function localFiles(
+    root: string,
+    include: (path: string) => boolean = isReadableFile
+  ): Promise<string[]> {
     const found: string[] = []
     const projectRoot = await deps.fileOperations.realpath(root)
     const queue = [{ absolute: projectRoot, relative: '', depth: 0 }]
@@ -547,7 +564,7 @@ export function createProjectReferenceCommands(deps: {
         const stat = await deps.fileOperations.statReadOnly(absolute)
         if (stat.kind === 'directory' && current.depth + 1 < MAX_DEPTH) {
           queue.push({ absolute, relative, depth: current.depth + 1 })
-        } else if (stat.kind === 'file' && isReadableFile(relative)) {
+        } else if (stat.kind === 'file' && include(relative)) {
           found.push(relative)
         }
       }
@@ -694,7 +711,167 @@ export function createProjectReferenceCommands(deps: {
     }
   }
 
+  async function projectFilesForCurrentCopy(entry: HomeProjectEntry) {
+    let paths: string[]
+    let readSourceFile: (path: string) => Promise<Uint8Array>
+    if (entry.localProjectPath) {
+      const root = await deps.fileOperations.realpath(entry.localProjectPath)
+      paths = await localFiles(root, isSafeRelativePath)
+      readSourceFile = async (path) => {
+        const absolute = await resolvedProjectPath(
+          root,
+          fsZds.join(root, ...webSafePathSplit(path))
+        )
+        if (!absolute) {
+          return Promise.reject(
+            new ProjectReferenceCommandError(
+              'A source file is outside the library project.'
+            )
+          )
+        }
+        const stat = await deps.fileOperations.statReadOnly(absolute)
+        if (
+          stat.kind !== 'file' ||
+          stat.size > MAX_CURRENT_PROJECT_COPY_BYTES
+        ) {
+          return Promise.reject(
+            new ProjectReferenceCommandError('A source file is too large.')
+          )
+        }
+        return deps.fileOperations.readFile(absolute)
+      }
+    } else {
+      if (!entry.remoteProjectId) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'Project is unavailable in this library.'
+          )
+        )
+      }
+      const apiToken = deps.getApiToken()
+      const config: CloudSyncConfig = { enabled: true, token: apiToken }
+      const project = await getRemoteProject(config, entry.remoteProjectId)
+      if (
+        apiToken !== deps.getApiToken() ||
+        (remoteEntries.has(entry.id) &&
+          project.access?.scope === 'organization') ||
+        !isArray(project.files) ||
+        project.files.length > MAX_FILES * 2
+      ) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'Project is unavailable in this library.'
+          )
+        )
+      }
+      paths = []
+      for (const file of project.files) {
+        if (!isRecord(file) || typeof file.relative_path !== 'string') {
+          return Promise.reject(
+            new ProjectReferenceCommandError('Project files are unavailable.')
+          )
+        }
+        if (isSafeRelativePath(file.relative_path)) {
+          paths.push(file.relative_path)
+        }
+      }
+      let archive: ArrayBuffer
+      try {
+        archive = await downloadRemoteProjectArchive(
+          config,
+          entry.remoteProjectId,
+          MAX_ARCHIVE_BYTES
+        )
+      } catch (error) {
+        if (error instanceof RemoteProjectArchiveLimitError) {
+          return Promise.reject(new ProjectReferenceCommandError(error.message))
+        }
+        return Promise.reject(error)
+      }
+      if (apiToken !== deps.getApiToken()) {
+        return Promise.reject(
+          new ProjectReferenceCommandError('The account changed. Search again.')
+        )
+      }
+      readSourceFile = async (path) => {
+        const data = await readProjectArchiveFile(
+          archive,
+          path,
+          MAX_FILES * 2,
+          MAX_CURRENT_PROJECT_COPY_BYTES
+        )
+        if (!data) {
+          return Promise.reject(
+            new ProjectReferenceCommandError('A source file is unavailable.')
+          )
+        }
+        return data
+      }
+    }
+
+    paths = paths.filter((path) => path !== PROJECT_IMAGE_NAME)
+    if (
+      paths.some(
+        (path) =>
+          path !== 'project.toml' &&
+          fsZds.extname(path).toLowerCase() !== '.kcl'
+      )
+    ) {
+      return Promise.reject(
+        new ProjectReferenceCommandError(
+          'Copying into the current project supports KCL-only sources.'
+        )
+      )
+    }
+    if (paths.includes('project.toml')) {
+      const projectToml = new TextDecoder('utf-8', { fatal: true }).decode(
+        await readSourceFile('project.toml')
+      )
+      const defaultFile =
+        getProjectDefaultFileFromProjectTomlContents(projectToml)
+      if (defaultFile && defaultFile !== 'main.kcl') {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'The source project does not open from main.kcl.'
+          )
+        )
+      }
+    }
+    paths = paths.filter((path) => path !== 'project.toml')
+    if (
+      paths.length === 0 ||
+      paths.length > MAX_CURRENT_PROJECT_COPY_FILES ||
+      new Set(paths).size !== paths.length ||
+      !paths.includes('main.kcl')
+    ) {
+      return Promise.reject(
+        new ProjectReferenceCommandError(
+          'The source project cannot be copied into the current project.'
+        )
+      )
+    }
+    const files: { path: string; data: Uint8Array }[] = []
+    let totalBytes = 0
+    for (const path of paths) {
+      const data = await readSourceFile(path)
+      totalBytes += data.byteLength
+      if (totalBytes > MAX_CURRENT_PROJECT_COPY_BYTES) {
+        return Promise.reject(
+          new ProjectReferenceCommandError('The source project is too large.')
+        )
+      }
+      files.push({ path, data })
+    }
+    return files
+  }
+
   async function duplicate(args: Record<string, unknown>) {
+    const destination = args.destination ?? 'new_project'
+    if (destination !== 'new_project' && destination !== 'current_project') {
+      return Promise.reject(
+        new ProjectReferenceCommandError('Invalid project destination.')
+      )
+    }
     const entry = resolveProject(args.project_id)
     const actions = deps.getHomeProjectActions?.()
     if (
@@ -727,6 +904,29 @@ export function createProjectReferenceCommands(deps: {
     if (deps.isSessionActive?.() === false) {
       return Promise.reject(
         new ProjectReferenceCommandError('Project session changed.')
+      )
+    }
+    if (destination === 'current_project') {
+      if (!deps.copyIntoCurrentProject) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'The current project cannot be used as a destination.'
+          )
+        )
+      }
+      const files = await projectFilesForCurrentCopy(entry)
+      if (
+        deps.isSessionActive?.() === false ||
+        !resolveProject(args.project_id)
+      ) {
+        return Promise.reject(
+          new ProjectReferenceCommandError('Project session changed.')
+        )
+      }
+      return deps.copyIntoCurrentProject(
+        files,
+        getHomeProjectDisplayName(entry),
+        entry.localProjectPath
       )
     }
     const result = await actions.duplicate(entry, { notify: false })
@@ -863,7 +1063,8 @@ export function createProjectReferenceCommands(deps: {
               catalog_revision: request.catalog_revision,
               status: 'rejected',
               error:
-                error instanceof ProjectReferenceCommandError
+                error instanceof ProjectReferenceCommandError ||
+                error instanceof CurrentProjectCopyError
                   ? error.message
                   : 'Could not access the library project.',
             })
