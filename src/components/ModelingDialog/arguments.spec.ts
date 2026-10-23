@@ -1,4 +1,3 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { resolveArguments } from '@src/components/ModelingDialog/arguments'
 import { assertParse } from '@src/lang/wasm'
 import type { Command } from '@src/lib/commandTypes'
@@ -8,6 +7,7 @@ import {
   assertNotErr,
   buildTheWorldAndNoEngineConnection,
 } from '@src/unitTestUtils'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 function faceSelection(entityId: string): Selections {
   return {
@@ -109,7 +109,9 @@ describe('resolveArguments', () => {
           inputType: 'selection',
           required: true,
           multiple: false,
-          selectionTypes: ['enginePrimitiveFace'],
+          // Preserve existing references even when the creation collector
+          // accepts a different selection type.
+          selectionTypes: ['segment'],
         },
         hiddenMetadata: {
           inputType: 'kcl',

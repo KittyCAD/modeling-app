@@ -1,9 +1,7 @@
-import path from 'path'
-import * as fsp from 'fs/promises'
-
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { ModelingDialogFixture } from '@e2e/playwright/fixtures/modelingDialogFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
@@ -16,6 +14,8 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import type { BrowserContext, Page } from '@playwright/test'
 import { isStepFile } from '@src/lib/fileExtensions'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import * as fsp from 'fs/promises'
+import path from 'path'
 
 async function insertPartIntoAssembly(
   path: string,
@@ -94,6 +94,7 @@ test.describe(
   'Point-and-click assemblies tests',
   { tag: ['@desktop', '@macos', '@windows'] },
   () => {
+    test.use({ userFeatures: ['modeling_dialogs'] })
     test(`Import kcl parts into assembly as whole module import`, async ({
       folderSetupFn,
       page,
@@ -229,12 +230,19 @@ test.describe(
       editor: EditorFixture,
       toolbar: ToolbarFixture,
       cmdBar: CmdBarFixture,
+      modelingDialog: ModelingDialogFixture,
       selectionType: 'scene' | 'feature-tree',
       folderSetupFn: (
         fn: (dir: string) => Promise<void>
       ) => Promise<{ dir: string }>
     ) {
-      const selectedObjects = selectionType === 'scene' ? '1 path' : '1 other'
+      const selectedObjects =
+        selectionType === 'scene' ? /^1 (path|other)$/ : '1 other'
+      // Picking the scaled geometry appends Rotate to that operation's pipe.
+      const rotateCall = (angle: string) =>
+        selectionType === 'scene'
+          ? `|> rotate(axis = Z, angle = ${angle})`
+          : `rotate(bracket, axis = Z, angle = ${angle})`
       async function selectBracket() {
         if (selectionType === 'scene') {
           // The bracket is only visible in the lower-right of the default view
@@ -242,7 +250,9 @@ test.describe(
             format: 'ratio',
           })
           await clickBracketInScene()
-          await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
+          await expect(toolbar.selectionStatus).toContainText(
+            /1 (path|face|other)/
+          )
           return
         } else if (selectionType === 'feature-tree') {
           const op = await toolbar.getFeatureTreeOperation('bracket', 0)
@@ -292,41 +302,17 @@ test.describe(
       await test.step('Set translate on module', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.selectTransform('translate')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'objects',
-          currentArgValue: '',
-          headerArguments: {
-            Objects: '',
-            X: '5',
-          },
-          highlightedHeaderArg: 'objects',
-          commandName: 'Translate',
-        })
+        await modelingDialog.selection('Objects').click()
         await selectBracket()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'x',
-          currentArgValue: '5',
-          headerArguments: {
-            Objects: selectedObjects,
-            X: '5',
-          },
-          highlightedHeaderArg: 'x',
-          commandName: 'Translate',
-        })
-        await page.keyboard.insertText('1')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-            X: '1',
-          },
-          commandName: 'Translate',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.selection('Objects')).toHaveText(
+          selectedObjects
+        )
+
+        await expect(modelingDialog.input(/^x\b/i)).toHaveText('5')
+        await modelingDialog.input(/^x\b/i).fill('1')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
@@ -338,36 +324,12 @@ test.describe(
       await test.step('Edit translate on module', async () => {
         const op = await toolbar.getFeatureTreeOperation('Translate', 0)
         await op.dblclick()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            X: '1',
-          },
-          commandName: 'Translate',
-        })
-        await cmdBar.clickOptionalArgument('y')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'y',
-          currentArgValue: '0',
-          headerArguments: {
-            X: '1',
-            Y: '',
-          },
-          highlightedHeaderArg: 'y',
-          commandName: 'Translate',
-        })
-        await page.keyboard.insertText('2')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            X: '1',
-            Y: '2',
-          },
-          commandName: 'Translate',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.submitButton).toBeEnabled()
+
+        await modelingDialog.input(/^y\b/i).fill('2')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain(
           `translate(bracket, x = 1, y = 2)`,
@@ -380,41 +342,17 @@ test.describe(
       await test.step('Set scale on module', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.selectTransform('scale')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'objects',
-          currentArgValue: '',
-          headerArguments: {
-            Objects: '',
-            Factor: '2',
-          },
-          highlightedHeaderArg: 'objects',
-          commandName: 'Scale',
-        })
+        await modelingDialog.selection('Objects').click()
         await selectBracket()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'factor',
-          currentArgValue: '2',
-          headerArguments: {
-            Objects: selectedObjects,
-            Factor: '2',
-          },
-          highlightedHeaderArg: 'factor',
-          commandName: 'Scale',
-        })
-        await page.keyboard.insertText('1.1')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-            Factor: '1.1',
-          },
-          commandName: 'Scale',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.selection('Objects')).toHaveText(
+          selectedObjects
+        )
+
+        await expect(modelingDialog.input(/^factor\b/i)).toHaveText('2')
+        await modelingDialog.input(/^factor\b/i).fill('1.1')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
@@ -428,34 +366,13 @@ test.describe(
       await test.step('Edit scale on module', async () => {
         const op = await toolbar.getFeatureTreeOperation('Scale', 0)
         await op.dblclick()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Factor: '1.1',
-          },
-          commandName: 'Scale',
-        })
-        await cmdBar.clickHeaderArgument('factor')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'factor',
-          currentArgValue: '1.1',
-          headerArguments: {
-            Factor: '1.1',
-          },
-          highlightedHeaderArg: 'factor',
-          commandName: 'Scale',
-        })
-        await page.keyboard.insertText('1.2')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Factor: '1.2',
-          },
-          commandName: 'Scale',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.submitButton).toBeEnabled()
+
+        await expect(modelingDialog.input(/^factor\b/i)).toHaveText('1.1')
+        await modelingDialog.input(/^factor\b/i).fill('1.2')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain(`scale(bracket, factor = 1.2)`, {
           shouldNormalise: true,
@@ -467,44 +384,17 @@ test.describe(
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
 
         await toolbar.selectTransform('rotate')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'objects',
-          currentArgValue: '',
-          headerArguments: {
-            Objects: '',
-            Axis: 'Z',
-            Angle: '45deg',
-          },
-          highlightedHeaderArg: 'objects',
-          commandName: 'Rotate',
-        })
+        await modelingDialog.selection('Objects').click()
         await selectBracket()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'angle',
-          currentArgValue: '45deg',
-          headerArguments: {
-            Objects: selectedObjects,
-            Axis: 'Z',
-            Angle: '45deg',
-          },
-          highlightedHeaderArg: 'angle',
-          commandName: 'Rotate',
-        })
-        await page.keyboard.insertText('0.1')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-            Axis: 'Z',
-            Angle: '0.1',
-          },
-          commandName: 'Rotate',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.selection('Objects')).toHaveText(
+          selectedObjects
+        )
+
+        await expect(modelingDialog.input(/^angle\b/i)).toHaveText('45deg')
+        await modelingDialog.input(/^angle\b/i).fill('0.1')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
@@ -512,7 +402,7 @@ test.describe(
           `
           translate(bracket, x = 1, y = 2)
           scale(bracket, factor = 1.2)
-          rotate(bracket, axis = Z, angle = 0.1)
+          ${rotateCall('0.1')}
           `,
           { shouldNormalise: true }
         )
@@ -521,44 +411,17 @@ test.describe(
       await test.step('Edit rotate on module', async () => {
         const op = await toolbar.getFeatureTreeOperation('Rotate', 0)
         await op.dblclick()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Axis: 'Z',
-            Angle: '0.1',
-          },
-          commandName: 'Rotate',
-        })
-        await cmdBar.clickHeaderArgument('angle')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'angle',
-          currentArgValue: '0.1',
-          headerArguments: {
-            Axis: 'Z',
-            Angle: '0.1',
-          },
-          highlightedHeaderArg: 'angle',
-          commandName: 'Rotate',
-        })
-        await page.keyboard.insertText('0.2')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Axis: 'Z',
-            Angle: '0.2',
-          },
-          commandName: 'Rotate',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.submitButton).toBeEnabled()
+
+        await expect(modelingDialog.input(/^angle\b/i)).toHaveText('0.1')
+        await modelingDialog.input(/^angle\b/i).fill('0.2')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
-        await editor.expectEditor.toContain(
-          `rotate(bracket, axis = Z, angle = 0.2)`,
-          {
-            shouldNormalise: true,
-          }
-        )
+        await editor.expectEditor.toContain(rotateCall('0.2'), {
+          shouldNormalise: true,
+        })
       })
 
       await test.step('Delete the part using the feature tree', async () => {
@@ -566,9 +429,12 @@ test.describe(
         await toolbar.openFeatureTreeOperationContextMenu('Rotate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()
-        await toolbar.openFeatureTreeOperationContextMenu('Scale', 0)
-        await page.getByTestId('context-menu-delete').click()
-        await scene.settled()
+        // Deleting the piped Rotate also removes its enclosing Scale call.
+        if (selectionType === 'feature-tree') {
+          await toolbar.openFeatureTreeOperationContextMenu('Scale', 0)
+          await page.getByTestId('context-menu-delete').click()
+          await scene.settled()
+        }
         await toolbar.openFeatureTreeOperationContextMenu('Translate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()
@@ -657,6 +523,7 @@ test.describe(
       editor,
       toolbar,
       cmdBar,
+      modelingDialog,
       tronApp,
       folderSetupFn,
     }) => {
@@ -670,6 +537,7 @@ test.describe(
         editor,
         toolbar,
         cmdBar,
+        modelingDialog,
         'scene',
         folderSetupFn
       )

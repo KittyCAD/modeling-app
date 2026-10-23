@@ -1,7 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { evaluateCommandArgumentFlags } from '@src/components/CommandBar/utils'
-import type { ArtifactGraph, Program } from '@src/lang/wasm'
 import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
+import type { ArtifactGraph, Program } from '@src/lang/wasm'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -110,8 +110,12 @@ export async function resolveArguments(
     const { isRequired } = evaluateCommandArgumentFlags(arg, current)
     let value = resolved[name]
     if (arg.inputType === 'selection') {
-      if (context.argumentsToSubmit.nodeToEdit)
-        value = context.argumentsToSubmit[name]
+      if (context.argumentsToSubmit.nodeToEdit) {
+        // Edit collectors are read-only. Their original references can use
+        // legacy selection types that the creation collector does not accept.
+        resolved[name] = context.argumentsToSubmit[name]
+        continue
+      }
       let selection = isSelections(value) && hasValue(value) ? value : undefined
       if (selection && artifactGraph && !context.argumentsToSubmit.nodeToEdit) {
         selection = coerceSelectionsForBodyOnlySelectionTypes(
