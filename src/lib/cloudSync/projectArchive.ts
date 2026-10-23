@@ -343,6 +343,77 @@ export function toArrayBuffer(data: Uint8Array): ArrayBuffer {
   return copy.buffer
 }
 
+/** Count central-directory records before JSZip allocates an object per entry. */
+function checkZipEntryLimit(archive: ArrayBuffer, maxEntries: number): boolean {
+  const view = new DataView(archive)
+  const endOfDirectorySize = 22
+  const firstCandidate = Math.max(
+    0,
+    archive.byteLength - 65_535 - endOfDirectorySize
+  )
+  let endOfDirectory = -1
+  for (
+    let offset = archive.byteLength - endOfDirectorySize;
+    offset >= firstCandidate;
+    offset -= 1
+  ) {
+    if (
+      view.getUint32(offset, true) === 0x06054b50 &&
+      offset + endOfDirectorySize + view.getUint16(offset + 20, true) ===
+        archive.byteLength
+    ) {
+      endOfDirectory = offset
+      break
+    }
+  }
+  if (endOfDirectory < 0) {
+    return false
+  }
+
+  const declaredEntries = view.getUint16(endOfDirectory + 10, true)
+  const directorySize = view.getUint32(endOfDirectory + 12, true)
+  const directoryOffset = view.getUint32(endOfDirectory + 16, true)
+  const directoryEnd = directoryOffset + directorySize
+  if (
+    declaredEntries === 0xffff ||
+    directorySize === 0xffffffff ||
+    directoryOffset === 0xffffffff ||
+    directoryEnd !== endOfDirectory ||
+    declaredEntries > maxEntries
+  ) {
+    // Limited reference reads accept ordinary single-volume ZIP files only.
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Too many or unsupported archive entries.')
+  }
+
+  let cursor = directoryOffset
+  let entries = 0
+  while (cursor < directoryEnd) {
+    if (
+      cursor + 46 > directoryEnd ||
+      view.getUint32(cursor, true) !== 0x02014b50
+    ) {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw new Error('Invalid archive directory.')
+    }
+    cursor +=
+      46 +
+      view.getUint16(cursor + 28, true) +
+      view.getUint16(cursor + 30, true) +
+      view.getUint16(cursor + 32, true)
+    entries += 1
+    if (cursor > directoryEnd || entries > maxEntries) {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw new Error('Too many or invalid archive entries.')
+    }
+  }
+  if (entries !== declaredEntries) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Invalid archive directory.')
+  }
+  return true
+}
+
 export async function parseProjectArchive(archive: ArrayBuffer) {
   return withCloudSyncFailureContext(
     { stage: 'archive', point: 'parse-project-archive' },
@@ -414,6 +485,77 @@ function parseJsonProjectArchive(archive: ArrayBuffer) {
   } catch {
     return undefined
   }
+}
+
+function readZipEntryWithinLimit(entry: JSZip.JSZipObject, limit: number) {
+  return new Promise<Uint8Array>((resolve, reject) => {
+    // JSZip exposes internalStream at runtime, but omits it from JSZipObject's
+    // declaration. Streaming lets us stop expansion at the byte limit.
+    const stream = (
+      entry as JSZip.JSZipObject & {
+        internalStream(type: 'uint8array'): JSZip.JSZipStreamHelper<Uint8Array>
+      }
+    ).internalStream('uint8array')
+    const chunks: Uint8Array[] = []
+    let size = 0
+    let exceeded = false
+    stream
+      .on('data', (chunk: Uint8Array) => {
+        if (exceeded) {
+          return
+        }
+        if (size + chunk.byteLength > limit) {
+          exceeded = true
+          stream.pause()
+          reject(new Error('Project archive is too large.'))
+          return
+        }
+        chunks.push(chunk)
+        size += chunk.byteLength
+      })
+      .on('error', reject)
+      .on('end', () => {
+        if (exceeded) {
+          return
+        }
+        const data = new Uint8Array(size)
+        let offset = 0
+        for (const chunk of chunks) {
+          data.set(chunk, offset)
+          offset += chunk.byteLength
+        }
+        resolve(data)
+      })
+      .resume()
+  })
+}
+
+/** Extract only the requested file from a bounded cloud ZIP archive. */
+export async function readProjectArchiveFile(
+  archive: ArrayBuffer,
+  relativePath: string,
+  maxArchiveEntries: number,
+  maxFileBytes: number
+): Promise<Uint8Array | undefined> {
+  if (!checkZipEntryLimit(archive, maxArchiveEntries)) {
+    return Promise.reject(new Error('Archive has no ZIP central directory.'))
+  }
+  const zip = await JSZip.loadAsync(archive)
+  const entries = Object.values(zip.files).filter(
+    (entry) => !entry.dir && !entry.name.startsWith('__MACOSX/')
+  )
+  const rootDirectory = getCommonArchiveRoot(entries.map((entry) => entry.name))
+  const matches = entries.filter(
+    (entry) =>
+      normalizeRelativePath(stripArchiveRoot(entry.name, rootDirectory)) ===
+      relativePath
+  )
+  if (matches.length > 1) {
+    return Promise.reject(new Error('Duplicate project file in archive.'))
+  }
+  return matches[0]
+    ? readZipEntryWithinLimit(matches[0], maxFileBytes)
+    : undefined
 }
 
 function getCommonArchiveRoot(fileNames: string[]) {

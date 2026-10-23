@@ -2,14 +2,36 @@ import { mkdtemp, mkdir, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { signal } from '@preact/signals-core'
+import { RemoteProjectArchiveLimitError } from '@src/lib/cloudSync/cloudApi'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
+import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { createProjectReferenceCommands } from '@src/lib/zookeeper/projectReferenceCommands'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+const cloudMocks = vi.hoisted(() => ({
+  download: vi.fn(),
+  get: vi.fn(),
+  list: vi.fn(),
+  parse: vi.fn(),
+}))
+
+vi.mock('@src/lib/cloudSync/cloudApi', () => ({
+  downloadRemoteProjectArchive: cloudMocks.download,
+  getRemoteProject: cloudMocks.get,
+  listRemoteProjects: cloudMocks.list,
+  RemoteProjectArchiveLimitError: class RemoteProjectArchiveLimitError extends Error {
+    constructor() {
+      super('Project archive is too large to reference.')
+    }
+  },
+}))
+vi.mock('@src/lib/cloudSync/projectArchive', () => ({
+  readProjectArchiveFile: cloudMocks.parse,
+}))
 
 const localProject: HomeProjectEntry = {
   id: 'local:/private/library/TRUCK',
@@ -42,6 +64,7 @@ function fixture(
     initialEntries?: HomeProjectEntry[]
     fileOperations?: FileOperationsRegistryService
     getApiToken?: () => string
+    includePersonalCloud?: () => boolean
   } = {}
 ) {
   const entries = signal<readonly HomeProjectEntry[]>(
@@ -93,6 +116,7 @@ function fixture(
     entries,
     fileOperations: options.fileOperations ?? fileOperations,
     getApiToken: options.getApiToken ?? (() => 'token'),
+    includePersonalCloud: options.includePersonalCloud,
   })
   let nextRequest = 0
   async function request(
@@ -149,7 +173,18 @@ describe('Zookeeper project reference commands', () => {
     await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
   })
 
-  it('advertises local reference commands without exposing source paths', async () => {
+  beforeEach(() => {
+    cloudMocks.download.mockReset()
+    cloudMocks.list.mockReset()
+    cloudMocks.get.mockReset().mockResolvedValue({
+      id: 'cloud-123',
+      revision: 'revision-1',
+      files: [{ relative_path: 'main.kcl', byte_size: 20 }],
+    })
+    cloudMocks.parse.mockReset()
+  })
+
+  it('advertises only read-only commands and hides source paths and cloud IDs', async () => {
     const { commands, request, sent, ws } = fixture()
     commands.advertise(ws)
     const catalog = sent[0]
@@ -165,10 +200,135 @@ describe('Zookeeper project reference commands', () => {
       name: string
       source: string
     }>
-    expect(projects).toHaveLength(1)
-    expect(projects.map((project) => project.source)).toEqual(['local'])
+    expect(projects).toHaveLength(2)
+    expect(projects.map((project) => project.source)).toEqual([
+      'local',
+      'cloud',
+    ])
     expect(JSON.stringify(projects)).not.toContain('/private/library')
     expect(JSON.stringify(projects)).not.toContain('cloud-123')
+  })
+
+  it('finds Personal Cloud projects before the Home remote index loads', async () => {
+    cloudMocks.list.mockResolvedValue([
+      { id: 'cloud-123', title: 'TRUCK cloud' },
+      { id: 'cloud-456', title: 'propeller' },
+      {
+        id: 'org-789',
+        title: 'organization design',
+        access: { scope: 'organization' },
+      },
+    ])
+    const { request } = fixture({
+      initialEntries: [localProject],
+      includePersonalCloud: () => true,
+    })
+
+    const response = await request('projects.search', { query: '' })
+    expect(response.status).toBe('succeeded')
+    expect(response.result?.projects).toEqual([
+      expect.objectContaining({ name: 'TRUCK', source: 'local' }),
+      expect.objectContaining({ name: 'TRUCK cloud', source: 'cloud' }),
+      expect.objectContaining({ name: 'propeller', source: 'cloud' }),
+    ])
+    expect(response.result?.next_offset).toBeNull()
+    expect(cloudMocks.list).toHaveBeenCalledWith({
+      enabled: true,
+      token: 'token',
+    })
+  })
+
+  it('does not repeat a Personal Cloud project already loaded by Home', async () => {
+    cloudMocks.list.mockResolvedValue([
+      { id: 'cloud-123', title: 'TRUCK cloud' },
+      { id: 'cloud-456', title: 'propeller' },
+    ])
+    const { request } = fixture({
+      initialEntries: [
+        localProject,
+        {
+          ...cloudProject,
+          libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+        },
+      ],
+      includePersonalCloud: () => true,
+    })
+
+    const response = await request('projects.search', { query: '' })
+    expect(
+      (response.result?.projects as Array<{ name: string }>).map(
+        ({ name }) => name
+      )
+    ).toEqual(['TRUCK', 'TRUCK cloud', 'propeller'])
+  })
+
+  it('reads an API-discovered cloud project without materializing it', async () => {
+    cloudMocks.list.mockResolvedValue([{ id: 'cloud-456', title: 'propeller' }])
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-456',
+      revision: 'revision-1',
+      files: [{ relative_path: 'main.kcl', byte_size: 20 }],
+    })
+    cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
+    cloudMocks.parse.mockResolvedValue(
+      new TextEncoder().encode('blade = circle(12)')
+    )
+    let apiToken = 'token'
+    const { request, readFile } = fixture({
+      initialEntries: [localProject],
+      getApiToken: () => apiToken,
+      includePersonalCloud: () => true,
+    })
+    const projectId = await searchProjectId(request, 'propeller')
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(listing.result?.files).toEqual(['main.kcl'])
+    expect(cloudMocks.download).not.toHaveBeenCalled()
+    const read = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    expect(read.result?.content).toBe('blade = circle(12)')
+    expect(readFile).not.toHaveBeenCalled()
+
+    apiToken = 'different-account'
+    const staleRead = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    expect(staleRead.status).toBe('rejected')
+  })
+
+  it('rejects an API-discovered project that moves outside Personal Cloud', async () => {
+    cloudMocks.list.mockResolvedValue([{ id: 'cloud-456', title: 'propeller' }])
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-456',
+      access: { scope: 'organization' },
+    })
+    const { request } = fixture({
+      initialEntries: [localProject],
+      includePersonalCloud: () => true,
+    })
+    const projectId = await searchProjectId(request, 'propeller')
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(listing.status).toBe('rejected')
+    expect(cloudMocks.download).not.toHaveBeenCalled()
+  })
+
+  it('does not claim a complete catalog when the cloud index request fails', async () => {
+    cloudMocks.list.mockRejectedValue(new Error('network error'))
+    const { request } = fixture({
+      initialEntries: [localProject],
+      includePersonalCloud: () => true,
+    })
+    const response = await request('projects.search', { query: '' })
+    expect(response.status).toBe('rejected')
+    expect(response.error).toBe(
+      'Could not list Personal Cloud projects. Try again.'
+    )
   })
 
   it('rejects requests for another catalog revision', async () => {
@@ -499,5 +659,236 @@ describe('Zookeeper project reference commands', () => {
     expect(response.status).toBe('rejected')
     expect(response.error).not.toContain('/private/library/TRUCK')
     expect(response.error).toBe('Could not access the library project.')
+  })
+
+  it('reads cloud-only project archives without materializing them', async () => {
+    const { request, readFile } = fixture()
+    const archive = new ArrayBuffer(1)
+    cloudMocks.download.mockResolvedValue(archive)
+    cloudMocks.parse.mockResolvedValue(
+      new TextEncoder().encode('cloudWheel = circle(12)')
+    )
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
+    const read = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    expect(read.result?.content).toBe('cloudWheel = circle(12)')
+    expect(cloudMocks.download).toHaveBeenCalledWith(
+      { enabled: true, token: 'token' },
+      'cloud-123',
+      32 * 1024 * 1024
+    )
+    expect(readFile).not.toHaveBeenCalled()
+    expect(cloudMocks.download).toHaveBeenCalledTimes(1)
+    expect(cloudMocks.parse).toHaveBeenCalledWith(
+      archive,
+      'main.kcl',
+      4_000,
+      256 * 1024
+    )
+  })
+
+  it('lists cloud files from metadata without downloading assets', async () => {
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-123',
+      revision: 'revision-1',
+      files: [
+        { relative_path: 'main.kcl' },
+        { relative_path: 'parts/wheel.kcl' },
+        { relative_path: 'render.png' },
+      ],
+    })
+    const { request } = fixture()
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(listing.result?.files).toEqual(['main.kcl', 'parts/wheel.kcl'])
+    expect(cloudMocks.download).not.toHaveBeenCalled()
+  })
+
+  it('reuses one cloud snapshot across file pages and refreshes a new read', async () => {
+    const { request } = fixture()
+    cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
+    cloudMocks.parse.mockResolvedValue(
+      new TextEncoder().encode('a'.repeat(8_001))
+    )
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
+    const first = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    const second = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+      offset: first.result?.next_offset,
+      version: first.result?.version,
+    })
+
+    expect(`${first.result?.content}${second.result?.content}`).toBe(
+      'a'.repeat(8_001)
+    )
+    expect(cloudMocks.download).toHaveBeenCalledOnce()
+    expect(cloudMocks.parse).toHaveBeenCalledOnce()
+    expect(cloudMocks.get).toHaveBeenCalledTimes(2)
+
+    cloudMocks.parse.mockResolvedValue(new TextEncoder().encode('new contents'))
+    const fresh = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    expect(fresh.result?.content).toBe('new contents')
+    expect(cloudMocks.download).toHaveBeenCalledTimes(2)
+  })
+
+  it('rejects a cloud continuation when the remote revision changes', async () => {
+    const { request } = fixture()
+    cloudMocks.get
+      .mockResolvedValueOnce({
+        id: 'cloud-123',
+        revision: 'revision-1',
+        files: [{ relative_path: 'main.kcl' }],
+      })
+      .mockResolvedValueOnce({
+        id: 'cloud-123',
+        revision: 'revision-2',
+        files: [{ relative_path: 'main.kcl' }],
+      })
+    cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
+    cloudMocks.parse
+      .mockResolvedValueOnce(new TextEncoder().encode('a'.repeat(8_001)))
+      .mockResolvedValueOnce(new TextEncoder().encode('b'.repeat(8_001)))
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
+    const first = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    const second = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+      offset: first.result?.next_offset,
+      version: first.result?.version,
+    })
+
+    expect(second.error).toBe(
+      'File changed while reading. Start again from offset 0.'
+    )
+    expect(cloudMocks.download).toHaveBeenCalledTimes(2)
+  })
+
+  it('refreshes each cloud page when the server has no revision', async () => {
+    const { request } = fixture()
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-123',
+      updated_at: '2026-10-19T12:00:00Z',
+      files: [{ relative_path: 'main.kcl' }],
+    })
+    cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
+    cloudMocks.parse
+      .mockResolvedValueOnce(new TextEncoder().encode('a'.repeat(8_001)))
+      .mockResolvedValueOnce(new TextEncoder().encode('b'.repeat(8_001)))
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
+    const first = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    const second = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+      offset: first.result?.next_offset,
+      version: first.result?.version,
+    })
+
+    expect(second.error).toBe(
+      'File changed while reading. Start again from offset 0.'
+    )
+    expect(cloudMocks.get).toHaveBeenCalledTimes(2)
+    expect(cloudMocks.download).toHaveBeenCalledTimes(2)
+    expect(cloudMocks.parse).toHaveBeenCalledTimes(2)
+  })
+
+  it('reloads a cloud snapshot when the API token changes', async () => {
+    let apiToken = 'token'
+    const { request } = fixture({ getApiToken: () => apiToken })
+    cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
+    cloudMocks.parse
+      .mockResolvedValueOnce(new TextEncoder().encode('a'.repeat(8_001)))
+      .mockResolvedValueOnce(new TextEncoder().encode('b'.repeat(8_001)))
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
+    const first = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    apiToken = 'new-token'
+    const second = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+      offset: first.result?.next_offset,
+      version: first.result?.version,
+    })
+
+    expect(second.error).toBe(
+      'File changed while reading. Start again from offset 0.'
+    )
+    expect(cloudMocks.download).toHaveBeenCalledTimes(2)
+    expect(cloudMocks.download).toHaveBeenLastCalledWith(
+      { enabled: true, token: 'new-token' },
+      'cloud-123',
+      32 * 1024 * 1024
+    )
+  })
+
+  it('reports an oversized cloud archive without exposing request details', async () => {
+    const { request } = fixture()
+    cloudMocks.download.mockRejectedValue(new RemoteProjectArchiveLimitError())
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
+
+    const read = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    expect(read.status).toBe('rejected')
+    expect(read.error).toBe('Project archive is too large to reference.')
+    expect(cloudMocks.parse).not.toHaveBeenCalled()
+  })
+
+  it('keeps long file listings within the broker response limit', async () => {
+    const { request } = fixture()
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-123',
+      files: Array.from({ length: 150 }, (_, index) => ({
+        relative_path: `part-${String(index).padStart(3, '0')}-${'x'.repeat(500)}.kcl`,
+      })),
+    })
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
+    const first = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(
+      new TextEncoder().encode(JSON.stringify(first.result)).byteLength
+    ).toBeLessThan(64 * 1024)
+    expect(first.result?.next_offset).toBeTypeOf('number')
+    const second = await request('projects.list_files', {
+      project_id: projectId,
+      offset: first.result?.next_offset,
+    })
+    expect((second.result?.files as string[])[0]).not.toBe(
+      (first.result?.files as string[])[0]
+    )
+    expect(cloudMocks.get).toHaveBeenCalledTimes(2)
+    expect(cloudMocks.download).not.toHaveBeenCalled()
+    expect(cloudMocks.parse).not.toHaveBeenCalled()
+  })
+
+  it('fails closed when cloud file metadata is unavailable', async () => {
+    cloudMocks.get.mockResolvedValue({ id: 'cloud-123' })
+    const { request } = fixture()
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(listing.error).toBe('Project files are unavailable.')
+    expect(cloudMocks.download).not.toHaveBeenCalled()
   })
 })

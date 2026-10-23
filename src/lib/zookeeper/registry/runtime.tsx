@@ -21,6 +21,10 @@ import type {
 import { makeProjectZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
+  isPersonalCloudProjectLibrarySetting,
+  projectLibrariesFromSettings,
+} from '@src/lib/projectLibraries'
+import {
   type AuthRegistryService,
   authService,
 } from '@src/registry/contracts/auth'
@@ -311,6 +315,11 @@ export function createZookeeperRuntime(
           ),
           fileOperations,
           libraryProjects: services.libraryProjects,
+          includePersonalCloud: () =>
+            projectLibrariesFromSettings(
+              services.settings.value?.current.value.app?.libraries?.current ??
+                []
+            ).some(isPersonalCloudProjectLibrarySetting),
           kclManager: next.kclManager,
           project: next.project,
           projectId: next.projectId,

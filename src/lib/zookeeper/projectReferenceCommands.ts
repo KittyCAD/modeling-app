@@ -1,8 +1,17 @@
 import type { ReadonlySignal } from '@preact/signals-core'
+import {
+  downloadRemoteProjectArchive,
+  getRemoteProject,
+  listRemoteProjects,
+  RemoteProjectArchiveLimitError,
+} from '@src/lib/cloudSync/cloudApi'
+import { readProjectArchiveFile } from '@src/lib/cloudSync/projectArchive'
+import type { CloudSyncConfig } from '@src/lib/cloudSync/types'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
-import { isRecord } from '@src/lib/utils'
+import { isArray, isRecord } from '@src/lib/utils'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 
@@ -11,6 +20,7 @@ const MAX_FILES = 2_000
 const MAX_FILE_BYTES = 256 * 1024
 const READ_CHARS = 8_000
 const MAX_LIST_PAGE_BYTES = 32 * 1024
+const MAX_ARCHIVE_BYTES = 32 * 1024 * 1024
 const MAX_DEPTH = 16
 
 class ProjectReferenceCommandError extends Error {}
@@ -37,7 +47,7 @@ const commands = [
     id: 'projects.search',
     title: 'Find library projects',
     description:
-      'Find local projects in the Zoo Design Studio library by name. Returns opaque project_id values for read-only reference commands.',
+      'Find local and cloud projects in the Zoo Design Studio library by name. Returns opaque project_id values for read-only reference commands.',
     input_schema: {
       type: 'object',
       properties: {
@@ -152,11 +162,25 @@ export function createProjectReferenceCommands(deps: {
   entries: ReadonlySignal<readonly HomeProjectEntry[]>
   fileOperations: FileOperationsRegistryService
   getApiToken: () => string
+  includePersonalCloud?: () => boolean
 }): ProjectReferenceCommandTransport {
   const projectIds = new Map<string, string>()
   const projectKeys = new Map<string, string>()
+  const remoteEntries = new Map<string, HomeProjectEntry>()
   const revision = 1
+  let remoteCatalogToken: string | undefined
   let activeSocket: WebSocket | undefined
+  // Continuation pages reuse one bounded snapshot while its cloud revision holds.
+  let cloudSnapshot:
+    | {
+        remoteProjectId: string
+        apiToken: string
+        revision: string
+        path: string
+        data: Uint8Array
+      }
+    | undefined
+  let cloudSnapshotGeneration = 0
 
   function sendCatalog(ws: WebSocket, advertisedCommands: readonly unknown[]) {
     ws.send(
@@ -177,8 +201,12 @@ export function createProjectReferenceCommands(deps: {
     if (!key) {
       return undefined
     }
-    return deps.entries.value.find(
-      (entry) => entry.id === key && Boolean(entry.localProjectPath)
+    return (
+      deps.entries.value.find((entry) => entry.id === key) ??
+      (deps.includePersonalCloud?.() &&
+      remoteCatalogToken === deps.getApiToken()
+        ? remoteEntries.get(key)
+        : undefined)
     )
   }
 
@@ -194,10 +222,73 @@ export function createProjectReferenceCommands(deps: {
       )
     }
     const query = args.query.trim().toLocaleLowerCase()
-    const matches = deps.entries.value
+    const apiToken = deps.getApiToken()
+    if (remoteCatalogToken !== apiToken) {
+      remoteEntries.clear()
+    }
+    let entries = deps.entries.value
+    let cloudEntries: HomeProjectEntry[] = []
+    if (deps.includePersonalCloud?.()) {
+      // Home's remote index can still be loading when Zookeeper starts in an
+      // editor. Read the existing cloud API instead of declaring a partial
+      // in-memory Home list complete.
+      const remoteProjects = await listRemoteProjects({
+        enabled: true,
+        token: apiToken,
+      }).catch(() =>
+        Promise.reject(
+          new ProjectReferenceCommandError(
+            'Could not list Personal Cloud projects. Try again.'
+          )
+        )
+      )
+      if (apiToken !== deps.getApiToken() || !deps.includePersonalCloud?.()) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'Personal Cloud changed. Search again.'
+          )
+        )
+      }
+      entries = deps.entries.value
+      remoteCatalogToken = apiToken
+      const homeCloudIds = new Set(
+        entries
+          .filter((entry) =>
+            entry.libraryIds?.includes(PERSONAL_CLOUD_PROJECT_LIBRARY_ID)
+          )
+          .map((entry) => entry.remoteProjectId)
+      )
+      remoteEntries.clear()
+      cloudEntries = remoteProjects
+        .filter(
+          (project) =>
+            project.access?.scope !== 'organization' &&
+            !homeCloudIds.has(project.id)
+        )
+        .map((project) => {
+          const entry: HomeProjectEntry = {
+            id: `personal-cloud-remote:${project.id}`,
+            source: 'remote',
+            status: 'cloud-only',
+            libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+            name:
+              typeof project.title === 'string' && project.title.trim()
+                ? project.title
+                : project.id,
+            remoteProjectId: project.id,
+            readWriteAccess: true,
+          }
+          remoteEntries.set(entry.id, entry)
+          return entry
+        })
+    } else {
+      remoteEntries.clear()
+      remoteCatalogToken = undefined
+    }
+    const matches = [...entries, ...cloudEntries]
       .filter(
         (entry) =>
-          entry.localProjectPath &&
+          Boolean(entry.localProjectPath || entry.remoteProjectId) &&
           (!query ||
             getHomeProjectDisplayName(entry)
               .toLocaleLowerCase()
@@ -214,7 +305,7 @@ export function createProjectReferenceCommands(deps: {
       return {
         project_id: projectId,
         name: getHomeProjectDisplayName(entry).slice(0, 300),
-        source: 'local',
+        source: entry.localProjectPath ? 'local' : 'cloud',
         status: entry.status,
       }
     })
@@ -223,6 +314,153 @@ export function createProjectReferenceCommands(deps: {
       next_offset:
         matches.length > MAX_PROJECTS ? offset + projects.length : null,
     }
+  }
+
+  async function cloudProjectMetadata(entry: HomeProjectEntry) {
+    if (!entry.remoteProjectId) {
+      return Promise.reject(
+        new ProjectReferenceCommandError(
+          'Project is unavailable in this library.'
+        )
+      )
+    }
+    const apiToken = deps.getApiToken()
+    const config: CloudSyncConfig = {
+      enabled: true,
+      token: apiToken,
+    }
+    const project = await getRemoteProject(config, entry.remoteProjectId)
+    if (
+      apiToken !== deps.getApiToken() ||
+      (remoteEntries.has(entry.id) && project.access?.scope === 'organization')
+    ) {
+      return Promise.reject(
+        new ProjectReferenceCommandError(
+          'Project is unavailable in this library.'
+        )
+      )
+    }
+    if (!isArray(project.files) || project.files.length > MAX_FILES * 2) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('Project files are unavailable.')
+      )
+    }
+    const files: string[] = []
+    const seen = new Set<string>()
+    for (const file of project.files) {
+      if (!isRecord(file) || typeof file.relative_path !== 'string') {
+        return Promise.reject(
+          new ProjectReferenceCommandError('Project files are unavailable.')
+        )
+      }
+      const path = file.relative_path
+      if (!isReadableFile(path)) {
+        continue
+      }
+      if (seen.has(path) || files.length >= MAX_FILES) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'Project has too many files to reference.'
+          )
+        )
+      }
+      seen.add(path)
+      files.push(path)
+    }
+    files.sort((a, b) => a.localeCompare(b))
+    return {
+      apiToken,
+      config,
+      project,
+      remoteProjectId: entry.remoteProjectId,
+      files,
+    }
+  }
+
+  async function readCloudFile(
+    entry: HomeProjectEntry,
+    path: string,
+    useSnapshot: boolean
+  ): Promise<Uint8Array> {
+    const { apiToken, config, project, remoteProjectId, files } =
+      await cloudProjectMetadata(entry)
+    if (!files.includes(path)) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('File is no longer available.')
+      )
+    }
+    // updated_at is not a content revision; revisionless servers need a fresh
+    // archive on every page so the file hash can detect changes.
+    const rawRevision = project.revision
+    const remoteRevision =
+      rawRevision === undefined || rawRevision === null
+        ? undefined
+        : String(rawRevision)
+    if (
+      useSnapshot &&
+      remoteRevision !== undefined &&
+      cloudSnapshot &&
+      cloudSnapshot.remoteProjectId === remoteProjectId &&
+      cloudSnapshot.apiToken === apiToken &&
+      cloudSnapshot.path === path &&
+      apiToken === deps.getApiToken() &&
+      cloudSnapshot.revision === remoteRevision
+    ) {
+      return cloudSnapshot.data
+    }
+    cloudSnapshot = undefined
+    const generation = ++cloudSnapshotGeneration
+    let archive: ArrayBuffer
+    try {
+      archive = await downloadRemoteProjectArchive(
+        config,
+        remoteProjectId,
+        MAX_ARCHIVE_BYTES
+      )
+    } catch (error) {
+      if (error instanceof RemoteProjectArchiveLimitError) {
+        return Promise.reject(new ProjectReferenceCommandError(error.message))
+      }
+      return Promise.reject(error)
+    }
+    let data: Uint8Array | undefined
+    try {
+      data = await readProjectArchiveFile(
+        archive,
+        path,
+        MAX_FILES * 2,
+        MAX_FILE_BYTES
+      )
+    } catch {
+      return Promise.reject(
+        new ProjectReferenceCommandError(
+          'Project archive cannot be referenced.'
+        )
+      )
+    }
+    if (apiToken !== deps.getApiToken()) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('The account changed. Search again.')
+      )
+    }
+    if (!data) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('File is no longer available.')
+      )
+    }
+    if (
+      remoteRevision !== undefined &&
+      generation === cloudSnapshotGeneration
+    ) {
+      cloudSnapshot = {
+        remoteProjectId,
+        apiToken,
+        revision: remoteRevision,
+        path,
+        data,
+      }
+    }
+    return data
   }
 
   async function resolvedProjectPath(root: string, path: string) {
@@ -289,15 +527,23 @@ export function createProjectReferenceCommands(deps: {
     return found.sort((a, b) => a.localeCompare(b))
   }
 
+  async function filesFor(entry: HomeProjectEntry): Promise<string[]> {
+    if (entry.localProjectPath) {
+      return localFiles(entry.localProjectPath)
+    }
+    const { files } = await cloudProjectMetadata(entry)
+    return files
+  }
+
   async function listFiles(args: Record<string, unknown>) {
     const entry = resolveProject(args.project_id)
     const offset = positiveOffset(args.offset)
-    if (!entry?.localProjectPath || offset === undefined) {
+    if (!entry || offset === undefined) {
       return Promise.reject(
         new ProjectReferenceCommandError('Invalid project_id or offset.')
       )
     }
-    const files = await localFiles(entry.localProjectPath)
+    const files = await filesFor(entry)
     const page: string[] = []
     let next = offset
     let pageBytes = 0
@@ -324,7 +570,7 @@ export function createProjectReferenceCommands(deps: {
     const path = args.path
     const version = args.version
     if (
-      !entry?.localProjectPath ||
+      !entry ||
       offset === undefined ||
       typeof path !== 'string' ||
       !isReadableFile(path) ||
@@ -342,25 +588,32 @@ export function createProjectReferenceCommands(deps: {
         )
       )
     }
-    const projectRoot = await deps.fileOperations.realpath(
-      entry.localProjectPath
-    )
-    const absolute = await resolvedProjectPath(
-      projectRoot,
-      fsZds.join(entry.localProjectPath, ...webSafePathSplit(path))
-    )
-    if (!absolute) {
-      return Promise.reject(
-        new ProjectReferenceCommandError('File is not in the library project.')
+    let bytes: Uint8Array
+    if (entry.localProjectPath) {
+      const projectRoot = await deps.fileOperations.realpath(
+        entry.localProjectPath
       )
-    }
-    const stat = await deps.fileOperations.statReadOnly(absolute)
-    if (stat.kind !== 'file' || stat.size > MAX_FILE_BYTES) {
-      return Promise.reject(
-        new ProjectReferenceCommandError('File is not a supported text file.')
+      const absolute = await resolvedProjectPath(
+        projectRoot,
+        fsZds.join(entry.localProjectPath, ...webSafePathSplit(path))
       )
+      if (!absolute) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'File is not in the library project.'
+          )
+        )
+      }
+      const stat = await deps.fileOperations.statReadOnly(absolute)
+      if (stat.kind !== 'file' || stat.size > MAX_FILE_BYTES) {
+        return Promise.reject(
+          new ProjectReferenceCommandError('File is not a supported text file.')
+        )
+      }
+      bytes = await deps.fileOperations.readFile(absolute)
+    } else {
+      bytes = await readCloudFile(entry, path, offset > 0)
     }
-    const bytes = await deps.fileOperations.readFile(absolute)
     if (bytes.byteLength > MAX_FILE_BYTES) {
       return Promise.reject(
         new ProjectReferenceCommandError('File is too large to reference.')

@@ -2,7 +2,9 @@ import 'fake-indexeddb/auto'
 import {
   CloudApiError,
   createRemoteProject,
+  downloadRemoteProjectArchive,
   getRemoteProject,
+  RemoteProjectArchiveLimitError,
 } from '@src/lib/cloudSync/cloudApi'
 import {
   CloudSyncError,
@@ -11,10 +13,12 @@ import {
 } from '@src/lib/cloudSync/failureContext'
 import {
   parseProjectArchive,
+  readProjectArchiveFile,
   projectManifestFromFiles,
 } from '@src/lib/cloudSync/projectArchive'
 import { getAllOutboxEntries } from '@src/lib/cloudSync/syncDb'
 import type { CloudSyncConfig } from '@src/lib/cloudSync/types'
+import JSZip from 'jszip'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const config: CloudSyncConfig = {
@@ -87,6 +91,56 @@ describe('cloud sync failure boundaries', () => {
     })
   })
 
+  it('stops a project archive download as soon as it exceeds its byte limit', async () => {
+    const canceled = vi.fn()
+    const stream = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        controller.enqueue(new Uint8Array(5))
+      },
+      cancel: canceled,
+    })
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(stream)))
+
+    await expect(
+      downloadRemoteProjectArchive(config, 'remote-project', 10)
+    ).rejects.toBeInstanceOf(RemoteProjectArchiveLimitError)
+    expect(canceled).toHaveBeenCalledOnce()
+  })
+
+  it('checks archive content length before reading the response body', async () => {
+    const canceled = vi.fn()
+    const stream = new ReadableStream<Uint8Array>({ cancel: canceled })
+    const response = new Response(stream, {
+      headers: { 'Content-Length': '11' },
+    })
+    const readAll = vi.spyOn(response, 'arrayBuffer')
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response))
+
+    await expect(
+      downloadRemoteProjectArchive(config, 'remote-project', 10)
+    ).rejects.toBeInstanceOf(RemoteProjectArchiveLimitError)
+    expect(canceled).toHaveBeenCalledOnce()
+    expect(readAll).not.toHaveBeenCalled()
+  })
+
+  it('returns a bounded archive downloaded in multiple chunks', async () => {
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array([1, 2]))
+        controller.enqueue(new Uint8Array([3]))
+        controller.close()
+      },
+    })
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(stream)))
+
+    const archive = await downloadRemoteProjectArchive(
+      config,
+      'remote-project',
+      3
+    )
+    expect(new Uint8Array(archive)).toEqual(new Uint8Array([1, 2, 3]))
+  })
+
   it('classifies invalid project archives', async () => {
     const result = await parseProjectArchive(
       new TextEncoder().encode('not-an-archive').buffer
@@ -97,6 +151,59 @@ describe('cloud sync failure boundaries', () => {
       stage: 'archive',
       point: 'parse-project-archive',
     })
+  })
+
+  it('extracts only the requested ZIP file and bounds its expansion', async () => {
+    const zip = new JSZip()
+    zip.file('project/main.kcl', 'shape = circle(10)')
+    zip.file('project/render.png', 'x'.repeat(8 * 1024 * 1024))
+    const archive = await zip.generateAsync({
+      type: 'arraybuffer',
+      compression: 'DEFLATE',
+    })
+
+    const data = await readProjectArchiveFile(
+      archive,
+      'main.kcl',
+      4_000,
+      256 * 1024
+    )
+    expect(new TextDecoder().decode(data)).toBe('shape = circle(10)')
+    await expect(
+      readProjectArchiveFile(archive, 'missing.kcl', 4_000, 256 * 1024)
+    ).resolves.toBeUndefined()
+    await expect(
+      readProjectArchiveFile(archive, 'render.png', 4_000, 256 * 1024)
+    ).rejects.toThrow('Project archive is too large.')
+  })
+
+  it('rejects excessive ZIP entries before JSZip loads them', async () => {
+    const zip = new JSZip()
+    for (let index = 0; index < 20; index += 1) {
+      zip.file(`project/asset-${index}.png`, '')
+    }
+    const archive = await zip.generateAsync({ type: 'arraybuffer' })
+    const load = vi.spyOn(JSZip, 'loadAsync')
+
+    try {
+      await expect(
+        readProjectArchiveFile(archive, 'main.kcl', 10, 256 * 1024)
+      ).rejects.toThrow('archive entries')
+      expect(load).not.toHaveBeenCalled()
+    } finally {
+      load.mockRestore()
+    }
+  })
+
+  it('preserves JSON fallback for existing cloud sync callers', async () => {
+    const archive = new TextEncoder().encode(
+      JSON.stringify({
+        files: [{ relativePath: 'main.kcl', contents: 'cube = 1' }],
+      })
+    ).buffer
+    const files = await parseProjectArchive(archive)
+    expect(files.map((file) => file.relativePath)).toEqual(['main.kcl'])
+    expect(new TextDecoder().decode(files[0].data)).toBe('cube = 1')
   })
 
   it('classifies project manifest hashing failures', async () => {
