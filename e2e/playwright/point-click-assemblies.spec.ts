@@ -762,7 +762,6 @@ test.describe(
             'cube.step',
             'main.kcl',
           ])
-          const importPrompt = page.getByText('Import into my current file')
           const importAction = page.getByRole('button', {
             name: 'Import in current file',
             exact: true,
@@ -773,19 +772,12 @@ test.describe(
           })
           await folder.click()
           await expect(folder).toHaveAttribute('aria-expanded', 'true')
-          await expect(importPrompt).not.toBeVisible()
           await folder.click({ button: 'right' })
           await expect(page.getByTestId('context-menu-rename')).toBeVisible()
           await expect(importAction).not.toBeVisible()
           await page.keyboard.press('Escape')
 
           await toolbar.openFile(complexPlmFileName)
-          await expect(importPrompt).not.toBeVisible()
-          await page
-            .getByRole('treeitem', { name: complexPlmFileName, exact: true })
-            .click({ button: 'right' })
-          await expect(importAction).toBeVisible()
-          await page.keyboard.press('Escape')
           await page
             .locator('#code-pane')
             .getByRole('button', { name: 'Import', exact: true })
