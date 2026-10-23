@@ -234,6 +234,62 @@ describe('layout extension', () => {
     expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
   })
 
+  it('opens panes idempotently without changing sibling sizes or previous snapshots', () => {
+    const settings = createSettings()
+    settings.layout.configs.user = {
+      default: createLayoutWithMetadata(
+        structuredClone(playwrightLayoutConfig)
+      ),
+    }
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-dependencies',
+        providesServices: [
+          provideService(runtimeService, createRuntimeService()),
+          provideService(settingsService, createSettingsService({ settings })),
+          provideService(userFeaturesService, createUserFeaturesService()),
+        ],
+      }),
+      layoutRegistryItem,
+    ])
+    const layout = registry.get(layoutService)
+    const initial = structuredClone(layout.get())
+    expect(layout.openPane('code')).toEqual(initial)
+    expect(layout.openPane('code')).toEqual(initial)
+
+    layout.togglePane('code')
+    const closed = layout.get()
+    const closedSnapshot = structuredClone(closed)
+    const opened = layout.openPane('code')
+    expect(opened).toBe(layout.signal.value)
+    expect(closed).toEqual(closedSnapshot)
+    expect(
+      findLayoutChildNode({
+        rootLayout: opened,
+        targetNodeId: DefaultLayoutToolbarID.Left,
+      })
+    ).toMatchObject({
+      activeIndices: [1],
+      sizes: [100],
+    })
+
+    layout.openPane('variables')
+    const resized = structuredClone(layout.get())
+    const toolbar = findLayoutChildNode({
+      rootLayout: resized,
+      targetNodeId: DefaultLayoutToolbarID.Left,
+    })
+    if (toolbar?.type !== LayoutType.Panes) {
+      throw new Error('Expected a pane toolbar')
+    }
+    expect(toolbar.activeIndices).toEqual([1, 3])
+    toolbar.sizes = [25, 75]
+    layout.set(resized)
+    expect(layout.openPane('code')).toEqual(resized)
+    expect(layout.openPane('variables')).toEqual(resized)
+  })
+
   it('provides the app layout service from runtime, settings, and feature services', () => {
     registry = new Registry()
     registry.configure([

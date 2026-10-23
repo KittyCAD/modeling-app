@@ -14,7 +14,6 @@ import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
-import { getOpenPanes } from '@src/lib/layout/utils'
 import {
   EngineSceneViewExtensionOverlay,
   engineSceneStreamClassNamesValueSpec,
@@ -80,13 +79,7 @@ export const useDefaultAreaLibrary = () => {
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()
-      if (
-        !getOpenPanes({ rootLayout: layout.get() }).includes(
-          DefaultLayoutPaneID.Code
-        )
-      ) {
-        layout.togglePane(DefaultLayoutPaneID.Code)
-      }
+      layout.openPane(DefaultLayoutPaneID.Code)
       kclManager.scrollToFirstErrorDiagnosticIfExists()
     },
     [kclManager, layout]

@@ -80,17 +80,17 @@ export const ModelingMachineProvider = ({
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      layout.togglePane(DefaultLayoutPaneID.FeatureTree)
+      layout.openPane(DefaultLayoutPaneID.FeatureTree)
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      layout.togglePane(DefaultLayoutPaneID.Code)
+      layout.openPane(DefaultLayoutPaneID.Code)
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      layout.togglePane(DefaultLayoutPaneID.Files)
+      layout.openPane(DefaultLayoutPaneID.Files)
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      layout.togglePane(DefaultLayoutPaneID.Variables)
+      layout.openPane(DefaultLayoutPaneID.Variables)
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      layout.togglePane(DefaultLayoutPaneID.Logs)
+      layout.openPane(DefaultLayoutPaneID.Logs)
     } else if (data.menuLabel === 'View.Panes.Zookeeper') {
-      layout.togglePane(DefaultLayoutPaneID.Zookeeper)
+      layout.openPane(DefaultLayoutPaneID.Zookeeper)
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({
         type: 'Enter sketch',
