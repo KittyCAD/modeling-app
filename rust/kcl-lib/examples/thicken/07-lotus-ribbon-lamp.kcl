@@ -44,3 +44,10 @@ crownProfile = sketch(on = offsetPlane(XY, offset = 78mm)) {
 crownSurface = extrude(crownProfile.ring, length = 4mm, bodyType = SURFACE)
 crownRing = thicken(crownSurface, thickness = 3mm, center = true)
   |> appearance(color = "#182832", metalness = 75, roughness = 28)
+
+// Keep construction sketches out of the final rendering.
+hide(petal)
+hide(baseProfile)
+hide(collarProfile)
+hide(diffuserProfile)
+hide(crownProfile)

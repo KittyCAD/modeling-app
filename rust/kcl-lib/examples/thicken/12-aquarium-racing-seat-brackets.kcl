@@ -1,0 +1,214 @@
+// RACE CAR SEAT BRACKETS -- Aquarium design rebuilt with surface thickening.
+// Original geometry: KittyCAD/modeling-app, public/kcl-samples/racing-seat-brackets/main.kcl
+// Source revision: d4629cd3e88783edc7a75d09c5b6c265fb33bcee
+// The original spacing, material thickness, flange trims, and hole/slot patterns are retained.
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
+
+bracketSpacing = 11.75in
+bendRad = 7mm
+thickness = 6.035mm
+holeDiameter = 0.375in
+xPitch = 25mm
+yPitch = 20mm
+xOffset = 100mm
+yOffset = 50mm
+yCount = 4
+
+// Geometry helpers for the original tangent arcs and perimeter trims.
+fn advance(@at, heading, distance) {
+  return [at[0] + distance * cos(heading), at[1] + distance * sin(heading)]
+}
+fn bend(@at, heading, radius, turn) {
+  sign = if turn > 0deg { 1 } else { -1 }
+  center = [at[0] - sign * radius * sin(heading), at[1] + sign * radius * cos(heading)]
+  return {
+    center = center,
+    end = [center[0] + sign * radius * sin(heading + turn), center[1] - sign * radius * cos(heading + turn)]
+  }
+}
+fn reflectX(@at) { return [at[0], -at[1]] }
+fn reflectY(@at) { return [-at[0], at[1]] }
+
+outerRadius = bendRad + thickness
+bracketSpan = 2 * xOffset + 8 * xPitch
+angleA = atan(2 * yPitch / xPitch)
+sectionTop = [0mm, yOffset + 5 * yPitch]
+sectionKnee = [0mm, yOffset - yPitch]
+firstBend = bend(sectionKnee, heading = -90deg, radius = outerRadius, turn = -20deg)
+diagonalDrop = yOffset - yPitch - outerRadius
+diagonalEnd = advance(firstBend.end, heading = -110deg, distance = diagonalDrop / sin(70deg))
+secondBend = bend(diagonalEnd, heading = -110deg, radius = outerRadius, turn = -70deg)
+flangeEnd = [-yOffset - 4 * yPitch, 0mm]
+
+// Only the OUTSIDE of the old closed wall profile is drawn: five open segments.
+section = sketch(on = XZ) {
+  upright = line(start = sectionTop, end = sectionKnee)
+  upperBend = arc(start = sectionKnee, end = firstBend.end, center = firstBend.center, direction = CW)
+  incline = line(start = firstBend.end, end = diagonalEnd)
+  lowerBend = arc(start = diagonalEnd, end = secondBend.end, center = secondBend.center, direction = CW)
+  foot = line(start = secondBend.end, end = flangeEnd)
+}
+sheetSurface = extrude([section.upright, section.upperBend, section.incline, section.lowerBend, section.foot], length = bracketSpan, symmetric = true, bodyType = SURFACE)
+
+// This creates the whole bracket wall. Its two inner bend radii are bendRad.
+bracketBlank = thicken(sheetSurface, thickness = thickness, flip = false)
+
+// Original lower-flange scalloped perimeter, mirrored about X.
+l0 = [-yOffset - 5 * yPitch, 0mm]
+l1 = [l0[0], -xOffset - 5 * xPitch]
+l2 = [-yOffset / 2, l1[1]]
+l3 = [l2[0], l2[1] + 0.99 * xPitch]
+l4 = [secondBend.end[0] - 1.5 * yPitch, l3[1]]
+lTurn1 = bend(l4, heading = 180deg, radius = xPitch, turn = -90deg)
+l5 = lTurn1.end
+l6 = advance(l5, heading = 90deg, distance = 4.5 * yPitch)
+lTurn2 = bend(l6, heading = 90deg, radius = xPitch, turn = -angleA)
+l7 = lTurn2.end
+l8 = advance(l7, heading = 90deg - angleA, distance = 1mm)
+lTurn3 = bend(l8, heading = 90deg - angleA, radius = xPitch, turn = angleA)
+l9 = lTurn3.end
+l10 = [l9[0], 0mm]
+lowerTrim = sketch(on = offsetPlane(XY, offset = -thickness)) {
+  edge00 = line(start = l0, end = l1)
+  edge01 = line(start = l1, end = l2)
+  edge02 = line(start = l2, end = l3)
+  edge03 = line(start = l3, end = l4)
+  edge04 = arc(start = l4, end = l5, center = lTurn1.center, direction = CW)
+  edge05 = line(start = l5, end = l6)
+  edge06 = arc(start = l6, end = l7, center = lTurn2.center, direction = CW)
+  edge07 = line(start = l7, end = l8)
+  edge08 = arc(start = l8, end = l9, center = lTurn3.center, direction = CCW)
+  edge09 = line(start = l9, end = l10)
+  edge10 = line(start = reflectX(l10), end = reflectX(l9))
+  edge11 = arc(start = reflectX(l9), end = reflectX(l8), center = reflectX(lTurn3.center), direction = CCW)
+  edge12 = line(start = reflectX(l8), end = reflectX(l7))
+  edge13 = arc(start = reflectX(l7), end = reflectX(l6), center = reflectX(lTurn2.center), direction = CW)
+  edge14 = line(start = reflectX(l6), end = reflectX(l5))
+  edge15 = arc(start = reflectX(l5), end = reflectX(l4), center = reflectX(lTurn1.center), direction = CW)
+  edge16 = line(start = reflectX(l4), end = reflectX(l3))
+  edge17 = line(start = reflectX(l3), end = reflectX(l2))
+  edge18 = line(start = reflectX(l2), end = reflectX(l1))
+  edge19 = line(start = reflectX(l1), end = reflectX(l0))
+}
+lowerTrimTool = extrude(region(segments = [lowerTrim.edge00, lowerTrim.edge01, lowerTrim.edge02, lowerTrim.edge03, lowerTrim.edge04, lowerTrim.edge05, lowerTrim.edge06, lowerTrim.edge07, lowerTrim.edge08, lowerTrim.edge09, lowerTrim.edge10, lowerTrim.edge11, lowerTrim.edge12, lowerTrim.edge13, lowerTrim.edge14, lowerTrim.edge15, lowerTrim.edge16, lowerTrim.edge17, lowerTrim.edge18, lowerTrim.edge19]), length = 3 * thickness)
+
+// Original upper-flange perimeter, mirrored about its vertical centerline.
+u0 = [0mm, yOffset + 6 * yPitch]
+u1 = [-xOffset - 5 * xPitch, u0[1]]
+u2 = [u1[0], yOffset]
+u3 = [u2[0] + 0.99 * xPitch, u2[1]]
+u4 = [u3[0], yOffset + yPitch]
+uTurn1 = bend(u4, heading = 90deg, radius = xPitch, turn = -90deg + angleA)
+u5 = uTurn1.end
+u6 = advance(u5, heading = angleA, distance = 1.9 * yPitch / sin(angleA))
+uTurn2 = bend(u6, heading = angleA, radius = xPitch, turn = -angleA)
+u7 = uTurn2.end
+u8 = advance(u7, heading = 0deg, distance = 2 * xPitch)
+uTurn3 = bend(u8, heading = 0deg, radius = xPitch, turn = -angleA)
+u9 = uTurn3.end
+u10 = advance(u9, heading = -angleA, distance = (xOffset / 4) / cos(angleA))
+uTurn4 = bend(u10, heading = -angleA, radius = xPitch, turn = angleA)
+u11 = uTurn4.end
+u12 = [0mm, u11[1]]
+upperTrim = sketch(on = offsetPlane(YZ, offset = -2 * thickness)) {
+  edge00 = line(start = u0, end = u1)
+  edge01 = line(start = u1, end = u2)
+  edge02 = line(start = u2, end = u3)
+  edge03 = line(start = u3, end = u4)
+  edge04 = arc(start = u4, end = u5, center = uTurn1.center, direction = CW)
+  edge05 = line(start = u5, end = u6)
+  edge06 = arc(start = u6, end = u7, center = uTurn2.center, direction = CW)
+  edge07 = line(start = u7, end = u8)
+  edge08 = arc(start = u8, end = u9, center = uTurn3.center, direction = CW)
+  edge09 = line(start = u9, end = u10)
+  edge10 = arc(start = u10, end = u11, center = uTurn4.center, direction = CCW)
+  edge11 = line(start = u11, end = u12)
+  edge12 = line(start = reflectY(u12), end = reflectY(u11))
+  edge13 = arc(start = reflectY(u11), end = reflectY(u10), center = reflectY(uTurn4.center), direction = CCW)
+  edge14 = line(start = reflectY(u10), end = reflectY(u9))
+  edge15 = arc(start = reflectY(u9), end = reflectY(u8), center = reflectY(uTurn3.center), direction = CW)
+  edge16 = line(start = reflectY(u8), end = reflectY(u7))
+  edge17 = arc(start = reflectY(u7), end = reflectY(u6), center = reflectY(uTurn2.center), direction = CW)
+  edge18 = line(start = reflectY(u6), end = reflectY(u5))
+  edge19 = arc(start = reflectY(u5), end = reflectY(u4), center = reflectY(uTurn1.center), direction = CW)
+  edge20 = line(start = reflectY(u4), end = reflectY(u3))
+  edge21 = line(start = reflectY(u3), end = reflectY(u2))
+  edge22 = line(start = reflectY(u2), end = reflectY(u1))
+  edge23 = line(start = reflectY(u1), end = reflectY(u0))
+}
+upperTrimTool = extrude(region(segments = [upperTrim.edge00, upperTrim.edge01, upperTrim.edge02, upperTrim.edge03, upperTrim.edge04, upperTrim.edge05, upperTrim.edge06, upperTrim.edge07, upperTrim.edge08, upperTrim.edge09, upperTrim.edge10, upperTrim.edge11, upperTrim.edge12, upperTrim.edge13, upperTrim.edge14, upperTrim.edge15, upperTrim.edge16, upperTrim.edge17, upperTrim.edge18, upperTrim.edge19, upperTrim.edge20, upperTrim.edge21, upperTrim.edge22, upperTrim.edge23]), length = 3 * thickness)
+
+trimmedBracket = subtract(bracketBlank, tools = [lowerTrimTool, upperTrimTool])
+
+// Upper wall: 12 round holes and eight horizontal adjustment slots.
+holeRadius = holeDiameter / 2
+upperHoleSeeds = sketch(on = offsetPlane(YZ, offset = -2 * thickness)) {
+  outerLeft = circle(start = [-xOffset - 3 * xPitch + holeRadius, yOffset], center = [-xOffset - 3 * xPitch, yOffset])
+  outerRight = circle(start = [xOffset + 3 * xPitch + holeRadius, yOffset], center = [xOffset + 3 * xPitch, yOffset])
+  innerLeft = circle(start = [-xOffset - 2 * xPitch + holeRadius, yOffset], center = [-xOffset - 2 * xPitch, yOffset])
+  innerRight = circle(start = [xOffset + 2 * xPitch + holeRadius, yOffset], center = [xOffset + 2 * xPitch, yOffset])
+}
+outerLeftTool = extrude(region(segments = [upperHoleSeeds.outerLeft]), length = 3 * thickness)
+outerRightTool = extrude(region(segments = [upperHoleSeeds.outerRight]), length = 3 * thickness)
+innerLeftTool = extrude(region(segments = [upperHoleSeeds.innerLeft]), length = 3 * thickness)
+innerRightTool = extrude(region(segments = [upperHoleSeeds.innerRight]), length = 3 * thickness)
+outerHoles = patternLinear3d([outerLeftTool, outerRightTool], instances = 2, distance = yPitch, axis = Z)
+innerHoles = patternLinear3d([innerLeftTool, innerRightTool], instances = yCount, distance = yPitch, axis = Z)
+rightSeatSlot = sketch(on = offsetPlane(YZ, offset = -2 * thickness)) {
+  bottom = line(start = [xOffset, yOffset - holeRadius], end = [xOffset + xPitch, yOffset - holeRadius])
+  right = arc(start = [xOffset + xPitch, yOffset - holeRadius], end = [xOffset + xPitch, yOffset + holeRadius], center = [xOffset + xPitch, yOffset])
+  top = line(start = [xOffset + xPitch, yOffset + holeRadius], end = [xOffset, yOffset + holeRadius])
+  left = arc(start = [xOffset, yOffset + holeRadius], end = [xOffset, yOffset - holeRadius], center = [xOffset, yOffset])
+}
+rightSeatSlotTool = extrude(region(segments = [rightSeatSlot.bottom, rightSeatSlot.right, rightSeatSlot.top, rightSeatSlot.left]), length = 3 * thickness)
+leftSeatSlot = sketch(on = offsetPlane(YZ, offset = -2 * thickness)) {
+  bottom = line(start = [-xOffset - xPitch, yOffset - holeRadius], end = [-xOffset, yOffset - holeRadius])
+  right = arc(start = [-xOffset, yOffset - holeRadius], end = [-xOffset, yOffset + holeRadius], center = [-xOffset, yOffset])
+  top = line(start = [-xOffset, yOffset + holeRadius], end = [-xOffset - xPitch, yOffset + holeRadius])
+  left = arc(start = [-xOffset - xPitch, yOffset + holeRadius], end = [-xOffset - xPitch, yOffset - holeRadius], center = [-xOffset - xPitch, yOffset])
+}
+leftSeatSlotTool = extrude(region(segments = [leftSeatSlot.bottom, leftSeatSlot.right, leftSeatSlot.top, leftSeatSlot.left]), length = 3 * thickness)
+seatSlots = patternLinear3d([leftSeatSlotTool, rightSeatSlotTool], instances = yCount, distance = yPitch, axis = Z)
+
+// Base flange: ten 12 mm wide slots, with the original 10 mm straight section.
+baseSlotX1 = secondBend.end[0] - yPitch - yPitch / 2
+baseSlotX2 = secondBend.end[0] - yPitch
+baseSlotRadius = 6mm
+leftBaseSlot = sketch(on = offsetPlane(XY, offset = -thickness)) {
+  bottom = line(start = [baseSlotX1, -xOffset - baseSlotRadius], end = [baseSlotX2, -xOffset - baseSlotRadius])
+  right = arc(start = [baseSlotX2, -xOffset - baseSlotRadius], end = [baseSlotX2, -xOffset + baseSlotRadius], center = [baseSlotX2, -xOffset])
+  top = line(start = [baseSlotX2, -xOffset + baseSlotRadius], end = [baseSlotX1, -xOffset + baseSlotRadius])
+  left = arc(start = [baseSlotX1, -xOffset + baseSlotRadius], end = [baseSlotX1, -xOffset - baseSlotRadius], center = [baseSlotX1, -xOffset])
+}
+leftBaseSlotTool = extrude(region(segments = [leftBaseSlot.bottom, leftBaseSlot.right, leftBaseSlot.top, leftBaseSlot.left]), length = 3 * thickness)
+rightBaseSlot = sketch(on = offsetPlane(XY, offset = -thickness)) {
+  bottom = line(start = [baseSlotX1, xOffset - baseSlotRadius], end = [baseSlotX2, xOffset - baseSlotRadius])
+  right = arc(start = [baseSlotX2, xOffset - baseSlotRadius], end = [baseSlotX2, xOffset + baseSlotRadius], center = [baseSlotX2, xOffset])
+  top = line(start = [baseSlotX2, xOffset + baseSlotRadius], end = [baseSlotX1, xOffset + baseSlotRadius])
+  left = arc(start = [baseSlotX1, xOffset + baseSlotRadius], end = [baseSlotX1, xOffset - baseSlotRadius], center = [baseSlotX1, xOffset])
+}
+rightBaseSlotTool = extrude(region(segments = [rightBaseSlot.bottom, rightBaseSlot.right, rightBaseSlot.top, rightBaseSlot.left]), length = 3 * thickness)
+leftBaseSlots = patternLinear3d(leftBaseSlotTool, instances = 5, distance = -0.75 * xPitch, axis = Y)
+rightBaseSlots = patternLinear3d(rightBaseSlotTool, instances = 5, distance = 0.75 * xPitch, axis = Y)
+
+// Explicit cuts replace the old implicit face-sketch extrusion cuts.
+drilledOuter = subtract(trimmedBracket, tools = outerHoles)
+drilledInner = subtract(drilledOuter, tools = innerHoles)
+drilledSeats = subtract(drilledInner, tools = seatSlots)
+drilledLeftBase = subtract(drilledSeats, tools = leftBaseSlots)
+bracket = subtract(drilledLeftBase, tools = rightBaseSlots)
+  |> appearance(color = "#9babb7", metalness = 80, roughness = 30)
+
+// Retain the original opposed pair and 11.75 inch spacing.
+positionedBracket = translate(bracket, x = bracketSpacing / 2, global = true)
+seatBrackets = patternCircular3d(positionedBracket, instances = 2, center = [0mm, 0mm, 0mm], axis = Z)
+
+// Keep construction sketches out of the final rendering.
+hide(section)
+hide(lowerTrim)
+hide(upperTrim)
+hide(upperHoleSeeds)
+hide(rightSeatSlot)
+hide(leftSeatSlot)
+hide(leftBaseSlot)
+hide(rightBaseSlot)

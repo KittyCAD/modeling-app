@@ -11,3 +11,6 @@ profile = sketch(on = XY) {
 surface = extrude([profile.base, profile.web, profile.flange], length = 22mm, bodyType = SURFACE)
 bracket = thicken(surface, thickness = 4mm, flip = true)
 appearance(bracket, color = "#8b78d4", metalness = 75, roughness = 30)
+
+// Keep construction sketches out of the final rendering.
+hide(profile)

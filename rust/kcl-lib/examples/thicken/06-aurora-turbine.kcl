@@ -38,3 +38,8 @@ upperRim = thicken(upperRimSurface, thickness = 4mm, flip = false)
   |> appearance(color = "#d89d48", metalness = 85, roughness = 24)
 hubCap = extrude(region(segments = [topProfile.cap]), length = 5mm)
   |> appearance(color = "#d89d48", metalness = 90, roughness = 20)
+
+// Keep construction sketches out of the final rendering.
+hide(vane)
+hide(housingProfile)
+hide(topProfile)

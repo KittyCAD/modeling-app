@@ -13,3 +13,6 @@ profile = sketch(on = XY) {
 surface = extrude([profile.base, profile.lowerBend, profile.back, profile.upperBend, profile.top], length = 24mm, bodyType = SURFACE)
 guard = thicken(surface, thickness = 3mm, center = true)
 appearance(guard, color = "#e7a44c", metalness = 65, roughness = 25)
+
+// Keep construction sketches out of the final rendering.
+hide(profile)

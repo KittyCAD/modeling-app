@@ -15,3 +15,6 @@ profile = sketch(on = XY) {
 surface = extrude([profile.lower, profile.bend, profile.upper], length = 16mm, bodyType = SURFACE)
 overlap = thicken(surface, thickness = wallThickness, flip = true)
 appearance(overlap, color = "#dd5577", opacity = 65, roughness = 35)
+
+// Keep construction sketches out of the final rendering.
+hide(profile)

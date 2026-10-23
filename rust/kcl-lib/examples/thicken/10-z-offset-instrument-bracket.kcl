@@ -66,3 +66,11 @@ lipBTool = extrude(region(segments = [lipHoles.lipB]), length = 14mm)
 lipCTool = extrude(region(segments = [lipHoles.lipC]), length = 14mm)
 finishedBracket = subtract(formedBlank, tools = [frontAdjusterTool, rearAdjusterTool, pilotTool, mountATool, mountBTool, mountCTool, mountDTool, webWindowTool, lipATool, lipBTool, lipCTool])
   |> appearance(color = "#38658c", metalness = 60, roughness = 33)
+
+// Keep construction sketches out of the final rendering.
+hide(section)
+hide(frontAdjuster)
+hide(rearAdjuster)
+hide(instrumentHoles)
+hide(webWindow)
+hide(lipHoles)

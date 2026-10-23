@@ -58,3 +58,9 @@ coolingSlot = sketch(on = offsetPlane(YZ, offset = -36mm)) {
 coolingSlotTool = extrude(region(segments = [coolingSlot.lower, coolingSlot.right, coolingSlot.upper, coolingSlot.left]), length = 72mm)
 finishedBracket = subtract(formedBlank, tools = [footATool, footBTool, footCTool, footDTool, motorOpeningTool, motorATool, motorBTool, motorCTool, motorDTool, coolingSlotTool])
   |> appearance(color = "#b6c6d1", metalness = 85, roughness = 28)
+
+// Keep construction sketches out of the final rendering.
+hide(section)
+hide(footHoles)
+hide(motorHoles)
+hide(coolingSlot)

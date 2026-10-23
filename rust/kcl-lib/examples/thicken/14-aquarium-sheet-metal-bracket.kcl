@@ -1,0 +1,100 @@
+// SHEET METAL BRACKET -- Zoo's original 75-degree formed hat bracket.
+// Source: KittyCAD/kcl-llm-finetuning/data/kcl-samples/sheet-metal-bracket/main.kcl
+// Four bends and the top/foot hole patterns are retained; thicken creates the gauge.
+@settings(defaultLengthUnit = in, kclVersion = 3.0, experimentalFeatures = allow)
+
+mountingBoltDiameter = 0.25in
+mountingBoltPatternX = 7in
+mountingBoltPatternY = 4in
+componentBoltDiameter = 0.1875in
+componentBoltPatternX = 2in
+componentBoltPatternY = 3in
+hatHeight = 2.5in
+bendAngle = 75deg
+thickness = 0.125in
+interiorBendRadius = 0.125in
+exteriorBendRadius = interiorBendRadius + thickness
+overhang = 3 * mountingBoltDiameter
+flangeLength = 6 * mountingBoltDiameter
+flangeExtrusion = max([mountingBoltPatternY, componentBoltPatternY]) + 2 * overhang
+
+fn advance(@at, heading, distance) {
+  return [at[0] + distance * cos(heading), at[1] + distance * sin(heading)]
+}
+fn bend(@at, heading, radius, turn) {
+  sign = if turn > 0deg { 1 } else { -1 }
+  center = [at[0] - sign * radius * sin(heading), at[1] + sign * radius * cos(heading)]
+  return {
+    center = center,
+    end = [center[0] + sign * radius * sin(heading + turn), center[1] - sign * radius * cos(heading + turn)]
+  }
+}
+
+// Cutting tools are separate solids; their construction sketches are hidden immediately.
+fn drill(@plane, at, radius, depth) {
+  boreRadius = radius
+  profile = sketch(on = plane) {
+    bore = circle(start = [at[0] + boreRadius, at[1]], center = at)
+  }
+  tool = extrude(region(segments = [profile.bore]), length = depth)
+  hide(profile)
+  return tool
+}
+fn cornerCut(@plane, at, xSign, ySign, radius, depth) {
+  a = [at[0] - xSign * radius, at[1]]
+  c = [at[0], at[1] - ySign * radius]
+  center = [at[0] - xSign * radius, at[1] - ySign * radius]
+  profile = sketch(on = plane) {
+    outerA = line(start = a, end = at)
+    outerB = line(start = at, end = c)
+    round = arc(start = c, end = a, center = center, direction = if xSign * ySign > 0 { CCW } else { CW })
+  }
+  tool = extrude(region(segments = [profile.outerA, profile.outerB, profile.round]), length = depth)
+  hide(profile)
+  return tool
+}
+
+p0 = [-mountingBoltPatternX / 2 - overhang, 0in]
+p1 = [p0[0] + flangeLength, 0in]
+b1 = bend(p1, heading = 0deg, radius = exteriorBendRadius, turn = bendAngle)
+webLength = (hatHeight - thickness - b1.end[1]) / sin(bendAngle)
+p2 = advance(b1.end, heading = bendAngle, distance = webLength)
+b2 = bend(p2, heading = bendAngle, radius = interiorBendRadius, turn = -bendAngle)
+p3 = [-b2.end[0], b2.end[1]]
+b3 = bend(p3, heading = 0deg, radius = interiorBendRadius, turn = -bendAngle)
+p4 = advance(b3.end, heading = -bendAngle, distance = webLength)
+b4 = bend(p4, heading = -bendAngle, radius = exteriorBendRadius, turn = bendAngle)
+p5 = [b4.end[0] + flangeLength, b4.end[1]]
+section = sketch(on = XZ) {
+  leftFoot = line(start = p0, end = p1)
+  leftHeel = arc(start = p1, end = b1.end, center = b1.center)
+  leftWeb = line(start = b1.end, end = p2)
+  leftShoulder = arc(start = p2, end = b2.end, center = b2.center, direction = CW)
+  bridge = line(start = b2.end, end = p3)
+  rightShoulder = arc(start = p3, end = b3.end, center = b3.center, direction = CW)
+  rightWeb = line(start = b3.end, end = p4)
+  rightHeel = arc(start = p4, end = b4.end, center = b4.center)
+  rightFoot = line(start = b4.end, end = p5)
+}
+surface = extrude([section.leftFoot, section.leftHeel, section.leftWeb, section.leftShoulder, section.bridge, section.rightShoulder, section.rightWeb, section.rightHeel, section.rightFoot], length = flangeExtrusion, bodyType = SURFACE)
+hide(section)
+formedBlank = thicken(surface, thickness = thickness, flip = true)
+
+footPlane = offsetPlane(XY, offset = -thickness)
+topPlane = offsetPlane(XY, offset = b2.end[1] - thickness)
+leftA = drill(footPlane, at = [-mountingBoltPatternX / 2, -overhang], radius = mountingBoltDiameter / 2, depth = 3 * thickness)
+leftB = drill(footPlane, at = [-mountingBoltPatternX / 2, -overhang - mountingBoltPatternY], radius = mountingBoltDiameter / 2, depth = 3 * thickness)
+rightA = drill(footPlane, at = [mountingBoltPatternX / 2, -overhang], radius = mountingBoltDiameter / 2, depth = 3 * thickness)
+rightB = drill(footPlane, at = [mountingBoltPatternX / 2, -overhang - mountingBoltPatternY], radius = mountingBoltDiameter / 2, depth = 3 * thickness)
+topA = drill(topPlane, at = [-componentBoltPatternX / 2, -flangeExtrusion / 2 + componentBoltPatternY / 2], radius = componentBoltDiameter / 2, depth = 3 * thickness)
+topB = drill(topPlane, at = [componentBoltPatternX / 2, -flangeExtrusion / 2 + componentBoltPatternY / 2], radius = componentBoltDiameter / 2, depth = 3 * thickness)
+topC = drill(topPlane, at = [-componentBoltPatternX / 2, -flangeExtrusion / 2 - componentBoltPatternY / 2], radius = componentBoltDiameter / 2, depth = 3 * thickness)
+topD = drill(topPlane, at = [componentBoltPatternX / 2, -flangeExtrusion / 2 - componentBoltPatternY / 2], radius = componentBoltDiameter / 2, depth = 3 * thickness)
+centerTool = drill(topPlane, at = [0in, -flangeExtrusion / 2], radius = 0.75in, depth = 3 * thickness)
+cornerRadius = flangeLength / 3
+cornerA = cornerCut(footPlane, at = [p0[0], 0in], xSign = -1, ySign = 1, radius = cornerRadius, depth = 3 * thickness)
+cornerB = cornerCut(footPlane, at = [p0[0], -flangeExtrusion], xSign = -1, ySign = -1, radius = cornerRadius, depth = 3 * thickness)
+cornerC = cornerCut(footPlane, at = [p5[0], 0in], xSign = 1, ySign = 1, radius = cornerRadius, depth = 3 * thickness)
+cornerD = cornerCut(footPlane, at = [p5[0], -flangeExtrusion], xSign = 1, ySign = -1, radius = cornerRadius, depth = 3 * thickness)
+finishedBracket = subtract(formedBlank, tools = [leftA, leftB, rightA, rightB, topA, topB, topC, topD, centerTool, cornerA, cornerB, cornerC, cornerD])
+  |> appearance(color = "#b5c2ca", metalness = 80, roughness = 32)

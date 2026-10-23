@@ -247,6 +247,16 @@ async fn inner_hollow(
 
 #[cfg(test)]
 mod tests {
+    #[tokio::test(flavor = "multi_thread")]
+    async fn thicken_aquarium_racing_seat_brackets_execute_in_mock() {
+        let code = include_str!("../../examples/thicken/12-aquarium-racing-seat-brackets.kcl");
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+        let outcome = outcome.unwrap_or_else(|error| panic!("{}", error.error));
+        assert!(outcome.test_program_memory.get("seatBrackets").is_some());
+    }
     use crate::execution::MockConfig;
 
     #[tokio::test(flavor = "multi_thread")]
@@ -296,7 +306,7 @@ surface = extrude([profile.line1, profile.arc1, profile.line2, profile.line3], l
     }
     #[tokio::test(flavor = "multi_thread")]
     async fn thicken_samples_execute_in_mock() {
-        for code in [
+        for (index, code) in [
             include_str!("../../examples/thicken/01-side-comparison.kcl"),
             include_str!("../../examples/thicken/02-centered-rounded-guard.kcl"),
             include_str!("../../examples/thicken/03-sharp-z-bracket.kcl"),
@@ -307,12 +317,20 @@ surface = extrude([profile.line1, profile.arc1, profile.line2, profile.line3], l
             include_str!("../../examples/thicken/09-omega-motor-pedestal.kcl"),
             include_str!("../../examples/thicken/10-z-offset-instrument-bracket.kcl"),
             include_str!("../../examples/thicken/11-return-flanged-bearing-clevis.kcl"),
-        ] {
+            include_str!("../../examples/thicken/13-aquarium-gallows-bracket.kcl"),
+            include_str!("../../examples/thicken/14-aquarium-sheet-metal-bracket.kcl"),
+            include_str!("../../examples/thicken/15-aquarium-adjustable-l-bracket.kcl"),
+            include_str!("../../examples/thicken/16-aquarium-shelf-l-bracket.kcl"),
+            include_str!("../../examples/thicken/17-aquarium-propellant-line-bracket.kcl"),
+        ]
+        .into_iter()
+        .enumerate()
+        {
             let program = crate::Program::parse_no_errs(code).unwrap();
             let ctx = crate::ExecutorContext::new_mock(None).await;
             let result = ctx.run_mock(&program, &MockConfig::default()).await;
             ctx.close().await;
-            result.unwrap();
+            result.unwrap_or_else(|error| panic!("Thicken sample {index}: {}", error.error));
         }
     }
 

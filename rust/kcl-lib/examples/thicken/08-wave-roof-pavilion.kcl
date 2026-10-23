@@ -40,3 +40,8 @@ columnD = extrude(region(segments = [columns.d]), length = 74mm)
 columnE = extrude(region(segments = [columns.e]), length = 74mm)
 columnF = extrude(region(segments = [columns.f]), length = 74mm)
 appearance([columnA, columnB, columnC, columnD, columnE, columnF], color = "#e2d5bb", metalness = 35, roughness = 38)
+
+// Keep construction sketches out of the final rendering.
+hide(roofSection)
+hide(deckProfile)
+hide(columns)

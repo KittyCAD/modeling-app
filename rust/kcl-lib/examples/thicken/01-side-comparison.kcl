@@ -20,3 +20,6 @@ centerWall = thicken(centerSurface, thickness = 2mm, center = true)
 appearance(normalWall, color = "#3388dd", roughness = 35)
 appearance(oppositeWall, color = "#ee9933", roughness = 35)
 appearance(centerWall, color = "#44bb88", roughness = 35)
+
+// Keep construction sketches out of the final rendering.
+hide(profile)

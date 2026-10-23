@@ -1,0 +1,67 @@
+// SHELF L-BRACKET -- Zoo's original dimensions and thickness expression.
+// Source: KittyCAD/kcl-llm-finetuning/data/kcl-samples/bracket/main.kcl
+// The archived load-based sizing expression is retained as an input, not revalidated here.
+@settings(defaultLengthUnit = in, kclVersion = 3.0, experimentalFeatures = allow)
+
+sigmaAllow = 35000
+width = 5in
+p = 300
+fos = 1.2
+shelfMountLength = 5in
+wallMountLength = 2.25in
+shelfDepth = 12in
+shelfMountingHoleDiameter = 0.5in
+wallMountingHoleDiameter = 0.625in
+thickness = sqrt((shelfDepth / 1in) * p * fos * 6 / (sigmaAllow * (width / 1in))) * 1in
+bendRadius = 0.25in
+extBendRadius = bendRadius + thickness
+filletRadius = 0.5in
+shelfOffset = 1.5 * shelfMountingHoleDiameter
+wallOffset = 1.5 * wallMountingHoleDiameter
+
+// Cutting tools are separate solids; their construction sketches are hidden immediately.
+fn drill(@plane, at, radius, depth) {
+  boreRadius = radius
+  profile = sketch(on = plane) {
+    bore = circle(start = [at[0] + boreRadius, at[1]], center = at)
+  }
+  tool = extrude(region(segments = [profile.bore]), length = depth)
+  hide(profile)
+  return tool
+}
+fn cornerCut(@plane, at, xSign, ySign, radius, depth) {
+  a = [at[0] - xSign * radius, at[1]]
+  c = [at[0], at[1] - ySign * radius]
+  center = [at[0] - xSign * radius, at[1] - ySign * radius]
+  profile = sketch(on = plane) {
+    outerA = line(start = a, end = at)
+    outerB = line(start = at, end = c)
+    round = arc(start = c, end = a, center = center, direction = if xSign * ySign > 0 { CCW } else { CW })
+  }
+  tool = extrude(region(segments = [profile.outerA, profile.outerB, profile.round]), length = depth)
+  hide(profile)
+  return tool
+}
+
+section = sketch(on = XZ) {
+  wall = line(start = [-thickness, thickness - wallMountLength], end = [-thickness, -bendRadius])
+  bend = arc(start = [-thickness, -bendRadius], end = [bendRadius, thickness], center = [bendRadius, -bendRadius], direction = CW)
+  shelf = line(start = [bendRadius, thickness], end = [shelfMountLength - thickness, thickness])
+}
+surface = extrude([section.wall, section.bend, section.shelf], length = width, bodyType = SURFACE)
+hide(section)
+formedBlank = thicken(surface, thickness = thickness, flip = false)
+footPlane = offsetPlane(XY, offset = -thickness)
+wallPlane = offsetPlane(YZ, offset = -2 * thickness)
+shelfA = drill(footPlane, at = [bendRadius + shelfOffset, -shelfOffset], radius = shelfMountingHoleDiameter / 2, depth = 3 * thickness)
+shelfB = drill(footPlane, at = [shelfMountLength - thickness - shelfOffset, -shelfOffset], radius = shelfMountingHoleDiameter / 2, depth = 3 * thickness)
+shelfC = drill(footPlane, at = [bendRadius + shelfOffset, -width + shelfOffset], radius = shelfMountingHoleDiameter / 2, depth = 3 * thickness)
+shelfD = drill(footPlane, at = [shelfMountLength - thickness - shelfOffset, -width + shelfOffset], radius = shelfMountingHoleDiameter / 2, depth = 3 * thickness)
+wallA = drill(wallPlane, at = [-wallOffset, -(wallMountLength - wallOffset - bendRadius)], radius = wallMountingHoleDiameter / 2, depth = 3 * thickness)
+wallB = drill(wallPlane, at = [-width + wallOffset, -(wallMountLength - wallOffset - bendRadius)], radius = wallMountingHoleDiameter / 2, depth = 3 * thickness)
+roundA = cornerCut(footPlane, at = [shelfMountLength - thickness, 0in], xSign = 1, ySign = 1, radius = filletRadius, depth = 3 * thickness)
+roundB = cornerCut(footPlane, at = [shelfMountLength - thickness, -width], xSign = 1, ySign = -1, radius = filletRadius, depth = 3 * thickness)
+roundC = cornerCut(wallPlane, at = [0in, thickness - wallMountLength], xSign = 1, ySign = -1, radius = filletRadius, depth = 3 * thickness)
+roundD = cornerCut(wallPlane, at = [-width, thickness - wallMountLength], xSign = -1, ySign = -1, radius = filletRadius, depth = 3 * thickness)
+finishedBracket = subtract(formedBlank, tools = [shelfA, shelfB, shelfC, shelfD, wallA, wallB, roundA, roundB, roundC, roundD])
+  |> appearance(color = "#aabac6", metalness = 80, roughness = 32)

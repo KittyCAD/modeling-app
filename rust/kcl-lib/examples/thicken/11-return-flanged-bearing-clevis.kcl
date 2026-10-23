@@ -56,3 +56,9 @@ reliefATool = extrude(region(segments = [crossHoles.reliefA]), length = 90mm)
 reliefBTool = extrude(region(segments = [crossHoles.reliefB]), length = 90mm)
 finishedBracket = subtract(formedBlank, tools = [baseATool, baseBTool, baseCTool, baseDTool, flangeATool, flangeBTool, flangeCTool, flangeDTool, bearingTool, reliefATool, reliefBTool])
   |> appearance(color = "#c49554", metalness = 85, roughness = 32)
+
+// Keep construction sketches out of the final rendering.
+hide(section)
+hide(baseHoles)
+hide(flangeHoles)
+hide(crossHoles)

@@ -27,3 +27,6 @@ sketch001 = sketch(on = YZ) {
 
 surface = extrude(sketch001, length = 15, bodyType = SURFACE)
 thicken(surface, thickness = 3mm)
+
+// Keep construction sketches out of the final rendering.
+hide(sketch001)
