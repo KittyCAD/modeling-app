@@ -8,6 +8,7 @@ import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import type { Layout, LayoutService } from '@src/lib/layout/types'
 import {
   applyLayoutContribution,
+  applyPaneOpenBehavior,
   createLayoutWithMetadata,
   defaultLayout,
   loadLayout,
@@ -58,8 +59,13 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       contributions
     ) => {
       const rootLayout = structuredClone(layoutSignal.peek())
+      const paneOpenBehavior = settings.get().layout.paneOpenBehavior.current
       const results = contributions.map((contribution) =>
-        applyLayoutContribution({ rootLayout, contribution })
+        applyLayoutContribution({
+          rootLayout,
+          contribution,
+          config: { paneOpenBehavior },
+        })
       )
 
       if (results.some((result) => result.applied)) {
@@ -80,16 +86,19 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
           rootLayout: structuredClone(get()),
           targetNodeId: paneId,
           shouldExpand: true,
+          paneOpenBehavior: settings.get().layout.paneOpenBehavior.current,
         })
       )
     }
 
     function togglePane(paneId: string) {
       const rootLayout = structuredClone(get())
+      const paneOpenBehavior = settings.get().layout.paneOpenBehavior.current
       return set(
         togglePaneLayoutNode({
           rootLayout,
           targetNodeId: paneId,
+          paneOpenBehavior,
         })
       )
     }
@@ -213,6 +222,12 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         coreLayoutService.applyContributions(contributions)
       }
     })
+    // Settings reactions belong to the layout service, which also owns their lifetime.
+    const stopPanePreferenceEffect = effect(() => {
+      const behavior =
+        settings.current.value.layout.paneOpenBehavior.currentSignal.value
+      layoutSignal.value = applyPaneOpenBehavior(layoutSignal.peek(), behavior)
+    })
     const saveEffectUnsubscribeFn = effect(() =>
       saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
     )
@@ -220,6 +235,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     layout = coreLayoutService
     disposeLayout = () => {
       settingsSubscription.unsubscribe()
+      stopPanePreferenceEffect()
       stopUserFeatureLayoutEffect()
       stopLayoutContributionsEffect()
       saveEffectUnsubscribeFn()

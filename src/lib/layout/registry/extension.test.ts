@@ -188,13 +188,15 @@ describe('layout extension', () => {
     registry = undefined
   })
 
-  it('toggles panes through the service and restores defaults on reset', () => {
+  it('applies the tab preference to loading, opening, contributions, and resets', () => {
     const settings = createSettings()
+    const service = createSettingsService({ settings })
 
     const savedLayout = togglePaneLayoutNode({
       rootLayout: structuredClone(playwrightLayoutConfig),
       targetNodeId: 'variables',
       shouldExpand: true,
+      paneOpenBehavior: settings.layout.paneOpenBehavior.current,
     })
     settings.layout.configs.user = {
       default: createLayoutWithMetadata(savedLayout),
@@ -206,7 +208,7 @@ describe('layout extension', () => {
         id: 'test-dependencies',
         providesServices: [
           provideService(runtimeService, createRuntimeService()),
-          provideService(settingsService, createSettingsService({ settings })),
+          provideService(settingsService, service),
           provideService(userFeaturesService, createUserFeaturesService()),
         ],
       }),
@@ -220,16 +222,55 @@ describe('layout extension', () => {
       })
 
     expect(toolbar()).toMatchObject({ activeIndices: [1, 3], sizes: [50, 50] })
+
+    // Exercise opening tabs both before and after the current tab's index.
     layout.togglePane('variables')
     expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    settings.layout.paneOpenBehavior.user = 'single'
     layout.togglePane('feature-tree')
-    expect(toolbar()).toMatchObject({ activeIndices: [0, 1], sizes: [50, 50] })
+    expect(toolbar()).toMatchObject({ activeIndices: [0], sizes: [100] })
     layout.togglePane('feature-tree')
-    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
-    layout.togglePane('code')
     expect(toolbar()).toMatchObject({ activeIndices: [], sizes: [] })
+    layout.togglePane('code')
+    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+
+    settings.layout.paneOpenBehavior.user = 'multiple'
     layout.togglePane('variables')
+    expect(toolbar()).toMatchObject({ activeIndices: [1, 3], sizes: [50, 50] })
+    settings.layout.paneOpenBehavior.user = 'single'
+
+    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    // Restoring multiple mode does not reopen panes that single mode closed.
+    settings.layout.paneOpenBehavior.user = 'multiple'
+    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    settings.layout.paneOpenBehavior.user = 'single'
+
+    layout.openPane('variables')
     expect(toolbar()).toMatchObject({ activeIndices: [3], sizes: [100] })
+    layout.openPane('variables')
+    expect(toolbar()).toMatchObject({ activeIndices: [3], sizes: [100] })
+    layout.openPane('code')
+    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+
+    layout.applyContributions([
+      {
+        id: 'extra-tab',
+        kind: 'area',
+        initiallyOpen: true,
+        pane: {
+          id: 'extra-tab',
+          label: 'Extra',
+          icon: 'code',
+          type: LayoutType.Simple,
+          areaType: AreaType.Code,
+        },
+        placement: {
+          targetPaneId: DefaultLayoutToolbarID.Left,
+          position: 'start',
+        },
+      },
+    ])
+    expect(toolbar()).toMatchObject({ activeIndices: [0], sizes: [100] })
     layout.reset()
     expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
   })

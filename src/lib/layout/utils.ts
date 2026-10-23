@@ -21,6 +21,7 @@ import type {
   LayoutWithMetadata,
   Orientation,
   Side,
+  PaneOpenBehavior,
 } from '@src/lib/layout/types'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import { isErr } from '@src/lib/trap'
@@ -31,6 +32,51 @@ import type React from 'react'
 export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v4'
 
 export const defaultLayout = defaultLayoutConfig
+
+/**
+ * Enforce the tab preference at the layout service boundary. Prefer a newly
+ * opened tab when replacing a layout; otherwise keep its first open tab.
+ * Unchanged nodes retain their identity so settings updates do not resave them.
+ */
+export function applyPaneOpenBehavior<T extends Layout>(
+  layout: T,
+  behavior: PaneOpenBehavior,
+  previousLayout?: Layout
+): T {
+  if (behavior === 'multiple' || layout.type === LayoutType.Simple) {
+    return layout
+  }
+
+  const children = layout.children.map((child) =>
+    applyPaneOpenBehavior(child, behavior, previousLayout)
+  )
+  const result = children.some(
+    (child, index) => child !== layout.children[index]
+  )
+    ? { ...layout, children }
+    : layout
+  if (result.type !== LayoutType.Panes || result.activeIndices.length <= 1) {
+    return result
+  }
+
+  const previous = previousLayout
+    ? findLayoutChildNode({
+        rootLayout: previousLayout,
+        targetNodeId: result.id,
+      })
+    : undefined
+  const previouslyOpenIds = new Set(
+    previous?.type === LayoutType.Panes
+      ? previous.activeIndices.map((index) => previous.children[index]?.id)
+      : []
+  )
+  const selectedIndex =
+    result.activeIndices.find(
+      (index) => !previouslyOpenIds.has(result.children[index]?.id)
+    ) ?? result.activeIndices[0]
+
+  return { ...result, activeIndices: [selectedIndex], sizes: [100] }
+}
 
 export function getOppositeSide(side: Side): Side {
   switch (side) {
@@ -305,24 +351,30 @@ function recomputePaneActiveState({
   sizeByPaneId,
   insertedPaneId,
   initiallyOpen,
+  paneOpenBehavior = 'multiple',
 }: {
   paneLayout: Extract<Layout, { type: LayoutType.Panes }>
   activePaneIds: string[]
   sizeByPaneId: Map<string, number>
   insertedPaneId: string
   initiallyOpen: boolean
+  paneOpenBehavior?: PaneOpenBehavior
 }) {
+  const mustFilter = paneOpenBehavior === 'single'
   const nextActivePaneIds =
     initiallyOpen && !activePaneIds.includes(insertedPaneId)
       ? [...activePaneIds, insertedPaneId]
       : activePaneIds
 
-  paneLayout.activeIndices = nextActivePaneIds
+  const preparedActivePaneIds = nextActivePaneIds
     .map((id) => paneLayout.children.findIndex((child) => child.id === id))
     .filter((index) => index >= 0)
     .sort((a, b) => a - b)
+  paneLayout.activeIndices = mustFilter
+    ? preparedActivePaneIds.slice(0, 1)
+    : preparedActivePaneIds
 
-  if (!initiallyOpen) {
+  if (!initiallyOpen && !mustFilter) {
     paneLayout.sizes = paneLayout.activeIndices.map((activeIndex) => {
       const paneId = paneLayout.children[activeIndex]?.id
       return paneId ? (sizeByPaneId.get(paneId) ?? 0) : 0
@@ -339,9 +391,15 @@ function recomputePaneActiveState({
 export function applyLayoutContribution({
   rootLayout,
   contribution,
+  config = {
+    paneOpenBehavior: 'multiple', // TODO: in future, derive these
+  },
 }: {
   rootLayout: Layout
   contribution: LayoutContribution
+  config?: {
+    paneOpenBehavior: PaneOpenBehavior
+  }
 }): LayoutContributionResult {
   if (contribution.kind === 'area') {
     if (
@@ -393,6 +451,7 @@ export function applyLayoutContribution({
       ),
       insertedPaneId: contribution.pane.id,
       initiallyOpen: contribution.initiallyOpen ?? false,
+      paneOpenBehavior: config.paneOpenBehavior,
     })
 
     return { applied: true, reason: 'applied' }
@@ -723,11 +782,19 @@ function prepareTogglePaneLayoutNode({
   }
 }
 
+export function togglePaneLayoutNode(
+  props: ITogglePane & { paneOpenBehavior: PaneOpenBehavior }
+) {
+  return props.paneOpenBehavior === 'multiple'
+    ? togglePaneLayoutNodeMultiple(props)
+    : togglePaneLayoutNodeExclusive(props)
+}
+
 /**
  * Mutates a layout by toggling a Pane layout child either opened or closed,
  * and making any adjustments to a parent Split layout needed if there is one.
  */
-export function togglePaneLayoutNode(props: ITogglePane): Layout {
+function togglePaneLayoutNodeMultiple(props: ITogglePane): Layout {
   const prepOutcome = prepareTogglePaneLayoutNode(props)
   if (isErr(prepOutcome)) {
     // We treat toggle setup as a non-fatal error
@@ -802,6 +869,45 @@ export function togglePaneLayoutNode(props: ITogglePane): Layout {
   }
 }
 
+/*
+ * Mutates a layout by toggling a Pane layout child either opened or closed,
+ * replacing any other pane children that were open.
+ */
+function togglePaneLayoutNodeExclusive(props: ITogglePane): Layout {
+  const prepOutcome = prepareTogglePaneLayoutNode(props)
+  if (isErr(prepOutcome)) {
+    // We treat toggle setup as a non-fatal error
+    console.warn(prepOutcome)
+    return props.rootLayout
+  }
+  const { rootLayout, shouldExpand } = props
+  const { paneLayout, isInActiveItems, indexInChildren } = prepOutcome
+  const open = shouldExpand === undefined ? !isInActiveItems : shouldExpand
+
+  // Closing has the same sizing and split-collapse behavior in either mode.
+  if (!open) {
+    return togglePaneLayoutNodeMultiple({ ...props, shouldExpand: false })
+  }
+
+  if (isInActiveItems && paneLayout.activeIndices.length === 1) {
+    return rootLayout
+  }
+
+  const wasClosed = paneLayout.activeIndices.length === 0
+  paneLayout.activeIndices = [indexInChildren]
+  paneLayout.sizes = [100]
+
+  if (wasClosed) {
+    return expandSplitChildPaneNode({ rootLayout, targetNode: paneLayout })
+  }
+
+  return findAndReplaceLayoutChildNode({
+    rootLayout,
+    targetNodeId: paneLayout.id,
+    newNode: paneLayout,
+  })
+}
+
 export function getOpenPanes({ rootLayout }: { rootLayout: Layout }): string[] {
   if (!rootLayout) {
     return []
@@ -859,6 +965,7 @@ export function closeAllPanes(
       rootLayout,
       targetNodeId: childId,
       shouldExpand: false,
+      paneOpenBehavior: 'multiple', // Doesn't matter, we're closing
     })
   }
 
@@ -867,6 +974,7 @@ export function closeAllPanes(
 
 /**
  * Mutate a Layout to find and open any panes within their parent Pane layout
+ * Always uses a "multiple" pane opening strategy, because this is like an assertion of the state.
  */
 export function setOpenPanes(rootLayout: Layout, paneIDs: string[]): Layout {
   // TODO: Make this more generic in the future when users can have any number of Pane layouts
@@ -882,6 +990,7 @@ export function setOpenPanes(rootLayout: Layout, paneIDs: string[]): Layout {
       rootLayout,
       targetNodeId: id,
       shouldExpand: true,
+      paneOpenBehavior: 'multiple', // We force it here, in case siblings have been requested opened
     })
   }
   return rootLayout

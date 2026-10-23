@@ -18,6 +18,9 @@ export enum AreaType {
 export type AreaTypeId = string
 export type AreaLibrary = Record<AreaTypeId, AreaTypeDefinition>
 
+/** Controls how many panes can be open within each pane container. */
+export type PaneOpenBehavior = 'multiple' | 'single'
+
 export type AreaTypeComponentProps = {
   areaConfig: Omit<AreaTypeDefinition, 'Component'>
   layout: Layout
