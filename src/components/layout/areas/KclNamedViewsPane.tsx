@@ -310,49 +310,49 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                     {row.label}
                   </span>
                 </button>
+                {manageableView && (
+                  <ActionButton
+                    Element="button"
+                    aria-label="Update from current camera"
+                    title="Update from current camera"
+                    data-testid="named-view-update-camera"
+                    disabled={editDisabled}
+                    tabIndex={0}
+                    iconStart={{
+                      icon: 'camera',
+                      iconClassName: '!text-current',
+                      bgClassName: 'bg-transparent dark:bg-transparent',
+                    }}
+                    className="h-6 w-6 shrink-0 justify-center !p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none disabled:opacity-40"
+                    onClick={() => void updateViewCamera(manageableView)}
+                  />
+                )}
                 {manageableView ? (
-                  <div className="flex shrink-0 items-center gap-0.5">
-                    <ActionButton
-                      Element="button"
-                      aria-label="Update from current camera"
-                      title="Update from current camera"
-                      data-testid="named-view-update-camera"
-                      disabled={editDisabled}
-                      tabIndex={0}
-                      iconStart={{
-                        icon: 'camera',
-                        iconClassName: '!text-current',
-                        bgClassName: 'bg-transparent dark:bg-transparent',
-                      }}
-                      className="h-6 w-6 shrink-0 justify-center !p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none disabled:opacity-40"
-                      onClick={() => void updateViewCamera(manageableView)}
-                    />
-                    <HeaderMenu
-                      aria-label="Named view actions"
-                      data-testid="named-view-actions"
-                      disabled={actionsDisabled}
-                    >
-                      <Menu.Item disabled={editDisabled}>
-                        <button
-                          type="button"
-                          className="menuButton"
-                          disabled={editDisabled}
-                          onClick={() => editView(manageableView)}
-                        >
-                          Edit
-                        </button>
-                      </Menu.Item>
-                      <Menu.Item disabled={actionsDisabled}>
-                        <button
-                          type="button"
-                          className="menuButton"
-                          onClick={() => void removeView(manageableView)}
-                        >
-                          Remove
-                        </button>
-                      </Menu.Item>
-                    </HeaderMenu>
-                  </div>
+                  <HeaderMenu
+                    aria-label="Named view actions"
+                    data-testid="named-view-actions"
+                    disabled={actionsDisabled}
+                  >
+                    <Menu.Item disabled={editDisabled}>
+                      <button
+                        type="button"
+                        className="menuButton"
+                        disabled={editDisabled}
+                        onClick={() => editView(manageableView)}
+                      >
+                        Edit
+                      </button>
+                    </Menu.Item>
+                    <Menu.Item disabled={actionsDisabled}>
+                      <button
+                        type="button"
+                        className="menuButton"
+                        onClick={() => void removeView(manageableView)}
+                      >
+                        Remove
+                      </button>
+                    </Menu.Item>
+                  </HeaderMenu>
                 ) : row.target.kind === 'declared' &&
                   !canManageNamedView(row.target.view) ? (
                   <CustomIcon
