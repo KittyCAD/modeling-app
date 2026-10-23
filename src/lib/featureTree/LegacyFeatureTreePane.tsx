@@ -86,13 +86,13 @@ import {
 import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: feature-tree file opening (useNavigate).
 import { useNavigate } from 'react-router-dom'
@@ -210,7 +210,8 @@ export const FeatureTreePaneContents = memo(() => {
     platform
   )
   const { kclManager } = useSingletons()
-  const executionService = app.registry.signal(executingEditorService).value
+  const executionService =
+    app.registry.signal(projectSession).value?.executingEditor.value
   const { engineCommandManager, rustContext } = kclManager
   const {
     send: modelingSend,
@@ -855,8 +856,6 @@ export function getFeatureTreeSketchSelectionContext({
   const modelingSnapshot = modelingActor.getSnapshot()
   return {
     sketchNoFace: modelingSnapshot.matches('Sketch no face'),
-    useSketchSolveMode:
-      modelingSnapshot.context.store.useSketchSolveMode?.current,
   }
 }
 
@@ -984,8 +983,6 @@ const OperationItem = ({
   const navigate = useNavigate()
   const { layout } = app
   const { kclManager, commandBarActor } = systemDeps
-  const useSketchSolveMode =
-    modelingActor.getSnapshot().context.store.useSketchSolveMode?.current
   const diagnostics = kclManager.diagnosticsSignal.value
   const liveAst = kclManager.astSignal.value
   const ast = kclManager.hasParseErrors() ? kclManager.lastGoodAst : liveAst
@@ -1049,14 +1046,7 @@ const OperationItem = ({
             item,
             kclManager.artifactGraph
           )
-          const result = await selectSketchPlane(
-            artifact?.id,
-            sketchSelectionContext.useSketchSolveMode,
-            kclManager
-          )
-          if (err(result)) {
-            console.error(result)
-          }
+          void selectSketchPlane(artifact?.id, kclManager)
         }
       } else if (providedSourceRange !== undefined) {
         onSelect(sourceRangeFromRust(providedSourceRange))
@@ -1271,7 +1261,7 @@ const OperationItem = ({
           data: { forceNewSketch: true },
         })
 
-        void selectSketchPlane(artifact.id, useSketchSolveMode, kclManager)
+        void selectSketchPlane(artifact.id, kclManager)
       }
     }
   }
@@ -1623,11 +1613,7 @@ const DefaultPlanes = ({
   const onClickPlane = useCallback(
     (planeId: string) => {
       if (sketchNoFace) {
-        void selectSketchPlane(
-          planeId,
-          modelingState.context.store.useSketchSolveMode?.current,
-          kclManager
-        )
+        void selectSketchPlane(planeId, kclManager)
       } else {
         const foundDefaultPlane =
           rustContext.defaultPlanes !== null &&
@@ -1649,7 +1635,7 @@ const DefaultPlanes = ({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [sketchNoFace, modelingState.context.store.useSketchSolveMode]
+    [sketchNoFace]
   )
 
   const startSketchOnDefaultPlane = useCallback(
@@ -1659,13 +1645,9 @@ const DefaultPlanes = ({
         data: { forceNewSketch: true },
       })
 
-      void selectSketchPlane(
-        planeId,
-        modelingState.context.store.useSketchSolveMode?.current,
-        kclManager
-      )
+      void selectSketchPlane(planeId, kclManager)
     },
-    [modelingState.context.store.useSketchSolveMode, sceneInfra, kclManager]
+    [sceneInfra, kclManager]
   )
 
   const defaultPlanes = rustContext.defaultPlanes
