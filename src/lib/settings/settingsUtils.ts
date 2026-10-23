@@ -555,7 +555,7 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
   ]),
   defineAppOnlySection('layout', [
     defineMappedAppOnlyField(
-      { category: 'layout', field: 'tabOpenBehavior' },
+      { category: 'layout', field: 'paneOpenBehavior' },
       'tab_open_behavior',
       {
         fromToml: (value) =>

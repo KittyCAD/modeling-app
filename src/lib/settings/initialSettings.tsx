@@ -638,7 +638,7 @@ function createCoreSettings() {
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) =>
-            context.layout.tabOpenBehavior.current,
+            context.layout.paneOpenBehavior.current,
           options: [
             { name: 'Multiple', value: 'multiple' },
             { name: 'Single', value: 'single' },
