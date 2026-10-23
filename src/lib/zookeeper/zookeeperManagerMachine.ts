@@ -258,6 +258,12 @@ const ZOOKEEPER_MAX_MESSAGE_BYTES = 128 * 1024 * 1024
 const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
 
+class ZookeeperProjectTooLargeError extends Error {
+  constructor() {
+    super(ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON)
+  }
+}
+
 class ZookeeperSetupConnectionError extends Error {
   closeReason?: string
   accessDeniedCode?: MlCopilotAccessDeniedCode
@@ -1644,9 +1650,7 @@ export const zookeeperManagerMachine = setup({
 
       const encodedRequest = msgpackEncode(request, { ignoreUndefined: true })
       if (encodedRequest.byteLength > ZOOKEEPER_MAX_MESSAGE_BYTES) {
-        return Promise.reject(
-          new Error(ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON)
-        )
+        return Promise.reject(new ZookeeperProjectTooLargeError())
       }
       context.ws.send(encodedRequest)
 
@@ -1724,9 +1728,7 @@ export const zookeeperManagerMachine = setup({
         ignoreUndefined: true,
       })
       if (encodedRequest.byteLength > ZOOKEEPER_MAX_MESSAGE_BYTES) {
-        return Promise.reject(
-          new Error(ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON)
-        )
+        return Promise.reject(new ZookeeperProjectTooLargeError())
       }
       context.ws.send(JSON.stringify(requestContinue))
       context.ws.send(encodedRequest)
@@ -2006,7 +2008,15 @@ export const zookeeperManagerMachine = setup({
             }),
           ],
         },
-        onError: { target: S.Await, actions: ['toastError'] },
+        onError: [
+          {
+            guard: ({ event }) =>
+              event.error instanceof ZookeeperProjectTooLargeError,
+            target: ZookeeperManagerStates.WaitForContinueCheck,
+            actions: ['toastError'],
+          },
+          { target: S.Await, actions: ['toastError'] },
+        ],
       },
     },
     [ZookeeperManagerStates.Ready]: {

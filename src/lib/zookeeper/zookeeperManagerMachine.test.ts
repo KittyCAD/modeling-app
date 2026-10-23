@@ -41,6 +41,7 @@ import { S } from '@src/machines/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, toPromise, waitFor } from 'xstate'
+import toast from 'react-hot-toast'
 
 // Prompt construction is stubbed in the race test, so these dependencies are
 // only forwarded by the manager. Avoid loading the editor or Wasm for them.
@@ -1397,86 +1398,72 @@ describe('zookeeperManagerMachine', () => {
     })
   })
 
-  it.each([
-    ZookeeperManagerTransitions.MessageSend,
-    ZookeeperManagerStates.ContinueCheck,
-  ] as const)(
-    'rejects oversized encoded %s requests before sending anything',
-    async (type) => {
-      const encode = vi
-        .spyOn(msgpack, 'encode')
-        .mockReturnValueOnce(new Uint8Array(128 * 1024 * 1024 + 1))
-      const ws: TestWebSocket = new TestSocket() as TestWebSocket
-      const send = vi.fn()
-      ws.send = send
-      const { kclManager, engineCommandManager, instance } =
-        await buildTheWorldAndNoEngineConnection(true)
-      const event: ZookeeperManagerEvents =
-        type === ZookeeperManagerStates.ContinueCheck
-          ? { type, projectName: 'demo', projectFiles: [] }
-          : {
-              type,
-              prompt: 'Inspect the project',
-              projectForPromptOutput: {
-                name: 'demo',
-                path: '/demo',
-                children: [],
-                default_file: '/demo/main.kcl',
-                directory_count: 0,
-                kcl_file_count: 1,
-                metadata: null,
-                readWriteAccess: true,
-              },
-              applicationProjectDirectory: '/',
-              fileSelectedDuringPrompting: {
-                entry: {
-                  name: 'main.kcl',
-                  path: '/demo/main.kcl',
-                  children: null,
-                },
-                content: '',
-              },
-              projectFiles: [],
-              selections: null,
-              artifactGraph: new Map(),
-              kclManager,
-              engineCommandManager,
-              wasmInstance: instance,
-            }
-      const logic = zookeeperManagerMachine.implementations.actors[type]
-      if (!logic || !('transition' in logic)) {
-        throw new Error('Missing request actor')
-      }
-      const actor = createActor(logic, {
-        input: {
-          context: {
-            ...zookeeperDefaultContext({}),
-            ws,
-            conversation: {
-              exchanges: [
-                {
-                  responses: [
-                    { reasoning: { type: 'text', content: 'Working' } },
-                  ],
-                  deltasAggregated: '',
-                },
-              ],
-            },
-          },
-          event,
+  it('rejects oversized encoded prompts before sending anything', async () => {
+    const encode = vi
+      .spyOn(msgpack, 'encode')
+      .mockReturnValueOnce(new Uint8Array(128 * 1024 * 1024 + 1))
+    const ws: TestWebSocket = new TestSocket() as TestWebSocket
+    const send = vi.fn()
+    ws.send = send
+    const { kclManager, engineCommandManager, instance } =
+      await buildTheWorldAndNoEngineConnection(true)
+    const event: ZookeeperManagerEvents = {
+      type: ZookeeperManagerTransitions.MessageSend,
+      prompt: 'Inspect the project',
+      projectForPromptOutput: {
+        name: 'demo',
+        path: '/demo',
+        children: [],
+        default_file: '/demo/main.kcl',
+        directory_count: 0,
+        kcl_file_count: 1,
+        metadata: null,
+        readWriteAccess: true,
+      },
+      applicationProjectDirectory: '/',
+      fileSelectedDuringPrompting: {
+        entry: {
+          name: 'main.kcl',
+          path: '/demo/main.kcl',
+          children: null,
         },
-      })
-      const result = toPromise(actor)
-      actor.start()
-
-      await expect(result).rejects.toThrow('Your project files are too large')
-      expect(encode).toHaveBeenCalledOnce()
-      expect(send).not.toHaveBeenCalled()
+        content: '',
+      },
+      projectFiles: [],
+      selections: null,
+      artifactGraph: new Map(),
+      kclManager,
+      engineCommandManager,
+      wasmInstance: instance,
     }
-  )
+    const logic =
+      zookeeperManagerMachine.implementations.actors[
+        ZookeeperManagerTransitions.MessageSend
+      ]
+    if (!logic || !('transition' in logic)) {
+      throw new Error('Missing request actor')
+    }
+    const actor = createActor(logic, {
+      input: {
+        context: {
+          ...zookeeperDefaultContext({}),
+          ws,
+          conversation: { exchanges: [] },
+        },
+        event,
+      },
+    })
+    const result = toPromise(actor)
+    actor.start()
+
+    await expect(result).rejects.toThrow('Your project files are too large')
+    expect(encode).toHaveBeenCalledOnce()
+    expect(send).not.toHaveBeenCalled()
+  })
 
   describe('ContinueCheck', () => {
-    it('sends continue requests when the last exchange was interrupted', async () => {
+    it('sends continue requests after rejecting oversized project context', async () => {
+      stubClientErrorFetch()
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       const send = vi.fn()
       ws.send = send
@@ -1541,13 +1528,33 @@ describe('zookeeperManagerMachine', () => {
 
       expect(send).not.toHaveBeenCalled()
 
-      actor.send({
+      const event = {
         type: ZookeeperManagerStates.ContinueCheck,
         projectName: 'zoo-project',
         projectFiles,
         activeFile: 'newFile.kcl',
         engineApiCallId: 'engine-api-call-id',
+      } as const
+      const encode = vi
+        .spyOn(msgpack, 'encode')
+        .mockReturnValueOnce(new Uint8Array(128 * 1024 * 1024 + 1))
+      const showError = vi.spyOn(toast, 'error')
+      actor.send(event)
+      await vi.waitFor(() => {
+        expect(showError).toHaveBeenCalledWith(
+          expect.stringContaining('Your project files are too large')
+        )
       })
+      expect(
+        actor.getSnapshot().matches(ZookeeperManagerStates.WaitForContinueCheck)
+      ).toBe(true)
+      expect(actor.getSnapshot().context.conversation).toBe(
+        interruptedConversation
+      )
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+      expect(send).not.toHaveBeenCalled()
+      encode.mockRestore()
+      actor.send(event)
 
       await waitFor(actor, (state) =>
         state.matches(ZookeeperManagerStates.Ready)
