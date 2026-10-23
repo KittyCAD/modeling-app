@@ -1,0 +1,60 @@
+// OMEGA MOTOR PEDESTAL -- 2 mm sheet, four 5 mm neutral-axis bends.
+// LEFT: cyan zero-thickness source. RIGHT: thickened, drilled bracket.
+// The bracket starts as ONE open profile. No closed wall outline or shell trick.
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
+
+sheetThickness = 2mm
+bracketWidth = 70mm
+
+section = sketch(on = offsetPlane(XZ, offset = -bracketWidth / 2)) {
+  leftFoot = line(start = [var -55mm, var 0mm], end = [var -35mm, var 0mm])
+  leftHeel = arc(start = [var -35mm, var 0mm], end = [var -30mm, var 5mm], center = [var -35mm, var 5mm])
+  leftWeb = line(start = [var -30mm, var 5mm], end = [var -30mm, var 35mm])
+  leftShoulder = arc(start = [var -30mm, var 35mm], end = [var -25mm, var 40mm], center = [var -25mm, var 35mm], direction = CW)
+  bridge = line(start = [var -25mm, var 40mm], end = [var 25mm, var 40mm])
+  rightShoulder = arc(start = [var 25mm, var 40mm], end = [var 30mm, var 35mm], center = [var 25mm, var 35mm], direction = CW)
+  rightWeb = line(start = [var 30mm, var 35mm], end = [var 30mm, var 5mm])
+  rightHeel = arc(start = [var 30mm, var 5mm], end = [var 35mm, var 0mm], center = [var 35mm, var 5mm])
+  rightFoot = line(start = [var 35mm, var 0mm], end = [var 55mm, var 0mm])
+}
+sheetSurface = extrude([section.leftFoot, section.leftHeel, section.leftWeb, section.leftShoulder, section.bridge, section.rightShoulder, section.rightWeb, section.rightHeel, section.rightFoot], length = bracketWidth, bodyType = SURFACE)
+referenceSurface = clone(sheetSurface)
+  |> translate(x = -145mm)
+  |> appearance(color = "#39cddd", backfaceColor = "#22788c", opacity = 55)
+
+// This is the operation that creates ALL of the bracket's material.
+formedBlank = thicken(sheetSurface, thickness = sheetThickness, center = true)
+
+// Four M6-clearance foot holes; a central motor opening and four top holes.
+footHoles = sketch(on = offsetPlane(XY, offset = -5mm)) {
+  footA = circle(start = [var -41.7mm, var -23mm], center = [var -45mm, var -23mm])
+  footB = circle(start = [var -41.7mm, var 23mm], center = [var -45mm, var 23mm])
+  footC = circle(start = [var 48.3mm, var -23mm], center = [var 45mm, var -23mm])
+  footD = circle(start = [var 48.3mm, var 23mm], center = [var 45mm, var 23mm])
+}
+footATool = extrude(region(segments = [footHoles.footA]), length = 10mm)
+footBTool = extrude(region(segments = [footHoles.footB]), length = 10mm)
+footCTool = extrude(region(segments = [footHoles.footC]), length = 10mm)
+footDTool = extrude(region(segments = [footHoles.footD]), length = 10mm)
+motorHoles = sketch(on = offsetPlane(XY, offset = 35mm)) {
+  motorOpening = circle(start = [var 14mm, var 0mm], center = [var 0mm, var 0mm])
+  motorA = circle(start = [var -15.4mm, var -18mm], center = [var -18mm, var -18mm])
+  motorB = circle(start = [var 20.6mm, var -18mm], center = [var 18mm, var -18mm])
+  motorC = circle(start = [var 20.6mm, var 18mm], center = [var 18mm, var 18mm])
+  motorD = circle(start = [var -15.4mm, var 18mm], center = [var -18mm, var 18mm])
+}
+motorOpeningTool = extrude(region(segments = [motorHoles.motorOpening]), length = 10mm)
+motorATool = extrude(region(segments = [motorHoles.motorA]), length = 10mm)
+motorBTool = extrude(region(segments = [motorHoles.motorB]), length = 10mm)
+motorCTool = extrude(region(segments = [motorHoles.motorC]), length = 10mm)
+motorDTool = extrude(region(segments = [motorHoles.motorD]), length = 10mm)
+// A transverse cutter opens the same rounded cooling slot in both webs.
+coolingSlot = sketch(on = offsetPlane(YZ, offset = -36mm)) {
+  lower = line(start = [var -17mm, var 16mm], end = [var 17mm, var 16mm])
+  right = arc(start = [var 17mm, var 16mm], end = [var 17mm, var 24mm], center = [var 17mm, var 20mm])
+  upper = line(start = [var 17mm, var 24mm], end = [var -17mm, var 24mm])
+  left = arc(start = [var -17mm, var 24mm], end = [var -17mm, var 16mm], center = [var -17mm, var 20mm])
+}
+coolingSlotTool = extrude(region(segments = [coolingSlot.lower, coolingSlot.right, coolingSlot.upper, coolingSlot.left]), length = 72mm)
+finishedBracket = subtract(formedBlank, tools = [footATool, footBTool, footCTool, footDTool, motorOpeningTool, motorATool, motorBTool, motorCTool, motorDTool, coolingSlotTool])
+  |> appearance(color = "#b6c6d1", metalness = 85, roughness = 28)
