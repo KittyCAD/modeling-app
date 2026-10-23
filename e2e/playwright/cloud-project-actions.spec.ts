@@ -110,6 +110,10 @@ test(
       remoteProjects: [project, copiedProject],
       listedProjects: [],
       createProject: () => copiedProject,
+      updateProject: ({ projectId }) =>
+        projectId === copiedProject.id
+          ? { status: 200, body: cloudProjectResponse(copiedProject) }
+          : undefined,
     })
     await context.route(`**/user/projects/${copiedProject.id}`, (route) =>
       route.fulfill({

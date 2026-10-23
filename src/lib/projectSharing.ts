@@ -95,7 +95,7 @@ export async function duplicateViewOnlyProject(app: App, libraryId?: string) {
     relative && isValidProjectFilePath(relative)
       ? fsZds.join(copy.path, relative)
       : copy.default_file
-  await app.registry
-    .get(routerService)
-    .navigate(await app.getProjectUrl(copy, filePath))
+  const url = await app.getProjectUrl(copy, filePath)
+  if (app.project !== session) return
+  await app.registry.get(routerService).navigate(url)
 }

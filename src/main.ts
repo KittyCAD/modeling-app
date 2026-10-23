@@ -39,6 +39,7 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import { registerFileProtocolCsp } from '@src/lib/csp'
+import { getDesktopRendererPath } from '@src/lib/desktopProtocol'
 import { DeviceFlowSessionStore } from '@src/lib/deviceFlowSessions'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import {
@@ -370,20 +371,13 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    const filteredPath = pathToOpen
-      ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
-      : ''
+    const filteredPath = pathToOpen ? getDesktopRendererPath(pathToOpen) : ''
     const fullHashBasedUrl = `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/${filteredPath}`
     newWindow.loadURL(fullHashBasedUrl).catch(reportRejection)
   } else {
     if (pathIsCustomProtocolLink && pathToOpen) {
       // We're trying to open a custom protocol link
-      // TODO: fix the replace %3 thing
-      const urlNoProtocol = pathToOpen
-        .replace(ZOO_STUDIO_PROTOCOL + '://', '')
-        .replaceAll('%3D', '')
-        .replaceAll('%3', '')
-      const filteredPath = decodeURI(urlNoProtocol)
+      const filteredPath = getDesktopRendererPath(pathToOpen)
       const startIndex = path.join(
         __dirname,
         `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
