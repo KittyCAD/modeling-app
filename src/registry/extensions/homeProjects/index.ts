@@ -603,7 +603,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       )
       return { defaultFile: projectInfo.default_file }
     },
-    duplicate: async (project) => {
+    duplicate: async (project, options) => {
       const duplicateProject = getProjectOperation(project, 'duplicateProject')
       if (!serviceImpl.canDuplicate(project) || !duplicateProject) {
         return
@@ -613,9 +613,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         library: duplicateProject.library,
         project,
       })
-      if (result) {
+      if (result && options?.notify !== false) {
         toast.success(result.message)
       }
+      return result
     },
     rename: async (project, requestedName, options) => {
       const renameProject = getProjectOperation(project, 'renameProject')
