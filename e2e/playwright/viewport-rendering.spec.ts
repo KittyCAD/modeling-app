@@ -21,23 +21,11 @@ test(
         appearance: { theme: 'light' },
       },
     }
+    // WebKit reports startup fetches interrupted by a reload as CORS errors.
+    // Let those requests finish before either of the setup reloads.
+    await page.waitForLoadState('networkidle')
     await page.addInitScript(
       ({ key, value }) => {
-        // WebKit checks CORS before route interception. Keep announcements out
-        // of this rendering test while leaving the engine connection live.
-        const originalFetch = globalThis.fetch.bind(globalThis)
-        globalThis.fetch = async (input, init) => {
-          const url = new URL(
-            input instanceof Request ? input.url : input,
-            location.href
-          )
-          if (url.pathname === '/announcements') {
-            return new Response(JSON.stringify({ items: [] }), {
-              headers: { 'content-type': 'application/json' },
-            })
-          }
-          return originalFetch(input, init)
-        }
         // The shared fixture resets user settings on reload. Restore the app's
         // saved settings so this test can exercise persistence too.
         const savedKey = 'viewport-rendering-saved-settings'
@@ -48,6 +36,7 @@ test(
       },
       { key: TEST_SETTINGS_KEY, value: settingsToToml(settings) }
     )
+    await page.waitForLoadState('networkidle')
 
     await folderSetupFn(async (dir) => {
       const project = await fs.join(dir, 'viewport-rendering')
