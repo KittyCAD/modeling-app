@@ -185,6 +185,24 @@ function parseRequest(message: unknown): ClientCommandRequest | undefined {
   }
 }
 
+async function downloadCloudArchive(
+  config: CloudSyncConfig,
+  projectId: string
+) {
+  try {
+    return await downloadRemoteProjectArchive(
+      config,
+      projectId,
+      MAX_ARCHIVE_BYTES
+    )
+  } catch (error) {
+    if (error instanceof RemoteProjectArchiveLimitError) {
+      return Promise.reject(new ProjectReferenceCommandError(error.message))
+    }
+    return Promise.reject(error)
+  }
+}
+
 export function createProjectReferenceCommands(deps: {
   entries: ReadonlySignal<readonly HomeProjectEntry[]>
   fileOperations: FileOperationsRegistryService
@@ -203,14 +221,12 @@ export function createProjectReferenceCommands(deps: {
   const projectIds = new Map<string, string>()
   const projectKeys = new Map<string, string>()
   const remoteEntries = new Map<string, HomeProjectEntry>()
-  const pending = new Map<string, Promise<unknown>>()
   const duplicates = new Map<
     string,
     { signature: string; token: string; task: Promise<unknown> }
   >()
   const revision = 1
   let remoteCatalogToken: string | undefined
-  let pendingToken = deps.getApiToken()
   let activeSocket: WebSocket | undefined
   // Continuation pages reuse one bounded snapshot while its cloud revision holds.
   let cloudSnapshot:
@@ -388,6 +404,7 @@ export function createProjectReferenceCommands(deps: {
       )
     }
     const files: string[] = []
+    const allFiles: string[] = []
     const seen = new Set<string>()
     for (const file of project.files) {
       if (!isRecord(file) || typeof file.relative_path !== 'string') {
@@ -396,6 +413,9 @@ export function createProjectReferenceCommands(deps: {
         )
       }
       const path = file.relative_path
+      if (isSafeRelativePath(path)) {
+        allFiles.push(path)
+      }
       if (!isReadableFile(path)) {
         continue
       }
@@ -416,6 +436,7 @@ export function createProjectReferenceCommands(deps: {
       project,
       remoteProjectId: entry.remoteProjectId,
       files,
+      allFiles,
     }
   }
 
@@ -452,19 +473,7 @@ export function createProjectReferenceCommands(deps: {
     }
     cloudSnapshot = undefined
     const generation = ++cloudSnapshotGeneration
-    let archive: ArrayBuffer
-    try {
-      archive = await downloadRemoteProjectArchive(
-        config,
-        remoteProjectId,
-        MAX_ARCHIVE_BYTES
-      )
-    } catch (error) {
-      if (error instanceof RemoteProjectArchiveLimitError) {
-        return Promise.reject(new ProjectReferenceCommandError(error.message))
-      }
-      return Promise.reject(error)
-    }
+    const archive = await downloadCloudArchive(config, remoteProjectId)
     let data: Uint8Array | undefined
     try {
       data = await readProjectArchiveFile(
@@ -741,53 +750,10 @@ export function createProjectReferenceCommands(deps: {
         return deps.fileOperations.readFile(absolute)
       }
     } else {
-      if (!entry.remoteProjectId) {
-        return Promise.reject(
-          new ProjectReferenceCommandError(
-            'Project is unavailable in this library.'
-          )
-        )
-      }
-      const apiToken = deps.getApiToken()
-      const config: CloudSyncConfig = { enabled: true, token: apiToken }
-      const project = await getRemoteProject(config, entry.remoteProjectId)
-      if (
-        apiToken !== deps.getApiToken() ||
-        (remoteEntries.has(entry.id) &&
-          project.access?.scope === 'organization') ||
-        !isArray(project.files) ||
-        project.files.length > MAX_FILES * 2
-      ) {
-        return Promise.reject(
-          new ProjectReferenceCommandError(
-            'Project is unavailable in this library.'
-          )
-        )
-      }
-      paths = []
-      for (const file of project.files) {
-        if (!isRecord(file) || typeof file.relative_path !== 'string') {
-          return Promise.reject(
-            new ProjectReferenceCommandError('Project files are unavailable.')
-          )
-        }
-        if (isSafeRelativePath(file.relative_path)) {
-          paths.push(file.relative_path)
-        }
-      }
-      let archive: ArrayBuffer
-      try {
-        archive = await downloadRemoteProjectArchive(
-          config,
-          entry.remoteProjectId,
-          MAX_ARCHIVE_BYTES
-        )
-      } catch (error) {
-        if (error instanceof RemoteProjectArchiveLimitError) {
-          return Promise.reject(new ProjectReferenceCommandError(error.message))
-        }
-        return Promise.reject(error)
-      }
+      const { apiToken, config, remoteProjectId, allFiles } =
+        await cloudProjectMetadata(entry)
+      paths = allFiles
+      const archive = await downloadCloudArchive(config, remoteProjectId)
       if (apiToken !== deps.getApiToken()) {
         return Promise.reject(
           new ProjectReferenceCommandError('The account changed. Search again.')
@@ -962,10 +928,6 @@ export function createProjectReferenceCommands(deps: {
 
   return {
     advertise(ws) {
-      if (activeSocket !== ws) {
-        // The server may retry the same request ID on a new connection.
-        pending.clear()
-      }
       activeSocket = ws
       sendCatalog(ws, commands)
     },
@@ -978,10 +940,6 @@ export function createProjectReferenceCommands(deps: {
         return true
       }
       const apiToken = deps.getApiToken()
-      if (pendingToken !== apiToken) {
-        pending.clear()
-        pendingToken = apiToken
-      }
       let task: Promise<unknown>
       if (request.command_id === 'projects.duplicate') {
         const signature = `${request.catalog_revision}:${request.command_id}:${JSON.stringify(request.arguments)}`
@@ -1010,14 +968,7 @@ export function createProjectReferenceCommands(deps: {
           })
         }
       } else {
-        const key = `${request.request_id}:${request.catalog_revision}:${request.command_id}:${JSON.stringify(request.arguments)}`
-        task = pending.get(key) ?? execute(request)
-        if (!pending.has(key)) {
-          pending.set(key, task)
-          if (pending.size > 128) {
-            pending.delete(pending.keys().next().value ?? '')
-          }
-        }
+        task = execute(request)
       }
       void task.then(
         (result) => {
