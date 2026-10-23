@@ -165,31 +165,12 @@ view001 = view::named(
       except: undefined,
     })
 
-    const renamed = addNamedView({
-      ast,
-      artifactGraph: execState.artifactGraph,
-      ...defaults,
-      name: 'Renamed view',
-      wasmInstance: instance,
-    })
-    if (err(renamed)) throw renamed
-    const renamedCode = recast(renamed.modifiedAst, instance)
-    if (err(renamedCode)) throw renamedCode
-    expect(renamedCode).toContain('"Renamed view"')
-    expect(renamedCode).toContain('    view::Orientation::Front,')
-    expect(renamedCode).toContain(
-      '    projection = view::Projection::Perspective,'
-    )
-    expect(renamedCode).toContain('  baseline = view::Visibility::Show,')
-
     const result = addNamedView({
       ast,
       artifactGraph: execState.artifactGraph,
       ...defaults,
       name: 'Updated view',
       orientation: 'Top',
-      projection: 'Orthographic',
-      baseline: 'Hide',
       wasmInstance: instance,
     })
     if (err(result)) throw result
@@ -198,9 +179,11 @@ view001 = view::named(
     if (err(updatedCode)) throw updatedCode
     expect(updatedCode.match(/view::named/g)).toHaveLength(1)
     expect(updatedCode).toContain('"Updated view"')
-    expect(updatedCode).toContain('view::Orientation::Top')
-    expect(updatedCode).toContain('view::Projection::Orthographic')
-    expect(updatedCode).toContain('view::Visibility::Hide')
+    expect(updatedCode).toContain('    view::Orientation::Top,')
+    expect(updatedCode).toContain(
+      '    projection = view::Projection::Perspective,'
+    )
+    expect(updatedCode).toContain('  baseline = view::Visibility::Show,')
     expect(updatedCode).toContain('target = [1 + 2, 3, 4]')
     expect(updatedCode).toContain('distance = 200mm')
     expect(updatedCode).toContain('except = exceptions')

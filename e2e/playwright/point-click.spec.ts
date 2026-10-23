@@ -5894,7 +5894,6 @@ test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
     const code = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 2mm, var 10mm], center = [var 0mm, var 10mm])
-  line1 = line(start = [var -10mm, var 0mm], end = [var -10mm, var 20mm])
 }
 region001 = region(segments = [sketch001.circle1])`
     await homePage.goToModelingScene()
@@ -5915,10 +5914,20 @@ region001 = region(segments = [sketch001.circle1])`
     await dialog
       .getByRole('combobox', { name: /^orientation/i })
       .selectOption({ label: 'Front' })
+    await dialog.getByText('Advanced', { exact: true }).click()
+    await dialog.getByRole('textbox', { name: /^distance/i }).fill('200mm')
+    await dialog
+      .locator('#command-kcl-input-distance-variable-checkbox')
+      .check()
+    await dialog
+      .getByRole('textbox', { name: 'Variable name', exact: true })
+      .fill('viewDistance')
     await editor.selectText('region(')
     await expect(exceptions).toContainText(/1 region/i)
     await scene.waitForExecutionDoneAfter(() => submit.click())
     await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('viewDistance = 200mm')
+    await editor.expectEditor.toContain('distance = viewDistance')
     await editor.expectEditor.toContain('except = [region001]')
 
     const row = pane
@@ -5965,7 +5974,7 @@ region001 = region(segments = [sketch001.circle1])`
     await expect(
       page
         .getByTestId('feature-tree-operation-item')
-        .filter({ hasText: 'Named View' })
+        .filter({ hasText: /Named View/ })
     ).toHaveCount(0)
     await row
       .getByRole('button', { name: 'Apply Inspection updated', exact: true })

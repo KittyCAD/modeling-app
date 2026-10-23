@@ -216,7 +216,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
             return (
               <li
                 key={row.key}
-                className="group flex h-7 min-w-0 select-none items-center gap-1 px-1 text-sm hover:bg-chalkboard-10 focus-within:bg-chalkboard-20 dark:hover:bg-chalkboard-90 dark:focus-within:bg-chalkboard-80"
+                className="flex h-7 min-w-0 select-none items-center gap-1 px-1 text-sm hover:bg-chalkboard-10 focus-within:bg-chalkboard-20 dark:hover:bg-chalkboard-90 dark:focus-within:bg-chalkboard-80"
                 data-testid="named-view-row"
                 data-active={isActive}
               >

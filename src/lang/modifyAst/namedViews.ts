@@ -19,30 +19,12 @@ import {
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import type {
-  ArtifactGraph,
-  CallExpressionKw,
-  Expr,
-  PathToNode,
-  Program,
-} from '@src/lang/wasm'
+import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-
-export function isOrientedCameraCall(
-  camera: Expr | undefined
-): camera is Node<CallExpressionKw> {
-  return (
-    camera?.type === 'CallExpressionKw' &&
-    camera.callee.name.name === 'oriented' &&
-    ['view', 'std::view'].includes(
-      camera.callee.path.map(({ name }) => name).join('::')
-    )
-  )
-}
 
 function viewEnum(type: string, value: string) {
   return createLocalName(value, [
@@ -80,6 +62,21 @@ export function addNamedView({
   const mNodeToEdit = structuredClone(nodeToEdit)
   const namedCall = modelingStdLibCall('Named View')
 
+  const exceptVars =
+    !mNodeToEdit && except
+      ? getVariableExprsFromSelection(
+          except,
+          artifactGraph,
+          modifiedAst,
+          wasmInstance,
+          undefined,
+          { lastChildLookup: false }
+        )
+      : { exprs: [] }
+  if (err(exceptVars)) {
+    return exceptVars
+  }
+
   const camera = createCallExpressionStdLibKw(
     'oriented',
     viewEnum('Orientation', orientation),
@@ -98,21 +95,6 @@ export function addNamedView({
   }
   if (distance && 'variableName' in distance && distance.variableName) {
     insertVariableAndOffsetPathToNode(distance, modifiedAst, mNodeToEdit)
-  }
-
-  const exceptVars =
-    !mNodeToEdit && except
-      ? getVariableExprsFromSelection(
-          except,
-          artifactGraph,
-          modifiedAst,
-          wasmInstance,
-          undefined,
-          { lastChildLookup: false }
-        )
-      : { exprs: [] }
-  if (err(exceptVars)) {
-    return exceptVars
   }
 
   const call = createCallExpressionStdLibKw(

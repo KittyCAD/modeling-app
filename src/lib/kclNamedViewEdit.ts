@@ -1,7 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { toUtf16 } from '@src/lang/errors'
-import { isOrientedCameraCall } from '@src/lang/modifyAst/namedViews'
 import {
   getNodeFromPath,
   retrieveSelectionsFromArtifactIds,
@@ -9,6 +8,7 @@ import {
 import type {
   ArtifactGraph,
   CallExpressionKw,
+  Expr,
   KclNamedViewArtifact,
   Program,
 } from '@src/lang/wasm'
@@ -19,6 +19,18 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import { isErr } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
+
+function isOrientedCameraCall(
+  camera: Expr | undefined
+): camera is Node<CallExpressionKw> {
+  return (
+    camera?.type === 'CallExpressionKw' &&
+    camera.callee.name.name === 'oriented' &&
+    ['view', 'std::view'].includes(
+      camera.callee.path.map(({ name }) => name).join('::')
+    )
+  )
+}
 
 export async function prepareNamedViewEditCommand({
   artifact,
