@@ -279,7 +279,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                       <button
                         type="button"
                         className="menuButton"
-                        data-testid="named-view-edit"
                         onClick={() => editView(manageableView)}
                       >
                         Edit
@@ -289,7 +288,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                       <button
                         type="button"
                         className="menuButton"
-                        data-testid="named-view-remove"
                         onClick={() => void removeView(manageableView)}
                       >
                         Remove

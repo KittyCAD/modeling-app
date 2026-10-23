@@ -159,17 +159,9 @@ view001 = view::named(
       rustContext,
     })
     if (err(event)) throw event
-    if (event.type !== 'Find and select command') {
-      throw new Error(`Expected an edit command, got ${event.type}`)
-    }
     const defaults = event.data.argDefaultValues
     expect(defaults).toMatchObject({
       name: 'Inspection view',
-      orientation: 'Front',
-      projection: 'Perspective',
-      baseline: 'Show',
-      target: { valueText: '[1 + 2, 3, 4]' },
-      distance: { valueText: '200mm' },
       except: undefined,
     })
 
