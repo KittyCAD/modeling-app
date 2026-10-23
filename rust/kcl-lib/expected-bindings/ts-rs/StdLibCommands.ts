@@ -7541,6 +7541,7 @@ export default {
     "moduleName": "std",
     "returnType": "Plane",
     "addedIn": null,
+    "summary": "Create a validated construction plane with an explicit sketch coordinate frame.",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,

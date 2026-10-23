@@ -2,10 +2,10 @@
 
 use kcl_api::SourceRef;
 use kcl_api::UnitLength;
+use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
 use kcmc::shared::Color;
-use kcmc::ModelingCmd;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
@@ -14,8 +14,6 @@ use super::args::TyF64;
 use super::sketch::PlaneData;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
-use crate::execution::types::ArrayLen;
-use crate::execution::types::RuntimeType;
 use crate::execution::ArtifactId;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
@@ -25,9 +23,11 @@ use crate::execution::Plane;
 use crate::execution::PlaneInfo;
 use crate::execution::PlaneKind;
 use crate::execution::Point3d;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::faces::FaceSpecifier;
-use crate::std::Args;
 
 /// Construct a typed plane using the existing custom-plane engine lifecycle.
 pub async fn plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
