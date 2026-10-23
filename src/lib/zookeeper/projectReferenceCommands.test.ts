@@ -9,7 +9,10 @@ import nodeFileSystem from '@src/lib/fs-zds/nodefs'
 import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { createProjectReferenceCommands } from '@src/lib/zookeeper/projectReferenceCommands'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
-import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
+import type {
+  HomeProjectActionsService,
+  HomeProjectEntry,
+} from '@src/registry/contracts/homeProjects'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const cloudMocks = vi.hoisted(() => ({
@@ -64,6 +67,10 @@ function fixture(
     initialEntries?: HomeProjectEntry[]
     fileOperations?: FileOperationsRegistryService
     getApiToken?: () => string
+    getHomeProjectActions?: () =>
+      | Pick<HomeProjectActionsService, 'canDuplicate' | 'duplicate'>
+      | undefined
+    isSessionActive?: () => boolean
     includePersonalCloud?: () => boolean
   } = {}
 ) {
@@ -116,6 +123,8 @@ function fixture(
     entries,
     fileOperations: options.fileOperations ?? fileOperations,
     getApiToken: options.getApiToken ?? (() => 'token'),
+    getHomeProjectActions: options.getHomeProjectActions,
+    isSessionActive: options.isSessionActive,
     includePersonalCloud: options.includePersonalCloud,
   })
   let nextRequest = 0
@@ -184,14 +193,19 @@ describe('Zookeeper project reference commands', () => {
     cloudMocks.parse.mockReset()
   })
 
-  it('advertises only read-only commands and hides source paths and cloud IDs', async () => {
+  it('advertises library commands and hides source paths and cloud IDs', async () => {
     const { commands, request, sent, ws } = fixture()
     commands.advertise(ws)
     const catalog = sent[0]
     expect(catalog.type).toBe('update_client_command_schema')
     expect(
       (catalog.commands as Array<{ id: string }>).map((cmd) => cmd.id)
-    ).toEqual(['projects.search', 'projects.list_files', 'projects.read_file'])
+    ).toEqual([
+      'projects.search',
+      'projects.duplicate',
+      'projects.list_files',
+      'projects.read_file',
+    ])
 
     const response = await request('projects.search', { query: 'TRUCK' })
     expect(response.status).toBe('succeeded')
@@ -207,6 +221,179 @@ describe('Zookeeper project reference commands', () => {
     ])
     expect(JSON.stringify(projects)).not.toContain('/private/library')
     expect(JSON.stringify(projects)).not.toContain('cloud-123')
+  })
+
+  it('replays a duplicate request across reconnects without making another copy', async () => {
+    let finishDuplicate!: (result: {
+      message: string
+      name: string
+      title: string
+    }) => void
+    const duplicate = vi.fn(
+      () =>
+        new Promise<{ message: string; name: string; title: string }>(
+          (resolve) => {
+            finishDuplicate = resolve
+          }
+        )
+    )
+    const { commands, request, sent, ws } = fixture({
+      getHomeProjectActions: () => ({ canDuplicate: () => true, duplicate }),
+    })
+    commands.advertise(ws)
+    const projectId = await searchProjectId(request, 'TRUCK')
+    const message = {
+      client_command_request: {
+        request_id: 'duplicate-once',
+        catalog_revision: 1,
+        command_id: 'projects.duplicate',
+        arguments: { project_id: projectId },
+      },
+    }
+    commands.handleRequest(ws, message)
+    expect(duplicate).toHaveBeenCalledWith(localProject, { notify: false })
+
+    const next = makeSocket()
+    commands.advertise(next.ws)
+    commands.handleRequest(next.ws, message)
+    finishDuplicate({
+      message: 'Copied',
+      name: 'TRUCK-copy',
+      title: 'TRUCK-copy',
+    })
+    await vi.waitFor(() => {
+      expect(next.sent).toContainEqual(
+        expect.objectContaining({
+          request_id: 'duplicate-once',
+          status: 'succeeded',
+          result: { title: 'TRUCK-copy' },
+        })
+      )
+    })
+    expect(sent.some((frame) => frame.request_id === 'duplicate-once')).toBe(
+      false
+    )
+
+    commands.handleRequest(next.ws, message)
+    await vi.waitFor(() => {
+      expect(
+        next.sent.filter((frame) => frame.request_id === 'duplicate-once')
+      ).toHaveLength(2)
+    })
+    expect(duplicate).toHaveBeenCalledOnce()
+  })
+
+  it('does not duplicate a removed project or reuse a request ID for another project', async () => {
+    const duplicate = vi.fn(async () => ({
+      message: 'Copied',
+      name: 'TRUCK-copy',
+      title: 'TRUCK-copy',
+    }))
+    const { commands, entries, request, sent, ws } = fixture({
+      getHomeProjectActions: () => ({ canDuplicate: () => true, duplicate }),
+    })
+    commands.advertise(ws)
+    const projectId = await searchProjectId(request, 'TRUCK')
+    entries.value = [cloudProject]
+    const missing = await request('projects.duplicate', {
+      project_id: projectId,
+    })
+    expect(missing).toMatchObject({
+      status: 'rejected',
+      error: 'Project cannot be duplicated.',
+    })
+    expect(duplicate).not.toHaveBeenCalled()
+
+    entries.value = [localProject, cloudProject]
+    const message = {
+      client_command_request: {
+        request_id: 'same-id',
+        catalog_revision: 1,
+        command_id: 'projects.duplicate',
+        arguments: { project_id: projectId },
+      },
+    }
+    commands.handleRequest(ws, message)
+    await vi.waitFor(() => {
+      expect(sent.some((frame) => frame.request_id === 'same-id')).toBe(true)
+    })
+    commands.handleRequest(ws, {
+      client_command_request: {
+        ...message.client_command_request,
+        arguments: { project_id: 'another-project' },
+      },
+    })
+    await vi.waitFor(() => {
+      expect(
+        sent.filter((frame) => frame.request_id === 'same-id')
+      ).toHaveLength(2)
+    })
+    expect(sent.at(-1)).toMatchObject({
+      status: 'rejected',
+      error: 'A project duplication request ID was reused.',
+    })
+    expect(duplicate).toHaveBeenCalledOnce()
+  })
+
+  it('duplicates an API-discovered Personal Cloud project only while it remains personal', async () => {
+    cloudMocks.list.mockResolvedValue([{ id: 'cloud-456', title: 'propeller' }])
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-456',
+      access: { scope: 'organization' },
+    })
+    const duplicate = vi.fn(async () => ({
+      message: 'Copied',
+      name: 'cloud-copy-id',
+      title: 'propeller-copy',
+    }))
+    let sessionActive = true
+    const { request } = fixture({
+      initialEntries: [localProject],
+      includePersonalCloud: () => true,
+      getHomeProjectActions: () => ({ canDuplicate: () => true, duplicate }),
+      isSessionActive: () => sessionActive,
+    })
+    const projectId = await searchProjectId(request, 'propeller')
+    const rejected = await request('projects.duplicate', {
+      project_id: projectId,
+    })
+    expect(rejected).toMatchObject({
+      status: 'rejected',
+      error: 'Project is unavailable in this library.',
+    })
+    expect(duplicate).not.toHaveBeenCalled()
+
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-456',
+      access: { scope: 'personal' },
+    })
+    cloudMocks.get.mockImplementationOnce(async () => {
+      sessionActive = false
+      return { id: 'cloud-456', access: { scope: 'personal' } }
+    })
+    const stale = await request('projects.duplicate', {
+      project_id: projectId,
+    })
+    expect(stale).toMatchObject({
+      status: 'rejected',
+      error: 'Project session changed.',
+    })
+    expect(duplicate).not.toHaveBeenCalled()
+
+    sessionActive = true
+    const copied = await request('projects.duplicate', {
+      project_id: projectId,
+    })
+    expect(copied).toMatchObject({
+      status: 'succeeded',
+      result: { title: 'propeller-copy' },
+    })
+    expect(duplicate).toHaveBeenCalledWith(
+      expect.objectContaining({ remoteProjectId: 'cloud-456' }),
+      { notify: false }
+    )
+    expect(JSON.stringify(copied.result)).not.toContain('cloud-456')
+    expect(JSON.stringify(copied.result)).not.toContain('cloud-copy-id')
   })
 
   it('finds Personal Cloud projects before the Home remote index loads', async () => {

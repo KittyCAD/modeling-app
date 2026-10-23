@@ -13,7 +13,10 @@ import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import { isArray, isRecord } from '@src/lib/utils'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
-import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
+import type {
+  HomeProjectActionsService,
+  HomeProjectEntry,
+} from '@src/registry/contracts/homeProjects'
 
 const MAX_PROJECTS = 20
 const MAX_FILES = 2_000
@@ -29,6 +32,7 @@ type CommandId =
   | 'projects.search'
   | 'projects.list_files'
   | 'projects.read_file'
+  | 'projects.duplicate'
 
 type ClientCommandRequest = {
   request_id: string
@@ -47,7 +51,7 @@ const commands = [
     id: 'projects.search',
     title: 'Find library projects',
     description:
-      'Find local and cloud projects in the Zoo Design Studio library by name. Returns opaque project_id values for read-only reference commands.',
+      'Find local and cloud projects in the Zoo Design Studio library by name. Returns opaque project_id values for library commands.',
     input_schema: {
       type: 'object',
       properties: {
@@ -55,6 +59,20 @@ const commands = [
         offset: { type: 'integer', minimum: 0 },
       },
       required: ['query'],
+      additionalProperties: false,
+    },
+  },
+  {
+    id: 'projects.duplicate',
+    title: 'Duplicate library project',
+    description:
+      'Create an exact copy of a complete local or cloud library project as a new project. Use this when the user asks to copy or recreate a whole project exactly. The current project stays unchanged. If the connection drops, search for the copy before retrying.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string' },
+      },
+      required: ['project_id'],
       additionalProperties: false,
     },
   },
@@ -162,11 +180,19 @@ export function createProjectReferenceCommands(deps: {
   entries: ReadonlySignal<readonly HomeProjectEntry[]>
   fileOperations: FileOperationsRegistryService
   getApiToken: () => string
+  getHomeProjectActions?: () =>
+    | Pick<HomeProjectActionsService, 'canDuplicate' | 'duplicate'>
+    | undefined
+  isSessionActive?: () => boolean
   includePersonalCloud?: () => boolean
 }): ProjectReferenceCommandTransport {
   const projectIds = new Map<string, string>()
   const projectKeys = new Map<string, string>()
   const remoteEntries = new Map<string, HomeProjectEntry>()
+  const duplicates = new Map<
+    string,
+    { signature: string; token: string; task: Promise<unknown> }
+  >()
   const revision = 1
   let remoteCatalogToken: string | undefined
   let activeSocket: WebSocket | undefined
@@ -666,6 +692,50 @@ export function createProjectReferenceCommands(deps: {
     }
   }
 
+  async function duplicate(args: Record<string, unknown>) {
+    const entry = resolveProject(args.project_id)
+    const actions = deps.getHomeProjectActions?.()
+    if (
+      !entry ||
+      !actions?.canDuplicate(entry) ||
+      deps.isSessionActive?.() === false
+    ) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('Project cannot be duplicated.')
+      )
+    }
+    if (remoteEntries.has(entry.id) && entry.remoteProjectId) {
+      const apiToken = deps.getApiToken()
+      const project = await getRemoteProject(
+        { enabled: true, token: apiToken },
+        entry.remoteProjectId
+      )
+      if (
+        apiToken !== deps.getApiToken() ||
+        project.access?.scope === 'organization' ||
+        !resolveProject(args.project_id)
+      ) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'Project is unavailable in this library.'
+          )
+        )
+      }
+    }
+    if (deps.isSessionActive?.() === false) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('Project session changed.')
+      )
+    }
+    const result = await actions.duplicate(entry, { notify: false })
+    if (!result) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('Project could not be duplicated.')
+      )
+    }
+    return { title: result.title }
+  }
+
   function execute(request: ClientCommandRequest): Promise<unknown> {
     if (request.catalog_revision !== revision) {
       return Promise.reject(
@@ -679,6 +749,8 @@ export function createProjectReferenceCommands(deps: {
         return listFiles(request.arguments)
       case 'projects.read_file':
         return readFile(request.arguments)
+      case 'projects.duplicate':
+        return duplicate(request.arguments)
       default:
         return Promise.reject(
           new ProjectReferenceCommandError('Unknown client command.')
@@ -700,7 +772,36 @@ export function createProjectReferenceCommands(deps: {
         return true
       }
       const apiToken = deps.getApiToken()
-      const task = execute(request)
+      let task: Promise<unknown>
+      if (request.command_id === 'projects.duplicate') {
+        const signature = `${request.catalog_revision}:${request.command_id}:${JSON.stringify(request.arguments)}`
+        const previous = duplicates.get(request.request_id)
+        if (previous) {
+          task =
+            previous.token === apiToken && previous.signature === signature
+              ? previous.task
+              : Promise.reject(
+                  new ProjectReferenceCommandError(
+                    'A project duplication request ID was reused.'
+                  )
+                )
+        } else if (duplicates.size >= 128) {
+          task = Promise.reject(
+            new ProjectReferenceCommandError(
+              'Too many project duplications in this session. Reopen Zookeeper.'
+            )
+          )
+        } else {
+          task = execute(request)
+          duplicates.set(request.request_id, {
+            signature,
+            token: apiToken,
+            task,
+          })
+        }
+      } else {
+        task = execute(request)
+      }
       void task.then(
         (result) => {
           if (

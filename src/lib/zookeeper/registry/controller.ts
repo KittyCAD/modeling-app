@@ -33,7 +33,10 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
-import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
+import type {
+  HomeProjectActionsService,
+  HomeProjectEntry,
+} from '@src/registry/contracts/homeProjects'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom, Subscription } from 'xstate'
@@ -43,6 +46,7 @@ export interface ZookeeperSessionControllerDependencies {
   billing: BillingRegistryService
   conversationStore: ZookeeperConversationStore
   fileOperations: FileOperationsRegistryService
+  getHomeProjectActions?: () => HomeProjectActionsService | undefined
   includePersonalCloud?: () => boolean
   libraryProjects?: ReadonlySignal<readonly HomeProjectEntry[]>
   kclManager: KclManager
@@ -142,6 +146,9 @@ class SessionController implements ZookeeperSessionController {
           entries: deps.libraryProjects,
           fileOperations: deps.fileOperations,
           getApiToken: () => this.apiToken,
+          getHomeProjectActions: deps.getHomeProjectActions,
+          isSessionActive: () =>
+            this.active && this.getZdsProject() !== undefined,
           includePersonalCloud: deps.includePersonalCloud,
         })
       : undefined
