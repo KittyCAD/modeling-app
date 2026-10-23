@@ -10505,7 +10505,7 @@ export default {
     "moduleName": "solid",
     "returnType": "Solid",
     "addedIn": null,
-    "summary": "Give a planar/cylindrical surface or a connected straight extrusion of lines and circular arcs a uniform thickness, closing its boundaries into a solid. Tangent joins stay smooth; sharp corners use mitered joins. Choose `side = \"normal\"` (default), `\"opposite\"`, or `\"center\"`. Thickness is a positive total wall thickness. Center places half on each side. Overlapping offset contours are passed through without a self-intersection check. Other surface types and cut multi-face surfaces are not yet supported. Requires an engine with surface thickening support.",
+    "summary": "Give a planar/cylindrical surface or a connected straight extrusion of lines and circular arcs a uniform thickness, closing its boundaries into a solid. Tangent joins stay smooth; sharp corners use mitered joins. Set `flip = true` to reverse the direction; `false` (default) follows the surface normal. Thickness is a positive total wall thickness. `center = true` places half on each side, so flipping has no effect when centered. Overlapping offset contours are passed through without a self-intersection check. Other surface types and cut multi-face surfaces are not yet supported. Requires an engine with surface thickening support.",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -10536,9 +10536,21 @@ export default {
         "removedIn": null
       },
       {
-        "name": "side",
-        "ty": "string",
-        "docs": "Which side to thicken: \"normal\", \"opposite\", or \"center\" (half on each side).",
+        "name": "flip",
+        "ty": "bool",
+        "docs": "Reverse the direction of thickening. Has no effect when centered.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "center",
+        "ty": "bool",
+        "docs": "Place half the total thickness on each side of the surface.",
         "required": false,
         "special": false,
         "experimental": false,

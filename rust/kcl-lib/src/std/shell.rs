@@ -26,17 +26,11 @@ pub async fn thicken(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let mut surface: Box<Solid> = args.get_unlabeled_kw_arg("surface", &RuntimeType::solid(), exec_state)?;
     let thickness: TyF64 = args.get_kw_arg("thickness", &RuntimeType::length(), exec_state)?;
     let distance = thickness.unwrap_to_mm();
-    let side: Option<String> = args.get_kw_arg_opt("side", &RuntimeType::string(), exec_state)?;
-    let side = side.as_deref().unwrap_or("normal");
-    if !matches!(side, "normal" | "opposite" | "center") {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Thicken side must be normal, opposite, or center".to_owned(),
-            vec![args.source_range],
-        )));
-    }
+    let flip: Option<bool> = args.get_kw_arg_opt("flip", &RuntimeType::bool(), exec_state)?;
+    let center: Option<bool> = args.get_kw_arg_opt("center", &RuntimeType::bool(), exec_state)?;
     if !distance.is_finite() || distance <= 0.0 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Thickness must be a finite, positive length; use side to choose its direction".to_owned(),
+            "Thickness must be a finite, positive length; use flip to reverse its direction".to_owned(),
             vec![args.source_range],
         )));
     }
@@ -59,7 +53,7 @@ pub async fn thicken(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         )));
     }
 
-    if side == "center" {
+    if center.unwrap_or(false) {
         // Reuse cloning and union so centering needs no additional wire/API fields.
         let mut copies = super::clone::inner_clone(
             vec![GeometryWithImportedGeometry::Solid(surface.as_ref().clone())],
@@ -95,7 +89,7 @@ pub async fn thicken(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     }
     thicken_one_side(
         &mut surface,
-        if side == "opposite" { -distance } else { distance },
+        if flip.unwrap_or(false) { -distance } else { distance },
         exec_state,
         &args,
     )
@@ -267,10 +261,16 @@ profile = sketch(on = XY) {
 }
 surface = extrude([profile.line1, profile.arc1, profile.line2, profile.line3], length = 10mm, bodyType = SURFACE)
 "#;
-        for side in ["normal", "opposite", "center"] {
+        for options in [
+            "",
+            ", flip = false",
+            ", flip = true",
+            ", center = true",
+            ", center = true, flip = true",
+        ] {
             for thickness in ["2mm", "0.1in"] {
                 let code = format!(
-                    "{setup}\nbody = thicken(surface, thickness = {thickness}, side = \"{side}\")\nassertIs(isSolid(body))\nassertIs(!isSurface(body))"
+                    "{setup}\nbody = thicken(surface, thickness = {thickness}{options})\nassertIs(isSolid(body))\nassertIs(!isSurface(body))"
                 );
                 let program = crate::Program::parse_no_errs(&code).unwrap();
                 let ctx = crate::ExecutorContext::new_mock(None).await;
@@ -282,7 +282,6 @@ surface = extrude([profile.line1, profile.arc1, profile.line2, profile.line3], l
         for (operation, message) in [
             ("thicken(surface, thickness = 0mm)", "finite, positive"),
             ("thicken(surface, thickness = -2mm)", "finite, positive"),
-            ("thicken(surface, thickness = 2mm, side = \"outside\")", "side must be"),
             (
                 "body = thicken(surface, thickness = 2mm)\nthicken(body, thickness = 1mm)",
                 "requires a surface body",

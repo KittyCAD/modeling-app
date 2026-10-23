@@ -1,19 +1,20 @@
 ---
 title: "thicken"
 subtitle: "Function in std::solid"
-excerpt: "Give a planar/cylindrical surface or a connected straight extrusion of lines and circular arcs a uniform thickness, closing its boundaries into a solid. Tangent joins stay smooth; sharp corners use mitered joins. Choose `side = \"normal\"` (default), `\"opposite\"`, or `\"center\"`. Thickness is a positive total wall thickness. Center places half on each side. Overlapping offset contours are passed through without a self-intersection check. Other surface types and cut multi-face surfaces are not yet supported. Requires an engine with surface thickening support."
+excerpt: "Give a planar/cylindrical surface or a connected straight extrusion of lines and circular arcs a uniform thickness, closing its boundaries into a solid. Tangent joins stay smooth; sharp corners use mitered joins. Set `flip = true` to reverse the direction; `false` (default) follows the surface normal. Thickness is a positive total wall thickness. `center = true` places half on each side, so flipping has no effect when centered. Overlapping offset contours are passed through without a self-intersection check. Other surface types and cut multi-face surfaces are not yet supported. Requires an engine with surface thickening support."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-Give a planar/cylindrical surface or a connected straight extrusion of lines and circular arcs a uniform thickness, closing its boundaries into a solid. Tangent joins stay smooth; sharp corners use mitered joins. Choose `side = "normal"` (default), `"opposite"`, or `"center"`. Thickness is a positive total wall thickness. Center places half on each side. Overlapping offset contours are passed through without a self-intersection check. Other surface types and cut multi-face surfaces are not yet supported. Requires an engine with surface thickening support.
+Give a planar/cylindrical surface or a connected straight extrusion of lines and circular arcs a uniform thickness, closing its boundaries into a solid. Tangent joins stay smooth; sharp corners use mitered joins. Set `flip = true` to reverse the direction; `false` (default) follows the surface normal. Thickness is a positive total wall thickness. `center = true` places half on each side, so flipping has no effect when centered. Overlapping offset contours are passed through without a self-intersection check. Other surface types and cut multi-face surfaces are not yet supported. Requires an engine with surface thickening support.
 
 ```kcl
 thicken(
   @surface: Solid,
   thickness: number(Length),
-  side?: string,
+  flip?: bool,
+  center?: bool,
 ): Solid
 ```
 
@@ -25,7 +26,8 @@ thicken(
 |----------|------|-------------|----------|
 | `surface` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The surface body to thicken. | Yes |
 | `thickness` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Positive total wall thickness. | Yes |
-| `side` | [`string`](/docs/kcl-std/types/std-types-string) | Which side to thicken: "normal", "opposite", or "center" (half on each side). | No |
+| `flip` | [`bool`](/docs/kcl-std/types/std-types-bool) | Reverse the direction of thickening. Has no effect when centered. | No |
+| `center` | [`bool`](/docs/kcl-std/types/std-types-bool) | Place half the total thickness on each side of the surface. | No |
 
 ### Returns
 
@@ -53,7 +55,7 @@ surface = extrude(
   length = 10mm,
   bodyType = SURFACE,
 )
-body = thicken(surface, thickness = 2mm, side = "center")
+body = thicken(surface, thickness = 2mm, center = true)
 
 ```
 

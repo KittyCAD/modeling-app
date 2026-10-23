@@ -13,9 +13,9 @@ normalSurface = extrude(profile.normalEdge, length = 18mm, bodyType = SURFACE)
 oppositeSurface = extrude(profile.oppositeEdge, length = 18mm, bodyType = SURFACE)
 centerSurface = extrude(profile.centerEdge, length = 18mm, bodyType = SURFACE)
 
-normalWall = thicken(normalSurface, thickness = 2mm, side = "normal")
-oppositeWall = thicken(oppositeSurface, thickness = 2mm, side = "opposite")
-centerWall = thicken(centerSurface, thickness = 2mm, side = "center")
+normalWall = thicken(normalSurface, thickness = 2mm, flip = false)
+oppositeWall = thicken(oppositeSurface, thickness = 2mm, flip = true)
+centerWall = thicken(centerSurface, thickness = 2mm, center = true)
 
 appearance(normalWall, color = "#3388dd", roughness = 35)
 appearance(oppositeWall, color = "#ee9933", roughness = 35)

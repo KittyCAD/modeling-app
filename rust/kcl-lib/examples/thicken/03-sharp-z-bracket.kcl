@@ -1,5 +1,5 @@
 // A Z bracket with two sharp, mitered corners.
-// Use side = "normal" to place the same 4 mm wall on the other side.
+// Use flip = false to place the same 4 mm wall on the other side.
 @settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
 
 profile = sketch(on = XY) {
@@ -9,5 +9,5 @@ profile = sketch(on = XY) {
 }
 
 surface = extrude([profile.base, profile.web, profile.flange], length = 22mm, bodyType = SURFACE)
-bracket = thicken(surface, thickness = 4mm, side = "opposite")
+bracket = thicken(surface, thickness = 4mm, flip = true)
 appearance(bracket, color = "#8b78d4", metalness = 75, roughness = 30)
