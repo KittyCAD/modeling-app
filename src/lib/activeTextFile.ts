@@ -36,6 +36,7 @@ export type ActiveTextFile =
       text: ''
       status: 'error'
       error: string
+      errorReason?: 'unsupported-text'
     }
 
 export const activeTextFileSignal = signal<ActiveTextFile | null>(null)
@@ -196,11 +197,21 @@ export async function openActiveTextFile(
         const isControlCharacter = /\p{Control}/u.test(character)
         const isAllowedWhitespace = '\t\n\r'.includes(character)
         if (isControlCharacter && !isAllowedWhitespace) {
-          return setActiveTextFileError(path, name, UNSUPPORTED_TEXT_MESSAGE)
+          return setActiveTextFileError(
+            path,
+            name,
+            UNSUPPORTED_TEXT_MESSAGE,
+            'unsupported-text'
+          )
         }
       }
     } catch {
-      return setActiveTextFileError(path, name, UNSUPPORTED_TEXT_MESSAGE)
+      return setActiveTextFileError(
+        path,
+        name,
+        UNSUPPORTED_TEXT_MESSAGE,
+        'unsupported-text'
+      )
     }
     activeTextFileSignal.value = {
       path,
@@ -223,7 +234,8 @@ export async function openActiveTextFile(
 function setActiveTextFileError(
   path: string,
   name: string,
-  error: string
+  error: string,
+  errorReason?: 'unsupported-text'
 ): void {
   activeTextFileSignal.value = {
     path,
@@ -231,5 +243,6 @@ function setActiveTextFileError(
     text: '',
     status: 'error',
     error,
+    errorReason,
   }
 }

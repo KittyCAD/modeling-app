@@ -12,6 +12,7 @@ import {
 } from '@codemirror/view'
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
@@ -40,6 +41,10 @@ import {
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import {
+  type ProjectExplorerRowContextMenuItemContext,
+  projectExplorerRowContextMenuItemsValueSpec,
+} from '@src/registry/contracts/projectExplorer'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
@@ -162,7 +167,8 @@ function TextFileEditor({
 }: {
   activeTextFile: ActiveTextFile
 }) {
-  const { fileOperations, settings } = useApp()
+  useSignals()
+  const { fileOperations, settings, registry, project } = useApp()
   const settingsValues = settings.useSettings()
   const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
   const editorParent = useRef<HTMLDivElement>(null)
@@ -241,9 +247,43 @@ function TextFileEditor({
   }
 
   if (activeTextFile.status === 'error') {
+    const importContext: ProjectExplorerRowContextMenuItemContext = {
+      project: project?.projectIORefSignal.value,
+      file: project?.executingFileEntry.value,
+      readOnly: !project?.projectIORefSignal.value.readWriteAccess,
+      row: {
+        path: activeTextFile.path,
+        name: activeTextFile.name,
+        isFolder: false,
+        isFake: false,
+      },
+    }
+    const importAction =
+      activeTextFile.errorReason === 'unsupported-text'
+        ? registry
+            .signal(projectExplorerRowContextMenuItemsValueSpec)
+            .value.find(
+              (item) =>
+                item.id === 'import-in-current-file' &&
+                item.isVisible?.(importContext)
+            )
+        : undefined
+
     return (
-      <div className="h-full p-3 text-sm text-destroy-80">
-        Failed to open {activeTextFile.name}: {activeTextFile.error}
+      <div className="h-full p-3 text-sm">
+        <p className="text-destroy-80">
+          Failed to open {activeTextFile.name}: {activeTextFile.error}
+        </p>
+        {importAction && (
+          <ActionButton
+            Element="button"
+            className="mt-3 py-2"
+            tabIndex={0}
+            onClick={() => importAction.onSelect(importContext)}
+          >
+            Import
+          </ActionButton>
+        )}
       </div>
     )
   }

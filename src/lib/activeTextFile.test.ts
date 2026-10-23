@@ -90,6 +90,7 @@ describe('text file detection', () => {
       status: 'error',
       text: '',
       error: 'This file is binary or is not UTF-8 text.',
+      errorReason: 'unsupported-text',
     })
     mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', '')
     await mod.flushActiveTextFileWrite()

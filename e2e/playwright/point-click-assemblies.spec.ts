@@ -737,7 +737,7 @@ test.describe(
           await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         })
 
-        await test.step('Import second foreign part from the context menu', async () => {
+        await test.step('Import second foreign part from the binary-file preview', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.Files)
           await toolbar.expectFileTreeState([
             'folder.prt',
@@ -767,7 +767,12 @@ test.describe(
           await page
             .getByRole('treeitem', { name: complexPlmFileName, exact: true })
             .click({ button: 'right' })
-          await importAction.click()
+          await expect(importAction).toBeVisible()
+          await page.keyboard.press('Escape')
+          await page
+            .locator('#code-pane')
+            .getByRole('button', { name: 'Import', exact: true })
+            .click()
 
           // Check getPathFilenameInVariableCase output
           const parsedValueFromFile =
