@@ -2,7 +2,10 @@ import { signal, type Signal } from '@preact/signals-core'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import type { BulkFileWriteProgress } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  type BulkFileWriteProgress,
+} from '@src/machines/systemIO/utils'
 import type * as SystemIOUtilsModule from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import toast from 'react-hot-toast'
@@ -16,6 +19,10 @@ const managerMocks = vi.hoisted(() => ({
 
 const projectFilesMocks = vi.hoisted(() => ({
   collect: vi.fn(),
+}))
+
+const currentProjectCopyMocks = vi.hoisted(() => ({
+  copy: vi.fn(),
 }))
 
 const workerMocks = vi.hoisted(() => ({
@@ -50,6 +57,14 @@ vi.mock('@src/machines/systemIO/utils', async (importOriginal) => ({
   ...(await importOriginal<typeof SystemIOUtilsModule>()),
   collectProjectFiles: projectFilesMocks.collect,
 }))
+
+vi.mock(
+  '@src/lib/zookeeper/copyIntoCurrentProject',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    copyLibraryFilesIntoCurrentProject: currentProjectCopyMocks.copy,
+  })
+)
 
 vi.mock('@src/lib/zookeeper/registry/ZookeeperEditPatchHistory', () => ({
   ZookeeperEditPatchHistory: class MockZookeeperEditPatchHistory {
@@ -257,6 +272,10 @@ function createHarness({
     projectIORefSignal: signal(project),
   } as unknown as ZDSProject
   const projectSignal = signal<ZDSProject | undefined>(zdsProject)
+  const systemIOActor = {
+    getSnapshot: vi.fn(() => ({ matches: () => true })),
+    send: vi.fn(),
+  }
   const dependencies = {
     apiToken,
     billing: { send: billingSend },
@@ -268,7 +287,7 @@ function createHarness({
     project: projectSignal,
     projectId: initialProjectId,
     projectPath,
-    systemIO: { actor: {} },
+    systemIO: { actor: systemIOActor },
   } as unknown as ZookeeperSessionControllerDependencies
   const controller = createZookeeperSessionController(dependencies)
   activeControllers.add(controller)
@@ -282,6 +301,7 @@ function createHarness({
     kclManager,
     project,
     projectSignal,
+    systemIOActor,
     zdsProject,
   }
 }
@@ -465,6 +485,35 @@ describe('Zookeeper session controller', () => {
     loading.mockClear()
     processor.fileWriteProgress.value = { written: 2, total: 25 }
     expect(loading).not.toHaveBeenCalled()
+  })
+
+  it('refreshes Project Files after copying into the current project', async () => {
+    const { controller, systemIOActor } = createHarness()
+    const result = {
+      title: 'bracket',
+      source_title: 'wall-e-robot',
+      destination: 'current_project' as const,
+    }
+    currentProjectCopyMocks.copy.mockResolvedValueOnce(result)
+
+    const copied = await (
+      controller as unknown as {
+        copyIntoCurrentProject: (
+          files: readonly { path: string; data: Uint8Array }[],
+          sourceTitle: string,
+          sourcePath?: string
+        ) => Promise<typeof result>
+      }
+    ).copyIntoCurrentProject(
+      [{ path: 'main.kcl', data: new TextEncoder().encode('model = 1') }],
+      'wall-e-robot',
+      '/projects/wall-e-robot'
+    )
+
+    expect(copied).toBe(result)
+    expect(systemIOActor.send).toHaveBeenCalledWith({
+      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+    })
   })
 
   it('waits for file edits and editor synchronization before collecting the next prompt', async () => {

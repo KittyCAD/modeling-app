@@ -306,6 +306,9 @@ export class ZDSProject {
     if (path.endsWith('.kcl')) {
       switch (eventType) {
         case 'add':
+          if (foundFile) {
+            break
+          }
           const newFile = new File(path, this.textFileIO, this.nextFileId++)
           this.files.push(newFile)
           newFile
