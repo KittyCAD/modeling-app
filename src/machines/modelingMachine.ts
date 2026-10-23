@@ -163,7 +163,6 @@ import {
   MAKE_TOAST_MESSAGES,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
 import { toProjectRelativePath, webSafePathSplit } from '@src/lib/paths'
@@ -467,6 +466,7 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['Pattern Linear 3D']
     }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
+  | { type: 'Named View'; data: ModelingCommandSchema['Named View'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
@@ -678,9 +678,6 @@ export const modelingMachine = setup({
     input: {} as ModelingMachineInput,
   },
   guards: {
-    'should use sketch solve mode': ({ context }) => {
-      return context.store.useSketchSolveMode?.current === true
-    },
     'Artifact graph is empty': ({ context }) => {
       return context.kclManager.artifactGraph.size === 0
     },
@@ -1492,14 +1489,6 @@ export const modelingMachine = setup({
       kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
         shouldAddToHistory: false,
         shouldWriteToDisk: false,
-      })
-    },
-    'report legacy sketch mode': ({ context }) => {
-      if (context.store.useSketchSolveMode?.current !== true) return
-
-      void reportClientError({
-        code: ClientErrorCode.LegacySketchMode,
-        message: 'Legacy sketch mode entered',
       })
     },
     'reset client scene mouse handlers': ({ context }) => {
@@ -4237,6 +4226,9 @@ export const modelingMachine = setup({
 
     /* Below are recent modeling codemods that are using updateModelinState,
      * trigger toastError on Error, and have the 'no kcl errors' guard yet */
+    namedViewAstMod: fromPromise(
+      createModelingCodemodActor(modelingCommandCodemods['Named View'])
+    ),
     extrudeAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods.Extrude)
     ),
@@ -4787,6 +4779,10 @@ export const modelingMachine = setup({
         ],
 
         // Modeling codemods
+
+        'Named View': {
+          target: 'Applying named view',
+        },
 
         Extrude: {
           target: 'Applying extrude',
@@ -6324,11 +6320,7 @@ export const modelingMachine = setup({
         },
       },
 
-      entry: [
-        'add axis n grid',
-        'clientToEngine cam sync direction',
-        'report legacy sketch mode',
-      ],
+      entry: ['add axis n grid', 'clientToEngine cam sync direction'],
     },
 
     'Sketch no face': {
@@ -6485,6 +6477,26 @@ export const modelingMachine = setup({
         },
       },
       description: `Actor defined in separate file`,
+    },
+
+    'Applying named view': {
+      invoke: {
+        src: 'namedViewAstMod',
+        id: 'namedViewAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Named View') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
     },
 
     'Applying extrude': {

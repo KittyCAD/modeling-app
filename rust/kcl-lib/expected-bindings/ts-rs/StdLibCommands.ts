@@ -280,6 +280,18 @@ export default {
         "removedIn": null
       },
       {
+        "name": "backfaceColor",
+        "ty": "string",
+        "docs": "Backface color of the new material, a hex string like '#ff0000'. Applies to solids and imported geometry.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "metalness",
         "ty": "number(_)",
         "docs": "Metalness of the new material, a percentage like 95.7.",
@@ -11494,4 +11506,24 @@ export default {
       }
     ]
   }
+} as const
+
+export const STD_LIB_ENUMS = {
+  "view::Orientation": [
+    "Front",
+    "Back",
+    "Left",
+    "Right",
+    "Top",
+    "Bottom",
+    "Isometric"
+  ],
+  "view::Projection": [
+    "Orthographic",
+    "Perspective"
+  ],
+  "view::Visibility": [
+    "Show",
+    "Hide"
+  ]
 } as const
