@@ -671,7 +671,6 @@ export function buildToolbarConfig(
               })
               void selectSketchPlane(
                 selectedSketchTarget,
-                modelingState.context.store.useSketchSolveMode?.current,
                 modelingState.context.kclManager
               )
             } else {

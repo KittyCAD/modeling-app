@@ -280,6 +280,18 @@ export default {
         "removedIn": null
       },
       {
+        "name": "backfaceColor",
+        "ty": "string",
+        "docs": "Backface color of the new material, a hex string like '#ff0000'. Applies to solids and imported geometry.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "metalness",
         "ty": "number(_)",
         "docs": "Metalness of the new material, a percentage like 95.7.",
@@ -7537,8 +7549,8 @@ export default {
     "args": [
       {
         "name": "curves",
-        "ty": "Sketch | [TaggedEdge; 1+] | [Edge; 1+] | [Segment; 1+]",
-        "docs": "One region created with `region(...)`, or a list of edges or sketch segments enclosing a planar surface.",
+        "ty": "Sketch | [TaggedEdge; 1+] | [Edge; 1+]",
+        "docs": "One region created with `region(...)`, or a list of swept-body edges enclosing a planar surface.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -11494,4 +11506,24 @@ export default {
       }
     ]
   }
+} as const
+
+export const STD_LIB_ENUMS = {
+  "view::Orientation": [
+    "Front",
+    "Back",
+    "Left",
+    "Right",
+    "Top",
+    "Bottom",
+    "Isometric"
+  ],
+  "view::Projection": [
+    "Orthographic",
+    "Perspective"
+  ],
+  "view::Visibility": [
+    "Show",
+    "Hide"
+  ]
 } as const

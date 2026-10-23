@@ -138,11 +138,18 @@ function fakes({ isReady = true }: { isReady?: boolean } = {}) {
   const getCameraView = vi.fn().mockResolvedValue(SAVED_CAMERA)
   const setCameraView = vi.fn().mockResolvedValue(undefined)
   const engineSceneGenerationSignal = signal(0)
+  const modelingStateSignal = signal<ModelingStateFake>(null)
 
   const raw = {
     execState: execStateWith(),
     errors: [] as unknown[],
-    modelingState: null as ModelingStateFake,
+    get modelingState() {
+      return modelingStateSignal.value
+    },
+    set modelingState(state: ModelingStateFake) {
+      modelingStateSignal.value = state
+    },
+    modelingStateSignal,
     engineSceneGenerationSignal,
     engineCommandManager: { setObjectsHidden, sendSceneCommand, isReady },
     sceneInfra: {
@@ -466,7 +473,7 @@ describe('reapplying the active view after an execution', () => {
     expect(f.setObjectsHidden).toHaveBeenCalledOnce()
   })
 
-  it('does nothing while a version 1 sketch session is open', async () => {
+  it('waits for a version 1 sketch session to close', async () => {
     const f = fakes()
     await activateFront(f)
 
@@ -477,15 +484,14 @@ describe('reapplying the active view after an execution', () => {
     expect(f.setObjectsHidden).not.toHaveBeenCalled()
     expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
 
-    // The sketch session is what stopped it, not a missing effect.
+    // Closing the session applies the rebuild it postponed, with no new run.
     f.raw.modelingState = null
-    f.engineSceneGenerationSignal.value += 1
     await flush()
 
     expect(f.setObjectsHidden).toHaveBeenCalledOnce()
   })
 
-  it('does nothing while a version 2 sketch session is open', async () => {
+  it('waits for a version 2 sketch session to close', async () => {
     const f = fakes()
     await activateFront(f)
 
@@ -495,8 +501,9 @@ describe('reapplying the active view after an execution', () => {
 
     expect(f.setObjectsHidden).not.toHaveBeenCalled()
 
+    // Exiting sketch mode rebuilds the scene before the session closes, and the
+    // executions after it are cache hits that leave the generation alone.
     f.raw.modelingState = null
-    f.engineSceneGenerationSignal.value += 1
     await flush()
 
     expect(f.setObjectsHidden).toHaveBeenCalledOnce()

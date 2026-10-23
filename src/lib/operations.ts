@@ -4190,6 +4190,13 @@ async function prepareToEditAppearance({
   }
 
   const color = getStringValue(code, operation.labeledArgs.color.sourceRange)
+  let backfaceColor: string | undefined
+  if (operation.labeledArgs.backfaceColor) {
+    backfaceColor = getStringValue(
+      code,
+      operation.labeledArgs.backfaceColor.sourceRange
+    )
+  }
 
   let metalness: KclCommandValue | undefined
   if (operation.labeledArgs.metalness) {
@@ -4239,6 +4246,7 @@ async function prepareToEditAppearance({
   const argDefaultValues: ModelingCommandSchema['Appearance'] = {
     objects,
     color,
+    backfaceColor,
     metalness,
     roughness,
     opacity,

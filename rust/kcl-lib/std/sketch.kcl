@@ -3539,32 +3539,9 @@ export fn region(
 
 /// Fills one closed region to make a single planar surface contained by its boundary.
 ///
-/// Pass one region created with `region(...)`, or a non-empty list of edges
-/// or sketch segments which form one closed, connected, coplanar region.
-/// List items must be provided in the order they connect.
-/// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
-/// 
-/// // Sketch a closed quadrilateral
-/// sketch001 = sketch(on = XY) {
-///   line1 = line(start = [var -3.33mm, var 2.33mm], end = [var -3.28mm, var -3.27mm])
-///   line2 = line(start = [var -3.28mm, var -3.27mm], end = [var 3.97mm, var -2.69mm])
-///   line3 = line(start = [var 3.97mm, var -2.69mm], end = [var 3.94mm, var 1.55mm])
-///   line4 = line(start = [var 3.94mm, var 1.55mm], end = [var -3.33mm, var 2.33mm])
-///   coincident([line1.end, line2.start])
-///   coincident([line2.end, line3.start])
-///   coincident([line3.end, line4.start])
-///   coincident([line4.end, line1.start])
-/// }
-/// 
-/// // Fill the single closed region with one surface.
-/// mySurface = planarSurface([
-///   sketch001.line1,
-///   sketch001.line2,
-///   sketch001.line3,
-///   sketch001.line4
-/// ])
-/// ```
+/// Pass one region created with `region(...)`, or a non-empty list of swept-body
+/// edges which form one closed, connected, coplanar boundary.
+/// Edges must be provided in the order they connect.
 /// ```kcl,no3d,sketchSolve
 /// // Select a closed region explicitly before filling it.
 /// @settings(kclVersion = 3.0, experimentalFeatures = allow)
@@ -3599,8 +3576,8 @@ export fn region(
 /// ```
 @(impl = std_rust, experimental = true, feature_tree = true)
 export fn planarSurface(
-    /// One region created with `region(...)`, or a list of edges or sketch segments enclosing a planar surface.
-  @curves: Sketch | [TaggedEdge; 1+] | [Edge; 1+] | [Segment; 1+],
+    /// One region created with `region(...)`, or a list of swept-body edges enclosing a planar surface.
+  @curves: Sketch | [TaggedEdge; 1+] | [Edge; 1+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
 ): Solid {}

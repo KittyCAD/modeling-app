@@ -1,3 +1,6 @@
+import type { Orientation } from '@rust/kcl-lib/bindings/Orientation'
+import type { Projection } from '@rust/kcl-lib/bindings/Projection'
+import type { Visibility } from '@rust/kcl-lib/bindings/Visibility'
 import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
 import type { SweepRelativeTo } from '@src/lang/modifyAst/sweeps'
@@ -18,10 +21,13 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 
 type DriftConfig = typeof modelingCommandStdLibDriftConfig
 
-// Extracts either `omittedStdLibArgs` or `deprecatedStdLibArgs` for one command, or `never`.
-type ConfiguredArgNames<
+// Extracts the names in an optional config list, or `never`.
+type ConfiguredNames<
   Name extends ModelingStdLibCommandName,
-  Key extends 'omittedStdLibArgs' | 'deprecatedStdLibArgs',
+  Key extends
+    | 'omittedStdLibArgs'
+    | 'deprecatedStdLibArgs'
+    | 'additionalStdLibNames',
 > = DriftConfig[Name] extends Record<
   Key,
   readonly (infer ArgName extends string)[]
@@ -29,9 +35,12 @@ type ConfiguredArgNames<
   ? ArgName
   : never
 
-// Maps display names like `Boolean Subtract` to KCL names like `subtract`
-type ConfiguredStdLibName<Name extends ModelingStdLibCommandName> =
-  DriftConfig[Name]['stdLibName'] & StdLibCommandName
+// Maps display names to their KCL function and any nested argument sources.
+type ConfiguredStdLibName<Name extends ModelingStdLibCommandName> = (
+  | DriftConfig[Name]['stdLibName']
+  | ConfiguredNames<Name, 'additionalStdLibNames'>
+) &
+  StdLibCommandName
 
 // Retrieves the generated union of arguments for the KCL function
 type StdLibArgForCommand<Name extends ModelingStdLibCommandName> =
@@ -45,14 +54,14 @@ type PointAndClickStdLibCommandArg<
   Name extends ModelingStdLibCommandName,
   Arg = StdLibArgForCommand<Name>,
 > = Arg extends { readonly name: infer ArgName extends string }
-  ? ArgName extends ConfiguredArgNames<Name, 'omittedStdLibArgs'>
+  ? ArgName extends ConfiguredNames<Name, 'omittedStdLibArgs'>
     ? never
     : Arg extends {
           readonly deprecated: false
           readonly deprecatedSince: null
         }
       ? Arg
-      : ArgName extends ConfiguredArgNames<Name, 'deprecatedStdLibArgs'>
+      : ArgName extends ConfiguredNames<Name, 'deprecatedStdLibArgs'>
         ? Arg
         : never
   : never
@@ -102,6 +111,15 @@ type GdtObjectsCommandArgs<Name extends ModelingStdLibCommandName> =
   GdtObjectsArgs<PointAndClickCommandArgs<Name>>
 
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
+
+export type NamedViewCommandArgs = Override<
+  PointAndClickCommandArgs<'Named View'>,
+  {
+    baseline: Visibility
+    orientation: Orientation
+    projection: Projection
+  }
+>
 
 export type ExtrudeCommandArgs = Override<
   PointAndClickCommandArgs<'Extrude'>,
@@ -201,6 +219,7 @@ export type AppearanceCommandArgs = Override<
   {
     objects: Selections
     color: string
+    backfaceColor?: string
   }
 >
 
@@ -294,6 +313,7 @@ export type BlendCommandArgs = PointAndClickCommandArgs<'Blend'>
 export type JoinSurfacesCommandArgs = PointAndClickCommandArgs<'Join Surfaces'>
 
 export type StdLibModelingCommandSchema = {
+  'Named View': NamedViewCommandArgs
   Extrude: ExtrudeCommandArgs
   Sweep: SweepCommandArgs
   Loft: LoftCommandArgs

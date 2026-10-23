@@ -15,6 +15,10 @@ import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import {
+  STD_LIB_ENUMS,
+  stdLibEnumOptions,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -625,6 +629,72 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
       },
     },
+  },
+  'Named View': {
+    icon: 'namedView',
+    status: 'experimental',
+    needsReview: true,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Named View']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Named View']>(
+      'Named View',
+      {
+        overrides: {
+          orientation: {
+            inputType: 'options',
+            defaultValue: 'Isometric',
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Orientation'],
+              'Isometric'
+            ),
+          },
+          projection: {
+            inputType: 'options',
+            required: true,
+            defaultValue: 'Orthographic',
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Projection'],
+              'Orthographic'
+            ),
+          },
+          baseline: {
+            inputType: 'options',
+            defaultValue: 'Show',
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Visibility'],
+              'Show',
+              {
+                Show: 'Show all',
+                Hide: 'Hide all',
+              }
+            ),
+          },
+          except: {
+            inputType: 'selection',
+            displayName: 'Exceptions',
+            selectionTypes: [
+              'path',
+              'pathRegion',
+              'sketchBlock',
+              'sweep',
+              'compositeSolid',
+              'gdtAnnotation',
+              'helix',
+              'plane',
+              'importedGeometry',
+            ],
+            multiple: true,
+          },
+          target: {
+            dialog: { advanced: true },
+          },
+          distance: {
+            dialog: { advanced: true },
+          },
+        },
+      }
+    ),
   },
   Extrude: {
     icon: 'extrude',
