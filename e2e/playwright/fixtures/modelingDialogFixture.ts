@@ -44,7 +44,8 @@ export class ModelingDialogFixture {
   async fillInput(label: string | RegExp, value: string) {
     const input = this.input(label)
     await input.press('ControlOrMeta+A')
-    await this.page.keyboard.insertText(value)
+    if (value) await this.page.keyboard.insertText(value)
+    else await input.press('Backspace')
     await expect(input).toHaveText(value)
   }
 

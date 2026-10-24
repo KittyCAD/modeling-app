@@ -479,10 +479,10 @@ extrude001 = extrude(region001, length = 100)`
       await modelingDialog.options(/^mode\b/i).selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
       await clickOnEdge()
-      await modelingDialog.input(/^revolutions\b/i).fill('20')
-      await modelingDialog.input(/^angle start\b/i).fill('0')
-      await modelingDialog.input(/^radius\b/i).fill('1')
-      await modelingDialog.input(/^length\b/i).fill('')
+      await modelingDialog.fillInput(/^revolutions\b/i, '20')
+      await modelingDialog.fillInput(/^angle start\b/i, '0')
+      await modelingDialog.fillInput(/^radius\b/i, '1')
+      await modelingDialog.fillInput(/^length\b/i, '')
       await expect(modelingDialog.submitButton).toBeEnabled()
 
       await modelingDialog
