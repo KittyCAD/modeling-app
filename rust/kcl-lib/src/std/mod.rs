@@ -151,7 +151,7 @@ pub struct StdFnProps {
     /// Set for the few builtins that call back into KCL (map, reduce,
     /// patternTransform): the machine executor routes them to a resumable
     /// entry so their callbacks run on the machine's continuation stack
-    /// instead of re-entering natively. The recursive executor ignores this.
+    /// instead of re-entering natively.
     pub(crate) resumable: Option<ResumableKind>,
 }
 

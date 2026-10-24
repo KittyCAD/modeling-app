@@ -764,6 +764,16 @@ export class Connection extends EventTarget {
       type: 'websocket',
     })
     this.websocket.addEventListener('message', onWebSocketMessage)
+    // Reliable commands can receive replies before WebRTC startup finishes.
+    const onCommandResponse = (event: MessageEvent) => {
+      this.handleMessage?.(event)
+    }
+    this.trackListener('websocket-command-response', {
+      event: 'message',
+      callback: onCommandResponse,
+      type: 'websocket',
+    })
+    this.websocket.addEventListener('message', onCommandResponse)
     this.trackListener('websocket-close', {
       event: 'close',
       callback: metaClose,
