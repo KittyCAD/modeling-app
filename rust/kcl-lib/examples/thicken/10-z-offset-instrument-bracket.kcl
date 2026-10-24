@@ -1,0 +1,68 @@
+// Z-OFFSET INSTRUMENT BRACKET -- 3 mm sheet, three 6 mm bends.
+// LEFT: zero-thickness cyan surface. RIGHT: finished blue formed bracket.
+// Long base slots, instrument pilot bore, four mounting holes, and a return lip.
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
+
+sheetThickness = 3mm
+bracketWidth = 72mm
+
+section = sketch(on = offsetPlane(XZ, offset = -bracketWidth / 2)) {
+  base = line(start = [var -65mm, var 0mm], end = [var -28mm, var 0mm])
+  heel = arc(start = [var -28mm, var 0mm], end = [var -22mm, var 6mm], center = [var -28mm, var 6mm])
+  riser = line(start = [var -22mm, var 6mm], end = [var -22mm, var 46mm])
+  shoulder = arc(start = [var -22mm, var 46mm], end = [var -16mm, var 52mm], center = [var -16mm, var 46mm], direction = CW)
+  shelf = line(start = [var -16mm, var 52mm], end = [var 40mm, var 52mm])
+  lipBend = arc(start = [var 40mm, var 52mm], end = [var 46mm, var 58mm], center = [var 40mm, var 58mm])
+  returnLip = line(start = [var 46mm, var 58mm], end = [var 46mm, var 70mm])
+}
+sheetSurface = extrude([section.base, section.heel, section.riser, section.shoulder, section.shelf, section.lipBend, section.returnLip], length = bracketWidth, bodyType = SURFACE)
+referenceSurface = clone(sheetSurface)
+  |> translate(x = -155mm)
+  |> appearance(color = "#39cddd", backfaceColor = "#22788c", opacity = 55)
+
+// All thickness grows on the flipped side of this open surface.
+formedBlank = thicken(sheetSurface, thickness = sheetThickness, flip = true)
+
+frontAdjuster = sketch(on = offsetPlane(XY, offset = -6mm)) {
+  lower = line(start = [var -54mm, var -25.5mm], end = [var -40mm, var -25.5mm])
+  right = arc(start = [var -40mm, var -25.5mm], end = [var -40mm, var -18.5mm], center = [var -40mm, var -22mm])
+  upper = line(start = [var -40mm, var -18.5mm], end = [var -54mm, var -18.5mm])
+  left = arc(start = [var -54mm, var -18.5mm], end = [var -54mm, var -25.5mm], center = [var -54mm, var -22mm])
+}
+frontAdjusterTool = extrude(region(segments = [frontAdjuster.lower, frontAdjuster.right, frontAdjuster.upper, frontAdjuster.left]), length = 12mm)
+rearAdjuster = sketch(on = offsetPlane(XY, offset = -6mm)) {
+  lower = line(start = [var -54mm, var 18.5mm], end = [var -40mm, var 18.5mm])
+  right = arc(start = [var -40mm, var 18.5mm], end = [var -40mm, var 25.5mm], center = [var -40mm, var 22mm])
+  upper = line(start = [var -40mm, var 25.5mm], end = [var -54mm, var 25.5mm])
+  left = arc(start = [var -54mm, var 25.5mm], end = [var -54mm, var 18.5mm], center = [var -54mm, var 22mm])
+}
+rearAdjusterTool = extrude(region(segments = [rearAdjuster.lower, rearAdjuster.right, rearAdjuster.upper, rearAdjuster.left]), length = 12mm)
+instrumentHoles = sketch(on = offsetPlane(XY, offset = 46mm)) {
+  pilot = circle(start = [var 24mm, var 0mm], center = [var 12mm, var 0mm])
+  mountA = circle(start = [var -3.7mm, var -20mm], center = [var -7mm, var -20mm])
+  mountB = circle(start = [var 34.3mm, var -20mm], center = [var 31mm, var -20mm])
+  mountC = circle(start = [var 34.3mm, var 20mm], center = [var 31mm, var 20mm])
+  mountD = circle(start = [var -3.7mm, var 20mm], center = [var -7mm, var 20mm])
+}
+pilotTool = extrude(region(segments = [instrumentHoles.pilot]), length = 12mm)
+mountATool = extrude(region(segments = [instrumentHoles.mountA]), length = 12mm)
+mountBTool = extrude(region(segments = [instrumentHoles.mountB]), length = 12mm)
+mountCTool = extrude(region(segments = [instrumentHoles.mountC]), length = 12mm)
+mountDTool = extrude(region(segments = [instrumentHoles.mountD]), length = 12mm)
+webWindow = sketch(on = offsetPlane(YZ, offset = -29mm)) {
+  lower = line(start = [var -18mm, var 18mm], end = [var 18mm, var 18mm])
+  right = arc(start = [var 18mm, var 18mm], end = [var 18mm, var 32mm], center = [var 18mm, var 25mm])
+  upper = line(start = [var 18mm, var 32mm], end = [var -18mm, var 32mm])
+  left = arc(start = [var -18mm, var 32mm], end = [var -18mm, var 18mm], center = [var -18mm, var 25mm])
+}
+webWindowTool = extrude(region(segments = [webWindow.lower, webWindow.right, webWindow.upper, webWindow.left]), length = 12mm)
+lipHoles = sketch(on = offsetPlane(YZ, offset = 39mm)) {
+  lipA = circle(start = [var -20.5mm, var 64mm], center = [var -23mm, var 64mm])
+  lipB = circle(start = [var 2.5mm, var 64mm], center = [var 0mm, var 64mm])
+  lipC = circle(start = [var 25.5mm, var 64mm], center = [var 23mm, var 64mm])
+}
+lipATool = extrude(region(segments = [lipHoles.lipA]), length = 14mm)
+lipBTool = extrude(region(segments = [lipHoles.lipB]), length = 14mm)
+lipCTool = extrude(region(segments = [lipHoles.lipC]), length = 14mm)
+finishedBracket = subtract(formedBlank, tools = [frontAdjusterTool, rearAdjusterTool, pilotTool, mountATool, mountBTool, mountCTool, mountDTool, webWindowTool, lipATool, lipBTool, lipCTool])
+  |> appearance(color = "#38658c", metalness = 60, roughness = 33)

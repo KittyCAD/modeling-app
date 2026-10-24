@@ -495,6 +495,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::shell::shell(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::shell"),
         ),
+        ("solid", "thicken") => (
+            |e, a| Box::pin(crate::std::shell::thicken(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::thicken"),
+        ),
         ("solid", "hollow") => (
             |e, a| Box::pin(crate::std::shell::hollow(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::hollow"),

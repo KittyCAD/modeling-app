@@ -1,0 +1,13 @@
+// A Z bracket with two sharp, mitered corners.
+// Use flip = false to place the same 4 mm wall on the other side.
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  base = line(start = [var 0mm, var 0mm], end = [var 42mm, var 0mm])
+  web = line(start = [var 42mm, var 0mm], end = [var 42mm, var 28mm])
+  flange = line(start = [var 42mm, var 28mm], end = [var 62mm, var 28mm])
+}
+
+surface = extrude([profile.base, profile.web, profile.flange], length = 22mm, bodyType = SURFACE)
+bracket = thicken(surface, thickness = 4mm, flip = true)
+appearance(bracket, color = "#8b78d4", metalness = 75, roughness = 30)

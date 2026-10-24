@@ -1,0 +1,15 @@
+// A rounded guard with tangent line/arc joins.
+// The original surface is the middle of a 3 mm wall: 1.5 mm per side.
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  base = line(start = [var 0mm, var 0mm], end = [var 35mm, var 0mm])
+  lowerBend = arc(start = [var 35mm, var 0mm], end = [var 45mm, var 10mm], center = [var 35mm, var 10mm])
+  back = line(start = [var 45mm, var 10mm], end = [var 45mm, var 35mm])
+  upperBend = arc(start = [var 45mm, var 35mm], end = [var 35mm, var 45mm], center = [var 35mm, var 35mm])
+  top = line(start = [var 35mm, var 45mm], end = [var 0mm, var 45mm])
+}
+
+surface = extrude([profile.base, profile.lowerBend, profile.back, profile.upperBend, profile.top], length = 24mm, bodyType = SURFACE)
+guard = thicken(surface, thickness = 3mm, center = true)
+appearance(guard, color = "#e7a44c", metalness = 65, roughness = 25)
