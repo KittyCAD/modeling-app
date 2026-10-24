@@ -1,4 +1,5 @@
 import path from 'path'
+import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds/opfsWriteWorker.ts?worker', () => ({
@@ -239,6 +240,30 @@ describe('opfs', () => {
 
     expect(stat.mtimeMs).toEqual(expect.any(Number))
     expect(JSON.parse(repaired)).toEqual({ mtimeMs: stat.mtimeMs })
+  })
+
+  test('read-only stat does not create directory metadata', async () => {
+    const projects = root.addDirectory('projects')
+    const project = projects.addDirectory('project')
+    project.addDirectory('empty')
+    const opfs = await getOpfs()
+
+    const runtime = createFileOperationsRuntime(opfs.impl)
+    try {
+      const stat = await runtime.operations.statReadOnly(
+        path.join(projectPath, 'empty')
+      )
+
+      expect(stat.kind).toBe('directory')
+      expect(project.children.has('._meta')).toBe(false)
+      expect(
+        (
+          project.children.get('empty') as MockFileSystemDirectoryHandle
+        ).children.has('._meta')
+      ).toBe(false)
+    } finally {
+      await runtime.dispose()
+    }
   })
 
   test('copies files from nested directories', async () => {
