@@ -50,6 +50,7 @@ import {
   getSegmentForEdgeCut,
   getSweepArtifactFromSelection,
   type ResolvedGraphSelection,
+  type CodeRef as SelectionCodeRef,
 } from '@src/lang/std/artifactGraph'
 import { findKwArg } from '@src/lang/util'
 import type {
@@ -611,6 +612,23 @@ function buildEdgeExpr(
     wasmInstance,
     { edgeContext }
   )
+  if (err(regularTagResult) && edgeArtifact.type === 'segment') {
+    const directTagResult = mutateAstWithTagForSketchSegment(
+      structuredClone(ast),
+      resolved.codeRef.pathToNode,
+      wasmInstance
+    )
+    if (!err(directTagResult)) {
+      return {
+        modifiedAst: directTagResult.modifiedAst,
+        edgeExpr: createCallExpressionStdLibKw(
+          'getBoundedEdge',
+          structuredClone(sourceSurfaceExpr),
+          [createLabeledArg('edge', createLocalName(directTagResult.tag))]
+        ),
+      }
+    }
+  }
   if (err(regularTagResult)) return regularTagResult
   if (regularTagResult.exprs.length === 0) {
     return new Error('Expected at least one tag for each blend edge.')
@@ -3435,8 +3453,8 @@ function getTagsExprsFromSelection(
   return { tagsExprs, modifiedAst }
 }
 
-// Sort of an opposite of getTagsExprsFromSelection above, used for edit flows
-export function retrieveEdgeSelectionsFromOpArgs(
+/** Recover legacy tag/UUID selections from an operation's `tags` argument. */
+export function retrieveEdgeSelectionsFromLegacyOpArgs(
   _unlabeledArg: unknown,
   tagsArg: OpArg,
   artifactGraph: ArtifactGraph,
@@ -3460,7 +3478,7 @@ export function retrieveEdgeSelectionsFromOpArgs(
   for (const v of tagValues) {
     if (v == null || typeof v !== 'object' || !('type' in v)) {
       console.warn(
-        'retrieveEdgeSelectionsFromOpArgs: skipping invalid tag value',
+        'retrieveEdgeSelectionsFromLegacyOpArgs: skipping invalid tag value',
         v
       )
       continue
@@ -3519,118 +3537,89 @@ function faceRefToArtifactId(v: OpKclValue): string | null {
   return null
 }
 
-/**
- * Finds an edge artifact (segment, edgeCut, or sweepEdge) given the set of face
- * artifact IDs from an edgeRef. For getCommonEdge(faces=[seg01, capStart001]),
- * one "face" may be the segment (the edge) and one the cap; or both may be
- * wall/cap and we find the segment whose commonSurfaceIds match.
- */
-function findEdgeArtifactFromFaceIds(
+/** Find the source-code location associated with an explicit edge reference. */
+function findCodeRefForEdgeReference(
   faceIds: string[],
   artifactGraph: ArtifactGraph
-): Artifact | null {
-  if (faceIds.length === 0) return null
-  const faceArtifacts: Artifact[] = []
-  for (const id of faceIds) {
-    const a = artifactGraph.get(id)
-    if (a) faceArtifacts.push(a)
+): SelectionCodeRef | null {
+  const artifacts = faceIds.flatMap((id) => {
+    const artifact = artifactGraph.get(id)
+    return artifact ? [artifact] : []
+  })
+  // Legacy selectors can name a sketch segment directly. Face API selectors
+  // already identify the edge: a face is sufficient to recover a code anchor.
+  const directArtifact = artifacts.find(
+    (artifact) => artifact.type === 'segment' || artifact.type === 'edgeCut'
+  )
+  if (directArtifact) {
+    return (
+      getCodeRefsByArtifactId(directArtifact.id, artifactGraph)?.[0] ?? null
+    )
   }
-  if (faceArtifacts.length === 0) return null
-  const edgeType = (
-    a: Artifact
-  ): a is Artifact & { type: 'segment' | 'edgeCut' } =>
-    a.type === 'segment' || a.type === 'edgeCut'
-  const asEdge = faceArtifacts.find(edgeType)
-  if (asEdge) return asEdge
-  const faceIdSet = new Set(faceIds)
-  for (const [, artifact] of artifactGraph) {
-    if (artifact.type !== 'segment') continue
-    const commonIds = artifact.commonSurfaceIds
-    if (!commonIds?.length) continue
-    const commonSet = new Set(commonIds)
-    if (
-      faceIdSet.size === commonSet.size &&
-      [...faceIdSet].every((id) => commonSet.has(id))
-    ) {
-      return artifact
-    }
+  for (const artifact of artifacts) {
+    const codeRef = getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0]
+    if (codeRef) return codeRef
   }
   return null
 }
 
-/**
- * Retrieves edge selections from edgeRefs argument (new API).
- * Used for edit flows when reading existing fillet calls with edgeRefs.
- * Parses edgeRefs array of objects with "sideFaces" array (UUID or TagIdentifier refs)
- * and resolves each to graphSelections for the command bar edit flow.
- */
-export function retrieveEdgeSelectionsFromEdgeRefs(
-  edgeRefsArg: OpArg,
+type EdgeSpecifierOpValue = Extract<OpKclValue, { type: 'Object' }> & {
+  value: {
+    sideFaces: Extract<OpKclValue, { type: 'Array' }>
+  }
+}
+
+/** KCL edge specifiers are recorded as generic objects, not an Edge variant. */
+function isEdgeSpecifierOpValue(
+  value: OpKclValue
+): value is EdgeSpecifierOpValue {
+  if (value.type !== 'Object' || !value.value) return false
+  return value.value.sideFaces?.type === 'Array'
+}
+
+/** Recover selections from the array-valued `edges` operation argument. */
+export function retrieveEdgeSelectionsFromOpArg(
+  edgesArg: OpArg,
   artifactGraph: ArtifactGraph
 ): Selections | Error {
-  if (edgeRefsArg.value.type !== 'Array') {
-    return new Error('edgeRefs argument is not an array')
+  if (edgesArg.value.type !== 'Array') {
+    return new Error('Edge selection argument is not an array')
   }
-  const edgeRefItems = edgeRefsArg.value.value
   const graphSelections: Selection[] = []
-
-  for (const item of edgeRefItems) {
-    if (item.type !== 'Object' || !item.value) continue
-    // Selection recovery only needs the primary graph edge so edit/delete flows
-    // can reselect an operation in the scene. `endFaces` and `index` refine how
-    // the engine resolves ambiguous edge specifiers, but they are not needed to
-    // recover the editable artifact from the current artifact graph.
-    const facesProp = item.value.sideFaces
-    if (facesProp?.type !== 'Array') continue
-    const faceIds = facesProp.value
-      .map(faceRefToArtifactId)
-      .filter((id): id is string => Boolean(id))
-    if (faceIds.length < 2) continue
-    const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
-    if (!edgeArtifact) continue
-    const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
-    if (!codeRefs?.length) continue
-    const entityRef: EntityReference = { type: 'edge', side_faces: faceIds }
-    graphSelections.push({ entityRef, codeRef: codeRefs[0] })
+  for (const value of edgesArg.value.value) {
+    if (value.type !== 'Object' || !value.value) continue
+    const selection = retrieveEdgeSelectionFromOpValue(value, artifactGraph)
+    if (err(selection)) return selection
+    graphSelections.push(selection)
   }
-
   return { graphSelections, otherSelections: [] }
 }
 
 /**
- * Retrieves edge selections from a single edge-ref-shaped kw arg (legacy `edgeRef` or `axis` object).
- * Used for edit flows when the call has axis = { sideFaces = [...] } (or legacy edgeRef = ...).
+ * Interpret one recorded KCL object `{ sideFaces, endFaces?, index? }` as an
+ * edge selection. Used for array entries and edge-valued axis arguments.
  */
-export function retrieveEdgeSelectionsFromSingleEdgeRef(
-  edgeRefArg: OpArg,
+export function retrieveEdgeSelectionFromOpValue(
+  value: OpKclValue,
   artifactGraph: ArtifactGraph
-): Selections | Error {
-  if (edgeRefArg.value.type !== 'Object' || !edgeRefArg.value.value) {
-    return new Error('edgeRef argument is not an object')
+): Selection | Error {
+  if (!isEdgeSpecifierOpValue(value)) {
+    return new Error('Expected an edge specifier object with a sideFaces array')
   }
-  const edgeRef = edgeRefArg.value.value
-  const facesProp = edgeRef.sideFaces ?? edgeRef.side_faces
-  if (facesProp?.type !== 'Array') {
-    return new Error('edgeRef has no sideFaces array')
-  }
-  const faceValues = facesProp.value ?? []
+  const edgeRef = value.value
   const faceIds: string[] = []
-  for (const v of faceValues) {
+  for (const v of edgeRef.sideFaces.value) {
     const id = faceRefToArtifactId(v)
     if (id) faceIds.push(id)
   }
-  if (faceIds.length < 2) {
-    return new Error('edgeRef sideFaces array needs at least 2 faces')
+  if (faceIds.length === 0) {
+    return new Error('Edge specifier sideFaces array needs at least one face')
   }
-  const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
-  if (!edgeArtifact) {
-    return new Error('Could not find edge from faces in artifact graph')
+  const codeRef = findCodeRefForEdgeReference(faceIds, artifactGraph)
+  if (!codeRef) {
+    return new Error('Could not find a code reference for the selected edge')
   }
-  const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
-  if (!codeRefs?.length) {
-    return new Error('Edge artifact has no codeRef')
-  }
-  const endFacesProp = edgeRef.endFaces ?? edgeRef.end_faces
+  const endFacesProp = edgeRef.endFaces
   const endFaceIds =
     endFacesProp?.type === 'Array'
       ? endFacesProp.value
@@ -3645,10 +3634,7 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
     ...(endFaceIds.length > 0 ? { end_faces: endFaceIds } : {}),
     ...(index !== undefined ? { index } : {}),
   }
-  return {
-    graphSelections: [{ entityRef, codeRef: codeRefs[0] }],
-    otherSelections: [],
-  }
+  return { entityRef, codeRef }
 }
 
 // Delete Edge Treatment
