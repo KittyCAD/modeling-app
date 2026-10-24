@@ -384,11 +384,16 @@ async fn send_pattern_transform<T: GeometryTrait>(
         )));
     };
 
+    // Record the source once; all replicas use the same source topology.
+    let has_source_topology = geometry.record_body_topology(entity_id, exec_state, args).await?;
     let mut geometries = vec![geometry.clone()];
     for id in entity_ids.iter().copied() {
         let mut new_geometry = geometry.clone();
         new_geometry.set_id(id);
         new_geometry.set_artifact_id(id);
+        if has_source_topology {
+            new_geometry.record_body_topology(id, exec_state, args).await?;
+        }
         geometries.push(new_geometry);
     }
     Ok(geometries)
@@ -562,6 +567,15 @@ pub trait GeometryTrait: Clone {
     fn topology_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn set_artifact_id(&mut self, id: Uuid);
+    #[allow(async_fn_in_trait)]
+    async fn record_body_topology(
+        &self,
+        _entity_id: Uuid,
+        _exec_state: &mut ExecState,
+        _args: &Args,
+    ) -> Result<bool, KclError> {
+        Ok(false)
+    }
     fn array_to_point3d(
         val: &KclValue,
         source_ranges: Vec<SourceRange>,
@@ -613,6 +627,20 @@ impl GeometryTrait for Solid {
 
     fn set_artifact_id(&mut self, id: Uuid) {
         self.become_pattern_copy(id);
+    }
+
+    async fn record_body_topology(
+        &self,
+        entity_id: Uuid,
+        exec_state: &mut ExecState,
+        args: &Args,
+    ) -> Result<bool, KclError> {
+        if args.ctx.no_engine_commands().await {
+            return Ok(false);
+        }
+        Ok(crate::std::clone::try_get_body_child_uuids(entity_id, exec_state, args)
+            .await?
+            .is_some())
     }
 
     async fn id(&mut self, _: &ExecutorContext) -> Result<Uuid, KclError> {
@@ -1414,6 +1442,11 @@ async fn pattern_circular<T: GeometryTrait>(
     };
 
     let geometry_id = geometry.id(&args.ctx).await?;
+    let entity_id = if data.use_original() {
+        geometry.topology_id()
+    } else {
+        geometry_id
+    };
     let center = data.center_mm();
     let resp = exec_state
         .send_modeling_cmd(
@@ -1421,11 +1454,7 @@ async fn pattern_circular<T: GeometryTrait>(
             ModelingCmd::from(
                 mcmd::EntityCircularPattern::builder()
                     .axis(kcmc::shared::Point3d::from(data.axis()))
-                    .entity_id(if data.use_original() {
-                        geometry.topology_id()
-                    } else {
-                        geometry_id
-                    })
+                    .entity_id(entity_id)
                     .center(kcmc::shared::Point3d {
                         x: LengthUnit(center[0]),
                         y: LengthUnit(center[1]),
@@ -1460,11 +1489,16 @@ async fn pattern_circular<T: GeometryTrait>(
         )));
     };
 
+    // Record the source once; all replicas use the same source topology.
+    let has_source_topology = geometry.record_body_topology(entity_id, exec_state, args).await?;
     let mut geometries = vec![geometry.clone()];
     for id in entity_ids.iter().copied() {
         let mut new_geometry = geometry.clone();
         new_geometry.set_id(id);
         new_geometry.set_artifact_id(id);
+        if has_source_topology {
+            new_geometry.record_body_topology(id, exec_state, args).await?;
+        }
         geometries.push(new_geometry);
     }
     Ok(geometries)

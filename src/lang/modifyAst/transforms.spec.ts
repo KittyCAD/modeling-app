@@ -1565,6 +1565,72 @@ extrude001 = extrude(profile001, length = 1)`
       )
     })
 
+    it.each(['cap', 'wall'] as const)(
+      'mirrors a pattern instance across its selected %s face',
+      async (faceType) => {
+        const code = `@settings(kclVersion = 3.0)
+cubeProfile = sketch(on = XY) {
+  bottomEdge = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])
+  rightEdge = line(start = [var 20mm, var 0mm], end = [var 20mm, var 20mm])
+  topEdge = line(start = [var 20mm, var 20mm], end = [var 0mm, var 20mm])
+  leftEdge = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+}
+cubeRegion = region(segments = [cubeProfile.bottomEdge, cubeProfile.rightEdge], direction = CCW)
+originalCube = extrude(cubeRegion, length = 20mm, tagEnd = $capEnd001)
+hide(cubeProfile)
+translatedCube = clone(originalCube) |> translate(x = 50mm, global = true)
+pattern001 = patternLinear3d(translatedCube, instances = 4, distance = 30mm, axis = Y)`
+        const { ast, artifactGraph, variables } = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        expect(kclManagerInThisFile.errors).toEqual([])
+        const pattern = [...artifactGraph.values()].find(
+          (artifact) => artifact.type === 'pattern'
+        )
+        if (pattern?.type !== 'pattern') throw new Error('Expected pattern')
+        const body = artifactGraph.get(pattern.copyIds[1])
+        if (body?.type !== 'sweep') throw new Error('Expected third instance')
+        const face = [...artifactGraph.values()].find(
+          (artifact) =>
+            (artifact.type === 'cap' || artifact.type === 'wall') &&
+            artifact.type === faceType &&
+            artifact.sweepId === body.id &&
+            (artifact.type !== 'cap' || artifact.subType === 'end')
+        )
+        if (!face) throw new Error('Expected copied face')
+        const result = addMirror3D({
+          ast,
+          artifactGraph,
+          variables,
+          bodies: {
+            graphSelections: [{ artifact: body, codeRef: body.codeRef }],
+            otherSelections: [],
+          },
+          across: {
+            graphSelections: [{ artifact: face, codeRef: body.codeRef }],
+            otherSelections: [],
+          },
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) throw result
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+        expect(newCode).toContain(
+          'planeOf(pattern001[2], face = pattern001[2].'
+        )
+        expect(newCode).toContain('mirror3d(pattern001[2], across = plane001)')
+        await getAstAndArtifactGraph(
+          newCode,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        expect(kclManagerInThisFile.errors).toEqual([])
+      },
+      60_000
+    )
+
     it('should support a body face as the mirror reference', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 10)

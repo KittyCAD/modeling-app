@@ -109,6 +109,7 @@ import type RustContext from '@src/lib/rustContext'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
+  hasUnscopedCopiedFaces,
 } from '@src/lib/primitiveBodySelection'
 import { err, isErr } from '@src/lib/trap'
 import {
@@ -223,6 +224,13 @@ async function resolveSweepParentEntityIdForEdge(
     visited.add(node.id)
 
     const artifact = artifactGraph.get(node.id)
+
+    // Pattern copies may have no body artifact. Keep their engine body ID
+    // rather than climbing to the pattern command or source body.
+    const pattern = getPatternArtifactForCopyId(node.id, artifactGraph)
+    if (pattern?.copyIds.includes(node.id)) {
+      return node.id
+    }
 
     if (artifact?.type === 'sweep' || artifact?.type === 'compositeSolid') {
       return artifact.id
@@ -1815,7 +1823,17 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  if (clickEntityId && engineCommandManager) {
+  if (
+    clickEntityId &&
+    engineCommandManager &&
+    !(
+      entityRef.type === 'edge' &&
+      entityRef.side_faces.length > 0 &&
+      [...entityRef.side_faces, ...(entityRef.end_faces ?? [])].every((id) =>
+        artifactGraph.has(id)
+      )
+    )
+  ) {
     const primitiveSel = await getPrimitiveSelectionForEntity(
       clickEntityId,
       engineCommandManager,
@@ -1932,6 +1950,35 @@ export async function getEventForQueryEntityTypeWithPoint(
   const engineTopologyFallbackEarly =
     engineTopologyFallbackFromReference(reference)
   let engineTopologyFallbackResolved = engineTopologyFallbackEarly
+  if (
+    !engineTopologyFallbackResolved &&
+    entityRef.type === 'edge' &&
+    clickEntityId &&
+    engineCommandManager &&
+    entityRef.side_faces.some((id) => {
+      const face = artifactGraph.get(id)
+      if (face?.type !== 'wall' && face?.type !== 'cap') return false
+      const body = artifactGraph.get(face.cmdId)
+      return (
+        (body?.type === 'sweep' || body?.type === 'compositeSolid') &&
+        hasUnscopedCopiedFaces([id], body.id, artifactGraph)
+      )
+    })
+  ) {
+    // Obtain the selected output's index when copied constituent faces only
+    // provide source-region references and the click omitted topology data.
+    const primitive = await getPrimitiveSelectionForEntity(
+      clickEntityId,
+      engineCommandManager,
+      artifactGraph
+    )
+    if (primitive?.parentEntityId) {
+      engineTopologyFallbackResolved = {
+        parentId: primitive.parentEntityId,
+        primitiveIndex: primitive.primitiveIndex,
+      }
+    }
+  }
   if (engineTopologyFallbackEarly && engineCommandManager) {
     // Faces need their direct engine parent so primitive-index KCL can resolve
     // the owning solid. Edge references instead walk to an artifact-graph body.
