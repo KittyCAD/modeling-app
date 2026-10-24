@@ -4,11 +4,13 @@ import type {
   Point3d,
 } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { isArray, toSync } from '@src/lib/utils'
+import { isArray } from '@src/lib/utils'
+import { getSketchCameraFrame } from '@src/clientSideScene/sketchCamera'
+import { getLocalCameraSceneScale } from '@src/clientSideScene/cameraSceneScale'
 
 import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
-import type { Camera } from 'three'
+import type { Camera, Object3D } from 'three'
 import { Matrix4 } from 'three'
 import {
   Euler,
@@ -87,6 +89,19 @@ export type ReactCameraProperties =
       quaternion: [number, number, number, number]
     }
 
+export type CameraSyncDirection = 'clientToEngine' | 'engineToClient'
+
+/** A point on screen, such as the center of a two-finger gesture. */
+type ScreenPoint = {
+  clientX: number
+  clientY: number
+  // MouseEvent, PointerEvent and WheelEvent have offsetX and offsetY, which
+  // avoid getBoundingClientRect() when the target is the canvas.
+  offsetX?: number
+  offsetY?: number
+  target?: EventTarget | null
+}
+
 class CameraRateLimiter {
   lastSend?: Date = undefined
   rateLimitMs: number = 16 //60 FPS
@@ -110,12 +125,17 @@ class CameraRateLimiter {
 
 export class CameraControls {
   engineCommandManager: ConnectionManager
-  syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
+  syncDirection: CameraSyncDirection = 'engineToClient'
+  localCameraMode = false
+  private pendingSketchCamera: { faceId?: string } | undefined
+  private cancelSketchTween: (() => void) | undefined
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
   domElement: HTMLCanvasElement
   isDragging: boolean
   wasDragging: boolean
+  private orbitDragUpInverted = false
+  hoverPickingDisabled = false
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
   worldDownPosition: Vector3
@@ -145,22 +165,31 @@ export class CameraControls {
     return this.camera instanceof PerspectiveCamera
   }
 
+  /**
+   * In local mode the client owns the camera, as in clientToEngine, and keeps
+   * pushing it to the engine so that engine camera commands start from it.
+   */
+  private get effectiveCameraMode(): CameraSyncDirection | 'local' {
+    return this.localCameraMode ? 'local' : this.syncDirection
+  }
+
   private _zoomFocus: Vector3 | null = null // the position under the mouse when zooming, in world space
-  private _lastWheelEvent: WheelEvent | null = null
+  private _zoomFocusPoint: ScreenPoint | null = null // where _zoomFocus is on screen
 
   // Converts a screen space coordinate to world space
-  private screenToWorld(
-    event: WheelEvent | PointerEvent,
-    camera?: Camera
-  ): Vector3 {
-    let x = event.offsetX
-    let y = event.offsetY
-    if (event.target !== this.domElement) {
+  private screenToWorld(point: ScreenPoint, camera?: Camera): Vector3 {
+    let x = point.offsetX
+    let y = point.offsetY
+    if (
+      point.target !== this.domElement ||
+      x === undefined ||
+      y === undefined
+    ) {
       // There are some divs over the canvas that change event.offsetX, so manually calculate it
       // We could just do this by default but the getBoundingClientRect() can be expensive
       const rect = this.domElement.getBoundingClientRect()
-      x = event.clientX - rect.left
-      y = event.clientY - rect.top
+      x = point.clientX - rect.left
+      y = point.clientY - rect.top
     }
 
     // Ideally we would have access to renderer drawing buffer size
@@ -253,10 +282,12 @@ export class CameraControls {
     this.update(true)
   }
 
-  throttledEngCmd = throttle((cmd: EngineCommand) => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.engineCommandManager.sendSceneCommand(cmd)
-  }, 1000 / 30)
+  private readonly throttledHighlightCommand = throttle(
+    (cmd: EngineCommand) => {
+      void this.engineCommandManager.sendSceneCommand(cmd)
+    },
+    1000 / 30
+  )
 
   throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
     const cmd: EngineCommand = {
@@ -273,6 +304,44 @@ export class CameraControls {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 15)
+
+  /** Gives the engine the client's camera: its projection and its pose. */
+  syncCameraToEngine = async () => {
+    if (this.camera instanceof OrthographicCamera) {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'default_camera_set_orthographic' },
+      })
+    } else {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_set_perspective',
+          parameters: { fov_y: this.camera.fov },
+        },
+      })
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam(
+          {
+            quaternion: this.camera.quaternion,
+            position: this.camera.position,
+            zoom: this.camera.zoom,
+            isPerspective: this.isPerspective,
+            target: this.target,
+          },
+          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+        ),
+      },
+    })
+  }
 
   doMove = (
     interaction: CameraDragInteractionType,
@@ -355,6 +424,15 @@ export class CameraControls {
     >[0]
 
     const cb = ({ data, type }: CallBackParam) => {
+      if (
+        this.effectiveCameraMode === 'local' &&
+        (type === 'camera_drag_move' ||
+          type === 'camera_drag_end' ||
+          type === 'default_camera_zoom')
+      ) {
+        return
+      }
+
       const camSettings = data.settings
       this.camera.position.set(
         camSettings.pos.x,
@@ -389,14 +467,31 @@ export class CameraControls {
 
       this.camera.up.copy(newUp)
       this.camera.updateProjectionMatrix()
-      if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
+      // In local mode the client owns the projection and field of view and pushes
+      // them to the engine, so only the pose is taken from the engine's replies.
+      // Code that changes the projection applies it on the client, e.g.
+      // setCameraProjection() and setCameraView().
+      const followsEngineProjection = this.effectiveCameraMode !== 'local'
+      if (
+        followsEngineProjection &&
+        this.camera instanceof PerspectiveCamera &&
+        camSettings.ortho
+      ) {
         this.useOrthographicCamera()
       }
-      if (this.camera instanceof OrthographicCamera && !camSettings.ortho) {
+      if (
+        followsEngineProjection &&
+        this.camera instanceof OrthographicCamera &&
+        !camSettings.ortho
+      ) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.usePerspectiveCamera()
       }
-      if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
+      if (
+        followsEngineProjection &&
+        this.camera instanceof PerspectiveCamera &&
+        camSettings.fov_y
+      ) {
         this.camera.fov = camSettings.fov_y
       } else if (this.camera instanceof OrthographicCamera) {
         const fovY = camSettings.fov_y ?? this.perspectiveFovBeforeOrtho ?? 45
@@ -430,6 +525,30 @@ export class CameraControls {
         callback: cb,
       })
     })
+  }
+
+  // This is only needed for local, streamed camera gets this from engine.
+  resetLocalCameraToDefaultView() {
+    // An orthographic camera's zoom is only recalculated when switching from perspective,
+    // so switch to perspective first if needed.
+    if (this.camera instanceof OrthographicCamera) {
+      this._usePerspectiveCamera()
+    }
+    // Set default view
+    this.target.set(0, 0, 0)
+    this.camera.up.set(0, 0, 1)
+    this.camera.position.set(14, -14, 14)
+    this.camera.lookAt(this.target)
+
+    // Switch back if necessary or just update
+    if (
+      this.getSettings().modeling.cameraProjection.current === 'orthographic'
+    ) {
+      // This will convert the distance set above on the perspective camera to ortho zoom
+      this.useOrthographicCamera()
+    } else {
+      this.onCameraChange()
+    }
   }
 
   private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
@@ -477,14 +596,16 @@ export class CameraControls {
     this.isDragging = true
     // Reset the wasDragging flag to false when starting a new drag
     this.wasDragging = false
-    this.mouseDownPosition.set(event.clientX, event.clientY)
-    this.worldDownPosition = this.screenToWorld(event).clone()
-    this.cameraDown = this.camera.clone()
+    this.setDragAnchor(event)
+    // Match engine camera drag: keep horizontal direction stable for the
+    // duration of the drag, even while crossing a pole.
+    this.orbitDragUpInverted =
+      new Vector3(0, 1, 0).applyQuaternion(this.camera.quaternion).z < 0
     let interaction = this.getInteractionType(event)
     if (interaction === 'none') return
     this.handleStart()
 
-    if (this.syncDirection === 'engineToClient') {
+    if (this.effectiveCameraMode === 'engineToClient') {
       const window = this.streamToEngineWindowCoordinates({
         clientX: event.clientX,
         clientY: event.clientY,
@@ -501,59 +622,26 @@ export class CameraControls {
     }
   }
 
+  /**
+   * Anchors the drag at `point`: later moves are measured from its screen
+   * position, the world position under it and the current camera.
+   */
+  private setDragAnchor(point: ScreenPoint) {
+    this.mouseDownPosition.set(point.clientX, point.clientY)
+    this.worldDownPosition = this.screenToWorld(point).clone()
+    this.cameraDown = this.camera.clone()
+  }
+
   onMouseMove = (event: PointerEvent) => {
     if (event.pointerType === 'touch') {
       return
     }
+    if (this.hoverPickingDisabled) {
+      return
+    }
 
     if (this.isDragging) {
-      this.mouseNewPosition.set(event.clientX, event.clientY)
-      const deltaMove = this.mouseNewPosition
-        .clone()
-        .sub(this.mouseDownPosition)
-      this.mouseDownPosition.copy(this.mouseNewPosition)
-
-      const interaction = this.getInteractionType(event)
-      if (interaction === 'none') {
-        return
-      }
-
-      // If there's a valid interaction and the mouse is moving,
-      // our past (and current) interaction was a drag.
-      this.wasDragging = true
-
-      if (this.syncDirection === 'engineToClient') {
-        this.moveSender.send(() => {
-          this.doMove(interaction, [event.clientX, event.clientY])
-        })
-        return
-      }
-
-      // else "clientToEngine" (Sketch Mode) or forceUpdate
-      // Implement camera movement logic here based on deltaMove
-      // For example, for rotating the camera around the target:
-      if (interaction === 'rotate') {
-        this.pendingRotation = this.pendingRotation
-          ? this.pendingRotation
-          : new Vector2()
-        this.pendingRotation.x += deltaMove.x
-        this.pendingRotation.y += deltaMove.y
-      } else if (interaction === 'zoom') {
-        this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
-        this.pendingZoom *= 1 + deltaMove.y * 0.01
-      } else if (interaction === 'pan') {
-        this.pendingPan = this.pendingPan ?? new Vector3()
-        if (this.camera instanceof PerspectiveCamera) {
-          const distance = this.camera.position.distanceTo(this.target)
-          const panSpeed =
-            (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
-          this.pendingPan.x += -deltaMove.x * panSpeed
-          this.pendingPan.y += deltaMove.y * panSpeed
-        } else {
-          const newPosition = this.screenToWorld(event, this.cameraDown)
-          this.pendingPan = newPosition.sub(this.worldDownPosition)
-        }
-      }
+      this.dragTo(event, this.getInteractionType(event))
     } else {
       /**
        * If we're not in sketch mode and not dragging, we can highlight entities
@@ -579,7 +667,7 @@ export class CameraControls {
           videoElement,
           this.engineCommandManager.streamDimensions
         )
-        this.throttledEngCmd({
+        this.throttledHighlightCommand({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'highlight_set_entity',
@@ -588,6 +676,70 @@ export class CameraControls {
           cmd_id: newCmdId,
         })
       }
+    }
+  }
+
+  /** Moves the camera for a drag that onMouseDown started, by mouse or touch. */
+  private dragTo(
+    point: ScreenPoint,
+    interaction: CameraDragInteractionType | 'none'
+  ) {
+    this.mouseNewPosition.set(point.clientX, point.clientY)
+    const deltaMove = this.mouseNewPosition.clone().sub(this.mouseDownPosition)
+    this.mouseDownPosition.copy(this.mouseNewPosition)
+
+    if (interaction === 'none') {
+      return
+    }
+
+    // If there's a valid interaction and the mouse is moving,
+    // our past (and current) interaction was a drag.
+    this.wasDragging = true
+
+    if (this.effectiveCameraMode === 'engineToClient') {
+      this.moveSender.send(() => {
+        this.doMove(interaction, [point.clientX, point.clientY])
+      })
+      return
+    }
+
+    if (this.effectiveCameraMode === 'local' && interaction === 'rotate') {
+      this.orbitLocalCamera(deltaMove)
+      this.update(true)
+      return
+    }
+
+    // Else the client owns the camera, either with engine synchronization
+    // for sketch mode or without it for local rendering.
+    // Implement camera movement logic here based on deltaMove
+    // For example, for rotating the camera around the target:
+    if (
+      interaction === 'rotate' ||
+      (this.effectiveCameraMode === 'local' &&
+        interaction === 'rotatetrackball')
+    ) {
+      this.pendingRotation = this.pendingRotation
+        ? this.pendingRotation
+        : new Vector2()
+      this.pendingRotation.x += deltaMove.x
+      this.pendingRotation.y += deltaMove.y
+    } else if (interaction === 'zoom') {
+      this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
+      this.pendingZoom *= 1 + deltaMove.y * 0.01
+    } else if (interaction === 'pan') {
+      this.pendingPan = this.pendingPan ?? new Vector3()
+      if (this.camera instanceof PerspectiveCamera) {
+        const distance = this.camera.position.distanceTo(this.target)
+        const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
+        this.pendingPan.x += -deltaMove.x * panSpeed
+        this.pendingPan.y += deltaMove.y * panSpeed
+      } else {
+        const newPosition = this.screenToWorld(point, this.cameraDown)
+        this.pendingPan = newPosition.sub(this.worldDownPosition)
+      }
+    }
+    if (this.effectiveCameraMode === 'local') {
+      this.update()
     }
   }
 
@@ -603,7 +755,7 @@ export class CameraControls {
     this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
     this.handleEnd()
-    if (this.syncDirection === 'engineToClient') {
+    if (this.effectiveCameraMode === 'engineToClient') {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
       const window = this.streamToEngineWindowCoordinates({
@@ -630,7 +782,7 @@ export class CameraControls {
     // TODO: find a better way than this clipping to +/- 100 to prevent the bug in #5120
     const deltaY = Math.max(-100, Math.min(100, event.deltaY))
 
-    if (this.syncDirection === 'engineToClient') {
+    if (this.effectiveCameraMode === 'engineToClient') {
       if (interaction === 'zoom') {
         this.zoomSender.send(() => {
           this.doZoom(deltaY)
@@ -644,7 +796,8 @@ export class CameraControls {
       return
     }
 
-    // else "clientToEngine" (Sketch Mode) or forceUpdate
+    // Else the client owns the camera, either with engine synchronization
+    // for sketch mode or without it for local rendering.
 
     // We need to simulate similar behavior as when we send
     // zoom commands to engine. This means dropping some zoom
@@ -657,12 +810,15 @@ export class CameraControls {
 
       // Record the world point under the mouse so we can keep it anchored during zoom
       this._zoomFocus = this.screenToWorld(event)
-      this._lastWheelEvent = event
+      this._zoomFocusPoint = event
     } else {
       // This case will get handled when we add pan and rotate using Apple trackpad.
       console.error(
         `Unexpected interaction type for wheel event: ${interaction}`
       )
+    }
+    if (this.effectiveCameraMode === 'local') {
+      this.update()
     }
     this.handleEnd()
   }
@@ -691,7 +847,12 @@ export class CameraControls {
     this.camera.position.set(px, py, pz)
     const distance = this.camera.position.distanceTo(this.target.clone())
     const fovFactor = 45 / this.lastPerspectiveFov
-    this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
+    this.camera.zoom =
+      this.effectiveCameraMode === 'local'
+        ? ORTHOGRAPHIC_CAMERA_SIZE /
+          (Math.max(distance, 0.001) *
+            viewHeightFactor(this.lastPerspectiveFov))
+        : (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
 
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
@@ -756,7 +917,7 @@ export class CameraControls {
 
   usePerspectiveCamera = async (forceSend = false) => {
     this._usePerspectiveCamera()
-    if (forceSend || this.syncDirection === 'clientToEngine') {
+    if (this.effectiveCameraMode !== 'engineToClient' || forceSend) {
       await this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -803,6 +964,11 @@ export class CameraControls {
       .clone()
       .add(direction.multiplyScalar(-distanceAfter))
     this.camera.position.copy(newPosition)
+
+    if (this.effectiveCameraMode === 'local') {
+      this.onCameraChange()
+      return
+    }
 
     if (splitEngineCalls) {
       await this.engineCommandManager.sendSceneCommand({
@@ -860,6 +1026,9 @@ export class CameraControls {
     let didChange = false
     if (this.pendingRotation) {
       this.rotateCamera(this.pendingRotation.x, this.pendingRotation.y)
+      if (this.effectiveCameraMode === 'local') {
+        this.safeLookAtTarget()
+      }
       this.pendingRotation = null // Clear the pending rotation after applying it
       didChange = true
     }
@@ -888,15 +1057,15 @@ export class CameraControls {
         this.camera.updateProjectionMatrix()
         // Keep mouse world point fixed during zoom (without this zooming is pivoted around the camera position,
         // regardless of current mouse position)
-        if (this._zoomFocus && this._lastWheelEvent) {
+        if (this._zoomFocus && this._zoomFocusPoint) {
           // The new focused point in world space after zooming
-          const newFocus = this.screenToWorld(this._lastWheelEvent)
+          const newFocus = this.screenToWorld(this._zoomFocusPoint)
           const diff = this._zoomFocus.clone().sub(newFocus)
           this.camera.position.add(diff)
           this.target.add(diff)
 
           this._zoomFocus = null
-          this._lastWheelEvent = null
+          this._zoomFocusPoint = null
         }
       }
       didChange = true
@@ -935,6 +1104,51 @@ export class CameraControls {
     }
 
     // damping would be implemented here in update if we choose to add it.
+  }
+
+  private orbitLocalCamera(delta: Vector2) {
+    // Match engine spherical orbit: canvas dragging can continue through
+    // both poles, unlike the cube gizmo's clamped rotation.
+    const rotation = this.camera.quaternion
+    const worldUp = new Vector3(0, 0, 1)
+    const back = new Vector3(0, 0, 1).applyQuaternion(rotation)
+    const up = new Vector3(0, 1, 0).applyQuaternion(rotation)
+    const distance = this.camera.position.distanceTo(this.target)
+
+    // Remove roll for spherical orbit while retaining the current up/down
+    // hemisphere. At a pole keep the existing orientation: lookAt is singular.
+    if (Math.abs(back.dot(worldUp)) < 1 - 1e-10) {
+      const upright = worldUp.clone().multiplyScalar(up.z < 0 ? -1 : 1)
+      rotation.setFromRotationMatrix(
+        new Matrix4().lookAt(back, new Vector3(), upright)
+      )
+    }
+
+    const right = new Vector3(1, 0, 0).applyQuaternion(rotation)
+    // Engine drag speeds are calibrated to a 1024 x 768 viewport.
+    const yaw = MathUtils.degToRad(
+      -delta.x *
+        0.25 *
+        (1024 / Math.max(this.domElement.clientWidth, 1)) *
+        (this.orbitDragUpInverted ? -1 : 1)
+    )
+    const pitch = MathUtils.degToRad(
+      -delta.y * 0.25 * (768 / Math.max(this.domElement.clientHeight, 1))
+    )
+    rotation
+      .premultiply(
+        new Quaternion()
+          .setFromAxisAngle(worldUp, yaw)
+          .multiply(new Quaternion().setFromAxisAngle(right, pitch))
+      )
+      .normalize()
+
+    this.camera.position
+      .set(0, 0, distance)
+      .applyQuaternion(rotation)
+      .add(this.target)
+    // The local renderer copies up as well as position; don't force Z-up here.
+    this.camera.up.set(0, 1, 0).applyQuaternion(rotation)
   }
 
   rotateCamera = (deltaX: number, deltaY: number) => {
@@ -1042,6 +1256,20 @@ export class CameraControls {
   }
 
   async setCameraView(view: CameraViewState): Promise<void> {
+    // In local mode the settings reply below only updates the pose, so take
+    // the projection and field of view from the view here.
+    // This can go away if the followsEngineProjection logic is updated
+    // to take the projection also.
+    if (this.effectiveCameraMode === 'local') {
+      this.lastPerspectiveFov = view.fov_y
+      if (this.camera instanceof PerspectiveCamera) {
+        this.camera.fov = view.fov_y
+      }
+      await this.setCameraProjection(
+        view.is_ortho ? 'orthographic' : 'perspective'
+      )
+    }
+
     await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -1336,12 +1564,80 @@ export class CameraControls {
     })
   }
 
+  requestSketchCameraTransition(faceId?: string) {
+    this.cancelSketchCameraTransition()
+    this.pendingSketchCamera = { faceId }
+  }
+
+  cancelSketchCameraTransition() {
+    this.pendingSketchCamera = undefined
+    this.cancelSketchTween?.()
+  }
+
+  /** Called once the sketch plane's world transform is available. */
+  async transitionToSketch(sketch: Object3D, signal?: AbortSignal) {
+    const request = this.pendingSketchCamera
+    if (!request) return
+    if (signal?.aborted) return Promise.reject(signal.reason)
+
+    let faceCenter: Vector3 | undefined
+    if (request.faceId) {
+      const response = await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'face_get_center', object_id: request.faceId },
+      })
+      if (signal?.aborted) return Promise.reject(signal.reason)
+      if (this.pendingSketchCamera !== request) return
+      const single = isArray(response) ? response[0] : response
+      const result =
+        single && isModelingResponse(single)
+          ? single.resp.data.modeling_response
+          : undefined
+      if (result?.type !== 'face_get_center') {
+        return Promise.reject(new Error('Could not get the sketch face centre'))
+      }
+      const { pos } = result.data
+      faceCenter = new Vector3(pos.x, pos.y, pos.z)
+    }
+    this.pendingSketchCamera = undefined
+
+    const camera = this.camera
+    const distance = Math.max(camera.position.distanceTo(this.target), 0.001)
+    const halfHeight =
+      camera instanceof PerspectiveCamera
+        ? distance * viewHeightFactor(camera.getEffectiveFOV())
+        : (camera.top - camera.bottom) / (2 * camera.zoom)
+    const frame = getSketchCameraFrame(sketch, camera.position, faceCenter)
+    const targetHalfHeight =
+      frame.distance *
+      viewHeightFactor(
+        camera instanceof PerspectiveCamera
+          ? camera.getEffectiveFOV()
+          : this.lastPerspectiveFov
+      )
+    this.pendingPan = null
+    this.pendingRotation = null
+    this.pendingZoom = null
+    this.useOrthographicCamera()
+    if (!(this.camera instanceof OrthographicCamera)) return
+    // Preserve the visible scale when switching projection before the tween.
+    this.camera.zoom = ORTHOGRAPHIC_CAMERA_SIZE / halfHeight
+    this.camera.updateProjectionMatrix()
+    await this._tweenCameraToQuaternion(frame.quaternion, frame.target, 500, {
+      zoom: ORTHOGRAPHIC_CAMERA_SIZE / targetHalfHeight,
+      distance: frame.distance,
+      signal,
+    })
+    this.enableRotate = this._setting_allowOrbitInSketchMode
+  }
+
   async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition = new Vector3(),
     duration = 500
   ): Promise<void> {
-    if (this.syncDirection === 'engineToClient')
+    if (this.effectiveCameraMode === 'engineToClient')
       console.warn(
         'tweenCameraToQuaternion not design to work with engineToClient syncDirection.'
       )
@@ -1354,9 +1650,10 @@ export class CameraControls {
   _tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition: Vector3,
-    duration = 500
+    duration = 500,
+    sketch?: { zoom: number; distance: number; signal?: AbortSignal }
   ): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const camera = this.camera
       this._isCamMovingCallback(true, true)
       const initialQuaternion = camera.quaternion.clone()
@@ -1364,6 +1661,7 @@ export class CameraControls {
       let tweenEnd = 1
       const tempVec = new Vector3()
       const initialDistance = initialTarget.distanceTo(camera.position.clone())
+      const initialZoom = camera.zoom
       const tempQuaternion = new Quaternion()
       const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
         const currentQ = tempQuaternion.slerpQuaternions(
@@ -1386,36 +1684,66 @@ export class CameraControls {
         this.camera.position
           .set(0, 0, 1)
           .applyQuaternion(currentQ)
-          .multiplyScalar(initialDistance)
+          .multiplyScalar(
+            MathUtils.lerp(
+              initialDistance,
+              sketch?.distance ?? initialDistance,
+              animationProgress
+            )
+          )
           .add(currentTarget)
 
         this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
         this.camera.quaternion.copy(currentQ)
         this.target.copy(currentTarget)
+        if (sketch)
+          this.camera.zoom = MathUtils.lerp(
+            initialZoom,
+            sketch.zoom,
+            animationProgress
+          )
         this.camera.updateProjectionMatrix()
         this.update()
         this.onCameraChange()
       }
 
-      const onComplete = async () => {
+      const cleanup = () => {
+        sketch?.signal?.removeEventListener('abort', cancel)
+        if (sketch) this.cancelSketchTween = undefined
+        this._isCamMovingCallback(false, true)
+      }
+      const onComplete = () => {
         if (isReducedMotion()) {
           // Even if there is no animation we need to call cameraAtTime so camera values are updated
           cameraAtTime(1)
         }
         this.enableRotate = false
-        this._isCamMovingCallback(false, true)
+        cleanup()
         resolve()
       }
 
+      let tween: TWEEN.Tween<{ t: number }> | undefined
+      const cancel = () => {
+        tween?.stop()
+        cleanup()
+        reject(
+          sketch?.signal?.reason ??
+            new DOMException('Sketch camera transition cancelled', 'AbortError')
+        )
+      }
+      if (sketch) {
+        this.cancelSketchTween = cancel
+        sketch.signal?.addEventListener('abort', cancel, { once: true })
+      }
+
       if (isReducedMotion()) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         onComplete()
       } else {
-        new TWEEN.Tween({ t: 0 })
+        tween = new TWEEN.Tween({ t: 0 })
           .to({ t: tweenEnd }, duration)
           .easing(TWEEN.Easing.Quadratic.InOut)
           .onUpdate(({ t }) => cameraAtTime(t))
-          .onComplete(toSync(onComplete, reportRejection))
+          .onComplete(onComplete)
           .start()
       }
     })
@@ -1424,7 +1752,7 @@ export class CameraControls {
   snapToPerspectiveBeforeHandingBackControlToEngine = async (
     targetCamUp = new Vector3(0, 0, 1)
   ) => {
-    if (this.syncDirection === 'engineToClient') {
+    if (this.effectiveCameraMode === 'engineToClient') {
       console.warn(
         'animate To Perspective not design to work with engineToClient syncDirection.'
       )
@@ -1482,14 +1810,40 @@ export class CameraControls {
   }, 200)
 
   onCameraChange = (forceUpdate = false) => {
-    const distance = this.target.distanceTo(this.camera.position)
-    if (this.camera.far / 2.1 < distance || this.camera.far / 1.9 > distance) {
+    let distance = this.target.distanceTo(this.camera.position)
+    if (this.effectiveCameraMode === 'local') {
+      if (this.camera instanceof OrthographicCamera) {
+        // Match engine orthographic zoom, derived from FOV and eye distance.
+        // Keep these in sync so entry/exit preserves zoom after wheel navigation.
+        distance =
+          (this.camera.top - this.camera.bottom) /
+          (2 * this.camera.zoom * viewHeightFactor(this.lastPerspectiveFov))
+        this.camera.position
+          .sub(this.target)
+          .setLength(distance)
+          .add(this.target)
+        this.camera.updateMatrixWorld()
+      }
+      const scale = getLocalCameraSceneScale(distance)
+      // Match engine clipping, including the mirrored orthographic near plane.
+      // Distances here are in mm.
+      const far = scale * 10000
+      const near = this.camera instanceof OrthographicCamera ? -far : scale
+      if (this.camera.near !== near || this.camera.far !== far) {
+        this.camera.near = near
+        this.camera.far = far
+        this.camera.updateProjectionMatrix()
+      }
+    } else if (
+      this.camera.far / 2.1 < distance ||
+      this.camera.far / 1.9 > distance
+    ) {
       this.camera.far = distance * 2
       this.camera.near = distance / 10
       this.camera.updateProjectionMatrix()
     }
 
-    if (this.syncDirection === 'clientToEngine' || forceUpdate) {
+    if (this.effectiveCameraMode !== 'engineToClient' || forceUpdate) {
       this.throttledUpdateEngineCamera({
         quaternion: this.camera.quaternion,
         position: this.camera.position,
@@ -1575,7 +1929,8 @@ export class CameraControls {
     })
 
     // TODO: get the engine to coalesce simultaneous zoom/pan/orbit events,
-    // then we won't have to worry about jitter at all.
+    // then we won't have to worry about jitter at all. Local mode applies them
+    // together in one client update, so this only affects the engine stream.
     // https://github.com/KittyCAD/engine/issues/3528
     hammertime.get('pinch').recognizeWith(hammertime.get('doublepan'))
 
@@ -1584,29 +1939,35 @@ export class CameraControls {
       clearIntervals()
     })
 
-    // Orbit gesture is a 1-finger "pan"
+    // Orbit gesture is a 1-finger "pan", handled like a mouse drag: onMouseDown
+    // started it, and getInteractionType() makes a touch drag orbit.
+    // Sketch mode has no touch support yet.
     hammertime.on('pan', (ev) => {
-      if (this.syncDirection === 'engineToClient' && ev.maxPointers === 1) {
-        if (this.enableRotate) {
-          const orbitMode =
-            this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
-              ? 'rotatetrackball'
-              : 'rotate'
-          this.moveSender.send(() => {
-            this.doMove(orbitMode, [ev.center.x, ev.center.y])
-          })
-        }
+      if (
+        ev.maxPointers === 1 &&
+        this.enableRotate &&
+        this.effectiveCameraMode !== 'clientToEngine' &&
+        ev.srcEvent instanceof PointerEvent
+      ) {
+        this.dragTo(ev.srcEvent, this.getInteractionType(ev.srcEvent))
       }
     })
     // Fake flicking by sending decaying orbit events in the last direction of orbit
     hammertime.on('panend', (ev) => {
+      // onMouseUp ignores touch, so end the drag here. Local mode has no flick.
+      if (this.effectiveCameraMode === 'local') {
+        if (ev.maxPointers === 1 && ev.srcEvent instanceof PointerEvent) {
+          this.onMouseUpInner(ev.srcEvent)
+        }
+        return
+      }
       /** HammerJS's `event.velocity` gives you `Math.max(ev.velocityX, ev.velocityY`)`, not the actual velocity. */
       let velocity = Math.sqrt(ev.velocityY ** 2 + ev.velocityX ** 2)
       const center = ev.center
       const direction = ev.angle
 
       if (
-        this.syncDirection === 'engineToClient' &&
+        this.effectiveCameraMode === 'engineToClient' &&
         ev.maxPointers === 1 &&
         this.enableRotate &&
         velocity > 0
@@ -1644,12 +2005,25 @@ export class CameraControls {
       }
     })
 
-    // Pan gesture is a 2-finger gesture I named "doublepan"
+    const centerOfHammerInput = (ev: HammerInput) => ({
+      clientX: ev.center.x,
+      clientY: ev.center.y,
+    })
+
+    // Pan gesture is a 2-finger gesture I named "doublepan". It follows the
+    // center between the fingers. onMouseDown anchored the drag where the
+    // second finger touched down, so re-anchor it at the center.
+    hammertime.on('doublepanstart', (ev) => {
+      this.setDragAnchor(centerOfHammerInput(ev))
+    })
     hammertime.on('doublepan', (ev) => {
-      if (this.syncDirection === 'engineToClient' && this.enablePan) {
-        this.moveSender.send(() => {
-          this.doMove('pan', [ev.center.x, ev.center.y])
-        })
+      // clientToEngine is sketch mode with the engine stream: no touch support yet.
+      if (this.effectiveCameraMode !== 'clientToEngine' && this.enablePan) {
+        const center = centerOfHammerInput(ev)
+        this.dragTo(center, 'pan')
+        // An orthographic pan uses the anchor's camera, so re-anchor after each
+        // move to account for a pinch changing the zoom meanwhile.
+        this.setDragAnchor(center)
       }
     })
 
@@ -1658,27 +2032,45 @@ export class CameraControls {
     // A zoom should only occur if the gesture velocity is low and the scale delta is high
     let lastScale = 1
     hammertime.on('pinchmove', (ev) => {
-      const scaleDelta = lastScale - ev.scale
-      const isUnderVelocityLimit = ev.velocity < velocityLimit
-      // The faster you move the less you zoom
-      const velocityFactor =
-        Math.abs(
-          velocityLimit - Math.min(velocityLimit, Math.abs(ev.velocity))
-        ) * 0.5
-      const normalizedScale = Math.ceil(scaleDelta * 2000 * velocityFactor)
-      const isOverNormalizedScaleLimit =
-        Math.abs(normalizedScale) > normalizedScaleThreshold
-
-      if (
-        this.syncDirection === 'engineToClient' &&
-        this.enableZoom &&
-        isUnderVelocityLimit &&
-        isOverNormalizedScaleLimit
-      ) {
-        this.zoomSender.send(() => {
-          this.doZoom(normalizedScale)
-        })
+      // Local mode zooms by the change in finger spread since the last event.
+      if (this.effectiveCameraMode === 'local') {
+        if (this.enableZoom) {
+          const center = centerOfHammerInput(ev)
+          this.pendingZoom = lastScale / ev.scale
+          // Like the mouse wheel, orthographic zoom keeps the point under the
+          // fingers in place; perspective zooms toward the target.
+          if (this.camera instanceof OrthographicCamera) {
+            this._zoomFocus = this.screenToWorld(center)
+            this._zoomFocusPoint = center
+          }
+          this.update()
+          // A pan in this gesture must start from the zoomed camera.
+          this.setDragAnchor(center)
+        }
         lastScale = ev.scale
+      } else {
+        const scaleDelta = lastScale - ev.scale
+        const isUnderVelocityLimit = ev.velocity < velocityLimit
+        // The faster you move the less you zoom
+        const velocityFactor =
+          Math.abs(
+            velocityLimit - Math.min(velocityLimit, Math.abs(ev.velocity))
+          ) * 0.5
+        const normalizedScale = Math.ceil(scaleDelta * 2000 * velocityFactor)
+        const isOverNormalizedScaleLimit =
+          Math.abs(normalizedScale) > normalizedScaleThreshold
+
+        if (
+          this.effectiveCameraMode === 'engineToClient' &&
+          this.enableZoom &&
+          isUnderVelocityLimit &&
+          isOverNormalizedScaleLimit
+        ) {
+          this.zoomSender.send(() => {
+            this.doZoom(normalizedScale)
+          })
+          lastScale = ev.scale
+        }
       }
     })
     hammertime.on('pinchend pinchcancel', () => {
@@ -1789,19 +2181,25 @@ function _getInteractionType(
 
 export async function letEngineAnimateAndSyncCamAfter(
   engineCommandManager: ConnectionManager,
-  entityId: string
+  entityId: string,
+  cameraControls: CameraControls,
+  onFace = false
 ) {
+  const local = engineCommandManager.geometryOnly
+  if (local)
+    cameraControls.requestSketchCameraTransition(onFace ? entityId : undefined)
   await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
     cmd: {
       type: 'enable_sketch_mode',
-      adjust_camera: true,
-      animated: !isReducedMotion(),
+      adjust_camera: !local,
+      animated: !local && !isReducedMotion(),
       ortho: true,
       entity_id: entityId,
     },
   })
+  if (local) return
   // wait 600ms (animation takes 500, + 100 for safety)
   await new Promise((resolve) =>
     setTimeout(resolve, isReducedMotion() ? 100 : 600)

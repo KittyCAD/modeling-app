@@ -1,0 +1,127 @@
+import {
+  LocalRenderer,
+  type LocalRendererProps,
+} from '@src/clientSideScene/localRenderer/LocalRenderer'
+import { Spinner } from '@src/components/Spinner'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+// The default planes are shown or hidden about 200 ms after an execution, so
+// the thumbnail waits for them, like the streamed one does.
+const THUMBNAIL_DELAY_MS = 500
+
+export const LocalWebGPUScene = (props: LocalRendererProps) => {
+  const { theme, enableSSAO, highlightEdges, fixedSizeGrid } = props
+  const containerRef = useRef<HTMLDivElement>(null)
+  const rendererRef = useRef<LocalRenderer | null>(null)
+  const latestPropsRef = useRef(props)
+  const app = useApp()
+  const { kclManager } = useSingletons()
+  const { state } = useModelingContext()
+  const pickingEnabled =
+    state.matches('idle') || state.matches('Sketch no face')
+  const defaultPlaneVisibility = state.context.defaultPlaneVisibility
+  const isExecuting = kclManager.isExecutingSignal.value
+  const [isAwaitingModel, setIsAwaitingModel] = useState(false)
+  const isLoadingModel = isExecuting || isAwaitingModel
+
+  latestPropsRef.current = props
+
+  useEffect(() => {
+    if (isExecuting) {
+      setIsAwaitingModel(true)
+    }
+  }, [isExecuting])
+
+  const handleModelLoadSettled = useCallback(
+    (isNewModel?: boolean) => {
+      if (!kclManager.isExecutingSignal.value) {
+        setIsAwaitingModel(false)
+      }
+      const renderer = rendererRef.current
+      const projectPath = app.project?.projectIORefSignal.value.path
+      if (isNewModel && renderer && projectPath) {
+        setTimeout(() => {
+          renderer.readFrame((renderedCanvas) =>
+            createThumbnailPNGOnDesktop({
+              fileOperations: app.fileOperations,
+              projectDirectoryWithoutEndingSlash: projectPath,
+              renderedCanvas,
+            })
+          )
+        }, THUMBNAIL_DELAY_MS)
+      }
+    },
+    [kclManager, app]
+  )
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) {
+      return
+    }
+
+    const renderer = new LocalRenderer(container, kclManager, {
+      ...latestPropsRef.current,
+      onModelLoadSettled: handleModelLoadSettled,
+    })
+    rendererRef.current = renderer
+    kclManager.sceneInfra.localRenderer = renderer
+
+    return () => {
+      if (rendererRef.current === renderer) {
+        rendererRef.current = null
+      }
+      if (kclManager.sceneInfra.localRenderer === renderer) {
+        kclManager.sceneInfra.localRenderer = null
+      }
+      renderer.dispose()
+    }
+  }, [handleModelLoadSettled, kclManager])
+
+  useEffect(() => {
+    rendererRef.current?.setTheme(theme)
+  }, [theme])
+
+  useEffect(() => {
+    rendererRef.current?.setPickingEnabled(pickingEnabled)
+  }, [pickingEnabled, kclManager])
+
+  useEffect(() => {
+    rendererRef.current?.setDefaultPlaneVisibility(defaultPlaneVisibility)
+  }, [defaultPlaneVisibility, kclManager])
+
+  useEffect(() => {
+    rendererRef.current?.setEnableSSAO(enableSSAO)
+  }, [enableSSAO])
+
+  useEffect(() => {
+    rendererRef.current?.setHighlightEdges(highlightEdges)
+  }, [highlightEdges])
+
+  useEffect(() => {
+    rendererRef.current?.setFixedSizeGrid(fixedSizeGrid)
+  }, [fixedSizeGrid])
+
+  return (
+    <>
+      <div
+        ref={containerRef}
+        className="pointer-events-none absolute inset-0 h-full w-full transition-opacity duration-200 opacity-0"
+      />
+      {isLoadingModel && (
+        <output
+          data-testid="local-renderer-loading"
+          className="pointer-events-none absolute bottom-4 left-1/2 z-40 -translate-x-1/2 rounded-full border border-chalkboard-30/80 bg-chalkboard-10/90 px-3 py-2 shadow-md backdrop-blur dark:border-chalkboard-70 dark:bg-chalkboard-90/90"
+        >
+          <div className="flex items-center gap-2 text-xs text-chalkboard-70 dark:text-chalkboard-30">
+            <Spinner className="h-4 w-4" />
+            <span>Updating model…</span>
+          </div>
+        </output>
+      )}
+    </>
+  )
+}

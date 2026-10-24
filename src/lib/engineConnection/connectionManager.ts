@@ -7,6 +7,7 @@ import {
   decode as msgpackDecode,
   encode as msgpackEncode,
 } from '@msgpack/msgpack'
+import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import { defaultSourceRange } from '@src/lang/sourceRange'
@@ -116,6 +117,7 @@ export class ConnectionManager extends EventTarget {
     | undefined
   private reconnectPreparation: AbortController | undefined
   private reconnectPreparationFinished = false
+  private localSelectionCommandHandler: LocalSelectionCommandHandler | undefined
   private readonly activeExecutions = new Set<symbol>()
   private readonly activeRecoveries = new Set<symbol>()
 
@@ -132,6 +134,11 @@ export class ConnectionManager extends EventTarget {
 
   get apiCallId(): string | undefined {
     return this.connection?.apiCallId
+  }
+
+  /** Rendering mode of the active session; reevaluated after every reconnect. */
+  get geometryOnly(): boolean {
+    return this.connection?.geometryOnly ?? false
   }
 
   /** True when a scene command sent now reaches the engine. */
@@ -347,6 +354,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc,
     unitTestPool,
     rustContext,
+    geometryOnly = false,
     kclVersion,
     prepareForReconnect,
   }: {
@@ -358,6 +366,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc?: boolean
     unitTestPool?: 'cpu'
     rustContext?: RustContext
+    geometryOnly?: boolean
     kclVersion?: KclVersion
     prepareForReconnect?: (signal: AbortSignal) => Promise<undefined | Error>
   }) {
@@ -379,7 +388,8 @@ export class ConnectionManager extends EventTarget {
       )
     }
 
-    const invalidStreamDimensions = validateStreamDimensions({ width, height })
+    const invalidStreamDimensions =
+      !geometryOnly && validateStreamDimensions({ width, height })
     if (invalidStreamDimensions) {
       return Promise.reject(invalidStreamDimensions)
     }
@@ -398,10 +408,11 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
-    const url = this.generateWebsocketURL(kclVersion)
+    const url = this.generateWebsocketURL(geometryOnly, kclVersion)
     this.connection = new Connection({
       url,
       token,
+      geometryOnly,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
       tearDownManager: this.tearDown.bind(this),
@@ -445,7 +456,7 @@ export class ConnectionManager extends EventTarget {
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
 
-    if (!this.connection.peerConnection) {
+    if (!geometryOnly && !this.connection.peerConnection) {
       return Promise.reject(
         new Error('this.connection.peerConnection is undefined')
       )
@@ -544,6 +555,10 @@ export class ConnectionManager extends EventTarget {
    */
   handleOnDataChannelMessage(event: MessageEvent<any>) {
     const result: UnreliableResponses = JSON.parse(event.data)
+    this.dispatchUnreliableSubscribers(result)
+  }
+
+  private dispatchUnreliableSubscribers(result: UnreliableResponses) {
     Object.values(this.unreliableSubscriptions[result.type] || {}).forEach(
       // Hover/highlight responses may arrive out of order on the unreliable
       // channel. Only apply the newest sequenced result we have seen.
@@ -565,13 +580,34 @@ export class ConnectionManager extends EventTarget {
     )
   }
 
-  generateWebsocketURL(kclVersion: KclVersion | undefined) {
+  private dispatchReliableSubscribers(result: {
+    type: string
+    data: Record<string, unknown>
+  }) {
+    Object.values(this.subscriptions[result.type] || {}).forEach((callback) => {
+      callback(result)
+    })
+  }
+
+  generateWebsocketURL(geometryOnly = false, kclVersion?: KclVersion) {
+    const versionQuery =
+      kclVersion === undefined
+        ? ''
+        : `&kcl_version=${encodeURIComponent(kclVersion)}`
+    if (geometryOnly) {
+      // No video either, but the engine frames camera moves such as zoom to
+      // fit for this size.
+      const resolution = validateStreamDimensions(this.streamDimensions)
+        ? ''
+        : `&video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}`
+      return withKittycadWebSocketURL(
+        `?geometry_only=true&webrtc=false${resolution}${versionQuery}`
+      )
+    }
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
-    if (kclVersion !== undefined) {
-      additionalSettings += `&kcl_version=${encodeURIComponent(kclVersion)}`
-    }
+    additionalSettings += versionQuery
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
@@ -580,6 +616,8 @@ export class ConnectionManager extends EventTarget {
 
   // Set the engine's theme
   async setTheme(theme: Themes) {
+    if (this.geometryOnly) return
+
     if (!this.isReady) {
       EngineDebugger.addLog({
         label: 'connectionManager',
@@ -671,6 +709,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set default system properties in the engine, with debug logging */
   async setDefaultSystemProperties(backfaceColor: string) {
+    if (this.geometryOnly) return
+
     const backfaceRgbaColor = hexToRgba(backfaceColor)
     if (!backfaceRgbaColor) {
       EngineDebugger.addLog({
@@ -720,6 +760,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set the edge highlighting setting in the engine, with debug logging */
   async setHighlightEdges(shouldHighlight: boolean) {
+    if (this.geometryOnly) return
+
     const cmd = {
       type: 'edge_lines_visible',
       hidden: !shouldHighlight,
@@ -757,6 +799,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set the "show scale grid" setting in the engine, with debug logging */
   async setShowScaleGrid(shouldShowGrid: boolean) {
+    if (this.geometryOnly) return
+
     const cmd = {
       type: 'edge_lines_visible',
       hidden: !shouldShowGrid,
@@ -792,10 +836,45 @@ export class ConnectionManager extends EventTarget {
     debugLog('done')
   }
 
+  /**
+   * Lets the local renderer answer selection commands in place of the engine.
+   * Returns a function that removes the handler again.
+   */
+  setLocalSelectionCommandHandler(handler: LocalSelectionCommandHandler) {
+    this.localSelectionCommandHandler = handler
+    return () => {
+      if (this.localSelectionCommandHandler === handler) {
+        this.localSelectionCommandHandler = undefined
+      }
+    }
+  }
+
   async sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
   ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
+    // The handler declines without a promise, so a command it does not want
+    // (or any command when there is no handler) is still sent in this step.
+    const localSelection = this.localSelectionCommandHandler?.(command, {
+      streamDimensions: this.streamDimensions,
+    })
+    if (localSelection) {
+      const localSelectionResult = await localSelection
+      if (localSelectionResult) {
+        if (localSelectionResult.unreliableModelingResponse) {
+          this.dispatchUnreliableSubscribers(
+            localSelectionResult.unreliableModelingResponse as UnreliableResponses
+          )
+        }
+        if (localSelectionResult.modelingResponse) {
+          this.dispatchReliableSubscribers(
+            localSelectionResult.modelingResponse
+          )
+        }
+        return Promise.resolve(localSelectionResult.websocketResponse ?? null)
+      }
+    }
+
     if (
       this.connection === undefined ||
       !this.started ||
@@ -1209,6 +1288,15 @@ export class ConnectionManager extends EventTarget {
   }
 
   async handleResize({ width, height }: { width: number; height: number }) {
+    if (this.geometryOnly) {
+      // There is no video to resize, but the local renderer maps pointer
+      // positions through these dimensions.
+      if (!validateStreamDimensions({ width, height })) {
+        this.streamDimensions = { width, height }
+      }
+      return
+    }
+
     if (!this.connection) {
       console.warn('unable to resize, connection is not found')
       return

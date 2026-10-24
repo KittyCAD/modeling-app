@@ -131,9 +131,7 @@ export async function buildTheWorldAndConnectToEngine({
   const rustContext = new RustContext(
     instancePromise,
     engineCommandManager,
-    settingsActor,
-    0,
-    pool === 'cpu'
+    settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
     machineManager,
@@ -174,6 +172,7 @@ export async function buildTheWorldAndConnectToEngine({
         },
         unitTestWebrtc: webrtc,
         unitTestPool: pool,
+        geometryOnly: pool === 'cpu',
         rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)

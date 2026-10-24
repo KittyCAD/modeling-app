@@ -507,6 +507,10 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       'enable_touch_controls'
     ),
     defineBooleanAppOnlyField(
+      { category: 'modeling', field: 'useLocalRenderer' },
+      'use_local_renderer'
+    ),
+    defineBooleanAppOnlyField(
       { category: 'modeling', field: 'showSketchGrid' },
       'show_sketch_grid'
     ),

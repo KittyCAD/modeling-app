@@ -314,6 +314,13 @@ type ExecutionCompletionResult = {
 
 export enum KclManagerEvents {
   LongExecution = 'long-execution',
+  ExecutionDone = 'execution-done',
+}
+
+export interface KclExecutionDoneDetail {
+  successful: boolean
+  isInterrupted: boolean
+  hasErrors: boolean
 }
 
 declare global {
@@ -582,15 +589,18 @@ export class KclManager extends File {
   private _execState = signal<ExecState>(emptyExecState())
   /**
    * The engine scene generation from the last execution: the number of runs
-   * that changed the engine scene. Runs answered from the cache leave it
-   * unchanged.
+   * that changed the engine scene. Cached runs don't increment it.
    *
    * Sketch-solve syncs and mock executions replace `execState` without sending
    * an engine command.  A consumer that must act only on a rebuilt scene
    * subscribes here rather than to `execStateSignal`.
    */
   private _engineSceneGeneration = signal(0)
-  /** Incremented on every execution completion (success, failure, or cancel). Used so callers can wait for "next" run. */
+  /**
+   * Incremented on every execution completion (success, failure, or cancel),
+   * even if cached.
+   * Used so callers can wait for "next" run.
+   */
   private _executionGeneration = 0
   private _lastExecutionCompletion: ExecutionCompletionResult = {
     generation: 0,
@@ -2386,13 +2396,32 @@ export class KclManager extends File {
       markOnce('code/endExecuteAst')
       this.notifyExecutionCompletion('completed')
 
-      // Update project thumbnail after successful execution
-      if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      // Update project thumbnail after successful execution. The local renderer
+      // writes its own once the new model is on screen.
+      if (
+        !isInterrupted &&
+        errors.length === 0 &&
+        projectFsManager.dir &&
+        !this.engineCommandManager.geometryOnly
+      ) {
         createThumbnailPNGOnDesktop({
           fileOperations: this.systemDeps.fileOperations,
           projectDirectoryWithoutEndingSlash: projectFsManager.dir,
         })
       }
+
+      this.dispatchEvent(
+        new CustomEvent<KclExecutionDoneDetail>(
+          KclManagerEvents.ExecutionDone,
+          {
+            detail: {
+              successful: !isInterrupted && errors.length === 0,
+              isInterrupted,
+              hasErrors: errors.length > 0,
+            },
+          }
+        )
+      )
     } finally {
       finishExecution()
     }
@@ -2416,6 +2445,12 @@ export class KclManager extends File {
       data: null,
     })
     markOnce('code/endExecuteAst')
+    // The local renderer shows its loading indicator until it hears this.
+    this.dispatchEvent(
+      new CustomEvent<KclExecutionDoneDetail>(KclManagerEvents.ExecutionDone, {
+        detail: { successful: false, isInterrupted: true, hasErrors: false },
+      })
+    )
   }
 
   // DO NOT CALL THIS from codemirror ever.
