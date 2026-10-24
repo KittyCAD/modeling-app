@@ -6,7 +6,7 @@ export class ModelingDialogFixture {
   readonly cancelButton: Locator
   readonly advanced: Locator
 
-  constructor(page: Page) {
+  constructor(private readonly page: Page) {
     this.locator = page.getByTestId('modeling-dialog')
     this.submitButton = this.locator.getByRole('button', {
       name: 'Submit',
@@ -17,6 +17,13 @@ export class ModelingDialogFixture {
       exact: true,
     })
     this.advanced = this.locator.getByText('Advanced', { exact: true })
+  }
+
+  async moveTo(position: { x: number; y: number }) {
+    await this.locator.locator('header').dragTo(this.page.locator('body'), {
+      sourcePosition: { x: 20, y: 20 },
+      targetPosition: { x: position.x + 20, y: position.y + 20 },
+    })
   }
 
   async submit() {
@@ -32,6 +39,13 @@ export class ModelingDialogFixture {
 
   input(label: string | RegExp) {
     return this.locator.getByRole('textbox', { name: label, exact: true })
+  }
+
+  async fillInput(label: string | RegExp, value: string) {
+    const input = this.input(label)
+    await input.press('ControlOrMeta+A')
+    await this.page.keyboard.insertText(value)
+    await expect(input).toHaveText(value)
   }
 
   options(label: string | RegExp) {

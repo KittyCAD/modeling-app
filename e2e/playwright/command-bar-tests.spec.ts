@@ -6,13 +6,13 @@ import * as fsp from 'fs/promises'
 import path, { join } from 'path'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
-  test('Extrude from command bar selects extrude line after', async ({
+  test('Extrude dialog selects the generated line in the editor', async ({
     page,
     homePage,
     toolbar,
     scene,
     editor,
-    cmdBar,
+    modelingDialog,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -38,41 +38,13 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await scene.settled()
 
     await toolbar.extrudeButton.click()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'Profiles',
-    })
+    await expect(modelingDialog.locator).toHaveAttribute(
+      'aria-label',
+      'Extrude'
+    )
     await editor.selectText('startProfile(at = [-10, -10])')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-    })
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      reviewValidationError: undefined,
-    })
-    await cmdBar.progressCmdBar()
+    await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
+    await modelingDialog.submit()
     await expect(page.locator('.cm-activeLine')).toHaveText(
       `extrude001 = extrude(sketch001, length = ${KCL_DEFAULT_LENGTH})`
     )
@@ -217,10 +189,11 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
   })
 
-  test('Can extrude from the command bar', async ({
+  test('Command palette opens Extrude dialog with variable and optional inputs', async ({
     page,
     homePage,
     cmdBar,
+    modelingDialog,
     scene,
     editor,
   }) => {
@@ -254,129 +227,31 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     // Search for extrude command and choose it
     await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
 
-    // Assert that we're on the selection step
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'Profiles',
-    })
-    // Select a face
-    await editor.selectText('startProfile(at = [-6.95, 10.98])')
-    await cmdBar.progressCmdBar()
-
-    // Assert that we're on the distance step
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-    })
-
-    // Assert that the an alternative variable name is chosen,
-    // since the default variable name is already in use (distance)
-    await cmdBar.variableCheckbox.click()
-    await expect(page.getByPlaceholder('Variable name')).toHaveValue(
-      'length001'
+    await expect(modelingDialog.locator).toHaveAttribute(
+      'aria-label',
+      'Extrude'
     )
-    await cmdBar.progressCmdBar()
+    await expect(modelingDialog.submitButton).toBeDisabled()
+    await editor.selectText('startProfile(at = [-6.95, 10.98])')
+    await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
+    await expect(modelingDialog.input(/^length$/i)).toHaveText('5')
+    await modelingDialog.variableCheckbox('length').check()
+    await expect(
+      modelingDialog.locator.getByRole('textbox', {
+        name: 'Variable name',
+        exact: true,
+      })
+    ).toHaveValue('length001')
 
-    // Closed profiles use KCL's solid default and skip the body type step.
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      reviewValidationError: undefined,
-    })
-    await page.keyboard.press('Meta+Backspace')
-
-    // Step back returns to the preceding length argument.
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-    })
-
-    await cmdBar.progressCmdBar()
-
-    // Add optional arg
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-    })
-    await cmdBar.clickOptionalArgument('bidirectionalLength')
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'bidirectionalLength',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-        BidirectionalLength: '',
-      },
-      highlightedHeaderArg: 'bidirectionalLength',
-    })
-    await page.keyboard.type('10') // Set bidirectional length
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-        BidirectionalLength: '10',
-      },
-    })
-
-    // Clear optional arg
-    await page.getByRole('button', { name: 'Bidirectional length' }).click()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'bidirectionalLength',
-      currentArgValue: '10',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-        BidirectionalLength: '10',
-      },
-      highlightedHeaderArg: 'bidirectionalLength',
-    })
-    await cmdBar.clearNonRequiredButton.click()
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-    })
-
-    await cmdBar.progressCmdBar()
+    const bidirectionalLength = modelingDialog.input(/^bidirectional length$/i)
+    await bidirectionalLength.fill('10')
+    await expect(bidirectionalLength).toHaveText('10')
+    await bidirectionalLength.fill('')
+    await expect(bidirectionalLength).toHaveAttribute(
+      'aria-placeholder',
+      'Use defaults'
+    )
+    await modelingDialog.submit()
     await scene.settled()
     await editor.expectEditor.toContain(
       'extrude001 = extrude(sketch001, length = length001)'
@@ -731,11 +606,12 @@ export exported = 2`,
     }
   )
 
-  test('Step back works on non-required and required arguments and closes', async ({
+  test('Can cancel a modeling dialog with an unfinished optional input', async ({
     page,
     homePage,
     scene,
     cmdBar,
+    modelingDialog,
     editor,
   }) => {
     await page.addInitScript(async () => {
@@ -753,116 +629,18 @@ export exported = 2`,
 
     await cmdBar.openCmdBar()
     await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'Profiles',
-    })
-
+    await expect(modelingDialog.locator).toHaveAttribute(
+      'aria-label',
+      'Extrude'
+    )
     await editor.selectText('circle(center = [0, 0], radius = 5)')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-    })
-
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'bodyType',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: '',
-      },
-      highlightedHeaderArg: 'bodyType',
-    })
-
-    await cmdBar.selectOption({ name: 'Surface' }).click()
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: 'SURFACE',
-      },
-    })
-
-    await cmdBar.clickOptionalArgument('method')
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'method',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: 'SURFACE',
-        Method: '',
-      },
-      highlightedHeaderArg: 'method',
-    })
-    // Here we specifically don't input anything, making the arg unvalidated
-
-    await cmdBar.stepBack()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'bodyType',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: 'SURFACE',
-      },
-      highlightedHeaderArg: 'bodyType',
-    })
-
-    await cmdBar.stepBack()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: 'SURFACE',
-      },
-      highlightedHeaderArg: 'length',
-    })
-
-    await cmdBar.stepBack()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: 'SURFACE',
-      },
-      highlightedHeaderArg: 'Profiles',
-    })
-
-    await cmdBar.stepBack()
-    await cmdBar.expectState({ stage: 'commandBarClosed' })
+    await modelingDialog
+      .options(/^body type\b/i)
+      .selectOption({ label: 'Surface' })
+    await modelingDialog.input(/^bidirectional length$/i).fill('1 +')
+    await expect(modelingDialog.submitButton).toBeDisabled()
+    await modelingDialog.cancelButton.click()
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await editor.expectEditor.not.toContain('extrude(')
   })
 })

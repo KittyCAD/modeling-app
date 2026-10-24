@@ -8,8 +8,6 @@ sketch001 = sketch(on = XY) {
 region001 = region(segments = [sketch001.circle1])`
 
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
-  test.use({ userFeatures: ['modeling_dialogs'] })
-
   test('Preserves an Extrude draft while hiding an obstruction', async ({
     page,
     homePage,

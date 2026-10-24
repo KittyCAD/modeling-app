@@ -71,7 +71,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     context,
     page,
     scene,
-    cmdBar,
+    modelingDialog,
     editor,
     toolbar,
     tronApp,
@@ -84,9 +84,11 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', edgeTreatmentCode)
-    )
+    if ((await editor.getCurrentCode()).trim() !== edgeTreatmentCode.trim()) {
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', edgeTreatmentCode)
+      )
+    }
     await editor.closePane()
     await scene.moveCameraTo(
       { x: -3.14, y: -11, z: 16.25 },
@@ -99,10 +101,10 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await clickChamferBoundaryEdge()
     await expect(toolbar.selectionStatus).toContainText('1 edge')
     await toolbar.filletButton.click()
-    await cmdBar.progressCmdBar()
-    await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.3')
-    await cmdBar.progressCmdBar()
-    await cmdBar.submit()
+
+    await modelingDialog.input(/^radius\b/i).fill('0.3')
+
+    await modelingDialog.submit()
     await scene.settled()
 
     await editor.expectEditor.toContain('tag = $')
@@ -115,7 +117,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     context,
     page,
     scene,
-    cmdBar,
+    modelingDialog,
     editor,
     toolbar,
     tronApp,
@@ -128,9 +130,11 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', shellCode)
-    )
+    if ((await editor.getCurrentCode()).trim() !== shellCode.trim()) {
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', shellCode)
+      )
+    }
     await editor.closePane()
     await scene.moveCameraTo({ x: 48, y: -38, z: 34 }, { x: 15, y: 11, z: 7 })
 
@@ -140,31 +144,12 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await clickShellRimEdge()
     await expect(toolbar.selectionStatus).toContainText('1 edge')
     await toolbar.filletButton.click()
-    await cmdBar.progressCmdBar()
 
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Fillet',
-      currentArgKey: 'radius',
-      currentArgValue: '5',
-      headerArguments: {
-        Selection: '1 edge',
-        Radius: '',
-      },
-      highlightedHeaderArg: 'radius',
-    })
-    await cmdBar.currentArgumentInput.locator('.cm-content').fill('1')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Fillet',
-      headerArguments: {
-        Selection: '1 edge',
-        Radius: '1',
-      },
-      reviewValidationError: undefined,
-    })
-    await cmdBar.submit()
+    await expect(modelingDialog.input(/^radius\b/i)).toHaveText('5')
+    await modelingDialog.input(/^radius\b/i).fill('1')
+
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await modelingDialog.submit()
     await scene.settled()
 
     await editor.expectEditor.toContain('edgeId(body001')
@@ -175,7 +160,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     context,
     page,
     scene,
-    cmdBar,
+    modelingDialog,
     editor,
     toolbar,
     tronApp,
@@ -188,9 +173,13 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', csgSurfaceExtrudeCode)
-    )
+    if (
+      (await editor.getCurrentCode()).trim() !== csgSurfaceExtrudeCode.trim()
+    ) {
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', csgSurfaceExtrudeCode)
+      )
+    }
     await editor.closePane()
     await scene.moveCameraTo({ x: 48, y: -42, z: 34 }, { x: 13, y: 9, z: 5 })
 
@@ -199,34 +188,16 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     })
     await clickOuterCsgEdge()
     await toolbar.extrudeButton.click()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'Profiles',
-    })
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-    })
-    await cmdBar.currentArgumentInput.locator('.cm-content').fill('6')
-    await cmdBar.progressCmdBar()
-    await cmdBar.selectOption({ name: 'Surface' }).click()
-    await cmdBar.selectOption({ name: 'New' }).click()
-    await cmdBar.submit()
+    await modelingDialog.selection('Profiles').click()
+
+    await expect(modelingDialog.input(/^length\b/i)).toHaveText('5')
+    await modelingDialog.input(/^length\b/i).fill('6')
+
+    await modelingDialog
+      .options(/^body type\b/i)
+      .selectOption({ label: 'Surface' })
+    await modelingDialog.options(/^method\b/i).selectOption({ label: 'New' })
+    await modelingDialog.submit()
     await scene.settled()
 
     await editor.expectEditor.toContain('sideFaces = [')
@@ -249,9 +220,11 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', standaloneHelixCode)
-    )
+    if ((await editor.getCurrentCode()).trim() !== standaloneHelixCode.trim()) {
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', standaloneHelixCode)
+      )
+    }
     await editor.closePane()
     await scene.moveCameraTo({ x: 24, y: -24, z: 18 }, { x: 0, y: 0, z: 10 })
 

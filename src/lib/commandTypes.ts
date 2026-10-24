@@ -149,7 +149,7 @@ export type Command<
   disabled?: boolean
   /** Keep unsupported modeling flows in the command bar instead of a dialog. */
   forceCommandBar?: boolean
-  /** Resolved from forceCommandBar and the modeling_dialogs feature gate. */
+  /** Resolved from the command group and forceCommandBar. */
   useModelingDialog?: boolean
   status?: CommandStatus
 }

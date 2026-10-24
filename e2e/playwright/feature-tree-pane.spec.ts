@@ -166,7 +166,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     homePage,
     scene,
     toolbar,
-    cmdBar,
+    modelingDialog,
     page,
     editor,
     folderSetupFn,
@@ -207,43 +207,15 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     await expect(setAppearanceMenuItem).toBeEnabled()
     await setAppearanceMenuItem.click()
 
-    await cmdBar.expectState({
-      commandName: 'Appearance',
-      currentArgKey: 'objects',
-      currentArgValue: '',
-      headerArguments: {
-        Objects: '',
-        Color: '',
-      },
-      highlightedHeaderArg: 'objects',
-      stage: 'arguments',
-    })
+    await modelingDialog.selection('Objects').click()
 
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      commandName: 'Appearance',
-      currentArgKey: 'color',
-      currentArgValue: '',
-      headerArguments: {
-        Objects: '1 other',
-        Color: '',
-      },
-      highlightedHeaderArg: 'color',
-      stage: 'arguments',
-    })
+    await expect(modelingDialog.input(/^color\b/i)).toBeVisible()
 
     // Fill color, submit, and verify code updated
-    await cmdBar.currentArgumentInput.fill('#00ff00')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      commandName: 'Appearance',
-      headerArguments: {
-        Objects: '1 other',
-        Color: '#00ff00',
-      },
-      stage: 'review',
-    })
-    await cmdBar.submit()
+    await modelingDialog.input(/^color\b/i).fill('#00ff00')
+
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await modelingDialog.submit()
     await scene.settled()
     await editor.expectEditor.toContain('appearance(test, color = "#00ff00")')
   })
@@ -347,6 +319,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     editor,
     toolbar,
     cmdBar,
+    modelingDialog,
     page,
     folderSetupFn,
   }) => {
@@ -393,32 +366,16 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
           `renamedExtrude = extrude(sketch001, length = ${initialInput})`,
         ],
       })
-      await cmdBar.clickHeaderArgument('length')
-      await cmdBar.expectState({
-        commandName: 'Extrude',
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: initialInput,
-        headerArguments: {
-          Length: initialInput,
-        },
-        highlightedHeaderArg: 'length',
-      })
+
+      await expect(modelingDialog.input(/^length\b/i)).toHaveText(initialInput)
     })
 
     await test.step('Add a parameter for distance argument and submit', async () => {
-      await expect(cmdBar.currentArgumentInput).toBeVisible()
-      await cmdBar.variableCheckbox.click()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          // The calculated value is shown in the argument summary
-          Length: initialInput,
-        },
-        commandName: 'Extrude',
-      })
-      await scene.waitForExecutionDoneAfter(() => cmdBar.progressCmdBar())
+      await expect(modelingDialog.input(/^length\b/i)).toBeVisible()
+      await modelingDialog.variableCheckbox('length').click()
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await scene.waitForExecutionDoneAfter(() => modelingDialog.submit())
       await editor.expectState({
         highlightedCode: '',
         diagnostics: [],
@@ -482,7 +439,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
     folderSetupFn,
   }) => {
     const testCode = (value: string) =>
@@ -520,30 +477,15 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         diagnostics: [],
         activeLines: [initialCode],
       })
-      await cmdBar.expectState({
-        commandName: 'Offset Plane',
-        stage: 'arguments',
-        currentArgKey: 'offset',
-        currentArgValue: initialInput,
-        headerArguments: {
-          Offset: initialInput,
-        },
-        highlightedHeaderArg: 'offset',
-      })
+      await expect(modelingDialog.input(/^offset\b/i)).toHaveText(initialInput)
     })
 
     await test.step('Edit the offset argument and submit', async () => {
-      await expect(cmdBar.currentArgumentInput).toBeVisible()
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill(newInput)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Offset: '15',
-        },
-        commandName: 'Offset Plane',
-      })
-      await cmdBar.progressCmdBar()
+      await expect(modelingDialog.input(/^offset\b/i)).toBeVisible()
+      await modelingDialog.input(/^offset\b/i).fill(newInput)
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await editor.expectState({
         highlightedCode: '',
         diagnostics: [],

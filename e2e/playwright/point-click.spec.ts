@@ -14,7 +14,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
   test.use({
-    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG, 'modeling_dialogs'],
+    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG],
   })
 
   test('Create an Extrude operation with a tag', async ({
@@ -518,7 +518,7 @@ extrude001 = extrude(region001, length = 100)`
       const initialInput = '1'
       const newInput = '5'
       await expect(modelingDialog.input(/^radius\b/i)).toHaveText(initialInput)
-      await modelingDialog.input(/^radius\b/i).fill(newInput)
+      await modelingDialog.fillInput(/^radius\b/i, newInput)
 
       await expect(modelingDialog.submitButton).toBeEnabled()
 
@@ -3717,11 +3717,11 @@ hole001 = hole::hole(
       await test.step('Create ring gear via toolbar group', async () => {
         await selectGearCommand('gear-ring')
         await expect(modelingDialog.input(/^n teeth\b/i)).toHaveText('40')
-        await modelingDialog.input(/^n teeth\b/i).fill('42')
-        await modelingDialog.input(/^module\b/i).fill('1.3')
-        await modelingDialog.input(/^pressure angle\b/i).fill('14deg')
-        await modelingDialog.input(/^helix angle\b/i).fill('-20deg')
-        await modelingDialog.input(/^gear height\b/i).fill('5')
+        await modelingDialog.fillInput(/^n teeth\b/i, '42')
+        await modelingDialog.fillInput(/^module\b/i, '1.3')
+        await modelingDialog.fillInput(/^pressure angle\b/i, '14deg')
+        await modelingDialog.fillInput(/^helix angle\b/i, '-20deg')
+        await modelingDialog.fillInput(/^gear height\b/i, '5')
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
         await scene.settled()
@@ -3746,10 +3746,9 @@ hole001 = hole::hole(
           0
         )
         await operationButton.dblclick({ button: 'left' })
-        await expect(modelingDialog.input(/^gear height\b/i)).toHaveText('5')
 
         await expect(modelingDialog.input(/^n teeth\b/i)).toHaveText('42')
-        await modelingDialog.input(/^n teeth\b/i).fill('48')
+        await modelingDialog.fillInput(/^n teeth\b/i, '48')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()

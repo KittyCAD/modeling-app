@@ -2116,7 +2116,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     context,
     homePage,
     scene,
-    cmdBar,
+    modelingDialog,
     editor,
     toolbar,
   }) => {
@@ -2137,40 +2137,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Extrude region by clicking center', async () => {
       await toolbar.extrudeButton.click()
       await clickCenter()
-      await expect(page.getByText('1 region selected')).toBeVisible()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'Profiles',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'length',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
+      await modelingDialog.selection('Profiles').click()
+
+      await expect(modelingDialog.input(/^length\b/i)).toHaveText('5')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step('Expect extrusion', async () => {
@@ -2216,7 +2189,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     context,
     homePage,
     scene,
-    cmdBar,
+    modelingDialog,
     editor,
     toolbar,
   }) => {
@@ -2261,40 +2234,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Extrude region by clicking center', async () => {
       await toolbar.extrudeButton.click()
       await clickCenter()
-      await expect(page.getByText('1 region selected')).toBeVisible()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'Profiles',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'length',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
+      await modelingDialog.selection('Profiles').click()
+
+      await expect(modelingDialog.input(/^length\b/i)).toHaveText('5')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step('Expect point fallback extrusion with inches as the default unit', async () => {

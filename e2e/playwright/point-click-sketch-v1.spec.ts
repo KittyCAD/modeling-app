@@ -14,7 +14,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Point-and-click tests - sketch v1', { tag: '@desktop' }, () => {
   test.use({
-    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG, 'modeling_dialogs'],
+    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG],
   })
 
   test('Create an Extrude operation with a tag and edit it via Feature Tree', async ({

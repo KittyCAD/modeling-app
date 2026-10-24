@@ -94,7 +94,6 @@ test.describe(
   'Point-and-click assemblies tests',
   { tag: ['@desktop', '@macos', '@windows'] },
   () => {
-    test.use({ userFeatures: ['modeling_dialogs'] })
     test(`Import kcl parts into assembly as whole module import`, async ({
       folderSetupFn,
       page,
@@ -349,7 +348,7 @@ test.describe(
         )
 
         await expect(modelingDialog.input(/^factor\b/i)).toHaveText('2')
-        await modelingDialog.input(/^factor\b/i).fill('1.1')
+        await modelingDialog.fillInput(/^factor\b/i, '1.1')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()

@@ -1030,7 +1030,7 @@ sketch001 = startSketchOn(XZ)
     context,
     homePage,
     toolbar,
-    cmdBar,
+    modelingDialog,
     scene,
   }) => {
     const u = await getUtils(page)
@@ -1077,29 +1077,11 @@ sketch001 = startSketchOn(XZ)
     // Wait for the selection to register (TODO: we need a definitive way to wait for this)
     await page.waitForTimeout(200)
     await toolbar.extrudeButton.click()
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-      commandName: 'Extrude',
-    })
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      commandName: 'Extrude',
-      reviewValidationError: undefined,
-    })
-    await cmdBar.progressCmdBar()
+
+    await expect(modelingDialog.input(/^length\b/i)).toHaveText('5')
+
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await modelingDialog.submit()
     await scene.settled()
 
     // expect the code to have changed
@@ -1108,9 +1090,8 @@ sketch001 = startSketchOn(XZ)
     )
 
     // Now hit undo
-    await page.keyboard.down('Control')
-    await page.keyboard.press('KeyZ')
-    await page.keyboard.up('Control')
+    await page.locator('.cm-content[data-language="kcl"]').focus()
+    await page.keyboard.press('ControlOrMeta+Z')
 
     await page.waitForTimeout(100)
     await expect(
