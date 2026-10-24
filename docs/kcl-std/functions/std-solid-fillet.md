@@ -25,6 +25,18 @@ Fillet is similar in function and use to a chamfer, except
 a chamfer will cut a sharp transition along an edge while fillet
 will smoothly blend the transition.
 
+### Edge selection limits
+
+A single fillet operation cannot include more than two edges meeting at the same vertex.
+This is a limit per vertex, not a limit on the total number of edges in `edges` or `tags`.
+Split intersecting edge groups into separate fillet calls. For example, fillet a plate's
+vertical corners first, then its top rim, as shown in the second example below.
+Recheck edge references after each operation because fillets change the solid's topology.
+With `tangentChain = true` (the default), tangent edges are also included; use
+`tangentChain = false` when you need to control the selection explicitly.
+Splitting can resolve this limitation, but radius and surrounding geometry can still
+prevent a fillet from succeeding.
+
 ### Face references
 
 In `edges`, `sideFaces` and `endFaces` contain face tags or face UUIDs, not raw sketch segments.
