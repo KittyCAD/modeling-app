@@ -133,6 +133,36 @@ export class SceneFixture {
       .or(page.getByRole('button', { name: 'Edit Sketch' }))
     this.appHeader = this.page.getByTestId('app-header')
   }
+  /** Project a point in millimeters into the current canvas. */
+  convertWorldPositionToStream = async (point: {
+    x: number
+    y: number
+    z: number
+  }) => {
+    await sendSceneCommand(this.page, {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'default_camera_get_settings' },
+    })
+    const ratio = await this.page.evaluate((point) => {
+      const camera =
+        window.app.singletons.kclManager.sceneInfra.camControls.camera
+      camera.updateMatrixWorld()
+      camera.updateProjectionMatrix()
+      const projected = camera.position
+        .clone()
+        .set(point.x, point.y, point.z)
+        .project(camera)
+      return { x: (projected.x + 1) / 2, y: (1 - projected.y) / 2 }
+    }, point)
+    return this.convertPagePositionToStream(ratio.x, ratio.y, 'ratio')
+  }
+
+  clickWorldPoint = async (point: { x: number; y: number; z: number }) => {
+    const projected = await this.convertWorldPositionToStream(point)
+    await this.page.mouse.click(projected.x, projected.y)
+  }
+
   private _serialiseScene = async (): Promise<SceneSerialised> => {
     const camera = await this.getCameraInfo()
 
@@ -503,11 +533,29 @@ export class SceneFixture {
 
     await this.connectionEstablished()
 
-    // If the caller expects a KCL error, don't wait for the sketch button to enable.
+    // Keep the startup readiness check. A completed command may leave a solid
+    // selected, which legitimately disables Edit Sketch after execution settles.
     if (!expectError) {
-      await expect(this.startEditSketchBtn).not.toBeDisabled({
-        timeout: 15_000,
-      })
+      await expect
+        .poll(
+          async () => {
+            if (await this.startEditSketchBtn.isEnabled()) return true
+            return this.page.evaluate(() => {
+              const manager = window.app.singletons.kclManager
+              const selections =
+                manager.modelingActor?.getSnapshot().context.selectionRanges
+                  .graphSelections
+              return (
+                Boolean(selections?.length) &&
+                !manager.isExecuting &&
+                !manager.executeIsStale &&
+                !manager.hasErrors()
+              )
+            })
+          },
+          { timeout: 15_000 }
+        )
+        .toBe(true)
     }
     await expect(this.startEditSketchBtn).toBeVisible()
   }

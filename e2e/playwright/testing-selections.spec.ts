@@ -56,7 +56,7 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     await selectUnExtrudable()
     // expect extrude button to be enabled, since we don't guard
     // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+    await expect(page.getByTestId('extrude')).toBeEnabled()
 
     await clickEmpty()
 
@@ -76,14 +76,12 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     await selectUnExtrudable()
     // expect extrude button to be enabled, since we don't guard
     // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+    await expect(page.getByTestId('extrude')).toBeEnabled()
 
     await clickEmpty()
     await expect(page.locator('.cm-activeLine')).toHaveText('')
     // there's not extrudable geometry, so button should be enabled
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
+    await expect(page.getByTestId('extrude')).not.toBeDisabled()
   })
 
   test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
@@ -91,20 +89,21 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     homePage,
     scene,
     cmdBar,
+    editor,
     folderSetupFn,
     fs,
   }) => {
     const cases = [
       {
-        pos: [0.31, 0.5],
+        pos: { x: -85.344, y: 0, z: 976.884 },
         expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
       },
       {
-        pos: [0.448, 0.557],
+        pos: { x: 1275.00063, y: 0, z: -11.60579 },
         expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
       },
       {
-        pos: [0.753, 0.5],
+        pos: { x: 4979.40488, y: 0, z: 1342.38568 },
         expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
       },
     ] as const
@@ -128,22 +127,21 @@ part001 = startSketchOn(XZ)
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.openProject('demo-project')
+    await editor.openPane()
     await scene.settled()
 
     // end setup, now test hover and selects
     for (const { pos, expectedCode } of cases) {
-      const [click, hover] = scene.makeMouseHelpers(pos[0], pos[1], {
-        format: 'ratio',
-        steps: 5,
-      })
+      await editor.scrollToText(expectedCode)
+      const point = await scene.convertWorldPositionToStream(pos)
       // hover over segment, check it's content
-      await hover()
+      await page.mouse.move(point.x, point.y, { steps: 5 })
       await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
       await expect(page.getByTestId('hover-highlight').first()).toHaveText(
         expectedCode
       )
       // hover over segment, click it and check the cursor has move to the right place
-      await click()
+      await page.mouse.click(point.x, point.y)
       await expect(page.locator('.cm-activeLine')).toContainText(expectedCode)
     }
   })
@@ -221,15 +219,14 @@ part001 = startSketchOn(XZ)
     // wait for start sketch as a proxy for the stream being ready
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
+    await u.openKclCodePanel()
     await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
     // expect extrude button to be enabled, since we don't guard
     // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+    await expect(page.getByTestId('extrude')).toBeEnabled()
 
     await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
+    await expect(page.getByTestId('extrude')).not.toBeDisabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeDisabled()
@@ -237,7 +234,7 @@ part001 = startSketchOn(XZ)
     await page.getByText(selectionsSnippets.editOnly).click()
     // expect extrude button to be enabled, since we don't guard
     // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+    await expect(page.getByTestId('extrude')).toBeEnabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeDisabled()
@@ -247,7 +244,7 @@ part001 = startSketchOn(XZ)
       .click()
     // expect extrude button to be enabled, since we don't guard
     // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+    await expect(page.getByTestId('extrude')).toBeEnabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).not.toBeVisible()
@@ -255,6 +252,7 @@ part001 = startSketchOn(XZ)
 
   test('"View KCL source code" right click menu in scene', async ({
     page,
+    editor,
     homePage,
     scene,
   }) => {
@@ -293,7 +291,9 @@ part001 = startSketchOn(XZ)
       await clickBracket({ shouldRightClick: true })
       await expect(viewKclSourceCodeOption).toBeVisible()
       await expect(viewKclSourceCodeOption).toBeEnabled()
+      await expect(editor.codeContent).not.toBeVisible()
       await viewKclSourceCodeOption.click()
+      await expect(editor.codeContent).toBeVisible()
       await expect(page.locator('.cm-activeLine')).toBeVisible()
       await expect(page.locator('.cm-activeLine')).not.toContainText(
         'Shelf Bracket'
@@ -301,7 +301,8 @@ part001 = startSketchOn(XZ)
     })
   })
 
-  const innerShellCode = `sketch001 = startSketchOn(XZ)
+  const innerShellCode = `@settings(defaultLengthUnit = mm)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 5)
   |> line(endAbsolute = [0, 5])
@@ -451,12 +452,7 @@ sketch001 = sketch(on = face001) {
       )
       // await page.pause()
 
-      const [clickEdgeForFillet] = scene.makeMouseHelpers(0.4457, 0.5014, {
-        format: 'ratio',
-      })
-      // const [clickEdgeForFillet] = scene.makeMouseHelpers(830, 412,  {})
-      // const [clickEdgeForFillet] = scene.makeMouseHelpers(828, 420)
-      await clickEdgeForFillet()
+      await scene.clickWorldPoint({ x: -2.5, y: -0.2, z: 2.217157 })
 
       await page.waitForTimeout(100)
       await toolbar.filletButton.click()

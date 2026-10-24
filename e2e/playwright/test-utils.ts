@@ -621,12 +621,13 @@ export async function getUtils(page: Page, test_?: typeof test) {
     },
 
     async editorTextMatches(this: void, code: string) {
-      const editor = page.locator(editorSelector)
       return expect
         .poll(async () => {
           try {
-            const text = await editor.textContent()
-            return toNormalizedCode(text ?? '')
+            const text = await page.evaluate(
+              () => window.app.singletons.kclManager.code
+            )
+            return toNormalizedCode(text)
           } catch (e) {
             console.log(e)
             return ''

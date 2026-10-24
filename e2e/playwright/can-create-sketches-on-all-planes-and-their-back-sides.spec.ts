@@ -221,6 +221,7 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
         await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })
 
+      await editor.openPane()
       await expect(editor.codeContent).toContainText(
         new RegExp(
           `sketch001 = startSketchOn\\(${escapeRegExp(planeRef)}\\)|sketch001 = sketch\\(on = ${escapeRegExp(planeRef)}\\)`

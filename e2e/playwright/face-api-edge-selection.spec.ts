@@ -73,10 +73,10 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     )
 
     await test.step('First revolve: profile and edge using ratio clicks', async () => {
-      const [clickProfile] = scene.makeMouseHelpers(0.4671, 0.75, {
+      const [clickProfile] = scene.makeMouseHelpers(0.4751, 0.75, {
         format: 'ratio',
       })
-      const [clickEdge, mv] = scene.makeMouseHelpers(0.0625, 0.422, {
+      const [clickEdge, mv] = scene.makeMouseHelpers(0.1692, 0.422, {
         format: 'ratio',
         steps: 5,
       })
@@ -156,10 +156,10 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     })
 
     await test.step('Second revolve: profile and edge using ratio clicks', async () => {
-      const [clickProfile2] = scene.makeMouseHelpers(0.3816, 0.4, {
+      const [clickProfile2] = scene.makeMouseHelpers(0.4105, 0.4, {
         format: 'ratio',
       })
-      const [clickEdge2] = scene.makeMouseHelpers(0.6748, 0.6455, {
+      const [clickEdge2] = scene.makeMouseHelpers(0.6322, 0.6455, {
         format: 'ratio',
       })
 
@@ -268,7 +268,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     editor,
     homePage,
   }) => {
-    const [clickEdge] = scene.makeMouseHelpers(0.1709, 0.4864, {
+    const [clickEdge] = scene.makeMouseHelpers(0.2511, 0.4864, {
       format: 'ratio',
     })
     await context.addInitScript((code) => {
@@ -374,10 +374,9 @@ hide(sketch001)`
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('surface001 = extrude')
     await editor.closePane()
+    await toolbar.closeFeatureTreePane()
 
-    const [clickSurfaceEdge] = scene.makeMouseHelpers(0.7513, 0.3071, {
-      format: 'ratio',
-    })
+    const clickSurfaceEdge = () => scene.clickWorldPoint({ x: 10, y: 0, z: 10 })
     await clickSurfaceEdge()
     await expect(toolbar.selectionStatus).toContainText('1 edge')
 

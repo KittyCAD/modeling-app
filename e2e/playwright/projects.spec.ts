@@ -1173,7 +1173,7 @@ test(
     await expect(u.codeLocator).toContainText('templateGap')
     await expect(u.codeLocator).toContainText('minClampingDistance')
 
-    await page.getByRole('switch', { name: 'Project Files' }).click()
+    await u.openFilePanel()
     await toolbar.openFile('otherThingToClickOn.kcl')
 
     await expect(u.codeLocator).toContainText(
@@ -1736,7 +1736,8 @@ test(
 
       await scene.settled()
 
-      await page.getByTestId('files-pane-button').click()
+      const u = await getUtils(page)
+      await u.openFilePanel()
     })
 
     await test.step('check the last file is out of view initially, and can be scrolled to', async () => {

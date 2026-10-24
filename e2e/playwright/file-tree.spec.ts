@@ -1360,8 +1360,8 @@ test.describe(
         // Get the text in the code locator.
         await u.openKclCodePanel()
         const originalText = await u.codeLocator.innerText()
-        // Click in the editor and add some new lines.
-        await u.codeLocator.click()
+        // Keep the cursor at the document end instead of clicking a wrapped line.
+        await u.codeLocator.focus()
 
         await page.keyboard.type(`sketch001 = startSketchOn(XY)
     some other shit`)
@@ -1432,8 +1432,8 @@ test.describe(
         // Get the text in the code locator.
         await u.openKclCodePanel()
         const originalText = await u.codeLocator.innerText()
-        // Click in the editor and add some new lines.
-        await u.codeLocator.click()
+        // Keep the cursor at the document end instead of clicking a wrapped line.
+        await u.codeLocator.focus()
 
         await page.keyboard.type(badContent)
 

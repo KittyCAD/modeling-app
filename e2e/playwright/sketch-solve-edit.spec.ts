@@ -1,6 +1,5 @@
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { openPane } from '@e2e/playwright/test-utils'
 import type { Page } from '@playwright/test'
 import { isArray } from '@src/lib/utils'
 
@@ -24,9 +23,10 @@ async function waitForCodeChange(
   page: Page,
   previousCode: string
 ): Promise<string> {
-  await openPane(page, 'code-pane-button')
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCode)
-  return await page.locator('.cm-content').innerText()
+  await expect
+    .poll(() => page.evaluate(() => window.app.singletons.kclManager.code))
+    .not.toBe(previousCode)
+  return page.evaluate(() => window.app.singletons.kclManager.code)
 }
 
 /**
@@ -96,26 +96,6 @@ async function expectNoUnsupportedSelectionToast(page: Page) {
   await expect(
     page.getByText('Some faces and edges are not currently selectable.')
   ).not.toBeVisible()
-}
-
-async function dragBetweenRatios(
-  page: Page,
-  scene: SceneFixture,
-  from: [number, number],
-  to: [number, number],
-  steps = 20
-) {
-  const fromPoint = await scene.convertPagePositionToStream(
-    from[0],
-    from[1],
-    'ratio'
-  )
-  const toPoint = await scene.convertPagePositionToStream(to[0], to[1], 'ratio')
-
-  await page.mouse.move(fromPoint.x, fromPoint.y)
-  await page.mouse.down()
-  await page.mouse.move(toPoint.x, toPoint.y, { steps })
-  await page.mouse.up()
 }
 
 const TEST_CODE = `mySketch = startSketchOn(XZ)
@@ -2053,12 +2033,24 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
             .filter((value): value is string => Boolean(value))
         )
 
+    const trimAcross = async (
+      from: { y: number; z: number },
+      to: { y: number; z: number }
+    ) => {
+      const start = await scene.convertWorldPositionToStream({ x: 0, ...from })
+      const end = await scene.convertWorldPositionToStream({ x: 0, ...to })
+      await page.mouse.move(start.x, start.y)
+      await page.mouse.down()
+      await page.mouse.move(end.x, end.y, { steps: 20 })
+      await page.mouse.up()
+    }
+
     const initialCode = await editor.getCurrentCode()
     const initialHandleCount = await pointHandles.count()
     const initialHandleIds = await getHandleIds()
 
     await test.step('Trim first region and undo', async () => {
-      await dragBetweenRatios(page, scene, [0.1467, 0.4583], [0.1454, 0.5452])
+      await trimAcross({ y: -9.5, z: 1 }, { y: -7.5, z: 1 })
 
       const trimmedCode = await waitForCodeChange(page, initialCode)
       expect(normaliseCode(trimmedCode)).not.toBe(normaliseCode(initialCode))
@@ -2083,7 +2075,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         normaliseCode(initialCode)
       )
 
-      await dragBetweenRatios(page, scene, [0.6697, 0.469], [0.8689, 0.5833])
+      await trimAcross({ y: 3.5, z: 0.5 }, { y: 6, z: 0.5 })
 
       const trimmedCode = await waitForCodeChange(page, codeBeforeSecondTrim)
       expect(normaliseCode(trimmedCode)).not.toBe(

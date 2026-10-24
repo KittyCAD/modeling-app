@@ -336,7 +336,8 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn(XZ)
+    const initialCode = `@settings(defaultLengthUnit = mm)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
 |> yLine(length = 100)
 |> line(endAbsolute = [100, 0])
@@ -344,9 +345,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 |> close()
 extrude001 = extrude(profile001, length = 100)`
 
-    // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
-    const testPoint = { x: 564, y: 364 }
-    const [clickOnEdge] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const clickOnEdge = () => scene.clickWorldPoint({ x: 0, y: -100, z: 50 })
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -357,6 +356,8 @@ extrude001 = extrude(profile001, length = 100)`
 
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
       await toolbar.helixButton.click()
       await cmdBar.expectState(initialCmdBarStateHelix)
       await cmdBar.selectOption({ name: 'Edge' }).click()
@@ -365,12 +366,11 @@ extrude001 = extrude(profile001, length = 100)`
         .toBe(1)
       await clickOnEdge()
       await cmdBar.progressCmdBar()
-      await cmdBar.argumentInput.focus()
-      await page.keyboard.insertText('20')
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('20')
       await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('0')
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('0')
       await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('1')
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('1')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -417,6 +417,8 @@ extrude001 = extrude(profile001, length = 100)`
         { shouldNormalise: true }
       )
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
     })
 
     await test.step(`Edit helix through the feature tree`, async () => {
@@ -492,6 +494,8 @@ extrude001 = extrude(profile001, length = 100)`
         { shouldNormalise: true }
       )
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
     })
 
     await test.step('Delete helix via feature tree selection', async () => {
@@ -540,6 +544,7 @@ sketch002 = startSketchOn(plane001)
       const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
       await editor.selectText(circleCode1)
       await page.keyboard.down(multiCursorKey)
+      await editor.scrollToText(circleCode2)
       await page.getByText(circleCode2).click()
       await page.keyboard.up(multiCursorKey)
     }

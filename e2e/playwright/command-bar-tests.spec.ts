@@ -377,8 +377,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       },
     })
 
-    await cmdBar.progressCmdBar()
-    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => cmdBar.progressCmdBar())
     await editor.expectEditor.toContain(
       'extrude001 = extrude(sketch001, length = length001)'
     )

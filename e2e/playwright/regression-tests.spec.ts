@@ -134,6 +134,7 @@ extrude001 = extrude(sketch001, length = 50)
     ).toBeVisible()
 
     // change 5 to 67
+    await u.openKclCodePanel()
     await page.locator('#code-mirror-override').getByText('myVar').click()
     await page.keyboard.press('End')
     await page.keyboard.press('Backspace')
@@ -184,6 +185,7 @@ extrude001 = extrude(sketch001, length = 50)
     page,
     homePage,
     scene,
+    editor,
   }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -228,15 +230,14 @@ extrude001 = extrude(sketch001, length = 50)
     // This bug happens when there is a diagnostic in the editor and you try to
     // edit text below it.
     // Or delete a huge chunk of text and then try to edit below it.
-    await page.keyboard.press('ControlOrMeta+ArrowDown')
-    await page.keyboard.press('End')
-    await page.keyboard.down('Shift')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('End')
-    await page.keyboard.up('Shift')
+    await editor.scrollToText('      |>\n')
+    await page.evaluate(() => {
+      const view = window.app.singletons.kclManager.editorView
+      const from = view.state.doc.toString().indexOf('      |>\n')
+      view.dispatch({
+        selection: { anchor: from, head: view.state.doc.length },
+      })
+    })
     await page.keyboard.press('Backspace')
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
@@ -246,9 +247,7 @@ extrude001 = extrude(sketch001, length = 50)
     await page.keyboard.press('Enter')
     await page.keyboard.press('ArrowLeft')
 
-    await expect(
-      page.locator('.cm-content')
-    ).toContainText(`exampleSketch = startSketchOn(XZ)
+    await editor.expectEditor.toContain(`exampleSketch = startSketchOn(XZ)
       |> startProfile(at = [0, 0])
       |> angledLine(angle = 50, length = 45 )
       |> yLine(endAbsolute = 0)

@@ -554,7 +554,8 @@ plane001 = offsetPlane(YZ, offset = 10)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = sketch(on = XZ) {
+    const initialCode = `@settings(defaultLengthUnit = mm)
+sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
   line2 = line(start = [var 0mm, var 100mm], end = [var 100mm, var 0mm])
   coincident([line1.end, line2.start])
@@ -565,9 +566,7 @@ plane001 = offsetPlane(YZ, offset = 10)`
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 100)`
 
-    // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
-    const testPoint = { x: 564, y: 364 }
-    const [clickOnEdge] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const clickOnEdge = () => scene.clickWorldPoint({ x: 50, y: -100, z: 0 })
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -578,6 +577,8 @@ extrude001 = extrude(region001, length = 100)`
 
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
       await toolbar.helixButton.click()
       await cmdBar.expectState(initialCmdBarStateHelix)
       await cmdBar.selectOption({ name: 'Edge' }).click()
@@ -586,12 +587,11 @@ extrude001 = extrude(region001, length = 100)`
         .toBe(1)
       await clickOnEdge()
       await cmdBar.progressCmdBar()
-      await cmdBar.argumentInput.focus()
-      await page.keyboard.insertText('20')
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('20')
       await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('0')
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('0')
       await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('1')
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('1')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -638,6 +638,8 @@ extrude001 = extrude(region001, length = 100)`
         { shouldNormalise: true }
       )
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
     })
 
     await test.step(`Edit helix through the feature tree`, async () => {
@@ -713,6 +715,8 @@ extrude001 = extrude(region001, length = 100)`
         { shouldNormalise: true }
       )
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
     })
 
     await test.step('Delete helix via feature tree selection', async () => {
@@ -762,6 +766,7 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
       const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
       await editor.selectText('region001 = region(')
       await page.keyboard.down(multiCursorKey)
+      await editor.scrollToText('region002 = region(')
       await page.getByText('region002 = region(').click()
       await page.keyboard.up(multiCursorKey)
     }
@@ -1668,7 +1673,8 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
     cmdBar,
   }) => {
     // Create a cube with small edges that will cause some fillets to fail
-    const initialCode = `sketch001 = sketch(on = XY) {
+    const initialCode = `@settings(defaultLengthUnit = mm)
+sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -1mm])
   line2 = line(start = [var 0mm, var -1mm], end = [var -10mm, var -1mm])
   coincident([line1.end, line2.start])
@@ -1682,10 +1688,6 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5)`
-    // Locators
-    // TODO: find a way to select sweepEdges in a different way
-    const edgeLocation = { x: 649, y: 283 }
-
     // Setup
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
@@ -1700,11 +1702,9 @@ extrude001 = extrude(region001, length = 5)`
     await test.step('Select edges and apply oversized fillet', async () => {
       await test.step(`Select the edge`, async () => {
         await toolbar.closePane(DefaultLayoutPaneID.Code)
-        const [clickOnTheEdge] = scene.makeMouseHelpers(
-          edgeLocation.x,
-          edgeLocation.y
-        )
-        await clickOnTheEdge()
+        await toolbar.closeFeatureTreePane()
+        await toolbar.closePane(DefaultLayoutPaneID.Files)
+        await scene.clickWorldPoint({ x: 0, y: -1, z: 2.5 })
       })
 
       await test.step(`Apply fillet`, async () => {
@@ -1755,7 +1755,7 @@ extrude001 = extrude(region001, length = 5)`
 
       expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
       expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
+        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line2]}]'
       )
       expect(normalizedCode).toContain('radius=1000,')
       expect(normalizedCode).not.toContain('tags=[')
@@ -2630,6 +2630,8 @@ hide(sketch001)`
     await editor.replaceCode('', initialCode)
     await scene.settled()
     await editor.closePane()
+    await toolbar.closeFeatureTreePane()
+    await toolbar.closePane(DefaultLayoutPaneID.Files)
     await scene.moveCameraTo(
       { x: 39.68, y: -7.24, z: 19.4 },
       { x: 15, y: 10, z: 6 }
@@ -2666,7 +2668,8 @@ hide(sketch001)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = sketch(on = XZ) {
+    const initialCode = `@settings(defaultLengthUnit = mm)
+sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -102.57mm, var 101.72mm], end = [var 100.03mm, var 101.72mm])
   line2 = line(start = [var 100.03mm, var 101.72mm], end = [var 100.03mm, var -100.88mm])
   coincident([line1.end, line2.start])
@@ -2751,11 +2754,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         highlightedHeaderArg: 'edge',
         stage: 'arguments',
       })
-      // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
-      const [clickOnFirstEdge] = scene.makeMouseHelpers(0.5, 0.23, {
-        format: 'ratio',
-      })
-      await clickOnFirstEdge()
+      await scene.clickWorldPoint({ x: 0, y: -50, z: 101.72 })
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Revolve',
@@ -2923,6 +2922,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
       const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
       await editor.selectText(firstSurfaceEdge)
       await page.keyboard.down(multiCursorKey)
+      await editor.scrollToText(secondSurfaceEdge)
       await page.getByText(secondSurfaceEdge).click()
       await page.keyboard.up(multiCursorKey)
     }
