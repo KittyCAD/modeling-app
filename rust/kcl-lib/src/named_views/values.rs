@@ -20,7 +20,7 @@ use crate::std::args::TyF64;
 /// Rust mirror of the KCL enum `std::view::Orientation`. Serialized variant
 /// names match the KCL spellings exactly.
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, rename = "ViewOrientation")]
 pub enum Orientation {
     Front,
     Back,
@@ -85,7 +85,7 @@ impl Orientation {
 /// Rust mirror of the KCL enum `std::view::Visibility`. Serialized variant
 /// names match the KCL spellings exactly.
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, rename = "ViewVisibility")]
 pub enum Visibility {
     Show,
     Hide,
@@ -123,7 +123,7 @@ impl Visibility {
 /// Rust mirror of the KCL enum `std::view::Projection`. Serialized variant
 /// names match the KCL spellings exactly.
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, rename = "ViewProjection")]
 pub enum Projection {
     Orthographic,
     Perspective,
