@@ -1,4 +1,3 @@
-import type { CameraViewState } from '@kittycad/lib'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import { effect, signal } from '@preact/signals-core'
 import toast from 'react-hot-toast'
@@ -16,7 +15,8 @@ import type { ExecState } from '@src/lang/wasm'
 import { getAllOperations } from '@src/lang/wasm'
 import { applyNamedViewCamera } from '@src/lib/kclNamedViewCamera'
 import { hiddenArtifactIdsFromOperations } from '@src/lib/operations'
-import { err, reportRejection } from '@src/lib/trap'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { reportRejection } from '@src/lib/trap'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import { PerspectiveCamera } from 'three'
@@ -47,14 +47,6 @@ export type ActiveView = DeclaredViewIdentity | 'kclDefault'
  */
 export const activeViewSignal = signal<ActiveView | null>('kclDefault')
 
-/**
- * The camera as it was before the active view moved it.
- *
- * Null while `Default View` is active. Held here rather than in
- * `CameraControls.oldCameraState`, which is owned by the idle-reconnect.
- */
-let preActivationCamera: CameraViewState | null = null
-
 let stopReapplyEffect: (() => void) | null = null
 let stopCameraChangeListener: (() => void) | null = null
 
@@ -62,7 +54,6 @@ export function resetNamedViewSession(): void {
   stopReapplyEffect?.()
   stopReapplyEffect = null
   stopTrackingActiveViewCamera()
-  preActivationCamera = null
   activeViewSignal.value = null
 }
 
@@ -101,10 +92,6 @@ export async function activateNamedView({
     return
   }
 
-  if (target.kind === 'declared') {
-    await savePreActivationCamera(kclManager)
-  }
-
   await applyVisibility({
     target,
     execState: kclManager.execState,
@@ -139,7 +126,11 @@ async function applyAndTrackCamera(
         engineCommandManager: kclManager.engineCommandManager,
       })
     } else {
-      await restorePreActivationCamera(kclManager)
+      await resetCameraPosition({
+        sceneInfra: kclManager.sceneInfra,
+        engineCommandManager: kclManager.engineCommandManager,
+        settingsActor: kclManager.systemDeps.settings,
+      })
     }
   } finally {
     trackActiveViewCamera(kclManager)
@@ -200,32 +191,6 @@ async function applyVisibility({
   await kclManager.engineCommandManager.setObjectsHidden(
     engineIdsForVisibility({ visibility, universe, artifactGraph })
   )
-}
-
-async function savePreActivationCamera(kclManager: KclManager): Promise<void> {
-  if (preActivationCamera !== null) {
-    return
-  }
-
-  const view = await kclManager.sceneInfra.camControls.getCameraView()
-  if (err(view)) {
-    return
-  }
-
-  preActivationCamera = view
-}
-
-async function restorePreActivationCamera(
-  kclManager: KclManager
-): Promise<boolean> {
-  const view = preActivationCamera
-  if (view === null) {
-    return false
-  }
-
-  preActivationCamera = null
-  await kclManager.sceneInfra.camControls.setCameraView(view)
-  return true
 }
 
 /** Installs the effect that reapplies the active view after each execution. */
@@ -359,15 +324,19 @@ async function fallBackToKclDefault({
     execState,
     kclManager,
   })
-  const restored = restoreCamera
-    ? await restorePreActivationCamera(kclManager)
-    : false
-  activeViewSignal.value = 'kclDefault'
-  trackActiveViewCamera(kclManager)
+  if (restoreCamera) {
+    await applyAndTrackCamera({ kind: 'kclDefault' }, kclManager)
+  } else {
+    trackActiveViewCamera(kclManager)
+  }
+  activeViewSignal.value = restoreCamera ? 'kclDefault' : null
 
+  const fallback = restoreCamera
+    ? `Showing ${getKclDefaultViewName()}.`
+    : 'Keeping the current camera.'
   toast.error(
-    `The view "${active.name}" is no longer in this program. Showing ${getKclDefaultViewName()}.`
+    `The view "${active.name}" is no longer in this program. ${fallback}`
   )
 
-  return restored
+  return restoreCamera
 }
