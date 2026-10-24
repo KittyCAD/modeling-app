@@ -44,7 +44,7 @@ export type ViewRow = {
   /** What the user reads. */
   label: string
   /** What `activeViewSignal` holds when this row is active. */
-  identity: ActiveView | null
+  identity: ActiveView
   target: ActivationTarget
 }
 
@@ -97,7 +97,7 @@ export function viewRows(views: KclNamedView[]): ViewRow[] {
     {
       key: 'kcl-default',
       label: getKclDefaultViewName(),
-      identity: null,
+      identity: 'kclDefault',
       target: { kind: 'kclDefault' },
     },
     ...declared,

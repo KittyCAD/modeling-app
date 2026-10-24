@@ -10,7 +10,11 @@ import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import { preflightEngineVideoCodecSupport } from '@src/lib/engineConnection/videoCodecSupport'
-import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
+import {
+  reapplyActiveViewAfterReconnect,
+  stopTrackingActiveViewCamera,
+  trackActiveViewCamera,
+} from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
 import {
@@ -158,6 +162,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   rustContext: RustContext
 }) => {
   const connection = engineCommandManager.connection
+  stopTrackingActiveViewCamera()
   const reconnectCameraState = sceneInfra.camControls.reconnectCameraState
   sceneInfra.camControls.reconnectCameraState = undefined
   if (!reconnectCameraState && sceneInfra.camControls.oldCameraState) {
@@ -227,6 +232,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
 
   // Since you reconnected you are not idle, clear the old camera state
   sceneInfra.camControls.clearOldCameraState()
+  trackActiveViewCamera(kclManager)
 }
 
 /**

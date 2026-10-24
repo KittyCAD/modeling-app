@@ -19,6 +19,7 @@ import { hiddenArtifactIdsFromOperations } from '@src/lib/operations'
 import { err, reportRejection } from '@src/lib/trap'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import { PerspectiveCamera } from 'three'
 import type { StateFrom } from 'xstate'
 
 export type ActivationTarget =
@@ -34,15 +35,17 @@ export function isSketchSessionOpen(
   )
 }
 
-export type ActiveView = {
+type DeclaredViewIdentity = {
   name: string
   moduleKey: string | undefined
 }
 
+export type ActiveView = DeclaredViewIdentity | 'kclDefault'
+
 /**
- * The active view, or null for `Default View`.
+ * The active view, or null when no view is selected.
  */
-export const activeViewSignal = signal<ActiveView | null>(null)
+export const activeViewSignal = signal<ActiveView | null>('kclDefault')
 
 /**
  * The camera as it was before the active view moved it.
@@ -53,10 +56,12 @@ export const activeViewSignal = signal<ActiveView | null>(null)
 let preActivationCamera: CameraViewState | null = null
 
 let stopReapplyEffect: (() => void) | null = null
+let stopCameraChangeListener: (() => void) | null = null
 
 export function resetNamedViewSession(): void {
   stopReapplyEffect?.()
   stopReapplyEffect = null
+  stopTrackingActiveViewCamera()
   preActivationCamera = null
   activeViewSignal.value = null
 }
@@ -73,7 +78,12 @@ export function isSameView(
   left: ActiveView | null,
   right: ActiveView | null
 ): boolean {
-  if (left === null || right === null) {
+  if (
+    left === null ||
+    right === null ||
+    left === 'kclDefault' ||
+    right === 'kclDefault'
+  ) {
     return left === right
   }
 
@@ -101,24 +111,68 @@ export async function activateNamedView({
     kclManager,
   })
 
+  await applyAndTrackCamera(target, kclManager)
   if (target.kind === 'declared') {
-    await applyNamedViewCamera({
-      camera: target.view.artifact.camera,
-      sceneInfra: kclManager.sceneInfra,
-      engineCommandManager: kclManager.engineCommandManager,
-    })
     installReapplyEffect(kclManager)
-  } else {
-    await restorePreActivationCamera(kclManager)
   }
 
   activeViewSignal.value =
     target.kind === 'kclDefault'
-      ? null
+      ? 'kclDefault'
       : {
           name: target.view.artifact.name,
           moduleKey: moduleKeyOf(target.view.modulePath),
         }
+}
+
+async function applyAndTrackCamera(
+  target: ActivationTarget,
+  kclManager: KclManager
+): Promise<void> {
+  // Applying or restoring a named view must not count as navigating away.
+  stopTrackingActiveViewCamera()
+  try {
+    if (target.kind === 'declared') {
+      await applyNamedViewCamera({
+        camera: target.view.artifact.camera,
+        sceneInfra: kclManager.sceneInfra,
+        engineCommandManager: kclManager.engineCommandManager,
+      })
+    } else {
+      await restorePreActivationCamera(kclManager)
+    }
+  } finally {
+    trackActiveViewCamera(kclManager)
+  }
+}
+
+export function stopTrackingActiveViewCamera(): void {
+  stopCameraChangeListener?.()
+  stopCameraChangeListener = null
+}
+
+export function trackActiveViewCamera(kclManager: KclManager): void {
+  stopTrackingActiveViewCamera()
+  const controls = kclManager.sceneInfra.camControls
+  const initialCamera = controls.camera.clone()
+  const initialTarget = controls.target.clone()
+  stopCameraChangeListener = controls.cameraChange.add(() => {
+    const camera = controls.camera
+    const projectionChanged =
+      camera.type !== initialCamera.type ||
+      (camera instanceof PerspectiveCamera &&
+        initialCamera instanceof PerspectiveCamera &&
+        camera.fov !== initialCamera.fov)
+    if (
+      projectionChanged ||
+      !camera.position.equals(initialCamera.position) ||
+      !camera.quaternion.equals(initialCamera.quaternion) ||
+      camera.zoom !== initialCamera.zoom ||
+      !controls.target.equals(initialTarget)
+    ) {
+      resetNamedViewSession()
+    }
+  })
 }
 
 async function applyVisibility({
@@ -243,17 +297,13 @@ export async function reapplyActiveViewAfterReconnect(
   if (!restoreCamera) {
     return false
   }
-  await applyNamedViewCamera({
-    camera: view.artifact.camera,
-    sceneInfra: kclManager.sceneInfra,
-    engineCommandManager: kclManager.engineCommandManager,
-  })
+  await applyAndTrackCamera({ kind: 'declared', view }, kclManager)
 
   return true
 }
 
 function reapplyContext(kclManager: KclManager): {
-  active: ActiveView
+  active: DeclaredViewIdentity
   execState: ExecState
   view: KclNamedView | undefined
 } | null {
@@ -261,6 +311,7 @@ function reapplyContext(kclManager: KclManager): {
 
   if (
     active === null ||
+    active === 'kclDefault' ||
     !kclManager.engineCommandManager.isReady ||
     kclManager.errors.length > 0 ||
     isSketchSessionOpen(kclManager.modelingState)
@@ -273,12 +324,12 @@ function reapplyContext(kclManager: KclManager): {
   return { active, execState, view: findDeclaredView({ active, execState }) }
 }
 
-/** Returns the view an ActiveView names, or undefined once it is gone. */
+/** Returns the view a declared identity names, or undefined once it is gone. */
 function findDeclaredView({
   active,
   execState,
 }: {
-  active: ActiveView
+  active: DeclaredViewIdentity
   execState: ExecState
 }): KclNamedView | undefined {
   return listNamedViews({
@@ -298,7 +349,7 @@ async function fallBackToKclDefault({
   kclManager,
   restoreCamera = true,
 }: {
-  active: ActiveView
+  active: DeclaredViewIdentity
   execState: ExecState
   kclManager: KclManager
   restoreCamera?: boolean
@@ -311,7 +362,8 @@ async function fallBackToKclDefault({
   const restored = restoreCamera
     ? await restorePreActivationCamera(kclManager)
     : false
-  activeViewSignal.value = null
+  activeViewSignal.value = 'kclDefault'
+  trackActiveViewCamera(kclManager)
 
   toast.error(
     `The view "${active.name}" is no longer in this program. Showing ${getKclDefaultViewName()}.`

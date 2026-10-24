@@ -68,7 +68,7 @@ describe('viewRows', () => {
       {
         key: 'kcl-default',
         label: getKclDefaultViewName(),
-        identity: null,
+        identity: 'kclDefault',
         target: { kind: 'kclDefault' },
       },
     ])
@@ -109,7 +109,7 @@ describe('viewRows', () => {
     ])
 
     expect(rows.map((row) => row.identity)).toEqual([
-      null,
+      'kclDefault',
       { name: 'Front', moduleKey: 'Local:/project/main.kcl' },
       { name: 'Front', moduleKey: 'Local:/project/parts/bracket.kcl' },
     ])
