@@ -483,6 +483,10 @@ extrude001 = extrude(region001, length = 100)`
       await modelingDialog.fillInput(/^angle start\b/i, '0')
       await modelingDialog.fillInput(/^radius\b/i, '1')
       await modelingDialog.fillInput(/^length\b/i, '')
+      await expect(modelingDialog.input(/^length\b/i)).toHaveAttribute(
+        'aria-placeholder',
+        'Use defaults'
+      )
       await expect(modelingDialog.submitButton).toBeEnabled()
 
       await modelingDialog
