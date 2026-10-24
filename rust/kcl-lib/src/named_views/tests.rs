@@ -44,7 +44,7 @@ use super::engine_id_for_artifact;
 use crate::docs::kcl_doc::DocData;
 use crate::docs::kcl_doc::walk_prelude;
 
-const LINKED_SWEEP_ENGINE_IDS: [(SweepSubType, u128); 7] = [
+const LINKED_SWEEP_ENGINE_IDS: [(SweepSubType, u128); 8] = [
     (SweepSubType::Extrusion, 2),
     (SweepSubType::ExtrusionTwist, 2),
     (SweepSubType::Revolve, 2),
@@ -52,6 +52,7 @@ const LINKED_SWEEP_ENGINE_IDS: [(SweepSubType, u128); 7] = [
     (SweepSubType::Sweep, 2),
     (SweepSubType::Loft, 1),
     (SweepSubType::Blend, 1),
+    (SweepSubType::PlanarSurface, 1),
 ];
 
 fn id(value: u128) -> ArtifactId {
