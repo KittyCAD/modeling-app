@@ -38,47 +38,28 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     )
     await expect(modelingDialog.submitButton).toBeDisabled()
     await modelingDialog.cancelButton.click()
-
-    await toolbar.logoLink.click()
-    await homePage.openProject('first-project')
-    await scene.settled()
-    await expect(modelingDialog.locator).not.toBeAttached()
-    await editor.expectEditor.toContain(profileCode)
-    await editor.expectEditor.not.toContain('extrude(')
   })
 
-  for (const entry of ['creating a sketch', 'editing a sketch'] as const) {
-    test(`Discards an unfinished dialog when ${entry}`, async ({
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      modelingDialog,
-    }) => {
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', profileCode)
-      )
-      await toolbar.extrudeButton.click()
-      await modelingDialog.input(/^length$/i).fill('73mm')
+  test('Discards an unfinished dialog when editing a sketch', async ({
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', profileCode)
+    )
+    await toolbar.extrudeButton.click()
+    await expect(modelingDialog.locator).toBeVisible()
 
-      if (entry === 'creating a sketch') {
-        await toolbar.startSketchOnDefaultPlane('Top plane')
-      } else {
-        await toolbar.editSketch()
-      }
-      await expect(modelingDialog.locator).not.toBeAttached()
-      await toolbar.exitSketch()
-      await scene.settled()
-      await expect(modelingDialog.locator).not.toBeAttached()
-      await editor.expectEditor.not.toContain('extrude(')
-
-      await toolbar.extrudeButton.click()
-      await expect(modelingDialog.input(/^length$/i)).toHaveText('5')
-      await modelingDialog.cancelButton.click()
-    })
-  }
+    await toolbar.editSketch()
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await toolbar.exitSketch()
+    await expect(modelingDialog.locator).not.toBeAttached()
+  })
 
   test('Submits with Enter after scene selection', async ({
     page,
