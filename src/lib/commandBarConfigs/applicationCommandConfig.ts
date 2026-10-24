@@ -1,6 +1,7 @@
 import env from '@src/env'
 import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
+import { createProjectActionCommands } from '@src/lib/commandBarConfigs/projectActionsCommandConfig'
 import {
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationZookeeperWebSocketUrl,
@@ -651,6 +652,7 @@ export function createApplicationCommands({
   }
 
   return [
+    ...createProjectActionCommands(app),
     addKCLFileToProject,
     ...(!isDesktop() ? [exportProjectZipCommand] : []),
     ...(isDesktop() ? [checkForUpdatesCommand] : []),
