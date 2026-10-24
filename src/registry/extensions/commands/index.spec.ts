@@ -303,19 +303,6 @@ describe('commands extension', () => {
     ).toEqual([MODE_SKETCHING_COMMAND_SCOPE, MODE_SKETCH_NO_FACE_COMMAND_SCOPE])
     expect(
       toolbarCommands
-        .filter(
-          (command) =>
-            command.id?.startsWith('zds.toolbar.sketchLegacy.') &&
-            command.id !== TOOLBAR_COMMAND_IDS.sketching.exit
-        )
-        .every(
-          (command) =>
-            command.scopes.length === 1 &&
-            command.scopes[0] === MODE_SKETCHING_COMMAND_SCOPE
-        )
-    ).toBe(true)
-    expect(
-      toolbarCommands
         .filter((command) => command.id?.startsWith('zds.toolbar.sketch.'))
         .every(
           (command) =>
