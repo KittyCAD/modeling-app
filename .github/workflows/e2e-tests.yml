@@ -8,7 +8,17 @@ on:
   schedule:
     - cron: 0 * * * * # hourly
   workflow_call:
+    inputs:
+      zookeeper-only:
+        description: Run only the Zookeeper deployment checks on Ubuntu web and desktop.
+        type: boolean
+        default: false
   workflow_dispatch:
+    inputs:
+      zookeeper-only:
+        description: Run only the Zookeeper deployment checks on Ubuntu web and desktop.
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -22,12 +32,73 @@ permissions:
 jobs:
   track-setup:
     runs-on: namespace-profile-ubuntu-2-cores
+    outputs:
+      web-matrix: ${{ steps.matrices.outputs.web }}
+      desktop-matrix: ${{ steps.matrices.outputs.desktop }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
+      - name: Select test matrices
+        id: matrices
+        env:
+          ZOOKEEPER_ONLY: ${{ inputs.zookeeper-only || false }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+
+          configs = [
+              {
+                  "os": "namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2",
+                  "label": "ubuntu",
+                  "test_script": "test:e2e:web",
+                  "playwright_cache_path": "~/.cache/ms-playwright",
+              },
+              {
+                  "os": "namespace-profile-macos-8-cores",
+                  "label": "macos",
+                  "test_script": "test:e2e:web:webkit",
+                  "playwright_cache_path": "~/Library/Caches/ms-playwright",
+              },
+              {
+                  "os": "namespace-profile-windows-8-cores",
+                  "label": "windows",
+                  "test_script": "test:e2e:web",
+                  "playwright_cache_path": "~/AppData/Local/ms-playwright",
+              },
+          ]
+          zookeeper_only = os.environ["ZOOKEEPER_ONLY"] == "true"
+          web_shards = 1 if zookeeper_only else 2
+          desktop_shards = 1 if zookeeper_only else 8
+          web = {
+              "shardIndex": list(range(1, web_shards + 1)),
+              "shardTotal": [web_shards],
+              "config": configs[:1] if zookeeper_only else configs,
+          }
+          desktop = {
+              "os": [configs[0]["os"]],
+              "shardIndex": list(range(1, desktop_shards + 1)),
+              "shardTotal": [desktop_shards],
+              "playwright_cache_path": [configs[0]["playwright_cache_path"]],
+              "include": [
+                  {
+                      "os": config["os"],
+                      "shardIndex": 1,
+                      "shardTotal": 1,
+                      "playwright_cache_path": config["playwright_cache_path"],
+                  }
+                  for config in configs[1:]
+              ] if not zookeeper_only else [],
+          }
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              print(f"web={json.dumps(web)}", file=output)
+              print(f"desktop={json.dumps(desktop)}", file=output)
+          PY
+
       - name: Track setup (snapshots)
+        if: ${{ !inputs.zookeeper-only }}
         run: .github/ci-cd-scripts/track-step.sh
         env:
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -67,7 +138,7 @@ jobs:
     needs: [build-wasm]
     name: e2e:snapshots
     runs-on: namespace-profile-macos-8-cores
-    if: github.repository == 'kittycad/modeling-app'
+    if: ${{ !inputs.zookeeper-only && github.repository == 'kittycad/modeling-app' }}
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -209,25 +280,10 @@ jobs:
           CI_STEP: teardown
 
   web:
-    needs: [build-wasm]
+    needs: [track-setup, build-wasm]
     strategy:
       fail-fast: false
-      matrix:
-        shardIndex: [1, 2]
-        shardTotal: [2]
-        config:
-          - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-            label: ubuntu
-            test_script: test:e2e:web
-            playwright_cache_path: ~/.cache/ms-playwright
-          - os: namespace-profile-macos-8-cores
-            label: macos
-            test_script: test:e2e:web:webkit
-            playwright_cache_path: ~/Library/Caches/ms-playwright
-          - os: namespace-profile-windows-8-cores
-            label: windows
-            test_script: test:e2e:web
-            playwright_cache_path: ~/AppData/Local/ms-playwright
+      matrix: ${{ fromJSON(needs.track-setup.outputs.web-matrix) }}
     runs-on: ${{ matrix.config.os }}
     name: e2e:web (${{ matrix.config.label }}, shard ${{ matrix.shardIndex }})
     env:
@@ -295,7 +351,7 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
-      - run: npm run ${{ matrix.config.test_script }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      - run: npm run ${{ matrix.config.test_script }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} ${{ inputs.zookeeper-only && 'zookeeper.spec.ts' || '' }}
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -328,25 +384,10 @@ jobs:
           CI_STEP: teardown
 
   desktop:
-    needs: [build-wasm]
+    needs: [track-setup, build-wasm]
     strategy:
       fail-fast: false
-      matrix:
-        os:
-          - namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-        shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
-        shardTotal: [8]
-        playwright_cache_path:
-          - ~/.cache/ms-playwright
-        include:
-          - os: namespace-profile-macos-8-cores
-            shardIndex: 1
-            shardTotal: 1
-            playwright_cache_path: ~/Library/Caches/ms-playwright
-          - os: namespace-profile-windows-8-cores
-            shardIndex: 1
-            shardTotal: 1
-            playwright_cache_path: ~/AppData/Local/ms-playwright
+      matrix: ${{ fromJSON(needs.track-setup.outputs.desktop-matrix) }}
     runs-on: ${{ matrix.os }}
     name: e2e:desktop (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}, shard ${{ matrix.shardIndex }})
     env:
@@ -426,7 +467,7 @@ jobs:
         uses: nick-fields/retry@v4.0.0
         with:
           shell: bash
-          command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }}
+          command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }} ${{ inputs.zookeeper-only && 'zookeeper.spec.ts' || '' }}
           timeout_minutes: 15
           max_attempts: 5
         env:
@@ -474,7 +515,7 @@ jobs:
   vercel:
     name: e2e:web (vercel)
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-    if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main'))
+    if: ${{ !inputs.zookeeper-only && github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main')) }}
 
     steps:
       - uses: actions/checkout@v7.0.1
