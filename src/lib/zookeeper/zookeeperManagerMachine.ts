@@ -253,7 +253,7 @@ export const ZOOKEEPER_HEARTBEAT_TIMEOUT_MS = 30_000
 export const ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE = 4409
 const ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS = 5_000
 // Matches text-to-cad's --ws-max-size.
-const ZOOKEEPER_MAX_MESSAGE_BYTES = 128 * 1024 * 1024
+export const ZOOKEEPER_MAX_MESSAGE_BYTES = 128 * 1024 * 1024
 
 const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'

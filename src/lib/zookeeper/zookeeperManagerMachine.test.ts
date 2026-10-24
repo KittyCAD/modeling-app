@@ -35,6 +35,7 @@ import {
   zookeeperDefaultContext,
   stopZookeeperManagerActor,
   ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
+  ZOOKEEPER_MAX_MESSAGE_BYTES,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import * as zookeeperPromptRequest from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { S } from '@src/machines/utils'
@@ -1257,7 +1258,7 @@ describe('zookeeperManagerMachine', () => {
           state.matches(ZookeeperManagerStates.WaitForContinueCheck)
         )
 
-        socket.bufferedAmount = 64 * 1024 * 1024
+        socket.bufferedAmount = ZOOKEEPER_MAX_MESSAGE_BYTES / 2
         for (let interval = 0; interval < 12; interval += 1) {
           await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
           expect(socket.close).not.toHaveBeenCalled()
@@ -1310,7 +1311,7 @@ describe('zookeeperManagerMachine', () => {
           state.matches(ZookeeperManagerStates.WaitForContinueCheck)
         )
 
-        socket.bufferedAmount = 64 * 1024 * 1024
+        socket.bufferedAmount = ZOOKEEPER_MAX_MESSAGE_BYTES / 2
         await vi.advanceTimersByTimeAsync(
           ZOOKEEPER_HEARTBEAT_TIMEOUT_MS + 2 * ZOOKEEPER_HEARTBEAT_INTERVAL_MS
         )
@@ -1401,7 +1402,7 @@ describe('zookeeperManagerMachine', () => {
   it('rejects oversized encoded prompts before sending anything', async () => {
     const encode = vi
       .spyOn(msgpack, 'encode')
-      .mockReturnValueOnce(new Uint8Array(128 * 1024 * 1024 + 1))
+      .mockReturnValueOnce(new Uint8Array(ZOOKEEPER_MAX_MESSAGE_BYTES + 1))
     const ws: TestWebSocket = new TestSocket() as TestWebSocket
     const send = vi.fn()
     ws.send = send
@@ -1537,7 +1538,7 @@ describe('zookeeperManagerMachine', () => {
       } as const
       const encode = vi
         .spyOn(msgpack, 'encode')
-        .mockReturnValueOnce(new Uint8Array(128 * 1024 * 1024 + 1))
+        .mockReturnValueOnce(new Uint8Array(ZOOKEEPER_MAX_MESSAGE_BYTES + 1))
       const showError = vi.spyOn(toast, 'error')
       actor.send(event)
       await vi.waitFor(() => {
