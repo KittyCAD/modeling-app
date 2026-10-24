@@ -8,11 +8,17 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { updateNamedViewCamera } from '@src/lang/modifyAst/namedViews'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { listNamedViews } from '@src/lang/std/kclNamedViews'
 import { ROOT_MODULE_ID } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { EXPERIMENTAL_POINT_AND_CLICK_FLAG, FILE_EXT } from '@src/lib/constants'
+import {
+  EXECUTION_TYPE_REAL,
+  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+  FILE_EXT,
+} from '@src/lib/constants'
 import { sendDeleteCommand } from '@src/lib/featureTree'
 import type {
   ActivationTarget,
@@ -25,9 +31,10 @@ import {
   isSketchSessionOpen,
   moduleKeyOf,
 } from '@src/lib/kclNamedViewActivation'
+import { captureNamedViewCamera } from '@src/lib/kclNamedViewCamera'
 import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { reportRejection, trap } from '@src/lib/trap'
+import { isErr, reportRejection, trap } from '@src/lib/trap'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
 
@@ -165,6 +172,38 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     }
   }
 
+  const updateViewCamera = async (view: KclNamedView) => {
+    try {
+      const camera = await captureNamedViewCamera(
+        kclManager.sceneInfra.camControls
+      )
+      if (isErr(camera)) {
+        toast.error(camera.message)
+        return
+      }
+
+      const wasmInstance = await kclManager.wasmInstancePromise
+      const modifiedAst = updateNamedViewCamera({
+        ast: kclManager.ast,
+        pathToNode: view.artifact.codeRef.pathToNode,
+        camera,
+        wasmInstance,
+      })
+      if (isErr(modifiedAst)) {
+        toast.error(modifiedAst.message)
+        return
+      }
+
+      await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, kclManager)
+    } catch (reason) {
+      toast.error(
+        reason instanceof Error
+          ? reason.message
+          : `Could not update “${view.artifact.name}”.`
+      )
+    }
+  }
+
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -271,6 +310,23 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                     {row.label}
                   </span>
                 </button>
+                {manageableView && (
+                  <ActionButton
+                    Element="button"
+                    aria-label="Update from current camera"
+                    title="Update from current camera"
+                    data-testid="named-view-update-camera"
+                    disabled={editDisabled}
+                    tabIndex={0}
+                    iconStart={{
+                      icon: 'camera',
+                      iconClassName: '!text-current',
+                      bgClassName: 'bg-transparent dark:bg-transparent',
+                    }}
+                    className="h-6 w-6 shrink-0 justify-center !p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none disabled:opacity-40"
+                    onClick={() => void updateViewCamera(manageableView)}
+                  />
+                )}
                 {manageableView ? (
                   <HeaderMenu
                     aria-label="Named view actions"
