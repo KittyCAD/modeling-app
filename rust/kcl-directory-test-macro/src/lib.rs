@@ -81,9 +81,11 @@ pub fn test_all_dirs(attr: TokenStream, item: TokenStream) -> TokenStream {
     let path = std::env::current_dir().unwrap().join(path);
 
     // Parse the function definition
-    let input_fn = parse_macro_input!(item as syn::ItemFn);
+    let mut input_fn = parse_macro_input!(item as syn::ItemFn);
+    // Compile the body and runtime wrapper once, rather than once per directory.
+    // Synchronous bodies still run inside a runtime, as they did previously.
+    input_fn.sig.asyncness = Some(Default::default());
     let fn_name = &input_fn.sig.ident;
-    let fn_block = &input_fn.block;
 
     // Get all directories at the specified path
     let dirs = match get_all_directories(&path) {
@@ -113,17 +115,18 @@ pub fn test_all_dirs(attr: TokenStream, item: TokenStream) -> TokenStream {
         let dir_path_str = dir_path.clone();
 
         quote! {
-            #[tokio::test(flavor = "multi_thread")]
-            async fn #test_fn_name() {
-                let dir_name = #dir_name_str;
-                let dir_path = std::path::Path::new(#dir_path_str);
-                #fn_block
+            #[test]
+            fn #test_fn_name() {
+                #fn_name(#dir_name_str, std::path::Path::new(#dir_path_str));
             }
         }
     });
 
     // Combine the generated test functions
     let expanded = quote! {
+        #[tokio::main(flavor = "multi_thread")]
+        #input_fn
+
         #(#test_fns)*
     };
 

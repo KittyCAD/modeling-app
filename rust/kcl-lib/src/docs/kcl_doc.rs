@@ -1905,11 +1905,17 @@ export FOO = 1
     }
 
     #[for_each_example_test]
-    #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_test_examples() {
+    #[test]
+    fn kcl_test_examples() {
+        check_example(NAME);
+    }
+
+    // Keep the body and runtime wrapper out of the per-example macro expansion.
+    #[tokio::main(flavor = "multi_thread")]
+    async fn check_example(example_name: &str) {
         let std = walk_stdlib();
 
-        let names = NAME.split('-');
+        let names = example_name.split('-');
         let mut mods: Vec<_> = names.collect();
         let number = mods.pop().unwrap();
         let number: usize = number.parse().unwrap();
@@ -1926,7 +1932,7 @@ export FOO = 1
 
         let Some(DocData::Fn(d)) = data.children.get(&format!("I:{qualname}")) else {
             panic!(
-                "Could not find data for {NAME} (missing a child entry for {qualname}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
+                "Could not find data for {example_name} (missing a child entry for {qualname}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
             );
         };
 
@@ -1936,20 +1942,23 @@ export FOO = 1
             if i != number {
                 continue;
             }
-            eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
+            eprintln!(
+                "Testing example {example_name} for {owner_name} in {}",
+                source_path.display()
+            );
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
 
             let result =
                 match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, eg.1.no3d, eg.1.norun).await {
                     Err(crate::errors::ExecError::Kcl(e)) => {
                         panic!(
-                            "Error testing example {NAME} for {owner_name} in {}: {}",
+                            "Error testing example {example_name} for {owner_name} in {}: {}",
                             source_path.display(),
                             e.error.message()
                         );
                     }
                     Err(other_err) => panic!(
-                        "Error testing example {NAME} for {owner_name} in {}: {other_err}",
+                        "Error testing example {example_name} for {owner_name} in {}: {other_err}",
                         source_path.display()
                     ),
                     Ok(img) => img,
@@ -1965,7 +1974,7 @@ export FOO = 1
                     0.99,
                 ) {
                     panic!(
-                        "Image assertion failed for example {NAME} for {owner_name} in {}: {err}",
+                        "Image assertion failed for example {example_name} for {owner_name} in {}: {err}",
                         source_path.display()
                     );
                 }
@@ -1992,7 +2001,7 @@ export FOO = 1
         }
 
         panic!(
-            "Could not find data for {NAME} (no example {number}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
+            "Could not find data for {example_name} (no example {number}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
         );
     }
 }
