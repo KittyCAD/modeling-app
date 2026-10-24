@@ -2257,6 +2257,39 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
     ),
   },
+  'Planar Surface': {
+    description:
+      'Fill a sketch region or a closed loop of swept-body edges with a surface.',
+    icon: 'planarSurface',
+    status: 'experimental',
+    needsReview: true,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Planar Surface']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Planar Surface']>(
+      'Planar Surface',
+      {
+        overrides: {
+          curves: {
+            inputType: 'selection',
+            displayName: 'Profiles',
+            description:
+              'Select one sketch region, or coplanar swept-body edges in the order they connect.',
+            selectionTypes: [
+              'segment',
+              'sweepEdge',
+              'primitiveEdge',
+              'enginePrimitiveEdge',
+              'pathRegion',
+              'engineRegion',
+            ],
+            selectionFilter: ['edge', 'region'],
+            multiple: true,
+          },
+        },
+      }
+    ),
+  },
   'Flip Surface': {
     icon: 'flipSurface',
     needsReview: true,
