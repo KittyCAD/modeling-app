@@ -110,6 +110,7 @@ test(
       .getByRole('button', { name: 'Start Sketch' })
       .waitFor({ state: 'visible' })
 
+    await page.getByTestId('code-pane-button').click()
     const codeEditorText = page.locator('.cm-content')
     const pasteContent = `// was this pasted?`
     const typeContent = `// this should be typed`
