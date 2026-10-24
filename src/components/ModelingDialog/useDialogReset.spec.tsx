@@ -20,6 +20,7 @@ beforeAll(async () => {
 afterEach(() => vi.restoreAllMocks())
 
 afterAll(() => {
+  world.kclManager.close()
   world.commandBarActor.stop()
   world.settingsActor.stop()
   world.engineCommandManager.tearDown({
@@ -62,6 +63,59 @@ function Harness() {
     </div>
   )
 }
+
+it('preserves the sketch plane picker when a dialog closes during sketch entry', async () => {
+  const { kclManager, commandBarActor } = world
+  const modelingActor = await kclManager.modelingActorPromise
+  vi.spyOn(kclManager, 'showPlanes').mockResolvedValue([])
+  const hidePlanes = vi.spyOn(kclManager, 'hidePlanes').mockResolvedValue([])
+  vi.spyOn(kclManager, '_isAstEmpty').mockReturnValue(false)
+  vi.spyOn(kclManager.sceneInfra, 'animate').mockImplementation(() => {})
+  const command = {
+    name: 'Plane picker test',
+    groupId: 'modeling',
+    scopes: GLOBAL_COMMAND_SCOPES,
+    machineActor: modelingActor,
+    useModelingDialog: true,
+    needsReview: false,
+    onSubmit: vi.fn(),
+    args: {
+      profiles: {
+        inputType: 'selection',
+        required: true,
+        selectionTypes: ['engineRegion'],
+        multiple: true,
+        selectionFilter: ['region'],
+      },
+    },
+  } satisfies Command
+  commandBarActor.send({ type: 'Add commands', data: { commands: [command] } })
+  commandBarActor.send({
+    type: 'Find and select command',
+    data: { name: command.name, groupId: command.groupId },
+  })
+  const view = render(<Harness />)
+  try {
+    await screen.findByRole('button', { name: 'Select Profiles' })
+    hidePlanes.mockClear()
+    await act(async () => {
+      modelingActor.send({
+        type: 'Enter sketch',
+        data: { forceNewSketch: true },
+      })
+    })
+    expect(modelingActor.getSnapshot().matches('Sketch no face')).toBe(true)
+    expect(screen.queryByTestId('modeling-dialog')).not.toBeInTheDocument()
+    expect(hidePlanes).not.toHaveBeenCalled()
+    expect(kclManager.selectionFilter.value).toEqual(['face', 'object'])
+  } finally {
+    await act(async () => {
+      view.unmount()
+      commandBarActor.send({ type: 'Close' })
+      modelingActor.send({ type: 'Cancel' })
+    })
+  }
+})
 
 it('keeps a failed draft, resets for another edit, and discards its pending submission', async () => {
   const onSubmit = vi.fn()
