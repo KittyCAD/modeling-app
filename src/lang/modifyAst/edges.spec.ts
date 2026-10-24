@@ -1919,6 +1919,51 @@ ${extrudedTriangle}`
   })
 
   describe('Testing addBlend', () => {
+    it('should add a blend from viewport surface boundary edge references', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        sketchSolveSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const walls = [...artifactGraph.values()].filter((a) => a.type === 'wall')
+      expect(walls).toHaveLength(2)
+      const edges: Selections = {
+        graphSelections: walls.map((wall) => ({
+          entityRef: { type: 'edge', side_faces: [wall.id], index: 0 },
+          codeRef: getCodeRefsByArtifactId(wall.id, artifactGraph)?.[0],
+        })),
+        otherSelections: [],
+      }
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain(
+        `getBoundedEdge(
+    extrude001,
+    edge = {
+      sideFaces = [extrude001.faces.line1],
+      index = 0
+    },
+  )`
+      )
+      expect(newCode).toContain(
+        `getBoundedEdge(
+    extrude002,
+    edge = {
+      sideFaces = [extrude002.faces.line1],
+      index = 0
+    },
+  )`
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a blend call from exactly two segments', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoSurfacesForBlend,
