@@ -3,12 +3,12 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing clock.kcl
 ---
 {
-  "__sketch_105_on": {
+  "__sketch_111_on": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "objectId": 104,
+      "objectId": 110,
       "value": "end",
       "xAxis": {
         "x": 1.0,
@@ -33,12 +33,12 @@ description: Variables in memory after executing clock.kcl
       "units": "mm"
     }
   },
-  "__sketch_110_on": {
+  "__sketch_118_on": {
     "type": "Plane",
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": 109,
+      "objectId": 117,
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -66,12 +66,12 @@ description: Variables in memory after executing clock.kcl
       }
     }
   },
-  "__sketch_143_on": {
+  "__sketch_151_on": {
     "type": "Plane",
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": 142,
+      "objectId": 150,
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -99,45 +99,12 @@ description: Variables in memory after executing clock.kcl
       }
     }
   },
-  "__sketch_14_on": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "objectId": 13,
-      "kind": "Custom",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 50.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      }
-    }
-  },
-  "__sketch_176_on": {
+  "__sketch_184_on": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "objectId": 175,
+      "objectId": 183,
       "value": "start",
       "xAxis": {
         "x": 1.0,
@@ -194,12 +161,12 @@ description: Variables in memory after executing clock.kcl
       }
     }
   },
-  "__sketch_31_on": {
+  "__sketch_20_on": {
     "type": "Plane",
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": 30,
+      "objectId": 19,
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -227,12 +194,78 @@ description: Variables in memory after executing clock.kcl
       }
     }
   },
-  "__sketch_6_on": {
+  "__sketch_37_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "objectId": 36,
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 50.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_86_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "objectId": 85,
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 50.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_8_on": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "objectId": 5,
+      "objectId": 7,
       "value": "end",
       "xAxis": {
         "x": 1.0,
@@ -255,39 +288,6 @@ description: Variables in memory after executing clock.kcl
         ]
       },
       "units": "mm"
-    }
-  },
-  "__sketch_80_on": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "objectId": 79,
-      "kind": "Custom",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 50.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      }
     }
   },
   "capEnd001": {
@@ -326,10 +326,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1116,
-            "end": 1128,
+            "commentStart": 1192,
+            "end": 1204,
             "moduleId": 0,
-            "start": 1116,
+            "start": 1192,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -471,10 +471,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1506,
-            "end": 1517,
+            "commentStart": 1582,
+            "end": 1593,
             "moduleId": 0,
-            "start": 1506,
+            "start": 1582,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -485,10 +485,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1588,
-            "end": 1599,
+            "commentStart": 1664,
+            "end": 1675,
             "moduleId": 0,
-            "start": 1588,
+            "start": 1664,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -499,10 +499,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1792,
-            "end": 1802,
+            "commentStart": 2036,
+            "end": 2046,
             "moduleId": 0,
-            "start": 1792,
+            "start": 2036,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -536,10 +536,10 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 250.0,
             "tag": {
-              "commentStart": 1506,
-              "end": 1517,
+              "commentStart": 1582,
+              "end": 1593,
               "moduleId": 0,
-              "start": 1506,
+              "start": 1582,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -566,10 +566,10 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 225.0,
             "tag": {
-              "commentStart": 1588,
-              "end": 1599,
+              "commentStart": 1664,
+              "end": 1675,
               "moduleId": 0,
-              "start": 1588,
+              "start": 1664,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -585,7 +585,7 @@ description: Variables in memory after executing clock.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "objectId": 5,
+          "objectId": 7,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -697,10 +697,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11514,
-            "end": 11518,
+            "commentStart": 11832,
+            "end": 11836,
             "moduleId": 0,
-            "start": 11514,
+            "start": 11832,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -711,10 +711,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11690,
-            "end": 11695,
+            "commentStart": 12008,
+            "end": 12013,
             "moduleId": 0,
-            "start": 11690,
+            "start": 12008,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -725,10 +725,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11841,
-            "end": 11846,
+            "commentStart": 12159,
+            "end": 12164,
             "moduleId": 0,
-            "start": 11841,
+            "start": 12159,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -739,10 +739,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12025,
-            "end": 12030,
+            "commentStart": 12343,
+            "end": 12348,
             "moduleId": 0,
-            "start": 12025,
+            "start": 12343,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -753,10 +753,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12190,
-            "end": 12195,
+            "commentStart": 12508,
+            "end": 12513,
             "moduleId": 0,
-            "start": 12190,
+            "start": 12508,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -767,10 +767,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12356,
-            "end": 12361,
+            "commentStart": 12674,
+            "end": 12679,
             "moduleId": 0,
-            "start": 12356,
+            "start": 12674,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -781,10 +781,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12560,
-            "end": 12565,
+            "commentStart": 12878,
+            "end": 12883,
             "moduleId": 0,
-            "start": 12560,
+            "start": 12878,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -795,10 +795,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12763,
-            "end": 12767,
+            "commentStart": 13081,
+            "end": 13085,
             "moduleId": 0,
-            "start": 12763,
+            "start": 13081,
             "type": "TagDeclarator",
             "value": "bore"
           },
@@ -826,10 +826,10 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 20.625000000241677,
             "tag": {
-              "commentStart": 11514,
-              "end": 11518,
+              "commentStart": 11832,
+              "end": 11836,
               "moduleId": 0,
-              "start": 11514,
+              "start": 11832,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -850,10 +850,10 @@ description: Variables in memory after executing clock.kcl
               7.054165456000009
             ],
             "tag": {
-              "commentStart": 11690,
-              "end": 11695,
+              "commentStart": 12008,
+              "end": 12013,
               "moduleId": 0,
-              "start": 11690,
+              "start": 12008,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -874,10 +874,10 @@ description: Variables in memory after executing clock.kcl
               7.054165456
             ],
             "tag": {
-              "commentStart": 11841,
-              "end": 11846,
+              "commentStart": 12159,
+              "end": 12164,
               "moduleId": 0,
-              "start": 11841,
+              "start": 12159,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -898,10 +898,10 @@ description: Variables in memory after executing clock.kcl
               19.554165456
             ],
             "tag": {
-              "commentStart": 12025,
-              "end": 12030,
+              "commentStart": 12343,
+              "end": 12348,
               "moduleId": 0,
-              "start": 12025,
+              "start": 12343,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -922,10 +922,10 @@ description: Variables in memory after executing clock.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 12190,
-              "end": 12195,
+              "commentStart": 12508,
+              "end": 12513,
               "moduleId": 0,
-              "start": 12190,
+              "start": 12508,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -946,10 +946,10 @@ description: Variables in memory after executing clock.kcl
               -18.904673793
             ],
             "tag": {
-              "commentStart": 12356,
-              "end": 12361,
+              "commentStart": 12674,
+              "end": 12679,
               "moduleId": 0,
-              "start": 12356,
+              "start": 12674,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -970,10 +970,10 @@ description: Variables in memory after executing clock.kcl
               -6.404673793
             ],
             "tag": {
-              "commentStart": 12560,
-              "end": 12565,
+              "commentStart": 12878,
+              "end": 12883,
               "moduleId": 0,
-              "start": 12560,
+              "start": 12878,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -1000,10 +1000,10 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 15.0,
             "tag": {
-              "commentStart": 12763,
-              "end": 12767,
+              "commentStart": 13081,
+              "end": 13085,
               "moduleId": 0,
-              "start": 12763,
+              "start": 13081,
               "type": "TagDeclarator",
               "value": "bore"
             },
@@ -1019,7 +1019,7 @@ description: Variables in memory after executing clock.kcl
           "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": 109,
+          "objectId": 117,
           "kind": "Custom",
           "origin": {
             "x": 0.0,
@@ -1165,10 +1165,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5495,
-            "end": 5500,
+            "commentStart": 5739,
+            "end": 5744,
             "moduleId": 0,
-            "start": 5495,
+            "start": 5739,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1179,10 +1179,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5567,
-            "end": 5572,
+            "commentStart": 5811,
+            "end": 5816,
             "moduleId": 0,
-            "start": 5567,
+            "start": 5811,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1193,10 +1193,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5678,
-            "end": 5683,
+            "commentStart": 5922,
+            "end": 5927,
             "moduleId": 0,
-            "start": 5678,
+            "start": 5922,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1207,10 +1207,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5791,
-            "end": 5796,
+            "commentStart": 6035,
+            "end": 6040,
             "moduleId": 0,
-            "start": 5791,
+            "start": 6035,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1232,10 +1232,10 @@ description: Variables in memory after executing clock.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 5495,
-              "end": 5500,
+              "commentStart": 5739,
+              "end": 5744,
               "moduleId": 0,
-              "start": 5495,
+              "start": 5739,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1256,10 +1256,10 @@ description: Variables in memory after executing clock.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 5567,
-              "end": 5572,
+              "commentStart": 5811,
+              "end": 5816,
               "moduleId": 0,
-              "start": 5567,
+              "start": 5811,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1280,10 +1280,10 @@ description: Variables in memory after executing clock.kcl
               -20.0
             ],
             "tag": {
-              "commentStart": 5678,
-              "end": 5683,
+              "commentStart": 5922,
+              "end": 5927,
               "moduleId": 0,
-              "start": 5678,
+              "start": 5922,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1304,10 +1304,10 @@ description: Variables in memory after executing clock.kcl
               -20.0
             ],
             "tag": {
-              "commentStart": 5791,
-              "end": 5796,
+              "commentStart": 6035,
+              "end": 6040,
               "moduleId": 0,
-              "start": 5791,
+              "start": 6035,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1323,7 +1323,7 @@ description: Variables in memory after executing clock.kcl
           "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": 13,
+          "objectId": 19,
           "kind": "Custom",
           "origin": {
             "x": 0.0,
@@ -1405,7 +1405,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 17,
+                "objectId": 23,
                 "kind": {
                   "line": {
                     "start": [
@@ -1478,8 +1478,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 15,
-                    "end_object_id": 16,
+                    "start_object_id": 21,
+                    "end_object_id": 22,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -1489,7 +1489,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 13,
+                  "objectId": 19,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -1533,7 +1533,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 20,
+                "objectId": 26,
                 "kind": {
                   "line": {
                     "start": [
@@ -1606,8 +1606,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 18,
-                    "end_object_id": 19,
+                    "start_object_id": 24,
+                    "end_object_id": 25,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -1617,7 +1617,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 13,
+                  "objectId": 19,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -1661,7 +1661,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 24,
+                "objectId": 30,
                 "kind": {
                   "line": {
                     "start": [
@@ -1734,8 +1734,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 22,
-                    "end_object_id": 23,
+                    "start_object_id": 28,
+                    "end_object_id": 29,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -1745,7 +1745,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 13,
+                  "objectId": 19,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -1789,7 +1789,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 28,
+                "objectId": 34,
                 "kind": {
                   "line": {
                     "start": [
@@ -1862,8 +1862,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 26,
-                    "end_object_id": 27,
+                    "start_object_id": 32,
+                    "end_object_id": 33,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -1873,7 +1873,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 13,
+                  "objectId": 19,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -1929,10 +1929,10 @@ description: Variables in memory after executing clock.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 5495,
-                    "end": 5500,
+                    "commentStart": 5739,
+                    "end": 5744,
                     "moduleId": 0,
-                    "start": 5495,
+                    "start": 5739,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1953,10 +1953,10 @@ description: Variables in memory after executing clock.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 5567,
-                    "end": 5572,
+                    "commentStart": 5811,
+                    "end": 5816,
                     "moduleId": 0,
-                    "start": 5567,
+                    "start": 5811,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1977,10 +1977,10 @@ description: Variables in memory after executing clock.kcl
                     -20.0
                   ],
                   "tag": {
-                    "commentStart": 5678,
-                    "end": 5683,
+                    "commentStart": 5922,
+                    "end": 5927,
                     "moduleId": 0,
-                    "start": 5678,
+                    "start": 5922,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2001,10 +2001,10 @@ description: Variables in memory after executing clock.kcl
                     -20.0
                   ],
                   "tag": {
-                    "commentStart": 5791,
-                    "end": 5796,
+                    "commentStart": 6035,
+                    "end": 6040,
                     "moduleId": 0,
-                    "start": 5791,
+                    "start": 6035,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2020,7 +2020,7 @@ description: Variables in memory after executing clock.kcl
                 "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": 13,
+                "objectId": 19,
                 "kind": "Custom",
                 "origin": {
                   "x": 0.0,
@@ -2127,10 +2127,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13067,
-            "end": 13071,
+            "commentStart": 13385,
+            "end": 13389,
             "moduleId": 0,
-            "start": 13067,
+            "start": 13385,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -2141,10 +2141,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13243,
-            "end": 13248,
+            "commentStart": 13561,
+            "end": 13566,
             "moduleId": 0,
-            "start": 13243,
+            "start": 13561,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2155,10 +2155,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13426,
-            "end": 13431,
+            "commentStart": 13744,
+            "end": 13749,
             "moduleId": 0,
-            "start": 13426,
+            "start": 13744,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2169,10 +2169,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13611,
-            "end": 13616,
+            "commentStart": 13929,
+            "end": 13934,
             "moduleId": 0,
-            "start": 13611,
+            "start": 13929,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2183,10 +2183,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13816,
-            "end": 13821,
+            "commentStart": 14134,
+            "end": 14139,
             "moduleId": 0,
-            "start": 13816,
+            "start": 14134,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2197,10 +2197,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 14020,
-            "end": 14025,
+            "commentStart": 14338,
+            "end": 14343,
             "moduleId": 0,
-            "start": 14020,
+            "start": 14338,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2211,10 +2211,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 14224,
-            "end": 14229,
+            "commentStart": 14542,
+            "end": 14547,
             "moduleId": 0,
-            "start": 14224,
+            "start": 14542,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -2225,10 +2225,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 14409,
-            "end": 14413,
+            "commentStart": 14727,
+            "end": 14731,
             "moduleId": 0,
-            "start": 14409,
+            "start": 14727,
             "type": "TagDeclarator",
             "value": "bore"
           },
@@ -2256,10 +2256,10 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 20.625000000279964,
             "tag": {
-              "commentStart": 13067,
-              "end": 13071,
+              "commentStart": 13385,
+              "end": 13389,
               "moduleId": 0,
-              "start": 13067,
+              "start": 13385,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -2280,10 +2280,10 @@ description: Variables in memory after executing clock.kcl
               -20.01234935462789
             ],
             "tag": {
-              "commentStart": 13243,
-              "end": 13248,
+              "commentStart": 13561,
+              "end": 13566,
               "moduleId": 0,
-              "start": 13243,
+              "start": 13561,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2304,10 +2304,10 @@ description: Variables in memory after executing clock.kcl
               -119.464538891
             ],
             "tag": {
-              "commentStart": 13426,
-              "end": 13431,
+              "commentStart": 13744,
+              "end": 13749,
               "moduleId": 0,
-              "start": 13426,
+              "start": 13744,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2328,10 +2328,10 @@ description: Variables in memory after executing clock.kcl
               -120.771144682
             ],
             "tag": {
-              "commentStart": 13611,
-              "end": 13616,
+              "commentStart": 13929,
+              "end": 13934,
               "moduleId": 0,
-              "start": 13611,
+              "start": 13929,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2352,10 +2352,10 @@ description: Variables in memory after executing clock.kcl
               -154.150893782
             ],
             "tag": {
-              "commentStart": 13816,
-              "end": 13821,
+              "commentStart": 14134,
+              "end": 14139,
               "moduleId": 0,
-              "start": 13816,
+              "start": 14134,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -2376,10 +2376,10 @@ description: Variables in memory after executing clock.kcl
               -117.39501294
             ],
             "tag": {
-              "commentStart": 14020,
-              "end": 14025,
+              "commentStart": 14338,
+              "end": 14343,
               "moduleId": 0,
-              "start": 14020,
+              "start": 14338,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -2400,10 +2400,10 @@ description: Variables in memory after executing clock.kcl
               -118.701618731
             ],
             "tag": {
-              "commentStart": 14224,
-              "end": 14229,
+              "commentStart": 14542,
+              "end": 14547,
               "moduleId": 0,
-              "start": 14224,
+              "start": 14542,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -2430,10 +2430,10 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 15.0,
             "tag": {
-              "commentStart": 14409,
-              "end": 14413,
+              "commentStart": 14727,
+              "end": 14731,
               "moduleId": 0,
-              "start": 14409,
+              "start": 14727,
               "type": "TagDeclarator",
               "value": "bore"
             },
@@ -2449,7 +2449,7 @@ description: Variables in memory after executing clock.kcl
           "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": 142,
+          "objectId": 150,
           "kind": "Custom",
           "origin": {
             "x": 0.0,
@@ -2606,10 +2606,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11257,
-            "end": 11264,
+            "commentStart": 11501,
+            "end": 11508,
             "moduleId": 0,
-            "start": 11257,
+            "start": 11501,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2637,10 +2637,10 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 15.0,
             "tag": {
-              "commentStart": 11257,
-              "end": 11264,
+              "commentStart": 11501,
+              "end": 11508,
               "moduleId": 0,
-              "start": 11257,
+              "start": 11501,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -2656,7 +2656,7 @@ description: Variables in memory after executing clock.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "objectId": 104,
+          "objectId": 110,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -3612,7 +3612,7 @@ description: Variables in memory after executing clock.kcl
                     "start_object_id": 2,
                     "center_object_id": 3,
                     "start_freedom": "Free",
-                    "center_freedom": "Free",
+                    "center_freedom": "Fixed",
                     "construction": false
                   }
                 },
@@ -3772,7 +3772,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 12,
+                "objectId": 14,
                 "kind": {
                   "circle": {
                     "start": [
@@ -3845,10 +3845,10 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 10,
-                    "center_object_id": 11,
+                    "start_object_id": 12,
+                    "center_object_id": 13,
                     "start_freedom": "Free",
-                    "center_freedom": "Free",
+                    "center_freedom": "Fixed",
                     "construction": false
                   }
                 },
@@ -3856,7 +3856,7 @@ description: Variables in memory after executing clock.kcl
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "objectId": 5,
+                  "objectId": 7,
                   "value": "end",
                   "xAxis": {
                     "x": 1.0,
@@ -3915,10 +3915,10 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 250.0,
                   "tag": {
-                    "commentStart": 1506,
-                    "end": 1517,
+                    "commentStart": 1582,
+                    "end": 1593,
                     "moduleId": 0,
-                    "start": 1506,
+                    "start": 1582,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -3962,10 +3962,10 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 225.0,
                   "tag": {
-                    "commentStart": 1588,
-                    "end": 1599,
+                    "commentStart": 1664,
+                    "end": 1675,
                     "moduleId": 0,
-                    "start": 1588,
+                    "start": 1664,
                     "type": "TagDeclarator",
                     "value": "innerCircle"
                   },
@@ -3981,7 +3981,7 @@ description: Variables in memory after executing clock.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "objectId": 5,
+                "objectId": 7,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -4047,7 +4047,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 9,
+                "objectId": 11,
                 "kind": {
                   "circle": {
                     "start": [
@@ -4120,10 +4120,10 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 7,
-                    "center_object_id": 8,
+                    "start_object_id": 9,
+                    "center_object_id": 10,
                     "start_freedom": "Free",
-                    "center_freedom": "Free",
+                    "center_freedom": "Fixed",
                     "construction": false
                   }
                 },
@@ -4131,7 +4131,7 @@ description: Variables in memory after executing clock.kcl
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "objectId": 5,
+                  "objectId": 7,
                   "value": "end",
                   "xAxis": {
                     "x": 1.0,
@@ -4178,7 +4178,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 114,
+                "objectId": 122,
                 "kind": {
                   "arc": {
                     "start": [
@@ -4285,9 +4285,9 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 111,
-                    "end_object_id": 112,
-                    "center_object_id": 113,
+                    "start_object_id": 119,
+                    "end_object_id": 120,
+                    "center_object_id": 121,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "center_freedom": "Free",
@@ -4298,7 +4298,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 109,
+                  "objectId": 117,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -4342,7 +4342,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 141,
+                "objectId": 149,
                 "kind": {
                   "circle": {
                     "start": [
@@ -4415,8 +4415,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 139,
-                    "center_object_id": 140,
+                    "start_object_id": 147,
+                    "center_object_id": 148,
                     "start_freedom": "Free",
                     "center_freedom": "Free",
                     "construction": false
@@ -4426,7 +4426,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 109,
+                  "objectId": 117,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -4470,7 +4470,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 117,
+                "objectId": 125,
                 "kind": {
                   "line": {
                     "start": [
@@ -4543,8 +4543,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 115,
-                    "end_object_id": 116,
+                    "start_object_id": 123,
+                    "end_object_id": 124,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -4554,7 +4554,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 109,
+                  "objectId": 117,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -4598,7 +4598,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 121,
+                "objectId": 129,
                 "kind": {
                   "line": {
                     "start": [
@@ -4671,8 +4671,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 119,
-                    "end_object_id": 120,
+                    "start_object_id": 127,
+                    "end_object_id": 128,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -4682,7 +4682,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 109,
+                  "objectId": 117,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -4726,7 +4726,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 125,
+                "objectId": 133,
                 "kind": {
                   "line": {
                     "start": [
@@ -4799,8 +4799,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 123,
-                    "end_object_id": 124,
+                    "start_object_id": 131,
+                    "end_object_id": 132,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -4810,7 +4810,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 109,
+                  "objectId": 117,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -4854,7 +4854,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 129,
+                "objectId": 137,
                 "kind": {
                   "line": {
                     "start": [
@@ -4927,8 +4927,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 127,
-                    "end_object_id": 128,
+                    "start_object_id": 135,
+                    "end_object_id": 136,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -4938,7 +4938,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 109,
+                  "objectId": 117,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -4982,7 +4982,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 133,
+                "objectId": 141,
                 "kind": {
                   "line": {
                     "start": [
@@ -5055,8 +5055,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 131,
-                    "end_object_id": 132,
+                    "start_object_id": 139,
+                    "end_object_id": 140,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -5066,7 +5066,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 109,
+                  "objectId": 117,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -5110,7 +5110,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 137,
+                "objectId": 145,
                 "kind": {
                   "line": {
                     "start": [
@@ -5183,8 +5183,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 135,
-                    "end_object_id": 136,
+                    "start_object_id": 143,
+                    "end_object_id": 144,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -5194,7 +5194,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 109,
+                  "objectId": 117,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -5256,10 +5256,10 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 20.625000000241677,
                   "tag": {
-                    "commentStart": 11514,
-                    "end": 11518,
+                    "commentStart": 11832,
+                    "end": 11836,
                     "moduleId": 0,
-                    "start": 11514,
+                    "start": 11832,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -5280,10 +5280,10 @@ description: Variables in memory after executing clock.kcl
                     7.054165456000009
                   ],
                   "tag": {
-                    "commentStart": 11690,
-                    "end": 11695,
+                    "commentStart": 12008,
+                    "end": 12013,
                     "moduleId": 0,
-                    "start": 11690,
+                    "start": 12008,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -5304,10 +5304,10 @@ description: Variables in memory after executing clock.kcl
                     7.054165456
                   ],
                   "tag": {
-                    "commentStart": 11841,
-                    "end": 11846,
+                    "commentStart": 12159,
+                    "end": 12164,
                     "moduleId": 0,
-                    "start": 11841,
+                    "start": 12159,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -5328,10 +5328,10 @@ description: Variables in memory after executing clock.kcl
                     19.554165456
                   ],
                   "tag": {
-                    "commentStart": 12025,
-                    "end": 12030,
+                    "commentStart": 12343,
+                    "end": 12348,
                     "moduleId": 0,
-                    "start": 12025,
+                    "start": 12343,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -5352,10 +5352,10 @@ description: Variables in memory after executing clock.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 12190,
-                    "end": 12195,
+                    "commentStart": 12508,
+                    "end": 12513,
                     "moduleId": 0,
-                    "start": 12190,
+                    "start": 12508,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -5376,10 +5376,10 @@ description: Variables in memory after executing clock.kcl
                     -18.904673793
                   ],
                   "tag": {
-                    "commentStart": 12356,
-                    "end": 12361,
+                    "commentStart": 12674,
+                    "end": 12679,
                     "moduleId": 0,
-                    "start": 12356,
+                    "start": 12674,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -5400,10 +5400,10 @@ description: Variables in memory after executing clock.kcl
                     -6.404673793
                   ],
                   "tag": {
-                    "commentStart": 12560,
-                    "end": 12565,
+                    "commentStart": 12878,
+                    "end": 12883,
                     "moduleId": 0,
-                    "start": 12560,
+                    "start": 12878,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -5447,10 +5447,10 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 15.0,
                   "tag": {
-                    "commentStart": 12763,
-                    "end": 12767,
+                    "commentStart": 13081,
+                    "end": 13085,
                     "moduleId": 0,
-                    "start": 12763,
+                    "start": 13081,
                     "type": "TagDeclarator",
                     "value": "bore"
                   },
@@ -5466,7 +5466,7 @@ description: Variables in memory after executing clock.kcl
                 "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": 109,
+                "objectId": 117,
                 "kind": "Custom",
                 "origin": {
                   "x": 0.0,
@@ -5565,7 +5565,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 147,
+                "objectId": 155,
                 "kind": {
                   "arc": {
                     "start": [
@@ -5672,9 +5672,9 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 144,
-                    "end_object_id": 145,
-                    "center_object_id": 146,
+                    "start_object_id": 152,
+                    "end_object_id": 153,
+                    "center_object_id": 154,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "center_freedom": "Free",
@@ -5685,7 +5685,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 142,
+                  "objectId": 150,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -5729,7 +5729,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 174,
+                "objectId": 182,
                 "kind": {
                   "circle": {
                     "start": [
@@ -5802,8 +5802,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 172,
-                    "center_object_id": 173,
+                    "start_object_id": 180,
+                    "center_object_id": 181,
                     "start_freedom": "Free",
                     "center_freedom": "Free",
                     "construction": false
@@ -5813,7 +5813,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 142,
+                  "objectId": 150,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -5857,7 +5857,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 150,
+                "objectId": 158,
                 "kind": {
                   "line": {
                     "start": [
@@ -5930,8 +5930,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 148,
-                    "end_object_id": 149,
+                    "start_object_id": 156,
+                    "end_object_id": 157,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -5941,7 +5941,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 142,
+                  "objectId": 150,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -5985,7 +5985,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 154,
+                "objectId": 162,
                 "kind": {
                   "line": {
                     "start": [
@@ -6058,8 +6058,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 152,
-                    "end_object_id": 153,
+                    "start_object_id": 160,
+                    "end_object_id": 161,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -6069,7 +6069,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 142,
+                  "objectId": 150,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -6113,7 +6113,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 158,
+                "objectId": 166,
                 "kind": {
                   "line": {
                     "start": [
@@ -6186,8 +6186,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 156,
-                    "end_object_id": 157,
+                    "start_object_id": 164,
+                    "end_object_id": 165,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -6197,7 +6197,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 142,
+                  "objectId": 150,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -6241,7 +6241,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 162,
+                "objectId": 170,
                 "kind": {
                   "line": {
                     "start": [
@@ -6314,8 +6314,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 160,
-                    "end_object_id": 161,
+                    "start_object_id": 168,
+                    "end_object_id": 169,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -6325,7 +6325,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 142,
+                  "objectId": 150,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -6369,7 +6369,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 166,
+                "objectId": 174,
                 "kind": {
                   "line": {
                     "start": [
@@ -6442,8 +6442,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 164,
-                    "end_object_id": 165,
+                    "start_object_id": 172,
+                    "end_object_id": 173,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -6453,7 +6453,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 142,
+                  "objectId": 150,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -6497,7 +6497,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 170,
+                "objectId": 178,
                 "kind": {
                   "line": {
                     "start": [
@@ -6570,8 +6570,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 168,
-                    "end_object_id": 169,
+                    "start_object_id": 176,
+                    "end_object_id": 177,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -6581,7 +6581,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 142,
+                  "objectId": 150,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -6643,10 +6643,10 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 20.625000000279964,
                   "tag": {
-                    "commentStart": 13067,
-                    "end": 13071,
+                    "commentStart": 13385,
+                    "end": 13389,
                     "moduleId": 0,
-                    "start": 13067,
+                    "start": 13385,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -6667,10 +6667,10 @@ description: Variables in memory after executing clock.kcl
                     -20.01234935462789
                   ],
                   "tag": {
-                    "commentStart": 13243,
-                    "end": 13248,
+                    "commentStart": 13561,
+                    "end": 13566,
                     "moduleId": 0,
-                    "start": 13243,
+                    "start": 13561,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -6691,10 +6691,10 @@ description: Variables in memory after executing clock.kcl
                     -119.464538891
                   ],
                   "tag": {
-                    "commentStart": 13426,
-                    "end": 13431,
+                    "commentStart": 13744,
+                    "end": 13749,
                     "moduleId": 0,
-                    "start": 13426,
+                    "start": 13744,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -6715,10 +6715,10 @@ description: Variables in memory after executing clock.kcl
                     -120.771144682
                   ],
                   "tag": {
-                    "commentStart": 13611,
-                    "end": 13616,
+                    "commentStart": 13929,
+                    "end": 13934,
                     "moduleId": 0,
-                    "start": 13611,
+                    "start": 13929,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -6739,10 +6739,10 @@ description: Variables in memory after executing clock.kcl
                     -154.150893782
                   ],
                   "tag": {
-                    "commentStart": 13816,
-                    "end": 13821,
+                    "commentStart": 14134,
+                    "end": 14139,
                     "moduleId": 0,
-                    "start": 13816,
+                    "start": 14134,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -6763,10 +6763,10 @@ description: Variables in memory after executing clock.kcl
                     -117.39501294
                   ],
                   "tag": {
-                    "commentStart": 14020,
-                    "end": 14025,
+                    "commentStart": 14338,
+                    "end": 14343,
                     "moduleId": 0,
-                    "start": 14020,
+                    "start": 14338,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -6787,10 +6787,10 @@ description: Variables in memory after executing clock.kcl
                     -118.701618731
                   ],
                   "tag": {
-                    "commentStart": 14224,
-                    "end": 14229,
+                    "commentStart": 14542,
+                    "end": 14547,
                     "moduleId": 0,
-                    "start": 14224,
+                    "start": 14542,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -6834,10 +6834,10 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 15.0,
                   "tag": {
-                    "commentStart": 14409,
-                    "end": 14413,
+                    "commentStart": 14727,
+                    "end": 14731,
                     "moduleId": 0,
-                    "start": 14409,
+                    "start": 14727,
                     "type": "TagDeclarator",
                     "value": "bore"
                   },
@@ -6853,7 +6853,7 @@ description: Variables in memory after executing clock.kcl
                 "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": 142,
+                "objectId": 150,
                 "kind": "Custom",
                 "origin": {
                   "x": 0.0,
@@ -7064,10 +7064,10 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 250.0,
           "tag": {
-            "commentStart": 1506,
-            "end": 1517,
+            "commentStart": 1582,
+            "end": 1593,
             "moduleId": 0,
-            "start": 1506,
+            "start": 1582,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -7094,10 +7094,10 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 225.0,
           "tag": {
-            "commentStart": 1588,
-            "end": 1599,
+            "commentStart": 1664,
+            "end": 1675,
             "moduleId": 0,
-            "start": 1588,
+            "start": 1664,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -7113,7 +7113,7 @@ description: Variables in memory after executing clock.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
-        "objectId": 5,
+        "objectId": 7,
         "value": "end",
         "xAxis": {
           "x": 1.0,
@@ -7195,10 +7195,10 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 15.0,
           "tag": {
-            "commentStart": 11257,
-            "end": 11264,
+            "commentStart": 11501,
+            "end": 11508,
             "moduleId": 0,
-            "start": 11257,
+            "start": 11501,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7214,7 +7214,7 @@ description: Variables in memory after executing clock.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
-        "objectId": 104,
+        "objectId": 110,
         "value": "end",
         "xAxis": {
           "x": 1.0,
@@ -7288,10 +7288,10 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 20.625000000241677,
           "tag": {
-            "commentStart": 11514,
-            "end": 11518,
+            "commentStart": 11832,
+            "end": 11836,
             "moduleId": 0,
-            "start": 11514,
+            "start": 11832,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -7312,10 +7312,10 @@ description: Variables in memory after executing clock.kcl
             7.054165456000009
           ],
           "tag": {
-            "commentStart": 11690,
-            "end": 11695,
+            "commentStart": 12008,
+            "end": 12013,
             "moduleId": 0,
-            "start": 11690,
+            "start": 12008,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7336,10 +7336,10 @@ description: Variables in memory after executing clock.kcl
             7.054165456
           ],
           "tag": {
-            "commentStart": 11841,
-            "end": 11846,
+            "commentStart": 12159,
+            "end": 12164,
             "moduleId": 0,
-            "start": 11841,
+            "start": 12159,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7360,10 +7360,10 @@ description: Variables in memory after executing clock.kcl
             19.554165456
           ],
           "tag": {
-            "commentStart": 12025,
-            "end": 12030,
+            "commentStart": 12343,
+            "end": 12348,
             "moduleId": 0,
-            "start": 12025,
+            "start": 12343,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7384,10 +7384,10 @@ description: Variables in memory after executing clock.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 12190,
-            "end": 12195,
+            "commentStart": 12508,
+            "end": 12513,
             "moduleId": 0,
-            "start": 12190,
+            "start": 12508,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -7408,10 +7408,10 @@ description: Variables in memory after executing clock.kcl
             -18.904673793
           ],
           "tag": {
-            "commentStart": 12356,
-            "end": 12361,
+            "commentStart": 12674,
+            "end": 12679,
             "moduleId": 0,
-            "start": 12356,
+            "start": 12674,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -7432,10 +7432,10 @@ description: Variables in memory after executing clock.kcl
             -6.404673793
           ],
           "tag": {
-            "commentStart": 12560,
-            "end": 12565,
+            "commentStart": 12878,
+            "end": 12883,
             "moduleId": 0,
-            "start": 12560,
+            "start": 12878,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -7462,10 +7462,10 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 15.0,
           "tag": {
-            "commentStart": 12763,
-            "end": 12767,
+            "commentStart": 13081,
+            "end": 13085,
             "moduleId": 0,
-            "start": 12763,
+            "start": 13081,
             "type": "TagDeclarator",
             "value": "bore"
           },
@@ -7481,7 +7481,7 @@ description: Variables in memory after executing clock.kcl
         "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": 109,
+        "objectId": 117,
         "kind": "Custom",
         "origin": {
           "x": 0.0,
@@ -7586,10 +7586,10 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 20.625000000279964,
           "tag": {
-            "commentStart": 13067,
-            "end": 13071,
+            "commentStart": 13385,
+            "end": 13389,
             "moduleId": 0,
-            "start": 13067,
+            "start": 13385,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -7610,10 +7610,10 @@ description: Variables in memory after executing clock.kcl
             -20.01234935462789
           ],
           "tag": {
-            "commentStart": 13243,
-            "end": 13248,
+            "commentStart": 13561,
+            "end": 13566,
             "moduleId": 0,
-            "start": 13243,
+            "start": 13561,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7634,10 +7634,10 @@ description: Variables in memory after executing clock.kcl
             -119.464538891
           ],
           "tag": {
-            "commentStart": 13426,
-            "end": 13431,
+            "commentStart": 13744,
+            "end": 13749,
             "moduleId": 0,
-            "start": 13426,
+            "start": 13744,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7658,10 +7658,10 @@ description: Variables in memory after executing clock.kcl
             -120.771144682
           ],
           "tag": {
-            "commentStart": 13611,
-            "end": 13616,
+            "commentStart": 13929,
+            "end": 13934,
             "moduleId": 0,
-            "start": 13611,
+            "start": 13929,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7682,10 +7682,10 @@ description: Variables in memory after executing clock.kcl
             -154.150893782
           ],
           "tag": {
-            "commentStart": 13816,
-            "end": 13821,
+            "commentStart": 14134,
+            "end": 14139,
             "moduleId": 0,
-            "start": 13816,
+            "start": 14134,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -7706,10 +7706,10 @@ description: Variables in memory after executing clock.kcl
             -117.39501294
           ],
           "tag": {
-            "commentStart": 14020,
-            "end": 14025,
+            "commentStart": 14338,
+            "end": 14343,
             "moduleId": 0,
-            "start": 14020,
+            "start": 14338,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -7730,10 +7730,10 @@ description: Variables in memory after executing clock.kcl
             -118.701618731
           ],
           "tag": {
-            "commentStart": 14224,
-            "end": 14229,
+            "commentStart": 14542,
+            "end": 14547,
             "moduleId": 0,
-            "start": 14224,
+            "start": 14542,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -7760,10 +7760,10 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 15.0,
           "tag": {
-            "commentStart": 14409,
-            "end": 14413,
+            "commentStart": 14727,
+            "end": 14731,
             "moduleId": 0,
-            "start": 14409,
+            "start": 14727,
             "type": "TagDeclarator",
             "value": "bore"
           },
@@ -7779,7 +7779,7 @@ description: Variables in memory after executing clock.kcl
         "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": 142,
+        "objectId": 150,
         "kind": "Custom",
         "origin": {
           "x": 0.0,
@@ -7878,10 +7878,10 @@ description: Variables in memory after executing clock.kcl
             200.0
           ],
           "tag": {
-            "commentStart": 14919,
-            "end": 14924,
+            "commentStart": 15237,
+            "end": 15242,
             "moduleId": 0,
-            "start": 14919,
+            "start": 15237,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7908,10 +7908,10 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 5.265000000064894,
           "tag": {
-            "commentStart": 15004,
-            "end": 15008,
+            "commentStart": 15322,
+            "end": 15326,
             "moduleId": 0,
-            "start": 15004,
+            "start": 15322,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -7932,10 +7932,10 @@ description: Variables in memory after executing clock.kcl
             160.0
           ],
           "tag": {
-            "commentStart": 15169,
-            "end": 15174,
+            "commentStart": 15487,
+            "end": 15492,
             "moduleId": 0,
-            "start": 15169,
+            "start": 15487,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7962,10 +7962,10 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 2.6325,
           "tag": {
-            "commentStart": 15290,
-            "end": 15294,
+            "commentStart": 15608,
+            "end": 15612,
             "moduleId": 0,
-            "start": 15290,
+            "start": 15608,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -7981,7 +7981,7 @@ description: Variables in memory after executing clock.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
-        "objectId": 175,
+        "objectId": 183,
         "value": "start",
         "xAxis": {
           "x": 1.0,
@@ -8099,7 +8099,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 108,
+                "objectId": 114,
                 "kind": {
                   "circle": {
                     "start": [
@@ -8172,10 +8172,10 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 106,
-                    "center_object_id": 107,
+                    "start_object_id": 112,
+                    "center_object_id": 113,
                     "start_freedom": "Free",
-                    "center_freedom": "Free",
+                    "center_freedom": "Fixed",
                     "construction": false
                   }
                 },
@@ -8183,7 +8183,7 @@ description: Variables in memory after executing clock.kcl
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "objectId": 104,
+                  "objectId": 110,
                   "value": "end",
                   "xAxis": {
                     "x": 1.0,
@@ -8242,10 +8242,10 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 15.0,
                   "tag": {
-                    "commentStart": 11257,
-                    "end": 11264,
+                    "commentStart": 11501,
+                    "end": 11508,
                     "moduleId": 0,
-                    "start": 11257,
+                    "start": 11501,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -8261,7 +8261,7 @@ description: Variables in memory after executing clock.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "objectId": 104,
+                "objectId": 110,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -8329,7 +8329,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 183,
+                "objectId": 191,
                 "kind": {
                   "arc": {
                     "start": [
@@ -8436,9 +8436,9 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 180,
-                    "end_object_id": 181,
-                    "center_object_id": 182,
+                    "start_object_id": 188,
+                    "end_object_id": 189,
+                    "center_object_id": 190,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "center_freedom": "Free",
@@ -8449,7 +8449,7 @@ description: Variables in memory after executing clock.kcl
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "objectId": 175,
+                  "objectId": 183,
                   "value": "start",
                   "xAxis": {
                     "x": 1.0,
@@ -8490,7 +8490,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 192,
+                "objectId": 200,
                 "kind": {
                   "arc": {
                     "start": [
@@ -8597,9 +8597,9 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 189,
-                    "end_object_id": 190,
-                    "center_object_id": 191,
+                    "start_object_id": 197,
+                    "end_object_id": 198,
+                    "center_object_id": 199,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "center_freedom": "Free",
@@ -8610,7 +8610,7 @@ description: Variables in memory after executing clock.kcl
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "objectId": 175,
+                  "objectId": 183,
                   "value": "start",
                   "xAxis": {
                     "x": 1.0,
@@ -8651,7 +8651,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 179,
+                "objectId": 187,
                 "kind": {
                   "line": {
                     "start": [
@@ -8724,8 +8724,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 177,
-                    "end_object_id": 178,
+                    "start_object_id": 185,
+                    "end_object_id": 186,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -8735,7 +8735,7 @@ description: Variables in memory after executing clock.kcl
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "objectId": 175,
+                  "objectId": 183,
                   "value": "start",
                   "xAxis": {
                     "x": 1.0,
@@ -8776,7 +8776,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 187,
+                "objectId": 195,
                 "kind": {
                   "line": {
                     "start": [
@@ -8849,8 +8849,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 185,
-                    "end_object_id": 186,
+                    "start_object_id": 193,
+                    "end_object_id": 194,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -8860,7 +8860,7 @@ description: Variables in memory after executing clock.kcl
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "objectId": 175,
+                  "objectId": 183,
                   "value": "start",
                   "xAxis": {
                     "x": 1.0,
@@ -8913,10 +8913,10 @@ description: Variables in memory after executing clock.kcl
                     200.0
                   ],
                   "tag": {
-                    "commentStart": 14919,
-                    "end": 14924,
+                    "commentStart": 15237,
+                    "end": 15242,
                     "moduleId": 0,
-                    "start": 14919,
+                    "start": 15237,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -8943,10 +8943,10 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 5.265000000064894,
                   "tag": {
-                    "commentStart": 15004,
-                    "end": 15008,
+                    "commentStart": 15322,
+                    "end": 15326,
                     "moduleId": 0,
-                    "start": 15004,
+                    "start": 15322,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -8967,10 +8967,10 @@ description: Variables in memory after executing clock.kcl
                     160.0
                   ],
                   "tag": {
-                    "commentStart": 15169,
-                    "end": 15174,
+                    "commentStart": 15487,
+                    "end": 15492,
                     "moduleId": 0,
-                    "start": 15169,
+                    "start": 15487,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -8997,10 +8997,10 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 2.6325,
                   "tag": {
-                    "commentStart": 15290,
-                    "end": 15294,
+                    "commentStart": 15608,
+                    "end": 15612,
                     "moduleId": 0,
-                    "start": 15290,
+                    "start": 15608,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -9016,7 +9016,7 @@ description: Variables in memory after executing clock.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "objectId": 175,
+                "objectId": 183,
                 "value": "start",
                 "xAxis": {
                   "x": 1.0,
@@ -9122,10 +9122,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7887,
-            "end": 7892,
+            "commentStart": 8131,
+            "end": 8136,
             "moduleId": 0,
-            "start": 7887,
+            "start": 8131,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9136,10 +9136,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7973,
-            "end": 7978,
+            "commentStart": 8217,
+            "end": 8222,
             "moduleId": 0,
-            "start": 7973,
+            "start": 8217,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -9150,10 +9150,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8093,
-            "end": 8098,
+            "commentStart": 8337,
+            "end": 8342,
             "moduleId": 0,
-            "start": 8093,
+            "start": 8337,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -9164,10 +9164,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8212,
-            "end": 8217,
+            "commentStart": 8456,
+            "end": 8461,
             "moduleId": 0,
-            "start": 8212,
+            "start": 8456,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -9178,10 +9178,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8335,
-            "end": 8340,
+            "commentStart": 8579,
+            "end": 8584,
             "moduleId": 0,
-            "start": 8335,
+            "start": 8579,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -9192,10 +9192,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8449,
-            "end": 8454,
+            "commentStart": 8693,
+            "end": 8698,
             "moduleId": 0,
-            "start": 8449,
+            "start": 8693,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -9217,10 +9217,10 @@ description: Variables in memory after executing clock.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 7887,
-              "end": 7892,
+              "commentStart": 8131,
+              "end": 8136,
               "moduleId": 0,
-              "start": 7887,
+              "start": 8131,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -9241,10 +9241,10 @@ description: Variables in memory after executing clock.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 7973,
-              "end": 7978,
+              "commentStart": 8217,
+              "end": 8222,
               "moduleId": 0,
-              "start": 7973,
+              "start": 8217,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -9265,10 +9265,10 @@ description: Variables in memory after executing clock.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 8093,
-              "end": 8098,
+              "commentStart": 8337,
+              "end": 8342,
               "moduleId": 0,
-              "start": 8093,
+              "start": 8337,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -9289,10 +9289,10 @@ description: Variables in memory after executing clock.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 8212,
-              "end": 8217,
+              "commentStart": 8456,
+              "end": 8461,
               "moduleId": 0,
-              "start": 8212,
+              "start": 8456,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -9313,10 +9313,10 @@ description: Variables in memory after executing clock.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 8335,
-              "end": 8340,
+              "commentStart": 8579,
+              "end": 8584,
               "moduleId": 0,
-              "start": 8335,
+              "start": 8579,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -9337,10 +9337,10 @@ description: Variables in memory after executing clock.kcl
               -20.0
             ],
             "tag": {
-              "commentStart": 8449,
-              "end": 8454,
+              "commentStart": 8693,
+              "end": 8698,
               "moduleId": 0,
-              "start": 8449,
+              "start": 8693,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -9356,7 +9356,7 @@ description: Variables in memory after executing clock.kcl
           "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": 79,
+          "objectId": 85,
           "kind": "Custom",
           "origin": {
             "x": 0.0,
@@ -9446,7 +9446,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 83,
+                "objectId": 89,
                 "kind": {
                   "line": {
                     "start": [
@@ -9519,8 +9519,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 81,
-                    "end_object_id": 82,
+                    "start_object_id": 87,
+                    "end_object_id": 88,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -9530,7 +9530,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 79,
+                  "objectId": 85,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9574,7 +9574,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 86,
+                "objectId": 92,
                 "kind": {
                   "line": {
                     "start": [
@@ -9647,8 +9647,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 84,
-                    "end_object_id": 85,
+                    "start_object_id": 90,
+                    "end_object_id": 91,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -9658,7 +9658,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 79,
+                  "objectId": 85,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9702,7 +9702,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 90,
+                "objectId": 96,
                 "kind": {
                   "line": {
                     "start": [
@@ -9775,8 +9775,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 88,
-                    "end_object_id": 89,
+                    "start_object_id": 94,
+                    "end_object_id": 95,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -9786,7 +9786,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 79,
+                  "objectId": 85,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9830,7 +9830,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 94,
+                "objectId": 100,
                 "kind": {
                   "line": {
                     "start": [
@@ -9903,8 +9903,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 92,
-                    "end_object_id": 93,
+                    "start_object_id": 98,
+                    "end_object_id": 99,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -9914,7 +9914,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 79,
+                  "objectId": 85,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9958,7 +9958,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 98,
+                "objectId": 104,
                 "kind": {
                   "line": {
                     "start": [
@@ -10031,8 +10031,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 96,
-                    "end_object_id": 97,
+                    "start_object_id": 102,
+                    "end_object_id": 103,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -10042,7 +10042,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 79,
+                  "objectId": 85,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -10086,7 +10086,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 102,
+                "objectId": 108,
                 "kind": {
                   "line": {
                     "start": [
@@ -10159,8 +10159,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 100,
-                    "end_object_id": 101,
+                    "start_object_id": 106,
+                    "end_object_id": 107,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -10170,7 +10170,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 79,
+                  "objectId": 85,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -10226,10 +10226,10 @@ description: Variables in memory after executing clock.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 7887,
-                    "end": 7892,
+                    "commentStart": 8131,
+                    "end": 8136,
                     "moduleId": 0,
-                    "start": 7887,
+                    "start": 8131,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -10250,10 +10250,10 @@ description: Variables in memory after executing clock.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 7973,
-                    "end": 7978,
+                    "commentStart": 8217,
+                    "end": 8222,
                     "moduleId": 0,
-                    "start": 7973,
+                    "start": 8217,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -10274,10 +10274,10 @@ description: Variables in memory after executing clock.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 8093,
-                    "end": 8098,
+                    "commentStart": 8337,
+                    "end": 8342,
                     "moduleId": 0,
-                    "start": 8093,
+                    "start": 8337,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -10298,10 +10298,10 @@ description: Variables in memory after executing clock.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 8212,
-                    "end": 8217,
+                    "commentStart": 8456,
+                    "end": 8461,
                     "moduleId": 0,
-                    "start": 8212,
+                    "start": 8456,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -10322,10 +10322,10 @@ description: Variables in memory after executing clock.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 8335,
-                    "end": 8340,
+                    "commentStart": 8579,
+                    "end": 8584,
                     "moduleId": 0,
-                    "start": 8335,
+                    "start": 8579,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -10346,10 +10346,10 @@ description: Variables in memory after executing clock.kcl
                     -20.0
                   ],
                   "tag": {
-                    "commentStart": 8449,
-                    "end": 8454,
+                    "commentStart": 8693,
+                    "end": 8698,
                     "moduleId": 0,
-                    "start": 8449,
+                    "start": 8693,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -10365,7 +10365,7 @@ description: Variables in memory after executing clock.kcl
                 "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": 79,
+                "objectId": 85,
                 "kind": "Custom",
                 "origin": {
                   "x": 0.0,
@@ -10460,10 +10460,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6117,
-            "end": 6122,
+            "commentStart": 6361,
+            "end": 6366,
             "moduleId": 0,
-            "start": 6117,
+            "start": 6361,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -10474,10 +10474,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6202,
-            "end": 6207,
+            "commentStart": 6446,
+            "end": 6451,
             "moduleId": 0,
-            "start": 6202,
+            "start": 6446,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -10488,10 +10488,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6344,
-            "end": 6349,
+            "commentStart": 6588,
+            "end": 6593,
             "moduleId": 0,
-            "start": 6344,
+            "start": 6588,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -10502,10 +10502,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6484,
-            "end": 6489,
+            "commentStart": 6728,
+            "end": 6733,
             "moduleId": 0,
-            "start": 6484,
+            "start": 6728,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -10516,10 +10516,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6614,
-            "end": 6619,
+            "commentStart": 6858,
+            "end": 6863,
             "moduleId": 0,
-            "start": 6614,
+            "start": 6858,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -10530,10 +10530,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6744,
-            "end": 6749,
+            "commentStart": 6988,
+            "end": 6993,
             "moduleId": 0,
-            "start": 6744,
+            "start": 6988,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -10544,10 +10544,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6875,
-            "end": 6880,
+            "commentStart": 7119,
+            "end": 7124,
             "moduleId": 0,
-            "start": 6875,
+            "start": 7119,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -10558,10 +10558,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7007,
-            "end": 7012,
+            "commentStart": 7251,
+            "end": 7256,
             "moduleId": 0,
-            "start": 7007,
+            "start": 7251,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -10572,10 +10572,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7149,
-            "end": 7154,
+            "commentStart": 7393,
+            "end": 7398,
             "moduleId": 0,
-            "start": 7149,
+            "start": 7393,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -10586,10 +10586,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7293,
-            "end": 7299,
+            "commentStart": 7537,
+            "end": 7543,
             "moduleId": 0,
-            "start": 7293,
+            "start": 7537,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -10600,10 +10600,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7421,
-            "end": 7427,
+            "commentStart": 7665,
+            "end": 7671,
             "moduleId": 0,
-            "start": 7421,
+            "start": 7665,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -10614,10 +10614,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7548,
-            "end": 7554,
+            "commentStart": 7792,
+            "end": 7798,
             "moduleId": 0,
-            "start": 7548,
+            "start": 7792,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -10639,10 +10639,10 @@ description: Variables in memory after executing clock.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 6117,
-              "end": 6122,
+              "commentStart": 6361,
+              "end": 6366,
               "moduleId": 0,
-              "start": 6117,
+              "start": 6361,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -10663,10 +10663,10 @@ description: Variables in memory after executing clock.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 6202,
-              "end": 6207,
+              "commentStart": 6446,
+              "end": 6451,
               "moduleId": 0,
-              "start": 6202,
+              "start": 6446,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -10687,10 +10687,10 @@ description: Variables in memory after executing clock.kcl
               6.666666667
             ],
             "tag": {
-              "commentStart": 6344,
-              "end": 6349,
+              "commentStart": 6588,
+              "end": 6593,
               "moduleId": 0,
-              "start": 6344,
+              "start": 6588,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -10711,10 +10711,10 @@ description: Variables in memory after executing clock.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 6484,
-              "end": 6489,
+              "commentStart": 6728,
+              "end": 6733,
               "moduleId": 0,
-              "start": 6484,
+              "start": 6728,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -10735,10 +10735,10 @@ description: Variables in memory after executing clock.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 6614,
-              "end": 6619,
+              "commentStart": 6858,
+              "end": 6863,
               "moduleId": 0,
-              "start": 6614,
+              "start": 6858,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -10759,10 +10759,10 @@ description: Variables in memory after executing clock.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 6744,
-              "end": 6749,
+              "commentStart": 6988,
+              "end": 6993,
               "moduleId": 0,
-              "start": 6744,
+              "start": 6988,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -10783,10 +10783,10 @@ description: Variables in memory after executing clock.kcl
               -20.0
             ],
             "tag": {
-              "commentStart": 6875,
-              "end": 6880,
+              "commentStart": 7119,
+              "end": 7124,
               "moduleId": 0,
-              "start": 6875,
+              "start": 7119,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -10807,10 +10807,10 @@ description: Variables in memory after executing clock.kcl
               -20.0
             ],
             "tag": {
-              "commentStart": 7007,
-              "end": 7012,
+              "commentStart": 7251,
+              "end": 7256,
               "moduleId": 0,
-              "start": 7007,
+              "start": 7251,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -10831,10 +10831,10 @@ description: Variables in memory after executing clock.kcl
               -6.666666667
             ],
             "tag": {
-              "commentStart": 7149,
-              "end": 7154,
+              "commentStart": 7393,
+              "end": 7398,
               "moduleId": 0,
-              "start": 7149,
+              "start": 7393,
               "type": "TagDeclarator",
               "value": "line9"
             },
@@ -10855,10 +10855,10 @@ description: Variables in memory after executing clock.kcl
               -20.0
             ],
             "tag": {
-              "commentStart": 7293,
-              "end": 7299,
+              "commentStart": 7537,
+              "end": 7543,
               "moduleId": 0,
-              "start": 7293,
+              "start": 7537,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -10879,10 +10879,10 @@ description: Variables in memory after executing clock.kcl
               -20.0
             ],
             "tag": {
-              "commentStart": 7421,
-              "end": 7427,
+              "commentStart": 7665,
+              "end": 7671,
               "moduleId": 0,
-              "start": 7421,
+              "start": 7665,
               "type": "TagDeclarator",
               "value": "line11"
             },
@@ -10903,10 +10903,10 @@ description: Variables in memory after executing clock.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 7548,
-              "end": 7554,
+              "commentStart": 7792,
+              "end": 7798,
               "moduleId": 0,
-              "start": 7548,
+              "start": 7792,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -10922,7 +10922,7 @@ description: Variables in memory after executing clock.kcl
           "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": 30,
+          "objectId": 36,
           "kind": "Custom",
           "origin": {
             "x": 0.0,
@@ -11036,7 +11036,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 34,
+                "objectId": 40,
                 "kind": {
                   "line": {
                     "start": [
@@ -11109,8 +11109,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 32,
-                    "end_object_id": 33,
+                    "start_object_id": 38,
+                    "end_object_id": 39,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -11120,7 +11120,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -11164,7 +11164,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 69,
+                "objectId": 75,
                 "kind": {
                   "line": {
                     "start": [
@@ -11237,8 +11237,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 67,
-                    "end_object_id": 68,
+                    "start_object_id": 73,
+                    "end_object_id": 74,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -11248,7 +11248,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -11292,7 +11292,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 73,
+                "objectId": 79,
                 "kind": {
                   "line": {
                     "start": [
@@ -11365,8 +11365,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 71,
-                    "end_object_id": 72,
+                    "start_object_id": 77,
+                    "end_object_id": 78,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -11376,7 +11376,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -11420,7 +11420,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 77,
+                "objectId": 83,
                 "kind": {
                   "line": {
                     "start": [
@@ -11493,8 +11493,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 75,
-                    "end_object_id": 76,
+                    "start_object_id": 81,
+                    "end_object_id": 82,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -11504,7 +11504,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -11548,7 +11548,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 37,
+                "objectId": 43,
                 "kind": {
                   "line": {
                     "start": [
@@ -11621,8 +11621,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 35,
-                    "end_object_id": 36,
+                    "start_object_id": 41,
+                    "end_object_id": 42,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -11632,7 +11632,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -11676,7 +11676,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 41,
+                "objectId": 47,
                 "kind": {
                   "line": {
                     "start": [
@@ -11749,8 +11749,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 39,
-                    "end_object_id": 40,
+                    "start_object_id": 45,
+                    "end_object_id": 46,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -11760,7 +11760,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -11804,7 +11804,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 45,
+                "objectId": 51,
                 "kind": {
                   "line": {
                     "start": [
@@ -11877,8 +11877,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 43,
-                    "end_object_id": 44,
+                    "start_object_id": 49,
+                    "end_object_id": 50,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -11888,7 +11888,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -11932,7 +11932,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 49,
+                "objectId": 55,
                 "kind": {
                   "line": {
                     "start": [
@@ -12005,8 +12005,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 47,
-                    "end_object_id": 48,
+                    "start_object_id": 53,
+                    "end_object_id": 54,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -12016,7 +12016,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -12060,7 +12060,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 53,
+                "objectId": 59,
                 "kind": {
                   "line": {
                     "start": [
@@ -12133,8 +12133,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 51,
-                    "end_object_id": 52,
+                    "start_object_id": 57,
+                    "end_object_id": 58,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -12144,7 +12144,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -12188,7 +12188,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 57,
+                "objectId": 63,
                 "kind": {
                   "line": {
                     "start": [
@@ -12261,8 +12261,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 55,
-                    "end_object_id": 56,
+                    "start_object_id": 61,
+                    "end_object_id": 62,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -12272,7 +12272,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -12316,7 +12316,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 61,
+                "objectId": 67,
                 "kind": {
                   "line": {
                     "start": [
@@ -12389,8 +12389,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 59,
-                    "end_object_id": 60,
+                    "start_object_id": 65,
+                    "end_object_id": 66,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -12400,7 +12400,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -12444,7 +12444,7 @@ description: Variables in memory after executing clock.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 65,
+                "objectId": 71,
                 "kind": {
                   "line": {
                     "start": [
@@ -12517,8 +12517,8 @@ description: Variables in memory after executing clock.kcl
                         }
                       }
                     },
-                    "start_object_id": 63,
-                    "end_object_id": 64,
+                    "start_object_id": 69,
+                    "end_object_id": 70,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -12528,7 +12528,7 @@ description: Variables in memory after executing clock.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 30,
+                  "objectId": 36,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -12584,10 +12584,10 @@ description: Variables in memory after executing clock.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 6117,
-                    "end": 6122,
+                    "commentStart": 6361,
+                    "end": 6366,
                     "moduleId": 0,
-                    "start": 6117,
+                    "start": 6361,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -12608,10 +12608,10 @@ description: Variables in memory after executing clock.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 6202,
-                    "end": 6207,
+                    "commentStart": 6446,
+                    "end": 6451,
                     "moduleId": 0,
-                    "start": 6202,
+                    "start": 6446,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -12632,10 +12632,10 @@ description: Variables in memory after executing clock.kcl
                     6.666666667
                   ],
                   "tag": {
-                    "commentStart": 6344,
-                    "end": 6349,
+                    "commentStart": 6588,
+                    "end": 6593,
                     "moduleId": 0,
-                    "start": 6344,
+                    "start": 6588,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -12656,10 +12656,10 @@ description: Variables in memory after executing clock.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 6484,
-                    "end": 6489,
+                    "commentStart": 6728,
+                    "end": 6733,
                     "moduleId": 0,
-                    "start": 6484,
+                    "start": 6728,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -12680,10 +12680,10 @@ description: Variables in memory after executing clock.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 6614,
-                    "end": 6619,
+                    "commentStart": 6858,
+                    "end": 6863,
                     "moduleId": 0,
-                    "start": 6614,
+                    "start": 6858,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -12704,10 +12704,10 @@ description: Variables in memory after executing clock.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 6744,
-                    "end": 6749,
+                    "commentStart": 6988,
+                    "end": 6993,
                     "moduleId": 0,
-                    "start": 6744,
+                    "start": 6988,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -12728,10 +12728,10 @@ description: Variables in memory after executing clock.kcl
                     -20.0
                   ],
                   "tag": {
-                    "commentStart": 6875,
-                    "end": 6880,
+                    "commentStart": 7119,
+                    "end": 7124,
                     "moduleId": 0,
-                    "start": 6875,
+                    "start": 7119,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -12752,10 +12752,10 @@ description: Variables in memory after executing clock.kcl
                     -20.0
                   ],
                   "tag": {
-                    "commentStart": 7007,
-                    "end": 7012,
+                    "commentStart": 7251,
+                    "end": 7256,
                     "moduleId": 0,
-                    "start": 7007,
+                    "start": 7251,
                     "type": "TagDeclarator",
                     "value": "line8"
                   },
@@ -12776,10 +12776,10 @@ description: Variables in memory after executing clock.kcl
                     -6.666666667
                   ],
                   "tag": {
-                    "commentStart": 7149,
-                    "end": 7154,
+                    "commentStart": 7393,
+                    "end": 7398,
                     "moduleId": 0,
-                    "start": 7149,
+                    "start": 7393,
                     "type": "TagDeclarator",
                     "value": "line9"
                   },
@@ -12800,10 +12800,10 @@ description: Variables in memory after executing clock.kcl
                     -20.0
                   ],
                   "tag": {
-                    "commentStart": 7293,
-                    "end": 7299,
+                    "commentStart": 7537,
+                    "end": 7543,
                     "moduleId": 0,
-                    "start": 7293,
+                    "start": 7537,
                     "type": "TagDeclarator",
                     "value": "line10"
                   },
@@ -12824,10 +12824,10 @@ description: Variables in memory after executing clock.kcl
                     -20.0
                   ],
                   "tag": {
-                    "commentStart": 7421,
-                    "end": 7427,
+                    "commentStart": 7665,
+                    "end": 7671,
                     "moduleId": 0,
-                    "start": 7421,
+                    "start": 7665,
                     "type": "TagDeclarator",
                     "value": "line11"
                   },
@@ -12848,10 +12848,10 @@ description: Variables in memory after executing clock.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 7548,
-                    "end": 7554,
+                    "commentStart": 7792,
+                    "end": 7798,
                     "moduleId": 0,
-                    "start": 7548,
+                    "start": 7792,
                     "type": "TagDeclarator",
                     "value": "line12"
                   },
@@ -12867,7 +12867,7 @@ description: Variables in memory after executing clock.kcl
                 "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": 30,
+                "objectId": 36,
                 "kind": "Custom",
                 "origin": {
                   "x": 0.0,
