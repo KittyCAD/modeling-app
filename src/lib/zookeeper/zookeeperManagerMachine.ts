@@ -1216,8 +1216,7 @@ export const zookeeperManagerMachine = setup({
               timeoutStartedAt = undefined
             }
             previousBufferedAmount = bufferedAmount
-            // A queued upload starts its own timeout. Once drained, the next
-            // heartbeat starts a fresh wait for a server response.
+            // While bytes are queued, start the timeout if it isn't already running.
             if (bufferedAmount > 0) {
               timeoutStartedAt ??= now
             }
