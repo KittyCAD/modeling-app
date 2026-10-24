@@ -91,6 +91,15 @@ flowchart TD
 
 ### Local Mutations
 
+The shared filesystem observer checks runtime path eligibility before notifying
+cloud sync. With sync disabled, or for paths outside configured cloud libraries
+and the opened cloud project, mutations bypass sync metadata and filesystem
+reads. The check uses current library and project context, so background writes
+to cloud projects remain observed while a directory-library project is open.
+Per-project exclusions and enrollment policy are still checked by the engine for
+eligible cloud paths. Pending-count refreshes skip the outbox read when sync is
+disabled or the opened project is not syncable, and publish only changed counts.
+
 ```mermaid
 flowchart TD
   Operation["writeFile / mkdir / cp / rm / rename"] --> ApplyOPFS["Apply OPFS mutation first"]

@@ -4,6 +4,7 @@ import {
   notifyCloudSyncRemoveMutation,
   notifyCloudSyncRenameMutation,
   notifyCloudSyncWriteLikeMutation,
+  shouldObserveCloudSyncMutation,
 } from '@src/lib/cloudSync/engine'
 import type { CloudSyncConfig } from '@src/lib/cloudSync/types'
 import fsZds from '@src/lib/fs-zds'
@@ -81,12 +82,16 @@ export function installCloudSyncFileSystemObserver(
     options
   ) => {
     const result = await localFs.writeFile(targetPath, data, options)
-    await notifyCloudSyncWriteLikeMutation(targetPath)
+    if (shouldObserveCloudSyncMutation(targetPath)) {
+      await notifyCloudSyncWriteLikeMutation(targetPath)
+    }
     return result
   }
   const mkdir: IZooDesignStudioFS['mkdir'] = async (targetPath, options) => {
     const result = await localFs.mkdir(targetPath, options)
-    await notifyCloudSyncWriteLikeMutation(targetPath)
+    if (shouldObserveCloudSyncMutation(targetPath)) {
+      await notifyCloudSyncWriteLikeMutation(targetPath)
+    }
     return result
   }
   const cp: IZooDesignStudioFS['cp'] = async (
@@ -95,12 +100,16 @@ export function installCloudSyncFileSystemObserver(
     options
   ) => {
     const result = await localFs.cp(sourcePath, targetPath, options)
-    await notifyCloudSyncWriteLikeMutation(targetPath)
+    if (shouldObserveCloudSyncMutation(targetPath)) {
+      await notifyCloudSyncWriteLikeMutation(targetPath)
+    }
     return result
   }
   const rm: IZooDesignStudioFS['rm'] = async (targetPath, options) => {
     const result = await localFs.rm(targetPath, options)
-    await notifyCloudSyncRemoveMutation(targetPath)
+    if (shouldObserveCloudSyncMutation(targetPath)) {
+      await notifyCloudSyncRemoveMutation(targetPath)
+    }
     return result
   }
   const rename: IZooDesignStudioFS['rename'] = async (
@@ -109,7 +118,9 @@ export function installCloudSyncFileSystemObserver(
     options
   ) => {
     const result = await localFs.rename(sourcePath, targetPath, options)
-    await notifyCloudSyncRenameMutation(sourcePath, targetPath)
+    if (shouldObserveCloudSyncMutation(targetPath)) {
+      await notifyCloudSyncRenameMutation(sourcePath, targetPath)
+    }
     return result
   }
 
