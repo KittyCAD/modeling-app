@@ -5881,7 +5881,7 @@ hole001 = hole::hole(
 
 test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
   test.use({
-    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG, 'modeling_dialogs'],
+    userFeatures: ['modeling_dialogs'],
   })
 
   test('Creates, edits visibility, and removes a Named View from the pane', async ({
@@ -5896,11 +5896,18 @@ sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 2mm, var 10mm], center = [var 0mm, var 10mm])
 }
 region001 = region(segments = [sketch001.circle1])`
+    const oldVersionCode = code.replace('kclVersion = 3.0', 'kclVersion = 2.0')
     await homePage.goToModelingScene()
     await scene.settled()
-    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', oldVersionCode)
+    )
     await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
     const pane = page.locator(`#${DefaultLayoutPaneID.NamedViews}-pane`)
+    await expect(pane.getByTestId('named-view-create')).toHaveCount(0)
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(oldVersionCode, code)
+    )
     await pane.getByTestId('named-view-create').click()
 
     const dialog = page.getByTestId('modeling-dialog')

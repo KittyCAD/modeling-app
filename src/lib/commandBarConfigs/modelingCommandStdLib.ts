@@ -689,6 +689,17 @@ export function modelingStdLibCall(
   return { name, path: parts }
 }
 
+export function modelingStdLibCommandAvailable(
+  commandName: ModelingStdLibCommandName,
+  context: ModelingMachineContext
+) {
+  return isKclVersionAvailable(
+    context.kclManager.kclProgramVersionSignal.peek(),
+    STD_LIB_COMMANDS[modelingStdLibCommandName(commandName)],
+    context.wasmInstance
+  )
+}
+
 export function modelingStdLibCommandArgs<CommandArgs extends object>(
   commandName: keyof typeof modelingCommandStdLibDriftConfig,
   options: Pick<StdLibCommandArgsOptions, 'overrides'> = {}
