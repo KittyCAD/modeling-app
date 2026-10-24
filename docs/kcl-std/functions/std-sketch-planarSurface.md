@@ -11,20 +11,20 @@ Fills one closed region to make a single planar surface contained by its boundar
 
 ```kcl
 planarSurface(
-  @curves: Sketch | [TaggedEdge; 1+] | [Edge; 1+],
+  @curves: Sketch | [any; 1+],
   tolerance?: number(Length),
 ): Solid
 ```
 
-Pass one region created with `region(...)`, or a non-empty list of swept-body
-edges which form one closed, connected, coplanar boundary.
+Pass one region created with `region(...)`, or a non-empty list of Face API
+edge selectors which form one closed, connected, coplanar boundary.
 Edges must be provided in the order they connect.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `curves` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [[`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge); 1+] or [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | One region created with `region(...)`, or a list of swept-body edges enclosing a planar surface. | Yes |
+| `curves` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [[`any`](/docs/kcl-std/types/std-types-any); 1+] | One region created with `region(...)`, or Face API edge selectors (`{ sideFaces, endFaces?, index? }`) enclosing a planar surface. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 
 ### Returns
@@ -69,7 +69,12 @@ sketch001 = sketch(on = XY) {
 hidden001 = hide(sketch001)
 region001 = region(point = [-3.5682909mm, 5.3681754mm], sketch = sketch001)
 extrude001 = extrude(region001, length = -5, bodyType = SURFACE)
-cap = planarSurface([extrude001.sketch.tags.circle1])
+cap = planarSurface([
+  {
+    sideFaces = [extrude001.sketch.tags.circle1],
+    index = 0
+  }
+])
 
 ```
 

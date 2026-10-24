@@ -766,7 +766,7 @@ export type CreatePlanarSurface = {
  * Curves must be provided in the order they are connected to each other
  * They must form a closed loop, either by themselves or in a group
  */
-curve_ids: Array<string>, 
+target: PlanarSurfaceTarget, 
 /**
  * Tolerance for the planar surface creation. Must be positive (i.e. greater than zero).
  */
@@ -2886,6 +2886,19 @@ surface_area_output_unit: UnitArea,
  * The output unit for the bounding box's dimensions.
  */
 bounding_box_output_unit: UnitLength, };
+
+/**
+ * Something to create a planar surface from.
+ */
+export type PlanarSurfaceTarget = { "edge": { 
+/**
+ * Which edges to create a surface between.
+ */
+specifier: Array<EdgeSpecifier>, } } | { "region": { 
+/**
+ * Create a 2D surface which spans this region.
+ */
+region_id: string, } };
 
 /**
  * Utility method. Performs both a ray cast and projection to plane-local coordinates.
