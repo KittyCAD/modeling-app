@@ -716,7 +716,8 @@ export function entityReferenceToEdgeRefPayload(
  * @param originalEdgeSelection - Optional original edge selection for Solid2D edge handling
  * @param fallbackCodeRef - Optional code location used when originalEdgeSelection is not available. Accepts either CodeRef: the wasm one carries nodePath, and the app one only needs range and pathToNode.
  * @param tagsBaseExpr - When original tags were referenced as base.tags.x (e.g. bs.tags.edge7), pass the base expr so we emit sideFaces = [base.tags.edge6, base.tags.edge7]
- * @param options.requireEveryFace - Popover copy path. Every side face and end face must appear in the expression, and building it must not edit the file. Codemod callers leave this off so a missing end face can still produce a useful sideFaces selector.
+ * @param options.requireEveryFace - Every side face and end face must appear in the expression. Building it must not edit the file unless allowTagging is set.
+ * @param options.allowTagging - Allow a strict codemod to add face tags while preserving every face in the selector.
  */
 export function createEdgeRefObjectExpression(
   payload: FilletEdgeRefPayload,
@@ -727,7 +728,7 @@ export function createEdgeRefObjectExpression(
   fallbackCodeRef?: Pick<CodeRef, 'range' | 'pathToNode'>,
   tagsBaseExpr?: Expr | null,
   owningBodyExpr?: Expr | null,
-  options?: { requireEveryFace?: boolean }
+  options?: { requireEveryFace?: boolean; allowTagging?: boolean }
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
   const sideFaceExprs: Expr[] = []
   // Solid2D tagging mutates its AST argument. The popover path must not tag
@@ -1020,7 +1021,9 @@ export function createEdgeRefObjectExpression(
       const endFaceTagExpr = tagResult.exprs[0]
       if (!endFaceTagExpr) continue
 
-      endFaceExprs.push(structuredClone(endFaceTagExpr))
+      endFaceExprs.push(
+        applyTagsBaseExprIfNeeded(endFaceTagExpr, endFaceArtifact)
+      )
       currentAst = tagResult.modifiedAst
     }
   }
@@ -1048,7 +1051,10 @@ export function createEdgeRefObjectExpression(
         'Not every face in the edge reference could be expressed without editing the file'
       )
     }
-    if (!programTextEqual(ast, currentAst, wasmInstance)) {
+    if (
+      !options.allowTagging &&
+      !programTextEqual(ast, currentAst, wasmInstance)
+    ) {
       return new Error('Edge reference would edit the file')
     }
   }

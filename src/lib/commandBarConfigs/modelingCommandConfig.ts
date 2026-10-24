@@ -2278,8 +2278,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: [
               'segment',
               'sweepEdge',
-              'primitiveEdge',
-              'enginePrimitiveEdge',
               'pathRegion',
               'engineRegion',
             ],
