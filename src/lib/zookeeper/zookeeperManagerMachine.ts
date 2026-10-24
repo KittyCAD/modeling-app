@@ -1199,7 +1199,7 @@ export const zookeeperManagerMachine = setup({
           let attemptCanceled = false
 
           // Any WS protocol messages will trigger the `api` heartbeat update.
-          let heartbeatSentAt: number | undefined
+          let timeoutStartedAt: number | undefined
           let previousBufferedAmount = 0
           const pingIntervalId = setInterval(() => {
             if (ws.readyState !== WebSocket.OPEN) {
@@ -1207,26 +1207,25 @@ export const zookeeperManagerMachine = setup({
             }
             const now = Date.now()
             const bufferedAmount = ws.bufferedAmount
-            // A heartbeat queues behind the project upload. Allow the upload
-            // to keep progressing before waiting for a heartbeat response.
-            if (bufferedAmount > 0) {
-              if (
-                heartbeatSentAt === undefined ||
-                previousBufferedAmount === 0 ||
-                bufferedAmount < previousBufferedAmount
-              ) {
-                heartbeatSentAt = now
-              }
-              previousBufferedAmount = bufferedAmount
-            } else if (previousBufferedAmount > 0) {
-              previousBufferedAmount = 0
-              heartbeatSentAt = undefined
+            const uploadStarted =
+              bufferedAmount > 0 && previousBufferedAmount === 0
+            const uploadProgressed = bufferedAmount < previousBufferedAmount
+
+            // Reset on upload progress, including when the queue empties.
+            if (uploadStarted || uploadProgressed) {
+              timeoutStartedAt = undefined
             }
-            if (heartbeatSentAt !== undefined) {
-              const heartbeatElapsed = now - heartbeatSentAt
-              if (heartbeatElapsed >= ZOOKEEPER_HEARTBEAT_TIMEOUT_MS) {
+            previousBufferedAmount = bufferedAmount
+            // A queued upload starts its own timeout. Once drained, the next
+            // heartbeat starts a fresh wait for a server response.
+            if (bufferedAmount > 0) {
+              timeoutStartedAt ??= now
+            }
+            if (timeoutStartedAt !== undefined) {
+              const timeoutElapsed = now - timeoutStartedAt
+              if (timeoutElapsed >= ZOOKEEPER_HEARTBEAT_TIMEOUT_MS) {
                 if (
-                  heartbeatElapsed - ZOOKEEPER_HEARTBEAT_TIMEOUT_MS <=
+                  timeoutElapsed - ZOOKEEPER_HEARTBEAT_TIMEOUT_MS <=
                   ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS
                 ) {
                   clearInterval(pingIntervalId)
@@ -1240,14 +1239,14 @@ export const zookeeperManagerMachine = setup({
                   })
                   return
                 }
-                heartbeatSentAt = undefined
+                timeoutStartedAt = undefined
               }
             }
             if (bufferedAmount > 0) {
               return
             }
             ws.send(JSON.stringify({ type: 'ping' }))
-            heartbeatSentAt ??= now
+            timeoutStartedAt ??= now
           }, ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
           const cancelSetupAttempt = () => {
             if (attemptCanceled) {
@@ -1282,7 +1281,7 @@ export const zookeeperManagerMachine = setup({
             if (attemptCanceled) {
               return
             }
-            heartbeatSentAt = undefined
+            timeoutStartedAt = undefined
 
             let response: unknown
             if (!isString(event.data)) {
