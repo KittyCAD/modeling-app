@@ -2002,6 +2002,14 @@ export class KclManager extends File {
   /** Clean up listeners, watchers, etc */
   public close() {
     if (this.closed) return
+    const commandBar = this.systemDeps.commandBar
+    if (
+      this._modelingActor &&
+      commandBar.getSnapshot().context.selectedCommand?.machineActor ===
+        this._modelingActor
+    ) {
+      commandBar.send({ type: 'Close' })
+    }
     this.closed = true
     this.modelingGeneration += 1
     this.modelingSubscription?.unsubscribe()

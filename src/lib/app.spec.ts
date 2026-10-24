@@ -4,6 +4,7 @@ import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import { File } from '@src/lib/projectSession'
 import { App } from '@src/lib/app'
+import type { Command } from '@src/lib/commandTypes'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
@@ -22,7 +23,10 @@ import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { billingService } from '@src/registry/contracts/billing'
-import { commandsValueSpec } from '@src/registry/contracts/commands'
+import {
+  MODE_MODELING_COMMAND_SCOPE,
+  commandsValueSpec,
+} from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { projectSession } from '@src/registry/contracts/projectSession'
@@ -256,6 +260,59 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
+  it.each([
+    'closing the project',
+    'opening another project',
+    'reopening a file',
+  ])('discards the active modeling command when %s', async (transition) => {
+    const app = createAppForTest()
+    try {
+      const project = await app.openProject(mockProject)
+      const editor = await project.openEditor(
+        '/some-dir/test/main.kcl',
+        app.singletons.kclManager,
+        ''
+      )
+      const command: Command = {
+        name: 'Test modeling command',
+        groupId: 'modeling',
+        scopes: [MODE_MODELING_COMMAND_SCOPE],
+        machineActor: await editor.modelingActorPromise,
+        useModelingDialog: true,
+        needsReview: false,
+        onSubmit: vi.fn(),
+        args: { name: { inputType: 'string', required: true } },
+      }
+      app.commands.send({ type: 'Add commands', data: { commands: [command] } })
+      app.commands.send({
+        type: 'Find and select command',
+        data: { name: command.name, groupId: command.groupId },
+      })
+      expect(
+        app.commands.actor.getSnapshot().matches('Gathering arguments')
+      ).toBe(true)
+
+      if (transition === 'closing the project') {
+        app.closeProject()
+      } else {
+        // File routes also replace the project session when opening a file.
+        await app.openProject(
+          transition === 'reopening a file'
+            ? mockProject
+            : { ...mockProject, name: 'second', path: '/some-dir/second' }
+        )
+      }
+
+      expect(app.commands.actor.getSnapshot().matches('Closed')).toBe(true)
+      expect(
+        app.commands.actor.getSnapshot().context.selectedCommand
+      ).toBeUndefined()
+      expect(command.onSubmit).not.toHaveBeenCalled()
+    } finally {
+      app.dispose()
+    }
+  })
+
   it('always closes a the last project before opening a new one', async () => {
     const app = createAppForTest()
     vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})

@@ -875,7 +875,7 @@ export const commandBarMachine = setup({
 
     Close: {
       target: '.Closed',
-      actions: 'Clear selected command',
+      actions: 'Clear argument data',
     },
 
     Clear: {

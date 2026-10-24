@@ -20,6 +20,8 @@ import {
 import { KclManager } from '@src/lang/KclManager'
 import { File } from '@src/lib/projectSession'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
+import type { Command } from '@src/lib/commandTypes'
+import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { Themes } from '@src/lib/theme'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -210,6 +212,86 @@ describe('KclManager line wrapping settings', () => {
     }
   })
 })
+
+describe.each(['editor closes', 'sketch starts'])(
+  'KclManager command ownership when %s',
+  (boundary) => {
+    it.each(['draft', 'argument validation', 'review validation'])(
+      'discards a modeling command during %s',
+      async (stage) => {
+        const { app, kclManager } = createKclManagerTestHarness()
+        const pending = createDeferred<true>()
+        const validation = vi.fn(() => pending.promise)
+        const reviewValidation = vi.fn(async () => {
+          await pending.promise
+          return undefined
+        })
+        const onSubmit = vi.fn()
+        try {
+          const modelingActor = await kclManager.modelingActorPromise
+          const command: Command = {
+            name: 'Test modeling command',
+            groupId: 'modeling',
+            scopes: [MODE_MODELING_COMMAND_SCOPE],
+            machineActor: modelingActor,
+            useModelingDialog: true,
+            needsReview: stage === 'review validation',
+            reviewValidation,
+            onSubmit,
+            args: {
+              name: {
+                inputType: 'string',
+                required: true,
+                ...(stage === 'argument validation' ? { validation } : {}),
+              },
+            },
+          }
+          const actor = app.commands.actor
+          actor.send({ type: 'Add commands', data: { commands: [command] } })
+          actor.send({
+            type: 'Find and select command',
+            data: { name: command.name, groupId: command.groupId },
+          })
+          expect(actor.getSnapshot().matches('Gathering arguments')).toBe(true)
+          if (stage !== 'draft') {
+            actor.send({
+              type: 'Submit command from dialog',
+              data: { argumentsToSubmit: { name: 'stale draft' } },
+            })
+            await vi.waitFor(() =>
+              expect(
+                stage === 'argument validation' ? validation : reviewValidation
+              ).toHaveBeenCalledOnce()
+            )
+          }
+
+          if (boundary === 'editor closes') {
+            kclManager.close()
+          } else {
+            vi.spyOn(kclManager.sceneInfra, 'animate').mockImplementation(
+              () => {}
+            )
+            vi.spyOn(kclManager, 'showPlanes').mockResolvedValue([])
+            modelingActor.send({ type: 'Enter sketch' })
+            expect(modelingActor.getSnapshot().matches('Sketch no face')).toBe(
+              true
+            )
+          }
+          pending.resolve(true)
+          await flushPromises(10)
+
+          expect(actor.getSnapshot().matches('Closed')).toBe(true)
+          expect(actor.getSnapshot().context.selectedCommand).toBeUndefined()
+          expect(actor.getSnapshot().context.currentArgument).toBeUndefined()
+          expect(actor.getSnapshot().context.argumentsToSubmit).toEqual({})
+          expect(onSubmit).not.toHaveBeenCalled()
+        } finally {
+          app.dispose()
+        }
+      }
+    )
+  }
+)
 
 describe('KclManager settings ownership', () => {
   function mockEngineSettings(kclManager: KclManager) {
