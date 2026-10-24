@@ -4704,3 +4704,69 @@ async fn repeated_pass_settles_on_the_same_diagnostics() {
         "the second pass settled somewhere else"
     );
 }
+
+#[tokio::test]
+async fn semantic_tokens_distinguish_import_from_from_user_names() {
+    let server = kcl_lsp_server(false).await.unwrap();
+    let source = "@settings(kclVersion = 3.0)\nimport from from \"dims.kcl\"\nimport width as from from \"dims.kcl\"\nimport * from \"dims.kcl\"\nimport \"dims.kcl\" as from\nitem = { from = 1 }\nvalue = from\n";
+    crate::Program::parse_no_errs(source).unwrap();
+    let uri: tower_lsp::lsp_types::Url = "file:///semantic-imports.kcl".parse().unwrap();
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: uri.clone(),
+                language_id: "kcl".into(),
+                version: 1,
+                text: source.into(),
+            },
+        })
+        .await;
+    let result = server
+        .semantic_tokens_full(tower_lsp::lsp_types::SemanticTokensParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier { uri },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+    let tower_lsp::lsp_types::SemanticTokensResult::Tokens(tokens) = result else {
+        panic!("expected full tokens")
+    };
+    let (mut line, mut column) = (0u32, 0u32);
+    let mut actual = vec![];
+    for token in tokens.data {
+        line += token.delta_line;
+        column = if token.delta_line == 0 {
+            column + token.delta_start
+        } else {
+            token.delta_start
+        };
+        let text = &source.lines().nth(line as usize).unwrap()[column as usize..(column + token.length) as usize];
+        if text == "from" {
+            actual.push((line, token.token_type));
+        }
+    }
+    let variable = server
+        .get_semantic_token_type_index(&SemanticTokenType::VARIABLE)
+        .unwrap();
+    let keyword = server
+        .get_semantic_token_type_index(&SemanticTokenType::KEYWORD)
+        .unwrap();
+    let property = server
+        .get_semantic_token_type_index(&SemanticTokenType::PROPERTY)
+        .unwrap();
+    assert_eq!(
+        actual,
+        vec![
+            (1, variable),
+            (1, keyword),
+            (2, variable),
+            (2, keyword),
+            (3, keyword),
+            (4, variable),
+            (5, property),
+            (6, variable)
+        ]
+    );
+}

@@ -717,6 +717,26 @@ impl Backend {
                         };
 
                         match node {
+                            crate::walk::Node::ImportStatement(import)
+                                if params.text.get(token.start..token.end) == Some("from") =>
+                            {
+                                // `from` is contextual: the lexer also accepts it as a name.
+                                // Only the separator after the selector is an import keyword.
+                                let selector_end = match &import.selector {
+                                    crate::parsing::ast::types::ImportSelector::List { items } => {
+                                        items.last().map(|item| item.end)
+                                    }
+                                    crate::parsing::ast::types::ImportSelector::Glob(glob) => Some(glob.end),
+                                    crate::parsing::ast::types::ImportSelector::None { .. } => None,
+                                };
+                                if selector_end.is_some_and(|end| token.start >= end) {
+                                    let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                    *ti = self
+                                        .get_semantic_token_type_index(&SemanticTokenType::KEYWORD)
+                                        .unwrap_or(token_type_index);
+                                    return Ok(false);
+                                }
+                            }
                             crate::walk::Node::TagDeclarator(_) => {
                                 return get_modifier(vec![
                                     SemanticTokenModifier::DEFINITION,
