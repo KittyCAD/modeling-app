@@ -91,6 +91,29 @@ describe('ConnectionManager', () => {
     ReconnectTestWebSocket.instances = []
   })
 
+  it('only requests a rendering reconnect when the connected mode differs', () => {
+    const manager = createConnectionManager()
+    const requestReconnect = vi.fn()
+    const connection = new Connection({
+      url: 'wss://example.test/modeling?post_effect=ssao',
+      token: 'test-token',
+      handleOnDataChannelMessage: vi.fn(),
+      recordShutdownTrigger: vi.fn(() => true),
+      tearDownManager: vi.fn(),
+      rejectPendingCommand: vi.fn(),
+      handleMessage: vi.fn(),
+      getCloudProjectId: () => undefined,
+    })
+    vi.spyOn(connection, 'requestReconnect').mockImplementation(
+      requestReconnect
+    )
+    manager.connection = connection
+    manager.setViewportRendering('ssao')
+    expect(requestReconnect).not.toHaveBeenCalled()
+    manager.setViewportRendering('retrocad')
+    expect(requestReconnect).toHaveBeenCalledOnce()
+  })
+
   it('warns when Engine rejects a modeling command', async () => {
     const manager = createConnectionManager()
     manager.connection = {} as Connection
@@ -335,9 +358,13 @@ describe('ConnectionManager', () => {
     expect(newClose).not.toHaveBeenCalled()
   })
 
-  it.each([1000, 1006])(
-    'carries a reconnect request through socket closure %s and manager cleanup',
-    (code) => {
+  it.each([
+    { code: 1000, source: 'api' },
+    { code: 1006, source: 'api' },
+    { code: 1000, source: 'client' },
+  ] as const)(
+    'carries a $source reconnect through socket closure $code and manager cleanup',
+    ({ code, source }) => {
       vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
       const manager = createConnectionManager()
       const closeDetails: EngineDisconnectEventDetail[] = []
@@ -373,8 +400,13 @@ describe('ConnectionManager', () => {
         request_id: null,
         resp: { type: 'reconnect', data: {} },
       })
-      socket.dispatchEvent(new MessageEvent('message', { data: notice }))
-      socket.dispatchEvent(new MessageEvent('message', { data: notice }))
+      if (source === 'api') {
+        socket.dispatchEvent(new MessageEvent('message', { data: notice }))
+        socket.dispatchEvent(new MessageEvent('message', { data: notice }))
+      } else {
+        connection.requestReconnect()
+        connection.requestReconnect()
+      }
       expect(socket.close).toHaveBeenCalledExactlyOnceWith(
         1000,
         'reconnect requested'
@@ -385,7 +417,7 @@ describe('ConnectionManager', () => {
         expect.objectContaining({
           extra: expect.objectContaining({
             shutdownRoute: 'websocket-closed',
-            initiatedBy: 'api',
+            initiatedBy: source,
             websocketCloseCode: '1000',
             websocketCloseReason: 'reconnect requested',
             reconnectRequested: true,

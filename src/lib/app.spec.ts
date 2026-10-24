@@ -388,6 +388,9 @@ describe('project system', () => {
       )
       const engine = app.engineCommandManager
       const theme = vi.spyOn(engine, 'setTheme').mockResolvedValue(undefined)
+      const rendering = vi
+        .spyOn(engine, 'setViewportRendering')
+        .mockImplementation(() => {})
       const edges = vi
         .spyOn(engine, 'setHighlightEdges')
         .mockResolvedValue(undefined)
@@ -402,6 +405,7 @@ describe('project system', () => {
 
       project.executingPath = first.path
       expect(theme).not.toHaveBeenCalled()
+      expect(rendering).not.toHaveBeenCalled()
       expect(edges).not.toHaveBeenCalled()
       expect(backface).not.toHaveBeenCalled()
       expect(execute).not.toHaveBeenCalled()
@@ -417,10 +421,12 @@ describe('project system', () => {
       project.executingPath = second.path
       expect(project.executingEditor.peek()).toBe(second)
       expect(theme).toHaveBeenCalledTimes(1)
+      expect(rendering).toHaveBeenCalledExactlyOnceWith('ssao')
       expect(edges).toHaveBeenCalledTimes(1)
       expect(backface).toHaveBeenCalledTimes(1)
       project.executingPath = second.path
       expect(theme).toHaveBeenCalledTimes(1)
+      expect(rendering).toHaveBeenCalledTimes(1)
       expect(edges).toHaveBeenCalledTimes(1)
       expect(backface).toHaveBeenCalledTimes(1)
     } finally {
@@ -456,6 +462,10 @@ describe('project system', () => {
       vi.spyOn(app.engineCommandManager, 'setTheme').mockResolvedValue(
         undefined
       )
+      vi.spyOn(
+        app.engineCommandManager,
+        'setViewportRendering'
+      ).mockImplementation(() => {})
       vi.spyOn(app.engineCommandManager, 'setHighlightEdges').mockResolvedValue(
         undefined
       )
