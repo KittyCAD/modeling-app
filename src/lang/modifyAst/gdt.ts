@@ -45,7 +45,11 @@ const GDT_LABELED_SELECTION_ARG_NAMES = [
 function setCallInAst(args: Parameters<typeof setBaseCallInAst>[0]) {
   return setBaseCallInAst({
     ...args,
-    labeledSelectionArgNames: GDT_LABELED_SELECTION_ARG_NAMES,
+    // Keep the KCL-only marker override when editing other annotation properties.
+    labeledSelectionArgNames: [
+      ...GDT_LABELED_SELECTION_ARG_NAMES,
+      'leaderType',
+    ],
   })
 }
 
