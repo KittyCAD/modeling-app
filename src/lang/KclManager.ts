@@ -464,6 +464,7 @@ export class KclManager extends File {
   private readonly _editorView: EditorView
   private readonly _globalHistoryView: HistoryView
   private readonly editorStatesByPath = new Map<string, EditorState>()
+  private readonly editorDiskTimestampsByPath = new Map<string, number>()
   private restoredEditorHistoryOnLastFileSwitch = false
   private disposeGlobalHistorySubscription: (() => boolean) | undefined
 
@@ -706,61 +707,64 @@ export class KclManager extends File {
     ) {
       return
     }
-    // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
-    // unless the change was initiated by us (the currently running instance).
+    if (
+      this.zookeeperManagerMachineBulkManipulatingFileSystem ||
+      this.zookeeperHistoryRecordingInProgress
+    )
+      return
+
     const requestedDocumentVersion = this._documentVersion
-    this.textFileIO
-      .read(path)
-      .then((code) => {
-        if (requestedDocumentVersion !== this._documentVersion) {
-          return
-        }
-        const isInSketchMode =
-          this.modelingState?.matches('Sketch') ||
-          this.modelingState?.matches('sketchSolveMode')
+    const pendingWrite = this.diskWriteInProgress
+    void (async () => {
+      // Keep watching during saves. Wait for our write's timestamp before
+      // deciding whether this notification represents a newer disk revision.
+      await pendingWrite
+      if (
+        path !== this.path ||
+        requestedDocumentVersion !== this._documentVersion
+      )
+        return
+      const modifiedAt = await this.textFileIO.modifiedAt(path)
+      if (
+        modifiedAt <= this._diskModifiedAt ||
+        modifiedAt <= this._editorModifiedAt
+      )
+        return
+      const snapshot = await this.readWithTimestamp()
+      if (
+        path !== this.path ||
+        requestedDocumentVersion !== this._documentVersion
+      )
+        return
+      this.reloadDiskSnapshot(snapshot)
+    })().catch(reportRejection)
+  }
 
-        if (isCodeTheSame(code, this.code)) {
-          this.markFileCodeAsSynced(code)
-          return
-        }
-
-        // Zookeeper history needs to record the active-file edit against the
-        // editor's pre-write text, so don't let the watcher preemptively reload
-        // it or report its intermediate editor state as an unsaved local edit.
-        if (
-          this.zookeeperManagerMachineBulkManipulatingFileSystem ||
-          this.zookeeperHistoryRecordingInProgress
-        ) {
-          return
-        }
-
-        if (this.hasUnsavedLocalChanges()) {
-          console.warn(
-            'External file change detected while local edits are unsaved. Skipping automatic reload to avoid overwriting the editor buffer.'
-          )
-          toast.error(
-            'File changed on disk while this editor has unsaved changes. Reload was skipped to protect your work.'
-          )
-          return
-        }
-
-        if (!isCodeTheSame(code, this.code)) {
-          // Nothing written out yet by ourselves, or it's not the same as the current file content
-          // -> this must be an external change -> re-execute.
-          this.updateCodeEditor(code, {
-            shouldExecute: !isInSketchMode,
-            shouldResetCamera: !isInSketchMode,
-            shouldAddToHistory: true,
-            // We explicitly do not write to the file here since we are loading from
-            // the file system and not the editor.
-            shouldWriteToDisk: false,
-          })
-          this.markFileCodeAsSynced(code)
-
-          toast('Reloading file from disk.', { icon: '📁' })
-        }
-      })
-      .catch(reportRejection)
+  private reloadDiskSnapshot(snapshot: { code: string; modifiedAt: number }) {
+    if (
+      this.zookeeperManagerMachineBulkManipulatingFileSystem ||
+      this.zookeeperHistoryRecordingInProgress
+    )
+      return
+    // Equal timestamps keep the current editor revision.
+    if (
+      snapshot.modifiedAt <= this._diskModifiedAt ||
+      snapshot.modifiedAt <= this._editorModifiedAt
+    )
+      return
+    clearTimeout(this.timeoutWriter)
+    this.timeoutWriter = undefined
+    const isInSketchMode =
+      this.modelingState?.matches('Sketch') ||
+      this.modelingState?.matches('sketchSolveMode')
+    this.updateCodeEditor(snapshot.code, {
+      shouldExecute: !isInSketchMode,
+      shouldResetCamera: !isInSketchMode,
+      shouldAddToHistory: true,
+      shouldWriteToDisk: false,
+    })
+    this._editorModifiedAt = snapshot.modifiedAt
+    this.markFileAsSynced(snapshot.modifiedAt)
   }
   private _wasmInitFailed = signal<boolean | undefined>(undefined)
   private _astParseFailed = false
@@ -793,7 +797,6 @@ export class KclManager extends File {
   private _isShiftDown: boolean = false
   private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
-  private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
@@ -802,13 +805,15 @@ export class KclManager extends File {
   private sceneSettingsActive = signal(false)
   private disposeSettings: (() => void) | undefined
   private _automaticallyRenderEnabled = true
-  private _lastKnownFileCode = ''
+  private _editorModifiedAt = 0
+  private _syncedDocumentVersion = 0
+  private _diskModifiedAt = 0
+  private diskWriteInProgress: Promise<void> | undefined
   private pendingRecoverySnapshot: {
     path: string
     code: string
-    diskCode: string
+    modifiedAt: number
   } | null = null
-  public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public zookeeperManagerMachineBulkManipulatingFileSystem = false
   /**
    * Zookeeper needs to record history against the editor state captured before
@@ -1270,6 +1275,8 @@ export class KclManager extends File {
     if (update.docChanged) {
       const newCode = update.view.state.doc.toString()
       this._documentVersion += 1
+      // Keep epoch milliseconds for disk comparisons, with sub-millisecond precision.
+      this._editorModifiedAt = performance.timeOrigin + performance.now()
       const isProgrammaticUpdate = update.transactions.some((tr) => {
         const ignoredEvents = [
           tr.annotation(updateOutsideEditorEvent.type),
@@ -1861,18 +1868,38 @@ export class KclManager extends File {
     providedCode?: string,
     options: FromFileOptions = { shouldSyncRustOnOpen: true }
   ) {
-    const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
+    if (providedEditor) {
+      await providedEditor.flushWriteToFile({ suppressConflictToast: true })
+      options.assertCurrent?.()
+    }
+    // Desktop tests can explicitly seed editor contents through persistCode.
+    const snapshot =
+      providedCode === undefined
+        ? await file.readWithTimestamp()
+        : {
+            code: providedCode,
+            modifiedAt: await file.textFileIO.modifiedAt(file.path),
+          }
+    const diskCode = normalizeLineEndings(snapshot.code)
     options.assertCurrent?.()
     const recoverySnapshot = readRecoverySnapshot(file.path)
     const initialCode =
-      recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
+      recoverySnapshot && recoverySnapshot.modifiedAt > snapshot.modifiedAt
         ? normalizeLineEndings(recoverySnapshot.code)
         : diskCode
 
     if (!providedEditor) {
       const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
-      if (!isCodeTheSame(initialCode, diskCode)) {
-        editor.markFileCodeAsSynced(diskCode)
+      editor._editorModifiedAt = snapshot.modifiedAt
+      editor.markFileAsSynced(snapshot.modifiedAt)
+      if (
+        recoverySnapshot &&
+        recoverySnapshot.modifiedAt > snapshot.modifiedAt
+      ) {
+        editor._editorModifiedAt = recoverySnapshot.modifiedAt
+        // Recovered code is an unsaved revision of the disk snapshot.
+        editor._documentVersion += 1
+        editor.persistRecoverySnapshot()
       }
       editor.watch()
       return editor
@@ -1885,11 +1912,14 @@ export class KclManager extends File {
       providedEditor.closed = false
     }
     // TODO: remove all this once the app can handle an undefined currently-executing editor
-    await providedEditor.flushWriteToFile({ suppressConflictToast: true })
     providedEditor.flushRecoverySnapshot()
     providedEditor.editorStatesByPath.set(
       providedEditor.path,
       providedEditor.editorView.state
+    )
+    providedEditor.editorDiskTimestampsByPath.set(
+      providedEditor.path,
+      providedEditor._diskModifiedAt
     )
     providedEditor.path = file.path
     providedEditor.id = file.id
@@ -1897,7 +1927,11 @@ export class KclManager extends File {
     const savedEditorState = providedEditor.editorStatesByPath.get(file.path)
     const canRestoreEditorState =
       savedEditorState !== undefined &&
-      savedEditorState.doc.toString() === initialCode
+      (providedCode === undefined ||
+        savedEditorState.doc.toString() === initialCode) &&
+      providedEditor.editorDiskTimestampsByPath.get(file.path) ===
+        snapshot.modifiedAt &&
+      !(recoverySnapshot && recoverySnapshot.modifiedAt > snapshot.modifiedAt)
     providedEditor.restoredEditorHistoryOnLastFileSwitch = canRestoreEditorState
 
     if (savedEditorState && canRestoreEditorState) {
@@ -1921,7 +1955,14 @@ export class KclManager extends File {
         shouldWriteToDisk: false,
       })
     }
-    providedEditor.markFileCodeAsSynced(diskCode)
+    providedEditor._editorModifiedAt = snapshot.modifiedAt
+    providedEditor.markFileAsSynced(snapshot.modifiedAt)
+    if (recoverySnapshot && recoverySnapshot.modifiedAt > snapshot.modifiedAt) {
+      providedEditor._editorModifiedAt = recoverySnapshot.modifiedAt
+      // Recovered code is an unsaved revision of the disk snapshot.
+      providedEditor._documentVersion += 1
+      providedEditor.persistRecoverySnapshot()
+    }
     providedEditor.startWatchingSettings()
     providedEditor.refreshEditorSettings()
     providedEditor.watch()
@@ -1968,7 +2009,7 @@ export class KclManager extends File {
     this._editorView = this.createEditorView(initialCode)
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
-    this.markFileCodeAsSynced(initialCode)
+    this.markFileAsSynced()
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
     this.disposeGlobalHistorySubscription =
       this._globalHistoryView.subscribeToHistoryChanges(() => {
@@ -2011,7 +2052,6 @@ export class KclManager extends File {
     // Keep its stopped actor readable until reopening installs the next one.
     this._modelingState.value = null
     clearTimeout(this.timeoutWriter)
-    clearTimeout(this.timeoutRewatch)
     this.sceneSettingsActive.value = false
     this.disposeSettings?.()
     this.disposeSettings = undefined
@@ -2020,13 +2060,17 @@ export class KclManager extends File {
     this.unwatch()
   }
 
-  private markFileCodeAsSynced(code: string) {
-    this._lastKnownFileCode = normalizeLineEndings(code)
+  private markFileAsSynced(
+    modifiedAt = this._diskModifiedAt,
+    documentVersion = this._documentVersion
+  ) {
+    this._diskModifiedAt = modifiedAt
+    this._syncedDocumentVersion = documentVersion
     this.persistRecoverySnapshot()
   }
 
   private hasUnsavedLocalChanges() {
-    return !isCodeTheSame(this.code, this._lastKnownFileCode)
+    return this._documentVersion !== this._syncedDocumentVersion
   }
 
   private persistRecoverySnapshot() {
@@ -2034,7 +2078,7 @@ export class KclManager extends File {
       return
     }
 
-    if (isCodeTheSame(this.code, this._lastKnownFileCode)) {
+    if (!this.hasUnsavedLocalChanges()) {
       this.pendingRecoverySnapshot = null
       clearTimeout(this.timeoutRecoverySnapshot)
       this.timeoutRecoverySnapshot = undefined
@@ -2045,7 +2089,7 @@ export class KclManager extends File {
     this.pendingRecoverySnapshot = {
       path: this.path,
       code: this.code,
-      diskCode: this._lastKnownFileCode,
+      modifiedAt: this._editorModifiedAt,
     }
     clearTimeout(this.timeoutRecoverySnapshot)
     this.timeoutRecoverySnapshot = setTimeout(() => {
@@ -3318,7 +3362,7 @@ export class KclManager extends File {
       shouldResetCamera: false,
       shouldWriteToDisk: false,
     })
-    this.markFileCodeAsSynced(nextContent)
+    this.markFileAsSynced()
     return true
   }
   clearLocalHistory() {
@@ -3814,11 +3858,8 @@ export class KclManager extends File {
       // KclManager is reused across file navigation. Bind this save to the
       // file that owned the buffer when the debounce was scheduled.
       const requestedPath = this.path
-      // Only write our buffer contents to file once per second. Any faster
-      // and file-system watchers which read, will receive empty data during
-      // writes.
+      // Debounce edits while recording their original edit timestamp.
       clearTimeout(this.timeoutWriter)
-      clearTimeout(this.timeoutRewatch)
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
           this.timeoutWriter = undefined
@@ -3841,6 +3882,7 @@ export class KclManager extends File {
   async flushWriteToFile(
     options: { suppressConflictToast?: boolean } = {}
   ): Promise<boolean> {
+    await this.diskWriteInProgress
     if (!this.path) {
       return true
     }
@@ -3851,9 +3893,7 @@ export class KclManager extends File {
     }
 
     clearTimeout(this.timeoutWriter)
-    clearTimeout(this.timeoutRewatch)
     this.timeoutWriter = undefined
-    this.timeoutRewatch = undefined
 
     const flushCurrentBuffer = () =>
       this.performDelayedWriteToFile({
@@ -3878,13 +3918,13 @@ export class KclManager extends File {
   /**
    * Performs the debounced disk-sync work after `writeToFile()` schedules it.
    * This keeps the timeout callback synchronous while preserving the existing
-   * version checks, conflict detection, and watcher re-arm behavior.
+   * version checks and timestamp ordering.
    */
   private async performDelayedWriteToFile({
     newCode,
     requestedDocumentVersion,
     requestedPath,
-    options,
+    options: _options,
   }: {
     newCode: string
     requestedDocumentVersion: number
@@ -3901,84 +3941,55 @@ export class KclManager extends File {
       return
     }
 
-    if (
-      await this.seedDefaultKclVersionOnBlankMain(
-        requestedDocumentVersion,
-        requestedPath
-      )
-    ) {
-      return
-    }
-
-    let currentDiskCode: string | null = null
+    // Queue the whole observation/write operation, including its async stat.
+    const previousWrite = this.diskWriteInProgress
+    const { promise: writeInProgress, resolve: finishWrite } =
+      Promise.withResolvers<undefined>()
+    this.diskWriteInProgress = writeInProgress
+    let phase = 'stat_before_write'
     try {
-      currentDiskCode = normalizeLineEndings(
-        await this.textFileIO.read(requestedPath)
-      )
-    } catch (err: unknown) {
-      if (isPathNotFoundError(err)) {
-        currentDiskCode = null
-      } else {
-        reportSystemIOError({
-          error: err,
-          operation: 'save_kcl_file',
-          risk: 'write',
-          source: 'KclManager',
-          extra: {
-            phase: 'read_before_write',
-            hasUnsavedChanges: this.hasUnsavedLocalChanges(),
-            contentLength: newCode.length,
-          },
-        })
-        return Promise.reject(err)
-      }
-    }
-
-    if (
-      requestedDocumentVersion !== this._documentVersion ||
-      requestedPath !== this.path
-    ) {
-      return
-    }
-    if (currentDiskCode !== null && isCodeTheSame(currentDiskCode, newCode)) {
-      this.markFileCodeAsSynced(currentDiskCode)
-      return
-    }
-
-    const diskChangedSinceLastSync =
-      currentDiskCode !== null
-        ? !isCodeTheSame(currentDiskCode, this._lastKnownFileCode)
-        : this._lastKnownFileCode.length > 0
-    if (diskChangedSinceLastSync) {
-      console.warn(
-        'File changed on disk since last sync. Skipping save to avoid overwriting newer contents.'
-      )
-      if (!options.suppressConflictToast) {
-        toast.error(
-          'File changed on disk since this editor last synced. Save was skipped to avoid overwriting newer contents.'
-        )
-      }
-      return
-    }
-
-    this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-    this.unwatch()
-
-    try {
-      await this.write(newCode)
+      await previousWrite
       if (
         requestedDocumentVersion !== this._documentVersion ||
         requestedPath !== this.path
+      )
+        return
+      const editorModifiedAt = this._editorModifiedAt
+      const diskModifiedAt = await this.textFileIO.modifiedAt(requestedPath)
+      if (
+        requestedDocumentVersion !== this._documentVersion ||
+        requestedPath !== this.path
+      )
+        return
+      if (
+        diskModifiedAt > this._diskModifiedAt &&
+        diskModifiedAt > editorModifiedAt
+      ) {
+        const snapshot = await this.readWithTimestamp()
+        if (
+          requestedDocumentVersion !== this._documentVersion ||
+          requestedPath !== this.path
+        )
+          return
+        this.reloadDiskSnapshot(snapshot)
+        return
+      }
+
+      if (
+        await this.seedDefaultKclVersionOnBlankMain(
+          requestedDocumentVersion,
+          requestedPath
+        )
       ) {
         return
       }
-      this.markFileCodeAsSynced(newCode)
 
-      // After a cooldown, start watching this file again on disk.
-      this.timeoutRewatch = setTimeout(() => {
-        this.watch()
-        this.timeoutRewatch = undefined
-      }, 1_000)
+      phase = 'write'
+      await this.write(newCode)
+      const modifiedAt = await this.textFileIO.modifiedAt(requestedPath)
+      if (requestedPath !== this.path) return
+      // An edit during the write stays dirty even though this save completed.
+      this.markFileAsSynced(modifiedAt, requestedDocumentVersion)
     } catch (err: unknown) {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
       console.warn('error saving file', err)
@@ -3989,7 +4000,7 @@ export class KclManager extends File {
           risk: 'write',
           source: 'KclManager',
           extra: {
-            phase: 'write',
+            phase,
             hasUnsavedChanges: this.hasUnsavedLocalChanges(),
             contentLength: newCode.length,
           },
@@ -3997,6 +4008,11 @@ export class KclManager extends File {
       }
       toast.error('Error saving file, please check file permissions.')
       return Promise.reject(err)
+    } finally {
+      finishWrite(undefined)
+      if (this.diskWriteInProgress === writeInProgress) {
+        this.diskWriteInProgress = undefined
+      }
     }
   }
 
@@ -4107,7 +4123,7 @@ type RecoverySnapshot = {
   version: typeof RECOVERY_SNAPSHOT_VERSION
   path: string
   code: string
-  diskCode: string
+  modifiedAt: number
   savedAt: string
 }
 
@@ -4124,7 +4140,7 @@ function readRecoverySnapshot(path: string): RecoverySnapshot | null {
     if (
       parsed.version !== RECOVERY_SNAPSHOT_VERSION ||
       typeof parsed.code !== 'string' ||
-      typeof parsed.diskCode !== 'string' ||
+      !Number.isFinite(parsed.modifiedAt ?? Date.parse(parsed.savedAt ?? '')) ||
       typeof parsed.path !== 'string'
     ) {
       return null
@@ -4134,7 +4150,7 @@ function readRecoverySnapshot(path: string): RecoverySnapshot | null {
       version: RECOVERY_SNAPSHOT_VERSION,
       path: parsed.path,
       code: parsed.code,
-      diskCode: parsed.diskCode,
+      modifiedAt: parsed.modifiedAt ?? Date.parse(parsed.savedAt ?? ''),
       savedAt: typeof parsed.savedAt === 'string' ? parsed.savedAt : '',
     }
   } catch {
@@ -4145,11 +4161,11 @@ function readRecoverySnapshot(path: string): RecoverySnapshot | null {
 function writeRecoverySnapshot({
   path,
   code,
-  diskCode,
+  modifiedAt,
 }: {
   path: string
   code: string
-  diskCode: string
+  modifiedAt: number
 }) {
   safeLSSetItem(
     getRecoverySnapshotKey(path),
@@ -4157,7 +4173,7 @@ function writeRecoverySnapshot({
       version: RECOVERY_SNAPSHOT_VERSION,
       path,
       code,
-      diskCode,
+      modifiedAt,
       savedAt: new Date().toISOString(),
     } satisfies RecoverySnapshot)
   )

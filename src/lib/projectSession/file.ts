@@ -34,6 +34,14 @@ export class File extends EventTarget {
     return this.textFileIO.read(this.pathSignal.value)
   }
 
+  /** Read file contents and their disk modification time. */
+  async readWithTimestamp(): Promise<{ code: string; modifiedAt: number }> {
+    const path = this.path
+    const modifiedAt = await this.textFileIO.modifiedAt(path)
+    const code = await this.textFileIO.read(path)
+    return { code, modifiedAt }
+  }
+
   write(newContent: string) {
     return this.textFileIO.write(this.pathSignal.value, newContent)
   }

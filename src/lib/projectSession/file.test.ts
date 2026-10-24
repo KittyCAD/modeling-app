@@ -1,6 +1,6 @@
 import { File } from '@src/lib/projectSession/file'
 import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
-import { expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 function createIO() {
   const watch = vi.fn(
@@ -13,6 +13,16 @@ function createIO() {
   const unwatch = vi.fn((_path: string, _key: string) => {})
   const io = createTextFileIO(
     {
+      stat: vi.fn(async () => ({
+        kind: 'file' as const,
+        device: 0,
+        inode: 0,
+        size: 0,
+        accessedAt: 0,
+        modifiedAt: 0,
+        changedAt: 0,
+        createdAt: 0,
+      })),
       readFile: vi.fn(async () => new Uint8Array()),
       writeFile: vi.fn(async () => {}),
     },
@@ -92,4 +102,21 @@ it('does not watch an empty path or restart watching when the path is cleared', 
   expect(unwatch).toHaveBeenCalledOnce()
   expect(watch).toHaveBeenCalledOnce()
   expect(file.watching).toBe(false)
+})
+
+describe('reading a file with its timestamp', () => {
+  it('reads the modification time and contents once', async () => {
+    const { io } = createIO()
+    const timestamp = vi.spyOn(io, 'modifiedAt').mockResolvedValue(1000)
+    const read = vi.spyOn(io, 'read').mockResolvedValue('bytes')
+
+    await expect(
+      new File('/tmp/model.kcl', io).readWithTimestamp()
+    ).resolves.toEqual({
+      code: 'bytes',
+      modifiedAt: 1000,
+    })
+    expect(timestamp).toHaveBeenCalledExactlyOnceWith('/tmp/model.kcl')
+    expect(read).toHaveBeenCalledExactlyOnceWith('/tmp/model.kcl')
+  })
 })
