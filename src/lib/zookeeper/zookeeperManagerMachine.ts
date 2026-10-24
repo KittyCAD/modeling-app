@@ -5,7 +5,10 @@ import type {
   MlCopilotFile,
   MlCopilotServerMessage,
 } from '@kittycad/lib'
-import { decode as msgpackDecode } from '@msgpack/msgpack'
+import {
+  decode as msgpackDecode,
+  encode as msgpackEncode,
+} from '@msgpack/msgpack'
 import {
   type CustomIconName,
   isCustomIconName,
@@ -249,9 +252,17 @@ export const ZOOKEEPER_HEARTBEAT_INTERVAL_MS = 4_000
 export const ZOOKEEPER_HEARTBEAT_TIMEOUT_MS = 30_000
 export const ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE = 4409
 const ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS = 5_000
+// Matches text-to-cad's --ws-max-size.
+const ZOOKEEPER_MAX_MESSAGE_BYTES = 128 * 1024 * 1024
 
 const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
+
+class ZookeeperProjectTooLargeError extends Error {
+  constructor() {
+    super(ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON)
+  }
+}
 
 class ZookeeperSetupConnectionError extends Error {
   closeReason?: string
@@ -1189,11 +1200,28 @@ export const zookeeperManagerMachine = setup({
 
           // Any WS protocol messages will trigger the `api` heartbeat update.
           let heartbeatSentAt: number | undefined
+          let previousBufferedAmount = 0
           const pingIntervalId = setInterval(() => {
             if (ws.readyState !== WebSocket.OPEN) {
               return
             }
             const now = Date.now()
+            const bufferedAmount = ws.bufferedAmount
+            // A heartbeat queues behind the project upload. Allow the upload
+            // to keep progressing before waiting for a heartbeat response.
+            if (bufferedAmount > 0) {
+              if (
+                heartbeatSentAt === undefined ||
+                previousBufferedAmount === 0 ||
+                bufferedAmount < previousBufferedAmount
+              ) {
+                heartbeatSentAt = now
+              }
+              previousBufferedAmount = bufferedAmount
+            } else if (previousBufferedAmount > 0) {
+              previousBufferedAmount = 0
+              heartbeatSentAt = undefined
+            }
             if (heartbeatSentAt !== undefined) {
               const heartbeatElapsed = now - heartbeatSentAt
               if (heartbeatElapsed >= ZOOKEEPER_HEARTBEAT_TIMEOUT_MS) {
@@ -1214,6 +1242,9 @@ export const zookeeperManagerMachine = setup({
                 }
                 heartbeatSentAt = undefined
               }
+            }
+            if (bufferedAmount > 0) {
+              return
             }
             ws.send(JSON.stringify({ type: 'ping' }))
             heartbeatSentAt ??= now
@@ -1617,7 +1648,11 @@ export const zookeeperManagerMachine = setup({
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
-      context.ws.send(JSON.stringify(request))
+      const encodedRequest = msgpackEncode(request, { ignoreUndefined: true })
+      if (encodedRequest.byteLength > ZOOKEEPER_MAX_MESSAGE_BYTES) {
+        return Promise.reject(new ZookeeperProjectTooLargeError())
+      }
+      context.ws.send(encodedRequest)
 
       const exchange: Exchange = {
         request,
@@ -1689,8 +1724,14 @@ export const zookeeperManagerMachine = setup({
         command: 'continue',
       }
 
+      const encodedRequest = msgpackEncode(requestProjectContext, {
+        ignoreUndefined: true,
+      })
+      if (encodedRequest.byteLength > ZOOKEEPER_MAX_MESSAGE_BYTES) {
+        return Promise.reject(new ZookeeperProjectTooLargeError())
+      }
       context.ws.send(JSON.stringify(requestContinue))
-      context.ws.send(JSON.stringify(requestProjectContext))
+      context.ws.send(encodedRequest)
 
       return {
         awaitingResponse: true,
@@ -1967,7 +2008,15 @@ export const zookeeperManagerMachine = setup({
             }),
           ],
         },
-        onError: { target: S.Await, actions: ['toastError'] },
+        onError: [
+          {
+            guard: ({ event }) =>
+              event.error instanceof ZookeeperProjectTooLargeError,
+            target: ZookeeperManagerStates.WaitForContinueCheck,
+            actions: ['toastError'],
+          },
+          { target: S.Await, actions: ['toastError'] },
+        ],
       },
     },
     [ZookeeperManagerStates.Ready]: {
