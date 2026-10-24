@@ -228,7 +228,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 </span>
                 <button
                   type="button"
-                  className="reset grid h-6 w-6 shrink-0 place-items-center text-chalkboard-70 hover:text-primary disabled:cursor-default disabled:opacity-50 dark:text-chalkboard-30"
+                  className="reset grid h-6 w-6 shrink-0 place-items-center border-none text-chalkboard-70 hover:text-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-default disabled:opacity-50 dark:text-chalkboard-30"
                   aria-label={
                     isActive ? `${row.label} is active` : `Apply ${row.label}`
                   }
@@ -256,7 +256,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 </button>
                 <button
                   type="button"
-                  className="reset flex min-w-0 flex-1 items-center gap-2 self-stretch text-left !text-xs"
+                  className="reset flex min-w-0 flex-1 items-center gap-2 self-stretch border-none text-left !text-xs focus-visible:ring-1 focus-visible:ring-primary"
                   disabled={!manageableView || editDisabled}
                   onDoubleClick={(event) => {
                     if (!manageableView || editDisabled) return
