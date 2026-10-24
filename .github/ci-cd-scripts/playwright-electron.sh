@@ -3,6 +3,8 @@
 # bash strict mode
 set -euo pipefail
 
+# Optional arguments after the platform select tests on both the initial run and retries.
+
 first_failure_dir=".playwright-first-failure"
 
 if [[ -d "test-results/first-failure" ]]; then
@@ -36,11 +38,11 @@ if [[ ! -f "test-results/.last-run.json" ]]; then
     # If no last run artifact, than run Playwright normally
     echo "run playwright normally"
     if [[ "$3" == *ubuntu* ]]; then
-        xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --shard=$1/$2 || true
+        xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --shard=$1/$2 "${@:4}" || true
     elif [[ "$3" == *windows* ]]; then
-        npm run test:e2e:desktop -- --grep=@windows --grep-invert=@web --shard=$1/$2 || true
+        npm run test:e2e:desktop -- --grep=@windows --grep-invert=@web --shard=$1/$2 "${@:4}" || true
     elif [[ "$3" == *macos* ]]; then
-        npm run test:e2e:desktop -- --grep=@macos --grep-invert=@web --shard=$1/$2 || true
+        npm run test:e2e:desktop -- --grep=@macos --grep-invert=@web --shard=$1/$2 "${@:4}" || true
     else
         echo "Do not run Playwright. Unable to detect os runtime."
         exit 1
@@ -64,11 +66,11 @@ while [[ $retry -le $max_retries ]]; do
             echo "retried=true" >>$GITHUB_OUTPUT
             echo "run playwright with last failed tests and retry $retry"
             if [[ "$3" == *ubuntu* ]]; then
-                xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --last-failed || true
+                xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --last-failed "${@:4}" || true
             elif [[ "$3" == *windows* ]]; then
-                npm run test:e2e:desktop -- --grep=@windows --grep-invert=@web --last-failed || true
+                npm run test:e2e:desktop -- --grep=@windows --grep-invert=@web --last-failed "${@:4}" || true
             elif [[ "$3" == *macos* ]]; then
-                npm run test:e2e:desktop -- --grep=@macos --grep-invert=@web --last-failed || true
+                npm run test:e2e:desktop -- --grep=@macos --grep-invert=@web --last-failed "${@:4}" || true
             else
                 echo "Do not run playwright. Unable to detect os runtime."
                 exit 1
