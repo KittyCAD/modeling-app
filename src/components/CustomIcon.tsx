@@ -1324,6 +1324,21 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  sidebar: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="sidebar"
+    >
+      <path
+        d="M16.5 15.5H3.5V5.5H16.5V15.5ZM4.5 14.5H7.5V6.5H4.5V14.5ZM8.5 14.5H15.5V6.5H8.5V14.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   layout: (
     <svg
       viewBox="0 0 20 20"
