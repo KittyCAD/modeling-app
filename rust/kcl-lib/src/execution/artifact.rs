@@ -2061,17 +2061,14 @@ fn artifacts_to_update(
                 None => id,
                 Some(_) => return Ok(Vec::new()),
             };
-            let Some(first_curve_id) = cmd.curve_ids.first().copied().map(ArtifactId::new) else {
-                return Ok(Vec::new());
-            };
-            let path_id = match artifacts.get(&first_curve_id) {
-                Some(Artifact::Path(path)) => Some(path.id),
-                Some(Artifact::Segment(segment)) => Some(segment.path_id),
-                Some(Artifact::SweepEdge(edge)) => match artifacts.get(&edge.sweep_id) {
-                    Some(Artifact::Sweep(sweep)) => sweep.path_id,
-                    _ => None,
-                },
-                _ => None,
+            let path_id = match &cmd.target {
+                kcmc::shared::PlanarSurfaceTarget::Region { region_id } => {
+                    match artifacts.get(&ArtifactId::new(*region_id)) {
+                        Some(Artifact::Path(path)) => Some(path.id),
+                        _ => None,
+                    }
+                }
+                kcmc::shared::PlanarSurfaceTarget::Edge { .. } => None,
             };
             return Ok(vec![Artifact::Sweep(Sweep {
                 id: surface_id,

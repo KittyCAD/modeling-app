@@ -1188,7 +1188,13 @@ fn planar_surface_artifact_uses_the_created_body_id_and_source_range() {
         range,
         command: ModelingCmd::from(
             kcmc::each_cmd::CreatePlanarSurface::builder()
-                .curve_ids(vec![curve_id])
+                .target(kcmc::shared::PlanarSurfaceTarget::Edge {
+                    specifier: vec![
+                        kcmc::shared::EdgeSpecifier::builder()
+                            .side_faces(vec![curve_id])
+                            .build(),
+                    ],
+                })
                 .tolerance(kcmc::length_unit::LengthUnit(0.01))
                 .build(),
         ),
