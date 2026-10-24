@@ -10,11 +10,25 @@ const NAMESPACE_KCL: uuid::Uuid = uuid::uuid!("8bda3118-75eb-58c7-a866-bef1dcb49
 pub struct IdGenerator {
     module_id: Option<ModuleId>,
     next_id: u64,
+    namespace: Option<uuid::Uuid>,
 }
 
 impl IdGenerator {
     pub fn new(module_id: Option<ModuleId>) -> Self {
-        Self { module_id, next_id: 0 }
+        Self {
+            module_id,
+            next_id: 0,
+            namespace: None,
+        }
+    }
+
+    /// Follow-up commands must not reuse IDs allocated by the remote interpreter.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub(super) fn remote_session() -> Self {
+        Self {
+            namespace: Some(uuid::Uuid::new_v4()),
+            ..Self::default()
+        }
     }
 
     pub fn next_uuid(&mut self) -> uuid::Uuid {
@@ -25,7 +39,7 @@ impl IdGenerator {
             self.module_id.map(|id| id.to_string()).unwrap_or("none".to_string()),
             next_id
         );
-        let next_uuid = uuid::Uuid::new_v5(&NAMESPACE_KCL, next.as_bytes());
+        let next_uuid = uuid::Uuid::new_v5(self.namespace.as_ref().unwrap_or(&NAMESPACE_KCL), next.as_bytes());
 
         self.next_id += 1;
 
