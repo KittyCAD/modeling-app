@@ -7,6 +7,7 @@ import type {
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
+import { validateGdtText } from '@src/lib/gdtTextValidation'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
@@ -1971,6 +1972,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isEditingNodeSelection,
           },
           name: {
+            validation: ({ data }) =>
+              validateGdtText({
+                data: typeof data === 'string' ? data : data.name,
+              }),
             defaultValue: (_, modelingContext) =>
               modelingContext
                 ? getNextAvailableDatumName(modelingContext.kclManager.ast)
@@ -2228,6 +2233,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           annotation: {
             inputType: 'text',
+            validation: ({ data }) =>
+              validateGdtText({
+                data: typeof data === 'string' ? data : data.annotation,
+              }),
             defaultValue: 'BREAK ALL SHARP EDGES',
           },
           ...gdtFrameDisplayArgOverrides,
@@ -2248,6 +2257,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           note: {
             inputType: 'text',
+            validation: ({ data }) =>
+              validateGdtText({
+                data: typeof data === 'string' ? data : data.note,
+              }),
             defaultValue: 'Note:',
           },
           framePosition: gdtFrameDisplayArgOverrides.framePosition,

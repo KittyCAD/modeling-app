@@ -29,6 +29,7 @@ import type {
   CommandArgumentConfig,
   KclCommandValue,
 } from '@src/lib/commandTypes'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import {
   KCL_AXIS_Z,
   KCL_DEFAULT_ROTATE_ANGLE,
@@ -102,6 +103,44 @@ gdt::datum(face = capEnd001, name = "A")`
     // Should return 'B' since 'A' is already used
     expect(getNextAvailableDatumName(ast)).toBe('B')
   })
+})
+
+describe('GDT text input validation', () => {
+  it.each([
+    ['GDT Note', 'note'],
+    ['GDT Annotation', 'annotation'],
+    ['GDT Datum', 'name'],
+  ] as const)(
+    'rejects unsupported quotes in %s',
+    async (commandName, argName) => {
+      const config = modelingMachineCommandConfig[commandName]
+      if (!config || isArray(config))
+        throw new Error('Expected a command config')
+      const arg = Object.entries(config.args ?? {}).find(
+        ([name]) => name === argName
+      )?.[1]
+      if (!arg || !('validation' in arg) || !arg.validation) {
+        throw new Error('Expected GDT text validation')
+      }
+      expect(
+        await arg.validation({
+          data: { [argName]: 'Use "datum A"' },
+          context: {} as CommandBarContext,
+        })
+      ).toEqual(expect.any(String))
+      expect(
+        await arg.validation({
+          data: 'Use "datum A"',
+          context: {} as CommandBarContext,
+        })
+      ).toEqual(expect.any(String))
+      for (const data of ['Use datum A', { [argName]: 'Use datum A' }]) {
+        expect(
+          await arg.validation({ data, context: {} as CommandBarContext })
+        ).toBe(true)
+      }
+    }
+  )
 })
 
 describe('GDT tolerance defaults', () => {

@@ -1,14 +1,199 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createActor } from 'xstate'
+import toast from 'react-hot-toast'
 
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Command } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { validateGdtText } from '@src/lib/gdtTextValidation'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 describe('commandBarMachine', () => {
+  it.each([false, true])(
+    'keeps invalid GDT text at the input step and accepts a corrected value (prefilled: %s)',
+    async (prefilled) => {
+      const onSubmit = vi.fn()
+      const command = {
+        scopes: GLOBAL_COMMAND_SCOPES,
+        name: 'Test GDT Note',
+        groupId: 'test',
+        needsReview: true,
+        onSubmit,
+        args: {
+          note: {
+            inputType: 'text',
+            required: true,
+            validation: ({ data }) => validateGdtText({ data: data.note }),
+          },
+        },
+      } satisfies Command
+      const actor = createActor(commandBarMachine, {
+        input: {
+          commands: [command],
+          wasmInstancePromise: Promise.resolve({} as ModuleType),
+          machineManager: {} as MachineManager,
+        },
+      }).start()
+      try {
+        actor.send({ type: 'Open' })
+        actor.send({
+          type: 'Select command',
+          data: {
+            command,
+            ...(prefilled
+              ? { argDefaultValues: { note: 'Use "datum A"' } }
+              : {}),
+          },
+        })
+        if (!prefilled) {
+          actor.send({
+            type: 'Submit argument',
+            data: { note: 'Use "datum A"' },
+          })
+        }
+        await vi.waitFor(() => {
+          expect(
+            actor
+              .getSnapshot()
+              .matches({ 'Gathering arguments': 'Awaiting input' })
+          ).toBe(true)
+        })
+        expect(actor.getSnapshot().context.argumentsToSubmit.note).toBe(
+          prefilled ? 'Use "datum A"' : undefined
+        )
+        expect(onSubmit).not.toHaveBeenCalled()
+        actor.send({
+          type: 'Submit argument',
+          data: { note: 'Use datum A' },
+        })
+        await vi.waitFor(() =>
+          expect(actor.getSnapshot().matches('Review')).toBe(true)
+        )
+        expect(actor.getSnapshot().context.argumentsToSubmit.note).toBe(
+          'Use datum A'
+        )
+      } finally {
+        actor.stop()
+      }
+    }
+  )
+  it('validates an existing datum name when only its frame plane changes', async () => {
+    const command = {
+      scopes: GLOBAL_COMMAND_SCOPES,
+      name: 'Test GDT Datum',
+      groupId: 'test',
+      needsReview: true,
+      onSubmit: vi.fn(),
+      args: {
+        name: {
+          inputType: 'string',
+          required: true,
+          validation: ({ data }) => validateGdtText({ data: data.name }),
+        },
+        framePlane: { inputType: 'string', required: false },
+      },
+    } satisfies Command
+    const actor = createActor(commandBarMachine, {
+      input: {
+        commands: [command],
+        wasmInstancePromise: Promise.resolve({} as ModuleType),
+        machineManager: {} as MachineManager,
+      },
+    }).start()
+    try {
+      actor.send({ type: 'Open' })
+      actor.send({
+        type: 'Select command',
+        data: { command, argDefaultValues: { name: '\n', framePlane: 'XY' } },
+      })
+      actor.send({
+        type: 'Change current argument',
+        data: { arg: { ...command.args.framePlane, name: 'framePlane' } },
+      })
+      actor.send({ type: 'Submit argument', data: { framePlane: 'XZ' } })
+      await vi.waitFor(() => {
+        expect(
+          actor
+            .getSnapshot()
+            .matches({ 'Gathering arguments': 'Awaiting input' })
+        ).toBe(true)
+        expect(actor.getSnapshot().context.currentArgument?.name).toBe('name')
+      })
+      actor.send({ type: 'Submit argument', data: { name: 'A' } })
+      await vi.waitFor(() =>
+        expect(actor.getSnapshot().matches('Review')).toBe(true)
+      )
+    } finally {
+      actor.stop()
+    }
+  })
+
+  it('does not validate annotation text before the user reaches that input', async () => {
+    const errorToast = vi.spyOn(toast, 'error')
+    const command = {
+      scopes: GLOBAL_COMMAND_SCOPES,
+      name: 'Test GDT Annotation',
+      groupId: 'test',
+      needsReview: true,
+      onSubmit: vi.fn(),
+      args: {
+        objects: {
+          inputType: 'selection',
+          required: true,
+          multiple: true,
+          selectionTypes: ['wall'],
+        },
+        annotation: {
+          inputType: 'text',
+          required: true,
+          validation: ({ data }) => validateGdtText({ data: data.annotation }),
+        },
+      },
+    } satisfies Command
+    const actor = createActor(commandBarMachine, {
+      input: {
+        commands: [command],
+        wasmInstancePromise: Promise.resolve({} as ModuleType),
+        machineManager: {} as MachineManager,
+      },
+    }).start()
+    try {
+      actor.send({ type: 'Open' })
+      actor.send({ type: 'Select command', data: { command } })
+      await vi.waitFor(() =>
+        expect(actor.getSnapshot().context.currentArgument?.name).toBe(
+          'objects'
+        )
+      )
+      actor.send({
+        type: 'Submit argument',
+        data: { objects: { graphSelections: [], otherSelections: [] } },
+      })
+      await vi.waitFor(() => {
+        expect(actor.getSnapshot().context.currentArgument?.name).toBe(
+          'annotation'
+        )
+        expect(
+          actor
+            .getSnapshot()
+            .matches({ 'Gathering arguments': 'Awaiting input' })
+        ).toBe(true)
+      })
+      expect(errorToast).not.toHaveBeenCalled()
+      actor.send({
+        type: 'Submit argument',
+        data: { annotation: 'BREAK ALL SHARP EDGES' },
+      })
+      await vi.waitFor(() =>
+        expect(actor.getSnapshot().matches('Review')).toBe(true)
+      )
+    } finally {
+      actor.stop()
+      errorToast.mockRestore()
+    }
+  })
   it('preserves hidden default values that are not declared command args', () => {
     const command = {
       scopes: GLOBAL_COMMAND_SCOPES,
