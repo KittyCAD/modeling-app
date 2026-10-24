@@ -1,0 +1,129 @@
+{
+  "purpose": "rank solver-safe candidates by recovering hidden KCL constraints",
+  "label_provenance": "masked_internal_kcl_constraints",
+  "cad_reviewed_labels": 0,
+  "source_families": 6,
+  "captured_selections": 76,
+  "usable_selections": 56,
+  "candidate_recall": 0.7368421052631579,
+  "leave_one_family_out": [
+    {
+      "held_out_family": "equal-radius-circles",
+      "train_selections": 46,
+      "baseline": {
+        "selections": 10,
+        "top_one": 10,
+        "ambiguous": 10,
+        "ambiguous_top_one": 10
+      },
+      "learned": {
+        "selections": 10,
+        "top_one": 10,
+        "ambiguous": 10,
+        "ambiguous_top_one": 10
+      }
+    },
+    {
+      "held_out_family": "tangent-line-circle",
+      "train_selections": 46,
+      "baseline": {
+        "selections": 10,
+        "top_one": 10,
+        "ambiguous": 0,
+        "ambiguous_top_one": 0
+      },
+      "learned": {
+        "selections": 10,
+        "top_one": 10,
+        "ambiguous": 0,
+        "ambiguous_top_one": 0
+      }
+    },
+    {
+      "held_out_family": "triangle-profile",
+      "train_selections": 36,
+      "baseline": {
+        "selections": 20,
+        "top_one": 19,
+        "ambiguous": 10,
+        "ambiguous_top_one": 9
+      },
+      "learned": {
+        "selections": 20,
+        "top_one": 20,
+        "ambiguous": 10,
+        "ambiguous_top_one": 10
+      }
+    },
+    {
+      "held_out_family": "rectangle-profile",
+      "train_selections": 44,
+      "baseline": {
+        "selections": 12,
+        "top_one": 12,
+        "ambiguous": 12,
+        "ambiguous_top_one": 12
+      },
+      "learned": {
+        "selections": 12,
+        "top_one": 12,
+        "ambiguous": 12,
+        "ambiguous_top_one": 12
+      }
+    },
+    {
+      "held_out_family": "arc-profile",
+      "train_selections": 55,
+      "baseline": {
+        "selections": 1,
+        "top_one": 1,
+        "ambiguous": 1,
+        "ambiguous_top_one": 1
+      },
+      "learned": {
+        "selections": 1,
+        "top_one": 1,
+        "ambiguous": 1,
+        "ambiguous_top_one": 1
+      }
+    },
+    {
+      "held_out_family": "fillet-profile",
+      "train_selections": 53,
+      "baseline": {
+        "selections": 3,
+        "top_one": 3,
+        "ambiguous": 1,
+        "ambiguous_top_one": 1
+      },
+      "learned": {
+        "selections": 3,
+        "top_one": 3,
+        "ambiguous": 1,
+        "ambiguous_top_one": 1
+      }
+    }
+  ],
+  "leave_one_family_out_summary": {
+    "baseline": {
+      "selections": 56,
+      "top_one": 55,
+      "ambiguous": 34,
+      "ambiguous_top_one": 33
+    },
+    "learned": {
+      "selections": 56,
+      "top_one": 56,
+      "ambiguous": 34,
+      "ambiguous_top_one": 34
+    }
+  },
+  "enable_in_preview": true,
+  "enable_reason": "The trained ranker matched or beat the rules order on weak-label family holdouts; this is an experimental preview only.",
+  "limitations": [
+    "Labels recover hidden fixture constraints, not CAD-reviewed design intent.",
+    "Other candidates may also encode valid design intent; weak negatives are uncertain.",
+    "The model only ranks generated, solver-safe candidates; it cannot recover a candidate the generator missed.",
+    "Perturbed variants of one source sketch share a family and are held out together."
+  ]
+}

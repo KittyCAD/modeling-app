@@ -23,6 +23,7 @@ import type {
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
+import { recordSuggestionMetric } from '@src/machines/sketchSolve/constraints/constraintSuggestionMetrics'
 import {
   buildCircularSizeDimensionConstraintInput,
   getLinePoints,
@@ -395,6 +396,28 @@ export const sketchSolveMachine = setup({
           sendToolbarConstraintOutcome(self, result.result, keepSelection)
         }
       })
+    },
+    'apply suggested constraint': ({ context, event, self }) => {
+      assertEvent(event, 'apply suggested constraint')
+      void runSketchSolveToolbarAction(
+        `apply suggested ${event.data.payload.type} constraint`,
+        async () => {
+          try {
+            const result = await context.rustContext.addConstraint(
+              0,
+              context.sketchId,
+              event.data.payload,
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
+            )
+            recordSuggestionMetric('applied', event.data.payload.type)
+            sendToolbarConstraintOutcome(self, result)
+          } catch (error) {
+            recordSuggestionMetric('applyFailed', event.data.payload.type)
+            return Promise.reject(error)
+          }
+        }
+      )
     },
     'send tool equipped to parent': sendParent(({ context }) => ({
       type: 'sketch solve tool changed',
@@ -940,6 +963,20 @@ export const sketchSolveMachine = setup({
     'move and select': {
       entry: ['setUpOnDragAndSelectionClickCallbacks'],
       on: {
+        'apply suggested constraint': {
+          guard: ({ context, event }) => {
+            assertEvent(event, 'apply suggested constraint')
+            return (
+              context.sketchExecOutcome?.sceneGraphDelta ===
+                event.data.sceneGraphDelta &&
+              context.selectedIds.length === event.data.selectedIds.length &&
+              context.selectedIds.every(
+                (id, index) => id === event.data.selectedIds[index]
+              )
+            )
+          },
+          actions: 'apply suggested constraint',
+        },
         'equip tool': [
           {
             guard: ({ context, event }) => {
