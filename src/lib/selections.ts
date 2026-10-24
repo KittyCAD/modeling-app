@@ -1815,7 +1815,17 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  if (clickEntityId && engineCommandManager) {
+  if (
+    clickEntityId &&
+    engineCommandManager &&
+    !(
+      entityRef.type === 'edge' &&
+      entityRef.side_faces.length > 0 &&
+      [...entityRef.side_faces, ...(entityRef.end_faces ?? [])].every((id) =>
+        artifactGraph.has(id)
+      )
+    )
+  ) {
     const primitiveSel = await getPrimitiveSelectionForEntity(
       clickEntityId,
       engineCommandManager,

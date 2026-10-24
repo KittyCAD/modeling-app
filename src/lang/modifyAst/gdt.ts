@@ -15,7 +15,7 @@ import {
   setCallInAst as setBaseCallInAst,
 } from '@src/lang/modifyAst'
 import {
-  createEdgeRefObjectExpression,
+  createEdgeRefFromSelection,
   entityReferenceToEdgeRefPayload,
 } from '@src/lang/modifyAst/edges'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
@@ -247,7 +247,8 @@ function buildGdtEdgeExpressions({
           }
         : undefined
 
-    const edgeRefResult = createEdgeRefObjectExpression(
+    const edgeRefResult = createEdgeRefFromSelection(
+      selection,
       payload,
       wasmInstance,
       modifiedAst,

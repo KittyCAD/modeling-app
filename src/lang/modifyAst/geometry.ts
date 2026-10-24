@@ -11,7 +11,7 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
-  createEdgeRefObjectExpression,
+  createEdgeRefFromSelection,
   edgeSelectionToEntityReference,
   entityReferenceToEdgeRefPayload,
   getEdgeTagCall,
@@ -222,7 +222,8 @@ export function getAxisExpression(
 
     if (edgeEntityRef && !err(edgeEntityRef) && edgeEntityRef.type === 'edge') {
       const payload = entityReferenceToEdgeRefPayload(edgeEntityRef)
-      const edgeRefResult = createEdgeRefObjectExpression(
+      const edgeRefResult = createEdgeRefFromSelection(
+        firstEdgeSelection,
         payload,
         wasmInstance,
         modifiedAst,
