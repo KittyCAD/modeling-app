@@ -1,6 +1,5 @@
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import type { KclManager } from '@src/lang/KclManager'
@@ -49,7 +48,6 @@ function createUseExportToSlicerDisabled({
   return function useExportToSlicerDisabled() {
     useSignals()
     const { overallState, immediateState } = useNetworkContext()
-    const { isStreamReady } = useAppState()
     const kclManager = getKclManager()
     const engineIsBusyOrUnavailable =
       !kclManager ||
@@ -57,7 +55,7 @@ function createUseExportToSlicerDisabled({
         overallState !== NetworkHealthState.Weak) ||
       kclManager.isExecutingSignal.value ||
       immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
-      !isStreamReady
+      !kclManager.engineCommandManager.isStreamReady.value
 
     return engineIsBusyOrUnavailable
       ? 'Need engine connection to export'

@@ -49,7 +49,6 @@ export const createOnEngineConnectionOpened = ({
   listenToDarkModeMatcher,
   camControlsCameraChange,
   connection,
-  setStreamIsReady,
 }: {
   settings: SettingsViaQueryString
   sendSceneCommand: (
@@ -61,7 +60,6 @@ export const createOnEngineConnectionOpened = ({
   listenToDarkModeMatcher: () => void
   camControlsCameraChange: () => void
   connection: Connection
-  setStreamIsReady: (isStreamReady: boolean) => void
 }) => {
   const onEngineConnectionOpened = async () => {
     // Set the stream's camera projection type
@@ -147,9 +145,6 @@ export const createOnEngineConnectionOpened = ({
         detail: connection,
       })
     )
-
-    // Enables the toolbar reading from App state
-    setStreamIsReady(true)
   }
   return onEngineConnectionOpened
 }
