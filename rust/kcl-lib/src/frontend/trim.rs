@@ -3614,27 +3614,27 @@ pub async fn execute_trim_loop_with_context(
 fn segment_ctor_units(ctor: &SegmentCtor) -> NumericSuffix {
     match ctor {
         SegmentCtor::Line(line_ctor) => match &line_ctor.start.x {
-            kcl_api::Expr::Var(v) | kcl_api::Expr::Number(v) => v.units,
+            kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
             _ => NumericSuffix::Mm,
         },
         SegmentCtor::Arc(arc_ctor) => match &arc_ctor.start.x {
-            kcl_api::Expr::Var(v) | kcl_api::Expr::Number(v) => v.units,
+            kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
             _ => NumericSuffix::Mm,
         },
         SegmentCtor::Circle(circle_ctor) => match &circle_ctor.start.x {
-            kcl_api::Expr::Var(v) | kcl_api::Expr::Number(v) => v.units,
+            kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
             _ => NumericSuffix::Mm,
         },
         SegmentCtor::ControlPointSpline(spline_ctor) => spline_ctor
             .points
             .first()
             .and_then(|point| match &point.x {
-                kcl_api::Expr::Var(v) | kcl_api::Expr::Number(v) => Some(v.units),
+                kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => Some(v.units),
                 _ => None,
             })
             .unwrap_or(NumericSuffix::Mm),
         SegmentCtor::Point(point_ctor) => match &point_ctor.position.x {
-            kcl_api::Expr::Var(v) | kcl_api::Expr::Number(v) => v.units,
+            kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
             _ => NumericSuffix::Mm,
         },
     }
@@ -5696,7 +5696,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 };
 
                 let units = match &circle_ctor.start.x {
-                    kcl_api::Expr::Var(v) | kcl_api::Expr::Number(v) => v.units,
+                    kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
                     _ => kcl_api::NumericSuffix::Mm,
                 };
 
@@ -6012,11 +6012,11 @@ pub(crate) async fn execute_trim_operations_simple(
                 // Extract units from the existing ctor
                 let units = match &original_ctor {
                     SegmentCtor::Line(line_ctor) => match &line_ctor.start.x {
-                        kcl_api::Expr::Var(v) | kcl_api::Expr::Number(v) => v.units,
+                        kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
                         _ => kcl_api::NumericSuffix::Mm,
                     },
                     SegmentCtor::Arc(arc_ctor) => match &arc_ctor.start.x {
-                        kcl_api::Expr::Var(v) | kcl_api::Expr::Number(v) => v.units,
+                        kcl_api::Expr::Var(v) | kcl_api::Expr::VarExact(v) | kcl_api::Expr::Number(v) => v.units,
                         _ => kcl_api::NumericSuffix::Mm,
                     },
                     _ => kcl_api::NumericSuffix::Mm,

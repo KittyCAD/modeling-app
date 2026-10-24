@@ -12,7 +12,6 @@ import {
 import type { KclExpression } from '@src/lib/commandTypes'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
-import { roundOff } from '@src/lib/utils'
 import type { Vector2 } from 'three'
 
 export const DUMMY_VARIABLE_NAME = '__result__'
@@ -201,12 +200,12 @@ export function applyVectorToPoint2D(
   return {
     x: {
       type: 'Var',
-      value: roundOff(xValue.value + vector.x),
+      value: xValue.value + vector.x,
       units: forceSuffix(xValue.units),
     },
     y: {
       type: 'Var',
-      value: roundOff(yValue.value + vector.y),
+      value: yValue.value + vector.y,
       units: forceSuffix(yValue.units),
     },
   }
@@ -219,7 +218,11 @@ export function applyVectorToPoint2D(
 function extractNumericValue(
   expr: Expr
 ): { value: number; units: string } | null {
-  if (expr.type === 'Number' || expr.type === 'Var') {
+  if (
+    expr.type === 'Number' ||
+    expr.type === 'Var' ||
+    expr.type === 'VarExact'
+  ) {
     return {
       value: expr.value,
       units: expr.units,
@@ -235,8 +238,10 @@ function extractNumericValue(
  */
 export function hasNumericValue(
   expr: Expr
-): expr is Extract<Expr, { type: 'Number' | 'Var' }> {
-  return expr.type === 'Number' || expr.type === 'Var'
+): expr is Extract<Expr, { type: 'Number' | 'Var' | 'VarExact' }> {
+  return (
+    expr.type === 'Number' || expr.type === 'Var' || expr.type === 'VarExact'
+  )
 }
 
 /**
@@ -244,7 +249,11 @@ export function hasNumericValue(
  * Returns the value if the Expr is a Number or Var, otherwise returns the default value (0).
  */
 export function getNumericValue(expr: Expr, defaultValue = 0): number {
-  if (expr.type === 'Number' || expr.type === 'Var') {
+  if (
+    expr.type === 'Number' ||
+    expr.type === 'Var' ||
+    expr.type === 'VarExact'
+  ) {
     return expr.value
   }
   return defaultValue

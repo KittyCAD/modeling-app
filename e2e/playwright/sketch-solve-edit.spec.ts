@@ -492,7 +492,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await arcEnd()
         await waitForCodeChange(page, previousCode)
 
-        await editor.expectEditor.toContain('arc(start = [')
+        await editor.expectEditor.toContain('arc(start = [', {
+          shouldNormalise: true,
+        })
       })
 
       await test.step('Pick hovered tools with P and unequip over empty space', async () => {
