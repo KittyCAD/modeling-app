@@ -106,6 +106,7 @@ class SessionController implements ZookeeperSessionController {
   private actorSubscription: Subscription | undefined
   private clearSubscription: Subscription | undefined
   private clearOperationGeneration = 0
+  private balanceCheckGeneration = 0
   private continueCheckInFlight = false
   private continueCheckGeneration = 0
   private disposal: Promise<void> | undefined
@@ -286,8 +287,10 @@ class SessionController implements ZookeeperSessionController {
     const project = this.getZdsProject()
     if (!project) return false
     const generation = this.clearOperationGeneration
+    const checkGeneration = ++this.balanceCheckGeneration
     const isCurrent = () =>
       this.active &&
+      this.balanceCheckGeneration === checkGeneration &&
       this.apiToken === apiToken &&
       this.getZdsProject() === project &&
       this.clearOperationGeneration === generation

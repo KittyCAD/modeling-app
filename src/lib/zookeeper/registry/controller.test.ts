@@ -484,6 +484,31 @@ describe('Zookeeper session controller', () => {
     expect(processor.reset).not.toHaveBeenCalled()
   })
 
+  it('ignores an older exhausted result after a newer funded check', async () => {
+    const oldBalance =
+      deferred<Awaited<ReturnType<typeof billingInfo.getBillingInfo>>>()
+    vi.mocked(billingInfo.getBillingInfo).mockReturnValueOnce(
+      oldBalance.promise
+    )
+    const { actor } = createHarness({
+      actorState: 'ready-await',
+      actorContext: { awaitingResponse: true },
+    })
+
+    actor.emit('ready-await', { awaitingResponse: false })
+    actor.emit('ready-await', { awaitingResponse: true })
+    actor.emit('ready-await', { awaitingResponse: false })
+    await flushPromises()
+    expect(billingInfo.getBillingInfo).toHaveBeenCalledTimes(2)
+
+    oldBalance.resolve({ balance: 0, isOrg: false, hasSubscription: false })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.AbruptClose)
+    ).toHaveLength(0)
+  })
+
   it('updates one bottom-center progress notification without a mounted pane', () => {
     const loading = vi
       .spyOn(toast, 'loading')
