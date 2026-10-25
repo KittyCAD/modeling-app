@@ -1015,6 +1015,29 @@ export const modelingMachine = setup({
         graphSelections: [],
       },
     }),
+    'clear construction plane references': assign(({ context }) => {
+      const selectionRanges: Selections = {
+        otherSelections: [],
+        graphSelections: [],
+      }
+      const { engineEvents, updateSceneObjectColors } = handleSelectionBatch({
+        selections: selectionRanges,
+        artifactGraph: context.kclManager.artifactGraph,
+        code: context.kclManager.code,
+        ast: context.kclManager.ast,
+        systemDeps: {
+          engineCommandManager: context.engineCommandManager,
+          sceneEntitiesManager: context.kclManager.sceneEntitiesManager,
+          wasmInstance: context.wasmInstance,
+        },
+      })
+      for (const event of engineEvents)
+        context.engineCommandManager
+          .sendSceneCommand(event)
+          .catch(reportRejection)
+      updateSceneObjectColors()
+      return { selectionRanges }
+    }),
     'set sketchMetadata from pathToNode': assign(
       ({ context: { sketchDetails } }) => {
         if (!sketchDetails?.sketchEntryNodePath || !sketchDetails) return {}
@@ -6624,7 +6647,10 @@ export const modelingMachine = setup({
             rustContext: context.rustContext,
           }
         },
-        onDone: ['idle'],
+        onDone: {
+          target: 'idle',
+          actions: 'clear construction plane references',
+        },
         onError: { target: 'idle', actions: 'toastError' },
       },
     },

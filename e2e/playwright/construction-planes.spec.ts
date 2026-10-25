@@ -79,17 +79,38 @@ body = extrude(face, length = 20mm)`
           debugLabel: 'reference',
         })
         await click()
-        await expect
-          .poll(async () => {
-            const selection = JSON.parse(
-              await cmdBar.currentArgumentInput.inputValue()
-            )
-            return (
-              selection.graphSelections.length +
-              selection.otherSelections.length
+        try {
+          await expect
+            .poll(async () => {
+              const selection = JSON.parse(
+                await cmdBar.currentArgumentInput.inputValue()
+              )
+              return (
+                selection.graphSelections.length +
+                selection.otherSelections.length
+              )
+            })
+            .toBe(count)
+        } catch (error) {
+          const queries = await page.evaluate(() => {
+            const relevant = [
+              'query_entity_type_with_point',
+              'solid3d_get_common_edge',
+              'curve_get_end_points',
+            ]
+            return window.engineCommandManager.commandLogs.filter((log) =>
+              log.type === 'receive-reliable'
+                ? relevant.includes(log.cmd_type ?? '')
+                : log.data?.type === 'modeling_cmd_req' &&
+                  relevant.includes(log.data.cmd.type)
             )
           })
-          .toBe(count)
+          await test.info().attach('reference-point-queries', {
+            body: JSON.stringify({ point, projected, pixel, queries }, null, 2),
+            contentType: 'application/json',
+          })
+          throw error
+        }
       }
       await pick(
         kind === 'Midplane'
@@ -114,12 +135,9 @@ body = extrude(face, length = 20mm)`
       }
       await cmdBar.progressCmdBar()
       if (kind === 'Offset') {
-        await expect
-          .poll(async () => {
-            const state = await cmdBar.getState()
-            return state.stage === 'arguments' ? state.currentArgKey : undefined
-          })
-          .toBe('offset')
+        await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText(
+          'Distance'
+        )
         await cmdBar.argumentInput.locator('[contenteditable]').fill('5mm')
         await expect(page.locator('#arg-form')).toHaveAttribute(
           'data-can-submit',
@@ -131,6 +149,9 @@ body = extrude(face, length = 20mm)`
       await expect(page.getByTestId('command-bar-submit')).toBeEnabled()
       await cmdBar.submit()
       await scene.settled()
+      await expect(
+        page.getByText('No selection', { exact: true })
+      ).toBeVisible()
       const result = await page.evaluate(() => {
         const p = window.app.singletons.kclManager.variables.plane001
         return p?.type === 'Plane'
