@@ -1,5 +1,8 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { ArtifactCameraView } from '@rust/kcl-lib/bindings/Artifact'
+import type {
+  ArtifactCameraView,
+  ArtifactPoint3d,
+} from '@rust/kcl-lib/bindings/Artifact'
 import type { Orientation } from '@rust/kcl-lib/bindings/Orientation'
 import type { Projection } from '@rust/kcl-lib/bindings/Projection'
 import type { Visibility } from '@rust/kcl-lib/bindings/Visibility'
@@ -31,6 +34,7 @@ import type {
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
+import { capitaliseFC } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
@@ -164,12 +168,11 @@ export function addNamedView({
   return { modifiedAst, pathToNode }
 }
 
-export type NamedViewCameraSnapshot = {
-  direction: [number, number, number]
-  up: [number, number, number]
-  target: [number, number, number]
-  distance: number
-  projection: Projection
+// A captured camera has an explicit target and distance rather than fitting the model.
+export type NamedViewCameraSnapshot = ArtifactCameraView & {
+  look: Extract<ArtifactCameraView['look'], { type: 'directed' }>
+  target: NonNullable<ArtifactCameraView['target']>
+  distance: NonNullable<ArtifactCameraView['distance']>
 }
 
 export type NamedViewCameraMode = ArtifactCameraView['look']['type']
@@ -182,12 +185,12 @@ function rounded(value: number): number {
 }
 
 function point(
-  values: [number, number, number],
+  value: ArtifactPoint3d,
   wasmInstance: ModuleType,
   suffix?: 'Mm'
 ) {
   return createArrayExpression(
-    values.map((value) =>
+    [value.x, value.y, value.z].map((value) =>
       createLiteral(rounded(value), wasmInstance, suffix, 6)
     )
   )
@@ -199,15 +202,18 @@ function createCapturedCamera(
 ) {
   return createCallExpressionStdLibKw(
     'directed',
-    point(camera.direction, wasmInstance),
+    point(camera.look.direction, wasmInstance),
     [
-      createLabeledArg('up', point(camera.up, wasmInstance)),
+      createLabeledArg('up', point(camera.look.up, wasmInstance)),
       createLabeledArg('target', point(camera.target, wasmInstance, 'Mm')),
       createLabeledArg(
         'distance',
         createLiteral(rounded(camera.distance), wasmInstance, 'Mm', 6)
       ),
-      createLabeledArg('projection', viewEnum('Projection', camera.projection)),
+      createLabeledArg(
+        'projection',
+        viewEnum('Projection', capitaliseFC(camera.projection))
+      ),
     ],
     undefined,
     [createIdentifier('view')]

@@ -195,7 +195,7 @@ export default function ModelingDialog({
               id={fieldId}
               controls={kclManager.sceneInfra.camControls}
               saved={hasValue(value)}
-              captured={isRecord(value) && 'direction' in value}
+              captured={isRecord(value) && 'look' in value}
               onCapture={(camera) => save(name, camera)}
               onValidationChange={(canSubmit) =>
                 setValidity((previous) => ({ ...previous, [name]: canSubmit }))

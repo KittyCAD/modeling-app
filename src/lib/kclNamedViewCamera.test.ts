@@ -127,16 +127,17 @@ describe('captureNamedViewCamera', () => {
     })
     if (result instanceof Error) throw result
 
-    expect(result.direction[0]).toBeCloseTo(0)
-    expect(result.direction[1]).toBeCloseTo(1)
-    expect(result.direction[2]).toBeCloseTo(0)
-    expect(result.up[0]).toBeCloseTo(0)
-    expect(result.up[1]).toBeCloseTo(0)
-    expect(result.up[2]).toBeCloseTo(1)
-    expect(result.target).toEqual([1, 2, 3])
+    expect(result.look.type).toBe('directed')
+    expect(result.look.direction.x).toBeCloseTo(0)
+    expect(result.look.direction.y).toBeCloseTo(1)
+    expect(result.look.direction.z).toBeCloseTo(0)
+    expect(result.look.up.x).toBeCloseTo(0)
+    expect(result.look.up.y).toBeCloseTo(0)
+    expect(result.look.up.z).toBeCloseTo(1)
+    expect(result.target).toEqual(mm(1, 2, 3))
     expect(camera.position.length()).toBe(10)
     expect(result.distance).toBe(25)
-    expect(result.projection).toBe('Orthographic')
+    expect(result.projection).toBe('orthographic')
   })
 
   it.each(['orbit', 'zoom'])(

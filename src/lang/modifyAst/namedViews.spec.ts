@@ -260,11 +260,14 @@ view001 = view::named(
   it('replaces only the camera with the current directed camera', async () => {
     const ast = assertParse(code, instance)
     const camera: NamedViewCameraSnapshot = {
-      direction: [0.25, -0.5, -0.75],
-      up: [0, 0, 1],
-      target: [10, 20, 30],
+      look: {
+        type: 'directed',
+        direction: { x: 0.25, y: -0.5, z: -0.75, units: null },
+        up: { x: 0, y: 0, z: 1, units: null },
+      },
+      target: { x: 10, y: 20, z: 30, units: 'mm' },
       distance: 125.5,
-      projection: 'Orthographic',
+      projection: 'orthographic',
     }
     const modifiedAst = updateNamedViewCamera({
       ast,

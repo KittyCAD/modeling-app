@@ -12,11 +12,14 @@ import { captureNamedViewCamera } from '@src/lib/kclNamedViewCamera'
 
 it('only reads the current camera when capture is requested', async () => {
   const camera: NamedViewCameraSnapshot = {
-    direction: [0, 1, 0],
-    up: [0, 0, 1],
-    target: [0, 0, 0],
+    look: {
+      type: 'directed',
+      direction: { x: 0, y: 1, z: 0, units: null },
+      up: { x: 0, y: 0, z: 1, units: null },
+    },
+    target: { x: 0, y: 0, z: 0, units: 'mm' },
     distance: 100,
-    projection: 'Perspective',
+    projection: 'perspective',
   }
   const controls = {
     camera: new PerspectiveCamera(),

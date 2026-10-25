@@ -79,11 +79,19 @@ export async function captureNamedViewCamera(
   }
 
   return {
-    direction: [direction.x, direction.y, direction.z],
-    up: [up.x, up.y, up.z],
-    target: [target.x, target.y, target.z],
+    look: {
+      type: 'directed',
+      direction: {
+        x: direction.x,
+        y: direction.y,
+        z: direction.z,
+        units: null,
+      },
+      up: { x: up.x, y: up.y, z: up.z, units: null },
+    },
+    target: { ...target, units: 'mm' },
     distance,
-    projection: isPerspective ? 'Perspective' : 'Orthographic',
+    projection: isPerspective ? 'perspective' : 'orthographic',
   }
 }
 
