@@ -1,3 +1,5 @@
+import type * as KittyCADLib from '@kittycad/lib'
+import * as billingInfo from '@kittycad/ui-components'
 import { signal, type Signal } from '@preact/signals-core'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
@@ -34,6 +36,17 @@ const workerMocks = vi.hoisted(() => ({
     reset: ReturnType<typeof vi.fn>
   }>,
 }))
+
+vi.mock('@kittycad/lib', async (importOriginal) => {
+  const lib = await importOriginal<typeof KittyCADLib>()
+  return {
+    ...lib,
+    users: {
+      ...lib.users,
+      get_user_self: vi.fn(async () => ({ allow_pay_as_you_go: false })),
+    },
+  }
+})
 
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
 
@@ -303,6 +316,11 @@ let online = true
 describe('Zookeeper session controller', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.spyOn(billingInfo, 'getBillingInfo').mockResolvedValue({
+      balance: 1,
+      isOrg: false,
+      hasSubscription: false,
+    })
     workerMocks.histories.length = 0
     workerMocks.processors.length = 0
     projectFilesMocks.collect.mockResolvedValue([])
@@ -425,6 +443,37 @@ describe('Zookeeper session controller', () => {
       projectFiles: [],
       type: ZookeeperManagerTransitions.MessageSend,
     })
+  })
+
+  it('blocks an exhausted account while keeping its prompt queued', async () => {
+    vi.mocked(billingInfo.getBillingInfo).mockResolvedValue({
+      balance: 0,
+      isOrg: false,
+      hasSubscription: false,
+    })
+    const { actor, controller } = createHarness({ actorState: 'ready-await' })
+    actor.send.mockImplementation((event) => {
+      if (event.type === ZookeeperManagerTransitions.AbruptClose) {
+        actor.setSnapshot('await', { abruptlyClosed: true, setupFailed: true })
+      }
+    })
+
+    controller.sendOrQueue('add two holes', undefined, [])
+
+    await vi.waitFor(() => {
+      expect(
+        sentEvents(actor, ZookeeperManagerTransitions.AbruptClose)
+      ).toEqual([
+        {
+          type: ZookeeperManagerTransitions.AbruptClose,
+          accessDeniedCode: 'pay_as_you_go_disabled',
+        },
+      ])
+    })
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
+    ).toHaveLength(0)
+    expect(controller.queue.value).toMatchObject([{ text: 'add two holes' }])
   })
 
   it('updates one bottom-center progress notification without a mounted pane', () => {
