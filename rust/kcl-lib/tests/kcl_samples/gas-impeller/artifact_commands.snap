@@ -739,6 +739,15 @@ description: Artifact commands gas-impeller.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true

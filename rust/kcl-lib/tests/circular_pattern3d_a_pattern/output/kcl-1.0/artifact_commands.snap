@@ -382,22 +382,10 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "center": {
-          "x": -20.0,
-          "y": -20.0,
-          "z": -20.0
-        },
-        "num_repetitions": 40,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": false
-      }
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -424,22 +412,10 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "center": {
-          "x": -20.0,
-          "y": -20.0,
-          "z": -20.0
-        },
-        "num_repetitions": 40,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": false
-      }
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -466,22 +442,10 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "center": {
-          "x": -20.0,
-          "y": -20.0,
-          "z": -20.0
-        },
-        "num_repetitions": 40,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": false
-      }
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -508,6 +472,15 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "entity_circular_pattern",
         "entity_id": "[uuid]",
         "axis": {
@@ -524,6 +497,105 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
         "arc_degrees": 360.0,
         "rotate_duplicates": false
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_circular_pattern",
+        "entity_id": "[uuid]",
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "center": {
+          "x": -20.0,
+          "y": -20.0,
+          "z": -20.0
+        },
+        "num_repetitions": 40,
+        "arc_degrees": 360.0,
+        "rotate_duplicates": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_circular_pattern",
+        "entity_id": "[uuid]",
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "center": {
+          "x": -20.0,
+          "y": -20.0,
+          "z": -20.0
+        },
+        "num_repetitions": 40,
+        "arc_degrees": 360.0,
+        "rotate_duplicates": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_circular_pattern",
+        "entity_id": "[uuid]",
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "center": {
+          "x": -20.0,
+          "y": -20.0,
+          "z": -20.0
+        },
+        "num_repetitions": 40,
+        "arc_degrees": 360.0,
+        "rotate_duplicates": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     }
   ]
 }

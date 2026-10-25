@@ -53,10 +53,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 138,
-            "end": 143,
+            "commentStart": 115,
+            "end": 120,
             "moduleId": 0,
-            "start": 138,
+            "start": 115,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -67,10 +67,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 221,
-            "end": 226,
+            "commentStart": 198,
+            "end": 203,
             "moduleId": 0,
-            "start": 221,
+            "start": 198,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -81,10 +81,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 305,
-            "end": 310,
+            "commentStart": 282,
+            "end": 287,
             "moduleId": 0,
-            "start": 305,
+            "start": 282,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -95,10 +95,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 390,
-            "end": 395,
+            "commentStart": 367,
+            "end": 372,
             "moduleId": 0,
-            "start": 390,
+            "start": 367,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -109,10 +109,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 915,
-            "end": 925,
+            "commentStart": 864,
+            "end": 874,
             "moduleId": 0,
-            "start": 915,
+            "start": 864,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -140,10 +140,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               4.06
             ],
             "tag": {
-              "commentStart": 138,
-              "end": 143,
+              "commentStart": 115,
+              "end": 120,
               "moduleId": 0,
-              "start": 138,
+              "start": 115,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -164,10 +164,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               4.06
             ],
             "tag": {
-              "commentStart": 221,
-              "end": 226,
+              "commentStart": 198,
+              "end": 203,
               "moduleId": 0,
-              "start": 221,
+              "start": 198,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -188,10 +188,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               -4.02
             ],
             "tag": {
-              "commentStart": 305,
-              "end": 310,
+              "commentStart": 282,
+              "end": 287,
               "moduleId": 0,
-              "start": 305,
+              "start": 282,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -212,10 +212,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               -4.02
             ],
             "tag": {
-              "commentStart": 390,
-              "end": 395,
+              "commentStart": 367,
+              "end": 372,
               "moduleId": 0,
-              "start": 390,
+              "start": 367,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -324,10 +324,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 138,
-                "end": 143,
+                "commentStart": 115,
+                "end": 120,
                 "moduleId": 0,
-                "start": 138,
+                "start": 115,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -338,10 +338,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 221,
-                "end": 226,
+                "commentStart": 198,
+                "end": 203,
                 "moduleId": 0,
-                "start": 221,
+                "start": 198,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -352,10 +352,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 305,
-                "end": 310,
+                "commentStart": 282,
+                "end": 287,
                 "moduleId": 0,
-                "start": 305,
+                "start": 282,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -366,10 +366,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 390,
-                "end": 395,
+                "commentStart": 367,
+                "end": 372,
                 "moduleId": 0,
-                "start": 390,
+                "start": 367,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -380,10 +380,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 915,
-                "end": 925,
+                "commentStart": 864,
+                "end": 874,
                 "moduleId": 0,
-                "start": 915,
+                "start": 864,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -411,10 +411,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   4.06
                 ],
                 "tag": {
-                  "commentStart": 138,
-                  "end": 143,
+                  "commentStart": 115,
+                  "end": 120,
                   "moduleId": 0,
-                  "start": 138,
+                  "start": 115,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -435,10 +435,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   4.06
                 ],
                 "tag": {
-                  "commentStart": 221,
-                  "end": 226,
+                  "commentStart": 198,
+                  "end": 203,
                   "moduleId": 0,
-                  "start": 221,
+                  "start": 198,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -459,10 +459,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   -4.02
                 ],
                 "tag": {
-                  "commentStart": 305,
-                  "end": 310,
+                  "commentStart": 282,
+                  "end": 287,
                   "moduleId": 0,
-                  "start": 305,
+                  "start": 282,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -483,10 +483,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   -4.02
                 ],
                 "tag": {
-                  "commentStart": 390,
-                  "end": 395,
+                  "commentStart": 367,
+                  "end": 372,
                   "moduleId": 0,
-                  "start": 390,
+                  "start": 367,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -592,10 +592,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 138,
-                "end": 143,
+                "commentStart": 115,
+                "end": 120,
                 "moduleId": 0,
-                "start": 138,
+                "start": 115,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -606,10 +606,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 221,
-                "end": 226,
+                "commentStart": 198,
+                "end": 203,
                 "moduleId": 0,
-                "start": 221,
+                "start": 198,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -620,10 +620,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 305,
-                "end": 310,
+                "commentStart": 282,
+                "end": 287,
                 "moduleId": 0,
-                "start": 305,
+                "start": 282,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -634,10 +634,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 390,
-                "end": 395,
+                "commentStart": 367,
+                "end": 372,
                 "moduleId": 0,
-                "start": 390,
+                "start": 367,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -648,10 +648,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 915,
-                "end": 925,
+                "commentStart": 864,
+                "end": 874,
                 "moduleId": 0,
-                "start": 915,
+                "start": 864,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -679,10 +679,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   4.06
                 ],
                 "tag": {
-                  "commentStart": 138,
-                  "end": 143,
+                  "commentStart": 115,
+                  "end": 120,
                   "moduleId": 0,
-                  "start": 138,
+                  "start": 115,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -703,10 +703,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   4.06
                 ],
                 "tag": {
-                  "commentStart": 221,
-                  "end": 226,
+                  "commentStart": 198,
+                  "end": 203,
                   "moduleId": 0,
-                  "start": 221,
+                  "start": 198,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -727,10 +727,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   -4.02
                 ],
                 "tag": {
-                  "commentStart": 305,
-                  "end": 310,
+                  "commentStart": 282,
+                  "end": 287,
                   "moduleId": 0,
-                  "start": 305,
+                  "start": 282,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -751,10 +751,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   -4.02
                 ],
                 "tag": {
-                  "commentStart": 390,
-                  "end": 395,
+                  "commentStart": 367,
+                  "end": 372,
                   "moduleId": 0,
-                  "start": 390,
+                  "start": 367,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -860,10 +860,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 138,
-                "end": 143,
+                "commentStart": 115,
+                "end": 120,
                 "moduleId": 0,
-                "start": 138,
+                "start": 115,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -874,10 +874,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 221,
-                "end": 226,
+                "commentStart": 198,
+                "end": 203,
                 "moduleId": 0,
-                "start": 221,
+                "start": 198,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -888,10 +888,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 305,
-                "end": 310,
+                "commentStart": 282,
+                "end": 287,
                 "moduleId": 0,
-                "start": 305,
+                "start": 282,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -902,10 +902,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 390,
-                "end": 395,
+                "commentStart": 367,
+                "end": 372,
                 "moduleId": 0,
-                "start": 390,
+                "start": 367,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -916,10 +916,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 915,
-                "end": 925,
+                "commentStart": 864,
+                "end": 874,
                 "moduleId": 0,
-                "start": 915,
+                "start": 864,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -947,10 +947,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   4.06
                 ],
                 "tag": {
-                  "commentStart": 138,
-                  "end": 143,
+                  "commentStart": 115,
+                  "end": 120,
                   "moduleId": 0,
-                  "start": 138,
+                  "start": 115,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -971,10 +971,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   4.06
                 ],
                 "tag": {
-                  "commentStart": 221,
-                  "end": 226,
+                  "commentStart": 198,
+                  "end": 203,
                   "moduleId": 0,
-                  "start": 221,
+                  "start": 198,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -995,10 +995,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   -4.02
                 ],
                 "tag": {
-                  "commentStart": 305,
-                  "end": 310,
+                  "commentStart": 282,
+                  "end": 287,
                   "moduleId": 0,
-                  "start": 305,
+                  "start": 282,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -1019,10 +1019,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                   -4.02
                 ],
                 "tag": {
-                  "commentStart": 390,
-                  "end": 395,
+                  "commentStart": 367,
+                  "end": 372,
                   "moduleId": 0,
-                  "start": 390,
+                  "start": 367,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -1116,7 +1116,7 @@ description: Variables in memory after executing pattern_index_bug.kcl
       }
     ]
   },
-  "square": {
+  "hidden001": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -1132,10 +1132,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
             4.06
           ],
           "tag": {
-            "commentStart": 138,
-            "end": 143,
+            "commentStart": 115,
+            "end": 120,
             "moduleId": 0,
-            "start": 138,
+            "start": 115,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1156,10 +1156,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
             4.06
           ],
           "tag": {
-            "commentStart": 221,
-            "end": 226,
+            "commentStart": 198,
+            "end": 203,
             "moduleId": 0,
-            "start": 221,
+            "start": 198,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1180,10 +1180,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
             -4.02
           ],
           "tag": {
-            "commentStart": 305,
-            "end": 310,
+            "commentStart": 282,
+            "end": 287,
             "moduleId": 0,
-            "start": 305,
+            "start": 282,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1204,10 +1204,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
             -4.02
           ],
           "tag": {
-            "commentStart": 390,
-            "end": 395,
+            "commentStart": 367,
+            "end": 372,
             "moduleId": 0,
-            "start": 390,
+            "start": 367,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1267,10 +1267,6 @@ description: Variables in memory after executing pattern_index_bug.kcl
         }
       },
       "tags": {
-        "capEnd001": {
-          "type": "TagIdentifier",
-          "value": "capEnd001"
-        },
         "line1": {
           "type": "TagIdentifier",
           "value": "line1"
@@ -1291,10 +1287,26 @@ description: Variables in memory after executing pattern_index_bug.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "mm",
-      "isClosed": "explicitly"
+      "isClosed": "implicitly"
     }
   },
-  "squareSketch": {
+  "line1": {
+    "type": "TagIdentifier",
+    "value": "line1"
+  },
+  "line2": {
+    "type": "TagIdentifier",
+    "value": "line2"
+  },
+  "line3": {
+    "type": "TagIdentifier",
+    "value": "line3"
+  },
+  "line4": {
+    "type": "TagIdentifier",
+    "value": "line4"
+  },
+  "sketch001": {
     "type": "Object",
     "value": {
       "line1": {
@@ -1304,59 +1316,9 @@ description: Variables in memory after executing pattern_index_bug.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -2.12
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.06
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -8.43
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.06
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -2.12,
-                        "ty": {
-                          "type": "Known",
-                          "value": {
-                            "type": "Length",
-                            "value": "mm"
-                          }
-                        }
-                      },
-                      {
-                        "n": 4.06,
-                        "ty": {
-                          "type": "Known",
-                          "value": {
-                            "type": "Length",
-                            "value": "mm"
-                          }
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 3,
                     "start": [
                       {
                         "n": -8.43,
@@ -1379,43 +1341,93 @@ description: Variables in memory after executing pattern_index_bug.kcl
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -2.12,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
+                        }
+                      },
+                      {
+                        "n": 4.06,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -8.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 4.06,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -2.12,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 4.06,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Free",
-                    "start_object_id": 2
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1432,59 +1444,9 @@ description: Variables in memory after executing pattern_index_bug.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 7,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -2.12
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -4.02
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -2.12
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.06
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -2.12,
-                        "ty": {
-                          "type": "Known",
-                          "value": {
-                            "type": "Length",
-                            "value": "mm"
-                          }
-                        }
-                      },
-                      {
-                        "n": -4.02,
-                        "ty": {
-                          "type": "Known",
-                          "value": {
-                            "type": "Length",
-                            "value": "mm"
-                          }
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 6,
                     "start": [
                       {
                         "n": -2.12,
@@ -1507,43 +1469,93 @@ description: Variables in memory after executing pattern_index_bug.kcl
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -2.12,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
+                        }
+                      },
+                      {
+                        "n": -4.02,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -2.12,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 4.06,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -2.12,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -4.02,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 5,
+                    "end_object_id": 6,
                     "start_freedom": "Free",
-                    "start_object_id": 5
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 7,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1560,59 +1572,9 @@ description: Variables in memory after executing pattern_index_bug.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 10,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -8.43
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -4.02
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -2.12
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -4.02
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -8.43,
-                        "ty": {
-                          "type": "Known",
-                          "value": {
-                            "type": "Length",
-                            "value": "mm"
-                          }
-                        }
-                      },
-                      {
-                        "n": -4.02,
-                        "ty": {
-                          "type": "Known",
-                          "value": {
-                            "type": "Length",
-                            "value": "mm"
-                          }
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 9,
                     "start": [
                       {
                         "n": -2.12,
@@ -1635,43 +1597,93 @@ description: Variables in memory after executing pattern_index_bug.kcl
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -8.43,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
+                        }
+                      },
+                      {
+                        "n": -4.02,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -2.12,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -4.02,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -8.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -4.02,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 8,
+                    "end_object_id": 9,
                     "start_freedom": "Free",
-                    "start_object_id": 8
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 10,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1688,59 +1700,9 @@ description: Variables in memory after executing pattern_index_bug.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 13,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -8.43
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.06
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -8.43
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -4.02
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -8.43,
-                        "ty": {
-                          "type": "Known",
-                          "value": {
-                            "type": "Length",
-                            "value": "mm"
-                          }
-                        }
-                      },
-                      {
-                        "n": 4.06,
-                        "ty": {
-                          "type": "Known",
-                          "value": {
-                            "type": "Length",
-                            "value": "mm"
-                          }
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 12,
                     "start": [
                       {
                         "n": -8.43,
@@ -1763,43 +1725,93 @@ description: Variables in memory after executing pattern_index_bug.kcl
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -8.43,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
+                        }
+                      },
+                      {
+                        "n": 4.06,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -8.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -4.02,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -8.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 4.06,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 11,
+                    "end_object_id": 12,
                     "start_freedom": "Free",
-                    "start_object_id": 11
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 13,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1828,10 +1840,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                     4.06
                   ],
                   "tag": {
-                    "commentStart": 138,
-                    "end": 143,
+                    "commentStart": 115,
+                    "end": 120,
                     "moduleId": 0,
-                    "start": 138,
+                    "start": 115,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1852,10 +1864,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                     4.06
                   ],
                   "tag": {
-                    "commentStart": 221,
-                    "end": 226,
+                    "commentStart": 198,
+                    "end": 203,
                     "moduleId": 0,
-                    "start": 221,
+                    "start": 198,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1876,10 +1888,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                     -4.02
                   ],
                   "tag": {
-                    "commentStart": 305,
-                    "end": 310,
+                    "commentStart": 282,
+                    "end": 287,
                     "moduleId": 0,
-                    "start": 305,
+                    "start": 282,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1900,10 +1912,10 @@ description: Variables in memory after executing pattern_index_bug.kcl
                     -4.02
                   ],
                   "tag": {
-                    "commentStart": 390,
-                    "end": 395,
+                    "commentStart": 367,
+                    "end": 372,
                     "moduleId": 0,
-                    "start": 390,
+                    "start": 367,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1991,5 +2003,183 @@ description: Variables in memory after executing pattern_index_bug.kcl
       }
     },
     "constrainable": false
+  },
+  "square": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -8.43,
+            4.06
+          ],
+          "tag": {
+            "commentStart": 115,
+            "end": 120,
+            "moduleId": 0,
+            "start": 115,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "to": [
+            -2.12,
+            4.06
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -2.12,
+            4.06
+          ],
+          "tag": {
+            "commentStart": 198,
+            "end": 203,
+            "moduleId": 0,
+            "start": 198,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "to": [
+            -2.12,
+            -4.02
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -2.12,
+            -4.02
+          ],
+          "tag": {
+            "commentStart": 282,
+            "end": 287,
+            "moduleId": 0,
+            "start": 282,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "to": [
+            -8.43,
+            -4.02
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -8.43,
+            -4.02
+          ],
+          "tag": {
+            "commentStart": 367,
+            "end": 372,
+            "moduleId": 0,
+            "start": 367,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            -8.43,
+            4.06
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        }
+      ],
+      "on": {
+        "type": "plane",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "objectId": 0,
+        "kind": "Custom",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          -8.43,
+          4.06
+        ],
+        "to": [
+          -8.43,
+          4.06
+        ],
+        "units": "mm",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "capEnd001": {
+          "type": "TagIdentifier",
+          "value": "capEnd001"
+        },
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        },
+        "line4": {
+          "type": "TagIdentifier",
+          "value": "line4"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": "mm",
+      "isClosed": "explicitly"
+    }
   }
 }

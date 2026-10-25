@@ -1304,6 +1304,15 @@ description: Artifact commands axial-fan.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -2241,6 +2250,15 @@ description: Artifact commands axial-fan.kcl
         "arc_degrees": 360.0,
         "rotate_duplicates": true
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     }
   ],
   "public/kcl-samples/axial-fan/motor.kcl": [

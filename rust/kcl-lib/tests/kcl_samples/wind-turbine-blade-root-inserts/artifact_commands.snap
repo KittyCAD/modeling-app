@@ -421,6 +421,15 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "boolean_subtract",
         "target_ids": [
           "[uuid]"
@@ -711,6 +720,15 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "arc_degrees": 360.0,
         "rotate_duplicates": false
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -1273,6 +1291,15 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "arc_degrees": 360.0,
         "rotate_duplicates": false
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",

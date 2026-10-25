@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties pattern_index_bug.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 8.725000000000012,
+      "y": 0.019999999999997797,
+      "z": 2.000000006965227
+    },
+    "dimensions": {
+      "x": 34.31000001947837,
+      "y": 9.696000000000025,
+      "z": 4.000000013930454
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 640.3152307319915
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.6069671559435127
+  }
+}

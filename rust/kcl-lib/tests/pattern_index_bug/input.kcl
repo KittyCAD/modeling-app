@@ -1,7 +1,6 @@
 @settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
 
-// Sketch a square.
-squareSketch = sketch(on = XY) {
+sketch001 = sketch(on = XY) {
   line1 = line(start = [var -8.43mm, var 4.06mm], end = [var -2.12mm, var 4.06mm])
   line2 = line(start = [var -2.12mm, var 4.06mm], end = [var -2.12mm, var -4.02mm])
   line3 = line(start = [var -2.12mm, var -4.02mm], end = [var -8.43mm, var -4.02mm])
@@ -15,10 +14,10 @@ squareSketch = sketch(on = XY) {
   perpendicular([line1, line2])
   horizontal(line3)
 }
-
-// Extrude it into a cube, pattern into 3 cubes.
-square = region(segments = [squareSketch.line1, squareSketch.line2], direction = CW)
+hidden001 = hide(sketch001)
+square = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
 cube = extrude(square, length = 4, tagEnd = $capEnd001)
+
 cubes = patternLinear3d(
   cube,
   instances = 3,
@@ -26,13 +25,32 @@ cubes = patternLinear3d(
   axis = X,
 )
 
-// This should succeed (first cube).
+appearance(
+  cubes[0],
+  color = "#da4333",
+  metalness = 90,
+  roughness = 50,
+)
+appearance(
+  cubes[1],
+  color = "#34daa8",
+  metalness = 90,
+  roughness = 50,
+)
+appearance(
+  cubes[2],
+  color = "#6134da",
+  metalness = 90,
+  roughness = 50,
+)
+
+// Fillet a different edge of each cube.
 fillet(
   cubes[0],
   edges = [
     {
       sideFaces = [
-        square.tags.line3,
+        square.tags.line4,
         cubes[0].faces.capEnd001
       ]
     }
@@ -40,7 +58,6 @@ fillet(
   radius = 1,
 )
 
-// This should also succeed (second cube).
 fillet(
   cubes[1],
   edges = [
@@ -53,3 +70,18 @@ fillet(
   ],
   radius = 1,
 )
+
+
+fillet(
+  cubes[2],
+  edges = [
+    {
+      sideFaces = [
+        square.tags.line2,
+        cubes[2].faces.capEnd001
+      ]
+    }
+  ],
+  radius = 1,
+)
+
