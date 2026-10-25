@@ -35,6 +35,7 @@ import { captureNamedViewCamera } from '@src/lib/kclNamedViewCamera'
 import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { isErr, reportRejection, trap } from '@src/lib/trap'
+import { capitaliseFC, roundOff } from '@src/lib/utils'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
 
@@ -43,6 +44,7 @@ export type ViewRow = {
   key: string
   /** What the user reads. */
   label: string
+  details?: string
   /** What `activeViewSignal` holds when this row is active. */
   identity: ActiveView
   target: ActivationTarget
@@ -84,10 +86,21 @@ export function viewRows(views: KclNamedView[]): ViewRow[] {
     const name = view.artifact.name
     const module = moduleName(view.modulePath)
     const collides = (nameCounts.get(name) ?? 0) > 1
+    const { camera } = view.artifact
+    const details = [
+      camera.look.type === 'oriented'
+        ? capitaliseFC(camera.look.orientation)
+        : 'Directed',
+      camera.distance === null ? undefined : `${roundOff(camera.distance)}mm`,
+      capitaliseFC(camera.projection),
+    ]
+      .filter(Boolean)
+      .join(' ')
 
     return {
       key: view.artifact.id,
       label: collides && module ? `${module}::${name}` : name,
+      details,
       identity: { name, moduleKey: moduleKeyOf(view.modulePath) },
       target: { kind: 'declared', view },
     }
@@ -308,6 +321,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 <button
                   type="button"
                   className="reset flex min-w-0 flex-1 items-center gap-2 self-stretch border-none text-left !text-xs focus-visible:ring-1 focus-visible:ring-primary"
+                  aria-label={row.label}
                   disabled={!manageableView || editDisabled}
                   onDoubleClick={(event) => {
                     if (!manageableView || editDisabled) return
@@ -321,6 +335,21 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                   >
                     {row.label}
                   </span>
+                  {row.details && (
+                    <>
+                      <span
+                        aria-hidden
+                        className="h-3 shrink-0 border-l border-chalkboard-40 dark:border-chalkboard-60"
+                      />
+                      <span
+                        data-testid="named-view-details"
+                        className="min-w-0 flex-1 truncate text-chalkboard-60 dark:text-chalkboard-50"
+                        title={row.details}
+                      >
+                        {row.details}
+                      </span>
+                    </>
+                  )}
                 </button>
                 {manageableView && (
                   <ActionButton

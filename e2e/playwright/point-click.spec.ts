@@ -5947,6 +5947,9 @@ region001 = region(segments = [sketch001.circle1])`
     const row = pane
       .getByTestId('named-view-row')
       .filter({ hasText: 'Inspection' })
+    await expect(row.getByTestId('named-view-details')).toContainText(
+      'Directed'
+    )
     await row
       .getByRole('button', { name: 'Apply Inspection', exact: true })
       .click()
@@ -5993,6 +5996,9 @@ region001 = region(segments = [sketch001.circle1])`
     await editor.expectEditor.toContain('viewDistance = 200mm')
     await editor.expectEditor.toContain('distance = viewDistance')
     await editor.expectEditor.toContain('view::Visibility::Hide')
+    await expect(row.getByTestId('named-view-details')).toHaveText(
+      'Top 200mm Orthographic'
+    )
     await editor.expectEditor.toContain('except = [region001]')
 
     await toolbar.openFeatureTreePane()

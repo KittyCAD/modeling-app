@@ -102,6 +102,33 @@ describe('viewRows', () => {
     ])
   })
 
+  it('summarizes camera intent, omitting distances that fit the model', () => {
+    const front = view({ name: 'Plate' })
+    front.artifact.camera.distance = 200
+    const directed = view({ name: 'Inspection' })
+    directed.artifact.camera = {
+      look: {
+        type: 'directed',
+        direction: { x: 0, y: 1, z: 0, units: null },
+        up: { x: 0, y: 0, z: 1, units: null },
+      },
+      target: null,
+      distance: 125.555,
+      projection: 'perspective',
+    }
+
+    expect(
+      viewRows([view({ name: 'Overview' }), front, directed]).map(
+        (row) => row.details
+      )
+    ).toEqual([
+      undefined,
+      'Front Orthographic',
+      'Front 200mm Orthographic',
+      'Directed 125.56mm Perspective',
+    ])
+  })
+
   it('gives two collided rows distinct identities', () => {
     const rows = viewRows([
       view({ name: 'Front', id: 'root', modulePath: LOCAL_MAIN }),
