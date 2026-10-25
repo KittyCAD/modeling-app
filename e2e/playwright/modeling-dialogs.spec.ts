@@ -10,6 +10,57 @@ region001 = region(segments = [sketch001.circle1])`
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
   test.use({ userFeatures: ['modeling_dialogs'] })
 
+  test('Discards an unfinished dialog when switching projects', async ({
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene('first-project')
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', profileCode)
+    )
+    await editor.selectText('region(')
+    await toolbar.extrudeButton.click()
+    await modelingDialog.input(/^length$/i).fill('73mm')
+    await expect(modelingDialog.submitButton).toBeEnabled()
+
+    await toolbar.logoLink.click()
+    await homePage.goToModelingScene('second-project')
+    await scene.settled()
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await toolbar.extrudeButton.click()
+    await expect(modelingDialog.input(/^length$/i)).toHaveText('5')
+    await expect(modelingDialog.selection('Profiles')).toHaveText(
+      'Select in the scene'
+    )
+    await expect(modelingDialog.submitButton).toBeDisabled()
+    await modelingDialog.cancelButton.click()
+  })
+
+  test('Discards an unfinished dialog when editing a sketch', async ({
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', profileCode)
+    )
+    await toolbar.extrudeButton.click()
+    await expect(modelingDialog.locator).toBeVisible()
+
+    await toolbar.editSketch()
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await toolbar.exitSketch()
+    await expect(modelingDialog.locator).not.toBeAttached()
+  })
+
   test('Submits with Enter after scene selection', async ({
     page,
     homePage,

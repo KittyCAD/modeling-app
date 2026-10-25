@@ -24,29 +24,40 @@ export function useSelectionLifecycle({
 
   useEffect(() => {
     if (!arg || arg.inputType !== 'selection') return
+    const modelingActor = kclManager.modelingActor
+    let filter = kclManager.selectionFilter.peek()
+    // A different editor or filter means scene picking has a new owner.
+    const ownsPicking = () =>
+      kclManager.modelingActor === modelingActor &&
+      (!modelingActor || modelingActor.getSnapshot().status === 'active') &&
+      kclManager.selectionFilter.peek() === filter
+
     if (arg.selectionTypes.includes('plane') && latest.current.showPlanes)
       void kclManager.showPlanes().catch(reportRejection)
 
     let cancelled = false
     void wasmPromise
       .then((wasm) => {
-        if (!cancelled && arg.selectionFilter)
-          kclManager.setSelectionFilter(
-            arg.selectionFilter,
-            wasm,
-            latest.current.selection
-          )
+        if (cancelled) return
+        filter = arg.selectionFilter ?? kclManager.selectionFilter.peek()
+        if (arg.selectionFilter)
+          kclManager.setSelectionFilter(filter, wasm, latest.current.selection)
       })
       .catch(reportRejection)
 
     return () => {
       cancelled = true
+      if (!ownsPicking()) return
       if (!kclManager._isAstEmpty(kclManager.ast))
         void kclManager.hidePlanes().catch(reportRejection)
       void wasmPromise
-        .then((wasm) =>
-          kclManager.setSelectionFilterToDefault(wasm, latest.current.selection)
-        )
+        .then((wasm) => {
+          if (ownsPicking())
+            kclManager.setSelectionFilterToDefault(
+              wasm,
+              latest.current.selection
+            )
+        })
         .catch(reportRejection)
     }
   }, [arg, kclManager, wasmPromise])

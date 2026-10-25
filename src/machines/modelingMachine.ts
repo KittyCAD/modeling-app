@@ -967,6 +967,14 @@ export const modelingMachine = setup({
   },
   // end guards
   actions: {
+    'close active modeling command': ({ context, self }) => {
+      if (
+        context.commandBarActor.getSnapshot().context.selectedCommand
+          ?.machineActor === self
+      ) {
+        context.commandBarActor.send({ type: 'Close' })
+      }
+    },
     toastError: ({ event }) => {
       if ('output' in event && event.output instanceof Error) {
         console.error(event.output)
@@ -6325,6 +6333,7 @@ export const modelingMachine = setup({
 
     'Sketch no face': {
       entry: [
+        'close active modeling command',
         'show planes sketch no face',
         'set selection filter to faces only',
       ],
@@ -6378,6 +6387,7 @@ export const modelingMachine = setup({
     },
 
     'animating to existing sketch': {
+      entry: 'close active modeling command',
       invoke: {
         src: 'animate-to-sketch',
         id: 'animate-to-sketch',
@@ -7659,6 +7669,7 @@ export const modelingMachine = setup({
     },
 
     'animating to existing sketch solve': {
+      entry: 'close active modeling command',
       invoke: {
         src: 'animate-to-existing-sketch-solve',
         input: ({ event, context }) => {
