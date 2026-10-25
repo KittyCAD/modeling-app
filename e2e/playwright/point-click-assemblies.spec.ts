@@ -710,12 +710,29 @@ test.describe(
               ),
               fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
             ])
+            // Valid trailing whitespace pushes the STEP file beyond the editor's size limit.
+            await fsp.appendFile(
+              path.join(bracketDir, 'cube.step'),
+              ' '.repeat(1024 * 1024)
+            )
           })
           await homePage.openProject(projectName)
           await scene.settled()
         })
 
         await test.step('Import step part as module', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.Files)
+          await toolbar.openFile('cube.step')
+          await expect(
+            page.getByText('Text files larger than 1 MiB cannot be edited.', {
+              exact: false,
+            })
+          ).toBeVisible()
+          await expect(
+            page
+              .locator('#code-pane')
+              .getByRole('button', { name: 'Import', exact: true })
+          ).toBeVisible()
           await insertPartIntoAssembly(
             'cube.step',
             'cube',
@@ -737,7 +754,7 @@ test.describe(
           await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         })
 
-        await test.step('Import second foreign part from the context menu', async () => {
+        await test.step('Import second foreign part from the binary-file preview', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.Files)
           await toolbar.expectFileTreeState([
             'folder.prt',
@@ -745,7 +762,6 @@ test.describe(
             'cube.step',
             'main.kcl',
           ])
-          const importPrompt = page.getByText('Import into my current file')
           const importAction = page.getByRole('button', {
             name: 'Import in current file',
             exact: true,
@@ -756,18 +772,16 @@ test.describe(
           })
           await folder.click()
           await expect(folder).toHaveAttribute('aria-expanded', 'true')
-          await expect(importPrompt).not.toBeVisible()
           await folder.click({ button: 'right' })
           await expect(page.getByTestId('context-menu-rename')).toBeVisible()
           await expect(importAction).not.toBeVisible()
           await page.keyboard.press('Escape')
 
           await toolbar.openFile(complexPlmFileName)
-          await expect(importPrompt).not.toBeVisible()
           await page
-            .getByRole('treeitem', { name: complexPlmFileName, exact: true })
-            .click({ button: 'right' })
-          await importAction.click()
+            .locator('#code-pane')
+            .getByRole('button', { name: 'Import', exact: true })
+            .click()
 
           // Check getPathFilenameInVariableCase output
           const parsedValueFromFile =
