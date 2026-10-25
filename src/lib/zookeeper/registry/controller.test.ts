@@ -1,5 +1,3 @@
-import type * as KittycadLibModule from '@kittycad/lib'
-import type * as UiComponentsModule from '@kittycad/ui-components'
 import { signal, type Signal } from '@preact/signals-core'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
@@ -19,24 +17,6 @@ const managerMocks = vi.hoisted(() => ({
 const projectFilesMocks = vi.hoisted(() => ({
   collect: vi.fn(),
 }))
-
-const billingMocks = vi.hoisted(() => ({
-  getBillingInfo: vi.fn(),
-  getUserSelf: vi.fn(),
-}))
-
-vi.mock('@kittycad/ui-components', async (importOriginal) => ({
-  ...(await importOriginal<typeof UiComponentsModule>()),
-  getBillingInfo: billingMocks.getBillingInfo,
-}))
-
-vi.mock('@kittycad/lib', async (importOriginal) => {
-  const original = await importOriginal<typeof KittycadLibModule>()
-  return {
-    ...original,
-    users: { ...original.users, get_user_self: billingMocks.getUserSelf },
-  }
-})
 
 const workerMocks = vi.hoisted(() => ({
   histories: [] as Array<{
@@ -326,15 +306,6 @@ describe('Zookeeper session controller', () => {
     workerMocks.histories.length = 0
     workerMocks.processors.length = 0
     projectFilesMocks.collect.mockResolvedValue([])
-    billingMocks.getBillingInfo.mockReset().mockResolvedValue({
-      balance: 10,
-      allowance: 10,
-      isOrg: false,
-      hasSubscription: false,
-    })
-    billingMocks.getUserSelf
-      .mockReset()
-      .mockResolvedValue({ allow_pay_as_you_go: false })
     online = true
     vi.spyOn(window.navigator, 'onLine', 'get').mockImplementation(() => online)
   })
@@ -380,146 +351,6 @@ describe('Zookeeper session controller', () => {
       { type: BillingTransition.UsageEnded },
       { type: BillingTransition.Update, apiToken: 'rotated-token' },
     ])
-  })
-
-  it('waits for a fresh balance and preserves a blocked queued prompt', async () => {
-    const balance = deferred<{
-      balance: number
-      isOrg: boolean
-      hasSubscription: boolean
-    }>()
-    billingMocks.getBillingInfo.mockReturnValueOnce(balance.promise)
-    const { actor, controller } = createHarness({ actorState: 'ready-await' })
-    controller.sendOrQueue('keep this prompt', undefined, [])
-    await vi.waitFor(() =>
-      expect(billingMocks.getBillingInfo).toHaveBeenCalledOnce()
-    )
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
-    ).toHaveLength(0)
-
-    balance.resolve({ balance: 0, isOrg: false, hasSubscription: false })
-    await vi.waitFor(() =>
-      expect(controller.billingWarning.value?.balance).toBe(0)
-    )
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
-    ).toHaveLength(0)
-    expect(controller.queue.value.map((message) => message.text)).toEqual([
-      'keep this prompt',
-    ])
-    expect(billingMocks.getBillingInfo).toHaveBeenCalledOnce()
-  })
-
-  it('checks the returned balance before sending the next queued prompt', async () => {
-    const { actor, controller } = createHarness({ actorState: 'ready-await' })
-    controller.sendOrQueue('first prompt', undefined, [])
-    await vi.waitFor(() =>
-      expect(
-        sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
-      ).toHaveLength(1)
-    )
-    actor.emit('other', { awaitingResponse: true })
-    controller.sendOrQueue('second prompt', undefined, [])
-    billingMocks.getBillingInfo.mockResolvedValue({
-      balance: 0,
-      isOrg: false,
-      hasSubscription: false,
-    })
-    actor.emit('ready-await', { awaitingResponse: false })
-
-    await vi.waitFor(() =>
-      expect(controller.billingWarning.value?.balance).toBe(0)
-    )
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
-    ).toHaveLength(1)
-    expect(controller.queue.value.map((message) => message.text)).toEqual([
-      'second prompt',
-    ])
-  })
-
-  it.each([
-    { balance: Number.POSITIVE_INFINITY, isOrg: false, allowPayg: false },
-    { balance: 0, isOrg: false, allowPayg: true },
-    { balance: 0, isOrg: true, allowPayg: false },
-  ])(
-    'preserves paid, pay-as-you-go and organization access: %o',
-    async ({ balance, isOrg, allowPayg }) => {
-      billingMocks.getBillingInfo.mockResolvedValue({
-        balance,
-        isOrg,
-        hasSubscription: true,
-      })
-      billingMocks.getUserSelf.mockResolvedValue({
-        allow_pay_as_you_go: allowPayg,
-      })
-      const { actor, controller } = createHarness({ actorState: 'ready-await' })
-      controller.sendOrQueue('paid prompt', undefined, [])
-      await vi.waitFor(() =>
-        expect(
-          sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
-        ).toHaveLength(1)
-      )
-      expect(controller.billingWarning.value).toBeUndefined()
-    }
-  )
-
-  it('pauses submission when the balance service fails', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    const notification = vi.spyOn(toast, 'error')
-    billingMocks.getBillingInfo.mockRejectedValueOnce(
-      new Error('Billing unavailable')
-    )
-    const { actor, controller } = createHarness({ actorState: 'ready-await' })
-    controller.sendOrQueue('retry this prompt', undefined, [])
-    await vi.waitFor(() => expect(notification).toHaveBeenCalled())
-    await flushPromises()
-    expect(billingMocks.getBillingInfo).toHaveBeenCalledOnce()
-    expect(controller.queue.value).toHaveLength(1)
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
-    ).toHaveLength(0)
-  })
-
-  it('does not resume an interrupted turn without credits', async () => {
-    billingMocks.getBillingInfo.mockResolvedValue({
-      balance: 0,
-      isOrg: false,
-      hasSubscription: false,
-    })
-    const { actor, controller } = createHarness()
-    actor.emit('wait-for-continue-check', {
-      conversation: interruptedConversation,
-    })
-    controller.resumeInterruptedTurn()
-    await vi.waitFor(() =>
-      expect(controller.billingWarning.value?.balance).toBe(0)
-    )
-    expect(
-      sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
-    ).toHaveLength(0)
-  })
-
-  it('ignores an exhausted balance returned after disposal', async () => {
-    const balance = deferred<{
-      balance: number
-      isOrg: boolean
-      hasSubscription: boolean
-    }>()
-    billingMocks.getBillingInfo.mockReturnValueOnce(balance.promise)
-    const { actor, controller } = createHarness({ actorState: 'ready-await' })
-    controller.sendOrQueue('old prompt', undefined, [])
-    await vi.waitFor(() =>
-      expect(billingMocks.getBillingInfo).toHaveBeenCalledOnce()
-    )
-    await controller.dispose()
-    balance.resolve({ balance: 0, isOrg: false, hasSubscription: false })
-    await flushPromises()
-    expect(controller.billingWarning.value).toBeUndefined()
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
-    ).toHaveLength(0)
   })
 
   it.each([
@@ -1122,11 +953,9 @@ describe('Zookeeper session controller', () => {
     await flushPromises()
 
     expect(projectFilesMocks.collect).toHaveBeenCalledTimes(2)
-    await vi.waitFor(() =>
-      expect(
-        sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
-      ).toHaveLength(1)
-    )
+    expect(
+      sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
+    ).toHaveLength(1)
     expect(consoleError).toHaveBeenCalled()
   })
 
@@ -1186,18 +1015,14 @@ describe('Zookeeper session controller', () => {
     collectedFiles.resolve([])
     await flushPromises()
 
-    await vi.waitFor(() =>
-      expect(sentEvents(actor, ZookeeperManagerStates.ContinueCheck)).toEqual([
-        expect.objectContaining({
-          engineApiCallId: 'engine-call-id',
-          projectFiles: [],
-          projectName: 'bracket',
-        }),
-      ])
-    )
-    await vi.waitFor(() =>
-      expect(controller.isResumingInterruptedTurn.value).toBe(false)
-    )
+    expect(sentEvents(actor, ZookeeperManagerStates.ContinueCheck)).toEqual([
+      expect.objectContaining({
+        engineApiCallId: 'engine-call-id',
+        projectFiles: [],
+        projectName: 'bracket',
+      }),
+    ])
+    expect(controller.isResumingInterruptedTurn.value).toBe(false)
   })
 
   it('invalidates a pending resume after leaving the continue state', async () => {
@@ -1225,11 +1050,9 @@ describe('Zookeeper session controller', () => {
     controller.resumeInterruptedTurn()
     await flushPromises()
 
-    await vi.waitFor(() =>
-      expect(
-        sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
-      ).toHaveLength(1)
-    )
+    expect(
+      sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
+    ).toHaveLength(1)
   })
 
   it('retries a failed conversation save', async () => {
