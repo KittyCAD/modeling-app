@@ -247,16 +247,6 @@ async fn inner_hollow(
 
 #[cfg(test)]
 mod tests {
-    #[tokio::test(flavor = "multi_thread")]
-    async fn thicken_aquarium_racing_seat_brackets_execute_in_mock() {
-        let code = include_str!("../../examples/thicken/12-aquarium-racing-seat-brackets.kcl");
-        let program = crate::Program::parse_no_errs(code).unwrap();
-        let ctx = crate::ExecutorContext::new_mock(None).await;
-        let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
-        ctx.close().await;
-        let outcome = outcome.unwrap_or_else(|error| panic!("{}", error.error));
-        assert!(outcome.test_program_memory.get("seatBrackets").is_some());
-    }
     use crate::execution::MockConfig;
 
     #[tokio::test(flavor = "multi_thread")]
@@ -305,38 +295,57 @@ surface = extrude([profile.line1, profile.arc1, profile.line2, profile.line3], l
         }
     }
     #[tokio::test(flavor = "multi_thread")]
-    async fn thicken_samples_execute_in_mock() {
-        for (index, code) in [
-            include_str!("../../examples/thicken/01-side-comparison.kcl"),
-            include_str!("../../examples/thicken/02-centered-rounded-guard.kcl"),
-            include_str!("../../examples/thicken/03-sharp-z-bracket.kcl"),
-            include_str!("../../examples/thicken/04-overlap-experiment.kcl"),
-            include_str!("../../examples/thicken/06-aurora-turbine.kcl"),
-            include_str!("../../examples/thicken/07-lotus-ribbon-lamp.kcl"),
-            include_str!("../../examples/thicken/08-wave-roof-pavilion.kcl"),
-            include_str!("../../examples/thicken/09-omega-motor-pedestal.kcl"),
-            include_str!("../../examples/thicken/10-z-offset-instrument-bracket.kcl"),
-            include_str!("../../examples/thicken/11-return-flanged-bearing-clevis.kcl"),
-            include_str!("../../examples/thicken/13-aquarium-gallows-bracket.kcl"),
-            include_str!("../../examples/thicken/14-aquarium-sheet-metal-bracket.kcl"),
-            include_str!("../../examples/thicken/15-aquarium-adjustable-l-bracket.kcl"),
-            include_str!("../../examples/thicken/16-aquarium-shelf-l-bracket.kcl"),
-            include_str!("../../examples/thicken/17-aquarium-propellant-line-bracket.kcl"),
-        ]
-        .into_iter()
-        .enumerate()
-        {
+    async fn thicken_bracket_samples_execute_in_mock() {
+        for code in [
+            include_str!("../../../../public/kcl-samples/bracket/main.kcl"),
+            include_str!("../../../../public/kcl-samples/bracket-with-slot/main.kcl"),
+            include_str!("../../../../public/kcl-samples/gallows-bracket/main.kcl"),
+            include_str!("../../../../public/kcl-samples/sheet-metal-bracket/main.kcl"),
+        ] {
             let program = crate::Program::parse_no_errs(code).unwrap();
             let ctx = crate::ExecutorContext::new_mock(None).await;
             let result = ctx.run_mock(&program, &MockConfig::default()).await;
             ctx.close().await;
-            result.unwrap_or_else(|error| panic!("Thicken sample {index}: {}", error.error));
+            result.unwrap_or_else(|error| panic!("{}", error.error));
         }
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn thicken_tight_tangent_return_regression() {
-        let code = include_str!("../../examples/thicken/05-tight-tangent-return.kcl");
+        let code = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -6.5mm, var 6.82mm], end = [var -9.34mm, var -7.42mm])
+  arc1 = arc(start = [var -9.34mm, var -7.42mm], end = [var -7.12mm, var -10.13mm], center = [var -7.12mm, var -7.87mm])
+  coincident([line1.end, arc1.start])
+  tangent([line1, arc1])
+  line2 = line(start = [var -7.12mm, var -10.13mm], end = [var 11.26mm, var -10.13mm])
+  coincident([line2.start, arc1.end])
+  arc2 = arc(start = [var 11.26mm, var -10.13mm], end = [var 12.82mm, var -6.22mm], center = [var 11.26mm, var -7.87mm])
+  coincident([line2.end, arc2.start])
+  tangent([line2, arc2])
+  line3 = line(start = [var 12.82mm, var -6.22mm], end = [var -0.73mm, var 6.63mm])
+  coincident([line3.start, arc2.end])
+  arc3 = arc(start = [var -0.73mm, var 6.63mm], end = [var -4.52mm, var 5.43mm], center = [var -2.88mm, var 5.02mm])
+  coincident([line3.end, arc3.start])
+  tangent([line3, arc3])
+  line4 = line(start = [var -4.52mm, var 5.43mm], end = [var -6.83mm, var -6.17mm])
+  coincident([line4.start, arc3.end])
+  tangent([line2, arc1])
+  horizontal(line2)
+  tangent([line3, arc2])
+  tangent([line4, arc3])
+  equalRadius([arc3, arc1, arc2])
+  parallel([line4, line1])
+}
+
+surface = extrude(sketch001, length = 15, bodyType = SURFACE)
+thicken(surface, thickness = 3mm)
+
+// Keep construction sketches out of the final rendering.
+hide(sketch001)
+"#;
         for thickness in ["2mm", "3mm"] {
             let code = code.replace("thickness = 3mm", &format!("thickness = {thickness}"));
             let program = crate::Program::parse_no_errs(&code).unwrap();

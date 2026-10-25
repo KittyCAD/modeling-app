@@ -2,198 +2,67 @@
 // This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.
 // Categories: Architecture & Construction; Mechanical Components; Parametric
 
-// Set units and enable experimental sketch constraints.
-@settings(defaultLengthUnit = in, kclVersion = 2.0)
+@settings(defaultLengthUnit = in, kclVersion = 3.0, experimentalFeatures = allow)
 
-// Define structural design inputs.
-allowableStress = 35000 // psi
-appliedLoad = 300 // lb applied at the end of the shelf
-factorOfSafety = 1.2
+sigmaAllow = 35000
+width = 5in
+p = 300
+fos = 1.2
+shelfMountLength = 5in
+wallMountLength = 2.25in
+shelfDepth = 12in
+shelfMountingHoleDiameter = 0.5in
+wallMountingHoleDiameter = 0.625in
+thickness = sqrt((shelfDepth / 1in) * p * fos * 6 / (sigmaAllow * (width / 1in))) * 1in
+bendRadius = 0.25in
+extBendRadius = bendRadius + thickness
+filletRadius = 0.5in
+shelfOffset = 1.5 * shelfMountingHoleDiameter
+wallOffset = 1.5 * wallMountingHoleDiameter
 
-// Define the overall bracket envelope.
-bracketWidth = 5.0
-shelfLegLength = 5.0
-wallLegLength = 2.25
-shelfDepth = 12
-
-// Define reference hole diameters used for simple geometric fit checks.
-referenceShelfMountHoleDiameter = 0.50
-referenceWallMountHoleDiameter = 0.625
-
-// Calculate the bending load and required section thickness.
-bendingMoment = shelfDepth * appliedLoad
-bracketThickness = sqrt(bendingMoment * factorOfSafety * 6 / (allowableStress * bracketWidth))
-insideBendRadius = 0.25
-outsideBendRadius = insideBendRadius + bracketThickness
-cornerFilletRadius = 0.5
-
-// Define the actual modeled hole sizes and blind depths.
-shelfMountHoleDiameter = 0.5
-shelfMountHoleDepth = 1.0
-wallMountHoleDiameter = 0.8
-wallMountHoleDepth = 1.0
-
-// Define hole center locations on the shelf-mount leg.
-shelfMountHoleBendSideCenterX = -1.5
-shelfMountHoleTipSideCenterX = -4.0
-shelfMountHoleTopRowCenterY = 1.5
-shelfMountHoleBottomRowCenterY = -1.5
-
-// Define hole center locations on the wall-mount leg.
-wallMountHoleColumnCenterX = -1.5
-wallMountHoleTopRowCenterY = 1.5
-wallMountHoleBottomRowCenterY = -1.5
-
-// Group the hole center coordinates into arrays for the hole operations.
-shelfMountHoleCenters = [
-  [
-    shelfMountHoleBendSideCenterX,
-    shelfMountHoleTopRowCenterY
-  ],
-  [
-    shelfMountHoleTipSideCenterX,
-    shelfMountHoleTopRowCenterY
-  ],
-  [
-    shelfMountHoleBendSideCenterX,
-    shelfMountHoleBottomRowCenterY
-  ],
-  [
-    shelfMountHoleTipSideCenterX,
-    shelfMountHoleBottomRowCenterY
-  ]
-]
-
-wallMountHoleCenters = [
-  [
-    wallMountHoleColumnCenterX,
-    wallMountHoleTopRowCenterY
-  ],
-  [
-    wallMountHoleColumnCenterX,
-    wallMountHoleBottomRowCenterY
-  ]
-]
-
-// Create the 2D bracket side profile on the XZ plane using constrained sketch geometry.
-bracketProfileSketch = sketch(on = XZ) {
-  line1 = line(start = [var -0.29in, var 1.23in], end = [var -0.28in, var 3.34in])
-  line2 = line(start = [var 0in, var 0in], end = [var 4.69in, var 3.79in])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 4.69in, var 3.79in], end = [var 4.66in, var 3.4in])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 4.66in, var 3.4in], end = [var -0.39in, var -0.39in])
-  coincident([line3.end, line4.start])
-  line5 = line(start = [var 1.93in, var -0.68in], end = [var -0.38in, var -2.25in])
-  coincident([line4.end, line5.start])
-  line6 = line(start = [var 1.6in, var -2.15in], end = [var -0.29in, var 1.23in])
-  coincident([line5.end, line6.start])
-  coincident([line6.end, line1.start])
-  coincident([line2.start, ORIGIN])
-
-  // Lock the intended line orientations.
-  horizontal(line6)
-  horizontal(line4)
-  horizontal(line2)
-  vertical(line1)
-  vertical(line5)
-  vertical(line3)
-
-  // Drive the profile from the design parameters.
-  horizontalDistance([line6.start, line6.end]) == -bracketThickness
-  verticalDistance([line3.end, line3.start]) == bracketThickness
-  horizontalDistance([line2.start, line2.end]) == shelfLegLength
-  verticalDistance([line1.start, line1.end]) == wallLegLength
+// Cutting tools are separate solids; their construction sketches are hidden immediately.
+fn drill(@plane, at, radius, depth) {
+  boreRadius = radius
+  profile = sketch(on = plane) {
+    bore = circle(start = [at[0] + boreRadius, at[1]], center = at)
+  }
+  tool = extrude(region(segments = [profile.bore]), length = depth)
+  hide(profile)
+  return tool
+}
+fn cornerCut(@plane, at, xSign, ySign, radius, depth) {
+  a = [at[0] - xSign * radius, at[1]]
+  c = [at[0], at[1] - ySign * radius]
+  center = [at[0] - xSign * radius, at[1] - ySign * radius]
+  profile = sketch(on = plane) {
+    outerA = line(start = a, end = at)
+    outerB = line(start = at, end = c)
+    round = arc(start = c, end = a, center = center, direction = if xSign * ySign > 0 { CCW } else { CW })
+  }
+  tool = extrude(region(segments = [profile.outerA, profile.outerB, profile.round]), length = depth)
+  hide(profile)
+  return tool
 }
 
-// Turn the closed sketch into a solid blank and hide the sketch.
-bracketProfileRegion = region(segments = [bracketProfileSketch.line1])
-hide(bracketProfileSketch)
-
-bracketBlank = extrude(
-  bracketProfileRegion,
-  length = bracketWidth,
-  symmetric = true,
-  tagEnd = $bracketEndFace,
-  tagStart = $bracketStartFace,
-)
-
-// Apply the inside bend radius at the elbow of the bracket.
-bracketWithInsideFillet = fillet(
-  bracketBlank,
-  radius = insideBendRadius,
-  edges = [
-    {
-      sideFaces = [
-        bracketProfileRegion.tags.line5,
-        bracketProfileRegion.tags.line4
-      ]
-    }
-  ],
-)
-
-// Apply the outside bend radius around the outer corner.
-bracketWithBendFillets = fillet(
-  bracketWithInsideFillet,
-  radius = outsideBendRadius,
-  edges = [
-    {
-      sideFaces = [
-        bracketProfileRegion.tags.line2,
-        bracketProfileRegion.tags.line1
-      ]
-    }
-  ],
-)
-
-// Round the four free outside corners of the extruded bracket.
-bracketWithCornerFillets = fillet(
-  bracketWithBendFillets,
-  radius = cornerFilletRadius,
-  edges = [
-    {
-      sideFaces = [
-        bracketProfileRegion.tags.line6,
-        bracketEndFace
-      ]
-    },
-    {
-      sideFaces = [
-        bracketProfileRegion.tags.line3,
-        bracketEndFace
-      ]
-    },
-    {
-      sideFaces = [
-        bracketProfileRegion.tags.line3,
-        bracketStartFace
-      ]
-    },
-    {
-      sideFaces = [
-        bracketProfileRegion.tags.line6,
-        bracketStartFace
-      ]
-    }
-  ],
-)
-
-// Drill the shelf-side mounting holes into the horizontal leg.
-bracketWithShelfMountHoles = hole::holes(
-  bracketWithCornerFillets,
-  face = bracketProfileRegion.tags.line4,
-  cutsAt = shelfMountHoleCenters,
-  holeBottom = hole::flat(),
-  holeBody = hole::blind(depth = shelfMountHoleDepth, diameter = shelfMountHoleDiameter),
-  holeType = hole::simple(),
-)
-
-// Drill the wall-side mounting holes into the vertical leg.
-finalBracket = hole::holes(
-  bracketWithShelfMountHoles,
-  face = bracketProfileRegion.tags.line5,
-  cutsAt = wallMountHoleCenters,
-  holeBottom = hole::flat(),
-  holeBody = hole::blind(depth = wallMountHoleDepth, diameter = wallMountHoleDiameter),
-  holeType = hole::simple(),
-)
+section = sketch(on = XZ) {
+  wall = line(start = [-thickness, thickness - wallMountLength], end = [-thickness, -bendRadius])
+  bend = arc(start = [-thickness, -bendRadius], end = [bendRadius, thickness], center = [bendRadius, -bendRadius], direction = CW)
+  shelf = line(start = [bendRadius, thickness], end = [shelfMountLength - thickness, thickness])
+}
+surface = extrude([section.wall, section.bend, section.shelf], length = width, bodyType = SURFACE)
+hide(section)
+formedBlank = thicken(surface, thickness = thickness, flip = false)
+footPlane = offsetPlane(XY, offset = -thickness)
+wallPlane = offsetPlane(YZ, offset = -2 * thickness)
+shelfA = drill(footPlane, at = [bendRadius + shelfOffset, -shelfOffset], radius = shelfMountingHoleDiameter / 2, depth = 3 * thickness)
+shelfB = drill(footPlane, at = [shelfMountLength - thickness - shelfOffset, -shelfOffset], radius = shelfMountingHoleDiameter / 2, depth = 3 * thickness)
+shelfC = drill(footPlane, at = [bendRadius + shelfOffset, -width + shelfOffset], radius = shelfMountingHoleDiameter / 2, depth = 3 * thickness)
+shelfD = drill(footPlane, at = [shelfMountLength - thickness - shelfOffset, -width + shelfOffset], radius = shelfMountingHoleDiameter / 2, depth = 3 * thickness)
+wallA = drill(wallPlane, at = [-wallOffset, -(wallMountLength - wallOffset - bendRadius)], radius = wallMountingHoleDiameter / 2, depth = 3 * thickness)
+wallB = drill(wallPlane, at = [-width + wallOffset, -(wallMountLength - wallOffset - bendRadius)], radius = wallMountingHoleDiameter / 2, depth = 3 * thickness)
+roundA = cornerCut(footPlane, at = [shelfMountLength - thickness, 0in], xSign = 1, ySign = 1, radius = filletRadius, depth = 3 * thickness)
+roundB = cornerCut(footPlane, at = [shelfMountLength - thickness, -width], xSign = 1, ySign = -1, radius = filletRadius, depth = 3 * thickness)
+roundC = cornerCut(wallPlane, at = [0in, thickness - wallMountLength], xSign = 1, ySign = -1, radius = filletRadius, depth = 3 * thickness)
+roundD = cornerCut(wallPlane, at = [-width, thickness - wallMountLength], xSign = -1, ySign = -1, radius = filletRadius, depth = 3 * thickness)
+finishedBracket = subtract(formedBlank, tools = [shelfA, shelfB, shelfC, shelfD, wallA, wallB, roundA, roundB, roundC, roundD])
+  |> appearance(color = "#aabac6", metalness = 80, roughness = 32)
