@@ -10,6 +10,26 @@ Selecting geometry starts a check after
 350 ms; **Suggest** refreshes it manually. Click a suggestion to apply it.
 Nothing is applied without that click.
 
+## Sketch continuation interaction prototype
+
+The **Sketch ideas** card is a separate experiment for adding geometry to the
+current sketch. It appears automatically when sketch mode opens on a simple
+four-line square, without selecting an edge. It previews two alternatives:
+a centered circle or a smaller offset circle. Clicking one adds a real circle
+to that sketch through the normal Rust sketch mutation and checkpoint path.
+The card disappears after the geometry is added.
+The circle position is currently a numeric placement; it is not constrained to
+remain centered if the square is resized later.
+
+These first two ideas are geometry templates to validate the interaction.
+The trained constraint ranker below does not generate or rank them. A model
+that proposes useful next geometry needs examples of a sketch *before* an
+edit, the continuation a designer chose, other plausible options, and cases
+where no suggestion was wanted. The existing constraint corpus labels do not
+provide those decisions. The four-line square case is intentionally narrow
+until there is a continuation benchmark that measures design intent and
+one-click apply success.
+
 ## Try it locally
 
 The browser checkout needs `VITE_ZOO_API_TOKEN` configured in

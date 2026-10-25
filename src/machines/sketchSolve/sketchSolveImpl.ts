@@ -129,6 +129,11 @@ export type SketchSolveMachineEvent =
       }
     }
   | {
+      type: 'apply suggested geometry'
+      data: { segment: SegmentCtor; sceneGraphDelta: SceneGraphDelta }
+    }
+  | { type: 'suggested geometry settled' }
+  | {
       type: 'equip tool'
       data: { tool: EquipTool }
       keepSelection?: boolean
@@ -247,6 +252,7 @@ export type SketchSolveContext = {
   pendingToolName?: EquipTool
   pendingToolKeepSelection?: boolean
   keepSelectionAfterToolCompletion: boolean
+  continuationPending?: boolean
   selectedIds: Array<SketchSolveSelectionId>
   selectionCoordinates: SelectionCoordinates
   duringAreaSelectIds: Array<number>

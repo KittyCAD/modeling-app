@@ -419,6 +419,27 @@ export const sketchSolveMachine = setup({
         }
       )
     },
+    'apply suggested geometry': ({ context, event, self }) => {
+      assertEvent(event, 'apply suggested geometry')
+      void runSketchSolveToolbarAction(
+        'add suggested sketch geometry',
+        async () => {
+          try {
+            const result = await context.rustContext.addSegment(
+              0,
+              context.sketchId,
+              event.data.segment,
+              undefined,
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
+            )
+            sendToolbarConstraintOutcome(self, result)
+          } finally {
+            sendToActorIfActive(self, { type: 'suggested geometry settled' })
+          }
+        }
+      )
+    },
     'send tool equipped to parent': sendParent(({ context }) => ({
       type: 'sketch solve tool changed',
       data: { tool: context.sketchSolveToolName },
@@ -489,6 +510,7 @@ export const sketchSolveMachine = setup({
   context: ({ input }): SketchSolveContext => {
     return {
       sketchSolveToolName: null,
+      continuationPending: false,
       keepSelectionAfterToolCompletion: false,
       selectedIds: [],
       selectionCoordinates: {},
@@ -513,6 +535,9 @@ export const sketchSolveMachine = setup({
   id: 'Sketch Solve Mode',
   initial: 'move and select',
   on: {
+    'suggested geometry settled': {
+      actions: assign({ continuationPending: false }),
+    },
     exit: {
       target: '#Sketch Solve Mode.exiting with cleanup',
       actions: [
@@ -963,6 +988,20 @@ export const sketchSolveMachine = setup({
     'move and select': {
       entry: ['setUpOnDragAndSelectionClickCallbacks'],
       on: {
+        'apply suggested geometry': {
+          guard: ({ context, event }) => {
+            assertEvent(event, 'apply suggested geometry')
+            return (
+              !context.continuationPending &&
+              context.sketchExecOutcome?.sceneGraphDelta ===
+                event.data.sceneGraphDelta
+            )
+          },
+          actions: [
+            assign({ continuationPending: true }),
+            'apply suggested geometry',
+          ],
+        },
         'apply suggested constraint': {
           guard: ({ context, event }) => {
             assertEvent(event, 'apply suggested constraint')

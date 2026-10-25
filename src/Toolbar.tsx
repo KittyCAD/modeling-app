@@ -53,6 +53,7 @@ import { isArray, type Platform } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getSymmetricToolSelectionStep } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { SketchConstraintSuggestions } from '@src/machines/sketchSolve/constraints/SketchConstraintSuggestions'
+import { SketchNextStepSuggestions } from '@src/machines/sketchSolve/continuation/SketchNextStepSuggestions'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import {
   findKeymapItemForCommand,
@@ -790,14 +791,24 @@ const Toolbar_ = memo(
           {showExperimentalSuggestions &&
             toolbarConfigurationName === 'sketchSolve' &&
             props.state.children.sketchSolveMachine && (
-              <SketchConstraintSuggestions
-                actor={
-                  props.state.children.sketchSolveMachine as ActorRefFrom<
-                    typeof sketchSolveMachine
-                  >
-                }
-                disabled={disableAllButtons || disableSketchToolbar}
-              />
+              <>
+                <SketchConstraintSuggestions
+                  actor={
+                    props.state.children.sketchSolveMachine as ActorRefFrom<
+                      typeof sketchSolveMachine
+                    >
+                  }
+                  disabled={disableAllButtons || disableSketchToolbar}
+                />
+                <SketchNextStepSuggestions
+                  actor={
+                    props.state.children.sketchSolveMachine as ActorRefFrom<
+                      typeof sketchSolveMachine
+                    >
+                  }
+                  disabled={disableAllButtons || disableSketchToolbar}
+                />
+              </>
             )}
         </ul>
         <div className="flex flex-col items-center absolute top-full left-1/2 -translate-x-1/2">

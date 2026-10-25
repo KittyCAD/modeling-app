@@ -11,6 +11,48 @@ test.describe('Sketch constraint suggestions', { tag: '@web' }, () => {
     userFeatures: testingPocPreview ? [] : [EXPERIMENTAL_POINT_AND_CLICK_FLAG],
   })
 
+  test('offers a next sketch idea without selecting an edge', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    const code = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
+`
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await editor.openPane()
+    await editor.replaceCode('', code)
+    await scene.settled()
+
+    await toolbar.openFeatureTreePane()
+    await expect(page.getByText('Building feature tree')).not.toBeVisible({
+      timeout: 10_000,
+    })
+    const sketchOperation = await toolbar.getFeatureTreeOperation(
+      'sketch001',
+      0
+    )
+    await sketchOperation.dblclick()
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+
+    const centeredCircle = page.getByRole('button', {
+      name: 'Add centered circle',
+    })
+    await expect(centeredCircle).toBeVisible()
+    await centeredCircle.click()
+    await editor.expectEditor.toContain('circle(')
+    await expect(centeredCircle).not.toBeVisible()
+  })
+
   test('previews and applies a horizontal constraint to the selected line', async ({
     page,
     homePage,
