@@ -17,6 +17,8 @@ import {
 import {
   createEdgeRefObjectExpression,
   entityReferenceToEdgeRefPayload,
+  getPrimitiveEdgeSelections,
+  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
 } from '@src/lang/modifyAst/edges'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
@@ -159,7 +161,12 @@ function buildFaceAndEdgeGdtExprs({
   const edgeSelections = objects.graphSelections.filter(
     (selection) => getEdgeRefPayloadFromSelection(selection) !== null
   )
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  const primitiveEdgeSelections = getPrimitiveEdgeSelections(objects)
+  if (
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0 &&
+    primitiveEdgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -194,6 +201,24 @@ function buildFaceAndEdgeGdtExprs({
     }
     modifiedAst = edgeResult.modifiedAst
     edgeExprs.push(...edgeResult.edgeExprs)
+  }
+
+  // Some Boolean and hollow-region edges have no taggable face references.
+  // Use the same body/index fallback as other edge commands for those picks.
+  const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode({
+    primitiveEdgeSelections,
+    bodies: new Map(),
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+  })
+  if (err(primitiveEdgeResult)) return primitiveEdgeResult
+  for (const body of primitiveEdgeResult.bodies.values()) {
+    if (body.tagsExpr.type === 'ArrayExpression') {
+      edgeExprs.push(...body.tagsExpr.elements)
+    } else {
+      edgeExprs.push(body.tagsExpr)
+    }
   }
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)

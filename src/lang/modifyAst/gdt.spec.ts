@@ -2061,6 +2061,70 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addAnnotationGdt', () => {
+    it.each(['Boolean cut', 'hollow region'] as const)(
+      'generates edgeId references for primitive edges on a %s',
+      async (kind) => {
+        const code = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  outer = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  ${kind === 'hollow region' ? 'inner = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])' : ''}
+}
+${
+  kind === 'Boolean cut'
+    ? `outerRegion = region(point = [0mm, 0mm], sketch = sketch001)
+sketch002 = sketch(on = XY) {
+  inner = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
+}
+innerRegion = region(point = [0mm, 0mm], sketch = sketch002)
+outerBody = extrude(outerRegion, length = 10mm)
+innerBody = extrude(innerRegion, length = 10mm)
+part = subtract(outerBody, tools = innerBody)`
+    : `outerRegion = region(point = [8mm, 0mm], sketch = sketch001)
+part = extrude(outerRegion, length = 10mm)`
+}`
+        const { artifactGraph, ast } = await executeCode(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const body = [...artifactGraph.values()].find((artifact) =>
+          kind === 'Boolean cut'
+            ? artifact.type === 'compositeSolid'
+            : artifact.type === 'sweep'
+        )
+        if (!body) throw new Error('Expected the selected body')
+        const originalCode = recast(ast, instanceInThisFile)
+        const objects: Selections = {
+          graphSelections: [],
+          otherSelections: [0, 1].map((index) => ({
+            type: 'enginePrimitive',
+            entityId: `primitive-edge-${index}`,
+            parentEntityId: body.id,
+            primitiveIndex: index,
+            primitiveType: 'edge',
+          })),
+        }
+        const result = addAnnotationGdt({
+          ast,
+          artifactGraph,
+          objects,
+          annotation: 'Hole edge',
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) throw result
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+
+        expect(newCode).toContain('edge001 = edgeId(part, index = 0)')
+        expect(newCode).toContain('edge002 = edgeId(part, index = 1)')
+        expect(newCode.match(/gdt::annotation\(/g)).toHaveLength(2)
+        expect(newCode).toContain('edges = [edge001]')
+        expect(newCode).toContain('edges = [edge002]')
+        expect(recast(ast, instanceInThisFile)).toBe(originalCode)
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      }
+    )
+
     it('should add annotations to selected faces and edges', async () => {
       const { artifactGraph, ast } = await executeCode(
         boxWithOneTagAndChamfer,
