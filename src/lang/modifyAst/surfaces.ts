@@ -24,12 +24,7 @@ import {
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
-import {
-  getSweepArtifactFromSelection,
-  getFaceCodeRef,
-  getCodeRefsByArtifactId,
-  getMergedSweepBodyArtifact,
-} from '@src/lang/std/artifactGraph'
+import { getMergedSweepBodyArtifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -210,115 +205,97 @@ export function addPlanarSurface({
   curves: Selections
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  let modifiedAst = structuredClone(ast)
-  let pathIfPipe: PathToNode | undefined
-  const recordCurvePipe = (curvePath?: PathToNode): Error | undefined => {
-    if (!curvePath) return
-    if (
-      pathIfPipe &&
-      stringifyPathToNode(pathIfPipe) !== stringifyPathToNode(curvePath) &&
-      !pathsReferToSamePipe(pathIfPipe, curvePath)
-    ) {
-      return new Error(
-        'Assign variables to the selected bodies before combining their edges.'
-      )
-    }
-    pathIfPipe = structuredClone(curvePath)
-  }
-
-  const engineRegions = curves.otherSelections.filter(isEngineRegionSelection)
-  const selectionCount =
-    curves.graphSelections.length + curves.otherSelections.length
+  const { graphSelections, otherSelections } = curves
+  const selectionCount = graphSelections.length + otherSelections.length
   if (selectionCount === 0) {
     return new Error('Select one sketch region or swept-body edges.')
   }
-  if (engineRegions.length !== curves.otherSelections.length) {
-    return new Error('Planar Surface requires a region or swept-body edges.')
-  }
 
-  const exprs: Expr[] = []
-  let isRegion = engineRegions.length > 0
-  // Resolve references here; KCL and the engine validate the boundary geometry.
-  for (const originalSelection of curves.graphSelections) {
-    if (originalSelection.entityRef?.type === 'edge') {
-      const edgeResult = getPlanarBodyEdgeExpression({
-        selection: originalSelection,
+  let modifiedAst = structuredClone(ast)
+  let pathIfPipe: PathToNode | undefined
+  let curvesExpr: Expr
+  if (otherSelections.length > 0) {
+    const [region] = otherSelections
+    if (selectionCount !== 1 || !isEngineRegionSelection(region)) {
+      return new Error(
+        'Select one sketch region or a list of swept-body edges.'
+      )
+    }
+    const engineRegions = [region]
+    const hidden = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (isErr(hidden)) return hidden
+    modifiedAst = hidden
+    const regions = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (isErr(regions)) return regions
+    curvesExpr = regions[0]
+  } else if (graphSelections[0].entityRef?.type === 'edge') {
+    const edges: Expr[] = []
+    for (const selection of graphSelections) {
+      const edge = getPlanarBodyEdgeExpression({
+        selection,
         modifiedAst,
         artifactGraph,
         wasmInstance,
       })
-      if (isErr(edgeResult)) return edgeResult
-      modifiedAst = edgeResult.modifiedAst
-      const pipeResult = recordCurvePipe(edgeResult.pathIfPipe)
-      if (isErr(pipeResult)) return pipeResult
-      exprs.push(edgeResult.expr)
-      continue
-    }
-    const resolved = resolveToCodeRef(originalSelection, artifactGraph)
-    if (!resolved)
-      return new Error('Could not resolve the selected curve in code.')
-    let selection = {
-      ...originalSelection,
-      ...resolved,
-    }
-    if (selection.artifact?.type === 'solid2d') {
-      const path = artifactGraph.get(selection.artifact.pathId)
-      if (path?.type !== 'path') {
-        return new Error('Could not resolve the selected region in code.')
+      if (isErr(edge)) return edge
+      if (edge.pathIfPipe) {
+        if (
+          pathIfPipe &&
+          stringifyPathToNode(pathIfPipe) !==
+            stringifyPathToNode(edge.pathIfPipe) &&
+          !pathsReferToSamePipe(pathIfPipe, edge.pathIfPipe)
+        ) {
+          return new Error(
+            'Assign variables to the selected bodies before combining their edges.'
+          )
+        }
+        pathIfPipe = edge.pathIfPipe
       }
-      selection = { ...selection, artifact: path, codeRef: path.codeRef }
+      modifiedAst = edge.modifiedAst
+      edges.push(edge.expr)
     }
+    curvesExpr = createArrayExpression(edges)
+  } else {
+    const artifact = resolveToCodeRef(
+      graphSelections[0],
+      artifactGraph
+    )?.artifact
+    const path =
+      artifact?.type === 'solid2d'
+        ? artifactGraph.get(artifact.pathId)
+        : artifact
     if (
-      selection.artifact?.type !== 'path' ||
-      selection.artifact.subType !== 'region'
+      selectionCount !== 1 ||
+      path?.type !== 'path' ||
+      path.subType !== 'region'
     ) {
       return new Error(
         'Select a sketch region or a Face API edge from the viewport.'
       )
     }
-
-    isRegion = true
-    const result = getVariableExprsFromSelection(
-      { graphSelections: [selection], otherSelections: [] },
+    const region = getVariableExprsFromSelection(
+      curves,
       artifactGraph,
       modifiedAst,
       wasmInstance
     )
-    if (isErr(result)) return result
-    if (result.exprs.length !== 1) {
+    if (isErr(region)) return region
+    if (region.exprs.length !== 1) {
       return new Error('Could not resolve the selected region in code.')
     }
-    pathIfPipe = structuredClone(result.pathIfPipe) ?? pathIfPipe
-    exprs.push(...result.exprs)
+    curvesExpr = region.exprs[0]
+    pathIfPipe = region.pathIfPipe
   }
-
-  if (isRegion && selectionCount !== 1) {
-    return new Error('Select one sketch region or a list of swept-body edges.')
-  }
-
-  if (engineRegions.length > 0) {
-    const hideResult = addHideCallsForRegionSketches({
-      engineRegions,
-      modifiedAst,
-      artifactGraph,
-      wasmInstance,
-    })
-    if (isErr(hideResult)) return hideResult
-    modifiedAst = hideResult
-    const regionResult = insertRegionVariablesAndOffsetPathToNode({
-      engineRegions,
-      modifiedAst,
-      artifactGraph,
-      wasmInstance,
-    })
-    if (isErr(regionResult)) return regionResult
-    exprs.push(...regionResult)
-  }
-
-  // The stdlib takes one region directly, or an array of swept-body edges.
-  const curvesExpr = isRegion
-    ? createVariableExpressionsArray(exprs)
-    : createArrayExpression(exprs)
 
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Planar Surface'),
@@ -364,29 +341,16 @@ function getPlanarBodyEdgeExpression({
       'Select an edge with Face API references from the viewport.'
     )
   const topology = getEngineTopologyFallbackNormalized(selection)
-  let bodySelection = topology
-    ? getBodySelectionFromPrimitiveParentEntityId(
+  let bodySelection =
+    (topology &&
+      getBodySelectionFromPrimitiveParentEntityId(
         topology.parentId,
         artifactGraph
-      )
-    : null
-  if (!bodySelection) {
-    for (const faceId of reference.side_faces) {
-      const artifact = artifactGraph.get(faceId)
-      if (!artifact) continue
-      const codeRef =
-        getFaceCodeRef(artifact) ??
-        getCodeRefsByArtifactId(faceId, artifactGraph)?.[0]
-      if (!codeRef) continue
-      const sweep = getSweepArtifactFromSelection(
-        { artifact, codeRef },
-        artifactGraph
-      )
-      if (isErr(sweep)) continue
-      bodySelection = { artifact: sweep, codeRef: sweep.codeRef }
-      break
-    }
-  }
+      )) ??
+    getBodySelectionFromPrimitiveParentEntityId(
+      reference.side_faces[0],
+      artifactGraph
+    )
   if (!bodySelection?.artifact || !bodySelection.codeRef)
     return new Error('Could not resolve the selected edge body in code.')
   if (bodySelection.artifact?.type === 'sweep') {
@@ -417,7 +381,7 @@ function getPlanarBodyEdgeExpression({
   const tagged = createEdgeRefObjectExpression(
     entityReferenceToEdgeRefPayload(reference),
     wasmInstance,
-    structuredClone(modifiedAst),
+    modifiedAst,
     artifactGraph,
     resolveToCodeRef(selection, artifactGraph) ?? undefined,
     undefined,
