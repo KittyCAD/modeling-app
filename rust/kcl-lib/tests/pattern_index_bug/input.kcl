@@ -1,0 +1,55 @@
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
+
+// Sketch a square.
+squareSketch = sketch(on = XY) {
+  line1 = line(start = [var -8.43mm, var 4.06mm], end = [var -2.12mm, var 4.06mm])
+  line2 = line(start = [var -2.12mm, var 4.06mm], end = [var -2.12mm, var -4.02mm])
+  line3 = line(start = [var -2.12mm, var -4.02mm], end = [var -8.43mm, var -4.02mm])
+  line4 = line(start = [var -8.43mm, var -4.02mm], end = [var -8.43mm, var 4.06mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+// Extrude it into a cube, pattern into 3 cubes.
+square = region(segments = [squareSketch.line1, squareSketch.line2], direction = CW)
+cube = extrude(square, length = 4, tagEnd = $capEnd001)
+cubes = patternLinear3d(
+  cube,
+  instances = 3,
+  distance = 14,
+  axis = X,
+)
+
+// This should succeed (first cube).
+fillet(
+  cubes[0],
+  edges = [
+    {
+      sideFaces = [
+        square.tags.line3,
+        cubes[0].faces.capEnd001
+      ]
+    }
+  ],
+  radius = 1,
+)
+
+// This should also succeed (second cube).
+fillet(
+  cubes[1],
+  edges = [
+    {
+      sideFaces = [
+        square.tags.line3,
+        cubes[1].faces.capEnd001
+      ]
+    }
+  ],
+  radius = 1,
+)
