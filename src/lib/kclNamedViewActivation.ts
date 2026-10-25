@@ -84,9 +84,11 @@ export function isSameView(
 export async function activateNamedView({
   target,
   kclManager,
+  restoreCamera = true,
 }: {
   target: ActivationTarget
   kclManager: KclManager
+  restoreCamera?: boolean
 }): Promise<void> {
   if (!kclManager.engineCommandManager.isReady) {
     return
@@ -98,7 +100,11 @@ export async function activateNamedView({
     kclManager,
   })
 
-  await applyAndTrackCamera(target, kclManager)
+  if (restoreCamera) {
+    await applyAndTrackCamera(target, kclManager)
+  } else {
+    trackActiveViewCamera(kclManager)
+  }
   if (target.kind === 'declared') {
     installReapplyEffect(kclManager)
   }

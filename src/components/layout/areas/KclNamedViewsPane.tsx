@@ -195,6 +195,18 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
       }
 
       await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, kclManager)
+      const updatedView = listNamedViews(kclManager.execState).find(
+        (updated) =>
+          updated.artifact.name === view.artifact.name &&
+          updated.moduleId === view.moduleId
+      )
+      if (updatedView) {
+        await activateNamedView({
+          target: { kind: 'declared', view: updatedView },
+          kclManager,
+          restoreCamera: false,
+        })
+      }
     } catch (reason) {
       toast.error(
         reason instanceof Error

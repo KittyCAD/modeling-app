@@ -5977,9 +5977,10 @@ region001 = region(segments = [sketch001.circle1])`
         .getByTestId('feature-tree-operation-item')
         .filter({ hasText: /Named View/ })
     ).toHaveCount(0)
-    await row
-      .getByRole('button', { name: 'Apply Inspection updated', exact: true })
-      .click()
+    await scene.waitForExecutionDoneAfter(() =>
+      row.getByRole('button', { name: 'Update from current camera' }).click()
+    )
+    await editor.expectEditor.toContain('view::directed(')
     await expect(row).toHaveAttribute('data-active', 'true')
     await row.getByRole('button', { name: 'Named view actions' }).click()
     await scene.waitForExecutionDoneAfter(() =>
