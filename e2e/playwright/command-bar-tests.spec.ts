@@ -558,7 +558,10 @@ export exported = 1
     })
 
     await editor.expectEditor.toContain(
-      `a = 5b = a * amyParameter001 = b - 5c = 3 + a`
+      `a = 5
+b = a * a
+myParameter001 = b - 5
+c = 3 + a`
     )
 
     const newValue = `2 * b + a`

@@ -228,7 +228,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await editor.openPane()
         await scene.settled()
       })
 
@@ -258,8 +257,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await line1End()
         previousCode = await waitForCodeChange(page, previousCode)
         await cancelLineChaining()
-        previousCode = await waitForCodeChange(page, previousCode)
         await expect(pointHandles).toHaveCount(2)
+        previousCode = await editor.getCurrentCode()
 
         // Second line segment
         // Keep this start point away from the Y axis so origin/axis snapping
@@ -275,8 +274,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await line2End()
         previousCode = await waitForCodeChange(page, previousCode)
         await cancelLineChaining()
-        previousCode = await waitForCodeChange(page, previousCode)
         await expect(pointHandles).toHaveCount(4)
+        previousCode = await editor.getCurrentCode()
 
         // Third line segment
         const [line3Start] = scene.makeMouseHelpers(0.7, 0.4, {
@@ -288,9 +287,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await line3Start()
         previousCode = await waitForCodeChange(page, previousCode)
         await line3End()
-        previousCode = await waitForCodeChange(page, previousCode)
-        await cancelLineChaining()
         await waitForCodeChange(page, previousCode)
+        await cancelLineChaining()
         await expect(pointHandles).toHaveCount(6)
       })
 
@@ -384,7 +382,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         })
 
         await circleCenterClick()
-        previousCode = await waitForCodeChange(page, previousCode)
         await circleRadiusClick()
         await waitForCodeChange(page, previousCode)
 
@@ -405,7 +402,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
-        await editor.openPane()
         await scene.settled()
 
         await toolbar.startSketchOnDefaultPlane('Top plane')
@@ -445,7 +441,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         })
 
         await circleCenter()
-        previousCode = await waitForCodeChange(page, previousCode)
         await circleRadius()
         await waitForCodeChange(page, previousCode)
 
@@ -1254,7 +1249,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await editor.openPane()
       await scene.settled()
     })
 
@@ -1548,9 +1542,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       })
 
       await circleCenterClick()
-      previousCode = await waitForCodeChange(page, circleCodeBefore)
       await circleRadiusClick()
-      const circleCodeAfter = await waitForCodeChange(page, previousCode)
+      const circleCodeAfter = await waitForCodeChange(page, circleCodeBefore)
       counts = getCodeCounts(circleCodeAfter)
       expect(counts.circles).toBe(circleCountsBefore.circles + 1)
       expect(await pointHandles.count()).toBeGreaterThan(
@@ -2000,7 +1993,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1400, height: 900 })
       await homePage.goToModelingScene()
-      await editor.openPane()
       await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = YZ) {')
     })
@@ -2034,15 +2026,19 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
             .filter((value): value is string => Boolean(value))
         )
 
-    const trimAcross = async (
-      from: { y: number; z: number },
-      to: { y: number; z: number }
-    ) => {
-      const start = await scene.convertWorldPositionToStream({ x: 0, ...from })
-      const end = await scene.convertWorldPositionToStream({ x: 0, ...to })
-      await page.mouse.move(start.x, start.y)
+    const trimAcrossLine = async (lineIndex: number) => {
+      const start = await pointHandles.nth(lineIndex * 2).boundingBox()
+      const end = await pointHandles.nth(lineIndex * 2 + 1).boundingBox()
+      if (!start || !end) throw new Error('Trim target handles are missing')
+      // Cross the upper quarter of the rendered line, away from intersections.
+      const x = start.x * 0.75 + end.x * 0.25
+      const y = start.y * 0.75 + end.y * 0.25
+      const length = Math.hypot(end.x - start.x, end.y - start.y)
+      const dx = ((end.y - start.y) / length) * 12
+      const dy = ((start.x - end.x) / length) * 12
+      await page.mouse.move(x - dx, y - dy)
       await page.mouse.down()
-      await page.mouse.move(end.x, end.y, { steps: 20 })
+      await page.mouse.move(x + dx, y + dy, { steps: 20 })
       await page.mouse.up()
     }
 
@@ -2051,7 +2047,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     const initialHandleIds = await getHandleIds()
 
     await test.step('Trim first region and undo', async () => {
-      await trimAcross({ y: -9.5, z: 1 }, { y: -7.5, z: 1 })
+      await trimAcrossLine(0)
 
       const trimmedCode = await waitForCodeChange(page, initialCode)
       expect(normaliseCode(trimmedCode)).not.toBe(normaliseCode(initialCode))
@@ -2080,7 +2076,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         normaliseCode(initialCode)
       )
 
-      await trimAcross({ y: 3.5, z: 0.5 }, { y: 6, z: 0.5 })
+      await trimAcrossLine(3)
 
       const trimmedCode = await waitForCodeChange(page, codeBeforeSecondTrim)
       expect(normaliseCode(trimmedCode)).not.toBe(

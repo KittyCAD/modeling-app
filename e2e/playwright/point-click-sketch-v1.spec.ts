@@ -1222,7 +1222,7 @@ extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
   |> circle(center = [-11.34, 10.0], radius = 8.69)`
     const newCodeToFind =
-      'revolve001 = revolve(  sketch002,  angle = 360deg,  axis = rectangleSegmentA001,  bodyType = SURFACE,)'
+      'revolve001 = revolve(  sketch002,  angle = 360deg,  axis = rectangleSegmentA001,  bodyType = SURFACE, )'
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)

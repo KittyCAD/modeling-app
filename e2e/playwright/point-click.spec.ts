@@ -2916,7 +2916,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   |> ${secondSurfaceEdge}
   |> extrude(length = 2, bodyType = SURFACE)
   |> flipSurface()`
-    const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = seg01),  getBoundedEdge(profile002, edge = seg02)])`
+    const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = seg01),  getBoundedEdge(profile002, edge = seg02) ])`
 
     async function selectEdgesFromBothSurfaces() {
       const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
