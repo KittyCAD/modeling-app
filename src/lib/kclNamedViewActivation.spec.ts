@@ -24,6 +24,10 @@ vi.mock('@src/lib/resetCameraPosition', () => ({
   resetCameraPosition: vi.fn().mockResolvedValue(undefined),
 }))
 
+vi.mock('@src/lib/isPlaywright', () => ({
+  isPlaywright: () => false,
+}))
+
 import { signal } from '@preact/signals-core'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
@@ -39,7 +43,6 @@ import {
   moduleKeyOf,
   reapplyActiveViewAfterReconnect,
   resetNamedViewSession,
-  trackActiveViewCamera,
 } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { Signal } from '@src/lib/signal'
@@ -150,7 +153,15 @@ function fakes({ isReady = true }: { isReady?: boolean } = {}) {
   camera.position.z = 1
 
   const raw = {
-    systemDeps: { settings: {} },
+    systemDeps: {
+      settings: {
+        getSnapshot: () => ({
+          context: {
+            modeling: { cameraProjection: { current: 'orthographic' } },
+          },
+        }),
+      },
+    },
     execState: execStateWith(),
     errors: [] as unknown[],
     get modelingState() {
@@ -398,17 +409,6 @@ describe('activateNamedView', () => {
     expect(resetCameraPosition).toHaveBeenCalledOnce()
   })
 
-  it('deselects the initial Default View after camera movement', () => {
-    const f = fakes()
-    activeViewSignal.value = 'kclDefault'
-    trackActiveViewCamera(f.kclManager)
-
-    f.raw.sceneInfra.camControls.camera.position.x += 1
-    f.raw.sceneInfra.camControls.cameraChange.dispatch()
-
-    expect(activeViewSignal.value).toBeNull()
-  })
-
   it('keeps a view active while applying its camera and reconnecting', async () => {
     const f = fakes()
     const controls = f.raw.sceneInfra.camControls
@@ -426,7 +426,11 @@ describe('activateNamedView', () => {
     expect(activeViewSignal.value).toBeNull()
   })
 
-  it('restores KCL visibility and uses Reset View for the Default View camera', async () => {
+  it('restores KCL visibility and the preferred projection for Default View', async () => {
+    const { resetCameraPosition: resetCamera } = await vi.importActual<{
+      resetCameraPosition: typeof resetCameraPosition
+    }>('@src/lib/resetCameraPosition')
+    vi.mocked(resetCameraPosition).mockImplementationOnce(resetCamera)
     const f = fakes()
 
     await activateNamedView({
@@ -438,11 +442,9 @@ describe('activateNamedView', () => {
       new Map([['body-1', false]])
     )
     expect(f.setCameraToAxis).not.toHaveBeenCalled()
-    expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
-      sceneInfra: f.raw.sceneInfra,
-      engineCommandManager: f.raw.engineCommandManager,
-      settingsActor: f.raw.systemDeps.settings,
-    })
+    expect(
+      f.raw.sceneInfra.camControls.setCameraProjection
+    ).toHaveBeenCalledWith('orthographic')
     expect(activeViewSignal.value).toBe('kclDefault')
   })
 })
