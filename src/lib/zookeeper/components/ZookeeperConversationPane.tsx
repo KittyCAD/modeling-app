@@ -1,10 +1,15 @@
+import { Dialog } from '@headlessui/react'
+import { BillingDialog } from '@kittycad/ui-components'
 import { useSignals } from '@preact/signals-react/runtime'
+import { ActionButton } from '@src/components/ActionButton'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import {
   LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
   SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
 import type { ZookeeperSessionController } from '@src/lib/zookeeper/registry/controller'
@@ -34,6 +39,7 @@ export const ZookeeperConversationPane = (props: {
   const [searchParams, setSearchParams] = useSearchParams()
   const controller = props.controller
   const actor = controller.actor
+  const billingWarning = controller.billingWarning.value
 
   useEffect(() => {
     setIsConfirmingClearChat(false)
@@ -151,6 +157,44 @@ export const ZookeeperConversationPane = (props: {
 
   return (
     <>
+      {billingWarning && (
+        <Dialog
+          open={true}
+          onClose={() => controller.dismissBillingWarning()}
+          className="relative z-50"
+        >
+          <div className="fixed inset-0 grid place-content-center bg-chalkboard-110/80">
+            <Dialog.Panel className="w-80 rounded border border-ml-green bg-chalkboard-10 p-4 shadow-lg dark:bg-chalkboard-100">
+              <Dialog.Title className="mb-4 text-lg font-semibold">
+                You're out of Zookeeper credits.
+              </Dialog.Title>
+              <BillingDialog
+                {...billingWarning}
+                upgradeHref={withSiteBaseURL('/design-studio-pricing')}
+                accountHref={withSiteBaseURL('/account/billing')}
+                billingClick={openExternalBrowserIfDesktop()}
+              />
+              <div className="mt-4 flex justify-end gap-2">
+                <ActionButton
+                  Element="button"
+                  onClick={() => controller.dismissBillingWarning()}
+                >
+                  Close
+                </ActionButton>
+                <ActionButton
+                  Element="button"
+                  onClick={() => {
+                    controller.dismissBillingWarning()
+                    controller.checkBillingAccess()
+                  }}
+                >
+                  Check again
+                </ActionButton>
+              </div>
+            </Dialog.Panel>
+          </div>
+        </Dialog>
+      )}
       {isConfirmingClearChat && (
         <DeleteConfirmationDialog
           title="Start a new chat?"

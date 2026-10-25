@@ -1,3 +1,4 @@
+import type { IBillingInfo } from '@kittycad/ui-components'
 import { signal } from '@preact/signals-core'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: observe query cleanup in the legacy prompt flow (useLocation).
@@ -144,6 +145,7 @@ const createFakeController = ({
   isResumingInterruptedTurn = false,
   queue = [],
   showManualConnect = false,
+  billingWarning,
 }: {
   actorContext?: Partial<FakeSnapshot['context']>
   actorValue?: string
@@ -151,6 +153,7 @@ const createFakeController = ({
   isResumingInterruptedTurn?: boolean
   queue?: QueuedMessage[]
   showManualConnect?: boolean
+  billingWarning?: IBillingInfo
 } = {}) => {
   const actor = createFakeActor(actorContext, actorValue)
   const queueSignal = signal<QueuedMessage[]>(queue)
@@ -162,6 +165,7 @@ const createFakeController = ({
     checkBillingAccess: vi.fn(),
     clearConversation: vi.fn(async () => undefined),
     dispose: vi.fn(),
+    dismissBillingWarning: vi.fn(),
     reconnect: vi.fn(),
     removeQueued: vi.fn(),
     resumeInterruptedTurn: vi.fn(),
@@ -171,6 +175,7 @@ const createFakeController = ({
   }
   const controller = {
     actor: actor.actor,
+    billingWarning: signal(billingWarning),
     isClearingChat: clearingSignal,
     isResumingInterruptedTurn: resumingSignal,
     projectPath: '/projects/cube',
@@ -222,6 +227,33 @@ beforeEach(() => {
 })
 
 describe('ZookeeperConversationPane', () => {
+  test('reuses the billing upgrade dialog and can recheck without clearing the chat', () => {
+    const fake = createFakeController({
+      billingWarning: {
+        balance: 0,
+        allowance: 20,
+        isOrg: false,
+        hasSubscription: false,
+      },
+    })
+    render(
+      <MemoryRouter>
+        <ZookeeperConversationPane {...createPaneProps(fake.controller)} />
+      </MemoryRouter>
+    )
+    expect(
+      screen.getByRole('dialog', { name: "You're out of Zookeeper credits." })
+    ).toBeVisible()
+    expect(screen.getByRole('link', { name: 'Upgrade' })).toHaveAttribute(
+      'href',
+      expect.stringContaining('/design-studio-pricing')
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Check again' }))
+    expect(fake.dismissBillingWarning).toHaveBeenCalledOnce()
+    expect(fake.checkBillingAccess).toHaveBeenCalledOnce()
+    expect(fake.clearConversation).not.toHaveBeenCalled()
+  })
+
   test('maps actor state, controller signals, and visual context to the conversation', () => {
     const attachmentFetches = {
       'prompt:0:0': { status: 'loading' as const },
