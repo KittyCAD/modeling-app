@@ -1,0 +1,71 @@
+/// Define T-slotted framing rails for manufacturing and construction models.
+///
+/// T-slotted framing rails are square aluminum extrusion profiles with attachment
+/// slots on each side for brackets, connectors, fasteners, and other hardware.
+
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+import toInches from "std::units"
+
+/// Create a square T-slotted framing rail with four symmetric side slots and a central bore.
+///
+/// The profile uses standard one-inch proportions and scales uniformly to `railHeight`.
+///
+/// ```kcl,legacySketch
+/// @settings(defaultLengthUnit = in, kclVersion = 1.0)
+///
+/// rail::tSlot(
+///   railHeight = 1.5in,
+///   length = 2ft,
+/// )
+/// ```
+export fn tSlot(
+  /// Overall width and height of the square rail profile.
+  railHeight: number(Length),
+  /// Extrusion length of the rail.
+  length: number(Length),
+): Solid {
+  assert(railHeight, isGreaterThan = 0in, error = "railHeight must be positive")
+  assert(length, isGreaterThan = 0in, error = "length must be positive")
+
+  interiorRadius = 0.01in
+  scoreDepth = 0.018in
+  arcEnd = 0.0275in
+  holeDiameter = 0.262in
+  scaleFactor = (toInches(railHeight) / 1in): number(_)
+
+  body = startSketchOn(-XZ)
+    |> startProfile(at = [0.5in, (1in - 0.356in) / 2])
+    |> xLine(length = -0.08in)
+    |> tangentialArc(angle = 45deg, radius = 0.09in)
+    |> angledLine(angle = 45deg, endAbsoluteY = 0.113in)
+    |> tangentialArc(angle = 135deg, radius = interiorRadius)
+    |> xLine(endAbsolute = 0.5in - (0.320in / 2) - interiorRadius)
+    |> tangentialArc(angle = -90deg, radius = interiorRadius)
+    |> yLine(endAbsolute = interiorRadius)
+    |> tangentialArc(angle = -90deg, radius = interiorRadius)
+    |> xLine(length = -0.03in)
+    |> arc(angleStart = 0deg, angleEnd = 180deg, radius = scoreDepth)
+    |> xLine(length = -0.1in)
+    |> arc(angleStart = 0deg, angleEnd = 180deg, radius = scoreDepth)
+    |> xLine(length = -0.03in)
+    |> tangentialArc(endAbsolute = [arcEnd, arcEnd])
+    |> mirror2d(axis = {
+         direction = [1.0, 1.0],
+         origin = [0in, 0in]
+       })
+    |> mirror2d(axis = {
+         direction = [1.0, 0.0],
+         origin = [0in, 0.5in]
+       })
+    |> mirror2d(axis = {
+         direction = [0.0, 1.0],
+         origin = [0.5in, 0in]
+       })
+    |> close()
+    |> subtract2d(tool = circle(center = [0.5in, 0.5in], radius = holeDiameter / 2))
+    |> scale(x = scaleFactor, y = scaleFactor, z = scaleFactor)
+    |> extrude(length)
+
+  return body
+}
