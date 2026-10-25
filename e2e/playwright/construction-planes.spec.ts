@@ -59,6 +59,21 @@ body = extrude(face, length = 20mm)`
             .project(camera)
           return { x: (p.x + 1) / 2, y: (1 - p.y) / 2 }
         }, point)
+        const pixel = await scene.convertPagePositionToStream(
+          projected.x,
+          projected.y,
+          'ratio'
+        )
+        expect(
+          await page.evaluate(
+            ({ x, y }) =>
+              !document
+                .elementFromPoint(x, y)
+                ?.closest('[data-testid="command-bar"]'),
+            pixel
+          ),
+          'The Plane dialog must leave the reference point available to click'
+        ).toBe(true)
         const [click] = scene.makeMouseHelpers(projected.x, projected.y, {
           format: 'ratio',
           debugLabel: 'reference',
@@ -112,9 +127,7 @@ body = extrude(face, length = 20mm)`
         )
         await cmdBar.progressCmdBar()
       }
-      await expect
-        .poll(async () => (await cmdBar.getState()).stage)
-        .toBe('review')
+      await expect(page.locator('#review-form')).toBeVisible()
       await expect(page.getByTestId('command-bar-submit')).toBeEnabled()
       await cmdBar.submit()
       await scene.settled()

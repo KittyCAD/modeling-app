@@ -1258,7 +1258,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           inputType: 'selection',
           displayName: 'References',
           description:
-            'Select one plane or planar face for an offset, two parallel faces for a midplane, a plane and point for a parallel plane, two points for a perpendicular bisector, or three points for a plane through them. Hold Shift to add references. Change Definition for manual coordinates.',
+            'Select planes, planar faces, or corner points. Hold Shift to add references; the selection determines the plane type.',
           selectionTypes: [
             'vertex',
             'plane',
