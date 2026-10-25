@@ -2,6 +2,10 @@ import type { Orientation } from '@rust/kcl-lib/bindings/Orientation'
 import type { Projection } from '@rust/kcl-lib/bindings/Projection'
 import type { Visibility } from '@rust/kcl-lib/bindings/Visibility'
 import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
+import type {
+  NamedViewCameraInput,
+  NamedViewCameraMode,
+} from '@src/lang/modifyAst/namedViews'
 import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
 import type { SweepRelativeTo } from '@src/lang/modifyAst/sweeps'
 import type {
@@ -116,6 +120,8 @@ export type NamedViewCommandArgs = Override<
   PointAndClickCommandArgs<'Named View'>,
   {
     baseline: Visibility
+    camera?: NamedViewCameraInput
+    cameraMode?: NamedViewCameraMode
     orientation?: Orientation
     projection?: Projection
   }

@@ -31,6 +31,7 @@ const _INPUT_TYPES = [
   'selection',
   'boolean',
   'vector3d',
+  'camera',
 ] as const
 type INPUT_TYPE = typeof _INPUT_TYPES
 export interface KclExpression {
@@ -287,6 +288,9 @@ export type CommandArgumentConfig<
       }) => Promise<boolean | string>
     }
   | {
+      inputType: 'camera'
+    }
+  | {
       inputType: 'text'
       defaultValue?:
         | OutputType
@@ -478,6 +482,9 @@ export type CommandArgument<
             wasmInstance?: ModuleType
           ) => OutputType)
       filters: FiltersConfig
+    }
+  | {
+      inputType: 'camera'
     }
   | {
       inputType: 'text'

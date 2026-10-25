@@ -8,6 +8,7 @@ import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelec
 import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
 import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
+import { CommandCameraInput } from '@src/components/CommandBar/CommandCameraInput'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
 
@@ -74,9 +75,22 @@ function ArgumentInput({
   onSubmit: (event: any) => void
 }) {
   const app = useApp()
+  const { argumentsToSubmit } = app.commands.useState().context
   const executingEditor = app.project?.executingEditor.value
   // @ts-ignore
   switch (arg.inputType) {
+    case 'camera':
+      return executingEditor ? (
+        <div className="p-4">
+          <CommandCameraInput
+            controls={executingEditor.sceneInfra.camControls}
+            saved={Boolean(argumentsToSubmit[arg.name])}
+            onCapture={onSubmit}
+          />
+        </div>
+      ) : (
+        <NoExecutingEditorWarning />
+      )
     case 'options':
       return (
         <CommandArgOptionInput

@@ -7,6 +7,7 @@ import {
   CommandKclInput,
   getKclInputValue,
 } from '@src/components/CommandBar/CommandKclInput'
+import { CommandCameraInput } from '@src/components/CommandBar/CommandCameraInput'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
@@ -16,7 +17,7 @@ import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { getSelectionTypeDisplayText, isSelections } from '@src/lib/selections'
 import { isErr, trap } from '@src/lib/trap'
-import { capitaliseFC } from '@src/lib/utils'
+import { capitaliseFC, isRecord } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { CommandScopeService } from '@src/registry/contracts/commands'
@@ -119,7 +120,10 @@ export default function ModelingDialog({
   const checking = state.matches('Checking Arguments for Dialog')
   const invalid = visible.some(({ name, arg, required }) => {
     if (arg.inputType === 'kcl') return validity[name] === false
-    return required && !hasValue(context.argumentsToSubmit[name])
+    return (
+      (arg.inputType === 'camera' && validity[name] === false) ||
+      (required && !hasValue(context.argumentsToSubmit[name]))
+    )
   })
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -183,6 +187,23 @@ export default function ModelingDialog({
     )
     const machineContext = arg.machineActor?.getSnapshot().context
     switch (arg.inputType) {
+      case 'camera':
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <CommandCameraInput
+              id={fieldId}
+              controls={kclManager.sceneInfra.camControls}
+              saved={hasValue(value)}
+              captured={isRecord(value) && 'direction' in value}
+              onCapture={(camera) => save(name, camera)}
+              onValidationChange={(canSubmit) =>
+                setValidity((previous) => ({ ...previous, [name]: canSubmit }))
+              }
+            />
+            {description}
+          </div>
+        )
       case 'kcl':
         return (
           <CommandKclInput

@@ -1,6 +1,7 @@
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addNamedView,
+  type NamedViewCameraSnapshot,
   updateNamedViewCamera,
 } from '@src/lang/modifyAst/namedViews'
 import { assertParse, recast } from '@src/lang/wasm'
@@ -258,16 +259,17 @@ view001 = view::named(
 
   it('replaces only the camera with the current directed camera', async () => {
     const ast = assertParse(code, instance)
+    const camera: NamedViewCameraSnapshot = {
+      direction: [0.25, -0.5, -0.75],
+      up: [0, 0, 1],
+      target: [10, 20, 30],
+      distance: 125.5,
+      projection: 'Orthographic',
+    }
     const modifiedAst = updateNamedViewCamera({
       ast,
       pathToNode: createPathToNodeForLastVariable(ast, false),
-      camera: {
-        direction: [0.25, -0.5, -0.75],
-        up: [0, 0, 1],
-        target: [10, 20, 30],
-        distance: 125.5,
-        projection: 'Orthographic',
-      },
+      camera,
       wasmInstance: instance,
     })
     if (err(modifiedAst)) throw modifiedAst
@@ -284,5 +286,34 @@ view001 = view::named(
   )`)
     expect(updatedCode).toContain('"Inspection view"')
     expect(updatedCode).toContain('baseline = view::Visibility::Show')
+
+    const commandResult = addNamedView({
+      ast: assertParse('@settings(kclVersion = 3.0)', instance),
+      artifactGraph: new Map(),
+      name: 'Inspection view',
+      cameraMode: 'directed',
+      camera,
+      baseline: 'Show',
+      wasmInstance: instance,
+    })
+    if (err(commandResult)) throw commandResult
+    expect(recast(commandResult.modifiedAst, instance)).toBe(updatedCode)
+
+    const orientedResult = addNamedView({
+      ast,
+      artifactGraph: new Map(),
+      nodeToEdit: createPathToNodeForLastVariable(ast, false),
+      name: 'Inspection view',
+      cameraMode: 'oriented',
+      camera,
+      orientation: 'Top',
+      projection: 'Perspective',
+      baseline: 'Show',
+      wasmInstance: instance,
+    })
+    if (err(orientedResult)) throw orientedResult
+    const orientedCode = recast(orientedResult.modifiedAst, instance)
+    expect(orientedCode).toContain('view::oriented(view::Orientation::Top')
+    expect(orientedCode).not.toContain('view::directed(')
   })
 })

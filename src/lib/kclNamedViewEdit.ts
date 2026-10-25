@@ -98,7 +98,7 @@ export async function prepareNamedViewEditCommand({
       ? retrieveSelectionsFromArtifactIds(exceptIds, artifactGraph)
       : undefined
 
-  // Other camera expressions stay in source; only name and visibility are editable.
+  // Other camera expressions stay intact unless the user recaptures or changes mode.
   const look = artifact.camera.look
   const orientation =
     orientedCamera && look.type === 'oriented'
@@ -108,6 +108,8 @@ export async function prepareNamedViewEditCommand({
       : undefined
   const argDefaultValues: ModelingCommandSchema['Named View'] = {
     name: artifact.name,
+    cameraMode: orientation ? 'oriented' : 'directed',
+    camera: orientedCamera ? undefined : camera,
     orientation,
     target,
     distance,

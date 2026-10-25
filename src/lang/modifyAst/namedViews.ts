@@ -1,4 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { ArtifactCameraView } from '@rust/kcl-lib/bindings/Artifact'
 import type { Orientation } from '@rust/kcl-lib/bindings/Orientation'
 import type { Projection } from '@rust/kcl-lib/bindings/Projection'
 import type { Visibility } from '@rust/kcl-lib/bindings/Visibility'
@@ -44,6 +45,8 @@ export function addNamedView({
   ast,
   artifactGraph,
   name,
+  camera: capturedCamera,
+  cameraMode = capturedCamera ? 'directed' : 'oriented',
   orientation,
   target,
   distance,
@@ -56,6 +59,8 @@ export function addNamedView({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   name: string
+  camera?: NamedViewCameraInput
+  cameraMode?: NamedViewCameraMode
   orientation?: Orientation
   target?: KclCommandValue
   distance?: KclCommandValue
@@ -85,7 +90,13 @@ export function addNamedView({
   }
 
   let camera: Expr | undefined
-  if (orientation && projection) {
+  if (cameraMode === 'directed') {
+    if (!capturedCamera) return new Error('Capture the current camera first.')
+    camera =
+      'type' in capturedCamera
+        ? structuredClone(capturedCamera)
+        : createCapturedCamera(capturedCamera, wasmInstance)
+  } else if (orientation && projection) {
     camera = createCallExpressionStdLibKw(
       'oriented',
       viewEnum('Orientation', orientation),
@@ -108,7 +119,7 @@ export function addNamedView({
       insertVariableAndOffsetPathToNode(distance, modifiedAst, mNodeToEdit)
     }
   } else if (mNodeToEdit) {
-    // Shared cameras, directed cameras, and custom helpers remain untouched.
+    // Preserve the existing expression when no replacement was supplied.
     const result = getNodeFromPath<CallExpressionKw>(
       modifiedAst,
       mNodeToEdit,
@@ -161,6 +172,10 @@ export type NamedViewCameraSnapshot = {
   projection: Projection
 }
 
+export type NamedViewCameraMode = ArtifactCameraView['look']['type']
+// Keep an existing camera expression until the user explicitly recaptures it.
+export type NamedViewCameraInput = NamedViewCameraSnapshot | Expr
+
 function rounded(value: number): number {
   const result = Math.round(value * 1_000_000) / 1_000_000
   return Object.is(result, -0) ? 0 : result
@@ -175,6 +190,27 @@ function point(
     values.map((value) =>
       createLiteral(rounded(value), wasmInstance, suffix, 6)
     )
+  )
+}
+
+function createCapturedCamera(
+  camera: NamedViewCameraSnapshot,
+  wasmInstance: ModuleType
+) {
+  return createCallExpressionStdLibKw(
+    'directed',
+    point(camera.direction, wasmInstance),
+    [
+      createLabeledArg('up', point(camera.up, wasmInstance)),
+      createLabeledArg('target', point(camera.target, wasmInstance, 'Mm')),
+      createLabeledArg(
+        'distance',
+        createLiteral(rounded(camera.distance), wasmInstance, 'Mm', 6)
+      ),
+      createLabeledArg('projection', viewEnum('Projection', camera.projection)),
+    ],
+    undefined,
+    [createIdentifier('view')]
   )
 }
 
@@ -210,21 +246,7 @@ export function updateNamedViewCamera({
     return new Error('This named view has no camera to update.')
   }
 
-  cameraArgument.arg = createCallExpressionStdLibKw(
-    'directed',
-    point(camera.direction, wasmInstance),
-    [
-      createLabeledArg('up', point(camera.up, wasmInstance)),
-      createLabeledArg('target', point(camera.target, wasmInstance, 'Mm')),
-      createLabeledArg(
-        'distance',
-        createLiteral(rounded(camera.distance), wasmInstance, 'Mm', 6)
-      ),
-      createLabeledArg('projection', viewEnum('Projection', camera.projection)),
-    ],
-    undefined,
-    [createIdentifier('view')]
-  )
+  cameraArgument.arg = createCapturedCamera(camera, wasmInstance)
 
   return modifiedAst
 }

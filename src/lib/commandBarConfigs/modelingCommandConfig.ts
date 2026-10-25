@@ -10,7 +10,6 @@ import { findUniqueName } from '@src/lang/create'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
-import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
@@ -66,7 +65,7 @@ import type {
 
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { capitaliseFC } from '@src/lib/utils'
+import { capitaliseFC, isRecord } from '@src/lib/utils'
 import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
@@ -217,11 +216,9 @@ const isEditingNode = (context: {
   argumentsToSubmit: Record<string, unknown>
 }) => Boolean(context.argumentsToSubmit.nodeToEdit)
 
-// Custom camera expressions remain untouched when editing a named view.
-const preserveNamedViewCamera = (context: {
+const isDirectedNamedViewCamera = (context: {
   argumentsToSubmit: Record<string, unknown>
-}) =>
-  isEditingNode(context) && context.argumentsToSubmit.orientation === undefined
+}) => context.argumentsToSubmit.cameraMode === 'directed'
 
 const isEditingNodeSelection = (context: {
   argumentsToSubmit: Record<string, unknown>
@@ -648,12 +645,30 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Named View',
       {
         overrides: {
+          cameraMode: {
+            inputType: 'options',
+            required: true,
+            defaultValue: 'oriented',
+            options: [
+              { name: 'Oriented', value: 'oriented', isCurrent: true },
+              { name: 'Directed', value: 'directed' },
+            ],
+          },
+          camera: {
+            inputType: 'camera',
+            required: isDirectedNamedViewCamera,
+            hidden: (context) => !isDirectedNamedViewCamera(context),
+            valueSummary: (value) =>
+              isRecord(value) && 'type' in value
+                ? 'Saved camera'
+                : 'Captured camera',
+          },
           orientation: {
             inputType: 'options',
-            required: (context) => !preserveNamedViewCamera(context),
-            hidden: preserveNamedViewCamera,
-            defaultValue: (context: CommandBarContext) =>
-              isEditingNode(context) ? undefined : 'Isometric',
+            required: (context) => !isDirectedNamedViewCamera(context),
+            hidden: isDirectedNamedViewCamera,
+            prepopulate: true,
+            defaultValue: 'Isometric',
             options: stdLibEnumOptions(
               STD_LIB_ENUMS['view::Orientation'],
               'Isometric'
@@ -661,8 +676,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           projection: {
             inputType: 'options',
-            required: (context) => !preserveNamedViewCamera(context),
-            hidden: preserveNamedViewCamera,
+            required: (context) => !isDirectedNamedViewCamera(context),
+            hidden: isDirectedNamedViewCamera,
+            prepopulate: true,
             defaultValue: 'Orthographic',
             options: stdLibEnumOptions(
               STD_LIB_ENUMS['view::Projection'],
@@ -698,11 +714,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             multiple: true,
           },
           target: {
-            hidden: preserveNamedViewCamera,
+            hidden: isDirectedNamedViewCamera,
             dialog: { advanced: true },
           },
           distance: {
-            hidden: preserveNamedViewCamera,
+            hidden: isDirectedNamedViewCamera,
             dialog: { advanced: true },
           },
         },
