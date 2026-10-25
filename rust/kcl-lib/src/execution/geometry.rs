@@ -1302,6 +1302,11 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub(crate) pattern_source_artifact_id: Option<ArtifactId>,
+    /// Source face IDs mapped to this pattern instance's faces. Capture
+    /// this when patterning, before later operations can change the source.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) pattern_face_ids: IndexMap<Uuid, Uuid>,
     /// Body type known from the KCL operation that created this value.
     ///
     /// Mock execution cannot query the engine for this, so retain it when it
@@ -1424,6 +1429,7 @@ impl Solid {
     pub(crate) fn become_new_body(&mut self, engine_id: uuid::Uuid, artifact_id: ArtifactId, kind: NewBodyKind) {
         self.topology_id = engine_id;
         self.pattern_source_artifact_id = None;
+        self.pattern_face_ids.clear();
         self.artifact_id = artifact_id;
         match kind {
             NewBodyKind::Replacement => {}

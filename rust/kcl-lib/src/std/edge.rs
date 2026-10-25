@@ -908,6 +908,17 @@ async fn resolve_edge_specifiers_with_face_tags(
         end_face_groups.push(resolve_as_face_ids(value, solid, exec_state, args).await?);
     }
 
+    // A pattern instance retains source topology in its KCL tags. The engine's
+    // face-based resolver needs faces on the target instance, even if an earlier
+    // operation has already modified the source body.
+    if let Some(solid) = solid {
+        for face_ids in side_face_groups.iter_mut().chain(&mut end_face_groups) {
+            for face_id in face_ids {
+                *face_id = solid.pattern_face_ids.get(face_id).copied().unwrap_or(*face_id);
+            }
+        }
+    }
+
     // Before computing all combinations, count them. If there would be too
     // many, generate a fatal error so that we don't get stuck doing large
     // work on pathological input.

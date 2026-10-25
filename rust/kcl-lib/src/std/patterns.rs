@@ -7,6 +7,7 @@ use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
 use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::output::FaceEdgeInfo;
 use kcmc::shared::Transform;
 use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::shared::Angle;
@@ -366,17 +367,24 @@ async fn send_pattern_transform<T: GeometryTrait>(
         .await?;
 
     let mut mock_ids = Vec::new();
-    let entity_ids = if let OkWebSocketResponseData::Modeling {
+    let (entity_ids, face_edge_ids) = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
     } = &resp
     {
-        &pattern_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
+        (
+            pattern_info
+                .entity_face_edge_ids
+                .iter()
+                .map(|x| x.object_id)
+                .collect::<Vec<_>>(),
+            pattern_info.entity_face_edge_ids.as_slice(),
+        )
     } else if args.ctx.no_engine_commands().await {
         mock_ids.reserve(extra_instances);
         for _ in 0..extra_instances {
             mock_ids.push(exec_state.next_uuid());
         }
-        &mock_ids
+        (mock_ids, &[][..])
     } else {
         return Err(KclError::new_engine(KclErrorDetails::new(
             format!("EntityLinearPattern response was not as expected: {resp:?}"),
@@ -391,6 +399,9 @@ async fn send_pattern_transform<T: GeometryTrait>(
         new_geometry.set_artifact_id(id);
         geometries.push(new_geometry);
     }
+    geometry
+        .map_pattern_copies(&mut geometries[1..], entity_id, face_edge_ids, exec_state, args)
+        .await?;
     Ok(geometries)
 }
 
@@ -557,18 +568,34 @@ fn array_to_point2d(
 
 pub trait GeometryTrait: Clone {
     type Set: Into<Vec<Self>> + Clone;
+
     #[allow(async_fn_in_trait)]
     async fn id(&mut self, ctx: &ExecutorContext) -> Result<Uuid, KclError>;
+
     fn topology_id(&self) -> Uuid;
+
     fn set_id(&mut self, id: Uuid);
+
     fn set_artifact_id(&mut self, id: Uuid);
+
     fn array_to_point3d(
         val: &KclValue,
         source_ranges: Vec<SourceRange>,
         exec_state: &mut ExecState,
     ) -> Result<[TyF64; 3], KclError>;
+
     #[allow(async_fn_in_trait)]
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: &Self::Set) -> Result<(), KclError>;
+
+    #[allow(async_fn_in_trait)]
+    async fn map_pattern_copies(
+        &self,
+        copies: &mut [Self],
+        source_entity_id: Uuid,
+        face_edge_ids: &[FaceEdgeInfo],
+        exec_state: &mut ExecState,
+        args: &Args,
+    ) -> Result<(), KclError>;
 }
 
 impl GeometryTrait for Sketch {
@@ -598,6 +625,18 @@ impl GeometryTrait for Sketch {
     async fn flush_batch(_: &Args, _: &mut ExecState, _: &Self::Set) -> Result<(), KclError> {
         Ok(())
     }
+
+    async fn map_pattern_copies(
+        &self,
+        _: &mut [Self],
+        _: Uuid,
+        _: &[FaceEdgeInfo],
+        _: &mut ExecState,
+        _: &Args,
+    ) -> Result<(), KclError> {
+        // Nothing to do here, because there's no alternate face IDs in a sketch.
+        Ok(())
+    }
 }
 
 impl GeometryTrait for Solid {
@@ -613,6 +652,53 @@ impl GeometryTrait for Solid {
 
     fn set_artifact_id(&mut self, id: Uuid) {
         self.become_pattern_copy(id);
+    }
+
+    async fn map_pattern_copies(
+        &self,
+        copies: &mut [Self],
+        source_entity_id: Uuid,
+        face_edge_ids: &[FaceEdgeInfo],
+        exec_state: &mut ExecState,
+        args: &Args,
+    ) -> Result<(), KclError> {
+        if copies.is_empty() || args.ctx.no_engine_commands().await {
+            return Ok(());
+        }
+        let response = exec_state
+            .send_untracked_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, args),
+                ModelingCmd::from(
+                    mcmd::EntityGetAllChildUuids::builder()
+                        .entity_id(source_entity_id)
+                        .build(),
+                ),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(source),
+        } = response
+        else {
+            return Err(KclError::new_engine(KclErrorDetails::new(
+                format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
+                vec![args.source_range],
+            )));
+        };
+        let source_ids = source.entity_ids;
+        // Entity children are ordered as faces, edges, then vertices. Pattern
+        // responses already include each copy's faces in that same face order.
+        for (copy, info) in copies.iter_mut().zip(face_edge_ids) {
+            copy.pattern_face_ids = source_ids.iter().copied().zip(info.faces.iter().copied()).collect();
+            // Nested patterns still accept references to earlier ancestors.
+            if source_entity_id == self.id {
+                for (ancestor, source) in &self.pattern_face_ids {
+                    if let Some(target) = copy.pattern_face_ids.get(source).copied() {
+                        copy.pattern_face_ids.insert(*ancestor, target);
+                    }
+                }
+            }
+        }
+        Ok(())
     }
 
     async fn id(&mut self, _: &ExecutorContext) -> Result<Uuid, KclError> {
@@ -666,6 +752,18 @@ impl GeometryTrait for ImportedGeometry {
     async fn flush_batch(_: &Args, _: &mut ExecState, _: &Self::Set) -> Result<(), KclError> {
         Ok(())
     }
+
+    async fn map_pattern_copies(
+        &self,
+        _: &mut [Self],
+        _: Uuid,
+        _: &[FaceEdgeInfo],
+        _: &mut ExecState,
+        _: &Args,
+    ) -> Result<(), KclError> {
+        // TODO: Support tagging faces in imported geometry.
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -674,6 +772,59 @@ mod tests {
     use crate::execution::KclValueView;
     use crate::execution::types::NumericType;
     use crate::execution::types::PrimitiveType;
+
+    async fn assert_pattern_face_references(pattern: &str) {
+        for cut_source_first in [false, true] {
+            let source_cut = if cut_source_first {
+                "fillet(copies[0], edges = [{sideFaces = [base.tags.edge, copies[0].faces.top]}], radius = 1mm)"
+            } else {
+                ""
+            };
+            let code = format!(
+                r#"@settings(kclVersion = 3.0, experimentalFeatures = allow)
+profile = sketch(on = XY) {{
+  edge = circle(center = [var 0mm, var 0mm], start = [var 5mm, var 0mm])
+}}
+base = region(segments = [profile.edge])
+body = extrude(base, length = 4mm, tagEnd = $top)
+fn shift(@i) {{ return {{translate = [14mm * i, 0mm, 0mm]}} }}
+copies = {pattern}
+{source_cut}
+fillet(copies[1], edges = [{{sideFaces = [base.tags.edge, copies[1].faces.top]}}], radius = 1mm)
+"#
+            );
+            crate::test_server::execute(&code, None)
+                .await
+                .unwrap_or_else(|err| panic!("{pattern}, cut_source_first={cut_source_first}: {err:?}"));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn face_references_after_circular_pattern() {
+        assert_pattern_face_references("patternCircular3d(body, instances = 3, axis = Z, center = [20mm, 0mm, 0mm])")
+            .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn face_references_after_transform_pattern() {
+        assert_pattern_face_references("patternTransform(body, instances = 3, transform = shift)").await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn face_references_after_nested_pattern() {
+        assert_pattern_face_references(
+            "patternLinear3d(patternLinear3d(body, instances = 2, distance = 14mm, axis = X)[1], instances = 2, distance = 14mm, axis = Y)",
+        )
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn face_references_after_nested_pattern_using_original() {
+        assert_pattern_face_references(
+            "patternLinear3d(patternLinear3d(body, instances = 2, distance = 14mm, axis = X)[1], instances = 2, distance = 14mm, axis = Y, useOriginal = true)",
+        )
+        .await;
+    }
 
     async fn assert_imported_pattern_executes(code: &str) {
         let current_file = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -1414,6 +1565,11 @@ async fn pattern_circular<T: GeometryTrait>(
     };
 
     let geometry_id = geometry.id(&args.ctx).await?;
+    let entity_id = if data.use_original() {
+        geometry.topology_id()
+    } else {
+        geometry_id
+    };
     let center = data.center_mm();
     let resp = exec_state
         .send_modeling_cmd(
@@ -1421,11 +1577,7 @@ async fn pattern_circular<T: GeometryTrait>(
             ModelingCmd::from(
                 mcmd::EntityCircularPattern::builder()
                     .axis(kcmc::shared::Point3d::from(data.axis()))
-                    .entity_id(if data.use_original() {
-                        geometry.topology_id()
-                    } else {
-                        geometry_id
-                    })
+                    .entity_id(entity_id)
                     .center(kcmc::shared::Point3d {
                         x: LengthUnit(center[0]),
                         y: LengthUnit(center[1]),
@@ -1439,20 +1591,26 @@ async fn pattern_circular<T: GeometryTrait>(
         )
         .await?;
 
-    // The common case is borrowing from the response.  Instead of cloning,
-    // create a Vec to borrow from in mock mode.
+    // Retain copied face IDs alongside body IDs to map topology references.
     let mut mock_ids = Vec::new();
-    let entity_ids = if let OkWebSocketResponseData::Modeling {
+    let (entity_ids, face_edge_ids) = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::EntityCircularPattern(pattern_info),
     } = &resp
     {
-        &pattern_info.entity_face_edge_ids.iter().map(|e| e.object_id).collect()
+        (
+            pattern_info
+                .entity_face_edge_ids
+                .iter()
+                .map(|x| x.object_id)
+                .collect::<Vec<_>>(),
+            pattern_info.entity_face_edge_ids.as_slice(),
+        )
     } else if args.ctx.no_engine_commands().await {
         mock_ids.reserve(num_repetitions as usize);
         for _ in 0..num_repetitions {
             mock_ids.push(exec_state.next_uuid());
         }
-        &mock_ids
+        (mock_ids, &[][..])
     } else {
         return Err(KclError::new_engine(KclErrorDetails::new(
             format!("EntityCircularPattern response was not as expected: {resp:?}"),
@@ -1467,5 +1625,8 @@ async fn pattern_circular<T: GeometryTrait>(
         new_geometry.set_artifact_id(id);
         geometries.push(new_geometry);
     }
+    geometry
+        .map_pattern_copies(&mut geometries[1..], entity_id, face_edge_ids, exec_state, args)
+        .await?;
     Ok(geometries)
 }
