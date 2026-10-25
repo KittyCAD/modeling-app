@@ -253,6 +253,10 @@ export type SketchSolveContext = {
   pendingToolKeepSelection?: boolean
   keepSelectionAfterToolCompletion: boolean
   continuationPending?: boolean
+  pendingGeometrySuggestion?: {
+    segment: SegmentCtor
+    sceneGraphDelta: SceneGraphDelta
+  }
   selectedIds: Array<SketchSolveSelectionId>
   selectionCoordinates: SelectionCoordinates
   duringAreaSelectIds: Array<number>

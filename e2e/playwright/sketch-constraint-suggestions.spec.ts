@@ -53,6 +53,58 @@ sketch001 = sketch(on = XY) {
     await expect(centeredCircle).not.toBeVisible()
   })
 
+  test('offers an idea after drawing a square in the current sketch', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await editor.openPane()
+    await editor.replaceCode(
+      '',
+      '@settings(kclVersion = 3.0)\nsketch001 = sketch(on = XY) {}'
+    )
+    await scene.settled()
+
+    await toolbar.openFeatureTreePane()
+    await expect(page.getByText('Building feature tree')).not.toBeVisible({
+      timeout: 10_000,
+    })
+    const sketchOperation = await toolbar.getFeatureTreeOperation(
+      'sketch001',
+      0
+    )
+    await sketchOperation.dblclick()
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+    await toolbar.closeFeatureTreePane()
+
+    await expect(
+      page.getByRole('button', { name: 'Add centered circle' })
+    ).not.toBeVisible()
+    await toolbar.rectangleBtn.click()
+    const stream = await scene.streamWrapper.boundingBox()
+    if (!stream) throw new Error('Sketch viewport is missing')
+    const centerX = stream.x + stream.width / 2
+    const centerY = stream.y + stream.height / 2
+    await page.mouse.click(centerX - 60, centerY - 60)
+    await expect(
+      page.getByRole('button', { name: 'Add centered circle' })
+    ).not.toBeVisible()
+    await page.mouse.move(centerX + 60, centerY + 60)
+    await page.mouse.click(centerX + 60, centerY + 60)
+
+    const centeredCircle = page.getByRole('button', {
+      name: 'Add centered circle',
+    })
+    await expect(centeredCircle).toBeVisible()
+    await centeredCircle.click()
+    await editor.expectEditor.toContain('circle(')
+  })
+
   test('previews and applies a horizontal constraint to the selected line', async ({
     page,
     homePage,

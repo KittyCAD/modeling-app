@@ -21,11 +21,16 @@ export function SketchNextStepSuggestions({
   const canAdd = useSelector(
     actor,
     (state) =>
-      state.matches('move and select') &&
+      (state.matches('move and select') ||
+        (state.matches('using tool') && !state.context.draftEntities)) &&
       state.context.continuationPending !== true
   )
+  const hasDraftGeometry = useSelector(
+    actor,
+    (state) => state.context.draftEntities !== undefined
+  )
   const [dismissedFor, setDismissedFor] = useState<SceneGraphDelta | null>(null)
-  if (!sceneGraphDelta) return null
+  if (!sceneGraphDelta || hasDraftGeometry) return null
 
   const snapshot = actor.getSnapshot()
   const ideas = suggestSketchContinuations(
@@ -80,7 +85,9 @@ export function SketchNextStepSuggestions({
                 onClick={() => {
                   const current = actor.getSnapshot()
                   if (
-                    !current.matches('move and select') ||
+                    (!current.matches('move and select') &&
+                      !current.matches('using tool')) ||
+                    current.context.draftEntities !== undefined ||
                     current.context.sketchExecOutcome?.sceneGraphDelta !==
                       sceneGraphDelta
                   ) {

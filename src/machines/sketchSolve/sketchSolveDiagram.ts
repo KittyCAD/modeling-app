@@ -126,6 +126,31 @@ async function runSketchSolveToolbarAction(
   }
 }
 
+function applySuggestedSegment(
+  context: SketchSolveContext,
+  self: SolveActionArgs['self'],
+  segment: SegmentCtor
+) {
+  void runSketchSolveToolbarAction(
+    'add suggested sketch geometry',
+    async () => {
+      try {
+        const result = await context.rustContext.addSegment(
+          0,
+          context.sketchId,
+          segment,
+          undefined,
+          jsAppSettings(context.kclManager.systemDeps.settings),
+          true
+        )
+        sendToolbarConstraintOutcome(self, result)
+      } finally {
+        sendToActorIfActive(self, { type: 'suggested geometry settled' })
+      }
+    }
+  )
+}
+
 function getSelectionPointCoords(
   selection: ApiObject | typeof ORIGIN_TARGET | undefined
 ): Coords2d | null {
@@ -421,24 +446,22 @@ export const sketchSolveMachine = setup({
     },
     'apply suggested geometry': ({ context, event, self }) => {
       assertEvent(event, 'apply suggested geometry')
-      void runSketchSolveToolbarAction(
-        'add suggested sketch geometry',
-        async () => {
-          try {
-            const result = await context.rustContext.addSegment(
-              0,
-              context.sketchId,
-              event.data.segment,
-              undefined,
-              jsAppSettings(context.kclManager.systemDeps.settings),
-              true
-            )
-            sendToolbarConstraintOutcome(self, result)
-          } finally {
-            sendToActorIfActive(self, { type: 'suggested geometry settled' })
-          }
-        }
-      )
+      applySuggestedSegment(context, self, event.data.segment)
+    },
+    'apply pending suggested geometry': ({ context, self }) => {
+      const pending = context.pendingGeometrySuggestion
+      if (!pending) return
+      if (
+        context.sketchExecOutcome?.sceneGraphDelta !== pending.sceneGraphDelta
+      ) {
+        toastSketchSolveError(
+          new Error('The sketch changed while the drawing tool was closing'),
+          'Could not add sketch idea'
+        )
+        sendToActorIfActive(self, { type: 'suggested geometry settled' })
+        return
+      }
+      applySuggestedSegment(context, self, pending.segment)
     },
     'send tool equipped to parent': sendParent(({ context }) => ({
       type: 'sketch solve tool changed',
@@ -536,7 +559,10 @@ export const sketchSolveMachine = setup({
   initial: 'move and select',
   on: {
     'suggested geometry settled': {
-      actions: assign({ continuationPending: false }),
+      actions: assign({
+        continuationPending: false,
+        pendingGeometrySuggestion: undefined,
+      }),
     },
     exit: {
       target: '#Sketch Solve Mode.exiting with cleanup',
@@ -1079,6 +1105,28 @@ export const sketchSolveMachine = setup({
 
     'using tool': {
       on: {
+        'apply suggested geometry': {
+          guard: ({ context, event }) => {
+            assertEvent(event, 'apply suggested geometry')
+            return (
+              !context.continuationPending &&
+              !context.draftEntities &&
+              context.sketchExecOutcome?.sceneGraphDelta ===
+                event.data.sceneGraphDelta
+            )
+          },
+          target: 'unequipping tool',
+          actions: [
+            assign(({ event }) => {
+              assertEvent(event, 'apply suggested geometry')
+              return {
+                continuationPending: true,
+                pendingGeometrySuggestion: event.data,
+              }
+            }),
+            'send unequip to tool',
+          ],
+        },
         'unequip tool': {
           target: 'unequipping tool',
           actions: ['send unequip to tool'],
@@ -1217,6 +1265,7 @@ export const sketchSolveMachine = setup({
             'refresh selection styling',
             'clear child tool',
             'send tool unequipped to parent',
+            'apply pending suggested geometry',
           ],
         },
       },

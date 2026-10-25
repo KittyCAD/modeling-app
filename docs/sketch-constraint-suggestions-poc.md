@@ -18,6 +18,8 @@ four-line square, without selecting an edge. It previews two alternatives:
 a centered circle or a smaller offset circle. Clicking one adds a real circle
 to that sketch through the normal Rust sketch mutation and checkpoint path.
 The card disappears after the geometry is added.
+When a drawing tool is still active, accepting an idea closes the tool before
+adding the circle.
 The circle position is currently a numeric placement; it is not constrained to
 remain centered if the square is resized later.
 
