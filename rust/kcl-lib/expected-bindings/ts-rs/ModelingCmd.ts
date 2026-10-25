@@ -758,7 +758,9 @@ scale: TransformBy<Point3d<number>> | null, };
 
 /**
  * Create a planar surface bounded by the connection of various paths and curves.
- * 'CreatePlanarSurface' modeling command.
+ * For example, if you delete a face from a body, you could use this command
+ * to recreate it. Or you could use this command to make a 3D surface (with 0 thickness) from a 2D region.
+ * The surface will have the ID of this command.
  */
 export type CreatePlanarSurface = { 
 /**
