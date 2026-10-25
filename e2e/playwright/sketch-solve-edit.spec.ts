@@ -228,6 +228,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
+        await editor.openPane()
         await scene.settled()
       })
 
@@ -404,6 +405,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
+        await editor.openPane()
         await scene.settled()
 
         await toolbar.startSketchOnDefaultPlane('Top plane')
@@ -1252,6 +1254,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
+      await editor.openPane()
       await scene.settled()
     })
 
@@ -1341,8 +1344,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(9)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterArc3)
-      const codeAfterUndo1 = await editor.getCurrentCode()
+      const codeAfterUndo1 = await waitForCodeChange(page, codeAfterArc3)
       expect(normaliseCode(codeAfterUndo1)).toBe(normaliseCode(codeAfterArc2))
       expect((codeAfterUndo1.match(/arc\(/g) ?? []).length).toBe(2)
       expect(
@@ -1351,8 +1353,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(6)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo1)
-      const codeAfterUndo2 = await editor.getCurrentCode()
+      const codeAfterUndo2 = await waitForCodeChange(page, codeAfterUndo1)
       expect(normaliseCode(codeAfterUndo2)).toBe(normaliseCode(codeAfterArc1))
       expect((codeAfterUndo2.match(/arc\(/g) ?? []).length).toBe(1)
       expect(
@@ -1361,8 +1362,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(3)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo2)
-      const codeAfterUndo3 = await editor.getCurrentCode()
+      const codeAfterUndo3 = await waitForCodeChange(page, codeAfterUndo2)
       expect(normaliseCode(codeAfterUndo3)).toBe(
         normaliseCode(codeAfterSketchStart)
       )
@@ -2000,6 +2000,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1400, height: 900 })
       await homePage.goToModelingScene()
+      await editor.openPane()
       await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = YZ) {')
     })
@@ -2055,13 +2056,17 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       const trimmedCode = await waitForCodeChange(page, initialCode)
       expect(normaliseCode(trimmedCode)).not.toBe(normaliseCode(initialCode))
 
-      const handleCountAfterTrim = await pointHandles.count()
-      const handleIdsAfterTrim = await getHandleIds()
-      expect(
-        handleCountAfterTrim !== initialHandleCount ||
-          normaliseCode(handleIdsAfterTrim.join(',')) !==
-            normaliseCode(initialHandleIds.join(','))
-      ).toBe(true)
+      await expect
+        .poll(async () => {
+          const handleCountAfterTrim = await pointHandles.count()
+          const handleIdsAfterTrim = await getHandleIds()
+          return (
+            handleCountAfterTrim !== initialHandleCount ||
+            normaliseCode(handleIdsAfterTrim.join(',')) !==
+              normaliseCode(initialHandleIds.join(','))
+          )
+        })
+        .toBe(true)
 
       await pressUndo()
       const undoneCode = await waitForCodeChange(page, trimmedCode)

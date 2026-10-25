@@ -1325,7 +1325,9 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       })
       await cmdBar.submit()
 
-      await editor.expectEditor.toContain(newCodeToFind)
+      await editor.expectEditor.toContain(newCodeToFind, {
+        shouldNormalise: true,
+      })
     })
 
     await test.step('Edit revolve feature via feature tree selection', async () => {

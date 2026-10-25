@@ -396,7 +396,6 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
       .poll(() => editor.getCurrentCode())
       .toBe(`@settings(kclVersion = 2.0)
 
-
 rectangleSketch = sketch(on = XY) {
   line1 = line(start = [var 0.42mm, var 0.91mm], end = [var 3.1mm, var 0.91mm])
   line2 = line(start = [var 3.1mm, var 0.91mm], end = [var 3.1mm, var 4.36mm])
@@ -416,7 +415,6 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)
 face001 = faceOf(shell001, face = faceId(shell001, index = 7))
 sketch001 = sketch(on = face001) {
 }
-
 `)
   })
 

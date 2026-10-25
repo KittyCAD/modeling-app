@@ -566,7 +566,7 @@ sketch001 = sketch(on = XZ) {
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 100)`
 
-    const clickOnEdge = () => scene.clickWorldPoint({ x: 50, y: -100, z: 0 })
+    const clickOnEdge = () => scene.clickWorldPoint({ x: 50, y: -100, z: 50 })
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -1755,7 +1755,7 @@ extrude001 = extrude(region001, length = 5)`
 
       expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
       expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line2]}]'
+        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
       )
       expect(normalizedCode).toContain('radius=1000,')
       expect(normalizedCode).not.toContain('tags=[')

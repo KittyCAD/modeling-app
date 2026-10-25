@@ -55,10 +55,7 @@ export class EditorFixture {
       const actual = expect.poll(
         async () => {
           const text = await this.getCurrentCode()
-          const renderedText = text.replaceAll('\n', '')
-          return typeof expected === 'string'
-            ? normalise(renderedText)
-            : renderedText
+          return typeof expected === 'string' ? normalise(text) : text
         },
         { timeout }
       )
@@ -71,8 +68,7 @@ export class EditorFixture {
     toContain: this._expectEditorToContain(),
     not: { toContain: this._expectEditorToContain(true) },
     toBe: async (code: string) => {
-      const currentCode = await this.getCurrentCode()
-      return expect(currentCode).toBe(code)
+      return expect.poll(this.getCurrentCode).toBe(code)
     },
   }
   getCurrentCode = async () =>
