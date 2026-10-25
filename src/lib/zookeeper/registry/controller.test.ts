@@ -445,13 +445,18 @@ describe('Zookeeper session controller', () => {
     })
   })
 
-  it('blocks an exhausted account while keeping its prompt queued', async () => {
+  it('warns after an exhausted turn while returned files are still pending', async () => {
     vi.mocked(billingInfo.getBillingInfo).mockResolvedValue({
       balance: 0,
       isOrg: false,
       hasSubscription: false,
     })
-    const { actor, controller } = createHarness({ actorState: 'ready-await' })
+    const { actor, controller } = createHarness({
+      actorState: 'ready-await',
+      actorContext: { awaitingResponse: true },
+    })
+    const processor = workerMocks.processors.at(-1)!
+    processor.hasPendingRequests = true
     actor.send.mockImplementation((event) => {
       if (event.type === ZookeeperManagerTransitions.AbruptClose) {
         actor.setSnapshot('await', { abruptlyClosed: true, setupFailed: true })
@@ -459,6 +464,7 @@ describe('Zookeeper session controller', () => {
     })
 
     controller.sendOrQueue('add two holes', undefined, [])
+    actor.emit('ready-await', { awaitingResponse: false })
 
     await vi.waitFor(() => {
       expect(
@@ -474,6 +480,8 @@ describe('Zookeeper session controller', () => {
       sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
     ).toHaveLength(0)
     expect(controller.queue.value).toMatchObject([{ text: 'add two holes' }])
+    expect(processor.dispose).not.toHaveBeenCalled()
+    expect(processor.reset).not.toHaveBeenCalled()
   })
 
   it('updates one bottom-center progress notification without a mounted pane', () => {

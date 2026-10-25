@@ -307,7 +307,15 @@ class SessionController implements ZookeeperSessionController {
     if (!isCurrent()) return false
     if (trap(user)) return Promise.reject(user)
     if (user.allow_pay_as_you_go || this.steeredId !== null) return true
-    if (this.isReadyForPrompt(this.actor.getSnapshot())) {
+    const snapshot = this.actor.getSnapshot()
+    if (
+      snapshot.matches({
+        [ZookeeperManagerStates.Ready]: {
+          [ZookeeperManagerStates.Request]: S.Await,
+        },
+      }) &&
+      !snapshot.context.awaitingResponse
+    ) {
       this.actor.send({
         type: ZookeeperManagerTransitions.AbruptClose,
         accessDeniedCode: 'pay_as_you_go_disabled',
