@@ -43,10 +43,7 @@ import {
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
-import {
-  type ProjectExplorerRowContextMenuItemContext,
-  projectExplorerRowContextMenuItemsValueSpec,
-} from '@src/registry/contracts/projectExplorer'
+import { fileImportActionValueSpec } from '@src/registry/contracts/fileImport'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
@@ -246,36 +243,29 @@ function TextFileEditor({
   }
 
   if (activeTextFile.status === 'error') {
-    const importContext: ProjectExplorerRowContextMenuItemContext = {
-      project: project?.projectIORefSignal.value,
-      file: project?.executingFileEntry.value,
-      readOnly: !project?.projectIORefSignal.value.readWriteAccess,
-      row: {
-        path: activeTextFile.path,
-        name: activeTextFile.name,
-        isFolder: false,
-        isFake: false,
-      },
-    }
-    const importAction = registry
-      .signal(projectExplorerRowContextMenuItemsValueSpec)
-      .value.find(
-        (item) =>
-          item.id === 'import-in-current-file' &&
-          item.isVisible?.(importContext)
-      )
+    const currentProject = project?.projectIORefSignal.value
+    const currentFile = project?.executingFileEntry.value
+    const importAction = registry.signal(fileImportActionValueSpec).value
+    const startImport =
+      currentProject?.readWriteAccess &&
+      currentFile &&
+      currentFile.path !== activeTextFile.path &&
+      importAction?.isSupported(activeTextFile.path)
+        ? () =>
+            importAction.startImport(currentProject.path, activeTextFile.path)
+        : undefined
 
     return (
       <div className="h-full p-3 text-sm">
         <p className="text-destroy-80">
           Failed to open {activeTextFile.name}: {activeTextFile.error}
         </p>
-        {importAction && (
+        {startImport && (
           <ActionButton
             Element="button"
             className="mt-3 py-2"
             tabIndex={0}
-            onClick={() => importAction.onSelect(importContext)}
+            onClick={startImport}
           >
             Import
           </ActionButton>
