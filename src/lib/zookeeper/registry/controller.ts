@@ -5,11 +5,7 @@ import {
   untracked,
 } from '@preact/signals-core'
 import { users } from '@kittycad/lib'
-import {
-  BillingError,
-  getBillingInfo,
-  type IBillingInfo,
-} from '@kittycad/ui-components'
+import { BillingError, getBillingInfo } from '@kittycad/ui-components'
 import type { KclManager } from '@src/lang/KclManager'
 import { type ZDSProject } from '@src/lib/projectSession'
 import { BillingTransition } from '@src/lib/billing'
@@ -61,7 +57,6 @@ export interface QueuedMessage {
 
 export interface ZookeeperSessionController {
   readonly actor: ZookeeperManagerActor
-  readonly billingWarning: ReadonlySignal<IBillingInfo | undefined>
   readonly isClearingChat: ReadonlySignal<boolean>
   readonly isResumingInterruptedTurn: ReadonlySignal<boolean>
   readonly projectPath: string
@@ -71,7 +66,6 @@ export interface ZookeeperSessionController {
   checkBillingAccess(): void
   clearConversation(): Promise<void>
   dispose(): Promise<void>
-  dismissBillingWarning(): void
   reconnect(): void
   removeQueued(id: string): void
   resumeInterruptedTurn(): void
@@ -89,13 +83,6 @@ type ZookeeperSnapshot = SnapshotFrom<ZookeeperManagerActor>
 class SessionController implements ZookeeperSessionController {
   readonly actor: ZookeeperManagerActor
   readonly projectPath: string
-
-  private readonly billingWarningSignal = signal<IBillingInfo | undefined>(
-    undefined
-  )
-  readonly billingWarning: ReadonlySignal<IBillingInfo | undefined> =
-    this.billingWarningSignal
-  private balanceCheck: Promise<boolean> | undefined
 
   private readonly queueSignal = signal<QueuedMessage[]>([])
   readonly queue: ReadonlySignal<readonly QueuedMessage[]> = this.queueSignal
@@ -270,7 +257,7 @@ class SessionController implements ZookeeperSessionController {
   }
 
   steer(id: string) {
-    if (!this.active) {
+    if (!this.active || !this.actor.getSnapshot().context.awaitingResponse) {
       return
     }
     this.steeredId = id
@@ -294,52 +281,39 @@ class SessionController implements ZookeeperSessionController {
     this.reconnect()
   }
 
-  dismissBillingWarning() {
-    this.billingWarningSignal.value = undefined
-  }
-
-  private checkBalance(): Promise<boolean> {
-    if (this.balanceCheck) return this.balanceCheck
-
+  private async checkBalance() {
     const apiToken = this.apiToken
     const project = this.getZdsProject()
+    if (!project) return false
     const generation = this.clearOperationGeneration
     const isCurrent = () =>
       this.active &&
       this.apiToken === apiToken &&
       this.getZdsProject() === project &&
       this.clearOperationGeneration === generation
-
-    const check = async () => {
-      const client = createKCClient(apiToken)
-      // Prompt boundaries must bypass the status bar's throttled billing cache.
-      const billing = await getBillingInfo(client)
-      if (!isCurrent()) return false
-      if (BillingError.from(billing)) {
-        return Promise.reject(
-          new Error('Could not check your Zookeeper balance. Please try again.')
-        )
-      }
-      if (billing.balance > 0 || billing.isOrg) return true
-
-      const user = await kcCall(() => users.get_user_self({ client }))
-      if (!isCurrent()) return false
-      if (user instanceof Error) return Promise.reject(user)
-      if (user.allow_pay_as_you_go) return true
-
-      this.billingWarningSignal.value = billing
-      return false
+    const client = createKCClient(apiToken)
+    const billing = await getBillingInfo(client)
+    if (!isCurrent()) return false
+    if (BillingError.from(billing)) {
+      const error = new Error(
+        'Could not check your Zookeeper balance. Please try again.'
+      )
+      trap(error)
+      return Promise.reject(error)
     }
+    if (billing.balance > 0 || billing.isOrg) return true
 
-    this.balanceCheck = check()
-      .catch((error: unknown) => {
-        if (isCurrent()) trap(error)
-        return Promise.reject(error)
+    const user = await kcCall(() => users.get_user_self({ client }))
+    if (!isCurrent()) return false
+    if (trap(user)) return Promise.reject(user)
+    if (user.allow_pay_as_you_go || this.steeredId !== null) return true
+    if (this.isReadyForPrompt(this.actor.getSnapshot())) {
+      this.actor.send({
+        type: ZookeeperManagerTransitions.AbruptClose,
+        accessDeniedCode: 'pay_as_you_go_disabled',
       })
-      .finally(() => {
-        this.balanceCheck = undefined
-      })
-    return this.balanceCheck
+    }
+    return false
   }
 
   reconnect = () => {
@@ -399,7 +373,6 @@ class SessionController implements ZookeeperSessionController {
     }
 
     this.isClearingChatSignal.value = true
-    this.billingWarningSignal.value = undefined
     this.activeSubmission = undefined
     this.continueCheckGeneration += 1
     this.continueCheckInFlight = false
@@ -596,9 +569,7 @@ class SessionController implements ZookeeperSessionController {
       }
       return Promise.reject(error)
     }
-    if (!(await this.checkBalance())) {
-      return false
-    }
+    if (this.steeredId === null && !(await this.checkBalance())) return false
     const snapshot = this.actor.getSnapshot()
     if (
       !this.active ||
@@ -675,7 +646,9 @@ class SessionController implements ZookeeperSessionController {
       type: BillingTransition.Update,
       apiToken: this.apiToken,
     })
-    void this.checkBalance().catch(reportRejection)
+    if (this.steeredId === null) {
+      void this.checkBalance().catch(reportRejection)
+    }
   }
 
   private saveConversationId(snapshot: ZookeeperSnapshot) {
@@ -846,13 +819,7 @@ class SessionController implements ZookeeperSessionController {
       fileNames: kclManager.execState.filenames,
       projectContext: project,
     })
-      .then(async (projectFiles) => {
-        if (!(await this.checkBalance())) {
-          if (this.continueCheckGeneration === generation) {
-            this.resumeInterruptedTurnPending = false
-          }
-          return
-        }
+      .then((projectFiles) => {
         if (
           !this.active ||
           this.continueCheckGeneration !== generation ||
@@ -946,7 +913,6 @@ class SessionController implements ZookeeperSessionController {
       !this.isReadyForPrompt(snapshot) ||
       this.isClearingChatSignal.peek() ||
       this.activeSubmission !== undefined ||
-      this.billingWarningSignal.peek() !== undefined ||
       this.getReadyZdsProject() === undefined ||
       this.queueSignal.peek().length === 0
     ) {
