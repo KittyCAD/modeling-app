@@ -1,6 +1,9 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
-import { viewRows } from '@src/components/layout/areas/KclNamedViewsPane'
+import {
+  canManageNamedView,
+  viewRows,
+} from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
@@ -20,10 +23,12 @@ function view({
   name,
   id = `view-${name}`,
   modulePath,
+  moduleId = 0,
 }: {
   name: string
   id?: string
   modulePath?: ModulePath
+  moduleId?: number
 }): KclNamedView {
   return {
     artifact: {
@@ -40,7 +45,7 @@ function view({
       hideIds: [],
       codeRef: CODE_REF,
     },
-    moduleId: 0,
+    moduleId,
     modulePath,
   }
 }
@@ -127,5 +132,19 @@ describe('viewRows', () => {
     const rows = viewRows([view({ name: 'Front', id: 'view-1' })])
 
     expect(rows.map((row) => row.key)).toEqual(['kcl-default', 'view-1'])
+  })
+
+  it('only manages root-module views declared outside functions', () => {
+    expect(canManageNamedView(view({ name: 'Root' }))).toBe(true)
+    expect(canManageNamedView(view({ name: 'Import', moduleId: 1 }))).toBe(
+      false
+    )
+
+    const generated = view({ name: 'Generated' })
+    generated.artifact.codeRef = {
+      ...generated.artifact.codeRef,
+      pathToNode: [['body', 'FunctionExpression']],
+    }
+    expect(canManageNamedView(generated)).toBe(false)
   })
 })

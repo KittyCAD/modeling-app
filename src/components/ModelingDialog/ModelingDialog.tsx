@@ -13,6 +13,7 @@ import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelect
 import Tooltip from '@src/components/Tooltip'
 import type { KclManager } from '@src/lang/KclManager'
 import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { getSelectionTypeDisplayText, isSelections } from '@src/lib/selections'
 import { isErr, trap } from '@src/lib/trap'
 import { capitaliseFC } from '@src/lib/utils'
@@ -335,6 +336,7 @@ export default function ModelingDialog({
           <div key={name} className="flex flex-col gap-1">
             {fieldLabel}
             <input
+              {...noAutofillInputProps}
               id={fieldId}
               type={arg.inputType === 'color' ? 'color' : 'text'}
               autoFocus={name === firstFieldName}
@@ -396,6 +398,7 @@ export default function ModelingDialog({
       }
     >
       <form
+        {...noAutofillFormProps}
         onSubmit={(event) => {
           void submit(event)
         }}

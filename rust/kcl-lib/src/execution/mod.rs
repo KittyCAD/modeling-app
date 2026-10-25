@@ -966,10 +966,6 @@ pub struct ExecutorContext {
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
     pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
-    /// Which executor evaluates KCL. Crate-internal: set before the first
-    /// run and immutable during execution (run methods take &self). Cloned
-    /// contexts (fresh roots, Args) inherit the same executor.
-    pub(crate) executor_kind: machine::ExecutorKind,
     /// Call-depth limit for the machine executor's runaway-recursion guard.
     /// Crate-internal policy, not user configuration.
     pub(crate) machine_call_depth_limit: usize,
@@ -987,7 +983,6 @@ impl std::fmt::Debug for ExecutorContext {
             .field("settings", &self.settings)
             .field("context_type", &self.context_type)
             .field("execution_callbacks", &self.execution_callbacks)
-            .field("executor_kind", &self.executor_kind)
             .field("machine_call_depth_limit", &self.machine_call_depth_limit)
             .finish()
     }
@@ -1197,7 +1192,6 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
         }
@@ -1212,9 +1206,6 @@ impl ExecutorContext {
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
             execution_callbacks: self.execution_callbacks.clone(),
-            // Imported modules execute on this cloned context; keep them on
-            // the executor selected for the run instead of the default.
-            executor_kind: self.executor_kind,
             machine_call_depth_limit: self.machine_call_depth_limit,
             configure_engine_render: true,
         }
@@ -1341,7 +1332,6 @@ impl ExecutorContext {
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
         }
@@ -1357,7 +1347,6 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
         }
@@ -1380,7 +1369,6 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
         })
@@ -1396,7 +1384,6 @@ impl ExecutorContext {
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
         }
@@ -2718,17 +2705,13 @@ pub(crate) async fn parse_execute_with_project_dir(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    // Differential testing: unit tests run under both executors.
-    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::resolve()).await
+    parse_execute_inner(code, project_directory, false).await
 }
 
 /// A mock-engine executor context for tests that need to inspect the context
 /// (e.g. the engine's batch queue) even when execution fails.
 #[cfg(test)]
-pub(crate) fn new_mock_executor_context(
-    project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
-) -> ExecutorContext {
+pub(crate) fn new_mock_executor_context(project_directory: Option<TypedPath>) -> ExecutorContext {
     ExecutorContext {
         engine: Arc::new(EngineManager::new_mock()),
         cache: Cache::default(),
@@ -2740,19 +2723,9 @@ pub(crate) fn new_mock_executor_context(
         },
         context_type: ContextType::Mock,
         execution_callbacks: Default::default(),
-        executor_kind,
         machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         configure_engine_render: true,
     }
-}
-
-#[cfg(test)]
-pub(crate) async fn parse_execute_with_executor_kind(
-    code: &str,
-    project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
-) -> Result<ExecTestResults, KclError> {
-    parse_execute_inner(code, project_directory, executor_kind, false).await
 }
 
 /// Like [`parse_execute_with_project_dir`], but missing names are explained
@@ -2763,19 +2736,18 @@ pub(crate) async fn parse_execute_hinting_all(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    parse_execute_inner(code, project_directory, machine::ExecutorKind::resolve(), true).await
+    parse_execute_inner(code, project_directory, true).await
 }
 
 #[cfg(test)]
 async fn parse_execute_inner(
     code: &str,
     project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
     hint_all_not_yet_added: bool,
 ) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
-    let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
+    let exec_ctxt = new_mock_executor_context(project_directory);
     let mut exec_state = ExecState::new(&exec_ctxt);
     exec_state.global.hint_all_not_yet_added = hint_all_not_yet_added;
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
@@ -3039,14 +3011,10 @@ mod tests {
     }
 
     #[test]
-    fn clone_with_fresh_execution_batch_keeps_executor_selection() {
-        // Imported modules execute on a context created by
-        // clone_with_fresh_execution_batch. They must stay on the executor
-        // selected for the run instead of silently reverting to the default.
-        let mut ctx = new_mock_executor_context(None, machine::ExecutorKind::Machine);
+    fn clone_with_fresh_execution_batch_keeps_call_depth_limit() {
+        let mut ctx = new_mock_executor_context(None);
         ctx.machine_call_depth_limit = 123;
         let cloned = ctx.clone_with_fresh_execution_batch();
-        assert_eq!(cloned.executor_kind, machine::ExecutorKind::Machine);
         assert_eq!(cloned.machine_call_depth_limit, 123);
     }
 
@@ -3058,10 +3026,7 @@ mod tests {
             .unwrap();
 
         let program = crate::Program::parse_no_errs("import \"cube.obj\" as cube\n\nmodel = cube\n").unwrap();
-        let ctx = new_mock_executor_context(
-            Some(crate::TypedPath(tmpdir.path().into())),
-            machine::ExecutorKind::resolve(),
-        );
+        let ctx = new_mock_executor_context(Some(crate::TypedPath(tmpdir.path().into())));
         let mut exec_state = ExecState::new(&ctx);
         let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
         let outcome = exec_state
@@ -3343,7 +3308,6 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
         };
@@ -4961,13 +4925,8 @@ forever(1)
 "#;
         let result = parse_execute(ast).await;
         let err = result.unwrap_err();
-        // The recursive executor's native-stack cap and the machine
-        // executor's call-depth guard report differently.
         let msg = err.to_string();
-        assert!(
-            msg.contains("stack size exceeded") || msg.contains("Call depth limit"),
-            "actual: {err:?}"
-        );
+        assert!(msg.contains("Call depth limit"), "actual: {err:?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -6160,7 +6119,6 @@ face = disc()
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
         }
@@ -7195,9 +7153,7 @@ assert(total, isEqualTo = 6, error = "reduce total")
 
     /// unwind_return must decrement the machine call depth like a normal
     /// call completion; otherwise sequential early-return calls would
-    /// accumulate depth until the runaway guard trips. The recursive
-    /// executor doesn't use the counter, so the bound is trivially true
-    /// there.
+    /// accumulate depth until the runaway guard trips.
     #[tokio::test(flavor = "multi_thread")]
     async fn early_returns_do_not_leak_machine_call_depth() {
         let code = r#"@settings(kclVersion = "3.0-preview")
@@ -7603,7 +7559,7 @@ x = if false {{
     #[tokio::test(flavor = "multi_thread")]
     async fn error_inside_if_arm_unwinds_balanced_in_v3() {
         // The user's error surfaces (not an internal environment-imbalance
-        // error), on both executors.
+        // error).
         let code = r#"@settings(kclVersion = "3.0-preview")
 fn f() {
   dummy = if true {
@@ -8502,7 +8458,6 @@ type Color { | Red | Green | Red }
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
         };
@@ -10018,7 +9973,7 @@ x = [1, 2]: NewT
 
     #[tokio::test(flavor = "multi_thread")]
     async fn not_yet_added_records_whether_the_declaration_is_std() {
-        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let ctx = new_mock_executor_context(None);
         let mut exec_state = ExecState::new(&ctx);
         let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
 
@@ -10102,7 +10057,7 @@ x = [1, 2]: NewT
     /// memory skips the prelude that writes them.
     #[tokio::test(flavor = "multi_thread")]
     async fn std_not_yet_added_records_survive_the_mock_memory_cache() {
-        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let ctx = new_mock_executor_context(None);
         let mut exec_state = ExecState::new(&ctx);
         let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
         let program = crate::Program::parse_no_errs("x = 1").unwrap();
