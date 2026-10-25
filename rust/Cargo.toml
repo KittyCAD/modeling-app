@@ -31,7 +31,7 @@ kittycad = { version = "0.5.7", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.254", features = [
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", branch = "achalmers/planar-face-api", features = [
   "ts-rs",
   "websocket",
 ] }
