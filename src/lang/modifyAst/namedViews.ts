@@ -31,6 +31,8 @@ import { capitaliseFC, roundOff } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
+const CAPTURED_CAMERA_DECIMALS = 6
+
 function viewEnum(type: string, value: string) {
   return createLocalName(value, [
     createIdentifier('view'),
@@ -167,7 +169,12 @@ function point(
 ) {
   return createArrayExpression(
     [value.x, value.y, value.z].map((value) =>
-      createLiteral(roundOff(value, 6), wasmInstance, suffix, 6)
+      createLiteral(
+        roundOff(value, CAPTURED_CAMERA_DECIMALS),
+        wasmInstance,
+        suffix,
+        CAPTURED_CAMERA_DECIMALS
+      )
     )
   )
 }
@@ -184,7 +191,12 @@ function createCapturedCamera(
       createLabeledArg('target', point(camera.target, wasmInstance, 'Mm')),
       createLabeledArg(
         'distance',
-        createLiteral(roundOff(camera.distance, 6), wasmInstance, 'Mm', 6)
+        createLiteral(
+          roundOff(camera.distance, CAPTURED_CAMERA_DECIMALS),
+          wasmInstance,
+          'Mm',
+          CAPTURED_CAMERA_DECIMALS
+        )
       ),
       createLabeledArg(
         'projection',
