@@ -13,13 +13,15 @@ import {
 } from '@src/lang/std/kclNamedViews'
 import type { ExecState } from '@src/lang/wasm'
 import { getAllOperations } from '@src/lang/wasm'
-import { applyNamedViewCamera } from '@src/lib/kclNamedViewCamera'
+import {
+  applyNamedViewCamera,
+  onCameraMoved,
+} from '@src/lib/kclNamedViewCamera'
 import { hiddenArtifactIdsFromOperations } from '@src/lib/operations'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { reportRejection } from '@src/lib/trap'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import { PerspectiveCamera } from 'three'
 import type { StateFrom } from 'xstate'
 
 export type ActivationTarget =
@@ -144,26 +146,10 @@ export function stopTrackingActiveViewCamera(): void {
 
 export function trackActiveViewCamera(kclManager: KclManager): void {
   stopTrackingActiveViewCamera()
-  const controls = kclManager.sceneInfra.camControls
-  const initialCamera = controls.camera.clone()
-  const initialTarget = controls.target.clone()
-  stopCameraChangeListener = controls.cameraChange.add(() => {
-    const camera = controls.camera
-    const projectionChanged =
-      camera.type !== initialCamera.type ||
-      (camera instanceof PerspectiveCamera &&
-        initialCamera instanceof PerspectiveCamera &&
-        camera.fov !== initialCamera.fov)
-    if (
-      projectionChanged ||
-      !camera.position.equals(initialCamera.position) ||
-      !camera.quaternion.equals(initialCamera.quaternion) ||
-      camera.zoom !== initialCamera.zoom ||
-      !controls.target.equals(initialTarget)
-    ) {
-      resetNamedViewSession()
-    }
-  })
+  stopCameraChangeListener = onCameraMoved(
+    kclManager.sceneInfra.camControls,
+    resetNamedViewSession
+  )
 }
 
 async function applyVisibility({
@@ -326,10 +312,10 @@ async function fallBackToKclDefault({
   })
   if (restoreCamera) {
     await applyAndTrackCamera({ kind: 'kclDefault' }, kclManager)
+    activeViewSignal.value = 'kclDefault'
   } else {
-    trackActiveViewCamera(kclManager)
+    resetNamedViewSession()
   }
-  activeViewSignal.value = restoreCamera ? 'kclDefault' : null
 
   const fallback = restoreCamera
     ? `Showing ${getKclDefaultViewName()}.`

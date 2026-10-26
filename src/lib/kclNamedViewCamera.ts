@@ -14,7 +14,7 @@ import {
   engineViewIsometric,
   uuidv4,
 } from '@src/lib/utils'
-import { Vector3 } from 'three'
+import { PerspectiveCamera, Vector3 } from 'three'
 
 const ORIENTATION_AXES = {
   front: AxisNames.NEG_Y,
@@ -93,6 +93,34 @@ export async function captureNamedViewCamera(
     distance,
     projection: isPerspective ? 'perspective' : 'orthographic',
   }
+}
+
+export function onCameraMoved(
+  controls: Pick<
+    SceneInfra['camControls'],
+    'camera' | 'target' | 'cameraChange'
+  >,
+  onMove: () => void
+): () => void {
+  const initialCamera = controls.camera.clone()
+  const initialTarget = controls.target.clone()
+  return controls.cameraChange.add(() => {
+    const camera = controls.camera
+    const projectionChanged =
+      camera.type !== initialCamera.type ||
+      (camera instanceof PerspectiveCamera &&
+        initialCamera instanceof PerspectiveCamera &&
+        camera.fov !== initialCamera.fov)
+    if (
+      projectionChanged ||
+      !camera.position.equals(initialCamera.position) ||
+      !camera.quaternion.equals(initialCamera.quaternion) ||
+      camera.zoom !== initialCamera.zoom ||
+      !controls.target.equals(initialTarget)
+    ) {
+      onMove()
+    }
+  })
 }
 
 function enginePoint(point: ArtifactPoint3d): {

@@ -644,6 +644,9 @@ describe('reapplying the active view after a reconnection', () => {
   it('keeps the preserved camera when an active named view disappears', async () => {
     const f = fakes()
     await activateFront(f)
+    const cameraChange = f.raw.sceneInfra.camControls.cameraChange
+    const subscribe = vi.spyOn(cameraChange, 'add')
+    const unsubscribe = vi.spyOn(cameraChange, 'remove')
     f.raw.execState = execStateWith({ views: [] })
     const moved = await reapplyActiveViewAfterReconnect(f.kclManager, {
       restoreCamera: false,
@@ -651,6 +654,8 @@ describe('reapplying the active view after a reconnection', () => {
     expect(moved).toBe(false)
     expect(resetCameraPosition).not.toHaveBeenCalled()
     expect(activeViewSignal.value).toBeNull()
+    expect(subscribe).not.toHaveBeenCalled()
+    expect(unsubscribe).toHaveBeenCalledOnce()
     expect(mockToast.error).toHaveBeenCalledOnce()
   })
 
