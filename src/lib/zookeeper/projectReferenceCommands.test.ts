@@ -70,8 +70,14 @@ function fixture(
     getHomeProjectActions?: () =>
       | Pick<HomeProjectActionsService, 'canDuplicate' | 'duplicate'>
       | undefined
+    copyIntoCurrentProject?: (
+      files: readonly { path: string; data: Uint8Array }[],
+      sourceTitle: string,
+      sourcePath?: string
+    ) => Promise<{ title: string }>
     isSessionActive?: () => boolean
     includePersonalCloud?: () => boolean
+    sourceFiles?: string[]
   } = {}
 ) {
   const entries = signal<readonly HomeProjectEntry[]>(
@@ -86,14 +92,16 @@ function fixture(
   const readDirectory = vi.fn(
     async (path: string): Promise<readonly string[]> => {
       if (path === '/private/library/TRUCK') {
-        return [
-          'main.kcl',
-          'project.toml',
-          'secrets.toml',
-          '.env',
-          'assets',
-          'parts',
-        ]
+        return (
+          options.sourceFiles ?? [
+            'main.kcl',
+            'project.toml',
+            'secrets.toml',
+            '.env',
+            'assets',
+            'parts',
+          ]
+        )
       }
       if (path === '/private/library/TRUCK/parts') {
         return ['wheel.kcl']
@@ -124,6 +132,7 @@ function fixture(
     fileOperations: options.fileOperations ?? fileOperations,
     getApiToken: options.getApiToken ?? (() => 'token'),
     getHomeProjectActions: options.getHomeProjectActions,
+    copyIntoCurrentProject: options.copyIntoCurrentProject,
     isSessionActive: options.isSessionActive,
     includePersonalCloud: options.includePersonalCloud,
   })
@@ -151,6 +160,7 @@ function fixture(
       request_id: string
       status: string
       result?: Record<string, unknown>
+      project_context?: Record<string, string>
       error?: string
     }
   }
@@ -281,6 +291,107 @@ describe('Zookeeper project reference commands', () => {
       ).toHaveLength(2)
     })
     expect(duplicate).toHaveBeenCalledOnce()
+  })
+
+  it('copies a KCL-only library project into the blank current project without using Home duplicate', async () => {
+    const duplicate = vi.fn()
+    const copyIntoCurrentProject = vi.fn(async () => ({ title: 'current' }))
+    const { request } = fixture({
+      sourceFiles: ['main.kcl', 'project.toml', 'parts'],
+      getHomeProjectActions: () => ({ canDuplicate: () => true, duplicate }),
+      copyIntoCurrentProject,
+    })
+    const projectId = await searchProjectId(request, 'TRUCK')
+    const result = await request('projects.duplicate', {
+      project_id: projectId,
+      destination: 'current_project',
+    })
+    expect(result).toMatchObject({
+      status: 'succeeded',
+      result: { title: 'current' },
+      project_context: {
+        'main.kcl': 'wheel = circle(10)',
+        'parts/wheel.kcl': '',
+      },
+    })
+    expect(copyIntoCurrentProject).toHaveBeenCalledWith(
+      [
+        {
+          path: 'main.kcl',
+          data: new TextEncoder().encode('wheel = circle(10)'),
+        },
+        { path: 'parts/wheel.kcl', data: new Uint8Array() },
+      ],
+      'TRUCK',
+      '/private/library/TRUCK'
+    )
+    expect(duplicate).not.toHaveBeenCalled()
+  })
+
+  it('reads a cloud KCL project once before copying into the current project', async () => {
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-123',
+      revision: 'revision-1',
+      files: [
+        { relative_path: 'main.kcl', byte_size: 20 },
+        { relative_path: 'parts/wheel.kcl', byte_size: 20 },
+        { relative_path: 'project.toml', byte_size: 20 },
+        { relative_path: 'thumbnail.png', byte_size: 20 },
+      ],
+    })
+    const archive = new ArrayBuffer(1)
+    cloudMocks.download.mockResolvedValue(archive)
+    cloudMocks.parse.mockImplementation(async (_archive, path) =>
+      new TextEncoder().encode(path)
+    )
+    const copyIntoCurrentProject = vi.fn(async () => ({ title: 'current' }))
+    const duplicate = vi.fn()
+    const { request } = fixture({
+      getHomeProjectActions: () => ({ canDuplicate: () => true, duplicate }),
+      copyIntoCurrentProject,
+    })
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
+    const result = await request('projects.duplicate', {
+      project_id: projectId,
+      destination: 'current_project',
+    })
+
+    expect(result.status).toBe('succeeded')
+    expect(cloudMocks.download).toHaveBeenCalledOnce()
+    expect(cloudMocks.parse).toHaveBeenCalledTimes(3)
+    expect(copyIntoCurrentProject).toHaveBeenCalledWith(
+      [
+        { path: 'main.kcl', data: new TextEncoder().encode('main.kcl') },
+        {
+          path: 'parts/wheel.kcl',
+          data: new TextEncoder().encode('parts/wheel.kcl'),
+        },
+      ],
+      'TRUCK cloud',
+      undefined
+    )
+    expect(duplicate).not.toHaveBeenCalled()
+  })
+
+  it('rejects unsupported source files before copying into the current project', async () => {
+    const copyIntoCurrentProject = vi.fn()
+    const { request } = fixture({
+      getHomeProjectActions: () => ({
+        canDuplicate: () => true,
+        duplicate: vi.fn(),
+      }),
+      copyIntoCurrentProject,
+    })
+    const projectId = await searchProjectId(request, 'TRUCK')
+    const result = await request('projects.duplicate', {
+      project_id: projectId,
+      destination: 'current_project',
+    })
+    expect(result).toMatchObject({
+      status: 'rejected',
+      error: 'Copying into the current project supports KCL-only sources.',
+    })
+    expect(copyIntoCurrentProject).not.toHaveBeenCalled()
   })
 
   it('does not duplicate a removed project or reuse a request ID for another project', async () => {

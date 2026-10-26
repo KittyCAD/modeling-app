@@ -6,9 +6,12 @@ import {
   RemoteProjectArchiveLimitError,
 } from '@src/lib/cloudSync/cloudApi'
 import { readProjectArchiveFile } from '@src/lib/cloudSync/projectArchive'
+import { CurrentProjectCopyError } from '@src/lib/zookeeper/copyIntoCurrentProject'
 import type { CloudSyncConfig } from '@src/lib/cloudSync/types'
+import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import { getProjectDefaultFileFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
 import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import { isArray, isRecord } from '@src/lib/utils'
@@ -24,6 +27,8 @@ const MAX_FILE_BYTES = 256 * 1024
 const READ_CHARS = 8_000
 const MAX_LIST_PAGE_BYTES = 32 * 1024
 const MAX_ARCHIVE_BYTES = 32 * 1024 * 1024
+const MAX_CURRENT_PROJECT_COPY_FILES = 128
+const MAX_CURRENT_PROJECT_COPY_BYTES = 32 * 1024 * 1024
 const MAX_DEPTH = 16
 
 class ProjectReferenceCommandError extends Error {}
@@ -39,6 +44,11 @@ type ClientCommandRequest = {
   catalog_revision: number
   command_id: string
   arguments: Record<string, unknown>
+}
+
+type CommandOutcome = {
+  result: unknown
+  projectContext?: Record<string, string>
 }
 
 export interface ProjectReferenceCommandTransport {
@@ -66,11 +76,15 @@ const commands = [
     id: 'projects.duplicate',
     title: 'Duplicate library project',
     description:
-      'Create an exact copy of a complete local or cloud library project as a new project. Use this when the user asks to copy or recreate a whole project exactly. The current project stays unchanged. If the connection drops, search for the copy before retrying.',
+      'Copy a local or cloud library project. Omit destination or use new_project to create a separate exact copy. Use current_project when the user asks to put a KCL-only model in the currently open blank project; this copies its KCL files while preserving the current project identity and settings. If the connection drops, check whether the copy completed before retrying.',
     input_schema: {
       type: 'object',
       properties: {
         project_id: { type: 'string' },
+        destination: {
+          type: 'string',
+          enum: ['new_project', 'current_project'],
+        },
       },
       required: ['project_id'],
       additionalProperties: false,
@@ -176,6 +190,24 @@ function parseRequest(message: unknown): ClientCommandRequest | undefined {
   }
 }
 
+async function downloadCloudArchive(
+  config: CloudSyncConfig,
+  projectId: string
+) {
+  try {
+    return await downloadRemoteProjectArchive(
+      config,
+      projectId,
+      MAX_ARCHIVE_BYTES
+    )
+  } catch (error) {
+    if (error instanceof RemoteProjectArchiveLimitError) {
+      return Promise.reject(new ProjectReferenceCommandError(error.message))
+    }
+    return Promise.reject(error)
+  }
+}
+
 export function createProjectReferenceCommands(deps: {
   entries: ReadonlySignal<readonly HomeProjectEntry[]>
   fileOperations: FileOperationsRegistryService
@@ -183,6 +215,11 @@ export function createProjectReferenceCommands(deps: {
   getHomeProjectActions?: () =>
     | Pick<HomeProjectActionsService, 'canDuplicate' | 'duplicate'>
     | undefined
+  copyIntoCurrentProject?: (
+    files: readonly { path: string; data: Uint8Array }[],
+    sourceTitle: string,
+    sourcePath?: string
+  ) => Promise<{ title: string }>
   isSessionActive?: () => boolean
   includePersonalCloud?: () => boolean
 }): ProjectReferenceCommandTransport {
@@ -191,7 +228,7 @@ export function createProjectReferenceCommands(deps: {
   const remoteEntries = new Map<string, HomeProjectEntry>()
   const duplicates = new Map<
     string,
-    { signature: string; token: string; task: Promise<unknown> }
+    { signature: string; token: string; task: Promise<CommandOutcome> }
   >()
   const revision = 1
   let remoteCatalogToken: string | undefined
@@ -372,6 +409,7 @@ export function createProjectReferenceCommands(deps: {
       )
     }
     const files: string[] = []
+    const allFiles: string[] = []
     const seen = new Set<string>()
     for (const file of project.files) {
       if (!isRecord(file) || typeof file.relative_path !== 'string') {
@@ -380,6 +418,9 @@ export function createProjectReferenceCommands(deps: {
         )
       }
       const path = file.relative_path
+      if (isSafeRelativePath(path)) {
+        allFiles.push(path)
+      }
       if (!isReadableFile(path)) {
         continue
       }
@@ -400,6 +441,7 @@ export function createProjectReferenceCommands(deps: {
       project,
       remoteProjectId: entry.remoteProjectId,
       files,
+      allFiles,
     }
   }
 
@@ -436,19 +478,7 @@ export function createProjectReferenceCommands(deps: {
     }
     cloudSnapshot = undefined
     const generation = ++cloudSnapshotGeneration
-    let archive: ArrayBuffer
-    try {
-      archive = await downloadRemoteProjectArchive(
-        config,
-        remoteProjectId,
-        MAX_ARCHIVE_BYTES
-      )
-    } catch (error) {
-      if (error instanceof RemoteProjectArchiveLimitError) {
-        return Promise.reject(new ProjectReferenceCommandError(error.message))
-      }
-      return Promise.reject(error)
-    }
+    const archive = await downloadCloudArchive(config, remoteProjectId)
     let data: Uint8Array | undefined
     try {
       data = await readProjectArchiveFile(
@@ -503,7 +533,10 @@ export function createProjectReferenceCommands(deps: {
     return resolved
   }
 
-  async function localFiles(root: string): Promise<string[]> {
+  async function localFiles(
+    root: string,
+    include: (path: string) => boolean = isReadableFile
+  ): Promise<string[]> {
     const found: string[] = []
     const projectRoot = await deps.fileOperations.realpath(root)
     const queue = [{ absolute: projectRoot, relative: '', depth: 0 }]
@@ -545,7 +578,7 @@ export function createProjectReferenceCommands(deps: {
         const stat = await deps.fileOperations.statReadOnly(absolute)
         if (stat.kind === 'directory' && current.depth + 1 < MAX_DEPTH) {
           queue.push({ absolute, relative, depth: current.depth + 1 })
-        } else if (stat.kind === 'file' && isReadableFile(relative)) {
+        } else if (stat.kind === 'file' && include(relative)) {
           found.push(relative)
         }
       }
@@ -692,7 +725,124 @@ export function createProjectReferenceCommands(deps: {
     }
   }
 
+  async function projectFilesForCurrentCopy(entry: HomeProjectEntry) {
+    let paths: string[]
+    let readSourceFile: (path: string) => Promise<Uint8Array>
+    if (entry.localProjectPath) {
+      const root = await deps.fileOperations.realpath(entry.localProjectPath)
+      paths = await localFiles(root, isSafeRelativePath)
+      readSourceFile = async (path) => {
+        const absolute = await resolvedProjectPath(
+          root,
+          fsZds.join(root, ...webSafePathSplit(path))
+        )
+        if (!absolute) {
+          return Promise.reject(
+            new ProjectReferenceCommandError(
+              'A source file is outside the library project.'
+            )
+          )
+        }
+        const stat = await deps.fileOperations.statReadOnly(absolute)
+        if (
+          stat.kind !== 'file' ||
+          stat.size > MAX_CURRENT_PROJECT_COPY_BYTES
+        ) {
+          return Promise.reject(
+            new ProjectReferenceCommandError('A source file is too large.')
+          )
+        }
+        return deps.fileOperations.readFile(absolute)
+      }
+    } else {
+      const { apiToken, config, remoteProjectId, allFiles } =
+        await cloudProjectMetadata(entry)
+      paths = allFiles
+      const archive = await downloadCloudArchive(config, remoteProjectId)
+      if (apiToken !== deps.getApiToken()) {
+        return Promise.reject(
+          new ProjectReferenceCommandError('The account changed. Search again.')
+        )
+      }
+      readSourceFile = async (path) => {
+        const data = await readProjectArchiveFile(
+          archive,
+          path,
+          MAX_FILES * 2,
+          MAX_CURRENT_PROJECT_COPY_BYTES
+        )
+        if (!data) {
+          return Promise.reject(
+            new ProjectReferenceCommandError('A source file is unavailable.')
+          )
+        }
+        return data
+      }
+    }
+
+    paths = paths.filter((path) => path !== PROJECT_IMAGE_NAME)
+    if (
+      paths.some(
+        (path) =>
+          path !== 'project.toml' &&
+          fsZds.extname(path).toLowerCase() !== '.kcl'
+      )
+    ) {
+      return Promise.reject(
+        new ProjectReferenceCommandError(
+          'Copying into the current project supports KCL-only sources.'
+        )
+      )
+    }
+    if (paths.includes('project.toml')) {
+      const projectToml = new TextDecoder('utf-8', { fatal: true }).decode(
+        await readSourceFile('project.toml')
+      )
+      const defaultFile =
+        getProjectDefaultFileFromProjectTomlContents(projectToml)
+      if (defaultFile && defaultFile !== 'main.kcl') {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'The source project does not open from main.kcl.'
+          )
+        )
+      }
+    }
+    paths = paths.filter((path) => path !== 'project.toml')
+    if (
+      paths.length === 0 ||
+      paths.length > MAX_CURRENT_PROJECT_COPY_FILES ||
+      new Set(paths).size !== paths.length ||
+      !paths.includes('main.kcl')
+    ) {
+      return Promise.reject(
+        new ProjectReferenceCommandError(
+          'The source project cannot be copied into the current project.'
+        )
+      )
+    }
+    const files: { path: string; data: Uint8Array }[] = []
+    let totalBytes = 0
+    for (const path of paths) {
+      const data = await readSourceFile(path)
+      totalBytes += data.byteLength
+      if (totalBytes > MAX_CURRENT_PROJECT_COPY_BYTES) {
+        return Promise.reject(
+          new ProjectReferenceCommandError('The source project is too large.')
+        )
+      }
+      files.push({ path, data })
+    }
+    return files
+  }
+
   async function duplicate(args: Record<string, unknown>) {
+    const destination = args.destination ?? 'new_project'
+    if (destination !== 'new_project' && destination !== 'current_project') {
+      return Promise.reject(
+        new ProjectReferenceCommandError('Invalid project destination.')
+      )
+    }
     const entry = resolveProject(args.project_id)
     const actions = deps.getHomeProjectActions?.()
     if (
@@ -727,16 +877,47 @@ export function createProjectReferenceCommands(deps: {
         new ProjectReferenceCommandError('Project session changed.')
       )
     }
+    if (destination === 'current_project') {
+      if (!deps.copyIntoCurrentProject) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'The current project cannot be used as a destination.'
+          )
+        )
+      }
+      const files = await projectFilesForCurrentCopy(entry)
+      if (
+        deps.isSessionActive?.() === false ||
+        !resolveProject(args.project_id)
+      ) {
+        return Promise.reject(
+          new ProjectReferenceCommandError('Project session changed.')
+        )
+      }
+      // Capture the exact KCL that will be copied before mutating the project.
+      const projectContext = Object.fromEntries(
+        files.map(({ path, data }) => [
+          path,
+          new TextDecoder('utf-8', { fatal: true }).decode(data),
+        ])
+      )
+      const result = await deps.copyIntoCurrentProject(
+        files,
+        getHomeProjectDisplayName(entry),
+        entry.localProjectPath
+      )
+      return { result, projectContext }
+    }
     const result = await actions.duplicate(entry, { notify: false })
     if (!result) {
       return Promise.reject(
         new ProjectReferenceCommandError('Project could not be duplicated.')
       )
     }
-    return { title: result.title }
+    return { result: { title: result.title } }
   }
 
-  function execute(request: ClientCommandRequest): Promise<unknown> {
+  function execute(request: ClientCommandRequest): Promise<CommandOutcome> {
     if (request.catalog_revision !== revision) {
       return Promise.reject(
         new ProjectReferenceCommandError('The command catalog changed.')
@@ -744,11 +925,11 @@ export function createProjectReferenceCommands(deps: {
     }
     switch (request.command_id as CommandId) {
       case 'projects.search':
-        return Promise.resolve(search(request.arguments))
+        return search(request.arguments).then((result) => ({ result }))
       case 'projects.list_files':
-        return listFiles(request.arguments)
+        return listFiles(request.arguments).then((result) => ({ result }))
       case 'projects.read_file':
-        return readFile(request.arguments)
+        return readFile(request.arguments).then((result) => ({ result }))
       case 'projects.duplicate':
         return duplicate(request.arguments)
       default:
@@ -772,7 +953,7 @@ export function createProjectReferenceCommands(deps: {
         return true
       }
       const apiToken = deps.getApiToken()
-      let task: Promise<unknown>
+      let task: Promise<CommandOutcome>
       if (request.command_id === 'projects.duplicate') {
         const signature = `${request.catalog_revision}:${request.command_id}:${JSON.stringify(request.arguments)}`
         const previous = duplicates.get(request.request_id)
@@ -803,7 +984,7 @@ export function createProjectReferenceCommands(deps: {
         task = execute(request)
       }
       void task.then(
-        (result) => {
+        ({ result, projectContext }) => {
           if (
             ws.readyState !== WebSocket.OPEN ||
             (activeSocket && activeSocket !== ws)
@@ -829,6 +1010,7 @@ export function createProjectReferenceCommands(deps: {
               catalog_revision: request.catalog_revision,
               status: 'succeeded',
               result,
+              ...(projectContext ? { project_context: projectContext } : {}),
             })
           )
         },
@@ -846,7 +1028,8 @@ export function createProjectReferenceCommands(deps: {
               catalog_revision: request.catalog_revision,
               status: 'rejected',
               error:
-                error instanceof ProjectReferenceCommandError
+                error instanceof ProjectReferenceCommandError ||
+                error instanceof CurrentProjectCopyError
                   ? error.message
                   : 'Could not access the library project.',
             })
