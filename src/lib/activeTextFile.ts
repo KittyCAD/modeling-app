@@ -3,6 +3,7 @@ import { signal } from '@preact/signals-core'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
+import { decodeTextFile, MAX_EDITABLE_TEXT_FILE_BYTES } from '@src/lib/textFile'
 import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
@@ -40,9 +41,7 @@ export type ActiveTextFile =
 
 export const activeTextFileSignal = signal<ActiveTextFile | null>(null)
 
-// Preserve the UTF-8 byte order mark when editing.
-const decoder = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true })
-export const MAX_EDITABLE_TEXT_FILE_BYTES = 1024 * 1024
+export { MAX_EDITABLE_TEXT_FILE_BYTES } from '@src/lib/textFile'
 const FILE_TOO_LARGE_MESSAGE = 'Text files larger than 1 MiB cannot be edited.'
 const UNSUPPORTED_TEXT_MESSAGE = 'This file is binary or is not UTF-8 text.'
 
@@ -188,18 +187,8 @@ export async function openActiveTextFile(
       return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
     }
 
-    let text: string
-    try {
-      text = decoder.decode(bytes)
-      // Allow tabs and line endings, but reject other control characters.
-      for (const character of text) {
-        const isControlCharacter = /\p{Control}/u.test(character)
-        const isAllowedWhitespace = '\t\n\r'.includes(character)
-        if (isControlCharacter && !isAllowedWhitespace) {
-          return setActiveTextFileError(path, name, UNSUPPORTED_TEXT_MESSAGE)
-        }
-      }
-    } catch {
+    const text = decodeTextFile(bytes)
+    if (text === null) {
       return setActiveTextFileError(path, name, UNSUPPORTED_TEXT_MESSAGE)
     }
     activeTextFileSignal.value = {

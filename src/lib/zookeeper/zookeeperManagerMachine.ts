@@ -17,6 +17,7 @@ import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket, SocketConnectionError } from '@src/lib/socket'
 import { cleanErrs, isErr } from '@src/lib/trap'
+import { decodeTextFile, MAX_EDITABLE_TEXT_FILE_BYTES } from '@src/lib/textFile'
 import { isArray, isRecord, uuidv4 } from '@src/lib/utils'
 import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
@@ -254,6 +255,13 @@ export const ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE = 4409
 const ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS = 5_000
 // Matches text-to-cad's --ws-max-size.
 export const ZOOKEEPER_MAX_MESSAGE_BYTES = 128 * 1024 * 1024
+
+function isZookeeperTextFile(data: number[]): boolean {
+  return (
+    data.length <= MAX_EDITABLE_TEXT_FILE_BYTES &&
+    decodeTextFile(new Uint8Array(data)) !== null
+  )
+}
 
 const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
@@ -1646,8 +1654,24 @@ export const zookeeperManagerMachine = setup({
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
-      const encodedRequest = msgpackEncode(request, { ignoreUndefined: true })
-      if (encodedRequest.byteLength > ZOOKEEPER_MAX_MESSAGE_BYTES) {
+      const textFilesOnly =
+        Object.values(filesAsByteArrays).every(isZookeeperTextFile) &&
+        (additionalFiles ?? []).every((file) => isZookeeperTextFile(file.data))
+      let encodedRequest = textFilesOnly
+        ? JSON.stringify(request)
+        : msgpackEncode(request, { ignoreUndefined: true })
+      let encodedBytes =
+        typeof encodedRequest === 'string'
+          ? new TextEncoder().encode(encodedRequest).byteLength
+          : encodedRequest.byteLength
+      if (
+        typeof encodedRequest === 'string' &&
+        encodedBytes > ZOOKEEPER_MAX_MESSAGE_BYTES
+      ) {
+        encodedRequest = msgpackEncode(request, { ignoreUndefined: true })
+        encodedBytes = encodedRequest.byteLength
+      }
+      if (encodedBytes > ZOOKEEPER_MAX_MESSAGE_BYTES) {
         return Promise.reject(new ZookeeperProjectTooLargeError())
       }
       context.ws.send(encodedRequest)
@@ -1722,10 +1746,25 @@ export const zookeeperManagerMachine = setup({
         command: 'continue',
       }
 
-      const encodedRequest = msgpackEncode(requestProjectContext, {
-        ignoreUndefined: true,
-      })
-      if (encodedRequest.byteLength > ZOOKEEPER_MAX_MESSAGE_BYTES) {
+      let encodedRequest = Object.values(filesAsByteArrays).every(
+        isZookeeperTextFile
+      )
+        ? JSON.stringify(requestProjectContext)
+        : msgpackEncode(requestProjectContext, { ignoreUndefined: true })
+      let encodedBytes =
+        typeof encodedRequest === 'string'
+          ? new TextEncoder().encode(encodedRequest).byteLength
+          : encodedRequest.byteLength
+      if (
+        typeof encodedRequest === 'string' &&
+        encodedBytes > ZOOKEEPER_MAX_MESSAGE_BYTES
+      ) {
+        encodedRequest = msgpackEncode(requestProjectContext, {
+          ignoreUndefined: true,
+        })
+        encodedBytes = encodedRequest.byteLength
+      }
+      if (encodedBytes > ZOOKEEPER_MAX_MESSAGE_BYTES) {
         return Promise.reject(new ZookeeperProjectTooLargeError())
       }
       context.ws.send(JSON.stringify(requestContinue))

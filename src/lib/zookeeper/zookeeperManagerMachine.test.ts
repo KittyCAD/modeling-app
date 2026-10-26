@@ -11,6 +11,7 @@ import {
   resetReportedClientErrorsForTests,
 } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
+import { MAX_EDITABLE_TEXT_FILE_BYTES } from '@src/lib/textFile'
 import {
   type Conversation,
   createZookeeperManagerActor,
@@ -1399,10 +1400,35 @@ describe('zookeeperManagerMachine', () => {
     })
   })
 
-  it('rejects oversized encoded prompts before sending anything', async () => {
+  it.each([
+    [
+      'UTF-8 without extensions',
+      new TextEncoder().encode('project'),
+      new Uint8Array(),
+      false,
+    ],
+    ['invalid UTF-8', new Uint8Array([0xff]), new Uint8Array(), true],
+    ['binary attachment', new Uint8Array(), new Uint8Array([0]), true],
+    [
+      'text over 1 MiB',
+      new Uint8Array(MAX_EDITABLE_TEXT_FILE_BYTES + 1).fill(97),
+      new Uint8Array(),
+      true,
+    ],
+  ] as const)('rejects oversized %s', async (_label, data, extra, binary) => {
+    const stringify = JSON.stringify
     const encode = vi
       .spyOn(msgpack, 'encode')
       .mockReturnValueOnce(new Uint8Array(ZOOKEEPER_MAX_MESSAGE_BYTES + 1))
+    const serialize = binary
+      ? encode
+      : vi
+          .spyOn(JSON, 'stringify')
+          .mockImplementation((value, ...args) =>
+            value?.type === 'user'
+              ? '\u00e9'.repeat(ZOOKEEPER_MAX_MESSAGE_BYTES / 2 + 1)
+              : stringify(value, ...args)
+          )
     const ws: TestWebSocket = new TestSocket() as TestWebSocket
     const send = vi.fn()
     ws.send = send
@@ -1430,7 +1456,10 @@ describe('zookeeperManagerMachine', () => {
         },
         content: '',
       },
-      projectFiles: [],
+      projectFiles: [
+        { type: 'other', relPath: 'project', data: new Blob([data]) },
+      ],
+      additionalFiles: [new File([extra], 'attachment')],
       selections: null,
       artifactGraph: new Map(),
       kclManager,
@@ -1458,12 +1487,12 @@ describe('zookeeperManagerMachine', () => {
     actor.start()
 
     await expect(result).rejects.toThrow('Your project files are too large')
-    expect(encode).toHaveBeenCalledOnce()
+    expect(serialize).toHaveBeenCalled()
     expect(send).not.toHaveBeenCalled()
   })
 
   describe('ContinueCheck', () => {
-    it('sends continue requests after rejecting oversized project context', async () => {
+    it.each(['text', 'binary', 'fallback'])('retries %s', async (name) => {
       stubClientErrorFetch()
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       const send = vi.fn()
@@ -1487,7 +1516,12 @@ describe('zookeeperManagerMachine', () => {
           },
         ],
       }
+      const data =
+        name === 'binary'
+          ? new Uint8Array([0xff])
+          : new TextEncoder().encode('notes')
       const projectFiles: FileMeta[] = [
+        { type: 'other', relPath: 'README.MD', data: new Blob(['readme']) },
         {
           type: 'kcl',
           relPath: 'main.kcl',
@@ -1497,8 +1531,8 @@ describe('zookeeperManagerMachine', () => {
         },
         {
           type: 'other',
-          relPath: 'notes.txt',
-          data: new Blob(['notes']),
+          relPath: name,
+          data: new Blob([data]),
         },
       ]
       const machine = zookeeperManagerMachine.provide({
@@ -1536,9 +1570,20 @@ describe('zookeeperManagerMachine', () => {
         activeFile: 'newFile.kcl',
         engineApiCallId: 'engine-api-call-id',
       } as const
+      const useMsgpack = name === 'binary'
+      const stringify = JSON.stringify
       const encode = vi
         .spyOn(msgpack, 'encode')
         .mockReturnValueOnce(new Uint8Array(ZOOKEEPER_MAX_MESSAGE_BYTES + 1))
+      const serialize = useMsgpack
+        ? encode
+        : vi
+            .spyOn(JSON, 'stringify')
+            .mockImplementation((value, ...args) =>
+              value?.type === 'project_context'
+                ? '\u00e9'.repeat(ZOOKEEPER_MAX_MESSAGE_BYTES / 2 + 1)
+                : stringify(value, ...args)
+            )
       const showError = vi.spyOn(toast, 'error')
       actor.send(event)
       await vi.waitFor(() => {
@@ -1555,6 +1600,7 @@ describe('zookeeperManagerMachine', () => {
       expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
       expect(send).not.toHaveBeenCalled()
       encode.mockRestore()
+      if (!useMsgpack && name !== 'fallback') serialize.mockRestore()
       actor.send(event)
 
       await waitFor(actor, (state) =>
@@ -1570,7 +1616,15 @@ describe('zookeeperManagerMachine', () => {
         type: 'system',
         command: 'continue',
       })
-      expect(msgpack.decode(send.mock.calls[1][0])).toStrictEqual({
+      const payload = send.mock.calls[1][0]
+      expect(typeof payload === 'string').toBe(
+        !useMsgpack && name !== 'fallback'
+      )
+      expect(
+        typeof payload === 'string'
+          ? JSON.parse(payload)
+          : msgpack.decode(payload)
+      ).toStrictEqual({
         type: 'project_context',
         correlation_id: expect.stringMatching(
           /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
@@ -1578,8 +1632,9 @@ describe('zookeeperManagerMachine', () => {
         engine_api_call_id: 'engine-api-call-id',
         project_name: 'zoo-project',
         current_files: {
+          'README.MD': Array.from(new TextEncoder().encode('readme')),
           'main.kcl': Array.from(new TextEncoder().encode('cube()')),
-          'notes.txt': Array.from(new TextEncoder().encode('notes')),
+          [name]: Array.from(data),
         },
         active_file: 'newFile.kcl',
       })

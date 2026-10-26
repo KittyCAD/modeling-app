@@ -1,5 +1,4 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import { decode as msgpackDecode } from '@msgpack/msgpack'
 
 vi.mock('@src/routes/utils', () => ({
   APP_DOWNLOAD_PATH: 'design-studio/download/staging',
@@ -194,7 +193,10 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     actor.stop()
 
     return ws.send.mock.calls
-      .map(([payload]) => msgpackDecode(payload))
+      .map(([payload]) => {
+        expect(typeof payload).toBe('string')
+        return JSON.parse(payload)
+      })
       .filter(isMlCopilotUserRequest)
   }
 
