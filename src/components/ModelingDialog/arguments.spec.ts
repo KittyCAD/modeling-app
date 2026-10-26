@@ -2,6 +2,8 @@ import {
   resolveArguments,
   updateKclArgument,
 } from '@src/components/ModelingDialog/arguments'
+import type { CommandKclArgument } from '@src/components/CommandBar/CommandKclInput'
+import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { assertParse } from '@src/lang/wasm'
 import type { Command } from '@src/lib/commandTypes'
@@ -69,6 +71,26 @@ describe('resolveArguments', () => {
     )
   }
 
+  async function namedExpression(text: string) {
+    const value = await stringToKclExpression(text, world.rustContext, {
+      allowArrays: true,
+      allowStringArrays: true,
+    })
+    assertNotErr(value)
+    if ('errors' in value)
+      throw new Error('Unable to calculate test expression')
+    return {
+      ...value,
+      variableName: 'parameter001',
+      insertIndex: 0,
+      variableIdentifierAst: createLocalName('parameter001'),
+      variableDeclarationAst: createVariableDeclaration(
+        'parameter001',
+        value.valueAst
+      ),
+    }
+  }
+
   it('keeps a newer edit when an earlier calculation reports its result', async () => {
     const arg = { inputType: 'kcl', required: true } as const
     const oldResult = await stringToKclExpression('5', world.rustContext)
@@ -95,6 +117,51 @@ describe('resolveArguments', () => {
     assertNotErr(submitted)
     expect(submitted.radius).toEqual(newResult)
   })
+
+  it('preserves variable creation when the editor text has surrounding whitespace', async () => {
+    const arg: CommandKclArgument = { inputType: 'kcl', required: true }
+    const calculated = await namedExpression('6')
+    const draft = updateKclArgument({ radius: ' 6 ' }, 'radius', arg, {
+      source: 'calculation',
+      value: calculated,
+    })
+    const submitted = await resolve({ radius: arg }, draft)
+    assertNotErr(submitted)
+    expect(submitted.radius).toEqual(calculated)
+  })
+
+  it.each(['A,B', '["A","B"]'])(
+    'preserves variable creation for transformed input %s',
+    async (input) => {
+      const arg = {
+        inputType: 'kcl',
+        required: true,
+        allowArrays: true,
+        allowStringArrays: true,
+        inputToKclValue: (value) =>
+          value.startsWith('[')
+            ? value
+            : `[${value
+                .split(',')
+                .map((item) => JSON.stringify(item.trim()))
+                .join(', ')}]`,
+        kclValueToInput: (value) =>
+          value
+            .replace(/[\[\]"]/g, '')
+            .split(',')
+            .map((item) => item.trim())
+            .join(', '),
+      } satisfies CommandKclArgument
+      const calculated = await namedExpression(arg.inputToKclValue(input))
+      const draft = updateKclArgument({ datums: input }, 'datums', arg, {
+        source: 'calculation',
+        value: calculated,
+      })
+      const submitted = await resolve({ datums: arg }, draft)
+      assertNotErr(submitted)
+      expect(submitted.datums).toEqual(calculated)
+    }
+  )
 
   it('drops inactive creation drafts but preserves static metadata', async () => {
     const result = await resolve(

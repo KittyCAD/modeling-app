@@ -41,12 +41,19 @@ export function updateKclArgument(
   arg: CommandKclArgument,
   change: CommandKclChange
 ): Record<string, unknown> {
-  // A calculation effect can finish after the editor has reported newer text.
-  if (
-    change.source === 'calculation' &&
-    getKclInputValue(arg, values[name]) !== getKclInputValue(arg, change.value)
-  )
-    return values
+  if (change.source === 'calculation') {
+    const toExpression = (input: string) => {
+      const trimmed = input.trim()
+      return arg.inputToKclValue ? arg.inputToKclValue(trimmed) : trimmed
+    }
+    const current = toExpression(getKclInputValue(arg, values[name]))
+    // Calculated values already contain the expression used by the editor.
+    const calculated = isKclCommandValue(change.value)
+      ? change.value.valueText
+      : toExpression(change.value)
+    // A calculation effect can finish after the editor has reported newer text.
+    if (current !== calculated) return values
+  }
   return { ...values, [name]: change.value }
 }
 
