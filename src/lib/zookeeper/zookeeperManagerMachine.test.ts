@@ -1232,7 +1232,7 @@ describe('zookeeperManagerMachine', () => {
       }
     })
 
-    it('keeps the socket open while a large upload progresses, then resumes heartbeat timeouts', async () => {
+    it('allows slow uploads, then detects missing heartbeat replies', async () => {
       vi.useFakeTimers()
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(zookeeperManagerMachine, {
