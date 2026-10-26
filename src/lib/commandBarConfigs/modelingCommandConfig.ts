@@ -16,6 +16,7 @@ import {
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import {
+  STD_LIB_COMMANDS,
   STD_LIB_ENUMS,
   stdLibEnumOptions,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -650,9 +651,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             required: true,
             defaultValue: 'oriented',
             options: [
-              { name: 'Oriented', value: 'oriented', isCurrent: true },
-              { name: 'Directed', value: 'directed' },
-            ],
+              STD_LIB_COMMANDS['view::oriented'],
+              STD_LIB_COMMANDS['view::directed'],
+            ].map(({ name }) => ({
+              name: capitaliseFC(name),
+              value: name,
+            })),
           },
           camera: {
             inputType: 'camera',
