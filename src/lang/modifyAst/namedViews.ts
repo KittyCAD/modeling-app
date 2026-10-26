@@ -20,17 +20,10 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
-  getNodeFromPath,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import type {
-  ArtifactGraph,
-  CallExpressionKw,
-  Expr,
-  PathToNode,
-  Program,
-} from '@src/lang/wasm'
+import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
@@ -122,18 +115,6 @@ export function addNamedView({
     if (distance && 'variableName' in distance && distance.variableName) {
       insertVariableAndOffsetPathToNode(distance, modifiedAst, mNodeToEdit)
     }
-  } else if (mNodeToEdit) {
-    // Preserve the existing expression when no replacement was supplied.
-    const result = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      mNodeToEdit,
-      wasmInstance,
-      'CallExpressionKw'
-    )
-    if (err(result)) return result
-    camera = result.node.arguments.find(
-      (argument) => argument.label?.name === 'camera'
-    )?.arg
   }
   if (!camera) return new Error('Could not determine the named view camera.')
 
