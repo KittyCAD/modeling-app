@@ -5954,19 +5954,22 @@ region001 = region(segments = [sketch001.circle1])`
       .getByRole('button', { name: 'Apply Inspection', exact: true })
       .click()
     await expect(row).toHaveAttribute('data-active', 'true')
-    await expect(
-      row.getByRole('button', { name: 'Inspection', exact: true })
-    ).toBeDisabled()
     await row.getByRole('button', { name: 'Named view actions' }).click()
-    await expect(
-      page.getByRole('menuitem', { name: 'Edit', exact: true })
-    ).toBeDisabled()
-    await page.keyboard.press('Escape')
-    await pane
-      .getByRole('button', { name: 'Apply Default View', exact: true })
-      .click()
+    await page.getByRole('menuitem', { name: 'Edit', exact: true }).click()
+    await expect(dialog).toBeVisible()
     await expect(row).toHaveAttribute('data-active', 'false')
+    await expect(
+      pane.getByTestId('named-view-row').filter({ hasText: 'Default View' })
+    ).toHaveAttribute('data-active', 'false')
+    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click()
+    await expect(dialog).not.toBeAttached()
+    await expect(row).toHaveAttribute('data-active', 'false')
+    await row
+      .getByRole('button', { name: 'Apply Inspection', exact: true })
+      .click()
+    await expect(row).toHaveAttribute('data-active', 'true')
     await row.getByTestId('named-view-label').dblclick()
+    await expect(row).toHaveAttribute('data-active', 'false')
     await expect(
       row.getByRole('button', { name: 'Apply Inspection', exact: true })
     ).toBeDisabled()

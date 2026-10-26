@@ -25,6 +25,7 @@ import {
   isSameView,
   isSketchSessionOpen,
   moduleKeyOf,
+  resetNamedViewSession,
 } from '@src/lib/kclNamedViewActivation'
 import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
@@ -156,6 +157,14 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     })
       .then((event) => {
         if (trap(event)) return
+        if (
+          isSameView(activeViewSignal.peek(), {
+            name: view.artifact.name,
+            moduleKey: moduleKeyOf(view.modulePath),
+          })
+        ) {
+          resetNamedViewSession()
+        }
         app.commands.actor.send(event)
       })
       .catch((reason) => toast.error(String(reason)))
@@ -232,7 +241,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 ? row.target.view
                 : undefined
             const isActive = isSameView(row.identity, active)
-            const editDisabled = actionsDisabled || isActive
 
             return (
               <li
@@ -249,7 +257,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 </span>
                 <button
                   type="button"
-                  className="reset grid h-6 w-6 shrink-0 place-items-center border-none text-chalkboard-70 hover:text-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-default disabled:opacity-50 dark:text-chalkboard-30"
+                  className="reset grid h-6 w-6 shrink-0 place-items-center border-none text-chalkboard-70 hover:text-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-default disabled:!bg-transparent disabled:opacity-50 dark:text-chalkboard-30"
                   aria-label={
                     isActive ? `${row.label} is active` : `Apply ${row.label}`
                   }
@@ -277,18 +285,18 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 </button>
                 <button
                   type="button"
-                  className="reset flex min-w-0 flex-1 items-center gap-2 self-stretch border-none text-left !text-xs focus-visible:ring-1 focus-visible:ring-primary"
+                  className="reset flex min-w-0 flex-1 items-center gap-2 self-stretch border-none text-left !text-xs focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-default disabled:!bg-transparent"
                   aria-label={row.label}
-                  disabled={!manageableView || editDisabled}
+                  disabled={!manageableView || actionsDisabled}
                   onDoubleClick={(event) => {
-                    if (!manageableView || editDisabled) return
+                    if (!manageableView || actionsDisabled) return
                     event.preventDefault()
                     editView(manageableView)
                   }}
                 >
                   <span
                     data-testid="named-view-label"
-                    className="min-w-0 truncate"
+                    className="min-w-0 truncate text-chalkboard-100 dark:text-chalkboard-10"
                   >
                     {row.label}
                   </span>
@@ -314,11 +322,11 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                     data-testid="named-view-actions"
                     disabled={actionsDisabled}
                   >
-                    <Menu.Item disabled={editDisabled}>
+                    <Menu.Item disabled={actionsDisabled}>
                       <button
                         type="button"
                         className="menuButton"
-                        disabled={editDisabled}
+                        disabled={actionsDisabled}
                         onClick={() => editView(manageableView)}
                       >
                         Edit
