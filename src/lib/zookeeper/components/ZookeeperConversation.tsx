@@ -33,6 +33,7 @@ import type { ChangeEvent, ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
+const MAX_INLINE_PASTE_LENGTH = 10_000
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 export type { QueuedMessage }
@@ -526,14 +527,25 @@ export const ZookeeperConversationInput = (
   }
 
   const handlePaste = (e: React.ClipboardEvent) => {
-    const files = Array.from(e.clipboardData.files)
-    if (!files.length) return
     if (props.disabled) return
 
-    // Prevent default only if we have files to handle
-    e.preventDefault()
+    const files = Array.from(e.clipboardData.files)
+    if (files.length > 0) {
+      e.preventDefault()
+      appendAttachments(files)
+      return
+    }
 
-    appendAttachments(files)
+    const text = e.clipboardData.getData('text/plain')
+    if (text.length <= MAX_INLINE_PASTE_LENGTH) return
+
+    e.preventDefault()
+    // Attachment names persist across turns, so each paste needs a unique name.
+    appendAttachments([
+      new File([text], `pasted-text-${crypto.randomUUID()}.txt`, {
+        type: 'text/plain',
+      }),
+    ])
   }
 
   const selectionsContext = props.contexts.find(
