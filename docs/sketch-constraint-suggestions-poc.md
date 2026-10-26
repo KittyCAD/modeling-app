@@ -22,6 +22,8 @@ When a drawing tool is still active, accepting an idea closes the tool before
 adding the circle.
 The circle position is currently a numeric placement; it is not constrained to
 remain centered if the square is resized later.
+The **Sketch ideas** control remains visible on other sketches. Opening it
+explains that this prototype has no continuation candidate for that geometry.
 
 These first two ideas are geometry templates to validate the interaction.
 The trained constraint ranker below does not generate or rank them. A model

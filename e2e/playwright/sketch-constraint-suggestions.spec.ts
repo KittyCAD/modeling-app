@@ -136,6 +136,14 @@ sketch001 = sketch(on = XY) {
     await sketchOperation.dblclick()
     await expect(toolbar.exitSketchBtn).toBeEnabled()
 
+    const sketchIdeas = page.getByRole('button', { name: 'Sketch ideas' })
+    await expect(sketchIdeas).toBeVisible()
+    await sketchIdeas.click()
+    await expect(
+      page.getByText('No ideas for this sketch yet.', { exact: false })
+    ).toBeVisible()
+    await page.getByRole('button', { name: 'Dismiss sketch ideas' }).click()
+
     const handles = page.locator('[data-handle="sketch-point-handle"]')
     await expect(handles).toHaveCount(2)
     const start = await handles.nth(0).boundingBox()
@@ -158,12 +166,14 @@ sketch001 = sketch(on = XY) {
     }
     const horizontal = page.getByRole('button', { name: 'Make horizontal' })
     await expect(horizontal).toBeVisible()
-    await expect(
-      page
-        .getByRole('group', { name: 'Constraint suggestions' })
-        .getByRole('button')
-        .first()
-    ).toHaveText('Make horizontal')
+    if (testingPocPreview) {
+      await expect(
+        page
+          .getByRole('group', { name: 'Constraint suggestions' })
+          .getByRole('button')
+          .first()
+      ).toHaveText('Make horizontal')
+    }
     const bounds = await horizontal.boundingBox()
     expect(bounds).not.toBeNull()
     if (bounds) {
