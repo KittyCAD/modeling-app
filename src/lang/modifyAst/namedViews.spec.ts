@@ -2,7 +2,6 @@ import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addNamedView,
   type NamedViewCameraSnapshot,
-  updateNamedViewCamera,
 } from '@src/lang/modifyAst/namedViews'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -242,23 +241,8 @@ view001 = view::named("Inspection view", camera = oriented(view::Orientation::Fr
     )
     expect(updatedView?.camera.distance).toBe(123)
   })
-})
 
-describe('updateNamedViewCamera', () => {
-  const code = `@settings(kclVersion = 3.0)
-
-view001 = view::named(
-  "Inspection view",
-  camera = view::oriented(
-    view::Orientation::Front,
-    distance = 200mm,
-    projection = view::Projection::Perspective,
-  ),
-  baseline = view::Visibility::Show,
-)`
-
-  it('replaces only the camera with the current directed camera', async () => {
-    const ast = assertParse(code, instance)
+  it('adds a captured camera and can switch back to an oriented camera', async () => {
     const camera: NamedViewCameraSnapshot = {
       look: {
         type: 'directed',
@@ -269,29 +253,8 @@ view001 = view::named(
       distance: 125.5,
       projection: 'orthographic',
     }
-    const modifiedAst = updateNamedViewCamera({
-      ast,
-      pathToNode: createPathToNodeForLastVariable(ast, false),
-      camera,
-      wasmInstance: instance,
-    })
-    if (err(modifiedAst)) throw modifiedAst
-
-    await enginelessExecutor(modifiedAst, rustContext)
-    const updatedCode = recast(modifiedAst, instance)
-    if (err(updatedCode)) throw updatedCode
-    expect(updatedCode).toContain(`camera = view::directed(
-    [0.25, -0.5, -0.75],
-    up = [0, 0, 1],
-    target = [10mm, 20mm, 30mm],
-    distance = 125.5mm,
-    projection = view::Projection::Orthographic,
-  )`)
-    expect(updatedCode).toContain('"Inspection view"')
-    expect(updatedCode).toContain('baseline = view::Visibility::Show')
-
-    const commandResult = addNamedView({
-      ast: assertParse('@settings(kclVersion = 3.0)', instance),
+    const result = addNamedView({
+      ast: assertParse(settings, instance),
       artifactGraph: new Map(),
       name: 'Inspection view',
       cameraMode: 'directed',
@@ -299,8 +262,16 @@ view001 = view::named(
       baseline: 'Show',
       wasmInstance: instance,
     })
-    if (err(commandResult)) throw commandResult
-    expect(recast(commandResult.modifiedAst, instance)).toBe(updatedCode)
+    if (err(result)) throw result
+    const ast = result.modifiedAst
+    await enginelessExecutor(ast, rustContext)
+    expect(recast(ast, instance)).toContain(`camera = view::directed(
+    [0.25, -0.5, -0.75],
+    up = [0, 0, 1],
+    target = [10mm, 20mm, 30mm],
+    distance = 125.5mm,
+    projection = view::Projection::Orthographic,
+  )`)
 
     const orientedResult = addNamedView({
       ast,

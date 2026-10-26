@@ -318,27 +318,6 @@ describe('activateNamedView', () => {
     expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
   })
 
-  it('activates a captured view without moving the camera again', async () => {
-    const f = fakes()
-
-    await activateNamedView({
-      target: { kind: 'declared', view: declaredView('Front') },
-      kclManager: f.kclManager,
-      restoreCamera: false,
-    })
-
-    expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
-    expect(f.setObjectsHidden).toHaveBeenCalledWith(
-      new Map([['body-1', false]])
-    )
-    expect(f.setCameraToAxis).not.toHaveBeenCalled()
-    expect(f.sendSceneCommand).not.toHaveBeenCalled()
-
-    f.raw.sceneInfra.camControls.camera.position.x += 1
-    f.raw.sceneInfra.camControls.cameraChange.dispatch()
-    expect(activeViewSignal.value).toBeNull()
-  })
-
   it('sends every newly nameable artifact kind to the engine', async () => {
     const f = fakes()
     const artifacts: Artifact[] = [

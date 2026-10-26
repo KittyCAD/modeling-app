@@ -6007,16 +6007,8 @@ region001 = region(segments = [sketch001.circle1])`
         .getByTestId('feature-tree-operation-item')
         .filter({ hasText: /Named View/ })
     ).toHaveCount(0)
-    await scene.waitForExecutionDoneAfter(() =>
-      row.getByRole('button', { name: 'Update from current camera' }).click()
-    )
-    await editor.expectEditor.toContain('view::directed(')
-    await expect(row).toHaveAttribute('data-active', 'true')
-    await pane
-      .getByRole('button', { name: 'Apply Default View', exact: true })
-      .click()
-    await expect(row).toHaveAttribute('data-active', 'false')
     await row.getByTestId('named-view-label').dblclick()
+    await cameraMode.selectOption({ label: 'Directed' })
     await expect(
       dialog.getByRole('combobox', { name: /^orientation/i })
     ).toHaveCount(0)
@@ -6026,6 +6018,8 @@ region001 = region(segments = [sketch001.circle1])`
     )
     await scene.waitForExecutionDoneAfter(() => submit.click())
     await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('view::directed(')
+    await expect(row).toHaveAttribute('data-active', 'false')
     await row.getByRole('button', { name: 'Named view actions' }).click()
     await scene.waitForExecutionDoneAfter(() =>
       page.getByRole('menuitem', { name: 'Remove', exact: true }).click()
