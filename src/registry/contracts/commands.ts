@@ -168,8 +168,11 @@ export type CommandScopeService = {
   }
 }
 
+export type CommandDialogSession = { id: string }
+
 export type CommandSystemService = {
   actor: CommandBarActorType
+  dialogSession: ReadonlySignal<CommandDialogSession | undefined>
   send: CommandBarActorType['send']
   useState: () => SnapshotFrom<CommandBarActorType>
 }
