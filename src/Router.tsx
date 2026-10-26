@@ -69,6 +69,7 @@ export const Router = () => {
               }) => {
                 if (
                   formMethod ||
+                  !app.project || // nothing loaded to reuse -> reopen the project
                   !currentParams.id ||
                   currentParams.id !== nextParams.id || // if file url changes -> reload project
                   currentUrl.href === nextUrl.href
