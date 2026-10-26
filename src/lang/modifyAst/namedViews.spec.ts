@@ -162,6 +162,9 @@ view001 = view::named(
     const defaults = event.data.argDefaultValues
     expect(defaults).toMatchObject({
       name: 'Inspection view',
+      orientation: 'Front',
+      projection: 'Perspective',
+      baseline: 'Show',
       except: undefined,
     })
 

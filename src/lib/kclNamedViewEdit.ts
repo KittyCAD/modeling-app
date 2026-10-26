@@ -1,4 +1,12 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type {
+  ArtifactOrientation,
+  ArtifactProjection,
+  ArtifactVisibility,
+} from '@rust/kcl-lib/bindings/Artifact'
+import type { Orientation } from '@rust/kcl-lib/bindings/Orientation'
+import type { Projection } from '@rust/kcl-lib/bindings/Projection'
+import type { Visibility } from '@rust/kcl-lib/bindings/Visibility'
 
 import { toUtf16 } from '@src/lang/errors'
 import {
@@ -13,12 +21,32 @@ import type {
   Program,
 } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import { STD_LIB_ENUMS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import { isErr } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
+
+// Bridge artifact enums to KCL spellings, with every Rust variant handled.
+const KCL_ORIENTATIONS = {
+  front: 'Front',
+  back: 'Back',
+  left: 'Left',
+  right: 'Right',
+  top: 'Top',
+  bottom: 'Bottom',
+  isometric: 'Isometric',
+} satisfies Record<ArtifactOrientation, Orientation>
+
+const KCL_PROJECTIONS = {
+  orthographic: 'Orthographic',
+  perspective: 'Perspective',
+} satisfies Record<ArtifactProjection, Projection>
+
+const KCL_VISIBILITIES = {
+  show: 'Show',
+  hide: 'Hide',
+} satisfies Record<ArtifactVisibility, Visibility>
 
 function isOrientedCameraCall(
   camera: Expr | undefined
@@ -98,22 +126,13 @@ export async function prepareNamedViewEditCommand({
       ? retrieveSelectionsFromArtifactIds(exceptIds, artifactGraph)
       : undefined
 
-  const orientation = STD_LIB_ENUMS['view::Orientation'].find(
-    (value) => value.toLowerCase() === look.orientation
-  )
-  if (!orientation) {
-    return new Error('Could not determine the named view orientation.')
-  }
   const argDefaultValues: ModelingCommandSchema['Named View'] = {
     name: artifact.name,
-    orientation,
+    orientation: KCL_ORIENTATIONS[look.orientation],
     target,
     distance,
-    projection:
-      artifact.camera.projection === 'orthographic'
-        ? 'Orthographic'
-        : 'Perspective',
-    baseline: artifact.baseline === 'show' ? 'Show' : 'Hide',
+    projection: KCL_PROJECTIONS[artifact.camera.projection],
+    baseline: KCL_VISIBILITIES[artifact.baseline],
     // Selection reconstruction is best-effort; edits preserve the original except expression.
     except: isErr(except) ? undefined : except,
     nodeToEdit: structuredClone(artifact.codeRef.pathToNode),
