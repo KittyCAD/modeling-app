@@ -36,6 +36,8 @@ use kcl_api::ast::node_path::NodePath;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
+pub(crate) mod sketch3d;
+pub(crate) mod sketch3d_solver;
 pub use kcl_value_view::EdgeCutViewExt;
 pub use kcl_value_view::ExtrudeSurfaceViewExt;
 pub use kcl_value_view::KclValueView;
@@ -57,6 +59,8 @@ pub(crate) use modeling::ModelingCmdMeta;
 pub use named_views::*;
 use serde::Deserialize;
 use serde::Serialize;
+pub(crate) use sketch_solve::Solved;
+pub(crate) use sketch_solve::normalize_to_solver_angle_unit;
 pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
 pub(crate) use sketch_solve::solver_numeric_type;
 pub(crate) use solver_arc::SolverArc;
@@ -80,6 +84,7 @@ pub use state::NotYetAdded;
 pub(crate) use state::PendingEdgeRefactorMeta;
 pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
+pub(crate) use state::SketchBlockState;
 pub(crate) use state::TangencyMode;
 pub(crate) use state::computed_kcl_version;
 pub(crate) use state::declared_kcl_version;
@@ -377,6 +382,10 @@ pub struct ExecOutcome {
     /// Objects in the scene, created from execution.
     #[serde(skip)]
     pub scene_objects: Vec<Object>,
+    /// World-space sketch overlays, including their source references for editing.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[ts(optional, as = "Option<Vec<Object>>")]
+    pub spatial_sketches: Vec<Object>,
     /// Map from source range to object ID for lookup of objects by their source
     /// range.
     #[serde(skip)]

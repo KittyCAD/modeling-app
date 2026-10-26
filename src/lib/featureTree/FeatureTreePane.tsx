@@ -44,6 +44,7 @@ import {
 } from '@src/lib/operations'
 import { defaultPlaneNameToKcl } from '@src/lib/planes'
 import { err, isErr, reportRejection } from '@src/lib/trap'
+import { sketch3dEditRequest } from '@src/lib/sketch3dMode'
 import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { ComponentProps, ReactNode } from 'react'
 import { memo, use, useCallback, useMemo } from 'react'
@@ -966,7 +967,23 @@ const OperationItem = ({
   const liveAst = kclManager.astSignal.value
   const ast = kclManager.hasParseErrors() ? kclManager.lastGoodAst : liveAst
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const name = getOperationLabel(item)
+  const spatialSketchId =
+    item.type === 'GroupBegin' && item.group.type === 'SketchBlock'
+      ? item.group.sketchId
+      : undefined
+  const spatialSketch = kclManager.execState.spatialSketches?.find(
+    (o) =>
+      o.id === spatialSketchId ||
+      ('sourceRange' in item &&
+        o.source.type === 'Simple' &&
+        o.source.range[2] === item.sourceRange[2] &&
+        o.source.range[0] <= item.sourceRange[0] &&
+        o.source.range[1] >= item.sourceRange[1])
+  )
+  const name =
+    spatialSketchId !== undefined && spatialSketch
+      ? '3D Sketch'
+      : getOperationLabel(item)
   const sourceRange =
     'sourceRange' in item &&
     sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
@@ -1084,6 +1101,13 @@ const OperationItem = ({
       item.type === 'VariableDeclaration' ||
       (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
     ) {
+      if (spatialSketch) {
+        sketch3dEditRequest.value = {
+          editor: kclManager,
+          label: spatialSketch.label,
+        }
+        return
+      }
       const artifact =
         getArtifactFromRange(
           item.sourceRange,
@@ -1125,6 +1149,8 @@ const OperationItem = ({
     commandBarActor,
     selectOperation,
     systemDeps,
+    spatialSketch,
+    kclManager,
   ])
 
   function enterAppearanceFlow() {

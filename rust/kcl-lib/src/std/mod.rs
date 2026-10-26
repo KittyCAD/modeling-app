@@ -792,6 +792,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::appearance::hexString"),
         ),
+        ("solver3d", _) => (
+            |e, a| Box::pin(crate::execution::sketch3d::call(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default(&format!("std::solver3d::{fn_name}")),
+        ),
         ("solver", "point") => (
             |e, a| Box::pin(crate::std::constraints::point(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::point"),

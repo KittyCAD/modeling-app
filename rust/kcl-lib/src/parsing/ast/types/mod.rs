@@ -1934,6 +1934,10 @@ impl AscribedExpression {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct SketchBlock {
+    /// A world-space sketch has no supporting plane.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    #[ts(optional, as = "Option<bool>")]
+    pub spatial: bool,
     pub arguments: Vec<LabeledArg>,
     pub body: Node<Block>,
 

@@ -2321,8 +2321,20 @@ impl Node<SketchBlock> {
         labeled: IndexMap<String, Arg>,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
-    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+    ) -> Result<(ObjectId, Option<SketchSurface>), EarlyReturn> {
         let range = SourceRange::from(self);
+        if self.spatial {
+            if !labeled.is_empty() {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "sketch3d does not take a supporting plane".to_owned(),
+                    vec![range],
+                ))
+                .into());
+            }
+            let id = exec_state.next_object_id();
+            exec_state.add_placeholder_scene_object(id, range, self.node_path.clone());
+            return Ok((id, None));
+        }
         let mut args = Args::new_no_args(
             range,
             self.node_path.clone(),
@@ -2373,7 +2385,7 @@ impl Node<SketchBlock> {
         // Store in memory so that it's cached.
         exec_state.mut_stack().add(on_cache_name, arg_on_value, range)?;
 
-        Ok((sketch_id, sketch_surface))
+        Ok((sketch_id, Some(sketch_surface)))
     }
 
     /// Sketch-mode path: arguments cannot be re-evaluated, so look the `on`
@@ -2381,8 +2393,13 @@ impl Node<SketchBlock> {
     pub(super) fn arguments_from_cache(
         &self,
         exec_state: &mut ExecState,
-    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+    ) -> Result<(ObjectId, Option<SketchSurface>), EarlyReturn> {
         let range = SourceRange::from(self);
+        if self.spatial {
+            let id = exec_state.next_object_id();
+            exec_state.add_placeholder_scene_object(id, range, self.node_path.clone());
+            return Ok((id, None));
+        }
         {
             // In sketch mode, we can't re-evaluate arguments. Instead, look
             // them up from cache.
@@ -2418,7 +2435,7 @@ impl Node<SketchBlock> {
                 sketch_surface.set_object_id(last_object.id);
             }
 
-            Ok((sketch_id, sketch_surface))
+            Ok((sketch_id, Some(sketch_surface)))
         }
     }
 
@@ -2427,10 +2444,16 @@ impl Node<SketchBlock> {
     pub(super) fn scene_setup(
         &self,
         sketch_id: ObjectId,
-        sketch_surface: &SketchSurface,
+        sketch_surface: &Option<SketchSurface>,
         exec_state: &mut ExecState,
     ) -> Result<ArtifactId, KclError> {
         let range = SourceRange::from(self);
+        if self.spatial {
+            return crate::execution::sketch3d::setup(self, sketch_id, exec_state);
+        }
+        let sketch_surface = sketch_surface
+            .as_ref()
+            .ok_or_else(|| internal_err("Missing sketch surface", range))?;
         let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
             object_id
         } else {
@@ -2525,7 +2548,7 @@ impl Node<SketchBlock> {
     pub(super) async fn finalize_sketch_block(
         &self,
         sketch_id: ObjectId,
-        sketch_surface: &SketchSurface,
+        sketch_surface: &Option<SketchSurface>,
         sketch_block_artifact_id: ArtifactId,
         variables: IndexMap<String, KclValue>,
         mut sketch_block_state: SketchBlockState,
@@ -2533,6 +2556,12 @@ impl Node<SketchBlock> {
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
         let range = SourceRange::from(self);
+        if self.spatial {
+            return crate::execution::sketch3d::finalize(self, sketch_id, variables, sketch_block_state, exec_state);
+        }
+        let sketch_surface = sketch_surface
+            .as_ref()
+            .ok_or_else(|| internal_err("Missing sketch surface", range))?;
         // Translate sketch variables and constraints to solver input.
         let constraints = sketch_block_state
             .solver_constraints
@@ -2864,7 +2893,10 @@ impl Node<SketchBlock> {
         ctx: &ExecutorContext,
         source_range: SourceRange,
     ) -> Result<(), KclError> {
-        let path = vec!["std".to_owned(), "solver".to_owned()];
+        let path = vec![
+            "std".to_owned(),
+            if self.spatial { "solver3d" } else { "solver" }.to_owned(),
+        ];
         let resolved_path = ModulePath::from_std_import_path(&path)?;
         let module_id = ctx
             .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
@@ -4331,7 +4363,20 @@ impl Node<BinaryExpression> {
                 // One sketch constraint, one number.
                 (KclValue::SketchConstraint { value: constraint }, input_number @ KclValue::Number { .. })
                 | (input_number @ KclValue::Number { .. }, KclValue::SketchConstraint { value: constraint }) => {
+                    if let SketchConstraintKind::Spatial { name, input } = &constraint.kind {
+                        return crate::execution::sketch3d::dimension(
+                            name,
+                            input,
+                            input_number,
+                            exec_state,
+                            self.as_source_range(),
+                            self.node_path.clone(),
+                        );
+                    }
                     let number_value = match constraint.kind {
+                        SketchConstraintKind::Spatial { .. } => {
+                            return Err(internal_err("3D dimension was not handled", self));
+                        }
                         // These constraint kinds expect the RHS to be an angle.
                         SketchConstraintKind::Angle { .. } => normalize_to_solver_angle_unit(
                             input_number,
@@ -4381,6 +4426,9 @@ impl Node<BinaryExpression> {
                     };
 
                     match &constraint.kind {
+                        SketchConstraintKind::Spatial { .. } => {
+                            return Err(internal_err("3D dimension was not handled", self));
+                        }
                         SketchConstraintKind::Angle {
                             line0,
                             line1,

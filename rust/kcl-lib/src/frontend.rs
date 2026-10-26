@@ -770,6 +770,7 @@ impl SketchApi for FrontendState {
             plane_ast = ast::Expr::Name(BoxNode::new(ast::Name::new(&face_name)));
         }
         let sketch_ast = ast::SketchBlock {
+            spatial: false,
             arguments: vec![ast::LabeledArg {
                 label: Some(ast::Identifier::new(SKETCH_BLOCK_PARAM_ON)),
                 arg: plane_ast,
@@ -2089,6 +2090,11 @@ impl FrontendState {
             engine_scene_generation: engine_scene_generation.unwrap_or_default(),
             operations,
             artifact_graph,
+            spatial_sketches: scene_objects
+                .iter()
+                .filter(|obj| matches!(obj.kind, kcl_api::ObjectKind::Sketch3d(_)))
+                .cloned()
+                .collect(),
             scene_objects,
             source_range_to_object,
             var_solutions,
@@ -9329,6 +9335,7 @@ cylinder = startSketchOn(XY)
             test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
+            spatial_sketches: Default::default(),
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions: Default::default(),
@@ -9486,6 +9493,7 @@ sketch(on = XY) {
             test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
+            spatial_sketches: Default::default(),
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions,

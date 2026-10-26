@@ -4391,7 +4391,9 @@ fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
 }
 
 fn is_callee_sketch_block(callee: &Name) -> bool {
-    callee.name.name == SketchBlock::CALLEE_NAME && !callee.abs_path && callee.path.is_empty()
+    matches!(callee.name.name.as_str(), SketchBlock::CALLEE_NAME | "sketch3d")
+        && !callee.abs_path
+        && callee.path.is_empty()
 }
 
 fn is_sketch_block_arg_shorthand(arg: &Expr) -> bool {
@@ -4425,7 +4427,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             outer_attrs,
             inner:
                 CallExpressionKw {
-                    callee: _,
+                    callee,
                     unlabeled,
                     mut arguments,
                     mut non_code_meta,
@@ -4465,6 +4467,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             pre_comments,
             comment_start,
             inner: SketchBlock {
+                spatial: callee.name.name == "sketch3d",
                 arguments,
                 body,
                 is_being_edited: false,

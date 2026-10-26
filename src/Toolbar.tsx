@@ -1,6 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
 import { ActionButton } from '@src/components/ActionButton'
+import { Sketch3dMode } from '@src/components/Sketch3dMode'
 import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
 import { LegacySketchModeBanner } from '@src/components/Announcements'
@@ -97,6 +98,7 @@ const Toolbar_ = memo(
     const keymap = app.registry.get(keymapService)
     const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
+    const [isSketch3dActive, setIsSketch3dActive] = useState(false)
     const platform = usePlatform()
     const executionService =
       app.registry.signal(projectSession).value?.executingEditor.value
@@ -158,9 +160,10 @@ const Toolbar_ = memo(
       platform
     )
     const disableSketchToolbar =
-      isSketchToolbarTransitioning(props.state) &&
-      (toolbarConfigurationName === 'sketching' ||
-        toolbarConfigurationName === 'sketchSolve')
+      isSketch3dActive ||
+      (isSketchToolbarTransitioning(props.state) &&
+        (toolbarConfigurationName === 'sketching' ||
+          toolbarConfigurationName === 'sketchSolve'))
 
     const showNonVisualConstraints =
       props.state.context.showNonVisualConstraints
@@ -429,6 +432,15 @@ const Toolbar_ = memo(
           disableSketchToolbar ? 'opacity-50' : ''
         }`}
       >
+        <Sketch3dMode
+          disabled={
+            props.isExecuting ||
+            disableAllButtons ||
+            toolbarConfigurationName === 'sketchSolve' ||
+            toolbarConfigurationName === 'sketching'
+          }
+          onActiveChange={setIsSketch3dActive}
+        />
         <ul
           ref={toolbarButtonsRef}
           className={`has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center ${

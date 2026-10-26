@@ -2620,6 +2620,11 @@ pub enum AngleConstraintMode {
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SketchConstraintKind {
+    Spatial {
+        name: String,
+        #[ts(type = "unknown")]
+        input: Box<crate::execution::KclValue>,
+    },
     Angle {
         line0: ConstrainableLine2d,
         line1: ConstrainableLine2d,
@@ -2735,6 +2740,7 @@ pub enum SketchConstraintKind {
 impl SketchConstraintKind {
     pub fn name(&self) -> &'static str {
         match self {
+            SketchConstraintKind::Spatial { .. } => "3D dimension",
             SketchConstraintKind::Angle { .. } => "angle",
             SketchConstraintKind::Distance { .. } => "distance",
             SketchConstraintKind::PointLineDistance { .. } => "distance",

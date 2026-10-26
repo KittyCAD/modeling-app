@@ -162,6 +162,7 @@ impl ObjectKindExt for ObjectKind {
             Self::Sketch(..) => "a Sketch",
             Self::Segment { .. } => "a Segment",
             Self::Constraint { .. } => "a Constraint",
+            Self::Sketch3d(_) => "a 3D Sketch",
         }
     }
 }

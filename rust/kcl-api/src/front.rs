@@ -11,6 +11,8 @@ use crate::artifact::PlaneName;
 
 mod sketch;
 pub use sketch::*;
+mod sketch3d;
+pub use sketch3d::*;
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
@@ -58,6 +60,7 @@ pub enum ObjectKind {
     Wall(Wall),
     Cap(Cap),
     Sketch(crate::front::sketch::Sketch),
+    Sketch3d(Sketch3d),
     // These need to be named since the nested types are also enums. ts-rs needs
     // a place to put the type tag.
     Segment {

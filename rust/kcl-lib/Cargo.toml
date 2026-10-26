@@ -78,6 +78,7 @@ libm = "0.2.16"
 miette = { workspace = true }
 mime_guess = "2.0.5"
 nalgebra-glm = "0.21.0"
+nalgebra = { version = "0.35.0", default-features = false, features = ["std"] }
 num-traits = "0.2"
 parse-display = "0.11.0"
 pyo3 = { workspace = true, optional = true }
