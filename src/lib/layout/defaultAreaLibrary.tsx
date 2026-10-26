@@ -1,9 +1,9 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
 import { ConnectionStream } from '@src/components/ConnectionStream'
-import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
+import { BodiesPane } from '@src/lib/featureTree/BodiesPane'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
-import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
+import { FeatureTreePane } from '@src/lib/featureTree/FeatureTreePane'
 import { EditorPane } from '@src/components/layout/areas/EditorPane'
 import { KclNamedViewsPane } from '@src/components/layout/areas/KclNamedViewsPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
@@ -14,7 +14,6 @@ import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
-import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
   EngineSceneViewExtensionOverlay,
   engineSceneStreamClassNamesValueSpec,
@@ -80,14 +79,7 @@ export const useDefaultAreaLibrary = () => {
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()
-      const rootLayout = structuredClone(layout.signal.value)
-      layout.set(
-        togglePaneLayoutNode({
-          rootLayout,
-          targetNodeId: DefaultLayoutPaneID.Code,
-          shouldExpand: true,
-        })
-      )
+      layout.openPane(DefaultLayoutPaneID.Code)
       kclManager.scrollToFirstErrorDiagnosticIfExists()
     },
     [kclManager, layout]

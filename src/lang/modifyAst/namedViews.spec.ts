@@ -3,6 +3,7 @@ import { assertParse, recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type RustContext from '@src/lib/rustContext'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
@@ -114,5 +115,105 @@ extrude001 = extrude(region001, length = 5mm)`
         (artifact) => artifact.type === 'namedView'
       )
     ).toBe(true)
+  })
+
+  it('edits name and camera while preserving framing expressions and exceptions', async () => {
+    const code = `${settings}
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+}
+region001 = region(segments = [sketch001.line1])
+extrude001 = extrude(region001, length = 5mm)
+exceptions = [extrude001]
+orientation = view::Orientation::Front
+projection = view::Projection::Perspective
+baseline = view::Visibility::Show
+
+view001 = view::named(
+  "Inspection view",
+  camera = view::oriented(
+    orientation,
+    target = [1 + 2, 3, 4],
+    distance = 200mm,
+    projection = projection,
+  ),
+  baseline = baseline,
+  except = exceptions,
+)`
+    const ast = assertParse(code, instance)
+    const execState = await enginelessExecutor(ast, rustContext)
+    const artifact = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
+    )
+    if (!artifact || artifact.type !== 'namedView') {
+      throw new Error('Expected a named view artifact')
+    }
+
+    const event = await prepareNamedViewEditCommand({
+      artifact,
+      // Missing preview artifacts must not erase the authored exceptions.
+      artifactGraph: new Map(),
+      ast,
+      code,
+      rustContext,
+    })
+    if (err(event)) throw event
+    const defaults = event.data.argDefaultValues
+    expect(defaults).toMatchObject({
+      name: 'Inspection view',
+      except: undefined,
+    })
+
+    const result = addNamedView({
+      ast,
+      artifactGraph: execState.artifactGraph,
+      ...defaults,
+      name: 'Updated view',
+      orientation: 'Top',
+      wasmInstance: instance,
+    })
+    if (err(result)) throw result
+
+    const updatedCode = recast(result.modifiedAst, instance)
+    if (err(updatedCode)) throw updatedCode
+    expect(updatedCode.match(/view::named/g)).toHaveLength(1)
+    expect(updatedCode).toContain('"Updated view"')
+    expect(updatedCode).toContain('    view::Orientation::Top,')
+    expect(updatedCode).toContain(
+      '    projection = view::Projection::Perspective,'
+    )
+    expect(updatedCode).toContain('  baseline = view::Visibility::Show,')
+    expect(updatedCode).toContain('target = [1 + 2, 3, 4]')
+    expect(updatedCode).toContain('distance = 200mm')
+    expect(updatedCode).toContain('except = exceptions')
+    await enginelessExecutor(result.modifiedAst, rustContext)
+  })
+
+  it('rejects editing a custom camera helper', async () => {
+    const code = `${settings}
+fn oriented(@orientation: view::Orientation) {
+  return view::oriented(orientation, distance = 123mm)
+}
+view001 = view::named("Inspection view", camera = oriented(view::Orientation::Front), baseline = view::Visibility::Show)`
+    const ast = assertParse(code, instance)
+    const execState = await enginelessExecutor(ast, rustContext)
+    const artifact = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
+    )
+    if (!artifact || artifact.type !== 'namedView') {
+      throw new Error('Expected a named view artifact')
+    }
+
+    const event = await prepareNamedViewEditCommand({
+      artifact,
+      artifactGraph: execState.artifactGraph,
+      ast,
+      code,
+      rustContext,
+    })
+    expect(event).toEqual(
+      new Error('Editing custom cameras is not supported yet.')
+    )
   })
 })

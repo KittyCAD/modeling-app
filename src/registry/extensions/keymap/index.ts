@@ -24,6 +24,7 @@ import {
   GLOBAL_COMMAND_SCOPES,
   getEffectiveCommandScopeSet,
   isCommandAvailable,
+  MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
   SETTINGS_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
@@ -39,6 +40,8 @@ import {
   type KeymapSource,
   keymapService,
   keymapValueSpec,
+  keymapEventOwnersValueSpec,
+  getKeymapItemWhen,
   matchKeymapKeystrokes,
   normalizeEventKey,
   normalizePersistedKeymap,
@@ -96,6 +99,14 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       },
     ],
     [
+      'zds.modelingDialog.submit',
+      {
+        scopes: [MODELING_DIALOG_FOCUSED_COMMAND_SCOPE],
+        run: () =>
+          getFocusedModelingDialogForm(document.activeElement)?.requestSubmit(),
+      },
+    ],
+    [
       'zds.settings.open',
       {
         scopes: GLOBAL_COMMAND_SCOPES,
@@ -136,11 +147,14 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
     CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
     EDITABLE_FOCUSED_COMMAND_SCOPE,
+    MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
   ])
 
   const syncFocusScopeFromEventTarget = (target: EventTarget | null) => {
     let nextFocusScope = CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
-    if (isEventFromFormControl(target)) {
+    if (getFocusedModelingDialogForm(target)) {
+      nextFocusScope = MODELING_DIALOG_FOCUSED_COMMAND_SCOPE
+    } else if (isEventFromFormControl(target)) {
       nextFocusScope = EDITABLE_FOCUSED_COMMAND_SCOPE
     } else if (isEventFromCodeEditor(target)) {
       nextFocusScope = CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
@@ -245,7 +259,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     if (source === 'global') {
       // A focused editable can be removed without another focusin event. Use
       // the event target to reconcile focus before checking availability.
-      syncFocusScopeFromEventTarget(event.target)
+      syncFocusScopeFromEventTarget(event.composedPath()[0] ?? event.target)
     }
 
     const chord = keyboardEventToKeymapChord(event)
@@ -258,6 +272,12 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       return false
     }
 
+    const owner =
+      source === 'global'
+        ? ctx.valueSpecs
+            .get(keymapEventOwnersValueSpec)
+            .find((owner) => owner.owns(event))
+        : undefined
     const commandSystem = ctx.services.optional(commandSystemService)
     const registeredCommands =
       commandSystem?.actor.getSnapshot().context.commands ?? []
@@ -278,6 +298,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
         commandsByKey.get(item.command)
       return (
         command !== undefined &&
+        (!owner || getKeymapItemWhen(item).includes(owner.scope)) &&
         isCommandAvailable(command, effectiveCommandScopes)
       )
     }
@@ -468,7 +489,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
   }
 
   const handleGlobalFocusIn = (event: FocusEvent) => {
-    syncFocusScopeFromEventTarget(event.target)
+    syncFocusScopeFromEventTarget(event.composedPath()[0] ?? event.target)
   }
 
   const handleGlobalPointerDown = (event: PointerEvent) => {
@@ -588,8 +609,8 @@ function shouldIgnoreKeyboardEvent(
   }
 
   return (
-    isEventFromFormControl(event.target) ||
-    isEventFromContentEditableTarget(event.target)
+    isEventFromFormControl(event.composedPath()[0] ?? event.target) ||
+    isEventFromContentEditableTarget(event.composedPath()[0] ?? event.target)
   )
 }
 
@@ -611,6 +632,18 @@ function isEventFromFormControl(target: EventTarget | null) {
     target instanceof HTMLTextAreaElement ||
     target instanceof HTMLSelectElement
   )
+}
+
+function getFocusedModelingDialogForm(target: EventTarget | null) {
+  const selection =
+    target === document.body
+      ? document.querySelector('[data-modeling-dialog-selection="true"]')
+      : target
+  return selection instanceof HTMLButtonElement &&
+    selection.dataset.modelingDialogSelection === 'true' &&
+    !selection.disabled
+    ? selection.form
+    : null
 }
 
 function shouldPreserveFocusScope(target: EventTarget | null) {

@@ -50,7 +50,7 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
-import { getOperationKey } from '@src/lib/featureTreeOperationTree'
+import { getOperationKey } from '@src/lib/featureTree/featureTreeOperationTree'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { markdownMessageElement } from '@src/lib/markdown'
 import { markOnce } from '@src/lib/performance'
@@ -187,7 +187,7 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
+import type { ExecutingEditor } from '@src/registry/contracts/projectSession'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -443,7 +443,6 @@ export class KclManager extends File {
         fileName: getStringAfterLastSeparator(this.path),
         projectRef: this.modelingProjectRef,
         store: {
-          useSketchSolveMode: modeling.useSketchSolveMode,
           cameraProjection: modeling.cameraProjection,
           defaultUnit: modeling.defaultUnit,
         },
@@ -527,7 +526,7 @@ export class KclManager extends File {
   get hasEditsSinceLastExecutionSignal() {
     return this._hasEditsSinceLastExecution
   }
-  get executingEditorService(): ExecutingEditorService {
+  get execution(): ExecutingEditor {
     return {
       code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
@@ -582,7 +581,9 @@ export class KclManager extends File {
 
   private _execState = signal<ExecState>(emptyExecState())
   /**
-   * Counts the executions that rebuilt the engine scene.
+   * The engine scene generation from the last execution: the number of runs
+   * that changed the engine scene. Runs answered from the cache leave it
+   * unchanged.
    *
    * Sketch-solve syncs and mock executions replace `execState` without sending
    * an engine command.  A consumer that must act only on a rebuilt scene
@@ -1148,7 +1149,6 @@ export class KclManager extends File {
       ast: parseResult.program,
       sourceCode: code,
       instance,
-      rustContext: this.rustContext,
       legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
       edgeRefactorMetadata: execState.edgeRefactorMetadata,
       directTagFilletMetadata: execState.directTagFilletMetadata,
@@ -2293,7 +2293,6 @@ export class KclManager extends File {
             ast,
             sourceCode: this.code,
             instance: await this.systemDeps.wasmInstancePromise,
-            rustContext: this.rustContext,
             legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
             edgeRefactorMetadata: execState.edgeRefactorMetadata,
             directTagFilletMetadata: execState.directTagFilletMetadata,
@@ -2356,7 +2355,11 @@ export class KclManager extends File {
       this.ast = structuredClone(ast)
       // updateArtifactGraph relies on updated executeState/variables
       await this.updateArtifactGraph(execState.artifactGraph)
-      this._engineSceneGeneration.value += 1
+      // Failed runs report their generation too. It is null only when no run
+      // reached the engine, which leaves the scene as it was.
+      if (execState.engineSceneGeneration !== null) {
+        this._engineSceneGeneration.value = execState.engineSceneGeneration
+      }
       this.dispatchUpdateOperations(
         getOperationsForCurrentFile({
           operationsByModule: execState.operations,

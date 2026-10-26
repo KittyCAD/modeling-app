@@ -111,7 +111,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
     }
 }
 
-/// Parse patternTransform's arguments. Shared by both executors.
+/// Parse patternTransform's arguments.
 pub(crate) fn pattern_transform_parse_args(
     args: &Args,
     exec_state: &mut ExecState,
@@ -128,7 +128,7 @@ pub(crate) fn pattern_transform_parse_args(
     Ok((geometry, instances, transform, use_original))
 }
 
-/// Parse patternTransform2d's arguments. Shared by both executors.
+/// Parse patternTransform2d's arguments.
 pub(crate) fn pattern_transform_2d_parse_args(
     args: &Args,
     exec_state: &mut ExecState,
@@ -140,8 +140,7 @@ pub(crate) fn pattern_transform_2d_parse_args(
     Ok((sketches, instances, transform, use_original))
 }
 
-/// The "at least 1 instance" check both executors run before the callback
-/// loop.
+/// Check for at least one instance before the callback loop.
 pub(crate) fn pattern_check_instances(instances: u32, source_range: SourceRange) -> Result<(), KclError> {
     if instances < 1 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -152,8 +151,7 @@ pub(crate) fn pattern_check_instances(instances: u32, source_range: SourceRange)
     Ok(())
 }
 
-/// Build the per-repetition callback arguments for patternTransform. Shared
-/// by both executors.
+/// Build the per-repetition callback arguments for patternTransform.
 pub(crate) fn transform_callback_args(
     i: u32,
     source_range: SourceRange,
@@ -177,8 +175,7 @@ pub(crate) fn transform_callback_args(
     )
 }
 
-/// Error when a transform callback produces no value. Shared by both
-/// executors.
+/// Error when a transform callback produces no value.
 pub(crate) fn transform_missing_value_error(source_range: SourceRange) -> KclError {
     KclError::new_semantic(KclErrorDetails::new(
         "Transform function must return a value".to_string(),
@@ -187,7 +184,7 @@ pub(crate) fn transform_missing_value_error(source_range: SourceRange) -> KclErr
 }
 
 /// Unpack a transform callback's returned value into engine transforms: the
-/// evaluation-free tail of make_transform, shared by both executors.
+/// evaluation-free tail of make_transform.
 pub(crate) fn transforms_from_callback_value<T: GeometryTrait>(
     transform_fn_return: KclValue,
     source_range: SourceRange,
