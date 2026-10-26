@@ -499,6 +499,7 @@ export const commandBarMachine = setup({
             context.selectedCommand &&
             (argConfig?.inputType === 'selection' ||
               argConfig?.inputType === 'string' ||
+              argConfig?.inputType === 'text' ||
               argConfig?.inputType === 'options') &&
             argConfig?.validation
           ) {
@@ -541,6 +542,33 @@ export const commandBarMachine = setup({
           let argValue = typeof arg === 'function' ? arg(input) : arg
 
           try {
+            // Recheck supplied text when editing another argument. Missing
+            // values are handled below as input steps, without an error toast.
+            if (
+              !isModelingDialogCommand(input.selectedCommand) &&
+              (argConfig.inputType === 'text' ||
+                argConfig.inputType === 'string') &&
+              argConfig.validation &&
+              argValue !== undefined
+            ) {
+              const result = await argConfig.validation({
+                data: { [argName]: argValue },
+                context: input,
+                machineContext:
+                  input.selectedCommand?.machineActor?.getSnapshot().context,
+              })
+              if (result !== true) {
+                const message =
+                  typeof result === 'string'
+                    ? result
+                    : `Unable to validate ${argName}.`
+                toast.error(message)
+                return Promise.reject({
+                  message,
+                  arg: { ...argConfig, name: argName },
+                })
+              }
+            }
             const isRequired =
               typeof argConfig.required === 'function'
                 ? argConfig.required(input)
