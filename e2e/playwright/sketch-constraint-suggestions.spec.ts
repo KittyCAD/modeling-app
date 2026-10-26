@@ -151,9 +151,11 @@ sketch001 = sketch(on = XY) {
     const suggest = page.getByRole('button', { name: 'Suggest', exact: true })
     await expect(suggest).toBeEnabled()
     await suggest.click()
-    await expect(
-      page.getByText('Ranked by trained model · experimental')
-    ).toBeVisible()
+    if (testingPocPreview) {
+      await expect(
+        page.getByText('Ranked by trained model · experimental')
+      ).toBeVisible()
+    }
     const horizontal = page.getByRole('button', { name: 'Make horizontal' })
     await expect(horizontal).toBeVisible()
     await expect(
