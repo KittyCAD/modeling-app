@@ -14,6 +14,7 @@ import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelect
 import Tooltip from '@src/components/Tooltip'
 import type { KclManager } from '@src/lang/KclManager'
 import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
+import type { CommandInputValidationState } from '@src/lib/commandTypes'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { getSelectionTypeDisplayText, isSelections } from '@src/lib/selections'
 import { isErr, trap } from '@src/lib/trap'
@@ -71,6 +72,13 @@ export default function ModelingDialog({
   })
   const save = (name: string, value: unknown) =>
     setValues((previous) => ({ ...previous, [name]: value }))
+  const updateValidation = (name: string, next: CommandInputValidationState) =>
+    setValidity((previous) => {
+      const canSubmit = next.canSubmit && !next.isChecking
+      return previous[name] === canSubmit
+        ? previous
+        : { ...previous, [name]: canSubmit }
+    })
   const selection = useDialogSelection({
     context: state.context,
     fields,
@@ -196,10 +204,8 @@ export default function ModelingDialog({
               controls={kclManager.sceneInfra.camControls}
               saved={hasValue(value)}
               captured={isRecord(value) && 'look' in value}
-              onCapture={(camera) => save(name, camera)}
-              onValidationChange={(canSubmit) =>
-                setValidity((previous) => ({ ...previous, [name]: canSubmit }))
-              }
+              onChange={(camera) => save(name, camera)}
+              onValidationChange={(next) => updateValidation(name, next)}
             />
             {description}
           </div>
@@ -231,14 +237,7 @@ export default function ModelingDialog({
             }
             selectionRanges={selection.selectionRanges}
             onChange={(change) => save(name, change.value)}
-            onValidationChange={(next) =>
-              setValidity((previous) => {
-                const canSubmit = next.canSubmit && !next.isChecking
-                return previous[name] === canSubmit
-                  ? previous
-                  : { ...previous, [name]: canSubmit }
-              })
-            }
+            onValidationChange={(next) => updateValidation(name, next)}
           />
         )
       case 'selection':

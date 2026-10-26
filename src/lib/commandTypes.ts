@@ -47,6 +47,11 @@ export interface KclExpressionWithVariable extends KclExpression {
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
+export type CommandInputValidationState = {
+  canSubmit: boolean
+  isChecking: boolean
+  message?: string
+}
 type CommandStatus =
   | 'active'
   | 'development'

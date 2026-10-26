@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { ActionButton } from '@src/components/ActionButton'
 import type { NamedViewCameraSnapshot } from '@src/lang/modifyAst/namedViews'
+import type { CommandInputValidationState } from '@src/lib/commandTypes'
 import { captureNamedViewCamera } from '@src/lib/kclNamedViewCamera'
 import { trap } from '@src/lib/trap'
 
@@ -10,29 +11,33 @@ export function CommandCameraInput({
   controls,
   captured = false,
   saved = false,
-  onCapture,
+  onChange,
   onValidationChange,
 }: {
   id?: string
   controls: Parameters<typeof captureNamedViewCamera>[0]
   captured?: boolean
   saved?: boolean
-  onCapture: (camera: NamedViewCameraSnapshot) => void
-  onValidationChange?: (canSubmit: boolean) => void
+  onChange: (camera: NamedViewCameraSnapshot) => void
+  onValidationChange?: (state: CommandInputValidationState) => void
 }) {
   const [capturing, setCapturing] = useState(false)
 
   async function capture() {
+    let canSubmit = saved || captured
     setCapturing(true)
-    onValidationChange?.(false)
+    onValidationChange?.({ canSubmit, isChecking: true })
     try {
       const camera = await captureNamedViewCamera(controls)
-      if (!trap(camera)) onCapture(camera)
+      if (!trap(camera)) {
+        canSubmit = true
+        onChange(camera)
+      }
     } catch (error) {
       trap(error)
     } finally {
       setCapturing(false)
-      onValidationChange?.(true)
+      onValidationChange?.({ canSubmit, isChecking: false })
     }
   }
 

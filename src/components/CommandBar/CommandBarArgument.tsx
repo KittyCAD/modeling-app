@@ -85,7 +85,7 @@ function ArgumentInput({
           <CommandCameraInput
             controls={executingEditor.sceneInfra.camControls}
             saved={Boolean(argumentsToSubmit[arg.name])}
-            onCapture={onSubmit}
+            onChange={onSubmit}
           />
         </div>
       ) : (
