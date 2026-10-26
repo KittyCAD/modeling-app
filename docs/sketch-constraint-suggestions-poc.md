@@ -10,6 +10,22 @@ Selecting geometry starts a check after
 350 ms; **Suggest** refreshes it manually. Click a suggestion to apply it.
 Nothing is applied without that click.
 
+## Intended sketch-mode interaction
+
+There are two independent suggestion flows in sketch mode:
+
+1. Selecting a line or other sketch entity shows constraints for that
+   selection. Accepting one applies the constraint to the current sketch.
+2. Entering sketch mode or changing its geometry can show **Sketch ideas**
+   without any selection. Each idea previews geometry that would be added to
+   the current sketch. Accepting one adds that geometry with one click.
+
+Neither flow should apply an edit merely because a suggestion appeared.
+After a sketch edit, ideas must be recomputed from the new sketch state; an
+idea prepared for an older state must not be applied. The existing prototype
+implements this interaction for the narrow square-to-circle case below. It
+does not yet generate general design continuations from the rest of a model.
+
 ## Sketch continuation interaction prototype
 
 The **Sketch ideas** card is a separate experiment for adding geometry to the
