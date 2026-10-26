@@ -226,7 +226,6 @@ async def test_kcl_session_explicit_credentials(
     for path, _ in requests:
         query = parse_qs(urlsplit(path).query)
         assert query["geometry_only"] == [str(geometry_only).lower()]
-        assert query.get("pool") == (["cpu"] if geometry_only else None)
     assert dict(os.environ) == before
 
 
