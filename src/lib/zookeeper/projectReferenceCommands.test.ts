@@ -160,6 +160,7 @@ function fixture(
       request_id: string
       status: string
       result?: Record<string, unknown>
+      project_context?: Record<string, string>
       error?: string
     }
   }
@@ -308,6 +309,10 @@ describe('Zookeeper project reference commands', () => {
     expect(result).toMatchObject({
       status: 'succeeded',
       result: { title: 'current' },
+      project_context: {
+        'main.kcl': 'wheel = circle(10)',
+        'parts/wheel.kcl': '',
+      },
     })
     expect(copyIntoCurrentProject).toHaveBeenCalledWith(
       [

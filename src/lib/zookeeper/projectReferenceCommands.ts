@@ -46,6 +46,11 @@ type ClientCommandRequest = {
   arguments: Record<string, unknown>
 }
 
+type CommandOutcome = {
+  result: unknown
+  projectContext?: Record<string, string>
+}
+
 export interface ProjectReferenceCommandTransport {
   advertise(ws: WebSocket): void
   handleRequest(ws: WebSocket, message: unknown): boolean
@@ -223,7 +228,7 @@ export function createProjectReferenceCommands(deps: {
   const remoteEntries = new Map<string, HomeProjectEntry>()
   const duplicates = new Map<
     string,
-    { signature: string; token: string; task: Promise<unknown> }
+    { signature: string; token: string; task: Promise<CommandOutcome> }
   >()
   const revision = 1
   let remoteCatalogToken: string | undefined
@@ -889,11 +894,19 @@ export function createProjectReferenceCommands(deps: {
           new ProjectReferenceCommandError('Project session changed.')
         )
       }
-      return deps.copyIntoCurrentProject(
+      // Capture the exact KCL that will be copied before mutating the project.
+      const projectContext = Object.fromEntries(
+        files.map(({ path, data }) => [
+          path,
+          new TextDecoder('utf-8', { fatal: true }).decode(data),
+        ])
+      )
+      const result = await deps.copyIntoCurrentProject(
         files,
         getHomeProjectDisplayName(entry),
         entry.localProjectPath
       )
+      return { result, projectContext }
     }
     const result = await actions.duplicate(entry, { notify: false })
     if (!result) {
@@ -901,10 +914,10 @@ export function createProjectReferenceCommands(deps: {
         new ProjectReferenceCommandError('Project could not be duplicated.')
       )
     }
-    return { title: result.title }
+    return { result: { title: result.title } }
   }
 
-  function execute(request: ClientCommandRequest): Promise<unknown> {
+  function execute(request: ClientCommandRequest): Promise<CommandOutcome> {
     if (request.catalog_revision !== revision) {
       return Promise.reject(
         new ProjectReferenceCommandError('The command catalog changed.')
@@ -912,11 +925,11 @@ export function createProjectReferenceCommands(deps: {
     }
     switch (request.command_id as CommandId) {
       case 'projects.search':
-        return Promise.resolve(search(request.arguments))
+        return search(request.arguments).then((result) => ({ result }))
       case 'projects.list_files':
-        return listFiles(request.arguments)
+        return listFiles(request.arguments).then((result) => ({ result }))
       case 'projects.read_file':
-        return readFile(request.arguments)
+        return readFile(request.arguments).then((result) => ({ result }))
       case 'projects.duplicate':
         return duplicate(request.arguments)
       default:
@@ -940,7 +953,7 @@ export function createProjectReferenceCommands(deps: {
         return true
       }
       const apiToken = deps.getApiToken()
-      let task: Promise<unknown>
+      let task: Promise<CommandOutcome>
       if (request.command_id === 'projects.duplicate') {
         const signature = `${request.catalog_revision}:${request.command_id}:${JSON.stringify(request.arguments)}`
         const previous = duplicates.get(request.request_id)
@@ -971,7 +984,7 @@ export function createProjectReferenceCommands(deps: {
         task = execute(request)
       }
       void task.then(
-        (result) => {
+        ({ result, projectContext }) => {
           if (
             ws.readyState !== WebSocket.OPEN ||
             (activeSocket && activeSocket !== ws)
@@ -997,6 +1010,7 @@ export function createProjectReferenceCommands(deps: {
               catalog_revision: request.catalog_revision,
               status: 'succeeded',
               result,
+              ...(projectContext ? { project_context: projectContext } : {}),
             })
           )
         },
