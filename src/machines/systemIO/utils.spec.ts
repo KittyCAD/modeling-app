@@ -382,6 +382,69 @@ describe('System IO Utils', () => {
     }
   })
 
+  it('excludes Git metadata from Zookeeper uploads before traversing it', async () => {
+    const projectPath = `/tmp/opencode/zookeeper-project-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    await fsZds.mkdir(fsZds.join(projectPath, '.git'), { recursive: true })
+    await fsZds.mkdir(fsZds.join(projectPath, 'parts', '.GiT'), {
+      recursive: true,
+    })
+    await fsZds.writeFile(mainPath, new TextEncoder().encode('cube()'))
+    await fsZds.writeFile(
+      fsZds.join(projectPath, '.gitignore'),
+      new TextEncoder().encode('dist/\n')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, '.git', 'COMMIT_EDITMSG'),
+      new TextEncoder().encode('commit message')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'parts', '.GiT', 'config'),
+      new TextEncoder().encode('git config')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'parts', 'bracket.kcl'),
+      new TextEncoder().encode('bracket = 1')
+    )
+
+    try {
+      const projectFiles = await collectProjectFilesWithFileOperations({
+        fileOperations: {
+          ...testFileOperations,
+          stat: async (path) => {
+            if (fsZds.basename(path).toLowerCase() === '.git') {
+              throw new Error('Git metadata should be skipped before stat')
+            }
+            return testFileOperations.stat(path)
+          },
+        },
+        selectedFileContents: 'cube()',
+        selectedFilePath: mainPath,
+        fileNames: {},
+        projectContext: {
+          name: 'zookeeper-project',
+          path: projectPath,
+          children: [],
+          metadata: null,
+          kcl_file_count: 2,
+          directory_count: 1,
+          default_file: mainPath,
+          readWriteAccess: true,
+        },
+        excludeGitMetadata: true,
+        skipUnreadableFiles: false,
+      })
+
+      expect(projectFiles.map((file) => file.relPath).sort()).toEqual([
+        '.gitignore',
+        'main.kcl',
+        'parts/bracket.kcl',
+      ])
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it.each([undefined, false])(
     'handles a file removed after directory listing with skipUnreadableFiles=%s',
     async (skipUnreadableFiles) => {

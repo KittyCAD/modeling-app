@@ -511,6 +511,7 @@ class SessionController implements ZookeeperSessionController {
           selectedFilePath: editorPath,
           fileNames: kclManager.execState.filenames,
           projectContext: project,
+          excludeGitMetadata: true,
         }),
         kclManager.wasmInstancePromise,
       ])
@@ -776,6 +777,7 @@ class SessionController implements ZookeeperSessionController {
       selectedFilePath: editorPath,
       fileNames: kclManager.execState.filenames,
       projectContext: project,
+      excludeGitMetadata: true,
     })
       .then((projectFiles) => {
         if (

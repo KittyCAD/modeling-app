@@ -449,6 +449,7 @@ export const sharedBulkDeleteWorkflow = async ({
     selectedFileContents: '',
     fileNames: [],
     projectContext: project,
+    excludeGitMetadata: true,
   })
 
   const requestedFilesToDelete = new Set(

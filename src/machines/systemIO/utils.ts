@@ -288,6 +288,7 @@ export const collectProjectFiles = async (args: {
   selectedFilePath?: string
   warnIfProjectExceeds64Mb?: boolean
   skipUnreadableFiles?: boolean
+  excludeGitMetadata?: boolean
 }) => {
   let projectFiles: FileMeta[] = [
     {
@@ -410,6 +411,9 @@ export const collectProjectFiles = async (args: {
     ) => {
       const entries = await args.fileOperations.readDirectory(path)
       for (const entry of entries) {
+        if (args.excludeGitMetadata && entry.toLowerCase() === '.git') {
+          continue
+        }
         const absolutePathToFileNameWithExtension = fsZds.join(path, entry)
         const relativePath = (
           fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
