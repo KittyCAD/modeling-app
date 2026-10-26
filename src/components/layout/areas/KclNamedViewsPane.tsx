@@ -1,5 +1,6 @@
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import type { ArtifactCameraLook } from '@rust/kcl-lib/bindings/Artifact'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
 import { ActionButton } from '@src/components/ActionButton'
@@ -62,6 +63,15 @@ function moduleName(path: ModulePath | undefined): string | undefined {
   return file.endsWith(FILE_EXT) ? file.slice(0, -FILE_EXT.length) : file
 }
 
+function cameraLookLabel(look: ArtifactCameraLook): string {
+  switch (look.type) {
+    case 'oriented':
+      return capitaliseFC(look.orientation)
+    case 'directed':
+      return 'Directed'
+  }
+}
+
 /**
  * Returns one row per view, `Default View` first.
  *
@@ -81,9 +91,7 @@ export function viewRows(views: KclNamedView[]): ViewRow[] {
     const collides = (nameCounts.get(name) ?? 0) > 1
     const { camera } = view.artifact
     const details = [
-      camera.look.type === 'oriented'
-        ? capitaliseFC(camera.look.orientation)
-        : 'Directed',
+      cameraLookLabel(camera.look),
       camera.distance === null ? undefined : `${roundOff(camera.distance)}mm`,
       capitaliseFC(camera.projection),
     ]

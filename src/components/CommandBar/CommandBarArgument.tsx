@@ -1,5 +1,6 @@
 import CommandArgOptionInput from '@src/components/CommandBar/CommandArgOptionInput'
 import CommandBarBasicInput from '@src/components/CommandBar/CommandBarBasicInput'
+import CommandBarCameraInput from '@src/components/CommandBar/CommandBarCameraInput'
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import CommandBarKclInput from '@src/components/CommandBar/CommandBarKclInput'
@@ -8,7 +9,6 @@ import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelec
 import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
 import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
-import { CommandCameraInput } from '@src/components/CommandBar/CommandCameraInput'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
 
@@ -75,19 +75,16 @@ function ArgumentInput({
   onSubmit: (event: any) => void
 }) {
   const app = useApp()
-  const { argumentsToSubmit } = app.commands.useState().context
   const executingEditor = app.project?.executingEditor.value
   // @ts-ignore
   switch (arg.inputType) {
     case 'camera':
       return executingEditor ? (
-        <div className="p-4">
-          <CommandCameraInput
-            controls={executingEditor.sceneInfra.camControls}
-            saved={Boolean(argumentsToSubmit[arg.name])}
-            onChange={onSubmit}
-          />
-        </div>
+        <CommandBarCameraInput
+          arg={arg}
+          onSubmit={onSubmit}
+          executingEditor={executingEditor}
+        />
       ) : (
         <NoExecutingEditorWarning />
       )
