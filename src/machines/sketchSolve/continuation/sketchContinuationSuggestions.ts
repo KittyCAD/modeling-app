@@ -1,7 +1,9 @@
 import type { ApiObject, SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import {
+  getArcPoints,
   getLinePoints,
+  isCircleSegment,
   isConstruction,
   isLineSegment,
   isOwnedLineSegment,
@@ -15,7 +17,9 @@ export type SketchContinuationSuggestion = {
   label: string
   description: string
   segment: SegmentCtor
-  preview: { x: number; y: number; radius: number }
+  preview:
+    | { kind: 'square'; x: number; y: number; radius: number }
+    | { kind: 'circle'; originalRadius: number; addedRadius: number }
 }
 
 function near(a: number, b: number, tolerance: number) {
@@ -90,7 +94,7 @@ function circle(
   }
 }
 
-/** First continuation experiment: offer explicit, reversible edits for a square. */
+/** Offer explicit, reversible edits for the first supported sketch profiles. */
 export function suggestSketchContinuations(
   sketchId: number,
   objects: readonly ApiObject[],
@@ -101,6 +105,40 @@ export function suggestSketchContinuations(
   const geometry = sketch.kind.segments
     .map((id) => objects[id])
     .filter((object) => object && !isPointSegment(object))
+  if (geometry.length === 1 && isCircleSegment(geometry[0])) {
+    if (isConstruction(geometry[0])) return []
+    const points = getArcPoints(geometry[0], [...objects])
+    if (!points) return []
+    const radius = Math.hypot(
+      points.start[0] - points.center[0],
+      points.start[1] - points.center[1]
+    )
+    if (!Number.isFinite(radius * 1.5) || radius <= 0) return []
+    return [
+      {
+        id: 'inner-concentric-circle',
+        label: 'Add inner concentric circle',
+        description: 'A smaller circle inside the existing circle',
+        segment: circle(points.center, radius * 0.5, units),
+        preview: {
+          kind: 'circle',
+          originalRadius: 30,
+          addedRadius: 15,
+        },
+      },
+      {
+        id: 'outer-concentric-circle',
+        label: 'Add outer concentric circle',
+        description: 'A larger circle around the existing circle',
+        segment: circle(points.center, radius * 1.5, units),
+        preview: {
+          kind: 'circle',
+          originalRadius: 22,
+          addedRadius: 33,
+        },
+      },
+    ]
+  }
   if (
     geometry.length !== 4 ||
     !geometry.every(isLineSegment) ||
@@ -134,14 +172,14 @@ export function suggestSketchContinuations(
       label: 'Add centered circle',
       description: 'A circle at the middle of the square',
       segment: circle(center, size * 0.2, units),
-      preview: { x: 50, y: 50, radius: 16 },
+      preview: { kind: 'square', x: 50, y: 50, radius: 16 },
     },
     {
       id: 'offset-circle',
       label: 'Add offset circle',
       description: 'A smaller circle near one corner',
       segment: circle(offset, size * 0.1, units),
-      preview: { x: 30, y: 70, radius: 8 },
+      preview: { kind: 'square', x: 30, y: 70, radius: 8 },
     },
   ]
 }

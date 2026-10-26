@@ -23,7 +23,7 @@ There are two independent suggestion flows in sketch mode:
 Neither flow should apply an edit merely because a suggestion appeared.
 After a sketch edit, ideas must be recomputed from the new sketch state; an
 idea prepared for an older state must not be applied. The existing prototype
-implements this interaction for the narrow square-to-circle case below. It
+implements this interaction for the narrow square and circle cases below. It
 does not yet generate general design continuations from the rest of a model.
 
 ## Sketch continuation interaction prototype
@@ -33,11 +33,15 @@ current sketch. It appears automatically when sketch mode opens on a simple
 four-line square, without selecting an edge. It previews two alternatives:
 a centered circle or a smaller offset circle. Clicking one adds a real circle
 to that sketch through the normal Rust sketch mutation and checkpoint path.
+For a sketch with a single circle, the card offers a smaller or larger
+concentric circle, again without a selection. This is a geometry template,
+not a learned design recommendation.
 The card disappears after the geometry is added.
 When a drawing tool is still active, accepting an idea closes the tool before
 adding the circle.
-The circle position is currently a numeric placement; it is not constrained to
-remain centered if the square is resized later.
+The circle positions are currently numeric placements; they are not
+constrained to remain centered or concentric if the original geometry moves
+or is resized later.
 The **Sketch ideas** control remains visible on other sketches. Opening it
 explains that this prototype has no continuation candidate for that geometry.
 
@@ -46,7 +50,7 @@ The trained constraint ranker below does not generate or rank them. A model
 that proposes useful next geometry needs examples of a sketch *before* an
 edit, the continuation a designer chose, other plausible options, and cases
 where no suggestion was wanted. The existing constraint corpus labels do not
-provide those decisions. The four-line square case is intentionally narrow
+provide those decisions. These square and circle cases are intentionally narrow
 until there is a continuation benchmark that measures design intent and
 one-click apply success.
 

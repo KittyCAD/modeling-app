@@ -105,6 +105,98 @@ sketch001 = sketch(on = XY) {
     await editor.expectEditor.toContain('circle(')
   })
 
+  test('offers an idea after drawing a circle without selecting it', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await editor.openPane()
+    await editor.replaceCode(
+      '',
+      '@settings(kclVersion = 3.0)\nsketch001 = sketch(on = XY) {}'
+    )
+    await scene.settled()
+
+    await toolbar.openFeatureTreePane()
+    await expect(page.getByText('Building feature tree')).not.toBeVisible({
+      timeout: 10_000,
+    })
+    const sketchOperation = await toolbar.getFeatureTreeOperation(
+      'sketch001',
+      0
+    )
+    await sketchOperation.dblclick()
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+    await toolbar.closeFeatureTreePane()
+
+    await toolbar.circleBtn.click()
+    const stream = await scene.streamWrapper.boundingBox()
+    if (!stream) throw new Error('Sketch viewport is missing')
+    const centerX = stream.x + stream.width / 2
+    const centerY = stream.y + stream.height / 2
+    await page.mouse.click(centerX, centerY)
+    await page.mouse.move(centerX + 60, centerY)
+    await page.mouse.click(centerX + 60, centerY)
+
+    const innerCircle = page.getByRole('button', {
+      name: 'Add inner concentric circle',
+    })
+    await expect(innerCircle).toBeVisible()
+    await innerCircle.click()
+    await expect
+      .poll(
+        async () => (await editor.getCurrentCode()).match(/circle\(/g)?.length
+      )
+      .toBe(2)
+  })
+
+  test('offers an idea when entering an existing circle sketch', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    const code = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle(center = [var 0mm, var 0mm], start = [var 10mm, var 0mm])
+}
+`
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await editor.openPane()
+    await editor.replaceCode('', code)
+    await scene.settled()
+
+    await toolbar.openFeatureTreePane()
+    await expect(page.getByText('Building feature tree')).not.toBeVisible({
+      timeout: 10_000,
+    })
+    const sketchOperation = await toolbar.getFeatureTreeOperation(
+      'sketch001',
+      0
+    )
+    await sketchOperation.dblclick()
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+
+    const innerCircle = page.getByRole('button', {
+      name: 'Add inner concentric circle',
+    })
+    await expect(innerCircle).toBeVisible()
+    await innerCircle.click()
+    await expect
+      .poll(
+        async () => (await editor.getCurrentCode()).match(/circle\(/g)?.length
+      )
+      .toBe(2)
+  })
+
   test('previews and applies a horizontal constraint to the selected line', async ({
     page,
     homePage,

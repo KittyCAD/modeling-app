@@ -46,6 +46,28 @@ function squareObjects(withCircle = false) {
     .new_graph.objects
 }
 
+function circleObjects(radius = 10) {
+  const center = createPointApiObject({ id: 1, x: 5, y: 7 })
+  const start = createPointApiObject({ id: 2, x: 5 + radius, y: 7 })
+  const circle = createCircleApiObject({ id: 3, center: 1, start: 2 })
+  const sketch: ApiObject = {
+    id: 10,
+    kind: {
+      type: 'Sketch',
+      args: { on: { default: 'xy' } },
+      plane: 0,
+      segments: [1, 2, 3],
+      constraints: [],
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  }
+  return createSceneGraphDelta([center, start, circle, sketch]).new_graph
+    .objects
+}
+
 describe('sketch continuation suggestions', () => {
   it('offers one-click geometry after a square without any edge selection', () => {
     const ideas = suggestSketchContinuations(10, squareObjects(), 'Mm')
@@ -61,6 +83,36 @@ describe('sketch continuation suggestions', () => {
       },
       start: { x: { value: 9, units: 'Mm' } },
     })
+  })
+
+  it('offers concentric circles after a single circle without a selection', () => {
+    const ideas = suggestSketchContinuations(10, circleObjects(), 'Mm')
+    expect(ideas.map((idea) => idea.label)).toEqual([
+      'Add inner concentric circle',
+      'Add outer concentric circle',
+    ])
+    expect(ideas.map((idea) => idea.segment)).toMatchObject([
+      {
+        type: 'Circle',
+        center: {
+          x: { value: 5, units: 'Mm' },
+          y: { value: 7, units: 'Mm' },
+        },
+        start: { x: { value: 10, units: 'Mm' } },
+      },
+      {
+        type: 'Circle',
+        center: {
+          x: { value: 5, units: 'Mm' },
+          y: { value: 7, units: 'Mm' },
+        },
+        start: { x: { value: 20, units: 'Mm' } },
+      },
+    ])
+  })
+
+  it('does not suggest a concentric circle for zero-radius geometry', () => {
+    expect(suggestSketchContinuations(10, circleObjects(0), 'Mm')).toEqual([])
   })
 
   it('does not repeat the idea after geometry is added', () => {

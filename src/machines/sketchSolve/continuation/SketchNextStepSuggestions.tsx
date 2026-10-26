@@ -91,7 +91,7 @@ export function SketchNextStepSuggestions({
             <p className="text-xs m-0">
               {hasDraftGeometry
                 ? 'Finish drawing to see ideas.'
-                : 'No ideas for this sketch yet. This experiment currently recognizes simple four-line squares.'}
+                : 'No ideas for this sketch yet. This experiment currently recognizes simple four-line squares and single circles.'}
             </p>
           ) : (
             <>
@@ -133,19 +133,38 @@ export function SketchNextStepSuggestions({
                       role="img"
                       aria-label={idea.description}
                     >
-                      <rect
-                        x="10"
-                        y="10"
-                        width="80"
-                        height="80"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      />
+                      {idea.preview.kind === 'square' ? (
+                        <rect
+                          x="10"
+                          y="10"
+                          width="80"
+                          height="80"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
+                      ) : (
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r={idea.preview.originalRadius}
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
+                      )}
                       <circle
-                        cx={idea.preview.x}
-                        cy={idea.preview.y}
-                        r={idea.preview.radius}
+                        cx={
+                          idea.preview.kind === 'square' ? idea.preview.x : 50
+                        }
+                        cy={
+                          idea.preview.kind === 'square' ? idea.preview.y : 50
+                        }
+                        r={
+                          idea.preview.kind === 'square'
+                            ? idea.preview.radius
+                            : idea.preview.addedRadius
+                        }
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
