@@ -463,7 +463,7 @@ region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 100)`
 
     // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
-    const testPoint = { x: 564, y: 364 }
+    const testPoint = { x: 564, y: 371 }
     const [clickOnEdge] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
 
     await context.addInitScript((initialCode) => {
@@ -479,6 +479,7 @@ extrude001 = extrude(region001, length = 100)`
       await modelingDialog.options(/^mode\b/i).selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
       await clickOnEdge()
+      await expect(modelingDialog.selection('Edge')).toHaveText('1 edge')
       await modelingDialog.fillInput(/^revolutions\b/i, '20')
       await modelingDialog.fillInput(/^angle start\b/i, '0')
       await modelingDialog.fillInput(/^radius\b/i, '1')

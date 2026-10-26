@@ -1,4 +1,8 @@
-import { resolveArguments } from '@src/components/ModelingDialog/arguments'
+import {
+  resolveArguments,
+  updateKclArgument,
+} from '@src/components/ModelingDialog/arguments'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { assertParse } from '@src/lang/wasm'
 import type { Command } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -64,6 +68,33 @@ describe('resolveArguments', () => {
       assertParse('@settings(kclVersion = 3.0)\nvalue = 1', world.instance)
     )
   }
+
+  it('keeps a newer edit when an earlier calculation reports its result', async () => {
+    const arg = { inputType: 'kcl', required: true } as const
+    const oldResult = await stringToKclExpression('5', world.rustContext)
+    const newResult = await stringToKclExpression('1', world.rustContext)
+    assertNotErr(oldResult)
+    assertNotErr(newResult)
+    if ('errors' in oldResult || 'errors' in newResult)
+      throw new Error('Unable to calculate test expressions')
+
+    const edited = updateKclArgument({ radius: oldResult }, 'radius', arg, {
+      source: 'edit',
+      value: '1',
+    })
+    const afterOldResult = updateKclArgument(edited, 'radius', arg, {
+      source: 'calculation',
+      value: oldResult,
+    })
+    expect(afterOldResult.radius).toBe('1')
+    const current = updateKclArgument(afterOldResult, 'radius', arg, {
+      source: 'calculation',
+      value: newResult,
+    })
+    const submitted = await resolve({ radius: arg }, current)
+    assertNotErr(submitted)
+    expect(submitted.radius).toEqual(newResult)
+  })
 
   it('drops inactive creation drafts but preserves static metadata', async () => {
     const result = await resolve(

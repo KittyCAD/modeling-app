@@ -26,6 +26,7 @@ import {
   hasValue,
   initializeArguments,
   resolveArguments,
+  updateKclArgument,
   type DialogField,
 } from '@src/components/ModelingDialog/arguments'
 import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSelection'
@@ -208,7 +209,11 @@ export default function ModelingDialog({
                 : arg.variableName
             }
             selectionRanges={selection.selectionRanges}
-            onChange={(change) => save(name, change.value)}
+            onChange={(change) =>
+              setValues((previous) =>
+                updateKclArgument(previous, name, arg, change)
+              )
+            }
             onValidationChange={(next) =>
               setValidity((previous) => {
                 const canSubmit = next.canSubmit && !next.isChecking
