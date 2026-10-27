@@ -4,10 +4,8 @@
  * Delete this directory when the renderer feature flag is retired and local rendering
  * is enabled for every user. Keep the original assertions and click coordinates here.
  */
-import {
-  expect,
-  test,
-} from '@e2e/playwright/deprecated-stream-renderer/fixtures'
+import { moveStreamCameraTo } from '@e2e/playwright/deprecated-stream-renderer/camera'
+import { expect, test } from '@e2e/playwright/zoo-test'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import fs from 'fs'
@@ -1046,7 +1044,8 @@ chamfer001 = chamfer(
         await editor.replaceCode('', initialCode)
         await scene.settled()
         await editor.closePane()
-        await scene.moveCameraTo(
+        await moveStreamCameraTo(
+          page,
           { x: 573.4, y: -539.4, z: 453.32 },
           { x: 51.38, y: -17.36, z: -68.74 }
         )
@@ -1106,7 +1105,8 @@ hide(sketch001)`
         await editor.replaceCode('', initialCode)
         await scene.settled()
         await editor.closePane()
-        await scene.moveCameraTo(
+        await moveStreamCameraTo(
+          page,
           { x: 5.72, y: -14.38, z: 26.13 },
           { x: 12, y: 8, z: 5 }
         )
@@ -1168,7 +1168,8 @@ hide(sketch001)`
         await editor.replaceCode('', initialCode)
         await scene.settled()
         await editor.closePane()
-        await scene.moveCameraTo(
+        await moveStreamCameraTo(
+          page,
           { x: 39.68, y: -7.24, z: 19.4 },
           { x: 15, y: 10, z: 6 }
         )
@@ -2681,7 +2682,8 @@ sketch001 = startSketchOn(YZ)
         await editor.expectEditor.toContain('solid001 = subtract')
 
         // Set camera position for optimal edge viewing
-        await scene.moveCameraTo(
+        await moveStreamCameraTo(
+          page,
           { x: 5.06, y: 25.19, z: 21.78 },
           { x: 7.72, y: 11.81, z: 8.2 }
         )
@@ -2816,7 +2818,8 @@ hide(toolSketch)`
             editor.replaceCode('', edgeTreatmentCode)
           )
           await editor.closePane()
-          await scene.moveCameraTo(
+          await moveStreamCameraTo(
+            page,
             { x: -3.14, y: -11, z: 16.25 },
             { x: 15, y: 10, z: 6 }
           )
@@ -2864,7 +2867,8 @@ hide(toolSketch)`
             editor.replaceCode('', shellCode)
           )
           await editor.closePane()
-          await scene.moveCameraTo(
+          await moveStreamCameraTo(
+            page,
             { x: 48, y: -38, z: 34 },
             { x: 15, y: 11, z: 7 }
           )
@@ -2927,7 +2931,8 @@ hide(toolSketch)`
             editor.replaceCode('', csgSurfaceExtrudeCode)
           )
           await editor.closePane()
-          await scene.moveCameraTo(
+          await moveStreamCameraTo(
+            page,
             { x: 48, y: -42, z: 34 },
             { x: 13, y: 9, z: 5 }
           )
