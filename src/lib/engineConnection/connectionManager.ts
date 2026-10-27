@@ -352,7 +352,7 @@ export class ConnectionManager extends EventTarget {
     setStreamIsReady,
     callbackOnUnitTestingConnection,
     unitTestWebrtc,
-    unitTestPool,
+    unitTestGeometryOnly,
     rustContext,
     geometryOnly = false,
     kclVersion,
@@ -364,7 +364,7 @@ export class ConnectionManager extends EventTarget {
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestWebrtc?: boolean
-    unitTestPool?: 'cpu'
+    unitTestGeometryOnly?: boolean
     rustContext?: RustContext
     geometryOnly?: boolean
     kclVersion?: KclVersion
@@ -420,7 +420,7 @@ export class ConnectionManager extends EventTarget {
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
       unitTestWebrtc,
-      unitTestPool,
+      unitTestGeometryOnly,
       handleMessage,
       getCloudProjectId: () =>
         this.systemDeps.settingsActor.getSnapshot().context.currentProject

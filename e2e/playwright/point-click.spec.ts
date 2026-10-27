@@ -585,6 +585,7 @@ extrude001 = extrude(region001, length = 100)`
         .poll(() => page.getByText('Please select one').count())
         .toBe(1)
       await clickOnEdge()
+      await toolbar.expectSelection('1 edge')
       await cmdBar.progressCmdBar()
       await cmdBar.argumentInput.focus()
       await page.keyboard.insertText('20')
@@ -5873,4 +5874,114 @@ hole001 = hole::hole(
       })
     }
   )
+})
+
+test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
+  test.use({
+    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG, 'modeling_dialogs'],
+  })
+
+  test('Creates, edits visibility, and removes a Named View from the pane', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    const code = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 2mm, var 10mm], center = [var 0mm, var 10mm])
+}
+region001 = region(segments = [sketch001.circle1])`
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+    const pane = page.locator(`#${DefaultLayoutPaneID.NamedViews}-pane`)
+    await pane.getByTestId('named-view-create').click()
+
+    const dialog = page.getByTestId('modeling-dialog')
+    const name = dialog.getByRole('textbox', { name: /^name/i })
+    const exceptions = dialog.getByRole('button', {
+      name: 'Select Exceptions',
+      exact: true,
+    })
+    const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
+    await name.fill('Inspection')
+    await dialog
+      .getByRole('combobox', { name: /^orientation/i })
+      .selectOption({ label: 'Front' })
+    await dialog.getByText('Advanced', { exact: true }).click()
+    await dialog.getByRole('textbox', { name: /^distance/i }).fill('200mm')
+    await dialog
+      .locator('#command-kcl-input-distance-variable-checkbox')
+      .check()
+    await dialog
+      .getByRole('textbox', { name: 'Variable name', exact: true })
+      .fill('viewDistance')
+    await editor.selectText('region(')
+    await expect(exceptions).toContainText(/1 region/i)
+    await scene.waitForExecutionDoneAfter(() => submit.click())
+    await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('viewDistance = 200mm')
+    await editor.expectEditor.toContain('distance = viewDistance')
+    await editor.expectEditor.toContain('except = [region001]')
+
+    const row = pane
+      .getByTestId('named-view-row')
+      .filter({ hasText: 'Inspection' })
+    await row
+      .getByRole('button', { name: 'Apply Inspection', exact: true })
+      .click()
+    await expect(row).toHaveAttribute('data-active', 'true')
+    await expect(
+      row.getByRole('button', { name: 'Inspection', exact: true })
+    ).toBeDisabled()
+    await row.getByRole('button', { name: 'Named view actions' }).click()
+    await expect(
+      page.getByRole('menuitem', { name: 'Edit', exact: true })
+    ).toBeDisabled()
+    await page.keyboard.press('Escape')
+    await pane
+      .getByRole('button', { name: 'Apply Default View', exact: true })
+      .click()
+    await expect(row).toHaveAttribute('data-active', 'false')
+    await row.getByTestId('named-view-label').dblclick()
+    await expect(
+      row.getByRole('button', { name: 'Apply Inspection', exact: true })
+    ).toBeDisabled()
+    await name.fill('Inspection updated')
+    await expect(exceptions).toBeDisabled()
+    await expect(exceptions).toContainText(/1 region/i)
+    await dialog
+      .getByRole('combobox', { name: /^orientation/i })
+      .selectOption({ label: 'Top' })
+    await dialog
+      .getByRole('combobox', { name: /^baseline/i })
+      .selectOption({ label: 'Hide all' })
+    await scene.waitForExecutionDoneAfter(() => submit.click())
+    await expect(dialog).not.toBeAttached()
+    await expect(row).toContainText('Inspection updated')
+    await expect(row).toHaveAttribute('data-active', 'false')
+    await editor.expectEditor.toContain('view::Orientation::Top')
+    await editor.expectEditor.toContain('view::Visibility::Hide')
+    await editor.expectEditor.toContain('except = [region001]')
+
+    await toolbar.openFeatureTreePane()
+    await expect(
+      page
+        .getByTestId('feature-tree-operation-item')
+        .filter({ hasText: /Named View/ })
+    ).toHaveCount(0)
+    await row
+      .getByRole('button', { name: 'Apply Inspection updated', exact: true })
+      .click()
+    await expect(row).toHaveAttribute('data-active', 'true')
+    await row.getByRole('button', { name: 'Named view actions' }).click()
+    await scene.waitForExecutionDoneAfter(() =>
+      page.getByRole('menuitem', { name: 'Remove', exact: true }).click()
+    )
+    await expect(row).not.toBeAttached()
+    await editor.expectEditor.not.toContain('view::named(')
+  })
 })

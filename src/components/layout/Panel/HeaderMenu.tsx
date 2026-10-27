@@ -4,7 +4,14 @@ import { useId, useRef } from 'react'
 
 import { ActionIcon } from '@src/components/ActionIcon'
 
-export const HeaderMenu = ({ children }: PropsWithChildren) => {
+export const HeaderMenu = ({
+  children,
+  ...buttonProps
+}: PropsWithChildren<{
+  'aria-label'?: string
+  'data-testid'?: string
+  disabled?: boolean
+}>) => {
   const id = useId().replace(/[^a-zA-Z0-9_-]/g, '')
   const anchorName = `--panel-header-menu-${id}`
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -14,6 +21,7 @@ export const HeaderMenu = ({ children }: PropsWithChildren) => {
     <Menu>
       <div className="relative">
         <Menu.Button
+          {...buttonProps}
           ref={buttonRef}
           className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 ui-open:!border-primary dark:ui-open:!border-chalkboard-70 !outline-none"
           onClick={(e) => e.stopPropagation()}

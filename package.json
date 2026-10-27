@@ -24,6 +24,7 @@
     "@codemirror/autocomplete": "^6.20.1",
     "@codemirror/commands": "^6.10.3",
     "@codemirror/lang-markdown": "^6.5.2",
+    "@codemirror/lang-python": "^6.2.1",
     "@codemirror/language": "^6.12.4",
     "@codemirror/lint": "^6.9.7",
     "@codemirror/merge": "^6.12.2",
@@ -113,8 +114,8 @@
     "organize-imports": "biome check --write --formatter-enabled=false --linter-enabled=false --assist-enabled=true --files-ignore-unknown=true eslint.config.mjs ./src *.ts *.js ./e2e ./packages ./rust/kcl-language-server",
     "check": "biome check ./src ./e2e ./packages/registry/src ./packages/codemirror-lsp-client/src ./rust/kcl-language-server/client/src",
     "remove-importmeta": "sed -i 's/import.meta.url/window.location.origin/g' \"./rust/kcl-wasm-lib/pkg/kcl_wasm_lib.js\"; sed -i '' 's/import.meta.url/window.location.origin/g' \"./rust/kcl-wasm-lib/pkg/kcl_wasm_lib.js\" || echo \"sed for both mac and linux\"",
-    "lint-fix": "node --require ./scripts/register-typescript-eslint-typescript.cjs ./node_modules/eslint/bin/eslint.js --fix src e2e packages/registry/src packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
-    "lint": "node --require ./scripts/register-typescript-eslint-typescript.cjs ./node_modules/eslint/bin/eslint.js --max-warnings 0 src e2e packages/registry/src packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
+    "lint-fix": "eslint --fix src e2e packages/registry/src packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
+    "lint": "eslint --max-warnings 0 src e2e packages/registry/src packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
     "build:ui-components": "npm run build -w @kittycad/ui-components",
     "storybook:ui-components": "npm run storybook -w @kittycad/ui-components",
     "build-storybook:ui-components": "npm run build-storybook -w @kittycad/ui-components",
@@ -163,6 +164,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "overrides": {
+    "tar": "^7.5.19"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
@@ -219,7 +223,7 @@
     "eslint-plugin-vitest": "^0.5.4",
     "fake-indexeddb": "^6.2.5",
     "fast-check": "^4.9.0",
-    "happy-dom": "^20.9.0",
+    "happy-dom": "^21.0.4",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "msw": "^2.14.6",

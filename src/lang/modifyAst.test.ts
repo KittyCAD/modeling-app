@@ -30,7 +30,7 @@ describe('editing calls in place', () => {
     expect(replacementCall.unlabeled).toBeNull()
   })
 
-  it('ignores a replacement unlabeled argument', () => {
+  it('preserves the unlabeled argument unless replacement is requested', () => {
     const existingCall = createCallExpressionStdLibKw(
       'translate',
       createLocalName('oldBody'),
@@ -46,6 +46,10 @@ describe('editing calls in place', () => {
     replaceCallInPlace(existingCall, replacementCall)
 
     expect(existingCall.unlabeled).toEqual(createLocalName('oldBody'))
+
+    replaceCallInPlace(existingCall, replacementCall, [], false)
+
+    expect(existingCall.unlabeled).toEqual(replacementInput)
   })
 
   it('preserves labeled selection arguments and applies other edits', () => {

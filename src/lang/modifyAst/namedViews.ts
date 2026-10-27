@@ -43,6 +43,7 @@ export function addNamedView({
   projection,
   baseline,
   except,
+  nodeToEdit,
   wasmInstance,
 }: {
   ast: Node<Program>
@@ -54,21 +55,24 @@ export function addNamedView({
   projection: Projection
   baseline: Visibility
   except?: Selections
+  nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
   const namedCall = modelingStdLibCall('Named View')
 
-  const exceptVars = except
-    ? getVariableExprsFromSelection(
-        except,
-        artifactGraph,
-        modifiedAst,
-        wasmInstance,
-        undefined,
-        { lastChildLookup: false }
-      )
-    : { exprs: [] }
+  const exceptVars =
+    !mNodeToEdit && except
+      ? getVariableExprsFromSelection(
+          except,
+          artifactGraph,
+          modifiedAst,
+          wasmInstance,
+          undefined,
+          { lastChildLookup: false }
+        )
+      : { exprs: [] }
   if (err(exceptVars)) {
     return exceptVars
   }
@@ -87,10 +91,10 @@ export function addNamedView({
     [createIdentifier('view')]
   )
   if (target && 'variableName' in target && target.variableName) {
-    insertVariableAndOffsetPathToNode(target, modifiedAst)
+    insertVariableAndOffsetPathToNode(target, modifiedAst, mNodeToEdit)
   }
   if (distance && 'variableName' in distance && distance.variableName) {
-    insertVariableAndOffsetPathToNode(distance, modifiedAst)
+    insertVariableAndOffsetPathToNode(distance, modifiedAst, mNodeToEdit)
   }
 
   const call = createCallExpressionStdLibKw(
@@ -110,6 +114,10 @@ export function addNamedView({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
+    pathToEdit: mNodeToEdit,
+    labeledSelectionArgNames: ['except'],
+    // The unlabeled argument is a name, not a read-only selection.
+    preserveUnlabeledArgument: false,
     variableIfNewDecl: 'view',
     wasmInstance,
   })

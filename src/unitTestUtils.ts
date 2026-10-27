@@ -99,10 +99,10 @@ export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
 // if this runs in vitest the engineCommandManager will run a lite connection mode.
 export async function buildTheWorldAndConnectToEngine({
   webrtc = true,
-  pool,
+  geometryOnly = false,
 }: {
   webrtc?: boolean
-  pool?: 'cpu'
+  geometryOnly?: boolean
 } = {}) {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
@@ -171,8 +171,8 @@ export async function buildTheWorldAndConnectToEngine({
           }
         },
         unitTestWebrtc: webrtc,
-        unitTestPool: pool,
-        geometryOnly: pool === 'cpu',
+        unitTestGeometryOnly: geometryOnly,
+        geometryOnly,
         rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)

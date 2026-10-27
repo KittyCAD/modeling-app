@@ -120,7 +120,7 @@ export class Connection extends EventTarget {
     rejectPendingCommand,
     callbackOnUnitTestingConnection,
     unitTestWebrtc,
-    unitTestPool,
+    unitTestGeometryOnly,
     handleMessage,
     getCloudProjectId,
     geometryOnly = false,
@@ -135,7 +135,7 @@ export class Connection extends EventTarget {
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestWebrtc?: boolean
-    unitTestPool?: 'cpu'
+    unitTestGeometryOnly?: boolean
     handleMessage: (event: MessageEvent<any>) => void
     getCloudProjectId: () => string | undefined
     geometryOnly?: boolean
@@ -179,7 +179,7 @@ export class Connection extends EventTarget {
       this.connectUnitTesting(
         callbackOnUnitTestingConnection,
         unitTestWebrtc,
-        unitTestPool
+        unitTestGeometryOnly
       )
       this.isUsingUnitTestingConnection = true
     }
@@ -188,14 +188,13 @@ export class Connection extends EventTarget {
   connectUnitTesting(
     callback: (message: string) => void,
     webrtc = true,
-    pool?: 'cpu'
+    geometryOnly = false
   ) {
     const webrtcQuery = webrtc ? '' : '&webrtc=false'
-    // The API derives the engine's geometry_only setting from the CPU pool.
-    const poolQuery = pool ? `&pool=${pool}` : ''
-    const postEffectQuery = pool ? '' : '&post_effect=ssao'
+    const geometryOnlyQuery = `&geometry_only=${geometryOnly}`
+    const postEffectQuery = geometryOnly ? '' : '&post_effect=ssao'
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${poolQuery}`
+      `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${geometryOnlyQuery}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
