@@ -119,7 +119,11 @@ describe('ZookeeperConversation', () => {
   beforeEach(() => {
     configureTestRegistry()
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:image-preview')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
   })
+
+  afterEach(() => vi.restoreAllMocks())
 
   test('shows recovery actions after conversation loading gives up', () => {
     const onReconnect = vi.fn()
@@ -993,7 +997,7 @@ describe('ZookeeperConversation', () => {
       within(requestBubble).queryByText('Attachments')
     ).not.toBeInTheDocument()
     expect(within(attachments).getByText('Attachments')).toBeInTheDocument()
-    expect(within(attachments).getByText('front-view.png')).toBeInTheDocument()
+    expect(within(attachments).getByText('Image')).toBeInTheDocument()
     expect(
       within(attachments).getByText('requirements.pdf')
     ).toBeInTheDocument()
@@ -1052,23 +1056,23 @@ describe('ZookeeperConversation', () => {
 
     const attachments = screen.getByTestId('ml-request-chat-bubble-attachments')
 
-    expect(within(attachments).getByText('front-view.png')).toBeInTheDocument()
+    expect(within(attachments).getByText('Image')).toBeInTheDocument()
     expect(
       within(attachments).getByText('requirements.pdf')
     ).toBeInTheDocument()
     expect(
-      within(attachments).queryByText('side-view.jpg')
+      within(attachments).queryByTitle('side-view.jpg')
     ).not.toBeInTheDocument()
 
     fireEvent.click(within(attachments).getByText('+ more'))
 
-    expect(within(attachments).getByText('side-view.jpg')).toBeInTheDocument()
+    expect(within(attachments).getAllByText('Image')).toHaveLength(2)
     expect(within(attachments).getByText('- collapse')).toBeInTheDocument()
 
     fireEvent.click(within(attachments).getByText('- collapse'))
 
     expect(
-      within(attachments).queryByText('side-view.jpg')
+      within(attachments).queryByTitle('side-view.jpg')
     ).not.toBeInTheDocument()
     expect(within(attachments).getByText('+ more')).toBeInTheDocument()
   })
@@ -1431,7 +1435,7 @@ describe('ZookeeperConversation', () => {
         fireEvent.click(sendButton)
 
         expect(
-          await screen.findByText('annotated-viewport-screenshot.png')
+          await screen.findByRole('img', { name: 'Attachment preview' })
         ).toBeInTheDocument()
       } finally {
         drawImageSpy.mockRestore()
@@ -1459,7 +1463,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('test-image.png')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
     })
 
     test('shows attached files when files are pasted', async () => {
@@ -1478,6 +1484,42 @@ describe('ZookeeperConversation', () => {
       fireEvent.paste(textarea, pasteEvent)
 
       expect(await screen.findByText('document.pdf')).toBeInTheDocument()
+    })
+
+    test('gives uploaded, dropped, and pasted images unique names across prompts without changing their contents', async () => {
+      const handleProcess = vi.fn()
+      const { container } = renderConversation(handleProcess)
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const file = createMockFile('reference.png', 'image/png', 100)
+      const names: string[] = []
+
+      for (const method of ['upload', 'drop', 'paste']) {
+        if (method === 'upload') {
+          fireEvent.change(container.querySelector('input[type="file"]')!, {
+            target: { files: [file] },
+          })
+        } else if (method === 'drop') {
+          fireEvent.drop(textarea.parentElement!, {
+            dataTransfer: { files: [file], types: ['Files'] },
+          })
+        } else {
+          fireEvent.paste(textarea, { clipboardData: { files: [file] } })
+        }
+        expect(
+          await screen.findByRole('img', { name: 'Attachment preview' })
+        ).toBeInTheDocument()
+        expect(screen.getByText('Image')).toBeInTheDocument()
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+        const sent: File = handleProcess.mock.lastCall![2][0]
+        expect(sent.name).toMatch(/^image-[0-9a-f-]{36}\.png$/)
+        expect(sent.type).toBe(file.type)
+        expect(await sent.text()).toBe(await file.text())
+        names.push(sent.name)
+      }
+
+      expect(new Set(names).size).toBe(3)
     })
 
     test.each([1, 10_000])(
@@ -1628,14 +1670,14 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('removable.png')).toBeInTheDocument()
+      expect(await screen.findByText('Image')).toBeInTheDocument()
 
       const removeButton = screen.getByRole('button', {
-        name: /Remove removable.png/i,
+        name: 'Remove image 1',
       })
       fireEvent.click(removeButton)
 
-      expect(screen.queryByText('removable.png')).not.toBeInTheDocument()
+      expect(screen.queryByText('Image')).not.toBeInTheDocument()
     })
 
     test('sends attachments with prompt on submit', async () => {
@@ -1656,7 +1698,7 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('attachment.png')).toBeInTheDocument()
+      expect(await screen.findByText('Image')).toBeInTheDocument()
 
       fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
@@ -1665,7 +1707,9 @@ describe('ZookeeperConversation', () => {
         'Test prompt',
         undefined,
         expect.arrayContaining([
-          expect.objectContaining({ name: 'attachment.png' }),
+          expect.objectContaining({
+            name: expect.stringMatching(/^image-[0-9a-f-]{36}\.png$/),
+          }),
         ])
       )
     })
@@ -1688,12 +1732,12 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('will-clear.png')).toBeInTheDocument()
+      expect(await screen.findByText('Image')).toBeInTheDocument()
 
       fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(screen.queryByText('will-clear.png')).not.toBeInTheDocument()
+      expect(screen.queryByText('Image')).not.toBeInTheDocument()
     })
 
     test('does not accept files when disabled', () => {
@@ -1712,7 +1756,7 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(screen.queryByText('disabled-test.png')).not.toBeInTheDocument()
+      expect(screen.queryByText('Image')).not.toBeInTheDocument()
     })
 
     test('does not accept paste when disabled', () => {
@@ -1728,7 +1772,7 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(screen.queryByText('disabled-paste.png')).not.toBeInTheDocument()
+      expect(screen.queryByText('Image')).not.toBeInTheDocument()
     })
 
     test('deduplicates files with same name and size', async () => {
@@ -1738,8 +1782,8 @@ describe('ZookeeperConversation', () => {
         .getByTestId('ml-ephant-conversation-input')
         .closest('div')!
 
-      const file1 = createMockFile('duplicate.png', 'image/png', 100)
-      const file2 = createMockFile('duplicate.png', 'image/png', 100)
+      const file1 = createMockFile('duplicate.pdf', 'application/pdf', 100)
+      const file2 = createMockFile('duplicate.pdf', 'application/pdf', 100)
 
       fireEvent.drop(dropContainer, {
         dataTransfer: {
@@ -1748,7 +1792,7 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('duplicate.png')).toBeInTheDocument()
+      expect(await screen.findByText('duplicate.pdf')).toBeInTheDocument()
 
       fireEvent.drop(dropContainer, {
         dataTransfer: {
@@ -1758,7 +1802,7 @@ describe('ZookeeperConversation', () => {
       })
 
       // Should still only have one instance
-      const attachments = screen.getAllByText('duplicate.png')
+      const attachments = screen.getAllByText('duplicate.pdf')
       expect(attachments).toHaveLength(1)
     })
 
@@ -1781,7 +1825,7 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('image.png')).toBeInTheDocument()
+      expect(await screen.findByText('Image')).toBeInTheDocument()
       expect(screen.getByText('doc.pdf')).toBeInTheDocument()
       expect(screen.getByText('drawing.dxf')).toBeInTheDocument()
       expect(screen.getByText('script.js')).toBeInTheDocument()

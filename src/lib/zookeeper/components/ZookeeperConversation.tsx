@@ -402,9 +402,19 @@ export const ZookeeperConversationInput = (
 
   const appendAttachments = (files: File[]) => {
     if (!files.length) return
+    // Image names also persist across prompts, including screenshots and pastes.
+    const namedFiles = files.map((file) => {
+      if (!file.type.startsWith('image/')) return file
+      const dotIndex = file.name.lastIndexOf('.')
+      const extension = dotIndex > 0 ? file.name.slice(dotIndex) : ''
+      return new File([file], `image-${crypto.randomUUID()}${extension}`, {
+        type: file.type,
+        lastModified: file.lastModified,
+      })
+    })
     setAttachments((current) => {
       const next = [...current]
-      for (const file of files) {
+      for (const file of namedFiles) {
         const newName = deduplicateFileName(
           file.name,
           next.map((f) => f.name)
@@ -619,7 +629,11 @@ export const ZookeeperConversationInput = (
                   type="button"
                   onClick={() => onRemoveAttachment(index)}
                   className="ml-1 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20"
-                  aria-label={`Remove ${file.name}`}
+                  aria-label={
+                    file.type.startsWith('image/')
+                      ? `Remove image ${index + 1}`
+                      : `Remove ${file.name}`
+                  }
                 >
                   <CustomIcon name="close" className="w-4 h-4" />
                 </button>
