@@ -255,6 +255,7 @@ part001 = startSketchOn(XZ)
 
   test('"View KCL source code" right click menu in scene', async ({
     page,
+    editor,
     homePage,
     scene,
   }) => {
@@ -271,6 +272,7 @@ part001 = startSketchOn(XZ)
 
     await homePage.goToModelingScene()
     await scene.settled()
+    await editor.closePane()
 
     const laterCode = page.getByText('finalBracket = hole::holes(')
     const menuItems = page.locator('[data-testid="view-controls-menu"] button')
@@ -293,7 +295,9 @@ part001 = startSketchOn(XZ)
       await clickBracket({ shouldRightClick: true })
       await expect(viewKclSourceCodeOption).toBeVisible()
       await expect(viewKclSourceCodeOption).toBeEnabled()
+      await expect(editor.codeContent).not.toBeVisible()
       await viewKclSourceCodeOption.click()
+      await expect(editor.codeContent).toBeVisible()
       await expect(page.locator('.cm-activeLine')).toBeVisible()
       await expect(page.locator('.cm-activeLine')).not.toContainText(
         'Shelf Bracket'
