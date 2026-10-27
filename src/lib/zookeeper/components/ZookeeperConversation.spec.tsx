@@ -53,7 +53,10 @@ import { Registry } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
-import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
+import {
+  ZookeeperConversation,
+  type ZookeeperConversationProps,
+} from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import type * as ScreenshotModule from '@src/lib/screenshot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -1289,7 +1292,11 @@ describe('ZookeeperConversation', () => {
       return new File([content], name, { type })
     }
 
-    const renderConversation = (handleProcess = vi.fn(), disabled = false) => {
+    const renderConversation = (
+      handleProcess = vi.fn(),
+      disabled = false,
+      props: Partial<ZookeeperConversationProps> = {}
+    ) => {
       return render(
         <>
           <ZookeeperConversation
@@ -1307,6 +1314,7 @@ describe('ZookeeperConversation', () => {
             queue={[]}
             onRemoveFromQueue={() => {}}
             onSteer={() => {}}
+            {...props}
           />
           <TestEngineSceneStreamLayers />
         </>
@@ -1521,7 +1529,7 @@ describe('ZookeeperConversation', () => {
 
         expect(defaultAllowed).toBe(false)
         expect(textarea).toHaveValue(prompt)
-        expect(screen.getByText(/^pasted-text-.*\.txt$/)).toBeInTheDocument()
+        expect(screen.getByText('pasted-text-1.txt')).toBeInTheDocument()
 
         fireEvent.click(
           screen.getByTestId('ml-ephant-conversation-input-button')
@@ -1531,7 +1539,7 @@ describe('ZookeeperConversation', () => {
           expect.any(File),
         ])
         const file: File = handleProcess.mock.calls[0][2][0]
-        expect(file.name).toMatch(/^pasted-text-.*\.txt$/)
+        expect(file.name).toBe('pasted-text-1.txt')
         expect(file.type).toBe('text/plain')
         expect(await file.text()).toBe(text)
         expect(textarea).toHaveValue('')
@@ -1541,7 +1549,7 @@ describe('ZookeeperConversation', () => {
       }
     )
 
-    test('gives large pastes unique filenames across submissions and allows an empty prompt', async () => {
+    test('numbers large pastes across submissions and allows an empty prompt', async () => {
       const handleProcess = vi.fn()
       renderConversation(handleProcess)
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
@@ -1563,9 +1571,61 @@ describe('ZookeeperConversation', () => {
       ])
       const firstFile: File = handleProcess.mock.calls[0][2][0]
       const secondFile: File = handleProcess.mock.calls[1][2][0]
-      expect(firstFile.name).not.toBe(secondFile.name)
+      expect(firstFile.name).toBe('pasted-text-1.txt')
+      expect(secondFile.name).toBe('pasted-text-2.txt')
       expect(await firstFile.text()).toBe('a'.repeat(10_001))
       expect(await secondFile.text()).toBe('b'.repeat(10_001))
+    })
+
+    test('avoids names in restored history, queued messages, and the current prompt', () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess, false, {
+        conversation: {
+          exchanges: [
+            {
+              request: {
+                type: 'user',
+                content: 'Previous prompt',
+                additional_files: [
+                  {
+                    name: 'pasted-text-1.txt',
+                    mimetype: 'text/plain',
+                    data: [],
+                  },
+                ],
+              },
+              responses: [],
+              deltasAggregated: '',
+            },
+          ],
+        },
+        queue: [
+          {
+            id: 'queued-paste',
+            text: 'Queued prompt',
+            attachments: [createMockFile('pasted-text-2.txt', 'text/plain')],
+          },
+        ],
+      })
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      fireEvent.paste(textarea, {
+        clipboardData: {
+          files: [createMockFile('pasted-text-3.txt', 'text/plain')],
+        },
+      })
+
+      for (let i = 0; i < 2; i++) {
+        fireEvent.paste(textarea, {
+          clipboardData: { files: [], getData: () => 'a'.repeat(10_001) },
+        })
+      }
+      expect(screen.getByText('pasted-text-4.txt')).toBeInTheDocument()
+      expect(screen.getByText('pasted-text-5.txt')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+      expect(
+        handleProcess.mock.calls[0][2].map((file: File) => file.name)
+      ).toEqual(['pasted-text-3.txt', 'pasted-text-4.txt', 'pasted-text-5.txt'])
     })
 
     test('does not attach a large text paste when disabled', () => {

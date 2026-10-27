@@ -291,6 +291,7 @@ const MlCopilotSelectionsContext = (props: {
 
 interface ZookeeperConversationInputProps {
   contexts: ZookeeperManagerPromptContext[]
+  existingAttachmentNames: string[]
   onProcess: ZookeeperConversationProps['onProcess']
   onCancel: ZookeeperConversationProps['onCancel']
   hasPromptCompleted: ZookeeperConversationProps['hasPromptCompleted']
@@ -313,6 +314,7 @@ export const ZookeeperConversationInput = (
   const { registry } = useApp()
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const nextPastedTextNumber = useRef(1)
   const [value, setValue] = useState<string>('')
   const [mode, setMode] = useState<MlCopilotModeId | undefined>(
     props.initialMlCopilotMode
@@ -540,12 +542,16 @@ export const ZookeeperConversationInput = (
     if (text.length <= MAX_INLINE_PASTE_LENGTH) return
 
     e.preventDefault()
-    // Attachment names persist across turns, so each paste needs a unique name.
-    appendAttachments([
-      new File([text], `pasted-text-${crypto.randomUUID()}.txt`, {
-        type: 'text/plain',
-      }),
+    // Names persist across turns; include history and queued messages when numbering.
+    const usedNames = new Set([
+      ...props.existingAttachmentNames,
+      ...attachments.map((file) => file.name),
     ])
+    let name: string
+    do {
+      name = `pasted-text-${nextPastedTextNumber.current++}.txt`
+    } while (usedNames.has(name))
+    appendAttachments([new File([text], name, { type: 'text/plain' })])
   }
 
   const selectionsContext = props.contexts.find(
@@ -726,6 +732,16 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     }
   )
   const shouldShowWelcomeMessage = isNonNullable(props.welcomeMessage)
+  const existingAttachmentNames = [
+    ...(props.conversation?.exchanges.flatMap(({ request }) =>
+      request?.type === 'user'
+        ? (request.additional_files?.map((file) => file.name) ?? [])
+        : []
+    ) ?? []),
+    ...props.queue.flatMap((message) =>
+      message.attachments.map((file) => file.name)
+    ),
+  ]
 
   return (
     <div className="relative">
@@ -879,6 +895,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           <div className="border-t b-4">
             <ZookeeperConversationInput
               contexts={props.contexts}
+              existingAttachmentNames={existingAttachmentNames}
               disabled={props.disabled || props.isLoading}
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
