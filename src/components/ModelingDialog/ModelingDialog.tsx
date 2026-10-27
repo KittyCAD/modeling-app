@@ -8,6 +8,7 @@ import {
   getKclInputValue,
 } from '@src/components/CommandBar/CommandKclInput'
 import { VectorInput } from '@src/components/ModelingDialog/VectorInput'
+import { CommandPathInput } from '@src/components/CommandBar/CommandPathInput'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
@@ -411,10 +412,38 @@ export default function ModelingDialog({
             {description}
           </div>
         )
+      case 'path':
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <CommandPathInput
+              id={fieldId}
+              value={
+                typeof value === 'string' || value instanceof File
+                  ? value
+                  : undefined
+              }
+              filters={arg.filters}
+              required={required}
+              autoFocus={name === firstFieldName}
+              inline={false}
+              onChange={(next) => save(name, next)}
+            />
+            {!required && hasValue(value) && (
+              <button
+                type="button"
+                onClick={() => save(name, undefined)}
+                className="m-0 self-start border-0 bg-transparent p-0 text-xs text-primary"
+              >
+                Use default
+              </button>
+            )}
+            {description}
+          </div>
+        )
       case 'string':
       case 'number':
-      case 'text':
-      case 'path': {
+      case 'text': {
         const Input = arg.inputType === 'text' ? 'textarea' : 'input'
         return (
           <div key={name} className="flex flex-col gap-1">
