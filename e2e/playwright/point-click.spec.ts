@@ -5899,6 +5899,7 @@ sketch001 = sketch(on = XY) {
 region001 = region(segments = [sketch001.circle1])`
     await homePage.goToModelingScene()
     await scene.settled()
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
     const pane = page.locator(`#${DefaultLayoutPaneID.NamedViews}-pane`)
@@ -5954,8 +5955,8 @@ region001 = region(segments = [sketch001.circle1])`
       .getByRole('button', { name: 'Apply Inspection', exact: true })
       .click()
     await expect(row).toHaveAttribute('data-active', 'true')
-    await row.getByRole('button', { name: 'Named view actions' }).click()
-    await page.getByRole('menuitem', { name: 'Edit', exact: true }).click()
+    await row.click({ button: 'right' })
+    await page.getByRole('button', { name: 'Edit', exact: true }).click()
     await expect(dialog).toBeVisible()
     await expect(row).toHaveAttribute('data-active', 'false')
     await expect(
@@ -6023,9 +6024,9 @@ region001 = region(segments = [sketch001.circle1])`
     await expect(dialog).not.toBeAttached()
     await editor.expectEditor.toContain('view::directed(')
     await expect(row).toHaveAttribute('data-active', 'false')
-    await row.getByRole('button', { name: 'Named view actions' }).click()
+    await row.click({ button: 'right' })
     await scene.waitForExecutionDoneAfter(() =>
-      page.getByRole('menuitem', { name: 'Remove', exact: true }).click()
+      page.getByRole('button', { name: 'Remove', exact: true }).click()
     )
     await expect(row).not.toBeAttached()
     await editor.expectEditor.not.toContain('view::named(')

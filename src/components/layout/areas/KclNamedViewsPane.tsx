@@ -1,12 +1,13 @@
-import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { ArtifactCameraLook } from '@rust/kcl-lib/bindings/Artifact'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import type { ComponentProps, ReactNode } from 'react'
+import { useRef } from 'react'
 
 import { ActionButton } from '@src/components/ActionButton'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
@@ -117,6 +118,31 @@ export function viewRows(views: KclNamedView[]): ViewRow[] {
     },
     ...declared,
   ]
+}
+
+function NamedViewRow({
+  children,
+  isActive,
+  menuItems,
+}: {
+  children: ReactNode
+  isActive: boolean
+  menuItems?: ComponentProps<typeof ContextMenu>['items']
+}) {
+  const menuRef = useRef<HTMLLIElement>(null)
+  return (
+    <li
+      ref={menuRef}
+      className="flex h-7 min-w-0 select-none items-center gap-1 px-1 text-sm hover:bg-chalkboard-10 focus-within:bg-chalkboard-20 dark:hover:bg-chalkboard-90 dark:focus-within:bg-chalkboard-80"
+      data-testid="named-view-row"
+      data-active={isActive}
+    >
+      {children}
+      {menuItems && (
+        <ContextMenu menuTargetElement={menuRef} items={menuItems} />
+      )}
+    </li>
+  )
 }
 
 export function KclNamedViewsPane(props: AreaTypeComponentProps) {
@@ -243,11 +269,27 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
             const isActive = isSameView(row.identity, active)
 
             return (
-              <li
+              <NamedViewRow
                 key={row.key}
-                className="flex h-7 min-w-0 select-none items-center gap-1 px-1 text-sm hover:bg-chalkboard-10 focus-within:bg-chalkboard-20 dark:hover:bg-chalkboard-90 dark:focus-within:bg-chalkboard-80"
-                data-testid="named-view-row"
-                data-active={isActive}
+                isActive={isActive}
+                menuItems={
+                  manageableView
+                    ? [
+                        <ContextMenuItem
+                          disabled={actionsDisabled}
+                          onClick={() => editView(manageableView)}
+                        >
+                          Edit
+                        </ContextMenuItem>,
+                        <ContextMenuItem
+                          disabled={actionsDisabled}
+                          onClick={() => void removeView(manageableView)}
+                        >
+                          Remove
+                        </ContextMenuItem>,
+                      ]
+                    : undefined
+                }
               >
                 <span
                   data-testid="named-view-number"
@@ -316,41 +358,15 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                     </>
                   )}
                 </button>
-                {manageableView ? (
-                  <HeaderMenu
-                    aria-label="Named view actions"
-                    data-testid="named-view-actions"
-                    disabled={actionsDisabled}
-                  >
-                    <Menu.Item disabled={actionsDisabled}>
-                      <button
-                        type="button"
-                        className="menuButton"
-                        disabled={actionsDisabled}
-                        onClick={() => editView(manageableView)}
-                      >
-                        Edit
-                      </button>
-                    </Menu.Item>
-                    <Menu.Item disabled={actionsDisabled}>
-                      <button
-                        type="button"
-                        className="menuButton"
-                        onClick={() => void removeView(manageableView)}
-                      >
-                        Remove
-                      </button>
-                    </Menu.Item>
-                  </HeaderMenu>
-                ) : row.target.kind === 'declared' &&
-                  !canManageNamedView(row.target.view) ? (
+                {row.target.kind === 'declared' &&
+                !canManageNamedView(row.target.view) ? (
                   <CustomIcon
                     name="lockClosed"
                     className="mx-1 h-4 w-4 shrink-0 text-chalkboard-50"
                     aria-label="Named view is read only"
                   />
                 ) : null}
-              </li>
+              </NamedViewRow>
             )
           })}
         </ul>
