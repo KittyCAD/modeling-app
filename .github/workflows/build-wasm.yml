@@ -3,6 +3,11 @@ name: Build Wasm
 on:
   workflow_call:
     inputs:
+      checkout_ref:
+        description: Optional modeling-app revision for cross-repository callers.
+        type: string
+        required: false
+        default: ''
       skip_wasm_opt:
         description: Use '--no-opt' for callers that do not run the app.
         type: boolean
@@ -23,6 +28,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
+          ref: ${{ inputs.checkout_ref }}
 
       - name: Use correct Rust toolchain
         shell: bash
