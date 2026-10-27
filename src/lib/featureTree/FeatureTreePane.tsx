@@ -31,7 +31,7 @@ import {
   getOperationTreeNodeKey,
   isOperationTreeBranch,
   type OperationTreeNode,
-} from '@src/lib/featureTreeOperationTree'
+} from '@src/lib/featureTree/featureTreeOperationTree'
 import {
   getOperationCalculatedDisplay,
   getOperationIcon,
@@ -49,13 +49,13 @@ import type { ComponentProps, ReactNode } from 'react'
 import { memo, use, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 
-export { buildOperationTree } from '@src/lib/featureTreeOperationTree'
+export { buildOperationTree } from '@src/lib/featureTree/featureTreeOperationTree'
 
 import { Disclosure } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import { FeatureTreeMenu } from '@src/lib/featureTree/FeatureTreeMenu'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
@@ -78,20 +78,17 @@ import {
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
-  getOpenPanes,
-  type Layout,
-  togglePaneLayoutNode,
 } from '@src/lib/layout'
 import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: feature-tree file opening (useNavigate).
 import { useNavigate } from 'react-router-dom'
@@ -176,20 +173,6 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
   )
 }
 
-function isCodePaneOpen(layout: Layout) {
-  return getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.Code)
-}
-function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
-  const rootLayout = structuredClone(layout)
-  setLayout(
-    togglePaneLayoutNode({
-      rootLayout,
-      targetNodeId: DefaultLayoutPaneID.Code,
-      shouldExpand: true,
-    })
-  )
-}
-
 export const FeatureTreePaneContents = memo(() => {
   useSignals()
   const app = useApp()
@@ -209,7 +192,8 @@ export const FeatureTreePaneContents = memo(() => {
     platform
   )
   const { kclManager } = useSingletons()
-  const executionService = app.registry.signal(executingEditorService).value
+  const executionService =
+    app.registry.signal(projectSession).value?.executingEditor.value
   const { engineCommandManager, rustContext } = kclManager
   const {
     send: modelingSend,
@@ -295,10 +279,7 @@ export const FeatureTreePaneContents = memo(() => {
   const liveLatestOperationKey = kclManager.liveLatestOperationKey
 
   function goToError() {
-    const l = layout.signal.value
-    if (!isCodePaneOpen(l)) {
-      openCodePane(l, layout.set)
-    }
+    layout.openPane(DefaultLayoutPaneID.Code)
     kclManager.scrollToFirstErrorDiagnosticIfExists()
   }
 
@@ -854,8 +835,6 @@ export function getFeatureTreeSketchSelectionContext({
   const modelingSnapshot = modelingActor.getSnapshot()
   return {
     sketchNoFace: modelingSnapshot.matches('Sketch no face'),
-    useSketchSolveMode:
-      modelingSnapshot.context.store.useSketchSolveMode?.current,
   }
 }
 
@@ -983,8 +962,6 @@ const OperationItem = ({
   const navigate = useNavigate()
   const { layout } = app
   const { kclManager, commandBarActor } = systemDeps
-  const useSketchSolveMode =
-    modelingActor.getSnapshot().context.store.useSketchSolveMode?.current
   const diagnostics = kclManager.diagnosticsSignal.value
   const liveAst = kclManager.astSignal.value
   const ast = kclManager.hasParseErrors() ? kclManager.lastGoodAst : liveAst
@@ -1048,14 +1025,7 @@ const OperationItem = ({
             item,
             kclManager.artifactGraph
           )
-          const result = await selectSketchPlane(
-            artifact?.id,
-            sketchSelectionContext.useSketchSolveMode,
-            kclManager
-          )
-          if (err(result)) {
-            console.error(result)
-          }
+          void selectSketchPlane(artifact?.id, kclManager)
         }
       } else if (providedSourceRange !== undefined) {
         onSelect(sourceRangeFromRust(providedSourceRange))
@@ -1081,10 +1051,7 @@ const OperationItem = ({
           : (providedSourceRange?.[2] ?? item.sourceRange[2])
       const targetModulePath = kclManager.execState.filenames[targetModuleId]
 
-      const l = layout.signal.value
-      if (!isCodePaneOpen(l)) {
-        openCodePane(l, layout.set)
-      }
+      layout.openPane(DefaultLayoutPaneID.Code)
 
       if (targetModulePath?.type === 'Local' && app.project) {
         const targetPath = targetModulePath.value
@@ -1270,7 +1237,7 @@ const OperationItem = ({
           data: { forceNewSketch: true },
         })
 
-        void selectSketchPlane(artifact.id, useSketchSolveMode, kclManager)
+        void selectSketchPlane(artifact.id, kclManager)
       }
     }
   }
@@ -1622,11 +1589,7 @@ const DefaultPlanes = ({
   const onClickPlane = useCallback(
     (planeId: string) => {
       if (sketchNoFace) {
-        void selectSketchPlane(
-          planeId,
-          modelingState.context.store.useSketchSolveMode?.current,
-          kclManager
-        )
+        void selectSketchPlane(planeId, kclManager)
       } else {
         const foundDefaultPlane =
           rustContext.defaultPlanes !== null &&
@@ -1648,7 +1611,7 @@ const DefaultPlanes = ({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [sketchNoFace, modelingState.context.store.useSketchSolveMode]
+    [sketchNoFace]
   )
 
   const startSketchOnDefaultPlane = useCallback(
@@ -1658,13 +1621,9 @@ const DefaultPlanes = ({
         data: { forceNewSketch: true },
       })
 
-      void selectSketchPlane(
-        planeId,
-        modelingState.context.store.useSketchSolveMode?.current,
-        kclManager
-      )
+      void selectSketchPlane(planeId, kclManager)
     },
-    [modelingState.context.store.useSketchSolveMode, sceneInfra, kclManager]
+    [sceneInfra, kclManager]
   )
 
   const defaultPlanes = rustContext.defaultPlanes

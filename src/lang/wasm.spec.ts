@@ -89,7 +89,7 @@ beforeEach(async () => {
   }
 
   const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
+    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
   instanceInThisFile = instance
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
@@ -202,11 +202,11 @@ it('formats numbers with units', () => {
 describe('test errFromErrWithOutputs', () => {
   it('converts KclErrorWithOutputs to KclError', () => {
     const blob =
-      '{"error":{"kind":"internal","details":{"sourceRanges":[],"backtrace":[],"msg":"Cache busted"}},"nonFatal":[],"variables":{},"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null}'
+      '{"error":{"kind":"internal","details":{"sourceRanges":[],"backtrace":[],"msg":"Cache busted"}},"nonFatal":[],"variables":{},"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null,"engineSceneGeneration":2}'
     const error = errFromErrWithOutputs(blob)
     const errorStr = JSON.stringify(error)
     expect(errorStr).toEqual(
-      '{"kind":"internal","sourceRange":[0,0,0],"msg":"Cache busted","kclBacktrace":[],"nonFatal":[],"variables":{},"operations":[],"artifactGraph":{},"filenames":{},"defaultPlanes":null}'
+      '{"kind":"internal","sourceRange":[0,0,0],"msg":"Cache busted","kclBacktrace":[],"nonFatal":[],"variables":{},"operations":[],"artifactGraph":{},"filenames":{},"defaultPlanes":null,"engineSceneGeneration":2}'
     )
   })
 })

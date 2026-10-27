@@ -1,7 +1,7 @@
 import {
   OperationItemWrapper,
   VariableTooltipContents,
-} from '@src/components/layout/areas/FeatureTreePane'
+} from '@src/lib/featureTree/FeatureTreePane'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 

@@ -456,6 +456,72 @@ test.describe(
     )
 
     test(
+      'Opening and closing settings does not re-execute the code',
+      { tag: ['@macos', '@windows'] },
+      async ({ page, homePage, scene }) => {
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await page.evaluate(() => {
+          window.engineCommandManager?.clearCommandLogs()
+        })
+
+        await test.step('Open settings, switch tabs and close', async () => {
+          // In a file, this link opens settings with ?tab=project, and closing
+          // drops the query again. Both used to reopen the project.
+          await page.getByRole('link', { name: 'settings Settings' }).click()
+          await expect(
+            page.getByRole('heading', { name: 'Settings', exact: true })
+          ).toBeVisible()
+          await settingsSwitchTab(page)('user')
+          await page.getByTestId('settings-close-button').click()
+          await expect(
+            page.getByTestId('settings-dialog-panel')
+          ).not.toBeVisible()
+          await scene.settled()
+        })
+
+        await test.step('Postcondition: The code did not execute again', async () => {
+          const executions = await page.evaluate(
+            () =>
+              window.engineCommandManager?.commandLogs.filter(
+                (log) => log.type === 'execution-done'
+              ).length
+          )
+          expect(executions).toBe(0)
+        })
+      }
+    )
+
+    test(
+      'Navigating Home while project settings are open lands on Home',
+      { tag: ['@macos', '@windows'] },
+      async ({ page, homePage }) => {
+        await homePage.goToModelingScene()
+
+        await test.step('Open project settings', async () => {
+          // In a file, this link opens settings with ?tab=project
+          await page.getByRole('link', { name: 'settings Settings' }).click()
+          await expect(
+            page.getByRole('radio', { name: 'Project' })
+          ).toBeChecked()
+        })
+
+        await test.step('Navigate Home without closing settings', async () => {
+          // No UI path does this today, but the e2e fixture's reset does the same
+          // hash change. Settings used to cancel it and bounce back to ?tab=user.
+          await page.evaluate(() => {
+            window.location.hash = '#/home'
+          })
+          await expect(page.getByTestId('home-section')).toBeVisible()
+          await expect(
+            page.getByTestId('settings-dialog-panel')
+          ).not.toBeVisible()
+          await expect(page).not.toHaveURL(/\/file\//)
+        })
+      }
+    )
+
+    test(
       'Changing modeling default unit',
       { tag: ['@macos', '@windows'] },
       async ({ page, homePage, scene, folderSetupFn }) => {

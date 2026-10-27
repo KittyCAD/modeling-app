@@ -1,6 +1,6 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
-import { type OperationsByModule, getOperationsForModule } from '@src/lang/wasm'
+import { getOperationsForModule, type OperationsByModule } from '@src/lang/wasm'
 import {
   filterOperations,
   groupNestedOperations,

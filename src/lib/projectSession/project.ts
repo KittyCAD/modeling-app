@@ -1,4 +1,9 @@
-import { type Signal, signal, computed } from '@preact/signals-core'
+import {
+  type Signal,
+  type ReadonlySignal,
+  signal,
+  computed,
+} from '@preact/signals-core'
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
 import { KclManager } from '@src/lang/KclManager'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
@@ -15,15 +20,24 @@ import type { ConnectionManager } from '@src/lib/engineConnection'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { App } from '@src/lib/app'
+import type { MachineManager } from '@src/lib/MachineManager'
 import { File } from '@src/lib/projectSession/file'
+import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
+import { projectSession } from '@src/registry/contracts/projectSession'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
 export interface ProjectSystemDeps {
+  machineManager: MachineManager
+  /** Live metadata for the editor's owning project; absent before a project opens. */
+  project: ReadonlySignal<Project | undefined>
+  /** Storage access for editor-owned export and thumbnail workflows. */
+  fileOperations: FileOperationsRegistryService
+  textFileIO: TextFileIO
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
-  projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
   userFeatures: UserFeaturesSettleService
@@ -62,7 +76,8 @@ export class ZDSProject {
 
   constructor(
     public projectIORefSignal: Signal<Project>,
-    private app: App
+    private app: App,
+    public readonly textFileIO: TextFileIO
   ) {
     this.files = this.collectProjectFiles(projectIORefSignal.value)
     window.electron?.watchFileOn(
@@ -83,7 +98,11 @@ export class ZDSProject {
 
   /** Open a project, with the option to open an initial editor too */
   static async open(projectRef: Signal<Project>, app: App) {
-    return new ZDSProject(projectRef, app)
+    return new ZDSProject(
+      projectRef,
+      app,
+      app.registry.get(projectSession).textFileIO
+    )
   }
 
   get executingPath() {
@@ -141,21 +160,28 @@ export class ZDSProject {
       (!providedEditor || found !== providedEditor || found.path === path)
     ) {
       console.warn(`Attempted to overwrite editor with path "${path}"`)
+      if (isExecuting) {
+        await found.modelingActorPromise
+        assertCurrent()
+      }
       return found
     }
 
     const systemDeps: ProjectSystemDeps = {
+      machineManager: this.app.machineManager,
+      project: this.projectIORefSignal,
+      fileOperations: this.app.fileOperations,
+      textFileIO: this.textFileIO,
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
       userFeatures: this.app.userFeatures,
-      projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
     if (providedEditor) {
-      providedEditor.systemDeps.projectPath = systemDeps.projectPath
+      providedEditor.systemDeps.project = systemDeps.project
     }
 
     const foundFileIndex = this.files.findIndex((f) => f.path === path)
@@ -166,6 +192,7 @@ export class ZDSProject {
       if (previousEditorFileIndex > -1) {
         this.files[previousEditorFileIndex] = new File(
           providedEditor.path,
+          this.textFileIO,
           providedEditor.id
         )
       }
@@ -173,7 +200,7 @@ export class ZDSProject {
     const newEditor = await KclManager.fromFile(
       foundFileIndex > -1
         ? this.files[foundFileIndex]
-        : new File(path, this.nextFileId++),
+        : new File(path, this.textFileIO, this.nextFileId++),
       systemDeps,
       providedEditor,
       providedCode,
@@ -234,6 +261,12 @@ export class ZDSProject {
         settingsActor: this.app.settings.actor,
       })
     }
+    if (isExecuting) {
+      // Finish preparing modeling before the route commits its view. Rendering
+      // an already loaded file must not introduce another Suspense loading screen.
+      await newEditor.modelingActorPromise
+      assertCurrent()
+    }
     return newEditor
   }
 
@@ -243,11 +276,15 @@ export class ZDSProject {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
+    if (this.executingEditor.peek() === foundPathSignal[1]) {
+      this.executingPath = null
+    }
     foundPathSignal[1].close()
     this.editors.delete(foundPathSignal[0])
   }
 
   closeAllEditors() {
+    this.executingPath = null
     for (const editor of this.editors.values()) {
       editor.close()
     }
@@ -273,7 +310,7 @@ export class ZDSProject {
     if (path.endsWith('.kcl')) {
       switch (eventType) {
         case 'add':
-          const newFile = new File(path, this.nextFileId++)
+          const newFile = new File(path, this.textFileIO, this.nextFileId++)
           this.files.push(newFile)
           newFile
             .asRustApiFile()
@@ -312,7 +349,7 @@ export class ZDSProject {
         if (entry.name.endsWith('.kcl')) {
           const id = this.nextFileId++
           const path = entry.path
-          files.push(new File(path, id))
+          files.push(new File(path, this.textFileIO, id))
         } else {
           this.collectProjectFiles(entry, files)
         }
@@ -364,7 +401,11 @@ export class ZDSProject {
         continue
       }
 
-      const newFile = new File(replayFile.absolutePath, this.nextFileId++)
+      const newFile = new File(
+        replayFile.absolutePath,
+        this.textFileIO,
+        this.nextFileId++
+      )
       this.files.push(newFile)
       await editor.rustContext
         .sendAddFile({

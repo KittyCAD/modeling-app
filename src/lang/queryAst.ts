@@ -2082,6 +2082,14 @@ export function retrieveSelectionsFromOpArg(
     return error
   }
 
+  return retrieveSelectionsFromArtifactIds(artifactIds, artifactGraph, error)
+}
+
+export function retrieveSelectionsFromArtifactIds(
+  artifactIds: string[],
+  artifactGraph: ArtifactGraph,
+  emptySelectionError = new Error("Couldn't retrieve artifacts for selection")
+): Error | Selections {
   const graphSelections: Selection[] = []
   for (const artifactId of artifactIds) {
     let artifact =
@@ -2136,7 +2144,7 @@ export function retrieveSelectionsFromOpArg(
   }
 
   if (graphSelections.length === 0) {
-    return error
+    return emptySelectionError
   }
 
   return {

@@ -1,0 +1,7 @@
+@settings(kclVersion = "3.0", defaultLengthUnit = mm)
+
+import firstPlane, secondPlane from "default_planes.kcl"
+
+hiddenPlane = offsetPlane(XY, offset = 30)
+visiblePlane = offsetPlane(XY, offset = 40)
+hide([hiddenPlane])

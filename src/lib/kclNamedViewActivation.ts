@@ -180,15 +180,17 @@ function installReapplyEffect(kclManager: KclManager): void {
     return
   }
 
-  let lastSeenGeneration = kclManager.engineSceneGenerationSignal.peek()
+  let lastAppliedGeneration = kclManager.engineSceneGenerationSignal.peek()
 
   stopReapplyEffect = effect(() => {
     const generation = kclManager.engineSceneGenerationSignal.value
-    if (generation === lastSeenGeneration) {
+    // reapplyActiveView does nothing while a sketch is open, so wait for it to close.
+    const sketchOpen = isSketchSessionOpen(kclManager.modelingStateSignal.value)
+    if (generation === lastAppliedGeneration || sketchOpen) {
       return
     }
 
-    lastSeenGeneration = generation
+    lastAppliedGeneration = generation
     reapplyActiveView(kclManager).catch(reportRejection)
   })
 }

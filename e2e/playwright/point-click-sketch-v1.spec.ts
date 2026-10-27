@@ -364,6 +364,7 @@ extrude001 = extrude(profile001, length = 100)`
         .poll(() => page.getByText('Please select one').count())
         .toBe(1)
       await clickOnEdge()
+      await toolbar.expectSelection('1 edge')
       await cmdBar.progressCmdBar()
       await cmdBar.argumentInput.focus()
       await page.keyboard.insertText('20')

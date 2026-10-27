@@ -3645,10 +3645,12 @@ export function getOperationLabel(op: Operation): string {
     case 'VariableDeclaration':
       return 'Parameter'
     case 'GroupBegin':
-      if (op.group.type === 'FunctionCall') {
-        return op.group.name ?? 'anonymous'
+      switch (op.group.type) {
+        case 'FunctionCall':
+          return op.group.name ?? 'anonymous'
+        case 'SketchBlock':
+          return 'Sketch'
       }
-      return 'Solve Sketch'
     case 'ModuleInstance':
       return op.name
     case 'GroupEnd':
@@ -4190,6 +4192,13 @@ async function prepareToEditAppearance({
   }
 
   const color = getStringValue(code, operation.labeledArgs.color.sourceRange)
+  let backfaceColor: string | undefined
+  if (operation.labeledArgs.backfaceColor) {
+    backfaceColor = getStringValue(
+      code,
+      operation.labeledArgs.backfaceColor.sourceRange
+    )
+  }
 
   let metalness: KclCommandValue | undefined
   if (operation.labeledArgs.metalness) {
@@ -4239,6 +4248,7 @@ async function prepareToEditAppearance({
   const argDefaultValues: ModelingCommandSchema['Appearance'] = {
     objects,
     color,
+    backfaceColor,
     metalness,
     roughness,
     opacity,
