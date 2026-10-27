@@ -256,32 +256,10 @@ export function useEngineConnectionSubscriptions() {
         })().catch(reportRejection)
       },
     })
-    const unSubAnnotationClick = engineCommandManager.subscribeTo({
-      event: 'select_with_point',
-      callback: ({ data }) => {
-        if (
-          stateRef.current.matches('Sketch no face') ||
-          stateRef.current.matches('sketchSolveMode')
-        )
-          return
-        const artifact = data.entity_id
-          ? kclManager.artifactGraph.get(data.entity_id)
-          : undefined
-        if (artifact?.type !== 'gdtAnnotation') return
-        send({
-          type: 'Set selection',
-          data: {
-            selectionType: 'singleCodeCursor',
-            selection: { artifact, codeRef: artifact.codeRef },
-          },
-        })
-      },
-    })
     return () => {
       clearHoverTimer()
       unSubHover()
       unSubClick()
-      unSubAnnotationClick()
     }
   }, [
     context?.sketchEnginePathId,

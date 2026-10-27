@@ -3071,20 +3071,7 @@ export async function sendQueryEntityTypeWithPoint(
   if (isArray(res)) {
     res = res[0]
   }
-  const data = getQueryEntityTypeWithPointData(res)
-  // Annotations have an engine ID but no geometry EntityReference.
-  if (data && !data.reference) {
-    await systemDeps.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_with_point',
-        selected_at_window: { x, y },
-        selection_type: 'add',
-      },
-      cmd_id: uuidv4(),
-    })
-  }
-  return data
+  return getQueryEntityTypeWithPointData(res)
 }
 
 /** Query entity at point using scene element for coordinates (e.g. renderer.domElement). Used when handling double-click from scene onClick. */

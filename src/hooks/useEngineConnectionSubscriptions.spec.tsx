@@ -47,12 +47,8 @@ test('stores a post-selected primitive before starting a sketch', async () => {
   const unsubscribe = vi.fn()
   let selectWithPointCallback: ((event: typeof engineEvent) => void) | undefined
   const subscribeTo = vi.fn(
-    (subscription: {
-      event: string
-      callback: (event: typeof engineEvent) => void
-    }) => {
-      if (subscription.event === 'query_entity_type_with_point')
-        selectWithPointCallback = subscription.callback
+    (subscription: { callback: (event: typeof engineEvent) => void }) => {
+      selectWithPointCallback = subscription.callback
       return unsubscribe
     }
   )

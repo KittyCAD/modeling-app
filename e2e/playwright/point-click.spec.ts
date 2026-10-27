@@ -5885,14 +5885,13 @@ test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
     userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG, 'modeling_dialogs'],
   })
 
-  test('Selects objects and annotations for Named View exceptions', async ({
+  test('Selects objects and annotations from the feature tree for Named View exceptions', async ({
     page,
     homePage,
     scene,
     editor,
     toolbar,
   }) => {
-    await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled()
     await toolbar.openPane(DefaultLayoutPaneID.Code)
@@ -5907,25 +5906,22 @@ body001 = extrude(region(segments = [sketch001.circle1]), length = 10mm)
 note001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontSize = 8mm)`
       )
     )
-    await scene.moveCameraTo({ x: 0, y: -30, z: 150 })
     await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
     await page.getByTestId('named-view-create').click()
     const dialog = page.getByTestId('modeling-dialog')
     await dialog.getByRole('textbox', { name: /^name/i }).fill('Inspection')
     await dialog.getByText('Advanced', { exact: true }).click()
 
-    const [clickBody] = scene.makeMouseHelpers(0.46, 0.53, { format: 'ratio' })
-    const [clickNote] = scene.makeMouseHelpers(0.42, 0.32, { format: 'ratio' })
-    await clickBody()
+    await (await toolbar.getFeatureTreeOperation('body001', 0)).click()
     const exceptions = dialog.getByRole('button', {
       name: 'Select Exceptions',
       exact: true,
     })
     await expect(exceptions).toHaveText('1 sweep')
-    await page.keyboard.down('Shift')
-    await clickNote()
+    await (await toolbar.getFeatureTreeOperation('Note', 0)).click({
+      modifiers: ['Shift'],
+    })
     await expect(exceptions).toHaveText('1 sweep, 1 annotation')
-    await page.keyboard.up('Shift')
     await scene.waitForExecutionDoneAfter(() =>
       dialog.getByRole('button', { name: 'Submit', exact: true }).click()
     )
