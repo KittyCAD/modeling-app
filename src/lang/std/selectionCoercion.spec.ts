@@ -422,7 +422,7 @@ describe('coerceSelectionsToBody', () => {
     }
   })
 
-  it('should coerce a topology-backed graph face without dropping another body', () => {
+  it('coerces faces and edges for object fields without dropping other objects', () => {
     const sweepOne: Artifact = {
       type: 'sweep',
       id: 'sweep-1',
@@ -449,9 +449,31 @@ describe('coerceSelectionsToBody', () => {
         nodePath: { steps: [] },
       },
     }
-    const artifactGraph: ArtifactGraph = new Map([
+    const plane: Artifact = {
+      type: 'plane',
+      id: 'plane-1',
+      pathIds: [],
+      codeRef: {
+        range: [250, 300, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const imported: Artifact = {
+      type: 'importedGeometry',
+      id: 'imported-1',
+      consumed: false,
+      codeRef: {
+        range: [350, 400, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
       [sweepOne.id, sweepOne],
       [sweepTwo.id, sweepTwo],
+      [plane.id, plane],
+      [imported.id, imported],
     ])
     const selections: Selections = {
       graphSelections: [
@@ -467,22 +489,54 @@ describe('coerceSelectionsToBody', () => {
             primitiveIndex: 4,
           },
         },
+        {
+          entityRef: { type: 'plane', plane_id: plane.id },
+          codeRef: plane.codeRef,
+        },
+        {
+          entityRef: { type: 'face', face_id: 'imported-face' },
+          engineTopologyFallback: { parentId: imported.id, primitiveIndex: 0 },
+        },
       ],
-      otherSelections: [],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'edge-2',
+          parentEntityId: sweepTwo.id,
+          primitiveIndex: 2,
+          primitiveType: 'edge',
+        },
+      ],
     }
 
-    const result = coerceSelectionsToBody(selections, artifactGraph)
+    const result = coerceSelectionsForBodyOnlySelectionTypes(
+      selections,
+      ['sweep', 'plane', 'importedGeometry'],
+      artifactGraph
+    )
 
-    expect(result).not.toBeInstanceOf(Error)
-    if (!(result instanceof Error)) {
-      expect(result.otherSelections).toHaveLength(0)
-      expect(result.graphSelections).toHaveLength(2)
-      expect(
-        result.graphSelections.map((selection) => selection.entityRef)
-      ).toEqual([
-        { type: 'solid3d', solid3d_id: 'sweep-1' },
-        { type: 'solid3d', solid3d_id: 'sweep-2' },
-      ])
-    }
+    expect(result?.otherSelections).toEqual([])
+    expect(result?.graphSelections).toEqual([
+      {
+        entityRef: { type: 'solid3d', solid3d_id: sweepOne.id },
+        codeRef: sweepOne.codeRef,
+      },
+      {
+        entityRef: { type: 'solid3d', solid3d_id: sweepTwo.id },
+        codeRef: sweepTwo.codeRef,
+      },
+      { artifact: imported, codeRef: imported.codeRef },
+      {
+        entityRef: { type: 'plane', plane_id: plane.id },
+        codeRef: plane.codeRef,
+      },
+    ])
+    expect(
+      coerceSelectionsForBodyOnlySelectionTypes(
+        selections,
+        ['sweep', 'wall', 'plane', 'importedGeometry'],
+        artifactGraph
+      )
+    ).toBe(selections)
   })
 })

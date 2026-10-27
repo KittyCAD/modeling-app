@@ -15,13 +15,26 @@ import {
 import { err } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
+const objectSelectionTypes = new Set<CommandSelectionType>([
+  'path',
+  'pathRegion',
+  'solid2d',
+  'sketchBlock',
+  'sweep',
+  'compositeSolid',
+  'gdtAnnotation',
+  'helix',
+  'plane',
+  'importedGeometry',
+])
+
 /**
  * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).
  * This is useful for commands that only work with bodies, but users may have faces or edges selected.
  *
  * @param selections - The selections to coerce
  * @param artifactGraph - The artifact graph to use for lookups
- * @returns A new Selections object with only body artifacts, or an Error if coercion fails
+ * @returns Body selections with other whole objects preserved, or an Error if coercion fails
  */
 export function coerceSelectionsToBody(
   selections: Selections,
@@ -40,11 +53,8 @@ export function coerceSelectionsToBody(
         topologyFallback.parentId,
         artifactGraph
       )
-      if (
-        bodySelection?.artifact &&
-        bodySelection.codeRef &&
-        !seenBodyIds.has(bodySelection.artifact.id)
-      ) {
+      if (bodySelection?.artifact && bodySelection.codeRef) {
+        if (seenBodyIds.has(bodySelection.artifact.id)) continue
         seenBodyIds.add(bodySelection.artifact.id)
         bodySelections.push({
           artifact: bodySelection.artifact,
@@ -113,7 +123,11 @@ export function coerceSelectionsToBody(
       continue
     }
 
-    if (selection.artifact.type === 'helix') {
+    if (
+      objectSelectionTypes.has(selection.artifact.type) &&
+      selection.artifact.type !== 'sweep' &&
+      selection.artifact.type !== 'compositeSolid'
+    ) {
       passthroughSelections.push(selV2)
       continue
     }
@@ -187,11 +201,8 @@ export function coerceSelectionsToBody(
         selection.parentEntityId,
         artifactGraph
       )
-      if (
-        bodySelection?.artifact &&
-        bodySelection.codeRef &&
-        !seenBodyIds.has(bodySelection.artifact.id)
-      ) {
+      if (bodySelection?.artifact && bodySelection.codeRef) {
+        if (seenBodyIds.has(bodySelection.artifact.id)) continue
         seenBodyIds.add(bodySelection.artifact.id)
         bodySelections.push({
           artifact: bodySelection.artifact,
@@ -205,17 +216,10 @@ export function coerceSelectionsToBody(
   }
 
   const graphSelections: Selection[] = [
-    ...bodySelections
-      .map((s) => ({
-        entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
-        codeRef: s.codeRef,
-      }))
-      .filter(
-        (
-          v2
-        ): v2 is typeof v2 & { entityRef: NonNullable<typeof v2.entityRef> } =>
-          v2.entityRef != null
-      ),
+    ...bodySelections.map(({ artifact, codeRef }) => {
+      const entityRef = artifactToEntityRef(artifact.type, artifact.id)
+      return entityRef ? { entityRef, codeRef } : { artifact, codeRef }
+    }),
     ...passthroughSelections,
     ...codeRefOnlyV2,
   ]
@@ -239,12 +243,8 @@ export function coerceSelectionsForBodyOnlySelectionTypes(
     return selections
   }
 
-  const onlyAcceptsBodyLikeObjects = selectionTypes?.every(
-    (type) =>
-      type === 'sweep' ||
-      type === 'compositeSolid' ||
-      type === 'path' ||
-      type === 'helix'
+  const onlyAcceptsBodyLikeObjects = selectionTypes?.every((type) =>
+    objectSelectionTypes.has(type)
   )
   if (!onlyAcceptsBodyLikeObjects) {
     return selections
