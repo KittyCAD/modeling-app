@@ -1304,7 +1304,9 @@ export async function getSelectionReferences({
               ? artifact.subType === 'region'
                 ? 'Region'
                 : 'Profile'
-              : undefined
+              : artifact?.type === 'gdtAnnotation'
+                ? 'Annotation'
+                : undefined
       if (label) {
         references.push(
           ...createExpressionReferences({
@@ -2629,6 +2631,10 @@ export function getSelectionCountByType(
   }
 
   function incrementArtifactSelectionType(artifact: Artifact): boolean {
+    if (artifact.type === 'gdtAnnotation') {
+      incrementOrInitializeSelectionType('gdtAnnotation')
+      return true
+    }
     if (artifact.type === 'helix') {
       incrementOrInitializeSelectionType('helix')
       return true
@@ -2703,8 +2709,11 @@ export function getSelectionCountByType(
           incrementOrInitializeSelectionType('path')
         }
       }
-    } else if (inlineArtifact?.type === 'helix') {
-      incrementOrInitializeSelectionType('helix')
+    } else if (
+      inlineArtifact?.type === 'helix' ||
+      inlineArtifact?.type === 'gdtAnnotation'
+    ) {
+      incrementOrInitializeSelectionType(inlineArtifact.type)
     } else if (
       inlineArtifact?.type === 'path' &&
       inlineArtifact.subType === 'region'
@@ -3057,7 +3066,20 @@ export async function sendQueryEntityTypeWithPoint(
   if (isArray(res)) {
     res = res[0]
   }
-  return getQueryEntityTypeWithPointData(res)
+  const data = getQueryEntityTypeWithPointData(res)
+  // Annotations have an engine ID but no geometry EntityReference.
+  if (data && !data.reference) {
+    await systemDeps.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'select_with_point',
+        selected_at_window: { x, y },
+        selection_type: 'add',
+      },
+      cmd_id: uuidv4(),
+    })
+  }
+  return data
 }
 
 /** Query entity at point using scene element for coordinates (e.g. renderer.domElement). Used when handling double-click from scene onClick. */
@@ -3244,6 +3266,7 @@ const semanticEntityNames: {
   ],
   point: [],
   plane: ['defaultPlane'],
+  annotation: ['gdtAnnotation'],
 }
 
 function getSemanticEntityForSelectionType(

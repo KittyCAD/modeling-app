@@ -5885,6 +5885,53 @@ test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
     userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG, 'modeling_dialogs'],
   })
 
+  test('Selects objects and annotations for Named View exceptions', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(
+        '',
+        `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
+}
+body001 = extrude(region(segments = [sketch001.circle1]), length = 10mm)
+note001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontSize = 8mm)`
+      )
+    )
+    await scene.moveCameraTo({ x: 0, y: -30, z: 150 })
+    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+    await page.getByTestId('named-view-create').click()
+    const dialog = page.getByTestId('modeling-dialog')
+    await dialog.getByRole('textbox', { name: /^name/i }).fill('Inspection')
+    await dialog.getByText('Advanced', { exact: true }).click()
+
+    const [clickBody] = scene.makeMouseHelpers(0.46, 0.53, { format: 'ratio' })
+    const [clickNote] = scene.makeMouseHelpers(0.42, 0.32, { format: 'ratio' })
+    await clickBody()
+    const exceptions = dialog.getByRole('button', {
+      name: 'Select Exceptions',
+      exact: true,
+    })
+    await expect(exceptions).toHaveText('1 sweep')
+    await page.keyboard.down('Shift')
+    await clickNote()
+    await expect(exceptions).toHaveText('1 sweep, 1 annotation')
+    await page.keyboard.up('Shift')
+    await scene.waitForExecutionDoneAfter(() =>
+      dialog.getByRole('button', { name: 'Submit', exact: true }).click()
+    )
+    await editor.expectEditor.toContain('except = [body001, note001]')
+  })
+
   test('Creates, edits visibility, and removes a Named View from the pane', async ({
     page,
     homePage,
