@@ -259,7 +259,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     })
   })
 
-  test('Can select split edges for fillet', async ({
+  test('Can select split edges for fillet @localRenderer', async ({
     context,
     scene,
     cmdBar,

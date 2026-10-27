@@ -253,7 +253,7 @@ part001 = startSketchOn(XZ)
     ).not.toBeVisible()
   })
 
-  test('"View KCL source code" right click menu in scene', async ({
+  test('"View KCL source code" right click menu in scene @localRenderer', async ({
     page,
     homePage,
     scene,
@@ -310,7 +310,7 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $endCap001)
 sketch002 = startSketchOn(extrude001, face = endCap001)
 shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
 
-  test(`Engine primitive selection works on shell inner face`, async ({
+  test(`Engine primitive selection works on shell inner face @localRenderer`, async ({
     context,
     page,
     homePage,

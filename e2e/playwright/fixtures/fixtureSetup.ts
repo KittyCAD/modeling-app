@@ -33,6 +33,7 @@ import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 
 import {
   TEST_SETTINGS,
+  geometryOnlyForTestTags,
   playwrightPluginSettings,
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
@@ -163,6 +164,7 @@ export class ElectronZoo {
   public page!: Page
   public context!: BrowserContext
   private tracingEnabled = false
+  private useLocalRenderer: boolean | undefined
 
   constructor(private readonly launchOptions: ElectronZooLaunchOptions = {}) {}
 
@@ -249,6 +251,8 @@ export class ElectronZoo {
     if (this.disposed) {
       throw new Error('Electron fixture has been disposed')
     }
+    this.useLocalRenderer = geometryOnlyForTestTags(testInfo.tags)
+
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
 
@@ -468,6 +472,14 @@ export class ElectronZoo {
       settings: {
         ...TEST_SETTINGS,
         ...appSettings,
+        ...(this.useLocalRenderer === undefined
+          ? {}
+          : {
+              modeling: {
+                ...(appSettings?.modeling ?? TEST_SETTINGS.modeling),
+                use_local_renderer: this.useLocalRenderer,
+              },
+            }),
         plugins: {
           ...playwrightPluginSettings(),
           ...appSettingsPlugins,
@@ -571,6 +583,29 @@ const fixturesForWeb = {
     const webApp = new AuthenticatedApp(context, page, testInfo)
     await webApp.initialise('', userFeatures)
 
+    const localRendererEnabled = geometryOnlyForTestTags(testInfo.tags)
+    if (localRendererEnabled !== undefined) {
+      // Web settings live in OPFS; the localStorage seed alone cannot select
+      // a renderer. Persist the choice before a modeling scene mounts.
+      await page.waitForFunction(() =>
+        window.app?.settings.actor.getSnapshot().matches('idle')
+      )
+      await page.evaluate((value) => {
+        window.app.settings.actor.send({
+          type: 'set.modeling.useLocalRenderer',
+          data: { level: 'user', value },
+        })
+      }, localRendererEnabled)
+      await page.waitForFunction((value) => {
+        const snapshot = window.app.settings.actor.getSnapshot()
+        return (
+          snapshot.matches('idle') &&
+          snapshot.context.modeling.useLocalRenderer.current === value
+        )
+      }, localRendererEnabled)
+      await page.reload()
+    }
+
     await use(page)
   },
 }
@@ -596,8 +631,8 @@ const fixturesBasedOnProcessEnvPlatform = {
   toolbar: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new ToolbarFixture(page))
   },
-  scene: async ({ page }: { page: Page }, use: FnUse) => {
-    await use(new SceneFixture(page))
+  scene: async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
+    await use(new SceneFixture(page, geometryOnlyForTestTags(testInfo.tags)))
   },
   homePage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new HomePageFixture(page))

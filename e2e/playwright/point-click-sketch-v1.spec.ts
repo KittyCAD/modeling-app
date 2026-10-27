@@ -1007,7 +1007,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
     })
   })
 
-  test(`Shell point-and-click`, async ({
+  test(`Shell point-and-click @localRenderer`, async ({
     context,
     page,
     homePage,
@@ -1128,7 +1128,7 @@ extrude001 = extrude(sketch001, length = 30)`
     })
   })
 
-  test(`Delete Face point-and-click`, async ({
+  test(`Delete Face point-and-click @localRenderer`, async ({
     context,
     page,
     homePage,
@@ -3330,7 +3330,7 @@ extrude001 = extrude(sketch001, length = 30)
     })
   })
 
-  test('Hole point-and-click', async ({
+  test('Hole point-and-click @localRenderer', async ({
     context,
     page,
     homePage,

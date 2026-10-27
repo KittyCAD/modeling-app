@@ -67,7 +67,7 @@ helix001 = helix(
 )`
 
 test.describe('Face API selection regressions', { tag: '@web' }, () => {
-  test('2.9 fillets a generated Chamfer boundary edge', async ({
+  test('2.9 fillets a generated Chamfer boundary edge @localRenderer', async ({
     context,
     page,
     scene,
@@ -109,7 +109,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await editor.expectEditor.not.toContain('edgeId(')
   })
 
-  test('2.10 fillets an outer Shell rim edge', async ({
+  test('2.10 fillets an outer Shell rim edge @localRenderer', async ({
     context,
     page,
     scene,
@@ -167,7 +167,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await editor.expectEditor.toContain('fillet001 = fillet(body001')
   })
 
-  test('2.12 surface-extrudes an untouched outer CSG edge', async ({
+  test('2.12 surface-extrudes an untouched outer CSG edge @localRenderer', async ({
     context,
     page,
     scene,

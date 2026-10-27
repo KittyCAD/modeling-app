@@ -326,7 +326,7 @@ openSketch = sketch(on = XY) {
     })
   })
 
-  test(`Shift-click to select and deselect faces`, async ({
+  test(`Shift-click to select and deselect faces @localRenderer`, async ({
     context,
     cmdBar,
     toolbar,
@@ -1000,7 +1000,7 @@ region001 = region(segments = [sketch001.circle1])`
     })
   })
 
-  test(`Fillet point-and-click`, async ({
+  test(`Fillet point-and-click @localRenderer`, async ({
     context,
     page,
     homePage,
@@ -1648,7 +1648,7 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
     })
   })
 
-  test(`Fillet with large radius should update code even if engine fails`, async ({
+  test(`Fillet with large radius should update code even if engine fails @localRenderer`, async ({
     context,
     page,
     homePage,
@@ -1748,7 +1748,7 @@ extrude001 = extrude(region001, length = 5)`
     })
   })
 
-  test(`Chamfer point-and-click`, async ({
+  test(`Chamfer point-and-click @localRenderer`, async ({
     context,
     page,
     homePage,
@@ -2181,7 +2181,7 @@ chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line2, ca
     })
   })
 
-  test(`Shell point-and-click`, async ({
+  test(`Shell point-and-click @localRenderer`, async ({
     context,
     page,
     homePage,
@@ -2375,7 +2375,7 @@ extrude001 = extrude(profile001, length = 500)`
     })
   })
 
-  test(`Delete Face point-and-click`, async ({
+  test(`Delete Face point-and-click @localRenderer`, async ({
     context,
     page,
     homePage,
@@ -2442,7 +2442,7 @@ extrude001 = extrude(region001, length = 30)`
     })
   })
 
-  test(`Delete face on a face-API chamfer using its edge-cut tag`, async ({
+  test(`Delete face on a face-API chamfer using its edge-cut tag @localRenderer`, async ({
     page,
     homePage,
     scene,
@@ -2496,7 +2496,7 @@ chamfer001 = chamfer(
     )
   })
 
-  test(`Delete face on an unmapped multi-selector chamfer face`, async ({
+  test(`Delete face on an unmapped multi-selector chamfer face @localRenderer`, async ({
     page,
     homePage,
     scene,
@@ -2554,7 +2554,7 @@ hide(sketch001)`
     )
   })
 
-  test(`Delete face on an unmapped chained fillet face`, async ({
+  test(`Delete face on an unmapped chained fillet face @localRenderer`, async ({
     page,
     homePage,
     scene,
@@ -4900,7 +4900,7 @@ extrude001 = extrude(region001, length = 30)`
     })
   })
 
-  test('Hole point-and-click', async ({
+  test('Hole point-and-click @localRenderer', async ({
     context,
     page,
     homePage,

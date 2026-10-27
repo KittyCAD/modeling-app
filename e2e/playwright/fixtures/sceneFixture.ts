@@ -120,7 +120,10 @@ export class SceneFixture {
   public startEditSketchBtn!: Locator
   public appHeader!: Locator
 
-  constructor(page: Page) {
+  constructor(
+    page: Page,
+    private readonly expectedLocalRenderer?: boolean
+  ) {
     this.page = page
     this.streamWrapper = page.getByTestId('stream')
     this.networkToggleConnected = page
@@ -508,6 +511,13 @@ export class SceneFixture {
     pos: { x: number; y: number; z: number },
     target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 }
   ) => {
+    // Initial model loading fits the local camera; let it finish before
+    // applying an explicit pose so that fit cannot overwrite the test's view.
+    await expect(
+      this.page.getByTestId('local-renderer-loading')
+    ).not.toBeVisible({
+      timeout: 30_000,
+    })
     await this.page.evaluate(
       ({ pos, target }) => {
         const controls = window.app.singletons.kclManager.sceneInfra.camControls
@@ -586,6 +596,21 @@ export class SceneFixture {
       })
     }
     await expect(this.startEditSketchBtn).toBeVisible()
+    if (this.expectedLocalRenderer !== undefined) {
+      await expect
+        .poll(() =>
+          this.page.evaluate(
+            () =>
+              window.app.singletons.kclManager.sceneInfra.localRenderer !== null
+          )
+        )
+        .toBe(this.expectedLocalRenderer)
+      await expect
+        .poll(() =>
+          this.page.evaluate(() => window.engineCommandManager.geometryOnly)
+        )
+        .toBe(this.expectedLocalRenderer)
+    }
   }
 
   waitForExecutionDoneAfter = async (

@@ -646,7 +646,7 @@ test.describe(
       await expect(page.getByTestId('context-menu-set-scale')).not.toBeVisible()
     })
 
-    test(`Import the bracket part into an assembly and transform it (scene selection)`, async ({
+    test(`Import the bracket part into an assembly and transform it (scene selection) @localRenderer`, async ({
       context,
       page,
       homePage,
