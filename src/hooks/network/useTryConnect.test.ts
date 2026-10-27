@@ -5,7 +5,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import {
   reapplyActiveViewAfterReconnect,
-  trackActiveViewCamera,
+  startTrackingActiveViewCamera,
 } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -24,7 +24,7 @@ vi.mock('@src/lang/kclLanguageVersion', () => ({
 vi.mock('@src/lib/kclNamedViewActivation', () => ({
   reapplyActiveViewAfterReconnect: vi.fn(),
   stopTrackingActiveViewCamera: vi.fn(),
-  trackActiveViewCamera: vi.fn(),
+  startTrackingActiveViewCamera: vi.fn(),
 }))
 vi.mock('@src/lib/resetCameraPosition', () => ({
   resetCameraPosition: vi.fn(),
@@ -151,7 +151,7 @@ describe('reconnect camera restoration', () => {
         }
       )
       vi.mocked(resetCameraPosition).mockClear()
-      vi.mocked(trackActiveViewCamera).mockClear()
+      vi.mocked(startTrackingActiveViewCamera).mockClear()
       await tryConnecting({
         abnormalCloseRetries: { current: 0 },
         isConnecting: { current: false },
@@ -188,7 +188,7 @@ describe('reconnect camera restoration', () => {
         camControls.overrideOldCameraStateToPreventDesync
       ).toHaveBeenCalledTimes(source === 'idle' ? 1 : 0)
       expect(resetCameraPosition).not.toHaveBeenCalled()
-      expect(trackActiveViewCamera).toHaveBeenCalledTimes(
+      expect(startTrackingActiveViewCamera).toHaveBeenCalledTimes(
         retired === 'none' ? 1 : 0
       )
       if (retired === 'clear') {

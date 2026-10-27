@@ -162,7 +162,7 @@ export type NamedViewCameraMode = ArtifactCameraView['look']['type']
 // Keep an existing camera expression until the user explicitly recaptures it.
 export type NamedViewCameraInput = NamedViewCameraSnapshot | Expr
 
-function point(
+function point3d(
   value: ArtifactPoint3d,
   wasmInstance: ModuleType,
   suffix?: 'Mm'
@@ -185,10 +185,10 @@ function createCapturedCamera(
 ) {
   return createCallExpressionStdLibKw(
     'directed',
-    point(camera.look.direction, wasmInstance),
+    point3d(camera.look.direction, wasmInstance),
     [
-      createLabeledArg('up', point(camera.look.up, wasmInstance)),
-      createLabeledArg('target', point(camera.target, wasmInstance, 'Mm')),
+      createLabeledArg('up', point3d(camera.look.up, wasmInstance)),
+      createLabeledArg('target', point3d(camera.target, wasmInstance, 'Mm')),
       createLabeledArg(
         'distance',
         createLiteral(

@@ -13,7 +13,7 @@ import { preflightEngineVideoCodecSupport } from '@src/lib/engineConnection/vide
 import {
   reapplyActiveViewAfterReconnect,
   stopTrackingActiveViewCamera,
-  trackActiveViewCamera,
+  startTrackingActiveViewCamera,
 } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
@@ -232,7 +232,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
 
   // Since you reconnected you are not idle, clear the old camera state
   sceneInfra.camControls.clearOldCameraState()
-  trackActiveViewCamera(kclManager)
+  startTrackingActiveViewCamera(kclManager)
 }
 
 /**

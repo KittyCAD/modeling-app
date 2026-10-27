@@ -76,7 +76,6 @@ function ArgumentInput({
 }) {
   const app = useApp()
   const executingEditor = app.project?.executingEditor.value
-  // @ts-ignore
   switch (arg.inputType) {
     case 'camera':
       return executingEditor ? (
@@ -188,7 +187,6 @@ function ArgumentInput({
     case 'string':
     case 'color':
     case 'tagDeclarator':
-    default:
       return (
         <CommandBarBasicInput
           arg={arg}

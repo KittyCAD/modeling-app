@@ -135,7 +135,7 @@ async function applyAndTrackCamera(
       })
     }
   } finally {
-    trackActiveViewCamera(kclManager)
+    startTrackingActiveViewCamera(kclManager)
   }
 }
 
@@ -144,7 +144,7 @@ export function stopTrackingActiveViewCamera(): void {
   stopCameraChangeListener = null
 }
 
-export function trackActiveViewCamera(kclManager: KclManager): void {
+export function startTrackingActiveViewCamera(kclManager: KclManager): void {
   stopTrackingActiveViewCamera()
   stopCameraChangeListener = onCameraMoved(
     kclManager.sceneInfra.camControls,
