@@ -27,16 +27,17 @@ describe('image attachment previews', () => {
       <ZookeeperAttachmentPreview file={first} />
     )
 
-    expect(screen.getByText('Image')).toHaveAttribute('title', first.name)
+    expect(screen.queryByText('Image')).not.toBeInTheDocument()
     expect(screen.queryByText(first.name)).not.toBeInTheDocument()
     const thumbnail = screen.getByRole('img', { name: 'Attachment preview' })
     expect(thumbnail).toHaveAttribute('src', 'blob:image-1')
-    expect(thumbnail).toHaveClass('h-8', 'w-8')
+    expect(thumbnail.closest('[title]')).toHaveAttribute('title', first.name)
+    expect(thumbnail.parentElement).toHaveClass('h-12', 'w-12')
     expect(createObjectURL).toHaveBeenCalledWith(first)
 
     fireEvent.error(thumbnail)
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
-    expect(screen.getByText('Image')).toBeInTheDocument()
+    expect(screen.getByText('Image')).toHaveClass('sr-only')
 
     rerender(<ZookeeperAttachmentPreview file={second} />)
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:image-1')
@@ -52,7 +53,7 @@ describe('image attachment previews', () => {
     const { rerender, unmount } = render(
       <ZookeeperAttachmentPreview file={file} />
     )
-    expect(screen.getByText('Image')).toBeInTheDocument()
+    expect(screen.getByText('Image')).toHaveClass('sr-only')
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
     expect(createObjectURL).not.toHaveBeenCalled()
 

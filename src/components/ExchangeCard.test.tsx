@@ -80,7 +80,8 @@ describe('ExchangeCard replay attachments', () => {
     expect(
       screen.getByRole('img', { name: 'Attachment preview' })
     ).toHaveAttribute('src', 'blob:image-preview')
-    expect(screen.getByText('Loaded')).toBeInTheDocument()
+    expect(screen.queryByText('Loaded')).not.toBeInTheDocument()
+    expect(screen.queryByText('Image')).not.toBeInTheDocument()
   })
 
   test('renders a metadata-only server file without a reasoning message', () => {

@@ -997,7 +997,9 @@ describe('ZookeeperConversation', () => {
       within(requestBubble).queryByText('Attachments')
     ).not.toBeInTheDocument()
     expect(within(attachments).getByText('Attachments')).toBeInTheDocument()
-    expect(within(attachments).getByText('Image')).toBeInTheDocument()
+    expect(
+      within(attachments).getByRole('img', { name: 'Attachment preview' })
+    ).toBeInTheDocument()
     expect(
       within(attachments).getByText('requirements.pdf')
     ).toBeInTheDocument()
@@ -1056,7 +1058,9 @@ describe('ZookeeperConversation', () => {
 
     const attachments = screen.getByTestId('ml-request-chat-bubble-attachments')
 
-    expect(within(attachments).getByText('Image')).toBeInTheDocument()
+    expect(
+      within(attachments).getByRole('img', { name: 'Attachment preview' })
+    ).toBeInTheDocument()
     expect(
       within(attachments).getByText('requirements.pdf')
     ).toBeInTheDocument()
@@ -1066,7 +1070,9 @@ describe('ZookeeperConversation', () => {
 
     fireEvent.click(within(attachments).getByText('+ more'))
 
-    expect(within(attachments).getAllByText('Image')).toHaveLength(2)
+    expect(
+      within(attachments).getAllByRole('img', { name: 'Attachment preview' })
+    ).toHaveLength(2)
     expect(within(attachments).getByText('- collapse')).toBeInTheDocument()
 
     fireEvent.click(within(attachments).getByText('- collapse'))
@@ -1508,7 +1514,7 @@ describe('ZookeeperConversation', () => {
         expect(
           await screen.findByRole('img', { name: 'Attachment preview' })
         ).toBeInTheDocument()
-        expect(screen.getByText('Image')).toBeInTheDocument()
+        expect(screen.queryByText('Image')).not.toBeInTheDocument()
         fireEvent.click(
           screen.getByTestId('ml-ephant-conversation-input-button')
         )
@@ -1670,14 +1676,18 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('Image')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
 
       const removeButton = screen.getByRole('button', {
         name: 'Remove image 1',
       })
       fireEvent.click(removeButton)
 
-      expect(screen.queryByText('Image')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
     test('sends attachments with prompt on submit', async () => {
@@ -1698,7 +1708,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('Image')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
 
       fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
@@ -1732,12 +1744,16 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('Image')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
 
       fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(screen.queryByText('Image')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
     test('does not accept files when disabled', () => {
@@ -1756,7 +1772,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(screen.queryByText('Image')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
     test('does not accept paste when disabled', () => {
@@ -1772,7 +1790,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(screen.queryByText('Image')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
     test('deduplicates files with same name and size', async () => {
@@ -1825,7 +1845,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('Image')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
       expect(screen.getByText('doc.pdf')).toBeInTheDocument()
       expect(screen.getByText('drawing.dxf')).toBeInTheDocument()
       expect(screen.getByText('script.js')).toBeInTheDocument()

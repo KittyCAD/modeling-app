@@ -321,6 +321,7 @@ export const RequestCard = (props: RequestCardProps) => {
               Attachments
             </div>
             {visibleAttachments.map((file, index) => {
+              const isImage = file.mimetype.startsWith('image/')
               const attachmentRef = file.attachment_ref
               const fetchState = attachmentRef
                 ? props.attachmentFetches?.[
@@ -342,19 +343,24 @@ export const RequestCard = (props: RequestCardProps) => {
                     icon="paperclip"
                   />
                   {fetchState?.status === 'loading' && (
-                    <span className="text-chalkboard-70 dark:text-chalkboard-40">
+                    <span
+                      className={
+                        isImage
+                          ? 'sr-only'
+                          : 'text-chalkboard-70 dark:text-chalkboard-40'
+                      }
+                    >
                       Loading…
                     </span>
                   )}
-                  {fetchState?.status === 'loaded' && (
+                  {fetchState?.status === 'loaded' && !isImage && (
                     <span className="text-chalkboard-70 dark:text-chalkboard-40">
                       Loaded
                     </span>
                   )}
                 </>
               )
-              const className =
-                'flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 px-2 py-1 text-xs'
+              const className = `flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 text-xs ${isImage ? '' : 'px-2 py-1'}`
 
               return canFetch ? (
                 <button

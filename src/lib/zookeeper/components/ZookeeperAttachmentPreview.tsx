@@ -55,7 +55,36 @@ export const ZookeeperAttachmentPreview = ({
   }, [file, isPastedText])
 
   const imageUrl = imagePreview?.file === file ? imagePreview.url : undefined
-  let label = isImage ? 'Image' : file.name
+  const fileIcon = (
+    <CustomIcon
+      name={icon}
+      className={icon === 'file' ? 'w-4 h-4 shrink-0' : 'w-3 h-3 shrink-0'}
+    />
+  )
+  if (isImage) {
+    return (
+      <span
+        className="inline-flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded"
+        title={file.name}
+      >
+        {imageUrl && failedImageUrl !== imageUrl ? (
+          <img
+            src={imageUrl}
+            alt="Attachment preview"
+            className="h-full w-full object-cover"
+            onError={() => setFailedImageUrl(imageUrl)}
+          />
+        ) : (
+          <>
+            {fileIcon}
+            <span className="sr-only">Image</span>
+          </>
+        )}
+      </span>
+    )
+  }
+
+  let label = file.name
   if (isPastedText) {
     const preview =
       file instanceof File
@@ -70,19 +99,7 @@ export const ZookeeperAttachmentPreview = ({
 
   return (
     <>
-      {imageUrl && failedImageUrl !== imageUrl ? (
-        <img
-          src={imageUrl}
-          alt="Attachment preview"
-          className="h-8 w-8 shrink-0 rounded object-cover"
-          onError={() => setFailedImageUrl(imageUrl)}
-        />
-      ) : (
-        <CustomIcon
-          name={icon}
-          className={icon === 'file' ? 'w-4 h-4 shrink-0' : 'w-3 h-3 shrink-0'}
-        />
-      )}
+      {fileIcon}
       <span className="min-w-0 max-w-[160px] truncate" title={file.name}>
         {label}
       </span>
