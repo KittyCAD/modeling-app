@@ -2013,9 +2013,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     const pressUndo = async () => {
-      await page.keyboard.down('Control')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Control')
+      await page.keyboard.press('ControlOrMeta+z')
     }
     const getHandleIds = async () =>
       await page
@@ -2026,13 +2024,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
             .filter((value): value is string => Boolean(value))
         )
 
-    const trimAcrossLine = async (lineIndex: number) => {
+    const trimAcrossLine = async (lineIndex: number, fraction: number) => {
       const start = await pointHandles.nth(lineIndex * 2).boundingBox()
       const end = await pointHandles.nth(lineIndex * 2 + 1).boundingBox()
       if (!start || !end) throw new Error('Trim target handles are missing')
-      // Cross the upper quarter of the rendered line, away from intersections.
-      const x = start.x * 0.75 + end.x * 0.25
-      const y = start.y * 0.75 + end.y * 0.25
+      // Cross the rendered line perpendicular to its endpoints.
+      const x = start.x * (1 - fraction) + end.x * fraction
+      const y = start.y * (1 - fraction) + end.y * fraction
       const length = Math.hypot(end.x - start.x, end.y - start.y)
       const dx = ((end.y - start.y) / length) * 12
       const dy = ((start.x - end.x) / length) * 12
@@ -2047,7 +2045,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     const initialHandleIds = await getHandleIds()
 
     await test.step('Trim first region and undo', async () => {
-      await trimAcrossLine(0)
+      // Split the horizontal segment between the two vertical lines.
+      await trimAcrossLine(2, 0.5)
 
       const trimmedCode = await waitForCodeChange(page, initialCode)
       expect(normaliseCode(trimmedCode)).not.toBe(normaliseCode(initialCode))
@@ -2076,7 +2075,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         normaliseCode(initialCode)
       )
 
-      await trimAcrossLine(3)
+      await trimAcrossLine(3, 0.25)
 
       const trimmedCode = await waitForCodeChange(page, codeBeforeSecondTrim)
       expect(normaliseCode(trimmedCode)).not.toBe(

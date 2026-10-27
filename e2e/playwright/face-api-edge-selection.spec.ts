@@ -308,6 +308,8 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     await toolbar.filletButton.click()
     await cmdBar.expectState(state)
 
+    await expect(page.locator('#arg-form')).toContainText('1 edge selected')
+
     // Edge should already be selected, progress to radius
     state.currentArgKey = 'radius'
     state.currentArgValue = '5' // Default radius
@@ -388,6 +390,7 @@ hide(sketch001)`
     await toolbar.helixButton.click()
     await cmdBar.selectOption({ name: 'Edge' }).click()
     await clickSurfaceEdge()
+    await expect(page.locator('#arg-form')).toContainText('1 edge selected')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       commandName: 'Helix',

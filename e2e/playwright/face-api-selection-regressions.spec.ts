@@ -213,6 +213,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       },
       highlightedHeaderArg: 'Profiles',
     })
+    await expect(page.locator('#arg-form')).toContainText('1 edge selected')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'arguments',

@@ -14,7 +14,11 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
-import { DefaultLayoutPaneID } from '@src/lib/layout'
+import {
+  DefaultLayoutPaneID,
+  getOpenPanes,
+  setOpenPanes,
+} from '@src/lib/layout'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { reportRejection } from '@src/lib/trap'
 import { shouldLockViewControls } from '@src/components/viewControlMenuUtils'
@@ -97,7 +101,11 @@ export function useViewControlMenuItems() {
         onClick={() => {
           if (firstValidSelection?.codeRef?.range) {
             // First, open the code pane if it's not already open
-            layout.openPane(DefaultLayoutPaneID.Code)
+            const rootLayout = layout.signal.value
+            setOpenPanes(rootLayout, [
+              ...getOpenPanes({ rootLayout }),
+              DefaultLayoutPaneID.Code,
+            ])
 
             // Navigate to the source code location
             modelingSend({
@@ -194,7 +202,7 @@ export function useViewControlMenuItems() {
       showSketchGrid,
       snapToGrid,
       gizmoType,
-      layout,
+      layout.signal.value,
       kclManager,
       settings,
     ]
