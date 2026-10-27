@@ -22,11 +22,12 @@ impl IdGenerator {
         }
     }
 
-    /// Follow-up commands must not reuse IDs allocated by the remote interpreter.
+    /// A stable client namespace makes follow-up command IDs repeatable without
+    /// reusing IDs allocated by the remote interpreter.
     #[cfg(not(target_arch = "wasm32"))]
     pub(super) fn remote_session() -> Self {
         Self {
-            namespace: Some(uuid::Uuid::new_v4()),
+            namespace: Some(uuid::Uuid::new_v5(&NAMESPACE_KCL, b"remote-client")),
             ..Self::default()
         }
     }
