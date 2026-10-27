@@ -4,7 +4,14 @@ import {
   coerceSelectionsToBody,
 } from '@src/lang/std/selectionCoercion'
 import type { ArtifactGraph } from '@src/lang/wasm'
+import { assertParse } from '@src/lang/wasm'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import {
+  canSubmitSelectionArg,
+  getSelectionCountByType,
+} from '@src/lib/selections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
 describe('coerceSelectionsToBody', () => {
@@ -126,7 +133,7 @@ describe('coerceSelectionsToBody', () => {
     }
   })
 
-  it('should coerce codeRef-only segment selection to parent sweep', () => {
+  it('coerces code-reference edges and their profile to one body', () => {
     const artifactGraph: ArtifactGraph = new Map()
 
     const path: Artifact = {
@@ -170,12 +177,19 @@ describe('coerceSelectionsToBody', () => {
     artifactGraph.set('path-1', path)
     artifactGraph.set('sweep-1', sweep)
     artifactGraph.set('segment-1', segment)
+    artifactGraph.set('segment-2', {
+      ...segment,
+      id: 'segment-2',
+      codeRef: { ...segment.codeRef, range: [30, 40, 0] },
+    })
 
     const selections: Selections = {
       graphSelections: [
         {
           codeRef: { range: [10, 20, 0], pathToNode: [] },
         },
+        { codeRef: { range: [30, 40, 0], pathToNode: [] } },
+        { codeRef: path.codeRef },
       ],
       otherSelections: [],
     }
@@ -422,7 +436,7 @@ describe('coerceSelectionsToBody', () => {
     }
   })
 
-  it('coerces faces and edges for object fields without dropping other objects', () => {
+  it('coerces faces and edges for object fields without dropping other objects', async () => {
     const sweepOne: Artifact = {
       type: 'sweep',
       id: 'sweep-1',
@@ -509,9 +523,15 @@ describe('coerceSelectionsToBody', () => {
       ],
     }
 
+    const argument = {
+      inputType: 'selection',
+      selectionTypes: ['sweep', 'plane', 'importedGeometry'],
+      multiple: true,
+      required: false,
+    } satisfies CommandArgument<unknown>
     const result = coerceSelectionsForBodyOnlySelectionTypes(
       selections,
-      ['sweep', 'plane', 'importedGeometry'],
+      argument.selectionTypes,
       artifactGraph
     )
 
@@ -538,5 +558,13 @@ describe('coerceSelectionsToBody', () => {
         artifactGraph
       )
     ).toBe(selections)
+
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const counts = getSelectionCountByType(
+      assertParse('', instance),
+      result,
+      artifactGraph
+    )
+    expect(canSubmitSelectionArg(counts, argument, result)).toBe(true)
   })
 })

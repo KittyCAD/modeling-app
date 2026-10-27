@@ -103,7 +103,8 @@ export function coerceSelectionsToBody(
           { key: maybeSweepId, types: ['sweep'] },
           artifactGraph
         )
-        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
+        if (!err(sweepWithType)) {
+          if (seenBodyIds.has(sweepWithType.id)) continue
           seenBodyIds.add(sweepWithType.id)
           bodySelections.push({
             artifact: sweepWithType,
@@ -159,7 +160,8 @@ export function coerceSelectionsToBody(
         { key: maybeSweep.id, types: ['sweep'] },
         artifactGraph
       )
-      if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
+      if (!err(sweepWithType)) {
+        if (seenBodyIds.has(sweepWithType.id)) continue
         seenBodyIds.add(sweepWithType.id)
         bodySelections.push({
           artifact: sweepWithType,

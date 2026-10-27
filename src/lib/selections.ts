@@ -2631,12 +2631,12 @@ export function getSelectionCountByType(
   }
 
   function incrementArtifactSelectionType(artifact: Artifact): boolean {
-    if (artifact.type === 'gdtAnnotation') {
-      incrementOrInitializeSelectionType('gdtAnnotation')
-      return true
-    }
-    if (artifact.type === 'helix') {
-      incrementOrInitializeSelectionType('helix')
+    if (
+      artifact.type === 'gdtAnnotation' ||
+      artifact.type === 'helix' ||
+      artifact.type === 'importedGeometry'
+    ) {
+      incrementOrInitializeSelectionType(artifact.type)
       return true
     }
     if (artifact.type === 'path' && artifact.subType === 'region') {
@@ -2711,7 +2711,8 @@ export function getSelectionCountByType(
       }
     } else if (
       inlineArtifact?.type === 'helix' ||
-      inlineArtifact?.type === 'gdtAnnotation'
+      inlineArtifact?.type === 'gdtAnnotation' ||
+      inlineArtifact?.type === 'importedGeometry'
     ) {
       incrementOrInitializeSelectionType(inlineArtifact.type)
     } else if (
@@ -3267,6 +3268,7 @@ const semanticEntityNames: {
   point: [],
   plane: ['defaultPlane'],
   annotation: ['gdtAnnotation'],
+  object: ['importedGeometry'],
 }
 
 function getSemanticEntityForSelectionType(
