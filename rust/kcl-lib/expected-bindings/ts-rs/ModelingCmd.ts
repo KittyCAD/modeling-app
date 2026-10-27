@@ -2020,7 +2020,11 @@ presentation: GltfPresentation,
 /**
  * Include engine UUIDs in glTF extras. Defaults to false.
  */
-include_uuids: boolean, };
+include_uuids: boolean, 
+/**
+ * Named views in the scene.
+ */
+views: { [key in string]: NamedView }, };
 
 /**
  * Options for importing glTF 2.0.
@@ -2364,6 +2368,37 @@ path: ModelingCmdId,
  * Where the path's pen should be.
  */
 to: Point3d<LengthUnit>, };
+
+/**
+ * Options for exporting glTF 2.0.
+ */
+export type NamedView = { 
+/**
+ * Vantage point.
+ */
+vantage: Point3d<number>, 
+/**
+ * Target point.
+ */
+target: Point3d<number>, 
+/**
+ * Up direction.
+ */
+up: Point3d<number>, 
+/**
+ * Projection kind.
+ */
+projection: Projection, 
+/**
+ * Baseline visibility.
+ *
+ * Determines whether entities are visible or by default.
+ */
+baseline: Visibility, 
+/**
+ * Exceptions to the baseline visibility.
+ */
+except_ids: Array<ModelingCmdId>, };
 
 /**
  * Create a new annotation
@@ -3014,6 +3049,11 @@ points: Array<Point3d<number>>,
  * else: the projected points are returned in the world coordinate system.
  */
 use_plane_coords: boolean, };
+
+/**
+ * Data item selection.
+ */
+export type Projection = { "type": "orthographic" } | { "type": "perspective" };
 
 /**
  * Query the type of entity given its id. E.g. if a face is selected the face id is
@@ -3956,7 +3996,11 @@ presentation: StepPresentation,
 /**
  * STEP application protocol schema. Defaults to AP242.
  */
-schema: StepSchema, };
+schema: StepSchema, 
+/**
+ * Named views in the scene.
+ */
+views: { [key in string]: NamedView }, };
 
 /**
  * Options for importing STEP format.
@@ -4333,6 +4377,11 @@ export type ViewIsometric = {
  * and padding = -0.2 means the view will span 80% of the object(s) bounding box.
  */
 padding: number, };
+
+/**
+ * Identifies the visibility of entities.
+ */
+export type Visibility = "show" | "hide";
 
 /**
  * Get the volume of entities in the scene or the default scene.

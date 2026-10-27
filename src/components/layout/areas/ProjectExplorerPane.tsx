@@ -13,8 +13,6 @@ import { FILE_EXT } from '@src/lib/constants'
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
-  getOpenPanes,
-  togglePaneLayoutNode,
 } from '@src/lib/layout'
 import { parentPathRelativeToProject } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
@@ -72,17 +70,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const [collapsePressed, setCollapsedPressed] = useState<number>(0)
 
   const openCodeEditorPaneIfClosed = useCallback(() => {
-    const rootLayout = layout.get()
-    if (getOpenPanes({ rootLayout }).includes(DefaultLayoutPaneID.Code)) {
-      return
-    }
-    layout.set(
-      togglePaneLayoutNode({
-        rootLayout: structuredClone(rootLayout),
-        targetNodeId: DefaultLayoutPaneID.Code,
-        shouldExpand: true,
-      })
-    )
+    layout.openPane(DefaultLayoutPaneID.Code)
   }, [layout])
 
   const downloadProjectZip = useCallback(() => {
