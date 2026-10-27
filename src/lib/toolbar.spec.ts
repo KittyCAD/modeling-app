@@ -76,6 +76,58 @@ function findModelingToolbarItem(
   return item
 }
 
+test('offers one Plane button and carries valid preselected references into its definition', () => {
+  const send = vi.fn()
+  const items = buildToolbarConfig({ send }).modeling.items
+  const item = items.find(
+    (item): item is ToolbarItem =>
+      item !== 'break' && !('array' in item) && item.id === 'plane'
+  )
+  if (!item) throw new Error('Missing Plane button')
+  expect(item.title).toBe('Plane')
+  expect(
+    items.some(
+      (item) => item !== 'break' && 'array' in item && item.id === 'planes'
+    )
+  ).toBe(false)
+  const selectionRanges = {
+    graphSelections: [
+      {
+        entityRef: { type: 'vertex', side_faces: [] },
+        vertexPosition: [0, 0, 0],
+      },
+      {
+        entityRef: { type: 'vertex', side_faces: [] },
+        vertexPosition: [0, 0, 40],
+      },
+    ],
+    otherSelections: [],
+  }
+  item.onClick({
+    modelingState: { context: { selectionRanges } },
+  } as unknown as Parameters<typeof item.onClick>[0])
+  expect(send).toHaveBeenLastCalledWith({
+    type: 'Find and select command',
+    data: {
+      name: 'Construction plane',
+      groupId: 'modeling',
+      argDefaultValues: { method: 'References', references: selectionRanges },
+    },
+  })
+  selectionRanges.graphSelections.pop()
+  item.onClick({
+    modelingState: { context: { selectionRanges } },
+  } as unknown as Parameters<typeof item.onClick>[0])
+  expect(send).toHaveBeenLastCalledWith({
+    type: 'Find and select command',
+    data: {
+      name: 'Construction plane',
+      groupId: 'modeling',
+      argDefaultValues: { method: 'References' },
+    },
+  })
+})
+
 function getToolbarItems(
   toolbarConfig: ReturnType<typeof buildToolbarConfig>
 ): ToolbarItem[] {

@@ -8,6 +8,31 @@ import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
 describe('KCL expression calculations', () => {
+  it('formats nested numeric arrays only when explicitly enabled', async () => {
+    const { rustContext } = await buildTheWorldAndNoEngineConnection()
+    const value = '[[0mm, 0mm, 20mm], [10mm, 0mm, 20mm], [0mm, 10mm, 20mm]]'
+    const enabled = await getCalculatedKclExpressionValue(value, rustContext, {
+      allowArrays: true,
+      allowNestedArrays: true,
+    })
+    expect(enabled).toMatchObject({ valueAsString: value })
+    const disabled = await getCalculatedKclExpressionValue(value, rustContext, {
+      allowArrays: true,
+    })
+    expect(disabled).toMatchObject({ valueAsString: 'NAN' })
+  })
+
+  it.each(['[[true]]', '[[]]', '[["point"]]'])(
+    'rejects nonnumeric or empty nested arrays: %s',
+    async (value) => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const actual = await getCalculatedKclExpressionValue(value, rustContext, {
+        allowArrays: true,
+        allowNestedArrays: true,
+      })
+      expect(actual).toMatchObject({ valueAsString: 'NAN' })
+    }
+  )
   it('calculates a simple expression without units', async () => {
     const { rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue('1 + 2', rustContext)

@@ -150,6 +150,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-edgeId-1",
     "std-faceId-0",
     "std-offsetPlane-0",
+    "std-plane-0",
     "std-offsetPlane-1",
     "std-offsetPlane-2",
     "std-offsetPlane-3",

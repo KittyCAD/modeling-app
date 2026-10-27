@@ -8,6 +8,11 @@ import type {
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
+import { planeMethodArgs } from '@src/lang/modifyAst/planes'
+import { validatePlanePoints } from '@src/lib/vertexPicking'
+import type { PickedPoint } from '@src/lib/vertexPicking'
+import type { PlaneMethod } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+import { inferReferencePlane } from '@src/lib/referencePlanes'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
@@ -55,7 +60,7 @@ import {
 import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
@@ -1213,6 +1218,173 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
       }
     ),
+  },
+  'Construction plane': {
+    description:
+      'Create a plane from selected references or enter coordinates.',
+    icon: 'plane',
+    needsReview: true,
+    reviewMessage: (context) => {
+      if (context.argumentsToSubmit.method !== 'References')
+        return 'Create plane'
+      const kind = inferReferencePlane(
+        context.argumentsToSubmit.references as Selections | undefined
+      )
+      return isErr(kind)
+        ? kind.message
+        : `${kind}. References are saved at their current positions.`
+    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Construction plane']
+    ),
+    args: modelingStdLibCommandArgs<
+      ModelingCommandSchema['Construction plane']
+    >('Construction plane', {
+      overrides: {
+        method: {
+          displayName: 'Definition',
+          inputType: 'options',
+          required: true,
+          defaultValue: 'Normal',
+          options: [
+            { name: 'From selected geometry', value: 'References' },
+            { name: 'Point and normal', value: 'Normal' },
+            { name: 'Axes and origin', value: 'Axes' },
+            { name: 'Three points', value: 'Points' },
+            { name: 'Equation', value: 'Equation' },
+          ],
+        },
+        references: {
+          inputType: 'selection',
+          displayName: 'References',
+          description:
+            'Select planes, planar faces, or corner points. Hold Shift to add references; the selection determines the plane type.',
+          selectionTypes: [
+            'vertex',
+            'plane',
+            'planeOfFace',
+            'cap',
+            'wall',
+            'edgeCut',
+            'enginePrimitiveFace',
+            'primitiveFace',
+          ],
+          selectionFilter: ['vertex', 'face', 'plane'],
+          multiple: true,
+          required: (context) =>
+            context.argumentsToSubmit.method === 'References',
+          hidden: (context) =>
+            context.argumentsToSubmit.method !== 'References',
+          validation: async ({
+            data,
+          }: {
+            data: { references: Selections }
+          }) => {
+            const kind = inferReferencePlane(data.references)
+            return isErr(kind) ? kind.message : true
+          },
+        },
+        offset: {
+          inputType: 'kcl',
+          displayName: 'Distance',
+          defaultValue: '0mm',
+          required: (context) =>
+            context.argumentsToSubmit.method === 'References' &&
+            inferReferencePlane(
+              context.argumentsToSubmit.references as Selections | undefined
+            ) === 'Offset',
+          hidden: (context) =>
+            context.argumentsToSubmit.method !== 'References' ||
+            inferReferencePlane(
+              context.argumentsToSubmit.references as Selections | undefined
+            ) !== 'Offset',
+        },
+        pointSource: {
+          inputType: 'options',
+          defaultValue: 'Pick',
+          required: (context) => context.argumentsToSubmit.method === 'Points',
+          hidden: (context) => context.argumentsToSubmit.method !== 'Points',
+          options: [
+            { name: 'Pick points on part', value: 'Pick' },
+            { name: 'Enter coordinates', value: 'Coordinates' },
+          ],
+        },
+        pickedPoints: {
+          inputType: 'selection',
+          displayName: 'Three points',
+          description:
+            'Click the first corner on the part, then hold Shift to add two more. Selection order sets the plane normal. Points are saved at their current coordinates.',
+          selectionTypes: ['vertex'],
+          selectionFilter: ['vertex'],
+          multiple: true,
+          required: (context) =>
+            context.argumentsToSubmit.method === 'Points' &&
+            context.argumentsToSubmit.pointSource === 'Pick',
+          hidden: (context) =>
+            context.argumentsToSubmit.method !== 'Points' ||
+            context.argumentsToSubmit.pointSource !== 'Pick',
+          validation: async ({
+            data,
+          }: {
+            data: { pickedPoints: Selections }
+          }) => {
+            const selection = data.pickedPoints
+            if (
+              selection.otherSelections.length ||
+              selection.graphSelections.some(
+                (s) => s.entityRef?.type !== 'vertex' || !s.vertexPosition
+              )
+            )
+              return 'Select exactly three corner points on the part.'
+            const valid = validatePlanePoints(
+              selection.graphSelections.map(
+                (s) => s.vertexPosition
+              ) as PickedPoint[]
+            )
+            return isErr(valid) ? valid.message : true
+          },
+        },
+        ...Object.fromEntries(
+          Object.entries({
+            origin: '[0, 0, 20]',
+            normal: '[0, 0, 1]',
+            xAxis: '[1, 0, 0]',
+            yAxis: '[0, 1, 0]',
+            points: '[[0, 0, 20], [10, 0, 20], [0, 10, 20]]',
+            a: '0',
+            b: '0',
+            c: '1',
+            d: '-20',
+          }).map(([name, defaultValue]) => {
+            const active = (context: {
+              argumentsToSubmit: Record<string, unknown>
+            }) =>
+              (
+                planeMethodArgs[
+                  (context.argumentsToSubmit.method ?? 'Normal') as PlaneMethod
+                ] as readonly string[]
+              ).includes(name) &&
+              (name !== 'points' ||
+                context.argumentsToSubmit.pointSource !== 'Pick')
+            return [
+              name,
+              {
+                inputType: ['origin', 'normal', 'xAxis', 'yAxis'].includes(name)
+                  ? 'vector3d'
+                  : 'kcl',
+                defaultValue,
+                allowArrays: name === 'points',
+                allowNestedArrays: name === 'points',
+                required: active,
+                hidden: (context: {
+                  argumentsToSubmit: Record<string, unknown>
+                }) => !active(context),
+              },
+            ]
+          })
+        ),
+      },
+    }),
   },
   Helix: {
     icon: 'helix',
