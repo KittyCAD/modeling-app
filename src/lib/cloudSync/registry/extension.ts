@@ -5,6 +5,7 @@ import {
 } from '@kittycad/registry'
 import { effect, signal, untracked } from '@preact/signals-core'
 import {
+  type CloudSyncConfig,
   cloudSyncStatus,
   configureCloudSync,
   deleteCloudSyncDuplicateProjectRealizations,
@@ -46,6 +47,7 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
+import isEqual from 'react-fast-compare'
 
 type SettingsSnapshot = ReturnType<
   SettingsRegistryService['actor']['getSnapshot']
@@ -152,6 +154,18 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   let stopPolicySync: (() => void) | undefined
   let stopSettingsActorSubscription: (() => void) | undefined
   let runtimePolicyVersion = 0
+  let appliedRuntimePolicy: CloudSyncConfig | undefined
+
+  const configureRuntimePolicy = (policy: CloudSyncConfig) => {
+    // Settings publish snapshots both during and after persistence. Only cloud
+    // configuration changes should schedule sync or invalidate in-flight work.
+    if (isEqual(appliedRuntimePolicy, policy)) {
+      return
+    }
+
+    untracked(() => configureCloudSync(policy))
+    appliedRuntimePolicy = policy
+  }
 
   const applyRuntimePolicy = () => {
     const version = ++runtimePolicyVersion
@@ -176,7 +190,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     }
 
     if (!runtimePolicy.enabled) {
-      untracked(() => configureCloudSync(runtimePolicy))
+      configureRuntimePolicy(runtimePolicy)
       return
     }
 
@@ -200,12 +214,10 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
       const policyCloudProjectDirectoryPaths =
         runtimePolicy.cloudProjectDirectoryPaths ?? cloudProjectDirectoryPaths
 
-      untracked(() =>
-        configureCloudSync({
-          ...runtimePolicy,
-          cloudProjectDirectoryPaths: policyCloudProjectDirectoryPaths,
-        })
-      )
+      configureRuntimePolicy({
+        ...runtimePolicy,
+        cloudProjectDirectoryPaths: policyCloudProjectDirectoryPaths,
+      })
     })
   }
 

@@ -103,6 +103,7 @@ export const settingsMachine = setup({
       {
         doNotPersist: boolean
         context: SettingsMachineContext
+        level?: SettingsLevel
         toastCallback?: () => void
       }
     >(async ({ input }) => {
@@ -125,7 +126,7 @@ export const settingsMachine = setup({
         wasmInstancePromise,
         settings,
         extensionSettings,
-        currentProject?.path
+        input.level === 'user' ? undefined : currentProject?.path
       )
 
       if (input.toastCallback) {
@@ -662,6 +663,13 @@ export const settingsMachine = setup({
           ],
         },
         input: ({ context, event }) => {
+          let level: SettingsLevel | undefined
+          if (event.type === 'Reset settings') {
+            level = event.level
+          } else if ('data' in event && 'level' in event.data) {
+            level = event.data.level
+          }
+
           if (
             event.type === 'set.app.namedViews' &&
             'toastCallback' in event.data
@@ -669,6 +677,7 @@ export const settingsMachine = setup({
             return {
               doNotPersist: event.doNotPersist ?? false,
               context,
+              level,
               toastCallback: event.data.toastCallback,
             }
           }
@@ -676,6 +685,7 @@ export const settingsMachine = setup({
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
+            level,
           }
         },
       },
