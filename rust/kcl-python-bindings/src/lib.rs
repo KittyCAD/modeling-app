@@ -436,6 +436,8 @@ struct ExecutedKcl {
     filename: String,
 }
 
+/// If mock execution, execute locally.
+/// Otherwise, execute remote on engine, to minimize latency.
 async fn execute_in_context(
     ctx: &ExecutorContext,
     state: &mut ExecState,
