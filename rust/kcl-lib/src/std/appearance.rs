@@ -235,6 +235,51 @@ mod tests {
     use crate::execution::parse_execute;
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_snapshot_cloned_transparent_solid_cpu_only() -> anyhow::Result<()> {
+        let code = r##"
+@settings(kclVersion = 3.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 0mm, var 1.14mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  vertical([circle1.start, circle1.center])
+  distance([circle1.start, circle1.center], labelPosition = [0.38mm, 2.59mm]) == 1.14mm
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(region001, length = 2) |> appearance(color = "#dba09a", metalness = 90, roughness = 50, opacity = 60)
+clone(extrude001) |> translate(x = 1)
+"##;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let settings = crate::ExecutorSettings {
+            geometry_only: true,
+            // Match the Python bindings: SSAO makes appearance enable transparency.
+            enable_ssao: true,
+            ..Default::default()
+        };
+        let ctx =
+            crate::ExecutorContext::new_with_client(settings, None, None, program.language_version().unwrap()).await?;
+        let mut state = crate::ExecState::new(&ctx);
+        let result = async {
+            ctx.run(&program, &mut state).await?;
+            ctx.enable_engine_graphics(&mut state).await?;
+            let snapshot_result = async {
+                ctx.enable_engine_graphics_settings(&mut state).await?;
+                Ok::<_, anyhow::Error>(ctx.prepare_snapshot().await?)
+            }
+            .await;
+            let disable_result = ctx.disable_engine_graphics(&mut state).await;
+            let snapshot = snapshot_result?;
+            disable_result?;
+            image::load_from_memory(&snapshot.contents.0)?;
+            Ok(())
+        }
+        .await;
+        ctx.close().await;
+        result
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn appearance_backface_color() {
         for (argument, expected) in [
             ("", None),
