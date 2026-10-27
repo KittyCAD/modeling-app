@@ -66,4 +66,8 @@ jobs:
       - name: Check Cargo.lock doesn't need updating
         if: steps.filter.outputs.rust == 'true'
         run: |
-          cargo check --locked || echo "Pls run cargo check and commit the changed Cargo.lock"
+          cd rust
+          cargo check --locked || { 
+          echo "Pls run cargo check and commit the changed Cargo.lock"
+          exit 1
+        } 
