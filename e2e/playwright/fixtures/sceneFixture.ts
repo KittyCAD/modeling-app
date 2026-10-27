@@ -535,7 +535,8 @@ export class SceneFixture {
         }
         camera.updateProjectionMatrix()
         camera.updateMatrixWorld(true)
-        controls.cameraChange.dispatch()
+        // Recomputes clip planes for the new distance and notifies listeners.
+        controls.onCameraChange()
       },
       { pos, target }
     )
