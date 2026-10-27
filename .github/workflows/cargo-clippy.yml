@@ -67,7 +67,7 @@ jobs:
         if: steps.filter.outputs.rust == 'true'
         run: |
           cd rust
-          cargo check --locked || { 
-          echo "Pls run cargo check and commit the changed Cargo.lock"
-          exit 1
-        } 
+          cargo check --locked || {
+            echo "Pls run cargo check and commit the changed Cargo.lock" >&2
+            exit 1
+          }
