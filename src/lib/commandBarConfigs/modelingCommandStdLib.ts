@@ -461,13 +461,13 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::flatness',
     editFlow: true,
     flowArgOrder: ['faces', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
   },
   'GDT Straightness': {
     stdLibName: 'gdt::straightness',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -477,7 +477,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::circularity',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -487,7 +487,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::cylindricity',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -497,7 +497,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::datum',
     editFlow: true,
     flowArgOrder: ['faces', 'name'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       face: 'faces',
     },
@@ -506,7 +506,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::position',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -516,7 +516,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::profileLine',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       edges: 'objects',
     },
@@ -536,7 +536,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::perpendicularity',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -546,7 +546,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::angularity',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -556,7 +556,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::concentricity',
     editFlow: true,
     flowArgOrder: ['objects', 'datums', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -566,7 +566,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::symmetry',
     editFlow: true,
     flowArgOrder: ['objects', 'datums', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -576,7 +576,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::runout',
     editFlow: true,
     flowArgOrder: ['objects', 'datums', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -586,7 +586,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::parallelism',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -596,7 +596,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::annotation',
     editFlow: true,
     flowArgOrder: ['objects', 'annotation'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: ['annotationName', 'leaderType'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',

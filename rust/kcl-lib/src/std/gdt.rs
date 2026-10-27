@@ -47,7 +47,7 @@ use crate::unit_conversion::ToKcmc;
 // quality does not resize the text, and map the requested length into font_scale.
 const GDT_FONT_TEXTURE_POINT_SIZE: u32 = 36;
 const DEFAULT_GDT_FONT_SIZE_MM: f64 = 10.0;
-const DEFAULT_GDT_DOT_LEADER_SCALE: f64 = 1.0;
+const DEFAULT_GDT_MARKER_SCALE: f64 = 1.0;
 const DEFAULT_GDT_DIMENSION_LEADER_SCALE: f64 = 1.0;
 const GDT_DOT_LEADER_REFERENCE_FONT_SIZE_MM: f64 = 100.0;
 const GDT_DOT_LEADER_REFERENCE_ENGINE_SCALE: f64 = 0.5;
@@ -84,10 +84,44 @@ fn gdt_user_leader_scale(leader_scale: Option<&TyF64>, default_scale: f64, args:
 }
 
 fn gdt_dot_leader_scale(leader_scale: Option<&TyF64>, font_size: Option<&TyF64>, args: &Args) -> Result<f32, KclError> {
-    let user_scale = gdt_user_leader_scale(leader_scale, DEFAULT_GDT_DOT_LEADER_SCALE, args)?;
+    let user_scale = gdt_user_leader_scale(leader_scale, DEFAULT_GDT_MARKER_SCALE, args)?;
     // Engine dot leaders are screen-space point sprites after an internal font_scale
     // multiplier. Divide that out so KCL leaderScale stays stable across fontSize.
     Ok(user_scale * gdt_dot_leader_normal_size() / gdt_font_scale(font_size, args)?)
+}
+
+// The KCL signature validates the nominal LeaderType enum before this conversion.
+fn gdt_leader_style(
+    default_type: AnnotationLineEnd,
+    leader_scale: Option<&TyF64>,
+    font_size: Option<&TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<(AnnotationLineEnd, f32), KclError> {
+    let requested: Option<KclValue> = args.get_kw_arg_opt("leaderType", &RuntimeType::any(), exec_state)?;
+    let leader_type = match requested {
+        None => default_type,
+        Some(KclValue::Enum { value }) => match value.variant() {
+            "None" => AnnotationLineEnd::None,
+            "Dot" => AnnotationLineEnd::Dot,
+            "Arrow" => AnnotationLineEnd::Arrow,
+            _ => return Err(invalid_leader_type(args)),
+        },
+        Some(_) => return Err(invalid_leader_type(args)),
+    };
+    let scale = match leader_type {
+        AnnotationLineEnd::Dot => gdt_dot_leader_scale(leader_scale, font_size, args)?,
+        // Arrowheads use the engine's font-relative size. None still validates the scale.
+        _ => gdt_user_leader_scale(leader_scale, DEFAULT_GDT_MARKER_SCALE, args)?,
+    };
+    Ok((leader_type, scale))
+}
+
+fn invalid_leader_type(args: &Args) -> KclError {
+    KclError::new_type(KclErrorDetails::new(
+        "leaderType must be a gdt::LeaderType variant.".to_owned(),
+        vec![args.source_range],
+    ))
 }
 
 fn gdt_dot_leader_normal_size() -> f32 {
@@ -384,11 +418,18 @@ async fn inner_datum(
     let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false).await?;
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
+    let (leader_type, marker_scale) = gdt_leader_style(
+        AnnotationLineEnd::Dot,
+        leader_scale.as_ref(),
+        font_size.as_ref(),
+        exec_state,
+        args,
+    )?;
     let feature_control = AnnotationFeatureControl::builder()
         .maybe_entity_id(Some(face_id))
         // Point to the center of the face.
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
-        .leader_type(AnnotationLineEnd::Dot)
+        .leader_type(leader_type)
         .defined_datum(name_char)
         .plane_id(frame_plane.id)
         .offset(if let Some(offset) = &frame_position {
@@ -402,7 +443,7 @@ async fn inner_datum(
         .precision(0)
         .font_scale(gdt_font_scale(font_size.as_ref(), args)?)
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
-        .leader_scale(gdt_dot_leader_scale(leader_scale.as_ref(), font_size.as_ref(), args)?)
+        .leader_scale(marker_scale)
         .build();
     let annotation_name = gdt_annotation_name(exec_state, args)?;
     let options = AnnotationOptions::builder()
@@ -1344,6 +1385,7 @@ async fn inner_annotation(
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
         create_annotation(
+            AnnotationLineEnd::Dot,
             Some(face_id),
             None,
             &annotation,
@@ -1361,6 +1403,7 @@ async fn inner_annotation(
         match edge {
             GdtEdgeReference::Entity(edge) => {
                 create_annotation(
+                    AnnotationLineEnd::Arrow,
                     Some(edge.get_engine_id(exec_state, args)?),
                     None,
                     &annotation,
@@ -1376,6 +1419,7 @@ async fn inner_annotation(
             }
             GdtEdgeReference::Specifier(edge_reference) => {
                 create_annotation(
+                    AnnotationLineEnd::Arrow,
                     None,
                     Some(edge_reference.clone()),
                     &annotation,
@@ -1473,6 +1517,7 @@ async fn create_feature_control_annotations(
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
         create_feature_control_annotation(
+            AnnotationLineEnd::Dot,
             Some(face_id),
             None,
             symbol,
@@ -1494,6 +1539,7 @@ async fn create_feature_control_annotations(
         match edge {
             GdtEdgeReference::Entity(edge) => {
                 create_feature_control_annotation(
+                    AnnotationLineEnd::Arrow,
                     Some(edge.get_engine_id(exec_state, args)?),
                     None,
                     symbol,
@@ -1513,6 +1559,7 @@ async fn create_feature_control_annotations(
             }
             GdtEdgeReference::Specifier(edge_reference) => {
                 create_feature_control_annotation(
+                    AnnotationLineEnd::Arrow,
                     None,
                     Some(edge_reference.clone()),
                     symbol,
@@ -1538,6 +1585,7 @@ async fn create_feature_control_annotations(
 
 #[allow(clippy::too_many_arguments)]
 async fn create_feature_control_annotation(
+    default_leader_type: AnnotationLineEnd,
     entity_id: Option<uuid::Uuid>,
     edge_reference: Option<kcmc::shared::EdgeSpecifier>,
     symbol: MbdSymbol,
@@ -1562,11 +1610,12 @@ async fn create_feature_control_annotation(
         tolerance.unwrap_to_length_units(display_units),
         datums,
     );
+    let (leader_type, marker_scale) = gdt_leader_style(default_leader_type, leader_scale, font_size, exec_state, args)?;
     let feature_control = AnnotationFeatureControl::builder()
         .maybe_entity_id(entity_id)
         .maybe_edge_reference(edge_reference)
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
-        .leader_type(AnnotationLineEnd::Dot)
+        .leader_type(leader_type)
         .control_frame(control_frame)
         .plane_id(frame_plane_id)
         .offset(if let Some(offset) = frame_position {
@@ -1580,7 +1629,7 @@ async fn create_feature_control_annotation(
         .precision(precision)
         .font_scale(gdt_font_scale(font_size, args)?)
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
-        .leader_scale(gdt_dot_leader_scale(leader_scale, font_size, args)?)
+        .leader_scale(marker_scale)
         .build();
     let annotation_name = gdt_annotation_name(exec_state, args)?;
     let options = AnnotationOptions::builder()
@@ -1646,6 +1695,7 @@ fn gdt_control_frame(
 
 #[allow(clippy::too_many_arguments)]
 async fn create_annotation(
+    default_leader_type: AnnotationLineEnd,
     entity_id: Option<uuid::Uuid>,
     edge_reference: Option<kcmc::shared::EdgeSpecifier>,
     annotation: &str,
@@ -1659,11 +1709,12 @@ async fn create_annotation(
 ) -> Result<(), KclError> {
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
+    let (leader_type, marker_scale) = gdt_leader_style(default_leader_type, leader_scale, font_size, exec_state, args)?;
     let feature_control = AnnotationFeatureControl::builder()
         .maybe_entity_id(entity_id)
         .maybe_edge_reference(edge_reference)
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
-        .leader_type(AnnotationLineEnd::Dot)
+        .leader_type(leader_type)
         .prefix(annotation.to_owned())
         .plane_id(frame_plane_id)
         .offset(if let Some(offset) = frame_position {
@@ -1677,7 +1728,7 @@ async fn create_annotation(
         .precision(0)
         .font_scale(gdt_font_scale(font_size, args)?)
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
-        .leader_scale(gdt_dot_leader_scale(leader_scale, font_size, args)?)
+        .leader_scale(marker_scale)
         .build();
     let annotation_name = gdt_annotation_name(exec_state, args)?;
     let options = AnnotationOptions::builder()
@@ -3126,6 +3177,158 @@ gdt::runout(faces = [controlledShaft.sketch.tags.perimeter], tolerance = 0.2mm, 
             assert_eq!(control_frame.primary_datum, Some('A'), "case: {label}");
             assert!(control_frame.secondary_datum.is_none(), "case: {label}");
             assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
+    }
+
+    fn leader_test_program(call: &str) -> String {
+        format!(
+            r#"
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
+profile = sketch(on = XY) {{
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}}
+disk = region(segments = [profile.perimeter])
+part = extrude(disk, length = 10mm, tagEnd = $top)
+{call}
+"#
+        )
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn attached_leader_markers_cover_all_entry_points() -> Result<(), KclError> {
+        // Each entry is also exercised with explicit overrides, so aliases and
+        // separately implemented datum/text annotations cannot drop leaderType.
+        let cases = [
+            ("datum", "face = top, name = \"A\"", vec![AnnotationLineEnd::Dot]),
+            (
+                "flatness",
+                "faces = [top], tolerance = 0.1mm",
+                vec![AnnotationLineEnd::Dot],
+            ),
+            (
+                "profileSurface",
+                "faces = [top], tolerance = 0.1mm",
+                vec![AnnotationLineEnd::Dot],
+            ),
+            (
+                "profileLine",
+                "edges = [disk.tags.perimeter], tolerance = 0.1mm",
+                vec![AnnotationLineEnd::Arrow],
+            ),
+            (
+                "profile",
+                "faces = [top], tolerance = 0.1mm",
+                vec![AnnotationLineEnd::Dot],
+            ),
+            (
+                "profile",
+                "edges = [disk.tags.perimeter], tolerance = 0.1mm",
+                vec![AnnotationLineEnd::Arrow],
+            ),
+        ];
+        for (function, selection, defaults) in cases {
+            check_leader_markers(function, selection, &defaults).await?;
+        }
+        for function in [
+            "straightness",
+            "circularity",
+            "cylindricity",
+            "concentricity",
+            "symmetry",
+            "runout",
+            "position",
+            "angularity",
+            "perpendicularity",
+            "parallelism",
+            "annotation",
+        ] {
+            let value = if function == "annotation" {
+                "annotation = \"Surface finish\""
+            } else if matches!(function, "concentricity" | "symmetry" | "runout") {
+                "tolerance = 0.1mm, datums = [\"A\"]"
+            } else {
+                "tolerance = 0.1mm"
+            };
+            let selection = format!(
+                "faces = [top], edges = [disk.tags.perimeter, {{ sideFaces = [part.sketch.tags.perimeter, top] }}], {value}"
+            );
+            check_leader_markers(
+                function,
+                &selection,
+                &[
+                    AnnotationLineEnd::Dot,
+                    AnnotationLineEnd::Arrow,
+                    AnnotationLineEnd::Arrow,
+                ],
+            )
+            .await?;
+        }
+        Ok(())
+    }
+
+    async fn check_leader_markers(
+        function: &str,
+        selection: &str,
+        defaults: &[AnnotationLineEnd],
+    ) -> Result<(), KclError> {
+        for (argument, override_type) in [
+            ("", None),
+            (", leaderType = gdt::LeaderType::None", Some(AnnotationLineEnd::None)),
+            (", leaderType = gdt::LeaderType::Dot", Some(AnnotationLineEnd::Dot)),
+            (", leaderType = gdt::LeaderType::Arrow", Some(AnnotationLineEnd::Arrow)),
+        ] {
+            let call = format!("gdt::{function}({selection}{argument}, fontSize = 2mm, leaderScale = 1.5)");
+            let commands = gdt_commands(&leader_test_program(&call)).await;
+            let controls: Vec<_> = commands
+                .iter()
+                .filter_map(|command| feature_control(command).ok())
+                .collect();
+            assert_eq!(controls.len(), defaults.len(), "{call}");
+            for (control, default_type) in controls.iter().zip(defaults) {
+                let expected_type = override_type.unwrap_or(*default_type);
+                assert_eq!(control.leader_type, expected_type, "{call}");
+                let expected_scale = if expected_type == AnnotationLineEnd::Dot {
+                    1.5 * f64::from(gdt_dot_leader_normal_size()) / 0.25
+                } else {
+                    1.5
+                };
+                assert_close(f64::from(control.leader_scale), expected_scale);
+                assert_close(f64::from(control.font_scale), 0.25);
+            }
+        }
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn leader_markers_reject_wrong_types_and_invalid_scales() {
+        for argument in [
+            "leaderType = \"Arrow\"",
+            "leaderType = 1",
+            "leaderType = view::Projection::Perspective",
+            "leaderType = Impostor::Arrow",
+            "leaderType = gdt::LeaderType::Arrow, leaderScale = 0",
+            "leaderType = gdt::LeaderType::Dot, leaderScale = -1",
+            "leaderType = gdt::LeaderType::None, leaderScale = 0",
+        ] {
+            let code = leader_test_program(&format!("gdt::flatness(faces = [top], tolerance = 0.1mm, {argument})"))
+                .replace("profile = sketch", "type Impostor {\n  | Arrow\n}\nprofile = sketch");
+            assert!(parse_execute(&code).await.is_err(), "accepted {argument}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn arrow_scale_is_font_relative_and_unit_aware() -> Result<(), KclError> {
+        for (font_size, expected_font_scale) in [("2mm", 0.25), ("100mm", 12.5), ("1in", 3.175)] {
+            let code = leader_test_program(&format!(
+                "gdt::annotation(edges = [disk.tags.perimeter], annotation = \"Edge\", fontSize = {font_size}, leaderScale = 2)"
+            ));
+            let commands = gdt_commands(&code).await;
+            let index = new_annotation_command_index(&commands)?;
+            let control = feature_control(&commands[index])?;
+            assert_eq!(control.leader_type, AnnotationLineEnd::Arrow);
+            assert_close(f64::from(control.leader_scale), 2.0);
+            assert_close(f64::from(control.font_scale), expected_font_scale);
         }
         Ok(())
     }

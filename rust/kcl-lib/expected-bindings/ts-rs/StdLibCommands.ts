@@ -2460,9 +2460,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2571,9 +2583,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2694,9 +2718,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2829,9 +2865,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2952,9 +3000,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3051,9 +3111,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3297,9 +3369,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3507,9 +3591,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3642,9 +3738,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3777,9 +3885,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3912,9 +4032,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4035,9 +4167,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4158,9 +4302,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4293,9 +4449,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4416,9 +4584,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4551,9 +4731,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The endpoint marker. Defaults to Dot for faces and Arrow for edges. None hides only the marker, keeping the leader line. Explicit enum values require experimentalFeatures = allow.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the endpoint marker. The default is `1.0`. Dots keep their calibrated screen size as fontSize changes; arrowheads scale with fontSize. Must be greater than `0`, including when leaderType is None.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -11470,6 +11662,11 @@ export default {
 } as const
 
 export const STD_LIB_ENUMS = {
+  "gdt::LeaderType": [
+    "None",
+    "Dot",
+    "Arrow"
+  ],
   "view::Orientation": [
     "Front",
     "Back",
