@@ -155,3 +155,46 @@ it('keeps a failed draft, resets for another edit, and discards its pending subm
     })
   )
 })
+
+it('submits zero, bare tag names, and an explicitly chosen black color', async () => {
+  const onSubmit = vi.fn()
+  const command = {
+    name: 'Basic dialog inputs',
+    groupId: 'modeling',
+    scopes: GLOBAL_COMMAND_SCOPES,
+    useModelingDialog: true,
+    needsReview: false,
+    onSubmit,
+    args: {
+      count: { inputType: 'number', required: true, defaultValue: 0 },
+      tag: { inputType: 'tagDeclarator', required: false },
+      color: { inputType: 'color', required: false },
+    },
+  } satisfies Command
+  const actor = world.commandBarActor
+  actor.send({ type: 'Add commands', data: { commands: [command] } })
+  actor.send({
+    type: 'Find and select command',
+    data: { name: command.name, groupId: command.groupId },
+  })
+  render(<Harness />)
+  const count = await screen.findByRole('spinbutton', { name: 'Count *' })
+  expect(count).toHaveValue(0)
+  fireEvent.change(count, { target: { value: '1' } })
+  fireEvent.change(count, { target: { value: '0' } })
+  fireEvent.change(screen.getByRole('textbox', { name: 'Tag' }), {
+    target: { value: '$endFace' },
+  })
+  expect(screen.getByRole('textbox', { name: 'Tag' })).toHaveValue('endFace')
+  const useDefault = screen.getByRole('checkbox', { name: 'Use default' })
+  expect(useDefault).toBeChecked()
+  fireEvent.click(useDefault)
+  fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
+  await waitFor(() =>
+    expect(onSubmit).toHaveBeenCalledExactlyOnceWith({
+      count: 0,
+      tag: 'endFace',
+      color: '#000000',
+    })
+  )
+})

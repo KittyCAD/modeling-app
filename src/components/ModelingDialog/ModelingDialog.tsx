@@ -360,12 +360,61 @@ export default function ModelingDialog({
           </div>
         )
       }
+      case 'tagDeclarator':
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <div className="flex items-center rounded-sm border border-chalkboard-30 px-2 dark:border-chalkboard-70">
+              <span aria-hidden="true">$</span>
+              <input
+                {...noAutofillInputProps}
+                id={fieldId}
+                type="text"
+                autoFocus={name === firstFieldName}
+                required={required}
+                className="min-w-0 flex-1 border-0 bg-transparent px-1 py-1 text-xs"
+                placeholder={required ? undefined : 'None'}
+                value={fieldText(value)}
+                onChange={(event) =>
+                  save(name, event.target.value.replace(/^\$/, ''))
+                }
+              />
+            </div>
+            {description}
+          </div>
+        )
+      case 'color':
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            {!required && (
+              <label className="flex items-center gap-1">
+                <input
+                  type="checkbox"
+                  checked={!hasValue(value)}
+                  onChange={(event) =>
+                    save(name, event.target.checked ? undefined : '#000000')
+                  }
+                />
+                Use default
+              </label>
+            )}
+            <input
+              id={fieldId}
+              type="color"
+              autoFocus={name === firstFieldName}
+              disabled={!required && !hasValue(value)}
+              className="h-8 w-full cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent dark:border-chalkboard-70 disabled:opacity-50"
+              value={fieldText(value) || '#000000'}
+              onChange={(event) => save(name, event.target.value)}
+            />
+            {description}
+          </div>
+        )
       case 'string':
       case 'number':
       case 'text':
-      case 'path':
-      case 'color':
-      case 'tagDeclarator': {
+      case 'path': {
         const Input = arg.inputType === 'text' ? 'textarea' : 'input'
         return (
           <div key={name} className="flex flex-col gap-1">
@@ -373,15 +422,12 @@ export default function ModelingDialog({
             <Input
               {...noAutofillInputProps}
               id={fieldId}
-              type={arg.inputType === 'color' ? 'color' : undefined}
+              type={arg.inputType === 'number' ? 'number' : undefined}
               rows={arg.inputType === 'text' ? 3 : undefined}
+              required={required}
+              step={arg.inputType === 'number' ? 'any' : undefined}
               autoFocus={name === firstFieldName}
-              className={`rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70 ${arg.inputType === 'color' ? 'h-8 w-full cursor-pointer' : ''}`}
-              placeholder={
-                !required && arg.inputType === 'tagDeclarator'
-                  ? 'None'
-                  : undefined
-              }
+              className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
               value={fieldText(value)}
               onChange={(event) => save(name, event.target.value)}
             />

@@ -1,6 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { evaluateCommandArgumentFlags } from '@src/components/CommandBar/utils'
 import type { ArtifactGraph, Program } from '@src/lang/wasm'
+import { parse, resultIsOk } from '@src/lang/wasm'
 import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
@@ -71,6 +72,8 @@ export async function initializeArguments(
         value = (options.find((option) => option.isCurrent) ?? options[0])
           ?.value
       }
+      if (value === undefined && arg.inputType === 'color' && isRequired)
+        value = '#000000'
     }
     values[name] = value
   }
@@ -154,6 +157,34 @@ export async function resolveArguments(
     } else if (typeof value === 'string' && !value.trim()) {
       value = undefined
     }
+    if (arg.inputType === 'number' && hasValue(value)) {
+      const number =
+        typeof value === 'string' || typeof value === 'number'
+          ? Number(value)
+          : NaN
+      if (!Number.isFinite(number))
+        return new Error(`Enter a valid number for ${arg.displayName || name}.`)
+      value = number
+    }
+    if (arg.inputType === 'tagDeclarator' && hasValue(value)) {
+      const tag =
+        typeof value === 'string' ? value.trim().replace(/^\$/, '') : ''
+      const parsed = parse(
+        `tag = $${tag}`,
+        await rustContext.wasmInstancePromise
+      )
+      const declaration =
+        !isErr(parsed) && resultIsOk(parsed)
+          ? parsed.program.body[0]
+          : undefined
+      if (
+        declaration?.type !== 'VariableDeclaration' ||
+        declaration.declaration.init.type !== 'TagDeclarator' ||
+        declaration.declaration.init.value !== tag
+      )
+        return new Error(`Enter a valid tag for ${arg.displayName || name}.`)
+      value = tag
+    }
     if (isRequired && !hasValue(value))
       return new Error(`Enter ${arg.displayName || name}.`)
     resolved[name] = value
@@ -164,7 +195,7 @@ export async function resolveArguments(
 export function fieldText(value: unknown): string {
   return isKclCommandValue(value)
     ? value.valueText
-    : typeof value === 'string'
-      ? value
+    : typeof value === 'string' || typeof value === 'number'
+      ? String(value)
       : ''
 }
