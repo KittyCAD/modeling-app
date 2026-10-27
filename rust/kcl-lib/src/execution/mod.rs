@@ -1240,7 +1240,6 @@ impl ExecutorContext {
             .await
             .map(|_| ())?;
 
-        exec_state.global.geometry_only = false;
         if self.needs_oit.load(Ordering::Relaxed) {
             self.engine
                 .send_modeling_cmd(
@@ -1285,7 +1284,6 @@ impl ExecutorContext {
             )
             .await
             .map(|_| ())?;
-        exec_state.global.geometry_only = true;
         Ok(())
     }
 
@@ -1533,7 +1531,7 @@ impl ExecutorContext {
             .await?;
         self.needs_oit.store(false, Ordering::Relaxed);
         // OIT requires a graphical context with SSAO enabled.
-        if !exec_state.geometry_only() && self.settings.enable_ssao {
+        if !self.settings.geometry_only && self.settings.enable_ssao {
             let cmd_id = exec_state.next_uuid();
             exec_state
                 .batch_modeling_cmd(
@@ -3080,9 +3078,9 @@ appearance(body, color = "#dba09a", opacity = {opacity})
             assert!(Arc::ptr_eq(&ctx.needs_oit, &cloned.needs_oit));
             for _ in 0..2 {
                 cloned.enable_engine_graphics(&mut state).await.unwrap();
-                assert!(!state.geometry_only());
+                assert_eq!(state.geometry_only(), geometry_only);
                 cloned.disable_engine_graphics(&mut state).await.unwrap();
-                assert!(state.geometry_only());
+                assert_eq!(state.geometry_only(), geometry_only);
                 assert_eq!(cloned.needs_oit.load(Ordering::Relaxed), needs_oit);
             }
             ctx.send_clear_scene(Some(program.kcl_version), &mut state, SourceRange::synthetic())

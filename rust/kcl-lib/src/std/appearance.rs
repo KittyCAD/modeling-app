@@ -198,7 +198,7 @@ async fn inner_appearance(
 
     if needs_oit {
         args.ctx.needs_oit.store(true, atomic::Ordering::Relaxed);
-        if !exec_state.geometry_only() {
+        if !args.ctx.settings.geometry_only {
             // TODO: Emit a warning annotation if SSAO is disabled.
             exec_state
                 .batch_modeling_cmd(
