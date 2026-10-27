@@ -4,6 +4,7 @@ import { expect } from '@playwright/test'
 import type { Locator, Page } from '@playwright/test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { ComparisonContext } from '@e2e/performance/comparison'
+import { getOpenPanes } from '@src/lib/layout/utils'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import type { InteractionDescription } from '@src/lib/interactionPerformance/types'
 
@@ -71,6 +72,16 @@ export async function prepareModeling({
   // Select the scored viewport before loading, including stream configuration.
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.setBodyDimensions({ width: 1200, height: 800 })
+  // Prepare the scored panes before their first render, without warming inputs.
+  const openPanes = getOpenPanes({
+    rootLayout: await page.evaluate(() => window.app.layout.get()),
+  })
+  await page.evaluate((openPanes) => {
+    for (const paneId of ['files', 'feature-tree']) {
+      if (openPanes.includes(paneId)) window.app.layout.togglePane(paneId)
+    }
+    window.app.layout.openPane('code')
+  }, openPanes)
   await homePage.openProject(projectName)
   await scene.connectionEstablished()
   await scene.settled()
