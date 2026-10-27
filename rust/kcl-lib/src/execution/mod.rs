@@ -192,7 +192,7 @@ pub(crate) const SKETCH_OBJECT_META_SKETCH: &str = "sketch";
 /// returning early if it is some kind of early return or stripping off the
 /// control flow otherwise. If it's an early return, it's returned as a
 /// `Result::Ok`.
-macro_rules! control_continue {
+macro_rules! control_normal {
     ($control_flow:expr) => {{
         let cf = $control_flow;
         if cf.is_some_return() {
@@ -203,7 +203,7 @@ macro_rules! control_continue {
     }};
 }
 // Expose the macro to other modules.
-pub(crate) use control_continue;
+pub(crate) use control_normal;
 
 /// Convenience macro for handling [`KclValueControlFlow`] in execution by
 /// returning early if it is some kind of early return or stripping off the
@@ -226,7 +226,7 @@ pub(crate) use early_return;
 pub enum ControlFlowKind {
     /// Normal control flow. Continue to the next step.
     #[default]
-    Continue,
+    Normal,
     /// A `return` statement executed under KCL 3.0: unwind to the nearest
     /// function-call boundary, which absorbs it as the function's result. Never
     /// constructed under older entry points, whose `return` uses
@@ -241,7 +241,7 @@ impl ControlFlowKind {
     /// Returns true if this is any kind of early return.
     pub fn is_some_return(&self) -> bool {
         match self {
-            ControlFlowKind::Continue => false,
+            ControlFlowKind::Normal => false,
             ControlFlowKind::Return => true,
             ControlFlowKind::Exit => true,
         }
@@ -251,16 +251,16 @@ impl ControlFlowKind {
 #[must_use = "You should always handle the control flow value when it is returned"]
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct KclValueControlFlow {
-    /// Use [control_continue] or [Self::into_value] to get the value.
+    /// Use [control_normal] or [Self::into_value] to get the value.
     value: Box<KclValue>,
     pub control: ControlFlowKind,
 }
 
 impl KclValue {
-    pub(crate) fn continue_(self) -> KclValueControlFlow {
+    pub(crate) fn normal(self) -> KclValueControlFlow {
         KclValueControlFlow {
             value: Box::new(self),
-            control: ControlFlowKind::Continue,
+            control: ControlFlowKind::Normal,
         }
     }
 

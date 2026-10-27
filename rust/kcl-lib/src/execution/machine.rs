@@ -699,7 +699,7 @@ pub(crate) async fn run_expr(
         annotations: Vec::new(),
     };
     match run_loop(ctx, Control::Eval(Box::new(req)), Vec::new(), exec_state).await? {
-        RootResult::Done(applied) => Ok(applied.expect_value()?.continue_()),
+        RootResult::Done(applied) => Ok(applied.expect_value()?.normal()),
         RootResult::Exited(cf) => Ok(cf),
     }
 }
@@ -1343,7 +1343,7 @@ async fn step_apply(
             apply_async(|| async move {
                 let object = applied.expect_value()?;
                 let cf = node.apply_member(object, property, exec_state, ctx).await?;
-                // apply_member only ever produces Continue values.
+                // apply_member only ever produces Normal values.
                 Ok(Control::Apply(Applied::Value(cf.into_value())))
             })
             .await
@@ -1369,7 +1369,7 @@ async fn step_apply(
                 let prop_value = applied.expect_value()?;
                 let property = Property::from_value(prop_value, SourceRange::from(node.as_ref()))?;
                 let cf = node.apply_member(object, property, exec_state, ctx).await?;
-                // apply_member only ever produces Continue values.
+                // apply_member only ever produces Normal values.
                 Ok(Control::Apply(Applied::Value(cf.into_value())))
             })
             .await
@@ -1488,7 +1488,7 @@ async fn step_apply(
                     }
                     BoundaryExpects::StdValue => {
                         let value = applied.expect_value()?;
-                        Ok(Some(value.continue_()))
+                        Ok(Some(value.normal()))
                     }
                 };
                 match completion {
@@ -1618,7 +1618,7 @@ async fn step_block(
             InFlight::Expression => {
                 // Exit control flow never arrives here as a value: it takes
                 // the Exit unwind path instead. A normal value continues.
-                last = Some(value.continue_());
+                last = Some(value.normal());
                 index += 1;
             }
             InFlight::Declaration { prev_being_declared } => {
@@ -1632,7 +1632,7 @@ async fn step_block(
                 };
                 let rhs = ctx.bind_variable_declaration(variable_declaration, value, body_type, exec_state)?;
                 // Variable declaration can be the return value of a module.
-                last = matches!(body_type, BodyType::Root).then_some(rhs.continue_());
+                last = matches!(body_type, BodyType::Root).then_some(rhs.normal());
                 index += 1;
             }
             InFlight::Return => {
@@ -2452,7 +2452,7 @@ fn finish_call_value(
 ) -> Result<Control, KclError> {
     match finished {
         // Only an Exit can pass through call_finish; a KCL 3.0 Return is
-        // absorbed there and arrives here as a Continue.
+        // absorbed there and arrives here as a Normal control flow.
         Some(cf) if cf.is_some_return() => Ok(Control::Exit(cf)),
         Some(cf) => Ok(Control::Apply(Applied::Value(cf.into_value()))),
         None => {
