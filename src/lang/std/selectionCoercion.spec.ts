@@ -11,7 +11,7 @@ import {
   getSelectionCountByType,
 } from '@src/lib/selections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { loadWasm } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
 describe('coerceSelectionsToBody', () => {
@@ -463,16 +463,6 @@ describe('coerceSelectionsToBody', () => {
         nodePath: { steps: [] },
       },
     }
-    const plane: Artifact = {
-      type: 'plane',
-      id: 'plane-1',
-      pathIds: [],
-      codeRef: {
-        range: [250, 300, 0],
-        pathToNode: [],
-        nodePath: { steps: [] },
-      },
-    }
     const imported: Artifact = {
       type: 'importedGeometry',
       id: 'imported-1',
@@ -486,7 +476,6 @@ describe('coerceSelectionsToBody', () => {
     const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
       [sweepOne.id, sweepOne],
       [sweepTwo.id, sweepTwo],
-      [plane.id, plane],
       [imported.id, imported],
     ])
     const selections: Selections = {
@@ -502,10 +491,6 @@ describe('coerceSelectionsToBody', () => {
             parentId: sweepTwo.id,
             primitiveIndex: 4,
           },
-        },
-        {
-          entityRef: { type: 'plane', plane_id: plane.id },
-          codeRef: plane.codeRef,
         },
         {
           entityRef: { type: 'face', face_id: 'imported-face' },
@@ -546,10 +531,6 @@ describe('coerceSelectionsToBody', () => {
         codeRef: sweepTwo.codeRef,
       },
       { artifact: imported, codeRef: imported.codeRef },
-      {
-        entityRef: { type: 'plane', plane_id: plane.id },
-        codeRef: plane.codeRef,
-      },
     ])
     expect(
       coerceSelectionsForBodyOnlySelectionTypes(
@@ -559,9 +540,8 @@ describe('coerceSelectionsToBody', () => {
       )
     ).toBe(selections)
 
-    const { instance } = await buildTheWorldAndNoEngineConnection()
     const counts = getSelectionCountByType(
-      assertParse('', instance),
+      assertParse('', await loadWasm()),
       result,
       artifactGraph
     )

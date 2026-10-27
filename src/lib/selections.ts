@@ -2631,9 +2631,12 @@ export function getSelectionCountByType(
   }
 
   function incrementArtifactSelectionType(artifact: Artifact): boolean {
+    if (artifact.type === 'helix') {
+      incrementOrInitializeSelectionType('helix')
+      return true
+    }
     if (
       artifact.type === 'gdtAnnotation' ||
-      artifact.type === 'helix' ||
       artifact.type === 'importedGeometry'
     ) {
       incrementOrInitializeSelectionType(artifact.type)
@@ -2709,8 +2712,9 @@ export function getSelectionCountByType(
           incrementOrInitializeSelectionType('path')
         }
       }
+    } else if (inlineArtifact?.type === 'helix') {
+      incrementOrInitializeSelectionType('helix')
     } else if (
-      inlineArtifact?.type === 'helix' ||
       inlineArtifact?.type === 'gdtAnnotation' ||
       inlineArtifact?.type === 'importedGeometry'
     ) {
