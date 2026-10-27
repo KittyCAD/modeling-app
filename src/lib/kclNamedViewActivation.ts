@@ -148,7 +148,17 @@ export function startTrackingActiveViewCamera(kclManager: KclManager): void {
   stopTrackingActiveViewCamera()
   stopCameraChangeListener = onCameraMoved(
     kclManager.sceneInfra.camControls,
-    resetNamedViewSession
+    () => {
+      const hadActiveView = activeViewSignal.peek() !== null
+      resetNamedViewSession()
+      if (!hadActiveView || !kclManager.engineCommandManager.isReady) return
+
+      applyVisibility({
+        target: { kind: 'kclDefault' },
+        execState: kclManager.execState,
+        kclManager,
+      }).catch(reportRejection)
+    }
   )
 }
 

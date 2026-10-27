@@ -43,6 +43,7 @@ import {
   moduleKeyOf,
   reapplyActiveViewAfterReconnect,
   resetNamedViewSession,
+  startTrackingActiveViewCamera,
 } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { Signal } from '@src/lib/signal'
@@ -361,19 +362,52 @@ describe('activateNamedView', () => {
     )
   })
 
-  it('deselects views after camera movement without resetting the camera', async () => {
+  it('restores KCL visibility after camera movement without resetting the camera', async () => {
     const f = fakes()
+    f.raw.execState = execStateWith({ bodies: ['body-1', 'body-2'] })
+    f.raw.execState.operations = {
+      map: {
+        0: [
+          {
+            type: 'StdLibCall',
+            name: 'hide',
+            unlabeledArg: {
+              value: { type: 'Solid', value: { artifactId: 'body-1' } },
+              sourceRange: CODE_REF.range,
+            },
+            labeledArgs: {},
+            nodePath: CODE_REF.nodePath,
+            sourceRange: CODE_REF.range,
+          },
+        ],
+      },
+    }
     await activateFront(f)
     const controls = f.raw.sceneInfra.camControls
 
     controls.cameraChange.dispatch()
     expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
+    expect(f.setObjectsHidden).not.toHaveBeenCalled()
 
     controls.camera.position.x += 1
     controls.cameraChange.dispatch()
+    await flush()
     expect(activeViewSignal.value).toBeNull()
     expect(resetCameraPosition).not.toHaveBeenCalled()
-    expect(f.setObjectsHidden).not.toHaveBeenCalled()
+    expect(f.setCameraToAxis).not.toHaveBeenCalled()
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([
+        ['body-1', true],
+        ['body-2', false],
+      ])
+    )
+
+    // Reconnect can start tracking again when no named view is active.
+    startTrackingActiveViewCamera(f.kclManager)
+    controls.camera.position.x += 1
+    controls.cameraChange.dispatch()
+    await flush()
+    expect(f.setObjectsHidden).toHaveBeenCalledOnce()
 
     await activateNamedView({
       target: { kind: 'kclDefault' },
@@ -381,11 +415,19 @@ describe('activateNamedView', () => {
     })
     expect(resetCameraPosition).toHaveBeenCalledOnce()
     expect(activeViewSignal.value).toBe('kclDefault')
+    f.setObjectsHidden.mockClear()
 
     controls.camera.zoom *= 2
     controls.cameraChange.dispatch()
+    await flush()
     expect(activeViewSignal.value).toBeNull()
     expect(resetCameraPosition).toHaveBeenCalledOnce()
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([
+        ['body-1', true],
+        ['body-2', false],
+      ])
+    )
   })
 
   it('keeps a view active while applying its camera and reconnecting', async () => {
