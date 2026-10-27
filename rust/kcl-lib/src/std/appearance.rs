@@ -1,5 +1,7 @@
 //! Standard library appearance.
 
+use std::sync::atomic;
+
 use anyhow::Result;
 use kcl_error::CompilationIssue;
 use kcmc::ModelingCmd;
@@ -195,13 +197,16 @@ async fn inner_appearance(
     let backface_color = backface_color.map(|rgb| Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity_param as f32));
 
     if needs_oit {
-        // TODO: Emit a warning annotation if SSAO is disabled.
-        exec_state
-            .batch_modeling_cmd(
-                ModelingCmdMeta::from_args(exec_state, &args),
-                ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
-            )
-            .await?;
+        args.ctx.needs_oit.store(true, atomic::Ordering::Relaxed);
+        if !exec_state.geometry_only() {
+            // TODO: Emit a warning annotation if SSAO is disabled.
+            exec_state
+                .batch_modeling_cmd(
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
+                )
+                .await?;
+        }
     }
 
     for solid_id in geometry.ids(&args.ctx).await? {
@@ -230,6 +235,8 @@ async fn inner_appearance(
 
 #[cfg(test)]
 mod tests {
+    use std::sync::atomic;
+
     use kittycad_modeling_cmds::ModelingCmd;
 
     use crate::execution::parse_execute;
@@ -262,16 +269,21 @@ clone(extrude001) |> translate(x = 1)
         let mut state = crate::ExecState::new(&ctx);
         let result = async {
             ctx.run(&program, &mut state).await?;
-            ctx.enable_engine_graphics(&mut state).await?;
-            let snapshot_result = async {
-                ctx.enable_engine_graphics_settings(&mut state).await?;
-                Ok::<_, anyhow::Error>(ctx.prepare_snapshot().await?)
+            let needs_oit: bool = ctx.needs_oit.load(atomic::Ordering::Relaxed);
+            assert!(needs_oit);
+            // Each snapshot recreates graphics and must restore the scene's OIT requirement.
+            for _ in 0..2 {
+                ctx.enable_engine_graphics(&mut state).await?;
+                let snapshot_result = async {
+                    ctx.enable_engine_graphics_settings(&mut state).await?;
+                    Ok::<_, anyhow::Error>(ctx.prepare_snapshot().await?)
+                }
+                .await;
+                let disable_result = ctx.disable_engine_graphics(&mut state).await;
+                let snapshot = snapshot_result?;
+                disable_result?;
+                image::load_from_memory(&snapshot.contents.0)?;
             }
-            .await;
-            let disable_result = ctx.disable_engine_graphics(&mut state).await;
-            let snapshot = snapshot_result?;
-            disable_result?;
-            image::load_from_memory(&snapshot.contents.0)?;
             Ok(())
         }
         .await;

@@ -2874,6 +2874,7 @@ result = countdown(9000)
             execution_callbacks: Default::default(),
             machine_call_depth_limit: 10_000,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
         let (env_ref, _) = exec_ctxt.run(&program, &mut exec_state).await.unwrap();

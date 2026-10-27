@@ -125,7 +125,7 @@ pub(super) struct GlobalState {
     /// the entire execution, including while executing the body of the sketch
     /// block being edited.
     pub sketch_mode: bool,
-    /// True when the engine being used for execution is CPU only with no graphical environment
+    /// True while engine graphics are disabled, including between CPU-only snapshots.
     pub geometry_only: bool,
     /// Std's exported declarations skipped as not yet added. Set once by
     /// `eval_prelude`, since root environments reach the prelude without an

@@ -3,6 +3,8 @@
 use std::collections::BTreeMap;
 use std::future::Future;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
@@ -973,6 +975,10 @@ pub struct ExecutorContext {
     /// KCL. This might need to be false if the engine server is disabling
     /// rendering because it's in a headless context.
     pub configure_engine_render: bool,
+    /// If the last execution needed order-independent transparency (OIT).
+    /// In a CPU-only engine, this to see if you should enable OIT in the engine.
+    /// In a GPU-enabled engine, this is done for you by the KCL runtime during the `appearance` function.
+    pub(crate) needs_oit: Arc<AtomicBool>,
 }
 
 impl std::fmt::Debug for ExecutorContext {
@@ -982,6 +988,7 @@ impl std::fmt::Debug for ExecutorContext {
             .field("engine_batch", &self.engine_batch)
             .field("settings", &self.settings)
             .field("context_type", &self.context_type)
+            .field("needs_oit", &self.needs_oit)
             .field("execution_callbacks", &self.execution_callbacks)
             .field("machine_call_depth_limit", &self.machine_call_depth_limit)
             .finish()
@@ -1194,6 +1201,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1208,6 +1216,7 @@ impl ExecutorContext {
             execution_callbacks: self.execution_callbacks.clone(),
             machine_call_depth_limit: self.machine_call_depth_limit,
             configure_engine_render: true,
+            needs_oit: self.needs_oit.clone(),
         }
     }
 
@@ -1230,6 +1239,18 @@ impl ExecutorContext {
             )
             .await
             .map(|_| ())?;
+
+        exec_state.global.geometry_only = false;
+        if self.needs_oit.load(Ordering::Relaxed) {
+            self.engine
+                .send_modeling_cmd(
+                    &self.engine_batch,
+                    exec_state.next_uuid(),
+                    source_range,
+                    &ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
+                )
+                .await?;
+        }
 
         Ok(())
     }
@@ -1264,6 +1285,7 @@ impl ExecutorContext {
             )
             .await
             .map(|_| ())?;
+        exec_state.global.geometry_only = true;
         Ok(())
     }
 
@@ -1330,6 +1352,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1345,6 +1368,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1367,6 +1391,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         })
     }
 
@@ -1382,6 +1407,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1505,8 +1531,9 @@ impl ExecutorContext {
                 self.settings.geometry_only,
             )
             .await?;
+        self.needs_oit.store(false, Ordering::Relaxed);
         // OIT requires a graphical context with SSAO enabled.
-        if !self.settings.geometry_only && self.settings.enable_ssao {
+        if !exec_state.geometry_only() && self.settings.enable_ssao {
             let cmd_id = exec_state.next_uuid();
             exec_state
                 .batch_modeling_cmd(
@@ -2721,6 +2748,7 @@ pub(crate) fn new_mock_executor_context(project_directory: Option<TypedPath>) ->
         execution_callbacks: Default::default(),
         machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         configure_engine_render: true,
+        needs_oit: Default::default(),
     }
 }
 
@@ -3012,6 +3040,57 @@ mod tests {
         ctx.machine_call_depth_limit = 123;
         let cloned = ctx.clone_with_fresh_execution_batch();
         assert_eq!(cloned.machine_call_depth_limit, 123);
+    }
+
+    #[tokio::test]
+    async fn appearance_oit_deferral() {
+        for (geometry_only, enable_ssao, opacity) in [
+            (true, true, 60),
+            (false, true, 60),
+            (true, false, 60),
+            (true, true, 100),
+        ] {
+            let ctx = ExecutorContext::new_mock(Some(ExecutorSettings {
+                geometry_only,
+                enable_ssao,
+                ..Default::default()
+            }))
+            .await;
+            let code = format!(
+                r##"@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {{
+  c = circle(center = [var 0mm, var 0mm], start = [var 1mm, var 0mm])
+}}
+body = extrude(region(segments = [profile.c]), length = 2mm)
+appearance(body, color = "#dba09a", opacity = {opacity})
+"##
+            );
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let mut state = ExecState::new(&ctx);
+            ctx.run(&program, &mut state).await.unwrap();
+
+            let needs_oit = enable_ssao && opacity < 100;
+            assert_eq!(ctx.needs_oit.load(Ordering::Relaxed), needs_oit);
+            let sent_oit = state.global.root_module_artifacts.commands.iter().any(|command| {
+                matches!(&command.command, ModelingCmd::SetOrderIndependentTransparency(command) if command.enabled == Some(true))
+            });
+            assert_eq!(sent_oit, needs_oit && !geometry_only);
+
+            let cloned = ctx.clone_with_fresh_execution_batch();
+            assert!(Arc::ptr_eq(&ctx.needs_oit, &cloned.needs_oit));
+            for _ in 0..2 {
+                cloned.enable_engine_graphics(&mut state).await.unwrap();
+                assert!(!state.geometry_only());
+                cloned.disable_engine_graphics(&mut state).await.unwrap();
+                assert!(state.geometry_only());
+                assert_eq!(cloned.needs_oit.load(Ordering::Relaxed), needs_oit);
+            }
+            ctx.send_clear_scene(Some(program.kcl_version), &mut state, SourceRange::synthetic())
+                .await
+                .unwrap();
+            assert!(!cloned.needs_oit.load(Ordering::Relaxed));
+            ctx.close().await;
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3306,6 +3385,7 @@ mod tests {
             execution_callbacks: Default::default(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
@@ -6117,6 +6197,7 @@ face = disc()
             execution_callbacks: Default::default(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -8456,6 +8537,7 @@ type Color { | Red | Green | Red }
             execution_callbacks: Default::default(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new(&ctx);
         // Close the context even if execution panics, then let the panic
