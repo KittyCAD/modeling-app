@@ -8,6 +8,7 @@ import {
   Thinking,
 } from '@src/components/Thinking'
 import Tooltip from '@src/components/Tooltip'
+import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import {
   type Exchange,
   getZookeeperAttachmentKey,
@@ -334,8 +335,12 @@ export const RequestCard = (props: RequestCardProps) => {
 
               const contents = (
                 <>
-                  <CustomIcon name="paperclip" className="w-3 h-3 shrink-0" />
-                  <span className="min-w-0 truncate">{file.name}</span>
+                  <ZookeeperAttachmentPreview
+                    file={
+                      fetchState?.status === 'loaded' ? fetchState.file : file
+                    }
+                    icon="paperclip"
+                  />
                   {fetchState?.status === 'loading' && (
                     <span className="text-chalkboard-70 dark:text-chalkboard-40">
                       Loading…
