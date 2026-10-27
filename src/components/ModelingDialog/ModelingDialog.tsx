@@ -7,6 +7,7 @@ import {
   CommandKclInput,
   getKclInputValue,
 } from '@src/components/CommandBar/CommandKclInput'
+import { VectorInput } from '@src/components/ModelingDialog/VectorInput'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
@@ -118,7 +119,15 @@ export default function ModelingDialog({
 
   const checking = state.matches('Checking Arguments for Dialog')
   const invalid = visible.some(({ name, arg, required }) => {
-    if (arg.inputType === 'kcl') return validity[name] === false
+    if (
+      arg.inputType === 'kcl' ||
+      arg.inputType === 'vector2d' ||
+      arg.inputType === 'vector3d'
+    )
+      return (
+        validity[name] === false ||
+        (required && !hasValue(context.argumentsToSubmit[name]))
+      )
     return required && !hasValue(context.argumentsToSubmit[name])
   })
 
@@ -219,6 +228,33 @@ export default function ModelingDialog({
               })
             }
           />
+        )
+      case 'vector2d':
+      case 'vector3d':
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <VectorInput
+              id={fieldId}
+              label={label}
+              inputType={arg.inputType}
+              value={value}
+              required={required}
+              autoFocus={name === firstFieldName}
+              kclManager={kclManager}
+              wasmPromise={wasmPromise}
+              onChange={(next) => save(name, next)}
+              onValidationChange={(next) =>
+                setValidity((previous) => {
+                  const canSubmit = next.canSubmit && !next.isChecking
+                  return previous[name] === canSubmit
+                    ? previous
+                    : { ...previous, [name]: canSubmit }
+                })
+              }
+            />
+            {description}
+          </div>
         )
       case 'selection':
         return (
@@ -327,9 +363,7 @@ export default function ModelingDialog({
       case 'string':
       case 'number':
       case 'text':
-      case 'vector3d':
       case 'path':
-      case 'vector2d':
       case 'color':
       case 'tagDeclarator': {
         const Input = arg.inputType === 'text' ? 'textarea' : 'input'

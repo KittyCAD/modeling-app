@@ -1,74 +1,13 @@
-import { CustomIcon } from '@src/components/CustomIcon'
-import { Spinner } from '@src/components/Spinner'
+import { CommandVectorCoordinateInput } from '@src/components/CommandBar/CommandVectorCoordinateInput'
 import type { KclManager } from '@src/lang/KclManager'
-import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { noAutofillFormProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { roundOffWithUnits } from '@src/lib/utils'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-
-function CoordinateInput({
-  label,
-  value,
-  onChange,
-  calculation,
-  inputRef,
-  onKeyDown,
-  testId,
-}: {
-  label: string
-  value: string
-  onChange: (value: string) => void
-  calculation: ReturnType<typeof useCalculateKclExpression>
-  inputRef: React.RefObject<HTMLInputElement | null>
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
-  testId: string
-}) {
-  return (
-    <label className="flex gap-4 items-center border-solid border-b border-chalkboard-50">
-      <span className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
-        {label}
-      </span>
-      <input
-        {...noAutofillInputProps}
-        ref={inputRef}
-        data-testid={testId}
-        type="text"
-        placeholder={`${label} coordinate`}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={(e) => e.target.select()}
-        onKeyDown={onKeyDown}
-        className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
-      />
-      <CustomIcon
-        name="equal"
-        className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
-      />
-      <span
-        className={
-          calculation.calcResult === 'NAN'
-            ? 'text-destroy-80 dark:text-destroy-40'
-            : 'text-succeed-80 dark:text-succeed-40'
-        }
-      >
-        {calculation.isExecuting ? (
-          <Spinner className="text-inherit w-4 h-4" />
-        ) : calculation.calcResult === 'NAN' ? (
-          "Can't calculate"
-        ) : calculation.calcResult ? (
-          roundOffWithUnits(calculation.calcResult, 4)
-        ) : (
-          ''
-        )}
-      </span>
-    </label>
-  )
-}
 
 // GOTCHA: must be defined outside of React to prevent endless rerenders
 const calculateKclExpressionOptions = { allowArrays: false }
@@ -298,7 +237,7 @@ function CommandBarVector3DInput({
           {arg.displayName || arg.name}
         </span>
         <div className="space-y-2">
-          <CoordinateInput
+          <CommandVectorCoordinateInput
             label="X"
             value={x}
             onChange={setX}
@@ -307,7 +246,7 @@ function CommandBarVector3DInput({
             onKeyDown={(e) => handleKeyDown(e, yInputRef)}
             testId="vector3d-x-input"
           />
-          <CoordinateInput
+          <CommandVectorCoordinateInput
             label="Y"
             value={y}
             onChange={setY}
@@ -316,7 +255,7 @@ function CommandBarVector3DInput({
             onKeyDown={(e) => handleKeyDown(e, zInputRef)}
             testId="vector3d-y-input"
           />
-          <CoordinateInput
+          <CommandVectorCoordinateInput
             label="Z"
             value={z}
             onChange={setZ}
