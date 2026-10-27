@@ -36,7 +36,10 @@ function removeObsoleteEdges(graph: ArtifactGraph) {
 
 let world: Awaited<ReturnType<typeof buildTheWorldAndConnectToEngine>>
 beforeAll(async () => {
-  world = await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
+  world = await buildTheWorldAndConnectToEngine({
+    webrtc: false,
+    geometryOnly: true,
+  })
 })
 afterAll(() => {
   world?.engineCommandManager.tearDown({
