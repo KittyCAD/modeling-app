@@ -564,7 +564,7 @@ jobs:
           overwrite: true
 
   custom:
-    name: e2e:custom
+    name: e2e:web (custom)
     if: ${{ inputs.grep }}
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
 
