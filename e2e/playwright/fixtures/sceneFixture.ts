@@ -596,6 +596,10 @@ export class SceneFixture {
       })
     }
     await expect(this.startEditSketchBtn).toBeVisible()
+    // Renderer-tagged suites must exercise different renderers, even if the
+    // rollout default changes or a setting fails to apply. Once the scene is
+    // loaded, verify both the mounted frontend renderer and the engine's
+    // geometry-only mode; otherwise both suites could pass using one renderer.
     if (this.expectedLocalRenderer !== undefined) {
       await expect
         .poll(() =>
