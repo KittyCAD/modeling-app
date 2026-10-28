@@ -209,10 +209,10 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
 
     await modelingDialog.selection('Objects').click()
 
-    await expect(modelingDialog.input(/^color\b/i)).toBeVisible()
+    await expect(modelingDialog.input('color')).toBeVisible()
 
     // Fill color, submit, and verify code updated
-    await modelingDialog.input(/^color\b/i).fill('#00ff00')
+    await modelingDialog.input('color').fill('#00ff00')
 
     await expect(modelingDialog.submitButton).toBeEnabled()
     await modelingDialog.submit()
@@ -367,11 +367,11 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         ],
       })
 
-      await expect(modelingDialog.input(/^length\b/i)).toHaveText(initialInput)
+      await expect(modelingDialog.input('length')).toHaveText(initialInput)
     })
 
     await test.step('Add a parameter for distance argument and submit', async () => {
-      await expect(modelingDialog.input(/^length\b/i)).toBeVisible()
+      await expect(modelingDialog.input('length')).toBeVisible()
       await modelingDialog.variableCheckbox('length').click()
 
       await expect(modelingDialog.submitButton).toBeEnabled()
@@ -477,12 +477,12 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         diagnostics: [],
         activeLines: [initialCode],
       })
-      await expect(modelingDialog.input(/^offset\b/i)).toHaveText(initialInput)
+      await expect(modelingDialog.input('offset')).toHaveText(initialInput)
     })
 
     await test.step('Edit the offset argument and submit', async () => {
-      await expect(modelingDialog.input(/^offset\b/i)).toBeVisible()
-      await modelingDialog.input(/^offset\b/i).fill(newInput)
+      await expect(modelingDialog.input('offset')).toBeVisible()
+      await modelingDialog.input('offset').fill(newInput)
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()

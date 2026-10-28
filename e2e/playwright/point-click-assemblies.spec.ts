@@ -307,8 +307,8 @@ test.describe(
           selectedObjects
         )
 
-        await expect(modelingDialog.input(/^x\b/i)).toHaveText('5')
-        await modelingDialog.input(/^x\b/i).fill('1')
+        await expect(modelingDialog.input('x')).toHaveText('5')
+        await modelingDialog.input('x').fill('1')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -325,7 +325,7 @@ test.describe(
         await op.dblclick()
         await expect(modelingDialog.submitButton).toBeEnabled()
 
-        await modelingDialog.input(/^y\b/i).fill('2')
+        await modelingDialog.input('y').fill('2')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -347,8 +347,8 @@ test.describe(
           selectedObjects
         )
 
-        await expect(modelingDialog.input(/^factor\b/i)).toHaveText('2')
-        await modelingDialog.fillInput(/^factor\b/i, '1.1')
+        await expect(modelingDialog.input('factor')).toHaveText('2')
+        await modelingDialog.fillInput('factor', '1.1')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -367,8 +367,8 @@ test.describe(
         await op.dblclick()
         await expect(modelingDialog.submitButton).toBeEnabled()
 
-        await expect(modelingDialog.input(/^factor\b/i)).toHaveText('1.1')
-        await modelingDialog.input(/^factor\b/i).fill('1.2')
+        await expect(modelingDialog.input('factor')).toHaveText('1.1')
+        await modelingDialog.input('factor').fill('1.2')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -389,8 +389,8 @@ test.describe(
           selectedObjects
         )
 
-        await expect(modelingDialog.input(/^angle\b/i)).toHaveText('45deg')
-        await modelingDialog.input(/^angle\b/i).fill('0.1')
+        await expect(modelingDialog.input('angle')).toHaveText('45deg')
+        await modelingDialog.input('angle').fill('0.1')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -412,8 +412,8 @@ test.describe(
         await op.dblclick()
         await expect(modelingDialog.submitButton).toBeEnabled()
 
-        await expect(modelingDialog.input(/^angle\b/i)).toHaveText('0.1')
-        await modelingDialog.input(/^angle\b/i).fill('0.2')
+        await expect(modelingDialog.input('angle')).toHaveText('0.1')
+        await modelingDialog.input('angle').fill('0.2')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()

@@ -461,7 +461,7 @@ sketch001 = sketch(on = face001) {
       await toolbar.filletButton.click()
 
       await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
-      await modelingDialog.input(/^radius\b/i).fill('1')
+      await modelingDialog.input('radius').fill('1')
 
       await modelingDialog.submit()
       await scene.settled()

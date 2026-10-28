@@ -1,4 +1,9 @@
 import { expect, type Locator, type Page } from '@playwright/test'
+import { escapeRegExp } from '@e2e/playwright/test-utils'
+
+// Match the full label, ignoring case and the required-field marker.
+const fieldLabel = (label: string) =>
+  new RegExp(`^${escapeRegExp(label)}(?: \\*)?$`, 'i')
 
 export class ModelingDialogFixture {
   readonly locator: Locator
@@ -37,11 +42,11 @@ export class ModelingDialogFixture {
     )
   }
 
-  input(label: string | RegExp) {
-    return this.locator.getByRole('textbox', { name: label, exact: true })
+  input(label: string) {
+    return this.locator.getByRole('textbox', { name: fieldLabel(label) })
   }
 
-  async fillInput(label: string | RegExp, value: string) {
+  async fillInput(label: string, value: string) {
     const input = this.input(label)
     await input.press('ControlOrMeta+A')
     if (value) {
@@ -52,8 +57,8 @@ export class ModelingDialogFixture {
     }
   }
 
-  options(label: string | RegExp) {
-    return this.locator.getByRole('combobox', { name: label, exact: true })
+  options(label: string) {
+    return this.locator.getByRole('combobox', { name: fieldLabel(label) })
   }
 
   selection(label: string) {

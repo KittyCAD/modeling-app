@@ -1078,7 +1078,7 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(200)
     await toolbar.extrudeButton.click()
 
-    await expect(modelingDialog.input(/^length\b/i)).toHaveText('5')
+    await expect(modelingDialog.input('length')).toHaveText('5')
 
     await expect(modelingDialog.submitButton).toBeEnabled()
     await modelingDialog.submit()

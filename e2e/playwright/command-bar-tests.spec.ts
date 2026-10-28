@@ -234,7 +234,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await expect(modelingDialog.submitButton).toBeDisabled()
     await editor.selectText('startProfile(at = [-6.95, 10.98])')
     await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
-    await expect(modelingDialog.input(/^length$/i)).toHaveText('5')
+    await expect(modelingDialog.input('length')).toHaveText('5')
     await modelingDialog.variableCheckbox('length').check()
     await expect(
       modelingDialog.locator.getByRole('textbox', {
@@ -243,7 +243,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       })
     ).toHaveValue('length001')
 
-    const bidirectionalLength = modelingDialog.input(/^bidirectional length$/i)
+    const bidirectionalLength = modelingDialog.input('bidirectional length')
     await bidirectionalLength.fill('10')
     await expect(bidirectionalLength).toHaveText('10')
     await bidirectionalLength.fill('')
@@ -634,10 +634,8 @@ export exported = 2`,
       'Extrude'
     )
     await editor.selectText('circle(center = [0, 0], radius = 5)')
-    await modelingDialog
-      .options(/^body type\b/i)
-      .selectOption({ label: 'Surface' })
-    await modelingDialog.input(/^bidirectional length$/i).fill('1 +')
+    await modelingDialog.options('body type').selectOption({ label: 'Surface' })
+    await modelingDialog.input('bidirectional length').fill('1 +')
     await expect(modelingDialog.submitButton).toBeDisabled()
     await modelingDialog.cancelButton.click()
     await expect(modelingDialog.locator).not.toBeAttached()

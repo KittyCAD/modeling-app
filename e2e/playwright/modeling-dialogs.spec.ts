@@ -62,7 +62,7 @@ obstruction = extrude(region002, length = 20mm)`
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await toolbar.openFeatureTreePane()
     await toolbar.extrudeButton.click()
-    const length = modelingDialog.input(/^length$/i)
+    const length = modelingDialog.input('length')
     const profiles = modelingDialog.selection('Profiles')
     await expect(length).toHaveText('5')
     await length.fill('12mm')
@@ -117,7 +117,7 @@ obstruction = extrude(region002, length = 20mm)`
     await toolbar.revolveButton.click()
 
     const { locator: dialog, submitButton: submit } = modelingDialog
-    const axisMode = modelingDialog.options(/axis or edge/i)
+    const axisMode = modelingDialog.options('axis or edge')
     await expect(dialog).toBeVisible()
     await axisMode.selectOption({ label: 'Edge' })
     await expect(modelingDialog.selection('Edge')).toBeVisible()
@@ -127,7 +127,7 @@ obstruction = extrude(region002, length = 20mm)`
     await axisMode.selectOption({ label: 'Edge' })
     await modelingDialog.selection('Edge').click()
     await editor.selectText('line(')
-    await modelingDialog.input(/^angle$/i).fill('180deg')
+    await modelingDialog.input('angle').fill('180deg')
     await expect(submit).toBeEnabled()
     await submit.click()
     await expect(dialog).not.toBeAttached()
@@ -138,7 +138,7 @@ obstruction = extrude(region002, length = 20mm)`
     await toolbar.openFeatureTreePane()
     await (await toolbar.getFeatureTreeOperation('Revolve', 0)).dblclick()
     await expect(axisMode).not.toBeAttached()
-    await modelingDialog.input(/^angle$/i).fill('90deg')
+    await modelingDialog.input('angle').fill('90deg')
     await expect(submit).toBeEnabled()
     await submit.click()
     await expect(dialog).not.toBeAttached()
@@ -147,12 +147,12 @@ obstruction = extrude(region002, length = 20mm)`
     await scene.settled()
 
     await toolbar.helixButton.click()
-    const helixLength = modelingDialog.input(/^length$/i)
+    const helixLength = modelingDialog.input('length')
     await expect(helixLength).not.toHaveAttribute(
       'aria-placeholder',
       'Use defaults'
     )
-    await modelingDialog.options(/^mode\b/i).selectOption({
+    await modelingDialog.options('mode').selectOption({
       label: 'Edge',
     })
     await expect(helixLength).toHaveAttribute(
@@ -238,7 +238,7 @@ body002 = clone(body001)
     await expect(toolbar.revolveButton).toHaveAttribute('aria-pressed', 'false')
 
     const { locator: dialog, submitButton: submit } = modelingDialog
-    const length = modelingDialog.input(/^length$/i)
+    const length = modelingDialog.input('length')
     const profiles = modelingDialog.selection('Profiles')
     const profileReferences = dialog.getByRole('group', {
       name: 'Profiles selections',
@@ -249,7 +249,7 @@ body002 = clone(body001)
     const removeProfile = profileReferences.getByRole('button', {
       name: 'Remove Region from selection',
     })
-    const tagStart = modelingDialog.input(/^tag start$/i)
+    const tagStart = modelingDialog.input('tag start')
     await expect(
       dialog.getByText('Only parallel faces are supported for now.', {
         exact: true,
@@ -257,7 +257,7 @@ body002 = clone(body001)
     ).toBeVisible()
     await expect(length).toHaveText('5')
     await expect(tagStart).toBeHidden()
-    await expect(modelingDialog.options(/^symmetric$/i)).toBeVisible()
+    await expect(modelingDialog.options('symmetric')).toBeVisible()
     await expect(profiles).toContainText(/1 region/i)
     await expect(profiles).toBeFocused()
     await page.keyboard.press('Tab')

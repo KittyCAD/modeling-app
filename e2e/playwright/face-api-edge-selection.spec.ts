@@ -91,7 +91,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
       // Select Edge option
       await modelingDialog
-        .options(/^axis or edge\b/i)
+        .options('axis or edge')
         .selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
 
@@ -137,7 +137,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
       // Select Edge option
       await modelingDialog
-        .options(/^axis or edge\b/i)
+        .options('axis or edge')
         .selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
 
@@ -211,7 +211,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
     // Set radius to 0.75mm
     await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
-    await modelingDialog.input(/^radius\b/i).fill('0.75')
+    await modelingDialog.input('radius').fill('0.75')
 
     await modelingDialog.submit()
 
@@ -274,11 +274,11 @@ hide(sketch001)`
     await clearSelection()
     await expect(toolbar.selectionStatus).not.toContainText('edge')
     await toolbar.helixButton.click()
-    await modelingDialog.options(/^mode\b/i).selectOption({ label: 'Edge' })
+    await modelingDialog.options('mode').selectOption({ label: 'Edge' })
     await modelingDialog.selection('Edge').click()
     await modelingDialog.moveTo({ x: 0, y: 80 })
     await clickSurfaceEdge()
     await expect(modelingDialog.selection('Edge')).toHaveText('1 edge')
-    await expect(modelingDialog.input(/^revolutions\b/i)).toHaveText('1')
+    await expect(modelingDialog.input('revolutions')).toHaveText('1')
   })
 })

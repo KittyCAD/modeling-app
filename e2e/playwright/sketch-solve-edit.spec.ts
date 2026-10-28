@@ -2140,7 +2140,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
       await modelingDialog.selection('Profiles').click()
 
-      await expect(modelingDialog.input(/^length\b/i)).toHaveText('5')
+      await expect(modelingDialog.input('length')).toHaveText('5')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -2237,7 +2237,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
       await modelingDialog.selection('Profiles').click()
 
-      await expect(modelingDialog.input(/^length\b/i)).toHaveText('5')
+      await expect(modelingDialog.input('length')).toHaveText('5')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()

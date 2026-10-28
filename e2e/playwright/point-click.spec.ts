@@ -47,15 +47,15 @@ region001 = region(segments = [sketch001.circle1])`
         await editor.selectText('region(')
       })
       await test.step('Set length', async () => {
-        await expect(modelingDialog.input(/^length\b/i)).toHaveText('5')
-        await modelingDialog.input(/^length\b/i).fill('4')
+        await expect(modelingDialog.input('length')).toHaveText('5')
+        await modelingDialog.input('length').fill('4')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
       })
       await test.step('Set end tag', async () => {
         await modelingDialog.advanced.click()
-        await expect(modelingDialog.input(/^tag end\b/i)).toBeVisible()
-        await modelingDialog.input(/^tag end\b/i).fill('myEndTag')
+        await expect(modelingDialog.input('tag end')).toBeVisible()
+        await modelingDialog.input('tag end').fill('myEndTag')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
       })
@@ -101,8 +101,8 @@ extrude001 = extrude(
 
     await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
 
-    await expect(modelingDialog.input(/^length\b/i)).toHaveText('4')
-    await modelingDialog.input(/^length\b/i).fill('3')
+    await expect(modelingDialog.input('length')).toHaveText('4')
+    await modelingDialog.input('length').fill('3')
 
     await expect(modelingDialog.submitButton).toBeEnabled()
     await modelingDialog.submit()
@@ -343,7 +343,7 @@ sketch001 = extrude(region001, length = -12)`
         await modelingDialog.selection('Plane').click()
         await toolbar.selectDefaultPlane('Front plane')
 
-        await expect(modelingDialog.input(/^offset\b/i)).toHaveText('5')
+        await expect(modelingDialog.input('offset')).toHaveText('5')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -476,22 +476,22 @@ extrude001 = extrude(region001, length = 100)`
     await test.step(`Fill the modeling dialog`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.helixButton.click()
-      await modelingDialog.options(/^mode\b/i).selectOption({ label: 'Edge' })
+      await modelingDialog.options('mode').selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
       await clickOnEdge()
       await expect(modelingDialog.selection('Edge')).toHaveText('1 edge')
-      await modelingDialog.fillInput(/^revolutions\b/i, '20')
-      await modelingDialog.fillInput(/^angle start\b/i, '0')
-      await modelingDialog.fillInput(/^radius\b/i, '1')
-      await modelingDialog.fillInput(/^length\b/i, '')
-      await expect(modelingDialog.input(/^length\b/i)).toHaveAttribute(
+      await modelingDialog.fillInput('revolutions', '20')
+      await modelingDialog.fillInput('angle start', '0')
+      await modelingDialog.fillInput('radius', '1')
+      await modelingDialog.fillInput('length', '')
+      await expect(modelingDialog.input('length')).toHaveAttribute(
         'aria-placeholder',
         'Use defaults'
       )
       await expect(modelingDialog.submitButton).toBeEnabled()
 
       await modelingDialog
-        .options(/^counterclockwise\b/i)
+        .options('counterclockwise')
         .selectOption({ label: 'On' })
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -522,14 +522,14 @@ extrude001 = extrude(region001, length = 100)`
       await operationButton.dblclick()
       const initialInput = '1'
       const newInput = '5'
-      await expect(modelingDialog.input(/^radius\b/i)).toHaveText(initialInput)
-      await modelingDialog.fillInput(/^radius\b/i, newInput)
+      await expect(modelingDialog.input('radius')).toHaveText(initialInput)
+      await modelingDialog.fillInput('radius', newInput)
 
       await expect(modelingDialog.submitButton).toBeEnabled()
 
-      await expect(modelingDialog.options(/^counterclockwise\b/i)).toBeVisible()
+      await expect(modelingDialog.options('counterclockwise')).toBeVisible()
       await modelingDialog
-        .options(/^counterclockwise\b/i)
+        .options('counterclockwise')
         .selectOption({ label: 'Off' })
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -627,8 +627,8 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
       await op.dblclick()
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.advanced.click()
-      await expect(modelingDialog.input(/^v degree\b/i)).toBeVisible()
-      await modelingDialog.input(/^v degree\b/i).fill('3')
+      await expect(modelingDialog.input('v degree')).toBeVisible()
+      await modelingDialog.input('v degree').fill('3')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -715,10 +715,8 @@ region001 = region(segments = [sketch001.circle1])`
       await op.dblclick()
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.advanced.click()
-      await expect(modelingDialog.options(/^sectional\b/i)).toBeVisible()
-      await modelingDialog
-        .options(/^sectional\b/i)
-        .selectOption({ label: 'On' })
+      await expect(modelingDialog.options('sectional')).toBeVisible()
+      await modelingDialog.options('sectional').selectOption({ label: 'On' })
       await expect(modelingDialog.submitButton).toBeEnabled()
       await scene.waitForExecutionDoneAfter(() => modelingDialog.submit())
       await scene.settled()
@@ -797,7 +795,7 @@ extrude001 = extrude(region001, length = -12)`
       await toolbar.filletButton.click()
       await modelingDialog.selection('Selection').click()
 
-      await expect(modelingDialog.input(/^radius\b/i)).toHaveText('5')
+      await expect(modelingDialog.input('radius')).toHaveText('5')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -824,8 +822,8 @@ extrude001 = extrude(region001, length = -12)`
         featureTreeIndex
       )
       await operationButton.dblclick({ button: 'left' })
-      await expect(modelingDialog.input(/^radius\b/i)).toHaveText(oldValue)
-      await modelingDialog.input(/^radius\b/i).fill(newValue)
+      await expect(modelingDialog.input('radius')).toHaveText(oldValue)
+      await modelingDialog.input('radius').fill(newValue)
 
       // await page.pause()
       await expect(modelingDialog.submitButton).toBeEnabled()
@@ -869,7 +867,7 @@ extrude001 = extrude(region001, length = -12)`
     await test.step(`Apply fillet to the second edge`, async () => {
       await modelingDialog.selection('Selection').click()
 
-      await expect(modelingDialog.input(/^radius\b/i)).toHaveText('5')
+      await expect(modelingDialog.input('radius')).toHaveText('5')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -949,8 +947,8 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tag
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 0)
       await operationButton.dblclick({ button: 'left' })
-      await expect(modelingDialog.input(/^radius\b/i)).toHaveText('5')
-      await modelingDialog.input(/^radius\b/i).fill('20')
+      await expect(modelingDialog.input('radius')).toHaveText('5')
+      await modelingDialog.input('radius').fill('20')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -1004,10 +1002,10 @@ revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
       )
       await operationButton.dblclick({ button: 'left' })
       // Auto-fix converts the axis to an edgeRef before opening the edit dialog.
-      await expect(modelingDialog.input(/^angle\b/i)).toBeVisible({
+      await expect(modelingDialog.input('angle')).toBeVisible({
         timeout: 20_000,
       })
-      await modelingDialog.input(/^angle\b/i).fill('180deg')
+      await modelingDialog.input('angle').fill('180deg')
       await modelingDialog.submit()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
     })
@@ -1068,10 +1066,10 @@ helix001 = helix(
       )
       await operationButton.dblclick({ button: 'left' })
       // Auto-fix converts the axis to an edgeRef before opening the edit dialog.
-      await expect(modelingDialog.input(/^radius\b/i)).toBeVisible({
+      await expect(modelingDialog.input('radius')).toBeVisible({
         timeout: 20_000,
       })
-      await modelingDialog.input(/^radius\b/i).fill('2')
+      await modelingDialog.input('radius').fill('2')
       await modelingDialog.submit()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
     })
@@ -1303,9 +1301,9 @@ extrude001 = extrude(region001, length = 5)`
         await toolbar.filletButton.click()
         await modelingDialog.selection('Selection').click()
 
-        await expect(modelingDialog.input(/^radius\b/i)).toHaveText('5')
+        await expect(modelingDialog.input('radius')).toHaveText('5')
         // Set a large radius (1000)
-        await modelingDialog.input(/^radius\b/i).fill('1000')
+        await modelingDialog.input('radius').fill('1000')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         // Apply fillet with large radius
@@ -1389,7 +1387,7 @@ extrude001 = extrude(region001, length = -12)`
       await modelingDialog.selection('Selection').click()
 
       await page.waitForTimeout(1000)
-      await expect(modelingDialog.input(/^length\b/i)).toHaveText('5')
+      await expect(modelingDialog.input('length')).toHaveText('5')
 
       await page.waitForTimeout(1000)
 
@@ -1418,8 +1416,8 @@ extrude001 = extrude(region001, length = -12)`
         0
       )
       await operationButton.dblclick({ button: 'left' })
-      await expect(modelingDialog.input(/^length\b/i)).toHaveText(oldValue)
-      await modelingDialog.input(/^length\b/i).fill(newValue)
+      await expect(modelingDialog.input('length')).toHaveText(oldValue)
+      await modelingDialog.input('length').fill(newValue)
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -1463,7 +1461,7 @@ extrude001 = extrude(region001, length = -12)`
       await modelingDialog.selection('Selection').click()
       await editor.openPane()
 
-      await expect(modelingDialog.input(/^length\b/i)).toHaveText('5')
+      await expect(modelingDialog.input('length')).toHaveText('5')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -1742,7 +1740,7 @@ extrude001 = extrude(profile001, length = 500)`
       await clickOnCap()
       await toolbar.expectSelection('1 face')
 
-      await expect(modelingDialog.input(/^thickness\b/i)).toHaveText('5')
+      await expect(modelingDialog.input('thickness')).toHaveText('5')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -1761,8 +1759,8 @@ extrude001 = extrude(profile001, length = 500)`
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
       await operationButton.dblclick()
-      await expect(modelingDialog.input(/^thickness\b/i)).toHaveText('5')
-      await modelingDialog.input(/^thickness\b/i).fill('2')
+      await expect(modelingDialog.input('thickness')).toHaveText('5')
+      await modelingDialog.input('thickness').fill('2')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -1806,7 +1804,7 @@ extrude001 = extrude(profile001, length = 500)`
       await clickOnDebugCap()
       await toolbar.expectSelection('1 face')
 
-      await expect(modelingDialog.input(/^thickness\b/i)).toHaveText('5')
+      await expect(modelingDialog.input('thickness')).toHaveText('5')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -2098,9 +2096,9 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await toolbar.revolveButton.click()
       await modelingDialog.selection('Profiles').click()
 
-      await expect(modelingDialog.options(/^axis or edge\b/i)).toBeVisible()
+      await expect(modelingDialog.options('axis or edge')).toBeVisible()
       await modelingDialog
-        .options(/^axis or edge\b/i)
+        .options('axis or edge')
         .selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
       const [clickOnFirstEdge] = scene.makeMouseHelpers(0.5, 0.23, {
@@ -2108,7 +2106,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       })
       await clickOnFirstEdge()
 
-      await expect(modelingDialog.input(/^angle\b/i)).toHaveText('360deg')
+      await expect(modelingDialog.input('angle')).toHaveText('360deg')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -2126,8 +2124,8 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         0
       )
       await operationButton.dblclick({ button: 'left' })
-      await expect(modelingDialog.input(/^angle\b/i)).toHaveText('360deg')
-      await modelingDialog.input(/^angle\b/i).fill(newAngle)
+      await expect(modelingDialog.input('angle')).toHaveText('360deg')
+      await modelingDialog.input('angle').fill(newAngle)
       await modelingDialog.variableCheckbox('angle').check()
       await expect(page.getByPlaceholder('Variable name')).toHaveValue(
         'angle001'
@@ -2171,8 +2169,8 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await modelingDialog.selection('Objects').click()
       await expect(modelingDialog.selection('Objects')).toHaveText('1 helix')
 
-      await expect(modelingDialog.input(/^x\b/i)).toHaveText('5')
-      await modelingDialog.input(/^x\b/i).fill('20')
+      await expect(modelingDialog.input('x')).toHaveText('5')
+      await modelingDialog.input('x').fill('20')
 
       await modelingDialog.submit()
       await scene.settled()
@@ -2422,8 +2420,8 @@ extrude001 = extrude(region001, length = 1)`
       await menuButton.click()
       await modelingDialog.selection('Objects').click()
 
-      await expect(modelingDialog.input(/^color\b/i)).toBeVisible()
-      await modelingDialog.input(/^color\b/i).fill('#ff0000') // uppercase doesn't work here
+      await expect(modelingDialog.input('color')).toBeVisible()
+      await modelingDialog.input('color').fill('#ff0000') // uppercase doesn't work here
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -2439,8 +2437,8 @@ extrude001 = extrude(region001, length = 1)`
     await test.step('Edit appearance via feature tree selection works', async () => {
       const op = await toolbar.getFeatureTreeOperation('Appearance', 0)
       await op.dblclick({ button: 'left' })
-      await expect(modelingDialog.input(/^color\b/i)).toBeVisible()
-      await modelingDialog.input(/^color\b/i).fill('#00ff00')
+      await expect(modelingDialog.input('color')).toBeVisible()
+      await modelingDialog.input('color').fill('#00ff00')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -2500,27 +2498,23 @@ solid001 = extrude(region001, length = 5)`
         })
 
         await test.step('Configure instances', async () => {
-          await expect(modelingDialog.input(/^instances\b/i)).toHaveText(
+          await expect(modelingDialog.input('instances')).toHaveText(
             KCL_DEFAULT_INSTANCES
           )
           // Update instances from DEFAULT to 8
-          await modelingDialog.input(/^instances\b/i).fill('8')
+          await modelingDialog.input('instances').fill('8')
         })
 
         await test.step('Configure axis', async () => {
-          await expect(modelingDialog.options(/^axis\b/i)).toBeVisible()
+          await expect(modelingDialog.options('axis')).toBeVisible()
           // Select Y-axis
-          await modelingDialog
-            .options(/^axis\b/i)
-            .selectOption({ label: 'Y-axis' })
+          await modelingDialog.options('axis').selectOption({ label: 'Y-axis' })
         })
 
         await test.step('Configure center', async () => {
-          await expect(modelingDialog.input(/^center\b/i)).toHaveValue(
-            '[0, 0, 0]'
-          )
+          await expect(modelingDialog.input('center')).toHaveValue('[0, 0, 0]')
           // Update center from [0, 0, 0] to [5, 0, 0]
-          await modelingDialog.input(/^center\b/i).fill('[5, 0, 0]')
+          await modelingDialog.input('center').fill('[5, 0, 0]')
         })
 
         await test.step('Review basic parameters', async () => {
@@ -2530,12 +2524,12 @@ solid001 = extrude(region001, length = 5)`
 
       await test.step('Configure optional parameters', async () => {
         await test.step('Configure arc degrees', async () => {
-          await expect(modelingDialog.input(/^arc degrees\b/i)).toHaveAttribute(
+          await expect(modelingDialog.input('arc degrees')).toHaveAttribute(
             'aria-placeholder',
             'Use defaults'
           )
           // Update arc degrees from 360deg to 180
-          await modelingDialog.input(/^arc degrees\b/i).fill('180')
+          await modelingDialog.input('arc degrees').fill('180')
 
           // Review changes to arc degrees
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -2543,21 +2537,21 @@ solid001 = extrude(region001, length = 5)`
 
         await test.step('Configure rotate duplicates', async () => {
           await expect(
-            modelingDialog.options(/^rotate duplicates\b/i)
+            modelingDialog.options('rotate duplicates')
           ).toBeVisible()
           // Select On option
           await modelingDialog
-            .options(/^rotate duplicates\b/i)
+            .options('rotate duplicates')
             .selectOption({ label: 'On' })
           // Review changes to rotate duplicates
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure use original', async () => {
-          await expect(modelingDialog.options(/^use original\b/i)).toBeVisible()
+          await expect(modelingDialog.options('use original')).toBeVisible()
           // Select Off option
           await modelingDialog
-            .options(/^use original\b/i)
+            .options('use original')
             .selectOption({ label: 'Off' })
           // Review changes to use original
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -2586,48 +2580,40 @@ solid001 = extrude(region001, length = 5)`
         )
         await patternOperation.dblclick()
         // Should open the modeling dialog in edit mode
-        await expect(modelingDialog.input(/^center\b/i)).toHaveValue(
-          '[5, 0, 0]'
-        )
+        await expect(modelingDialog.input('center')).toHaveValue('[5, 0, 0]')
       })
 
       await test.step('Edit parameters', async () => {
         await test.step('Edit center', async () => {
-          await expect(modelingDialog.input(/^center\b/i)).toHaveValue(
-            '[5, 0, 0]'
-          )
+          await expect(modelingDialog.input('center')).toHaveValue('[5, 0, 0]')
           // Update center from [5, 0, 0] to [5, 3+4, 0]
-          await modelingDialog.input(/^center\b/i).fill('[5, 3+4, 0]')
+          await modelingDialog.input('center').fill('[5, 3+4, 0]')
 
           // Review changes to center
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit instances', async () => {
-          await expect(modelingDialog.input(/^instances\b/i)).toHaveText('8')
+          await expect(modelingDialog.input('instances')).toHaveText('8')
           // Update instances from 8 to 12
-          await modelingDialog.input(/^instances\b/i).fill('12')
+          await modelingDialog.input('instances').fill('12')
 
           // Review changes to instances
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit axis', async () => {
-          await expect(modelingDialog.options(/^axis\b/i)).toBeVisible()
+          await expect(modelingDialog.options('axis')).toBeVisible()
           // Update axis from Y-axis to Z-axis
-          await modelingDialog
-            .options(/^axis\b/i)
-            .selectOption({ label: 'Z-axis' })
+          await modelingDialog.options('axis').selectOption({ label: 'Z-axis' })
           // Review changes to axis
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit arc degrees', async () => {
-          await expect(modelingDialog.input(/^arc degrees\b/i)).toHaveText(
-            '180'
-          )
+          await expect(modelingDialog.input('arc degrees')).toHaveText('180')
           // Update arc degrees from 180 to 270
-          await modelingDialog.input(/^arc degrees\b/i).fill('270')
+          await modelingDialog.input('arc degrees').fill('270')
 
           // Review changes to arc degrees
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -2635,21 +2621,21 @@ solid001 = extrude(region001, length = 5)`
 
         await test.step('Edit rotate duplicates', async () => {
           await expect(
-            modelingDialog.options(/^rotate duplicates\b/i)
+            modelingDialog.options('rotate duplicates')
           ).toBeVisible()
           // Update rotate duplicates from On to Off
           await modelingDialog
-            .options(/^rotate duplicates\b/i)
+            .options('rotate duplicates')
             .selectOption({ label: 'Off' })
           // Review changes to rotate duplicates
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit use original', async () => {
-          await expect(modelingDialog.options(/^use original\b/i)).toBeVisible()
+          await expect(modelingDialog.options('use original')).toBeVisible()
           // Update use original from Off to On
           await modelingDialog
-            .options(/^use original\b/i)
+            .options('use original')
             .selectOption({ label: 'On' })
           // Review changes to use original
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -2726,34 +2712,32 @@ solid001 = extrude(region001, length = 5)`
         })
 
         await test.step('Configure instances', async () => {
-          await expect(modelingDialog.input(/^instances\b/i)).toHaveText(
+          await expect(modelingDialog.input('instances')).toHaveText(
             KCL_DEFAULT_INSTANCES
           )
           // Update instances from DEFAULT to 6
-          await modelingDialog.input(/^instances\b/i).fill('6')
+          await modelingDialog.input('instances').fill('6')
         })
 
         await test.step('Configure distance', async () => {
-          await expect(modelingDialog.input(/^distance\b/i)).toHaveText(
+          await expect(modelingDialog.input('distance')).toHaveText(
             KCL_DEFAULT_LENGTH
           )
           // Update distance from KCL_DEFAULT_LENGTH to 8
-          await modelingDialog.input(/^distance\b/i).fill('8')
+          await modelingDialog.input('distance').fill('8')
         })
 
         await test.step('Configure axis', async () => {
-          await expect(modelingDialog.options(/^axis\b/i)).toBeVisible()
+          await expect(modelingDialog.options('axis')).toBeVisible()
           // Select Y-axis
-          await modelingDialog
-            .options(/^axis\b/i)
-            .selectOption({ label: 'Y-axis' })
+          await modelingDialog.options('axis').selectOption({ label: 'Y-axis' })
         })
 
         await test.step('Configure use original', async () => {
-          await expect(modelingDialog.options(/^use original\b/i)).toBeVisible()
+          await expect(modelingDialog.options('use original')).toBeVisible()
           // Select On option
           await modelingDialog
-            .options(/^use original\b/i)
+            .options('use original')
             .selectOption({ label: 'On' })
           // Review changes to use original
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -2785,42 +2769,40 @@ solid001 = extrude(region001, length = 5)`
         )
         await patternOperation.dblclick()
         // Should open the modeling dialog in edit mode
-        await expect(modelingDialog.options(/^axis\b/i)).toBeVisible()
+        await expect(modelingDialog.options('axis')).toBeVisible()
       })
 
       await test.step('Edit parameters', async () => {
         await test.step('Edit axis parameter', async () => {
           // Select Z-axis
-          await modelingDialog
-            .options(/^axis\b/i)
-            .selectOption({ label: 'Z-axis' })
+          await modelingDialog.options('axis').selectOption({ label: 'Z-axis' })
           // Review changes to axis
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit instances parameter', async () => {
-          await expect(modelingDialog.input(/^instances\b/i)).toHaveText('6')
+          await expect(modelingDialog.input('instances')).toHaveText('6')
           // Update instances from 6 to 4
-          await modelingDialog.input(/^instances\b/i).fill('4')
+          await modelingDialog.input('instances').fill('4')
 
           // Review changes to instances
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit distance parameter', async () => {
-          await expect(modelingDialog.input(/^distance\b/i)).toHaveText('8')
+          await expect(modelingDialog.input('distance')).toHaveText('8')
           // Update distance from 8 to 12
-          await modelingDialog.input(/^distance\b/i).fill('12')
+          await modelingDialog.input('distance').fill('12')
 
           // Review changes to distance
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit use original parameter', async () => {
-          await expect(modelingDialog.options(/^use original\b/i)).toBeVisible()
+          await expect(modelingDialog.options('use original')).toBeVisible()
           // Update use original from On to Off
           await modelingDialog
-            .options(/^use original\b/i)
+            .options('use original')
             .selectOption({ label: 'Off' })
           // Review changes to use original
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -2902,11 +2884,9 @@ extrude001 = extrude(region001, length = 30)`
         })
 
         await test.step('Configure tolerance', async () => {
-          await expect(modelingDialog.input(/^tolerance\b/i)).toHaveText(
-            '0.1in'
-          )
+          await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
           // Set tolerance to 0.1in
-          await modelingDialog.input(/^tolerance\b/i).fill('0.1in')
+          await modelingDialog.input('tolerance').fill('0.1in')
         })
 
         await test.step('Review basic parameters', async () => {
@@ -2916,45 +2896,43 @@ extrude001 = extrude(region001, length = 30)`
 
       await test.step('Configure optional parameters', async () => {
         await test.step('Configure precision', async () => {
-          await expect(modelingDialog.input(/^precision\b/i)).toHaveAttribute(
+          await expect(modelingDialog.input('precision')).toHaveAttribute(
             'aria-placeholder',
             'Use defaults'
           )
           // Update precision from 3 to 5
-          await modelingDialog.input(/^precision\b/i).fill('5')
+          await modelingDialog.input('precision').fill('5')
 
           // Review changes to precision
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure frame position', async () => {
-          await expect(modelingDialog.input(/^frame position\b/i)).toHaveValue(
-            ''
-          )
+          await expect(modelingDialog.input('frame position')).toHaveValue('')
           // Update frame position from [0, 0] to [10, 10]
-          await modelingDialog.input(/^frame position\b/i).fill('[10, 10]')
+          await modelingDialog.input('frame position').fill('[10, 10]')
 
           // Review changes to frame position
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure frame plane', async () => {
-          await expect(modelingDialog.options(/^frame plane\b/i)).toBeVisible()
+          await expect(modelingDialog.options('frame plane')).toBeVisible()
           // Select XY plane
           await modelingDialog
-            .options(/^frame plane\b/i)
+            .options('frame plane')
             .selectOption({ label: 'XY Plane' })
           // Review changes to frame plane
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure font size', async () => {
-          await expect(modelingDialog.input(/^font size\b/i)).toHaveAttribute(
+          await expect(modelingDialog.input('font size')).toHaveAttribute(
             'aria-placeholder',
             'Use defaults'
           )
           // Update font size to 12mm
-          await modelingDialog.input(/^font size\b/i).fill('12mm')
+          await modelingDialog.input('font size').fill('12mm')
 
           // Review changes to font size
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -2984,55 +2962,53 @@ extrude001 = extrude(region001, length = 30)`
         )
         await gdtOperation.dblclick()
         // Should open the modeling dialog in edit mode
-        await expect(modelingDialog.input(/^tolerance\b/i)).toHaveText('0.1in')
+        await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
       })
 
       await test.step('Edit parameters', async () => {
         await test.step('Edit tolerance', async () => {
-          await expect(modelingDialog.input(/^tolerance\b/i)).toHaveText(
-            '0.1in'
-          )
+          await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
           // Update tolerance from 0.1in to 0.2in
-          await modelingDialog.input(/^tolerance\b/i).fill('0.2in')
+          await modelingDialog.input('tolerance').fill('0.2in')
 
           // Review changes to tolerance
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit precision', async () => {
-          await expect(modelingDialog.input(/^precision\b/i)).toHaveText('5')
+          await expect(modelingDialog.input('precision')).toHaveText('5')
           // Update precision from 5 to 3
-          await modelingDialog.input(/^precision\b/i).fill('3')
+          await modelingDialog.input('precision').fill('3')
 
           // Review changes to precision
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit frame position', async () => {
-          await expect(modelingDialog.input(/^frame position\b/i)).toHaveValue(
+          await expect(modelingDialog.input('frame position')).toHaveValue(
             '[10, 10]'
           )
           // Update frame position from [10, 10] to [20, 30]
-          await modelingDialog.input(/^frame position\b/i).fill('[20, 30]')
+          await modelingDialog.input('frame position').fill('[20, 30]')
 
           // Review changes to frame position
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit frame plane', async () => {
-          await expect(modelingDialog.options(/^frame plane\b/i)).toBeVisible()
+          await expect(modelingDialog.options('frame plane')).toBeVisible()
           // Update frame plane from XY to XZ
           await modelingDialog
-            .options(/^frame plane\b/i)
+            .options('frame plane')
             .selectOption({ label: 'XZ Plane' })
           // Review changes to frame plane
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit font size', async () => {
-          await expect(modelingDialog.input(/^font size\b/i)).toHaveText('12mm')
+          await expect(modelingDialog.input('font size')).toHaveText('12mm')
           // Update font size from 48 to 24
-          await modelingDialog.input(/^font size\b/i).fill('24')
+          await modelingDialog.input('font size').fill('24')
 
           // Review changes to font size
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -3113,7 +3089,7 @@ extrude001 = extrude(region001, length = 30)`
         })
 
         await test.step('Configure name', async () => {
-          await expect(modelingDialog.input(/^name\b/i)).toBeVisible()
+          await expect(modelingDialog.input('name')).toBeVisible()
           // Keep default name 'A'
         })
 
@@ -3124,33 +3100,31 @@ extrude001 = extrude(region001, length = 30)`
 
       await test.step('Configure optional parameters', async () => {
         await test.step('Configure frame position', async () => {
-          await expect(modelingDialog.input(/^frame position\b/i)).toHaveValue(
-            ''
-          )
+          await expect(modelingDialog.input('frame position')).toHaveValue('')
           // Update frame position from [0, 0] to [5, 0]
-          await modelingDialog.input(/^frame position\b/i).fill('[5, 0]')
+          await modelingDialog.input('frame position').fill('[5, 0]')
 
           // Review changes to frame position
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure frame plane', async () => {
-          await expect(modelingDialog.options(/^frame plane\b/i)).toBeVisible()
+          await expect(modelingDialog.options('frame plane')).toBeVisible()
           // Select XZ plane
           await modelingDialog
-            .options(/^frame plane\b/i)
+            .options('frame plane')
             .selectOption({ label: 'XZ Plane' })
           // Review changes to frame plane
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure font size', async () => {
-          await expect(modelingDialog.input(/^font size\b/i)).toHaveAttribute(
+          await expect(modelingDialog.input('font size')).toHaveAttribute(
             'aria-placeholder',
             'Use defaults'
           )
           // Update font size to 12mm
-          await modelingDialog.input(/^font size\b/i).fill('12mm')
+          await modelingDialog.input('font size').fill('12mm')
 
           // Review changes to font size
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -3180,40 +3154,40 @@ extrude001 = extrude(region001, length = 30)`
 
       await test.step('Edit parameters', async () => {
         await test.step('Edit name from A to B', async () => {
-          await expect(modelingDialog.input(/^name\b/i)).toBeVisible()
+          await expect(modelingDialog.input('name')).toBeVisible()
           // Update name from A to B
-          await expect(modelingDialog.input(/^name\b/i)).toBeVisible()
-          await modelingDialog.input(/^name\b/i).fill('B')
+          await expect(modelingDialog.input('name')).toBeVisible()
+          await modelingDialog.input('name').fill('B')
 
           // Review changes to name
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit frame position', async () => {
-          await expect(modelingDialog.input(/^frame position\b/i)).toHaveValue(
+          await expect(modelingDialog.input('frame position')).toHaveValue(
             '[5, 0]'
           )
           // Update frame position from [5, 0] to [10, 5]
-          await modelingDialog.input(/^frame position\b/i).fill('[10, 5]')
+          await modelingDialog.input('frame position').fill('[10, 5]')
 
           // Review changes to frame position
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit frame plane', async () => {
-          await expect(modelingDialog.options(/^frame plane\b/i)).toBeVisible()
+          await expect(modelingDialog.options('frame plane')).toBeVisible()
           // Update frame plane from XZ to YZ
           await modelingDialog
-            .options(/^frame plane\b/i)
+            .options('frame plane')
             .selectOption({ label: 'YZ Plane' })
           // Review changes to frame plane
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit font size', async () => {
-          await expect(modelingDialog.input(/^font size\b/i)).toHaveText('12mm')
+          await expect(modelingDialog.input('font size')).toHaveText('12mm')
           // Update font size from 48 to 32
-          await modelingDialog.input(/^font size\b/i).fill('32')
+          await modelingDialog.input('font size').fill('32')
 
           // Review changes to font size
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -3284,23 +3258,21 @@ extrude001 = extrude(region001, length = 10)`
       await clickOnCap()
       await toolbar.expectSelection('1 face')
 
-      await expect(modelingDialog.input(/^cut at\b/i)).toHaveValue('[0, 0]')
+      await expect(modelingDialog.input('cut at')).toHaveValue('[0, 0]')
 
-      await expect(modelingDialog.options(/^hole body\b/i)).toBeVisible()
+      await expect(modelingDialog.options('hole body')).toBeVisible()
+      await modelingDialog.options('hole body').selectOption({ label: 'Blind' })
+      await expect(modelingDialog.input('blind depth')).toHaveText('2')
+
+      await expect(modelingDialog.input('blind diameter')).toHaveText('1')
+
+      await expect(modelingDialog.options('hole type')).toBeVisible()
       await modelingDialog
-        .options(/^hole body\b/i)
-        .selectOption({ label: 'Blind' })
-      await expect(modelingDialog.input(/^blind depth\b/i)).toHaveText('2')
-
-      await expect(modelingDialog.input(/^blind diameter\b/i)).toHaveText('1')
-
-      await expect(modelingDialog.options(/^hole type\b/i)).toBeVisible()
-      await modelingDialog
-        .options(/^hole type\b/i)
+        .options('hole type')
         .selectOption({ label: 'Simple' })
-      await expect(modelingDialog.options(/^hole bottom\b/i)).toBeVisible()
+      await expect(modelingDialog.options('hole bottom')).toBeVisible()
       await modelingDialog
-        .options(/^hole bottom\b/i)
+        .options('hole bottom')
         .selectOption({ label: 'Flat' })
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -3330,23 +3302,21 @@ hole001 = hole::hole(
       await holeOperation.dblclick()
       await expect(modelingDialog.submitButton).toBeEnabled()
 
-      await expect(modelingDialog.input(/^cut at\b/i)).toHaveValue('[0, 0]')
+      await expect(modelingDialog.input('cut at')).toHaveValue('[0, 0]')
       // Update cut at from [0, 0] to [2, 2]
-      await modelingDialog.input(/^cut at\b/i).fill('[2, 2]')
+      await modelingDialog.input('cut at').fill('[2, 2]')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
 
-      await expect(modelingDialog.options(/^hole type\b/i)).toBeVisible()
+      await expect(modelingDialog.options('hole type')).toBeVisible()
       await modelingDialog
-        .options(/^hole type\b/i)
+        .options('hole type')
         .selectOption({ label: 'Countersink' })
-      await expect(modelingDialog.input(/^countersink angle\b/i)).toBeVisible()
-      await modelingDialog.input(/^countersink angle\b/i).fill('80deg')
+      await expect(modelingDialog.input('countersink angle')).toBeVisible()
+      await modelingDialog.input('countersink angle').fill('80deg')
 
-      await expect(
-        modelingDialog.input(/^countersink diameter\b/i)
-      ).toBeVisible()
-      await modelingDialog.input(/^countersink diameter\b/i).fill('3')
+      await expect(modelingDialog.input('countersink diameter')).toBeVisible()
+      await modelingDialog.input('countersink diameter').fill('3')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -3406,12 +3376,12 @@ hole001 = hole::hole(
 
       await test.step('Create helical gear via toolbar group', async () => {
         await selectGearCommand('gear-helical')
-        await expect(modelingDialog.input(/^n teeth\b/i)).toHaveText('10')
-        await modelingDialog.input(/^n teeth\b/i).fill('12')
-        await modelingDialog.input(/^module\b/i).fill('2.2')
-        await modelingDialog.input(/^pressure angle\b/i).fill('25deg')
-        await modelingDialog.input(/^helix angle\b/i).fill('30deg')
-        await modelingDialog.input(/^gear height\b/i).fill('8')
+        await expect(modelingDialog.input('n teeth')).toHaveText('10')
+        await modelingDialog.input('n teeth').fill('12')
+        await modelingDialog.input('module').fill('2.2')
+        await modelingDialog.input('pressure angle').fill('25deg')
+        await modelingDialog.input('helix angle').fill('30deg')
+        await modelingDialog.input('gear height').fill('8')
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
         await scene.settled()
@@ -3436,12 +3406,10 @@ hole001 = hole::hole(
           0
         )
         await operationButton.dblclick({ button: 'left' })
-        await expect(modelingDialog.input(/^gear height\b/i)).toHaveText('8')
+        await expect(modelingDialog.input('gear height')).toHaveText('8')
 
-        await expect(modelingDialog.input(/^helix angle\b/i)).toHaveText(
-          '30deg'
-        )
-        await modelingDialog.input(/^helix angle\b/i).fill('15deg')
+        await expect(modelingDialog.input('helix angle')).toHaveText('30deg')
+        await modelingDialog.input('helix angle').fill('15deg')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -3514,11 +3482,11 @@ hole001 = hole::hole(
 
       await test.step('Create spur gear via toolbar group', async () => {
         await selectGearCommand('gear-spur')
-        await expect(modelingDialog.input(/^n teeth\b/i)).toHaveText('21')
-        await modelingDialog.input(/^n teeth\b/i).fill('22')
-        await modelingDialog.input(/^module\b/i).fill('1.8')
-        await modelingDialog.input(/^pressure angle\b/i).fill('16deg')
-        await modelingDialog.input(/^gear height\b/i).fill('6')
+        await expect(modelingDialog.input('n teeth')).toHaveText('21')
+        await modelingDialog.input('n teeth').fill('22')
+        await modelingDialog.input('module').fill('1.8')
+        await modelingDialog.input('pressure angle').fill('16deg')
+        await modelingDialog.input('gear height').fill('6')
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
         await scene.settled()
@@ -3542,8 +3510,8 @@ hole001 = hole::hole(
           0
         )
         await operationButton.dblclick({ button: 'left' })
-        await expect(modelingDialog.input(/^gear height\b/i)).toHaveText('6')
-        await modelingDialog.input(/^gear height\b/i).fill('7')
+        await expect(modelingDialog.input('gear height')).toHaveText('6')
+        await modelingDialog.input('gear height').fill('7')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -3615,12 +3583,12 @@ hole001 = hole::hole(
 
       await test.step('Create herringbone gear via toolbar group', async () => {
         await selectGearCommand('gear-herringbone')
-        await expect(modelingDialog.input(/^n teeth\b/i)).toHaveText('10')
-        await modelingDialog.input(/^n teeth\b/i).fill('11')
-        await modelingDialog.input(/^module\b/i).fill('2.3')
-        await modelingDialog.input(/^pressure angle\b/i).fill('24deg')
-        await modelingDialog.input(/^gear height\b/i).fill('6')
-        await modelingDialog.input(/^helix angle\b/i).fill('35deg')
+        await expect(modelingDialog.input('n teeth')).toHaveText('10')
+        await modelingDialog.input('n teeth').fill('11')
+        await modelingDialog.input('module').fill('2.3')
+        await modelingDialog.input('pressure angle').fill('24deg')
+        await modelingDialog.input('gear height').fill('6')
+        await modelingDialog.input('helix angle').fill('35deg')
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
         await scene.settled()
@@ -3645,10 +3613,8 @@ hole001 = hole::hole(
           0
         )
         await operationButton.dblclick({ button: 'left' })
-        await expect(modelingDialog.input(/^helix angle\b/i)).toHaveText(
-          '35deg'
-        )
-        await modelingDialog.input(/^helix angle\b/i).fill('20deg')
+        await expect(modelingDialog.input('helix angle')).toHaveText('35deg')
+        await modelingDialog.input('helix angle').fill('20deg')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -3721,12 +3687,12 @@ hole001 = hole::hole(
 
       await test.step('Create ring gear via toolbar group', async () => {
         await selectGearCommand('gear-ring')
-        await expect(modelingDialog.input(/^n teeth\b/i)).toHaveText('40')
-        await modelingDialog.fillInput(/^n teeth\b/i, '42')
-        await modelingDialog.fillInput(/^module\b/i, '1.3')
-        await modelingDialog.fillInput(/^pressure angle\b/i, '14deg')
-        await modelingDialog.fillInput(/^helix angle\b/i, '-20deg')
-        await modelingDialog.fillInput(/^gear height\b/i, '5')
+        await expect(modelingDialog.input('n teeth')).toHaveText('40')
+        await modelingDialog.fillInput('n teeth', '42')
+        await modelingDialog.fillInput('module', '1.3')
+        await modelingDialog.fillInput('pressure angle', '14deg')
+        await modelingDialog.fillInput('helix angle', '-20deg')
+        await modelingDialog.fillInput('gear height', '5')
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
         await scene.settled()
@@ -3752,8 +3718,8 @@ hole001 = hole::hole(
         )
         await operationButton.dblclick({ button: 'left' })
 
-        await expect(modelingDialog.input(/^n teeth\b/i)).toHaveText('42')
-        await modelingDialog.fillInput(/^n teeth\b/i, '48')
+        await expect(modelingDialog.input('n teeth')).toHaveText('42')
+        await modelingDialog.fillInput('n teeth', '48')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -3801,6 +3767,7 @@ test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
     scene,
     editor,
     toolbar,
+    modelingDialog,
   }) => {
     const code = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
@@ -3814,19 +3781,17 @@ region001 = region(segments = [sketch001.circle1])`
     const pane = page.locator(`#${DefaultLayoutPaneID.NamedViews}-pane`)
     await pane.getByTestId('named-view-create').click()
 
-    const dialog = page.getByTestId('modeling-dialog')
-    const name = dialog.getByRole('textbox', { name: /^name/i })
+    const dialog = modelingDialog.locator
+    const name = modelingDialog.input('name')
     const exceptions = dialog.getByRole('button', {
       name: 'Select Exceptions',
       exact: true,
     })
     const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
     await name.fill('Inspection')
-    await dialog
-      .getByRole('combobox', { name: /^orientation/i })
-      .selectOption({ label: 'Front' })
+    await modelingDialog.options('orientation').selectOption({ label: 'Front' })
     await dialog.getByText('Advanced', { exact: true }).click()
-    await dialog.getByRole('textbox', { name: /^distance/i }).fill('200mm')
+    await modelingDialog.input('distance').fill('200mm')
     await dialog
       .locator('#command-kcl-input-distance-variable-checkbox')
       .check()
@@ -3867,12 +3832,8 @@ region001 = region(segments = [sketch001.circle1])`
     await name.fill('Inspection updated')
     await expect(exceptions).toBeDisabled()
     await expect(exceptions).toContainText(/1 region/i)
-    await dialog
-      .getByRole('combobox', { name: /^orientation/i })
-      .selectOption({ label: 'Top' })
-    await dialog
-      .getByRole('combobox', { name: /^baseline/i })
-      .selectOption({ label: 'Hide all' })
+    await modelingDialog.options('orientation').selectOption({ label: 'Top' })
+    await modelingDialog.options('baseline').selectOption({ label: 'Hide all' })
     await scene.waitForExecutionDoneAfter(() => submit.click())
     await expect(dialog).not.toBeAttached()
     await expect(row).toContainText('Inspection updated')
