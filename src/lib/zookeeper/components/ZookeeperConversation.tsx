@@ -642,7 +642,7 @@ export const ZookeeperConversationInput = (
                   >
                     <CustomIcon
                       name="close"
-                      className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+                      className="w-5 h-5 rounded-sm bg-chalkboard-20 text-chalkboard-80 dark:bg-chalkboard-80 dark:text-chalkboard-20 group-hover:brightness-110"
                     />
                   </button>
                 </div>
