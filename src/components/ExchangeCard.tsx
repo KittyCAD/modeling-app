@@ -339,7 +339,6 @@ export const RequestCard = (props: RequestCardProps) => {
                     file={
                       fetchState?.status === 'loaded' ? fetchState.file : file
                     }
-                    icon="paperclip"
                   />
                   {fetchState?.status === 'loading' && (
                     <span className="text-chalkboard-70 dark:text-chalkboard-40">
