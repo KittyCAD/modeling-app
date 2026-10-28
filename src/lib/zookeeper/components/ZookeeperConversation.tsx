@@ -412,18 +412,19 @@ export const ZookeeperConversationInput = (
       for (const file of files) {
         const newName = deduplicateFileName(
           file.name,
-          next.map(({ file }) => file.name)
+          next.map((f) => f.file.name)
         )
-        next.push({
-          file:
-            newName !== file.name
-              ? new File([file], newName, {
-                  type: file.type,
-                  lastModified: file.lastModified,
-                })
-              : file,
-          isPastedText,
-        })
+        if (newName !== file.name) {
+          next.push({
+            file: new File([file], newName, {
+              type: file.type,
+              lastModified: file.lastModified,
+            }),
+            isPastedText,
+          })
+        } else {
+          next.push({ file, isPastedText })
+        }
       }
       return next
     })
