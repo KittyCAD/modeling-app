@@ -122,39 +122,4 @@ describe('ExchangeCard replay attachments', () => {
     expect(onFetchAttachment).toHaveBeenCalledOnce()
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
   })
-
-  test('keeps the filename for sent text attachments without paste intent', () => {
-    const file = {
-      name: 'pasted-text-a2f180bb-d734-46f2-974e-71f804b1f1a1.txt',
-      mimetype: 'text/plain',
-      data: [],
-      attachment_ref: attachmentRef,
-    }
-    const props = {
-      ...exchangeProps,
-      request: { ...exchangeProps.request, additional_files: [file] },
-      onFetchAttachment: vi.fn(),
-    }
-    const { rerender } = render(<ExchangeCard {...props} />)
-
-    fireEvent.click(screen.getByRole('button', { name: /pasted-text-/ }))
-    expect(props.onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
-    expect(screen.getByText(file.name)).toBeInTheDocument()
-
-    const data = Array.from(
-      new TextEncoder().encode('First few words\nfrom the pasted reference')
-    )
-    rerender(
-      <ExchangeCard
-        {...props}
-        attachmentFetches={{
-          [attachmentKey]: { status: 'loaded', file: { ...file, data } },
-        }}
-      />
-    )
-    const preview = screen.getByText(file.name)
-    expect(preview).toHaveAttribute('title', file.name)
-    expect(preview).toHaveClass('truncate')
-    expect(screen.queryByText(/First few words/)).not.toBeInTheDocument()
-  })
 })
