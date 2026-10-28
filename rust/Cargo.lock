@@ -3179,6 +3179,7 @@ dependencies = [
  "http 1.5.0",
  "indexmap 2.14.2",
  "kcl-api",
+ "kcl-error",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",

@@ -72,7 +72,7 @@ kcl-error = { version = "=0.2.193", path = "../kcl-error" }
 kcl-syntax = { version = "=0.2.193", path = "../kcl-syntax" }
 ezpz = { workspace = true }
 kittycad = { workspace = true }
-kittycad-modeling-cmds = { workspace = true }
+kittycad-modeling-cmds = { workspace = true, features = ["exec-kcl"] }
 lazy_static = { workspace = true }
 libm = "0.2.16"
 miette = { workspace = true }

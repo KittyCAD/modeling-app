@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import asyncio
 import os
+import shutil
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from urllib.parse import parse_qs, urlsplit
 
-import kcl
 import pytest
+
+import kcl
 from kcl import Point3d
 
 # Get the path to this script's parent directory.
@@ -50,6 +52,78 @@ box3D = extrude(box_sketch, length = box_height)
 requires_engine = pytest.mark.skipif(
     "ZOO_API_TOKEN" not in os.environ, reason="requires ZOO_API_TOKEN"
 )
+
+
+@requires_engine
+@pytest.mark.asyncio
+@pytest.mark.parametrize("geometry_only", [False, True])
+async def test_engine_execution_preserves_imported_error_sources(
+    tmp_path, geometry_only
+):
+    dependency = tmp_path / "dependency.kcl"
+    dependency.write_text(
+        "@settings(kclVersion = 3.0)\nexport value = missingIdentifier\n"
+    )
+    entrypoint = tmp_path / "main.kcl"
+    entrypoint.write_text('@settings(kclVersion = 3.0)\nimport "dependency.kcl"\n')
+    with pytest.raises(kcl.KclError) as caught:
+        await kcl.execute(str(entrypoint), geometry_only=geometry_only)
+    assert "missingIdentifier" in str(caught.value)
+    assert "undefined value" in str(caught.value)
+    assert str(dependency) in str(caught.value)
+
+
+@requires_engine
+@pytest.mark.asyncio
+@pytest.mark.parametrize("geometry_only", [False, True])
+async def test_engine_code_can_import_a_file_named_main(
+    tmp_path, monkeypatch, geometry_only
+):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "main.kcl").write_text(
+        "@settings(kclVersion = 3.0)\nexport value = 42\n"
+    )
+    outcome = await kcl.execute_code(
+        '@settings(kclVersion = 3.0)\nimport "main.kcl"\nvalue = main::value\n',
+        geometry_only=geometry_only,
+    )
+    assert not any(issue.is_err() for issue in outcome.issues())
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_engine_execution_uploads_parent_relative_assets(tmp_path):
+    subdirectory = tmp_path / "sub"
+    subdirectory.mkdir()
+    entrypoint = subdirectory / "main.kcl"
+    entrypoint.write_text(
+        '@settings(kclVersion = 3.0)\nimport "../cube.step" as cube\n'
+    )
+    asset = tmp_path / "cube.step"
+    await asyncio.to_thread(shutil.copyfile, cube_step_file, asset)
+    async with await kcl.new_kcl_session(str(entrypoint)) as session:
+        entrypoint.unlink()
+        asset.unlink()
+        request = kcl.PhysicalPropertiesRequest()
+        request.set_volume(kcl.UnitVolume.CubicMillimeters)
+        result = await session.measure(request)
+        assert result.get_volume() > 0
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_engine_execution_rejects_absolute_imports(tmp_path):
+    dependency = tmp_path / "dependency.kcl"
+    dependency.write_text("@settings(kclVersion = 3.0)\nexport value = 42\n")
+    with pytest.raises(
+        kcl.KclError,
+        match="Absolute import paths are not supported|import path may not start",
+    ):
+        await kcl.execute_code(
+            f'@settings(kclVersion = 3.0)\nimport "{dependency.as_posix()}"\n',
+            geometry_only=True,
+        )
+
 
 MAX_EXECUTION_ATTEMPTS = 3
 EXECUTION_RETRY_BASE_DELAY_SECONDS = 1
