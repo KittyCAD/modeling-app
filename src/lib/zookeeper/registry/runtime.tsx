@@ -12,6 +12,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import type { ZDSProject } from '@src/lib/projectSession'
 import type { BillingRegistryService } from '@src/lib/billing'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { isMobile } from '@src/lib/isMobile'
 import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
 import { getOpenPanes } from '@src/lib/layout/utils'
 import type {
@@ -437,6 +438,7 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
       [AreaType.Zookeeper]: {
         hide: () => false,
         shortcut: 'Ctrl + T',
+        hidePaneButton: !isMobile(),
         cssClassOverrides: {
           button:
             'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',

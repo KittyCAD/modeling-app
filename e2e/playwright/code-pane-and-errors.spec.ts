@@ -66,6 +66,7 @@ extrude001 = extrude(sketch001, length = 5)`
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
+    await editor.openPane()
 
     // Ensure badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')

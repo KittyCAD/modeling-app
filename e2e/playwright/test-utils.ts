@@ -66,23 +66,8 @@ import {
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import { createLayoutWithMetadata } from '@src/lib/layout'
-import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
-
-export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
-
 export const PLAYWRIGHT_TEST_SCOPE_KEY = 'playwrightTestScope'
 export const PLAYWRIGHT_STORAGE_SCOPE_KEY = 'playwrightStorageScope'
-
-export const PLAYWRIGHT_LAYOUT_SETTINGS = {
-  layout: {
-    configs: {
-      [PLAYWRIGHT_LAYOUT_CONFIG_NAME]: JSON.stringify(
-        createLayoutWithMetadata(playwrightLayoutConfig)
-      ),
-    },
-  },
-} as const
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -636,12 +621,13 @@ export async function getUtils(page: Page, test_?: typeof test) {
     },
 
     async editorTextMatches(this: void, code: string) {
-      const editor = page.locator(editorSelector)
       return expect
         .poll(async () => {
           try {
-            const text = await editor.textContent()
-            return toNormalizedCode(text ?? '')
+            const text = await page.evaluate(
+              () => window.app.singletons.kclManager.code
+            )
+            return toNormalizedCode(text)
           } catch (e) {
             console.log(e)
             return ''
@@ -1101,7 +1087,6 @@ export async function setup(
             cloudSyncEnabled,
             zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),
           }),
-          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             appearance: {
               ...TEST_SETTINGS.app?.appearance,

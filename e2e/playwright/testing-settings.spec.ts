@@ -352,6 +352,12 @@ test.describe(
         })
 
         await createProject({ name: 'project-000', page })
+        // Let project creation finish persisting before editing settings externally.
+        await page.waitForFunction(
+          () =>
+            window.app.project !== undefined &&
+            window.app.settings.actor.getSnapshot().matches('idle')
+        )
 
         const changeShowDebugPanelFs = async (showPanel: boolean) => {
           const tempSettingsFilePath = join(
@@ -758,6 +764,7 @@ test.describe(
             'background-color',
             lightBackgroundCss
           )
+          await u.openKclCodePanel()
           await expect(codeMirrorContent).toBeVisible()
           codeMirrorLightThemeColors = await getCodeMirrorThemeColors()
           await expect
@@ -873,8 +880,7 @@ test.describe(
     test(
       `Change inline units setting`,
       { tag: ['@macos', '@windows'] },
-      async ({ page, homePage, editor, folderSetupFn }) => {
-        const u = await getUtils(page)
+      async ({ page, homePage, editor, scene, folderSetupFn }) => {
         const initialInlineUnits = 'yd'
         const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
         const inlineSettingsString = (s: string) =>
@@ -894,6 +900,8 @@ test.describe(
 
         await test.step(`Initial units from settings are ignored`, async () => {
           await homePage.openProject('project-000')
+          await scene.connectionEstablished()
+          await scene.settled()
           await expect(unitsIndicator).toHaveText(
             'Default units for current filemm'
           )
@@ -901,18 +909,13 @@ test.describe(
 
         await test.step(`Manually write inline settings`, async () => {
           await editor.openPane()
-          // Clear debug logs so expectCmdLog waits for executeAst from this edit, not a prior run.
-          await u.openDebugPanel()
-          await u.clearCommandLogs()
-          await u.closeDebugPanel()
-          await editor.replaceCode(
-            `fn cube`,
-            `${inlineSettingsString(initialInlineUnits)}
+          await scene.waitForExecutionDoneAfter(() =>
+            editor.replaceCode(
+              `fn cube`,
+              `${inlineSettingsString(initialInlineUnits)}
 fn cube`
+            )
           )
-          await u.openDebugPanel()
-          await u.expectCmdLog('[data-message-type="execution-done"]', 20_000)
-          await u.closeDebugPanel()
           await expect(unitsIndicator).toContainText(initialInlineUnits)
         })
 

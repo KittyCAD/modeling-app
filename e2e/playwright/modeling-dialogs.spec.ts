@@ -28,7 +28,7 @@ sketch001 = sketch(on = XZ) {
     await scene.moveCameraTo({ x: 0, y: -100, z: 0 })
     await toolbar.extrudeButton.click()
     await expect(modelingDialog.selection('Profiles')).toBeFocused()
-    const [selectProfile] = scene.makeMouseHelpers(0.38, 0.5, {
+    const [selectProfile] = scene.makeMouseHelpers(0.5, 0.5, {
       format: 'ratio',
     })
     await selectProfile()
@@ -351,11 +351,10 @@ body002 = clone(body001)
         width: initialPosition.width,
         height: initialPosition.height,
       })
-    await submit.click()
+    await scene.waitForExecutionDoneAfter(() => submit.click())
     await expect(dialog).not.toBeAttached()
     await editor.expectEditor.toContain('length = 12mm')
     await editor.expectEditor.toContain('tagStart = $startFace')
-    await scene.settled()
     await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'false')
 
     await toolbar.openFeatureTreePane()

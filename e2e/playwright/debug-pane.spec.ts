@@ -1,4 +1,4 @@
-import { getUtils } from '@e2e/playwright/test-utils'
+import { closePane, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 function countNewlines(input: string): number {
@@ -16,6 +16,7 @@ test.describe('Debug pane', { tag: '@desktop' }, () => {
     page,
     context,
     homePage,
+    toolbar,
   }) => {
     const code = `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [0, 0])
@@ -31,6 +32,8 @@ test.describe('Debug pane', { tag: '@desktop' }, () => {
 
     await test.step('Test setup', async () => {
       await homePage.goToModelingScene()
+      await toolbar.closeFeatureTreePane()
+      await closePane(page, 'files-pane-button')
       await u.openKclCodePanel()
       await u.openDebugPanel()
       // Set the code in the code editor.

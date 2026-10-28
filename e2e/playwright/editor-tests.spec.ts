@@ -2,6 +2,7 @@ import {
   executorInputPath,
   expectRenderedDiagnosticText,
   getUtils,
+  openPane,
   TEST_COLORS,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -39,6 +40,7 @@ test.describe('Editor tests', { tag: '@desktop' }, () => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -89,6 +91,7 @@ sketch001 = startSketchOn(XY)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
     await u.waitForPageLoad()
 
     await u.codeLocator.click()
@@ -143,6 +146,7 @@ sketch001 = startSketchOn(XY)
 
     await homePage.waitForAuthentication()
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
     await scene.settled()
 
     await u.codeLocator.click()
@@ -196,6 +200,7 @@ sketch001 = startSketchOn(XY)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -241,6 +246,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
     await scene.connectionEstablished()
 
     // check no error to begin with
@@ -291,6 +297,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -354,6 +361,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     // TODO: Jess needs to fix this but you have to mod the code to get them to show
     // up, its an annoying codemirror thing.
@@ -423,6 +431,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -471,6 +480,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -515,6 +525,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -583,6 +594,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     await scene.connectionEstablished()
 
@@ -637,6 +649,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     await scene.connectionEstablished()
 
@@ -684,6 +697,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
@@ -742,6 +756,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -766,11 +781,13 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if you write invalid kcl you get inlined errors',
     { tag: '@web' },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, scene, editor }) => {
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await openPane(page, 'code-pane-button')
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -822,6 +839,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.keyboard.press('Enter')
       await page.keyboard.type('topAng = 42')
       await page.keyboard.press('ArrowLeft')
+      await editor.scrollToText('topAng = 42', true)
 
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
       await expect(
@@ -837,8 +855,10 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
         'topAng'
       )
 
-      const secondTopAng = page.getByText('topAng').first()
-      await secondTopAng?.dblclick()
+      const secondTopAng = u.codeLocator
+        .getByText('topAng', { exact: true })
+        .last()
+      await secondTopAng.selectText()
       await page.keyboard.type('otherAng')
 
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -878,6 +898,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
@@ -897,6 +918,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       // tests clicking on an option, selection the first option
       // and arrowing down to an option
@@ -965,6 +987,7 @@ sketch001 = startSketchOn(XZ)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       // this test might be brittle as we add and remove functions
       // but should also be easy to update.
@@ -1048,6 +1071,7 @@ sketch001 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
     await scene.settled()
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
@@ -1149,6 +1173,7 @@ sketch001 = startSketchOn(XZ)
     await test.step(`Open the empty file`, async () => {
       await projectLink.click()
       await scene.settled()
+      await u.openKclCodePanel()
     })
     await test.step(`Write the import function line`, async () => {
       await u.codeLocator.fill(`import 'cube.obj'\ncube`)
@@ -1170,6 +1195,7 @@ sketch001 = startSketchOn(XZ)
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 900 })
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     // wait until scene is ready to be interacted with
     await scene.connectionEstablished()
@@ -1233,6 +1259,7 @@ sketch001 = startSketchOn(XZ)
     await page.setBodyDimensions(viewportSize)
 
     await homePage.goToModelingScene()
+    await openPane(page, 'code-pane-button')
 
     await scene.connectionEstablished()
 
@@ -1257,6 +1284,7 @@ sketch001 = startSketchOn(XZ)
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       // wait until scene is ready to be interacted with
       await scene.connectionEstablished()
@@ -1299,6 +1327,7 @@ sketch001 = startSketchOn(XZ)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       // Wait for connection, this is especially important for this test, because safeParse is invoked when
       // connection is established which would interfere with the test if it happened during later steps.

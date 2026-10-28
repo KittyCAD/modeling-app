@@ -180,6 +180,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await scene.settled()
 
     // Put the cursor in the code editor
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
     await page.locator('.cm-content').click()
 
     // Now try the same, but with the keyboard shortcut, check focus
@@ -376,8 +377,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       },
     })
 
-    await cmdBar.progressCmdBar()
-    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => cmdBar.progressCmdBar())
     await editor.expectEditor.toContain(
       'extrude001 = extrude(sketch001, length = length001)'
     )
@@ -558,7 +558,10 @@ export exported = 1
     })
 
     await editor.expectEditor.toContain(
-      `a = 5b = a * amyParameter001 = b - 5c = 3 + a`
+      `a = 5
+b = a * a
+myParameter001 = b - 5
+c = 3 + a`
     )
 
     const newValue = `2 * b + a`

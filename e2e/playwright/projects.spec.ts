@@ -320,7 +320,7 @@ test(
     )
 
     await test.step('Ensure the code is empty', async () => {
-      await editor.expectEditor.toBe('\n')
+      await editor.expectEditor.toBe('')
     })
   }
 )
@@ -1168,11 +1168,12 @@ test(
     await page.getByText(projectName).click()
     await u.waitForPageLoad()
 
+    await u.openKclCodePanel()
     await expect(u.codeLocator).toContainText('routerDiameter')
     await expect(u.codeLocator).toContainText('templateGap')
     await expect(u.codeLocator).toContainText('minClampingDistance')
 
-    await page.getByRole('switch', { name: 'Project Files' }).click()
+    await u.openFilePanel()
     await toolbar.openFile('otherThingToClickOn.kcl')
 
     await expect(u.codeLocator).toContainText(
@@ -1735,7 +1736,8 @@ test(
 
       await scene.settled()
 
-      await page.getByTestId('files-pane-button').click()
+      const u = await getUtils(page)
+      await u.openFilePanel()
     })
 
     await test.step('check the last file is out of view initially, and can be scrolled to', async () => {
@@ -1778,6 +1780,7 @@ test(
     await closeOnboardingModalIfPresent(page)
 
     await test.step('select all in code editor, check its length', async () => {
+      await u.openKclCodePanel()
       await u.codeLocator.click()
       // expect u.codeLocator to have some text
       await expect(u.codeLocator).toContainText('line(')

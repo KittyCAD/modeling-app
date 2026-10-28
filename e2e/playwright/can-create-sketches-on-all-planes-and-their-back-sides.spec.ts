@@ -49,7 +49,9 @@ test.describe(
         },
       }
 
-      const code = `@settings(defaultLengthUnit = in, kclVersion = 3.0)sketch001 = sketch(on = ${plane}) {}`
+      const code = `@settings(defaultLengthUnit = in, kclVersion = 3.0)
+sketch001 = sketch(on = ${plane}) {
+}`
       await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
         await u.openDebugPanel()
         await u.clearCommandLogs()
@@ -221,6 +223,7 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
         await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })
 
+      await editor.openPane()
       await expect(editor.codeContent).toContainText(
         new RegExp(
           `sketch001 = startSketchOn\\(${escapeRegExp(planeRef)}\\)|sketch001 = sketch\\(on = ${escapeRegExp(planeRef)}\\)`

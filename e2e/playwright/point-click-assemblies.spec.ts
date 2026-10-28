@@ -426,6 +426,8 @@ test.describe(
       })
 
       await test.step('Edit scale on module', async () => {
+        await editor.closePane()
+        await toolbar.closePane(DefaultLayoutPaneID.Files)
         const op = await toolbar.getFeatureTreeOperation('Scale', 0)
         await op.dblclick()
         await cmdBar.expectState({

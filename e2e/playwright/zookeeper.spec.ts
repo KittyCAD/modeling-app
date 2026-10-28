@@ -10,6 +10,72 @@ const ZK_MOCK_REPLY_MARKER =
 const ZOOKEEPER_TEST_TAGS = ['@desktop', '@web', '@zookeeper']
 
 test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
+  test('Header toggle collapses the right pane and restores its width', async ({
+    page,
+    homePage,
+    scene,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+
+    const toggle = page
+      .getByTestId('app-header')
+      .getByRole('button', { name: 'Zookeeper', exact: true })
+    const rightPane = page.locator('[data-panel-id="right-toolbar"]')
+    const viewport = page.locator('[data-panel-id="modeling-scene"]')
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByTestId('ttc-pane-button')).toHaveCount(1)
+    const headerHeights = await toggle.evaluate((button) => {
+      const header = button.closest('header')!
+      const wrapper = button.parentElement!
+      const withToggle = header.getBoundingClientRect().height
+      wrapper.style.display = 'none'
+      const withoutToggle = header.getBoundingClientRect().height
+      wrapper.style.removeProperty('display')
+      return { withToggle, withoutToggle }
+    })
+    expect(headerHeights.withToggle).toBe(headerHeights.withoutToggle)
+    await expect(toggle.locator('.bg-img-mel')).toBeVisible()
+    const avatarSize = await page
+      .getByTestId('user-sidebar-toggle')
+      .locator('.avatar')
+      .boundingBox()
+    const toggleSize = await toggle.boundingBox()
+    expect(toggleSize?.width).toBe(avatarSize?.width)
+    expect(toggleSize?.height).toBe(avatarSize?.height)
+    expect(toggleSize?.width).toBe(toggleSize?.height)
+    await expect(rightPane.locator('[data-pane-toolbar]')).toBeHidden()
+
+    const handle = page.locator(
+      '[data-panel-resize-handle-id="handle-modeling-scene"]'
+    )
+    const handleBox = await handle.boundingBox()
+    if (!handleBox) throw new Error('Missing Zookeeper resize handle')
+    await page.mouse.move(handleBox.x, handleBox.y + handleBox.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(handleBox.x - 80, handleBox.y + handleBox.height / 2)
+    await page.mouse.up()
+    const openWidth = (await rightPane.boundingBox())!.width
+    const viewportWidth = (await viewport.boundingBox())!.width
+
+    await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+    await expect
+      .poll(async () => (await rightPane.boundingBox())?.width)
+      .toBe(0)
+    await expect
+      .poll(async () => (await viewport.boundingBox())!.width)
+      .toBeGreaterThan(viewportWidth + openWidth - 2)
+
+    await page.keyboard.press('Control+t')
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+    await expect
+      .poll(async () =>
+        Math.abs((await rightPane.boundingBox())!.width - openWidth)
+      )
+      .toBeLessThan(2)
+  })
+
   test('Happy path: new project, easy prompt, good result', async ({
     page,
     editor,
@@ -104,9 +170,9 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       expect(zookeeperConnectionCount).toBe(1)
       holdResponses = false
       releaseResponses()
-      await expect(
-        zookeeperPaneButton.locator('svg[aria-label="sparkles"]')
-      ).toBeVisible({ timeout: 30_000 })
+      await expect(zookeeperPaneButton.locator('.bg-img-mel')).toBeVisible({
+        timeout: 30_000,
+      })
       expect(zookeeperConnectionCount).toBe(1)
 
       await toolbar.openPane(DefaultLayoutPaneID.Code)

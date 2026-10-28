@@ -271,8 +271,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
           await page.waitForTimeout(100)
           await page.mouse.up({ button: 'right' })
         },
-        // afterPosition: [1.14, 9.49, 119.83], // value on macOS
-        afterPosition: [-12.78, 14.54, 118.64], // value on Linux
+        afterPosition: [-4, 22.6, 118],
         beforePosition: initialCamPosition,
         page,
       })

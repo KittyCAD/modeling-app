@@ -23,8 +23,10 @@ async function waitForCodeChange(
   page: Page,
   previousCode: string
 ): Promise<string> {
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCode)
-  return await page.locator('.cm-content').innerText()
+  await expect
+    .poll(() => page.evaluate(() => window.app.singletons.kclManager.code))
+    .not.toBe(previousCode)
+  return page.evaluate(() => window.app.singletons.kclManager.code)
 }
 
 /**
@@ -94,26 +96,6 @@ async function expectNoUnsupportedSelectionToast(page: Page) {
   await expect(
     page.getByText('Some faces and edges are not currently selectable.')
   ).not.toBeVisible()
-}
-
-async function dragBetweenRatios(
-  page: Page,
-  scene: SceneFixture,
-  from: [number, number],
-  to: [number, number],
-  steps = 20
-) {
-  const fromPoint = await scene.convertPagePositionToStream(
-    from[0],
-    from[1],
-    'ratio'
-  )
-  const toPoint = await scene.convertPagePositionToStream(to[0], to[1], 'ratio')
-
-  await page.mouse.move(fromPoint.x, fromPoint.y)
-  await page.mouse.down()
-  await page.mouse.move(toPoint.x, toPoint.y, { steps })
-  await page.mouse.up()
 }
 
 const TEST_CODE = `mySketch = startSketchOn(XZ)
@@ -275,8 +257,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await line1End()
         previousCode = await waitForCodeChange(page, previousCode)
         await cancelLineChaining()
-        previousCode = await waitForCodeChange(page, previousCode)
         await expect(pointHandles).toHaveCount(2)
+        previousCode = await editor.getCurrentCode()
 
         // Second line segment
         // Keep this start point away from the Y axis so origin/axis snapping
@@ -292,8 +274,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await line2End()
         previousCode = await waitForCodeChange(page, previousCode)
         await cancelLineChaining()
-        previousCode = await waitForCodeChange(page, previousCode)
         await expect(pointHandles).toHaveCount(4)
+        previousCode = await editor.getCurrentCode()
 
         // Third line segment
         const [line3Start] = scene.makeMouseHelpers(0.7, 0.4, {
@@ -305,9 +287,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await line3Start()
         previousCode = await waitForCodeChange(page, previousCode)
         await line3End()
-        previousCode = await waitForCodeChange(page, previousCode)
-        await cancelLineChaining()
         await waitForCodeChange(page, previousCode)
+        await cancelLineChaining()
         await expect(pointHandles).toHaveCount(6)
       })
 
@@ -401,7 +382,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         })
 
         await circleCenterClick()
-        previousCode = await waitForCodeChange(page, previousCode)
         await circleRadiusClick()
         await waitForCodeChange(page, previousCode)
 
@@ -461,7 +441,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         })
 
         await circleCenter()
-        previousCode = await waitForCodeChange(page, previousCode)
         await circleRadius()
         await waitForCodeChange(page, previousCode)
 
@@ -1359,8 +1338,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(9)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterArc3)
-      const codeAfterUndo1 = await editor.getCurrentCode()
+      const codeAfterUndo1 = await waitForCodeChange(page, codeAfterArc3)
       expect(normaliseCode(codeAfterUndo1)).toBe(normaliseCode(codeAfterArc2))
       expect((codeAfterUndo1.match(/arc\(/g) ?? []).length).toBe(2)
       expect(
@@ -1369,8 +1347,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(6)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo1)
-      const codeAfterUndo2 = await editor.getCurrentCode()
+      const codeAfterUndo2 = await waitForCodeChange(page, codeAfterUndo1)
       expect(normaliseCode(codeAfterUndo2)).toBe(normaliseCode(codeAfterArc1))
       expect((codeAfterUndo2.match(/arc\(/g) ?? []).length).toBe(1)
       expect(
@@ -1379,8 +1356,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(3)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo2)
-      const codeAfterUndo3 = await editor.getCurrentCode()
+      const codeAfterUndo3 = await waitForCodeChange(page, codeAfterUndo2)
       expect(normaliseCode(codeAfterUndo3)).toBe(
         normaliseCode(codeAfterSketchStart)
       )
@@ -1566,9 +1542,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       })
 
       await circleCenterClick()
-      previousCode = await waitForCodeChange(page, circleCodeBefore)
       await circleRadiusClick()
-      const circleCodeAfter = await waitForCodeChange(page, previousCode)
+      const circleCodeAfter = await waitForCodeChange(page, circleCodeBefore)
       counts = getCodeCounts(circleCodeAfter)
       expect(counts.circles).toBe(circleCountsBefore.circles + 1)
       expect(await pointHandles.count()).toBeGreaterThan(
@@ -2038,9 +2013,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     const pressUndo = async () => {
-      await page.keyboard.down('Control')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Control')
+      await page.keyboard.press('ControlOrMeta+z')
     }
     const getHandleIds = async () =>
       await page
@@ -2051,23 +2024,44 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
             .filter((value): value is string => Boolean(value))
         )
 
+    const trimAcrossLine = async (lineIndex: number, fraction: number) => {
+      const start = await pointHandles.nth(lineIndex * 2).boundingBox()
+      const end = await pointHandles.nth(lineIndex * 2 + 1).boundingBox()
+      if (!start || !end) throw new Error('Trim target handles are missing')
+      // Cross the rendered line perpendicular to its endpoints.
+      const x = start.x * (1 - fraction) + end.x * fraction
+      const y = start.y * (1 - fraction) + end.y * fraction
+      const length = Math.hypot(end.x - start.x, end.y - start.y)
+      const dx = ((end.y - start.y) / length) * 12
+      const dy = ((start.x - end.x) / length) * 12
+      await page.mouse.move(x - dx, y - dy)
+      await page.mouse.down()
+      await page.mouse.move(x + dx, y + dy, { steps: 20 })
+      await page.mouse.up()
+    }
+
     const initialCode = await editor.getCurrentCode()
     const initialHandleCount = await pointHandles.count()
     const initialHandleIds = await getHandleIds()
 
     await test.step('Trim first region and undo', async () => {
-      await dragBetweenRatios(page, scene, [0.1467, 0.4583], [0.1454, 0.5452])
+      // Split the horizontal segment between the two vertical lines.
+      await trimAcrossLine(2, 0.5)
 
       const trimmedCode = await waitForCodeChange(page, initialCode)
       expect(normaliseCode(trimmedCode)).not.toBe(normaliseCode(initialCode))
 
-      const handleCountAfterTrim = await pointHandles.count()
-      const handleIdsAfterTrim = await getHandleIds()
-      expect(
-        handleCountAfterTrim !== initialHandleCount ||
-          normaliseCode(handleIdsAfterTrim.join(',')) !==
-            normaliseCode(initialHandleIds.join(','))
-      ).toBe(true)
+      await expect
+        .poll(async () => {
+          const handleCountAfterTrim = await pointHandles.count()
+          const handleIdsAfterTrim = await getHandleIds()
+          return (
+            handleCountAfterTrim !== initialHandleCount ||
+            normaliseCode(handleIdsAfterTrim.join(',')) !==
+              normaliseCode(initialHandleIds.join(','))
+          )
+        })
+        .toBe(true)
 
       await pressUndo()
       const undoneCode = await waitForCodeChange(page, trimmedCode)
@@ -2081,7 +2075,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         normaliseCode(initialCode)
       )
 
-      await dragBetweenRatios(page, scene, [0.6697, 0.469], [0.8689, 0.5833])
+      await trimAcrossLine(3, 0.25)
 
       const trimmedCode = await waitForCodeChange(page, codeBeforeSecondTrim)
       expect(normaliseCode(trimmedCode)).not.toBe(
