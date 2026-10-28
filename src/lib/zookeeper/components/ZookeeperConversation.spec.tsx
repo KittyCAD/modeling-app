@@ -1480,7 +1480,7 @@ describe('ZookeeperConversation', () => {
       expect(await screen.findByText('document.pdf')).toBeInTheDocument()
     })
 
-    test('allows native text paste at the 10,000-character limit', () => {
+    test('allows native text paste at the 5,000-character limit', () => {
       renderConversation()
 
       const defaultAllowed = fireEvent.paste(
@@ -1488,7 +1488,7 @@ describe('ZookeeperConversation', () => {
         {
           clipboardData: {
             files: [],
-            getData: () => 'a'.repeat(10_000),
+            getData: () => 'a'.repeat(5_000),
           },
         }
       )
@@ -1504,7 +1504,7 @@ describe('ZookeeperConversation', () => {
       renderConversation(handleProcess)
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
       const prompt = 'Use these requirements.'
-      const text = 'first line\r\nsecond line\n'.padEnd(10_001, 'a')
+      const text = 'first line\r\nsecond line\n'.padEnd(5_001, 'a')
       fireEvent.change(textarea, { target: { value: prompt } })
 
       const defaultAllowed = fireEvent.paste(textarea, {
@@ -1531,7 +1531,7 @@ describe('ZookeeperConversation', () => {
       const handleProcess = vi.fn()
       renderConversation(handleProcess)
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
-      for (const text of ['a'.repeat(10_001), 'b'.repeat(10_001)]) {
+      for (const text of ['a'.repeat(5_001), 'b'.repeat(5_001)]) {
         fireEvent.paste(textarea, {
           clipboardData: { files: [], getData: () => text },
         })
