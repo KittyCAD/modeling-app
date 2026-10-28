@@ -144,10 +144,7 @@ import {
   cursorBlinkingCompartment,
   lineWrappingCompartment,
 } from '@src/editor'
-import {
-  HistoryView,
-  type TransactionSpecNoChanges,
-} from '@src/editor/HistoryView'
+import { type TransactionSpecNoChanges } from '@src/editor/HistoryView'
 import { historyCompartment } from '@src/editor/compartments'
 import {
   createEmptyAst,
@@ -158,7 +155,6 @@ import {
   requestCameraReset,
   requestSkipExecution,
 } from '@src/editor/plugins/execution'
-import { fsHistoryExtension } from '@src/editor/plugins/fs'
 import {
   operationsAnnotation,
   setOperationsEffect,
@@ -171,7 +167,6 @@ import {
   themeCompartment,
 } from '@src/editor/plugins/theme'
 import { requestWriteToFile } from '@src/editor/plugins/write'
-import { zookeeperHistoryExtension } from '@src/lib/zookeeper/editorPlugin'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
@@ -197,6 +192,7 @@ import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import type { ProjectSystemDeps } from '@src/lib/projectSession/project'
 import { File } from '@src/lib/projectSession/file'
+import { ProjectEditorHistory } from '@src/lib/projectSession/editorHistory'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -462,8 +458,14 @@ export class KclManager extends File {
   // CORE STATE
 
   private readonly _editorView: EditorView
-  private readonly _globalHistoryView: HistoryView
-  private readonly editorStatesByPath = new Map<string, EditorState>()
+  private editorHistory: ProjectEditorHistory
+  private ownsEditorHistory: boolean
+  private get _globalHistoryView() {
+    return this.editorHistory.view
+  }
+  private get editorStatesByPath() {
+    return this.editorHistory.files
+  }
   private restoredEditorHistoryOnLastFileSwitch = false
   private disposeGlobalHistorySubscription: (() => boolean) | undefined
 
@@ -1878,12 +1880,6 @@ export class KclManager extends File {
       return editor
     }
 
-    // The legacy singleton can be reopened after its previous project disposed it.
-    // Actor ownership still ends at close; reopening creates a fresh actor on demand.
-    if (providedEditor.closed) {
-      providedEditor._modelingActorPromise = undefined
-      providedEditor.closed = false
-    }
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     await providedEditor.flushWriteToFile({ suppressConflictToast: true })
     providedEditor.flushRecoverySnapshot()
@@ -1891,6 +1887,17 @@ export class KclManager extends File {
       providedEditor.path,
       providedEditor.editorView.state
     )
+    if (systemDeps.editorHistory)
+      providedEditor.useProjectHistory(systemDeps.editorHistory)
+    // The legacy singleton changes files without closing its retained project.
+    // Until each file owns an editor, end modeling interactions at this boundary.
+    const changingFile = providedEditor.path !== file.path
+    if (changingFile && !providedEditor.closed)
+      providedEditor.stopModelingActor()
+    if (changingFile || providedEditor.closed) {
+      providedEditor._modelingActorPromise = undefined
+      providedEditor.closed = false
+    }
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
@@ -1961,11 +1968,19 @@ export class KclManager extends File {
       getSettings
     )
 
-    this._globalHistoryView = new HistoryView([
-      fsHistoryExtension(),
-      zookeeperHistoryExtension(),
-    ])
+    this.editorHistory = systemDeps.editorHistory ?? new ProjectEditorHistory()
+    this.ownsEditorHistory = systemDeps.editorHistory === undefined
     this._editorView = this.createEditorView(initialCode)
+    const saved = this.editorStatesByPath.get(path)
+    if (saved?.doc.toString() === initialCode) {
+      // Preserve undo fields while binding every editor extension to this owner.
+      this._editorView.setState(
+        saved.update({
+          effects: StateEffect.reconfigure.of(this.createEditorExtensions()),
+        }).state
+      )
+      this.restoredEditorHistoryOnLastFileSwitch = true
+    } else this.editorStatesByPath.delete(path)
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
@@ -1999,10 +2014,23 @@ export class KclManager extends File {
       })
   }
 
-  /** Clean up listeners, watchers, etc */
-  public close() {
-    if (this.closed) return
-    this.closed = true
+  /** Bridge the legacy reused editor to the history owned by its current project. */
+  private useProjectHistory(history: ProjectEditorHistory) {
+    if (history === this.editorHistory) return
+    this.disposeGlobalHistorySubscription?.()
+    if (this.ownsEditorHistory) this.editorHistory.dispose()
+    this.editorHistory = history
+    this.ownsEditorHistory = false
+    this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
+    this.disposeGlobalHistorySubscription =
+      this._globalHistoryView.subscribeToHistoryChanges(() =>
+        this.updateHistoryDepth()
+      )
+    this.updateHistoryDepth()
+  }
+
+  /** End file-specific interactions while leaving the outgoing view readable. */
+  private stopModelingActor() {
     this.modelingGeneration += 1
     this.modelingSubscription?.unsubscribe()
     this.modelingSubscription = undefined
@@ -2010,6 +2038,13 @@ export class KclManager extends File {
     // The outgoing route can still render while its replacement is loading.
     // Keep its stopped actor readable until reopening installs the next one.
     this._modelingState.value = null
+  }
+
+  /** Clean up listeners, watchers, etc */
+  public close() {
+    if (this.closed) return
+    this.closed = true
+    this.stopModelingActor()
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.sceneSettingsActive.value = false
