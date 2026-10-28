@@ -320,7 +320,9 @@ export const ZookeeperConversationInput = (
   )
   const userHasPickedMode = useRef(false)
   const lastModeScopeKey = useRef(props.modeScopeKey)
-  const [attachments, setAttachments] = useState<File[]>([])
+  const [attachments, setAttachments] = useState<
+    { file: File; isPastedText: boolean }[]
+  >([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [isZoodleActive, setIsZoodleActive] = useState(false)
 
@@ -381,7 +383,7 @@ export const ZookeeperConversationInput = (
     props.onProcess(
       value,
       getSelectableModeOption(mode, modeOptions)?.id,
-      attachments
+      attachments.map(({ file }) => file)
     )
     setValue('')
     setAttachments([])
@@ -400,25 +402,28 @@ export const ZookeeperConversationInput = (
     return `${base}-${i}${ext}`
   }
 
-  const appendAttachments = (files: File[]) => {
+  const appendAttachments = (
+    files: File[],
+    { isPastedText = false }: { isPastedText?: boolean } = {}
+  ) => {
     if (!files.length) return
     setAttachments((current) => {
       const next = [...current]
       for (const file of files) {
         const newName = deduplicateFileName(
           file.name,
-          next.map((f) => f.name)
+          next.map(({ file }) => file.name)
         )
-        if (newName !== file.name) {
-          next.push(
-            new File([file], newName, {
-              type: file.type,
-              lastModified: file.lastModified,
-            })
-          )
-        } else {
-          next.push(file)
-        }
+        next.push({
+          file:
+            newName !== file.name
+              ? new File([file], newName, {
+                  type: file.type,
+                  lastModified: file.lastModified,
+                })
+              : file,
+          isPastedText,
+        })
       }
       return next
     })
@@ -542,11 +547,14 @@ export const ZookeeperConversationInput = (
 
     e.preventDefault()
     // Attachment names persist across turns, so each paste needs a unique name.
-    appendAttachments([
-      new File([text], `pasted-text-${crypto.randomUUID()}.txt`, {
-        type: 'text/plain',
-      }),
-    ])
+    appendAttachments(
+      [
+        new File([text], `pasted-text-${crypto.randomUUID()}.txt`, {
+          type: 'text/plain',
+        }),
+      ],
+      { isPastedText: true }
+    )
   }
 
   const selectionsContext = props.contexts.find(
@@ -608,13 +616,16 @@ export const ZookeeperConversationInput = (
         ></textarea>
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {attachments.map((file, index) => (
+            {attachments.map(({ file, isPastedText }, index) => (
               <div
                 key={`${file.name}-${file.lastModified}-${file.size}`}
                 className="relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs py-1 pl-2 pr-8"
                 title={file.name}
               >
-                <ZookeeperAttachmentPreview file={file} />
+                <ZookeeperAttachmentPreview
+                  file={file}
+                  isPastedText={isPastedText}
+                />
                 <button
                   type="button"
                   onClick={() => onRemoveAttachment(index)}

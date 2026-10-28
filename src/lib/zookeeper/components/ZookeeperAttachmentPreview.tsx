@@ -7,10 +7,11 @@ const PREVIEW_BYTES = 256
 
 export const ZookeeperAttachmentPreview = ({
   file,
+  isPastedText = false,
 }: {
   file: File | MlCopilotFile
+  isPastedText?: boolean
 }) => {
-  const isPastedText = /^pasted-text-.+\.txt$/.test(file.name)
   const [localPreview, setLocalPreview] = useState<{
     file: File
     text: string
@@ -32,18 +33,11 @@ export const ZookeeperAttachmentPreview = ({
     }
   }, [file, isPastedText])
 
-  let label = file.name
-  if (isPastedText) {
-    const preview =
-      file instanceof File
-        ? localPreview?.file === file
-          ? localPreview.text
-          : ''
-        : new TextDecoder().decode(
-            new Uint8Array(file.data.slice(0, PREVIEW_BYTES))
-          )
-    label = preview.replace(/\s+/g, ' ').trim() || 'Pasted text'
-  }
+  const label = isPastedText
+    ? (localPreview?.file === file ? localPreview.text : '')
+        .replace(/\s+/g, ' ')
+        .trim() || 'Pasted text'
+    : file.name
 
   return (
     <>
