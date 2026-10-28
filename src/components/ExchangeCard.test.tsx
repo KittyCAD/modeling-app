@@ -123,7 +123,7 @@ describe('ExchangeCard replay attachments', () => {
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
   })
 
-  test('previews pasted text after loading replay attachment bytes', () => {
+  test('keeps the filename for sent text attachments without paste intent', () => {
     const file = {
       name: 'pasted-text-a2f180bb-d734-46f2-974e-71f804b1f1a1.txt',
       mimetype: 'text/plain',
@@ -137,9 +137,9 @@ describe('ExchangeCard replay attachments', () => {
     }
     const { rerender } = render(<ExchangeCard {...props} />)
 
-    fireEvent.click(screen.getByRole('button', { name: /Pasted text/ }))
+    fireEvent.click(screen.getByRole('button', { name: /pasted-text-/ }))
     expect(props.onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
-    expect(screen.queryByText(file.name)).not.toBeInTheDocument()
+    expect(screen.getByText(file.name)).toBeInTheDocument()
 
     const data = Array.from(
       new TextEncoder().encode('First few words\nfrom the pasted reference')
@@ -152,10 +152,9 @@ describe('ExchangeCard replay attachments', () => {
         }}
       />
     )
-    const preview = screen.getByText(
-      'First few words from the pasted reference'
-    )
+    const preview = screen.getByText(file.name)
     expect(preview).toHaveAttribute('title', file.name)
-    expect(preview).toHaveClass('line-clamp-2')
+    expect(preview).toHaveClass('truncate')
+    expect(screen.queryByText(/First few words/)).not.toBeInTheDocument()
   })
 })
