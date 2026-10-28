@@ -77,7 +77,10 @@ export function Draggable({
         offsetRef.current.margin.inlineStart -
         offsetRef.current.margin.inlineEnd
     )
-    targetRef.current.style.maxHeight = `${height}px`
+    // Explicit heights must remain resizable rather than becoming a ceiling.
+    targetRef.current.style[
+      targetRef.current.style.height ? 'height' : 'maxHeight'
+    ] = `${height}px`
     targetRef.current.style.width = `${width}px`
 
     const top = clamp(
@@ -177,7 +180,9 @@ export function Draggable({
       targetRef.current.style.top = `${top - margin.blockStart}px`
       targetRef.current.style.left = `${left - margin.inlineStart}px`
       targetRef.current.style.width = `${width}px`
-      targetRef.current.style.maxHeight = `${height}px`
+      targetRef.current.style[
+        targetRef.current.style.height ? 'height' : 'maxHeight'
+      ] = `${height}px`
 
       document.addEventListener('mouseup', closeDragElement)
       offsetRef.current = {
