@@ -16,6 +16,7 @@ import {
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import {
+  STD_LIB_COMMANDS,
   STD_LIB_ENUMS,
   stdLibEnumOptions,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -65,7 +66,7 @@ import type {
 
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { capitaliseFC } from '@src/lib/utils'
+import { capitaliseFC, isRecord } from '@src/lib/utils'
 import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
@@ -215,6 +216,10 @@ type WithCommandBarEditFlowArgs<Schema> = {
 const isEditingNode = (context: {
   argumentsToSubmit: Record<string, unknown>
 }) => Boolean(context.argumentsToSubmit.nodeToEdit)
+
+const isDirectedNamedViewCamera = (context: {
+  argumentsToSubmit: Record<string, unknown>
+}) => context.argumentsToSubmit.cameraMode === 'directed'
 
 const isEditingNodeSelection = (context: {
   argumentsToSubmit: Record<string, unknown>
@@ -641,8 +646,32 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Named View',
       {
         overrides: {
+          cameraMode: {
+            inputType: 'options',
+            required: true,
+            defaultValue: 'oriented',
+            options: [
+              STD_LIB_COMMANDS['view::oriented'],
+              STD_LIB_COMMANDS['view::directed'],
+            ].map(({ name }) => ({
+              name: capitaliseFC(name),
+              value: name,
+            })),
+          },
+          camera: {
+            inputType: 'camera',
+            required: isDirectedNamedViewCamera,
+            hidden: (context) => !isDirectedNamedViewCamera(context),
+            valueSummary: (value) =>
+              isRecord(value) && 'type' in value
+                ? 'Saved camera'
+                : 'Captured camera',
+          },
           orientation: {
             inputType: 'options',
+            required: (context) => !isDirectedNamedViewCamera(context),
+            hidden: isDirectedNamedViewCamera,
+            prepopulate: true,
             defaultValue: 'Isometric',
             options: stdLibEnumOptions(
               STD_LIB_ENUMS['view::Orientation'],
@@ -651,7 +680,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           projection: {
             inputType: 'options',
-            required: true,
+            required: (context) => !isDirectedNamedViewCamera(context),
+            hidden: isDirectedNamedViewCamera,
+            prepopulate: true,
             defaultValue: 'Orthographic',
             options: stdLibEnumOptions(
               STD_LIB_ENUMS['view::Projection'],
@@ -687,9 +718,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             multiple: true,
           },
           target: {
+            hidden: isDirectedNamedViewCamera,
             dialog: { advanced: true },
           },
           distance: {
+            hidden: isDirectedNamedViewCamera,
             dialog: { advanced: true },
           },
         },
