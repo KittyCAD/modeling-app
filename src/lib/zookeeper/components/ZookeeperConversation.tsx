@@ -14,6 +14,7 @@ import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
+import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
 import type { QueuedMessage } from '@src/lib/zookeeper/registry/controller'
 import {
@@ -33,6 +34,7 @@ import type { ChangeEvent, ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
+const MAX_INLINE_PASTE_LENGTH = 10_000
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 export type { QueuedMessage }
@@ -318,7 +320,9 @@ export const ZookeeperConversationInput = (
   )
   const userHasPickedMode = useRef(false)
   const lastModeScopeKey = useRef(props.modeScopeKey)
-  const [attachments, setAttachments] = useState<File[]>([])
+  const [attachments, setAttachments] = useState<
+    { file: File; isPastedText: boolean }[]
+  >([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [isZoodleActive, setIsZoodleActive] = useState(false)
 
@@ -379,7 +383,7 @@ export const ZookeeperConversationInput = (
     props.onProcess(
       value,
       getSelectableModeOption(mode, modeOptions)?.id,
-      attachments
+      attachments.map(({ file }) => file)
     )
     setValue('')
     setAttachments([])
@@ -398,24 +402,28 @@ export const ZookeeperConversationInput = (
     return `${base}-${i}${ext}`
   }
 
-  const appendAttachments = (files: File[]) => {
+  const appendAttachments = (
+    files: File[],
+    { isPastedText = false }: { isPastedText?: boolean } = {}
+  ) => {
     if (!files.length) return
     setAttachments((current) => {
       const next = [...current]
       for (const file of files) {
         const newName = deduplicateFileName(
           file.name,
-          next.map((f) => f.name)
+          next.map((f) => f.file.name)
         )
         if (newName !== file.name) {
-          next.push(
-            new File([file], newName, {
+          next.push({
+            file: new File([file], newName, {
               type: file.type,
               lastModified: file.lastModified,
-            })
-          )
+            }),
+            isPastedText,
+          })
         } else {
-          next.push(file)
+          next.push({ file, isPastedText })
         }
       }
       return next
@@ -526,14 +534,28 @@ export const ZookeeperConversationInput = (
   }
 
   const handlePaste = (e: React.ClipboardEvent) => {
-    const files = Array.from(e.clipboardData.files)
-    if (!files.length) return
     if (props.disabled) return
 
-    // Prevent default only if we have files to handle
-    e.preventDefault()
+    const files = Array.from(e.clipboardData.files)
+    if (files.length > 0) {
+      e.preventDefault()
+      appendAttachments(files)
+      return
+    }
 
-    appendAttachments(files)
+    const text = e.clipboardData.getData('text/plain')
+    if (text.length <= MAX_INLINE_PASTE_LENGTH) return
+
+    e.preventDefault()
+    // Attachment names persist across turns, so each paste needs a unique name.
+    appendAttachments(
+      [
+        new File([text], `pasted-text-${crypto.randomUUID()}.txt`, {
+          type: 'text/plain',
+        }),
+      ],
+      { isPastedText: true }
+    )
   }
 
   const selectionsContext = props.contexts.find(
@@ -595,21 +617,26 @@ export const ZookeeperConversationInput = (
         ></textarea>
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {attachments.map((file, index) => (
+            {attachments.map(({ file, isPastedText }, index) => (
               <div
                 key={`${file.name}-${file.lastModified}-${file.size}`}
-                className="flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-1 text-xs"
+                className="relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs py-1 pl-2 pr-8"
                 title={file.name}
               >
-                <CustomIcon name="file" className="w-4 h-4" />
-                <span className="max-w-[160px] truncate">{file.name}</span>
+                <ZookeeperAttachmentPreview
+                  file={file}
+                  isPastedText={isPastedText}
+                />
                 <button
                   type="button"
                   onClick={() => onRemoveAttachment(index)}
-                  className="ml-1 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20"
+                  className="group absolute right-0 top-0 m-0 flex h-6 w-6 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
                   aria-label={`Remove ${file.name}`}
                 >
-                  <CustomIcon name="close" className="w-4 h-4" />
+                  <CustomIcon
+                    name="close"
+                    className="w-5 h-5 rounded-sm bg-chalkboard-20 text-chalkboard-80 dark:bg-chalkboard-80 dark:text-chalkboard-20 group-hover:brightness-110"
+                  />
                 </button>
               </div>
             ))}
