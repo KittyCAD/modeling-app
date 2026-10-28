@@ -160,8 +160,8 @@ export class CameraControls {
   touchControlManager: HammerManager | null = null
   enableTouchControls = true
   getSettings: () => SettingsType
-  /** The local renderer's model bounds, in the camera's world. */
-  private readonly getLocalModelBounds: () => Box3 | undefined
+  /** What zoom to fit frames in local mode, in the camera's world. */
+  private readonly getLocalFitBounds: () => Box3 | undefined
 
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
@@ -351,11 +351,11 @@ export class CameraControls {
     domElement: HTMLCanvasElement,
     engineCommandManager: ConnectionManager,
     getSettings: typeof this.getSettings,
-    getLocalModelBounds: typeof this.getLocalModelBounds = () => undefined
+    getLocalFitBounds: typeof this.getLocalFitBounds = () => undefined
   ) {
     this.engineCommandManager = engineCommandManager
     this.getSettings = getSettings
-    this.getLocalModelBounds = getLocalModelBounds
+    this.getLocalFitBounds = getLocalFitBounds
     this.camera = new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
@@ -1238,7 +1238,7 @@ export class CameraControls {
    */
   async zoomToFit({ padding }: { padding: number }): Promise<void> {
     if (this.effectiveCameraMode === 'local') {
-      const bounds = this.getLocalModelBounds()
+      const bounds = this.getLocalFitBounds()
       if (bounds) {
         frameLocalCamera(
           this.camera,
@@ -1265,7 +1265,7 @@ export class CameraControls {
    */
   async viewIsometric({ padding }: { padding: number }): Promise<void> {
     if (this.effectiveCameraMode === 'local') {
-      const bounds = this.getLocalModelBounds()
+      const bounds = this.getLocalFitBounds()
       if (bounds) {
         // The engine's isometric view looks along (-1, 1, -1) with Z up.
         this.camera.quaternion.setFromRotationMatrix(

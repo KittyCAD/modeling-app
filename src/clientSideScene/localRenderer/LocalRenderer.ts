@@ -832,19 +832,23 @@ export class LocalRenderer {
     this.syncPreviewCameraFromShared()
   }
 
-  /** The loaded model's bounds in the engine's world: Z up, in mm. */
-  getModelBounds(): Box3 | undefined {
-    if (!this.currentModel) {
-      return undefined
+  /**
+   * What zoom to fit frames, as in the engine: the loaded model and the
+   * visible planes. In the engine's world: Z up, in mm.
+   */
+  getFitBounds(): Box3 | undefined {
+    const bounds = this.gpu?.planeRenderer.getVisibleBounds() ?? new Box3()
+    if (this.currentModel) {
+      const { min, max } = new Box3().setFromObject(this.currentModel)
+      // glTF is Y-up in meters; the shared navigation camera is Z-up in mm.
+      const modelBounds = new Box3(
+        new Vector3(min.x, -max.z, min.y),
+        new Vector3(max.x, -min.z, max.y)
+      )
+      modelBounds.min.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
+      modelBounds.max.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
+      bounds.union(modelBounds)
     }
-    const { min, max } = new Box3().setFromObject(this.currentModel)
-    // glTF is Y-up in meters; the shared navigation camera is Z-up in mm.
-    const bounds = new Box3(
-      new Vector3(min.x, -max.z, min.y),
-      new Vector3(max.x, -min.z, max.y)
-    )
-    bounds.min.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
-    bounds.max.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
     return bounds.isEmpty() ? undefined : bounds
   }
 
