@@ -832,6 +832,22 @@ export class LocalRenderer {
     this.syncPreviewCameraFromShared()
   }
 
+  /** The loaded model's bounds in the engine's world: Z up, in mm. */
+  getModelBounds(): Box3 | undefined {
+    if (!this.currentModel) {
+      return undefined
+    }
+    const { min, max } = new Box3().setFromObject(this.currentModel)
+    // glTF is Y-up in meters; the shared navigation camera is Z-up in mm.
+    const bounds = new Box3(
+      new Vector3(min.x, -max.z, min.y),
+      new Vector3(max.x, -min.z, max.y)
+    )
+    bounds.min.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
+    bounds.max.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
+    return bounds.isEmpty() ? undefined : bounds
+  }
+
   private clearModel() {
     const { gpu } = this
     this.loadedSceneGeneration = null

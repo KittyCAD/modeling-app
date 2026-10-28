@@ -10,7 +10,7 @@ import { getLocalCameraSceneScale } from '@src/clientSideScene/cameraSceneScale'
 
 import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
-import type { Camera, Object3D } from 'three'
+import type { Box3, Camera, Object3D } from 'three'
 import { Matrix4 } from 'three'
 import {
   Euler,
@@ -39,6 +39,7 @@ import { Signal as LegacySignal } from '@src/lib/signal'
 import { reportRejection } from '@src/lib/trap'
 import { err, isErr } from '@src/lib/trap'
 import {
+  engineStreamZoomToFit,
   getNormalisedCoordinates,
   isReducedMotion,
   roundOff,
@@ -158,6 +159,8 @@ export class CameraControls {
   touchControlManager: HammerManager | null = null
   enableTouchControls = true
   getSettings: () => SettingsType
+  /** The local renderer's model bounds, in the camera's world. */
+  private readonly getLocalModelBounds: () => Box3 | undefined
 
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
@@ -347,11 +350,12 @@ export class CameraControls {
     domElement: HTMLCanvasElement,
     engineCommandManager: ConnectionManager,
     getSettings: typeof this.getSettings,
-    isOrtho = false
+    getLocalModelBounds: typeof this.getLocalModelBounds = () => undefined
   ) {
     this.engineCommandManager = engineCommandManager
     this.getSettings = getSettings
-    this.camera = isOrtho ? new OrthographicCamera() : new PerspectiveCamera()
+    this.getLocalModelBounds = getLocalModelBounds
+    this.camera = new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
     this.target = new Vector3()
@@ -1227,6 +1231,33 @@ export class CameraControls {
     })
   }
 
+  /**
+   * Frames the model without turning the camera, as the engine's zoom_to_fit
+   * does. `padding` grows the model's bounds by that fraction of their size.
+   */
+  async zoomToFit({ padding }: { padding: number }): Promise<void> {
+    if (this.effectiveCameraMode === 'local') {
+      const bounds = this.getLocalModelBounds()
+      if (bounds) {
+        frameLocalCamera(
+          this.camera,
+          this.target,
+          bounds,
+          padding,
+          this.lastPerspectiveFov,
+          this.normalizedViewportAspect()
+        )
+        this.onCameraChange()
+      }
+      return
+    }
+
+    await engineStreamZoomToFit({
+      engineCommandManager: this.engineCommandManager,
+      padding,
+    })
+  }
+
   private async setCameraViewAlongZ(
     direction: StandardView,
     overrides?: { pivotPosition?: Point3d; eyeOffset?: number }
@@ -1318,30 +1349,16 @@ export class CameraControls {
   }
 
   async resetCameraPosition(): Promise<void> {
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        center: this.target,
-        vantage: {
-          x: this.target.x,
-          y: this.target.y - 128,
-          z: this.target.z + 64,
-        },
-        up: { x: 0, y: 0, z: 1 },
+    await this.lookAt({
+      center: this.target,
+      vantage: {
+        x: this.target.x,
+        y: this.target.y - 128,
+        z: this.target.z + 64,
       },
+      up: { x: 0, y: 0, z: 1 },
     })
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'zoom_to_fit',
-        object_ids: [], // leave empty to zoom to all objects
-        padding: 0.2, // padding around the objects
-        animated: false, // don't animate the zoom for now
-      },
-    })
+    await this.zoomToFit({ padding: 0.2 })
   }
 
   /**
@@ -2306,6 +2323,39 @@ function lookAtLocalCamera(
       camera.position.distanceTo(target),
       perspectiveFov
     )
+  }
+  camera.updateProjectionMatrix()
+}
+
+/**
+ * Frames `bounds` without turning the camera, as the engine's
+ * Camera::frameObject does. The bounds grow by `padding` times their size.
+ * Half their diagonal then fills half the view's height, or half its width
+ * when the viewport is taller than it is wide.
+ */
+function frameLocalCamera(
+  camera: PerspectiveCamera | OrthographicCamera,
+  target: Vector3,
+  bounds: Box3,
+  padding: number,
+  perspectiveFov: number,
+  aspect: number
+) {
+  const fov = camera instanceof PerspectiveCamera ? camera.fov : perspectiveFov
+  const radius = 0.5 * (1 + padding) * bounds.getSize(new Vector3()).length()
+  let eyeOffset = radius / viewHeightFactor(fov)
+  if (aspect < 1) {
+    eyeOffset /= aspect
+  }
+  bounds.getCenter(target)
+  camera.position
+    .set(0, 0, eyeOffset)
+    .applyQuaternion(camera.quaternion)
+    .add(target)
+  // The local renderer orients its camera from up, position and target.
+  camera.up.set(0, 1, 0).applyQuaternion(camera.quaternion)
+  if (camera instanceof OrthographicCamera) {
+    camera.zoom = getLocalOrthoZoom(camera, eyeOffset, perspectiveFov)
   }
   camera.updateProjectionMatrix()
 }
