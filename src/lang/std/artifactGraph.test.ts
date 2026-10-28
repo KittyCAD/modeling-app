@@ -226,7 +226,11 @@ describe('getSweepArtifactFromSelection', () => {
     }
     sweep.surfaceIds.push(cut.id)
     artifactGraph.set(cut.id, cut)
-    for (const artifact of artifactGraph.values()) {
+    for (const [id, artifact] of artifactGraph) {
+      if (artifact.type === 'segment') {
+        artifactGraph.delete(id)
+        continue
+      }
       for (const field of [
         'edgeIds',
         'commonSurfaceIds',
@@ -875,7 +879,6 @@ describe('edge-independent artifact traversal', () => {
       id: 'cut',
       subType: 'fillet',
       edgeIds: [],
-      surfaceId: 'wall-cut',
       codeRef,
     }
     artifactGraph.set(cut.id, cut)
@@ -906,14 +909,6 @@ describe('edge-independent artifact traversal', () => {
     const { artifactGraph, segment, cut } = fixture()
     expect(getSegmentArtifactForEdgeCut(cut, artifactGraph)).toBe(segment)
     expect(getEdgeCutConsumedCodeRef(cut, artifactGraph)).toBe(segment.codeRef)
-    expect(
-      getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
-    ).toBe(artifactGraph.get('sweep-cut'))
-  })
-
-  it('finds the body through the treatment surface when no source segment remains', () => {
-    const { artifactGraph, segment, cut } = fixture()
-    artifactGraph.delete(segment.id)
     expect(
       getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
     ).toBe(artifactGraph.get('sweep-cut'))

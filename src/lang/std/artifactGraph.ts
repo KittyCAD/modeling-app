@@ -430,18 +430,6 @@ export function getSweepFromSuspectedSweepSurface(
   }
   const segment = getSegmentArtifactForEdgeCut(faceArtifact, artifactGraph)
   if (segment == null) {
-    if (faceArtifact.surfaceId) {
-      const surface = getArtifactOfTypes(
-        { key: faceArtifact.surfaceId, types: ['wall', 'cap'] },
-        artifactGraph
-      )
-      if (!err(surface)) {
-        return getArtifactOfTypes(
-          { key: surface.sweepId, types: ['sweep'] },
-          artifactGraph
-        )
-      }
-    }
     return new Error('edgeCut has no consumed segment')
   }
   const pathId = segment.pathId
