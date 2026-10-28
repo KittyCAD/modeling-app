@@ -1,4 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 const profileCode = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
@@ -212,6 +213,68 @@ body002 = clone(body001)
     await scene.settled()
   })
 
+  test('Keeps preview shortcuts separate from code and shows newly opened text files', async ({
+    folderSetupFn,
+    fs,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+    page,
+  }) => {
+    const projectName = 'code-preview'
+    const readme = 'Project notes'
+    await folderSetupFn(async (dir) => {
+      const projectPath = await fs.join(dir, projectName)
+      await fs.mkdir(projectPath, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectPath, 'main.kcl'),
+        new TextEncoder().encode(profileCode)
+      )
+      await fs.writeFile(
+        await fs.join(projectPath, 'README.md'),
+        new TextEncoder().encode(readme)
+      )
+    })
+    await homePage.openProject(projectName)
+    await scene.settled()
+    // Give Undo an actual edit to undo if the preview leaks its shortcuts.
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(profileCode, `${profileCode}\nlength = 10mm`)
+    )
+    const code = await editor.getCurrentCode()
+    await editor.selectText('region(')
+    await toolbar.extrudeButton.click()
+    await modelingDialog.locator
+      .getByRole('button', { name: 'Show code changes', exact: true })
+      .click()
+    const preview = page.getByRole('region', {
+      name: 'Code changes',
+      exact: true,
+    })
+    const diff = preview.getByTestId('code-changes-diff')
+    await expect(diff).toContainText('extrude(')
+    await diff.locator('.cm-content').click()
+    await page.keyboard.press('ControlOrMeta+z')
+    await expect(modelingDialog.locator).toBeVisible()
+    await expect(diff).toBeVisible()
+    await preview.getByRole('button', { name: 'Close code changes' }).click()
+    await editor.expectEditor.toBe(code)
+    await modelingDialog.locator
+      .getByRole('button', { name: 'Show code changes', exact: true })
+      .click()
+    await expect(diff).toBeVisible()
+
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+    await toolbar.openFile('README.md')
+    await expect(preview).not.toBeAttached()
+    await expect(page.locator('#code-pane').getByRole('textbox')).toHaveText(
+      readme
+    )
+    await expect(modelingDialog.locator).toBeVisible()
+  })
+
   test('Creates and edits Extrude without losing collapsed fields or selection drafts', async ({
     page,
     homePage,
@@ -328,6 +391,38 @@ body002 = clone(body001)
         dialog.evaluate((element) => element.getBoundingClientRect().height)
       )
       .toBeCloseTo(initialHeight)
+    const codeBeforePreview = await editor.getCurrentCode()
+    const codeChanges = dialog.getByRole('button', {
+      name: 'Show code changes',
+      exact: true,
+    })
+    const preview = page.getByRole('region', {
+      name: 'Code changes',
+      exact: true,
+    })
+    await codeChanges.click()
+    await expect(preview.getByTestId('code-changes-diff')).toContainText(
+      'length = 12mm'
+    )
+    await length.fill('16mm')
+    await expect(preview.getByTestId('code-changes-diff')).toContainText(
+      'length = 16mm'
+    )
+    await length.fill('missingLength')
+    await expect(preview.getByTestId('code-changes-diff')).not.toBeAttached()
+    await expect(preview.getByRole('alert')).toContainText(
+      'Unable to preview code changes'
+    )
+    await expect(preview.getByRole('alert')).toContainText(
+      'Complete the arguments to preview changes.'
+    )
+    await length.fill('12mm')
+    await expect(preview.getByTestId('code-changes-diff')).toContainText(
+      'length = 12mm'
+    )
+    await preview.getByRole('button', { name: 'Close code changes' }).click()
+    await expect(codeChanges).toHaveAttribute('aria-pressed', 'false')
+    await editor.expectEditor.toBe(codeBeforePreview)
     const more = modelingDialog.advanced
     await more.click()
     await expect(submit).toBeInViewport()
@@ -377,9 +472,15 @@ body002 = clone(body001)
     await more.click()
     await expect(tagStart).toHaveValue('startFace')
     await length.fill('99mm')
+    await codeChanges.click()
+    await expect(preview.getByTestId('code-changes-diff')).toContainText(
+      'length = 99mm'
+    )
     await modelingDialog.cancelButton.click()
     await expect(dialog).not.toBeAttached()
     await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'false')
+    await expect(preview).not.toBeAttached()
+    await editor.expectEditor.toContain('length = 12mm')
     await operation.dblclick()
     await expect(length).toHaveText('12mm')
     await expect(tagStart).toBeHidden()
