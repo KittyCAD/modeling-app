@@ -1,8 +1,6 @@
-import { useAppState } from '@src/AppState'
 import { useEffect } from 'react'
 import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
-
-import { useSignals } from '@preact/signals-react/runtime'
+import { useComputed, useSignals } from '@preact/signals-react/runtime'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { shouldDisableModelingForUnrenderedChanges } from '@src/lib/automaticRendering'
@@ -14,6 +12,8 @@ import type {
 } from '@src/lib/commandTypes'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
+import { ConnectionAvailability } from '@src/lib/engineConnection/connectionManager'
+import { useConnectionManagerAvailabilityAsSignal } from '@src/hooks/network/useConnectionManagerAvailability'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,
@@ -52,7 +52,7 @@ export default function useStateMachineCommands<
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
   useSignals()
-  const { commands, settings, userFeatures } = useApp()
+  const { commands, engineCommandManager, settings, userFeatures } = useApp()
   const { kclManager } = useSingletons()
   const kclProgramVersion = kclManager.kclProgramVersionSignal.value
   const showExperimentalCommands = userFeatures.useHas(
@@ -62,7 +62,12 @@ export default function useStateMachineCommands<
   const modelingDialogsEnabled = userFeatures.useHas('modeling_dialogs', false)
   const settingsValues = settings.useSettings()
   const { overallState } = useNetworkContext()
-  const { isStreamReady } = useAppState()
+  const engineConnectionAvailability =
+    useConnectionManagerAvailabilityAsSignal(engineCommandManager)
+  const isStreamReady = useComputed(
+    () =>
+      engineConnectionAvailability.value === ConnectionAvailability.StreamReady
+  )
   const disableForUnrenderedChanges = shouldDisableModelingForUnrenderedChanges(
     {
       settings: settingsValues,
@@ -74,7 +79,7 @@ export default function useStateMachineCommands<
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
     isExecuting ||
-    !isStreamReady ||
+    !isStreamReady.value ||
     disableForUnrenderedChanges
 
   useEffect(() => {

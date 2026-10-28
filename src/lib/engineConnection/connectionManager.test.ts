@@ -78,7 +78,6 @@ function startConnectionManager(
     width,
     height,
     token: 'token',
-    setStreamIsReady: vi.fn(),
   })
 }
 

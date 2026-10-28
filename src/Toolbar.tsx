@@ -1,5 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { useAppState } from '@src/AppState'
+import { ConnectionAvailability } from '@src/lib/engineConnection/connectionManager'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
@@ -62,19 +62,14 @@ import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useSelector } from '@xstate/react'
 import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
 import type { SnapshotFrom } from 'xstate'
+import { useConnectionManagerAvailabilityAsSignal } from '@src/hooks/network/useConnectionManagerAvailability'
 
 type ToolbarProps = {
   isExecuting: boolean
   disableModelingForUnrenderedChanges: boolean
+  engineConnectionAvailability: ConnectionAvailability
 } & Omit<ReturnType<typeof useModelingContext>, 'theProject'> &
-  Pick<
-    ReturnType<typeof useNetworkContext>,
-    'overallState' | 'immediateState'
-  > &
-  Pick<
-    ReturnType<typeof useAppState>,
-    'isStreamReady' | 'isStreamAcceptingInput'
-  >
+  Pick<ReturnType<typeof useNetworkContext>, 'overallState' | 'immediateState'>
 
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
@@ -136,8 +131,8 @@ const Toolbar_ = memo(
       props.disableModelingForUnrenderedChanges ||
       props.immediateState.type !==
         EngineConnectionStateType.ConnectionEstablished ||
-      !props.isStreamReady ||
-      !props.isStreamAcceptingInput
+      props.engineConnectionAvailability !==
+        ConnectionAvailability.AcceptingInput
 
     // Load bearing logic for determining the items in the toolbar
     // Based on the state of the modeling machine determine what toolbar should be rendered
@@ -823,8 +818,7 @@ const Toolbar_ = memo(
     oldP.state.value === newP.state.value &&
     oldP.overallState === newP.overallState &&
     oldP.immediateState?.type === newP.immediateState?.type &&
-    oldP.isStreamReady === newP.isStreamReady &&
-    oldP.isStreamAcceptingInput === newP.isStreamAcceptingInput &&
+    oldP.engineConnectionAvailability === newP.engineConnectionAvailability &&
     oldP.disableModelingForUnrenderedChanges ===
       newP.disableModelingForUnrenderedChanges &&
     oldP.context?.currentTool === newP.context?.currentTool
@@ -1050,11 +1044,13 @@ const ToolbarItemTooltipRichContent = memo(
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
   const { kclManager } = useSingletons()
-  const { settings } = useApp()
+  const { settings, engineCommandManager } = useApp()
   const settingsValues = settings.useSettings()
   const { state, send, context, actor } = useModelingContext()
   const { overallState, immediateState } = useNetworkContext()
-  const { isStreamReady, isStreamAcceptingInput } = useAppState()
+  const engineConnectionAvailability =
+    useConnectionManagerAvailabilityAsSignal(engineCommandManager)
+
   useSignals()
   const disableModelingForUnrenderedChanges =
     shouldDisableModelingForUnrenderedChanges({
@@ -1070,9 +1066,8 @@ export function Toolbar() {
       context={context}
       overallState={overallState}
       immediateState={immediateState}
-      isStreamReady={isStreamReady}
       actor={actor}
-      isStreamAcceptingInput={isStreamAcceptingInput}
+      engineConnectionAvailability={engineConnectionAvailability.value}
       isExecuting={kclManager.isExecutingSignal.value}
       disableModelingForUnrenderedChanges={disableModelingForUnrenderedChanges}
     />

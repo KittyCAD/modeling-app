@@ -1,4 +1,3 @@
-import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import Loading from '@src/components/Loading'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -49,6 +48,9 @@ import type {
 import type { MouseEventHandler } from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useConnectionManagerAvailabilityAsSignal } from '@src/hooks/network/useConnectionManagerAvailability'
+import { useComputed } from '@preact/signals-react'
+import { ConnectionAvailability } from '@src/lib/engineConnection/connectionManager'
 
 const TIME_TO_CONNECT = 30_000
 
@@ -69,16 +71,27 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands, fileOperations } = useApp()
+  const {
+    settings,
+    project,
+    wasmPromise,
+    commands,
+    fileOperations,
+    engineCommandManager,
+  } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
-  const engineCommandManager = kclManager.engineCommandManager
   const sceneInfra = kclManager.sceneInfra
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
-  const [isSceneReady, setIsSceneReady] = useState(false)
+  const engineConnectionAvailability =
+    useConnectionManagerAvailabilityAsSignal(engineCommandManager)
+  const isSceneReady = useComputed(
+    () =>
+      engineConnectionAvailability.value ===
+      ConnectionAvailability.AcceptingInput
+  )
   const settingsValues = settings.useSettings()
-  const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
@@ -118,7 +131,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           eventType,
           projectName: project?.name,
           currentFileName: kclManager.currentFileName,
-          isSceneReady,
+          isSceneReady: isSceneReady.value,
           numberOfConnectionAttempts,
           pendingCommandCount: Object.keys(engineCommandManager.pendingCommands)
             .length,
@@ -137,7 +150,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     },
     [
       engineCommandManager,
-      isSceneReady,
+      isSceneReady.value,
       kclManager,
       numberOfConnectionAttempts,
       project?.name,
@@ -311,9 +324,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         tryConnecting({
           authToken: props.authToken || '',
           videoWrapperRef,
-          setAppState,
           videoRef,
-          setIsSceneReady,
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
@@ -388,9 +399,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     tryConnecting({
       authToken: props.authToken || '',
       videoWrapperRef,
-      setAppState,
       videoRef,
-      setIsSceneReady,
       isConnecting,
       numberOfConnectionAttempts,
       timeToConnect: TIME_TO_CONNECT,
@@ -430,9 +439,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         tryConnecting({
           authToken: props.authToken || '',
           videoWrapperRef,
-          setAppState,
           videoRef,
-          setIsSceneReady,
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
@@ -478,9 +485,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         tryConnecting({
           authToken: props.authToken || '',
           videoWrapperRef,
-          setAppState,
           videoRef,
-          setIsSceneReady,
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
@@ -506,9 +511,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         tryConnecting({
           authToken: props.authToken || '',
           videoWrapperRef,
-          setAppState,
           videoRef,
-          setIsSceneReady,
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
@@ -552,9 +555,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         tryConnecting({
           authToken: props.authToken || '',
           videoWrapperRef,
-          setAppState,
           videoRef,
-          setIsSceneReady,
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
@@ -659,7 +660,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         guard={viewControlContextMenuGuard}
         menuTargetElement={videoWrapperRef}
       />
-      {(!isSceneReady || showManualConnect) && (
+      {(!isSceneReady.value || showManualConnect) && (
         <Loading
           isRetrying={false}
           retryAttemptCountdown={0}
@@ -673,9 +674,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             tryConnecting({
               authToken: props.authToken || '',
               videoWrapperRef,
-              setAppState,
               videoRef,
-              setIsSceneReady,
               isConnecting,
               numberOfConnectionAttempts,
               timeToConnect: TIME_TO_CONNECT,

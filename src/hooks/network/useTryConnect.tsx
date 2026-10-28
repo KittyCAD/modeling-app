@@ -1,5 +1,4 @@
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
-import type { useAppState } from '@src/AppState'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import type { KclManager } from '@src/lang/KclManager'
@@ -7,7 +6,10 @@ import { useSingletons } from '@src/lib/boot'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import {
+  ConnectionAvailability,
+  type ConnectionManager,
+} from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import { preflightEngineVideoCodecSupport } from '@src/lib/engineConnection/videoCodecSupport'
 import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
@@ -27,9 +29,7 @@ import { useRef } from 'react'
 const attemptToConnectToEngine = async ({
   authToken,
   videoWrapperRef,
-  setAppState,
   videoRef,
-  setIsSceneReady,
   timeToConnect,
   engineCommandManager,
   kclVersion,
@@ -38,9 +38,7 @@ const attemptToConnectToEngine = async ({
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
-  setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
   videoRef: React.RefObject<HTMLVideoElement | null>
-  setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   engineCommandManager: ConnectionManager
   kclVersion?: KclVersion
@@ -93,9 +91,6 @@ const attemptToConnectToEngine = async ({
           width,
           height,
           token: authToken,
-          setStreamIsReady: () => {
-            setAppState({ isStreamReady: true })
-          },
           rustContext,
           kclVersion,
           prepareForReconnect,
@@ -128,7 +123,7 @@ const attemptToConnectToEngine = async ({
         }
         // Scene is ready, start firing events!
         videoRef.current.srcObject = engineCommandManager.connection.mediaStream
-        setIsSceneReady(true)
+        engineCommandManager.availability = ConnectionAvailability.StreamReady
         EngineDebugger.addLog({
           label: 'attemptToConnectToEngine',
           message: 'setIsSceneReady(true)',
@@ -248,9 +243,7 @@ export async function tryConnecting({
   numberOfConnectionAttempts,
   authToken,
   videoWrapperRef,
-  setAppState,
   videoRef,
-  setIsSceneReady,
   timeToConnect,
   settingsActor,
   setShowManualConnect,
@@ -264,9 +257,7 @@ export async function tryConnecting({
   numberOfConnectionAttempts: React.RefObject<number>
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
-  setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
   videoRef: React.RefObject<HTMLVideoElement | null>
-  setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   settingsActor: SettingsActorType
   setShowManualConnect: React.Dispatch<React.SetStateAction<boolean>>
@@ -294,9 +285,7 @@ export async function tryConnecting({
           await attemptToConnectToEngine({
             authToken: authToken,
             videoWrapperRef,
-            setAppState,
             videoRef,
-            setIsSceneReady,
             timeToConnect,
             engineCommandManager,
             // Invalid source can still connect; execution reports its diagnostics.
@@ -333,7 +322,8 @@ export async function tryConnecting({
 
           abnormalCloseRetries.current = 0
           isConnecting.current = false
-          setAppState({ isStreamAcceptingInput: true })
+          engineCommandManager.availability =
+            ConnectionAvailability.AcceptingInput
           numberOfConnectionAttempts.current = 0
           setShowManualConnect(false)
           EngineDebugger.addLog({
@@ -342,7 +332,7 @@ export async function tryConnecting({
           })
           resolve('connected')
         } catch (e) {
-          setAppState({ isStreamAcceptingInput: false })
+          engineCommandManager.availability = ConnectionAvailability.Unavailable
           const terminalConnectionError =
             engineCommandManager.lastConnectionError?.terminal === true
               ? engineCommandManager.lastConnectionError

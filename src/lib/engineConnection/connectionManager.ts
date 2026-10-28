@@ -83,8 +83,15 @@ export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
 }
 
+export enum ConnectionAvailability {
+  Unavailable = 'unavailable',
+  StreamReady = 'stream-ready',
+  AcceptingInput = 'accepting-input',
+}
+
 export class ConnectionManager extends EventTarget {
   started: boolean
+  availability: ConnectionAvailability = ConnectionAvailability.Unavailable
   inSequence = 1
   _camControlsCameraChange = () => {}
   id: string
@@ -145,7 +152,6 @@ export class ConnectionManager extends EventTarget {
   private readonly systemDeps: ConnectionSystemDeps
 
   streamDimensions = {
-    // startFromWasm uses 256, 256
     width: 256,
     height: 256,
   }
@@ -342,7 +348,6 @@ export class ConnectionManager extends EventTarget {
     width,
     height,
     token,
-    setStreamIsReady,
     callbackOnUnitTestingConnection,
     unitTestWebrtc,
     unitTestPool,
@@ -353,7 +358,6 @@ export class ConnectionManager extends EventTarget {
     width: number
     height: number
     token: string
-    setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestWebrtc?: boolean
     unitTestPool?: 'cpu'
@@ -533,12 +537,12 @@ export class ConnectionManager extends EventTarget {
       // Don't think this needs the bind because it is an external set function for the callback
       camControlsCameraChange: this._camControlsCameraChange,
       connection: this.connection,
-      setStreamIsReady,
     })
 
     // Engine is ready to start sending events!
-    // Gotcha: The other listenerse above need to be initialized otherwise this will halt forever.
+    // Gotcha: The other listeners above need to be initialized otherwise this will halt forever.
     await onEngineConnectionOpened()
+    this.availability = ConnectionAvailability.StreamReady
   }
 
   /**
@@ -1186,9 +1190,6 @@ export class ConnectionManager extends EventTarget {
       token,
       width: 256,
       height: 256,
-      setStreamIsReady: () => {
-        console.warn('This is a NO OP. Should not be called in web.')
-      },
     })
   }
 

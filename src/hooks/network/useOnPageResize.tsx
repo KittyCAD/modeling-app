@@ -1,9 +1,13 @@
-import { useAppState } from '@src/AppState'
 import { EngineDebugger } from '@src/lib/debugger'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import {
+  ConnectionAvailability,
+  type ConnectionManager,
+} from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import { useEffect, useRef } from 'react'
+import { useConnectionManagerAvailabilityAsSignal } from '@src/hooks/network/useConnectionManagerAvailability'
+import { useComputed } from '@preact/signals-react'
 
 const TIME_TO_WAIT_AFTER_DEBOUNCE_IS_DONE = 250
 
@@ -26,12 +30,19 @@ export const useOnPageResize = ({
   const last = useRef<number>(Date.now())
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)
-  const { isStreamAcceptingInput } = useAppState()
+  const engineConnectionAvailability =
+    useConnectionManagerAvailabilityAsSignal(engineCommandManager)
+  const isStreamAcceptingInput = useComputed(
+    () =>
+      engineConnectionAvailability.value ===
+      ConnectionAvailability.AcceptingInput
+  )
+
   useEffect(() => {
     if (!videoWrapperRef.current) return
     if (!videoRef.current) return
     if (!canvasRef.current) return
-    if (!isStreamAcceptingInput) {
+    if (!isStreamAcceptingInput.value) {
       console.warn('attempting to resize stream before it is ready')
       EngineDebugger.addLog({
         label: 'useOnPageResize',
@@ -90,7 +101,7 @@ export const useOnPageResize = ({
     videoWrapperRef,
     videoRef,
     canvasRef,
-    isStreamAcceptingInput,
+    isStreamAcceptingInput.value,
     engineCommandManager,
   ])
 }

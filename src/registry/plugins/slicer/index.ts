@@ -1,10 +1,16 @@
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
-import { useSignals } from '@preact/signals-react/runtime'
-import { useAppState } from '@src/AppState'
+import { useComputed, useSignals } from '@preact/signals-react/runtime'
+import { useConnectionManagerAvailabilityAsSignal } from '@src/hooks/network/useConnectionManagerAvailability'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
+import {
+  type ConnectionManager,
+  engineConnectionService,
+} from '@src/lib/engineConnection'
+import { ConnectionAvailability } from '@src/lib/engineConnection/connectionManager'
+import { engineConnectionExtension } from '@src/lib/engineConnection/registry/extension'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { DefaultLayoutToolbarID } from '@src/lib/layout/configs/default'
@@ -43,13 +49,21 @@ type ExportToSlicerCommandArgs = {
 
 function createUseExportToSlicerDisabled({
   getKclManager,
+  getEngineCommandManager,
 }: {
   getKclManager: () => KclManager | undefined
+  getEngineCommandManager: () => ConnectionManager
 }) {
   return function useExportToSlicerDisabled() {
     useSignals()
+    const engineConnectionAvailability =
+      useConnectionManagerAvailabilityAsSignal(getEngineCommandManager())
+    const isStreamReady = useComputed(
+      () =>
+        engineConnectionAvailability.value ===
+        ConnectionAvailability.StreamReady
+    )
     const { overallState, immediateState } = useNetworkContext()
-    const { isStreamReady } = useAppState()
     const kclManager = getKclManager()
     const engineIsBusyOrUnavailable =
       !kclManager ||
@@ -120,55 +134,62 @@ function createExportToSlicerCommand({
   }
 }
 
-const exportToSlicerSidebarItem = defineRegistryItemFactory((ctx) => {
-  const getCommandSystem = () => ctx.services.get(commandSystemService)
-  const getKclManager = () =>
-    ctx.services.optional(projectSession)?.project.value?.executingEditor
-      .value ?? undefined
-  const exportToSlicerCommand = createExportToSlicerCommand({
-    getKclManager,
-    getFileOperations: () => ctx.services.get(fileOperationsService),
-  })
-  const useExportToSlicerDisabled = createUseExportToSlicerDisabled({
-    getKclManager,
-  })
+const exportToSlicerSidebarItem = defineRegistryItemFactory(
+  (ctx) => {
+    const getCommandSystem = () => ctx.services.get(commandSystemService)
+    const getEngineCommandManager = () =>
+      ctx.services.get(engineConnectionService).manager
+    const getKclManager = () =>
+      ctx.services.optional(projectSession)?.project.value?.executingEditor
+        .value ?? undefined
+    const exportToSlicerCommand = createExportToSlicerCommand({
+      getKclManager,
+      getFileOperations: () => ctx.services.get(fileOperationsService),
+    })
+    const useExportToSlicerDisabled = createUseExportToSlicerDisabled({
+      getKclManager,
+      getEngineCommandManager,
+    })
 
-  return {
-    id: 'slicer.left-toolbar.item',
-    provides: [
-      provideCommand(exportToSlicerCommand),
-      provide(layoutActionLibraryValueSpec, {
-        [EXPORT_TO_SLICER_ACTION_TYPE]: {
-          useHidden: () => !isDesktop(),
-          useDisabled: useExportToSlicerDisabled,
-          execute: () => {
-            getCommandSystem().send({
-              type: 'Find and select command',
-              data: {
-                name: EXPORT_TO_SLICER_COMMAND_NAME,
-                groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
-              },
-            })
+    return {
+      id: 'slicer.left-toolbar.item',
+      provides: [
+        provideCommand(exportToSlicerCommand),
+        provide(layoutActionLibraryValueSpec, {
+          [EXPORT_TO_SLICER_ACTION_TYPE]: {
+            useHidden: () => !isDesktop(),
+            useDisabled: useExportToSlicerDisabled,
+            execute: () => {
+              getCommandSystem().send({
+                type: 'Find and select command',
+                data: {
+                  name: EXPORT_TO_SLICER_COMMAND_NAME,
+                  groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
+                },
+              })
+            },
           },
-        },
-      }),
-      provide(layoutContributionsValueSpec, {
-        id: 'slicer.left-toolbar.action',
-        kind: 'action',
-        action: {
-          id: 'export-to-slicer',
-          label: EXPORT_TO_SLICER_COMMAND_NAME,
-          icon: 'printer3d',
-          actionType: EXPORT_TO_SLICER_ACTION_TYPE,
-        },
-        placement: {
-          targetPaneId: DefaultLayoutToolbarID.Left,
-          position: 'end',
-        },
-      }),
-    ],
-  }
-}, 'slicer.left-toolbar.item')
+        }),
+        provide(layoutContributionsValueSpec, {
+          id: 'slicer.left-toolbar.action',
+          kind: 'action',
+          action: {
+            id: 'export-to-slicer',
+            label: EXPORT_TO_SLICER_COMMAND_NAME,
+            icon: 'printer3d',
+            actionType: EXPORT_TO_SLICER_ACTION_TYPE,
+          },
+          placement: {
+            targetPaneId: DefaultLayoutToolbarID.Left,
+            position: 'end',
+          },
+        }),
+      ],
+    }
+  },
+  'slicer.left-toolbar.item',
+  [engineConnectionExtension]
+)
 
 const slicer = createZdsPlugin({
   id: SLICER_PLUGIN_ID,
