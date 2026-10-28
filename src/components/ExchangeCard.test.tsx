@@ -145,6 +145,6 @@ describe('ExchangeCard replay attachments', () => {
       'First few words from the pasted reference'
     )
     expect(preview).toHaveAttribute('title', file.name)
-    expect(preview).toHaveClass('truncate')
+    expect(preview).toHaveClass('line-clamp-2')
   })
 })
