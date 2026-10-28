@@ -4484,17 +4484,15 @@ export const modelingMachine = setup({
           const views: Record<string, NamedView> = Object.create(null)
           for (const view of namedViews) {
             const { baseline, showIds, hideIds, camera } = view.artifact
-            if (camera.target === null || camera.distance === null) {
-              return new Error(
-                `Named view "${view.artifact.name}" needs an explicit target and distance for export.`
-              )
-            }
-
             const target = new Vector3(
-              camera.target.x,
-              camera.target.y,
-              camera.target.z
+              camera.target?.x ?? 0,
+              camera.target?.y ?? 0,
+              camera.target?.z ?? 0
             )
+            const { camControls } = kclManager.sceneInfra
+            const distance =
+              camera.distance ??
+              camControls.camera.position.distanceTo(camControls.target)
             let direction: Vector3
             let viewUp: Vector3
             if (camera.look.type === 'directed') {
@@ -4529,9 +4527,7 @@ export const modelingMachine = setup({
             }
             // Remove any component along the viewing direction to get camera up.
             viewUp.projectOnPlane(direction).normalize()
-            const vantage = target
-              .clone()
-              .addScaledVector(direction, -camera.distance)
+            const vantage = target.clone().addScaledVector(direction, -distance)
 
             views[view.artifact.name] = {
               vantage: { x: vantage.x, y: vantage.y, z: vantage.z },
