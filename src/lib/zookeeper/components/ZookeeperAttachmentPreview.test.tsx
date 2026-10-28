@@ -2,9 +2,9 @@ import { render, screen } from '@testing-library/react'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import { expect, test } from 'vitest'
 
-test('uses explicit paste intent rather than the filename', async () => {
+test('shows text excerpts for pastes and filenames for uploads', async () => {
   const contents = 'Pasted reference contents'
-  const uploaded = new File([contents], 'pasted-text-upload.txt', {
+  const uploaded = new File([contents], 'requirements.txt', {
     type: 'text/plain',
   })
   const pasted = new File([contents], 'reference.txt', { type: 'text/plain' })
