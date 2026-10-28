@@ -8,7 +8,7 @@ import {
   Thinking,
 } from '@src/components/Thinking'
 import Tooltip from '@src/components/Tooltip'
-import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
+import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
 import {
   type Exchange,
   getZookeeperAttachmentKey,
@@ -328,53 +328,20 @@ export const RequestCard = (props: RequestCardProps) => {
                     getZookeeperAttachmentKey(attachmentRef)
                   ]
                 : undefined
-              const canFetch =
-                file.data.length === 0 &&
-                attachmentRef !== undefined &&
-                props.onFetchAttachment !== undefined &&
-                fetchState?.status !== 'loaded'
-
-              const contents = (
-                <>
-                  <ZookeeperAttachmentPreview
-                    file={
-                      fetchState?.status === 'loaded' ? fetchState.file : file
-                    }
-                  />
-                  {fetchState?.status === 'loading' && (
-                    <span
-                      className={
-                        isImage
-                          ? 'sr-only'
-                          : 'text-chalkboard-70 dark:text-chalkboard-40'
-                      }
-                    >
-                      Loading…
-                    </span>
-                  )}
-                  {fetchState?.status === 'loaded' && !isImage && (
-                    <span className="text-chalkboard-70 dark:text-chalkboard-40">
-                      Loaded
-                    </span>
-                  )}
-                </>
-              )
               const className = `flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 text-xs ${isImage ? '' : 'px-2 py-1'}`
 
-              return canFetch ? (
-                <button
-                  type="button"
+              return (
+                <ZookeeperAttachment
                   key={`${file.name}-${index}`}
+                  file={file}
                   className={className}
-                  disabled={fetchState?.status === 'loading'}
-                  onClick={() => props.onFetchAttachment?.(attachmentRef)}
-                >
-                  {contents}
-                </button>
-              ) : (
-                <div key={`${file.name}-${index}`} className={className}>
-                  {contents}
-                </div>
+                  fetchState={fetchState}
+                  onFetch={
+                    attachmentRef && props.onFetchAttachment
+                      ? () => props.onFetchAttachment?.(attachmentRef)
+                      : undefined
+                  }
+                />
               )
             })}
             {hasHiddenAttachments && (

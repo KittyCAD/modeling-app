@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
@@ -36,7 +36,7 @@ describe('ExchangeCard replay attachments', () => {
     onClickClearChat: vi.fn(),
   }
 
-  test('requests replay attachment bytes and shows its loading state', () => {
+  test('opens a replay image immediately, retries loading, and shows the full image', () => {
     const onFetchAttachment = vi.fn()
     const { rerender } = render(
       <ExchangeCard {...exchangeProps} onFetchAttachment={onFetchAttachment} />
@@ -45,6 +45,25 @@ describe('ExchangeCard replay attachments', () => {
     fireEvent.click(screen.getByRole('button', { name: /Image/ }))
     expect(onFetchAttachment).toHaveBeenCalledOnce()
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
+    const dialog = screen.getByRole('dialog', { name: 'Image preview' })
+
+    rerender(
+      <ExchangeCard
+        {...exchangeProps}
+        onFetchAttachment={onFetchAttachment}
+        attachmentFetches={{
+          [attachmentKey]: {
+            status: 'error',
+            message: 'Attachment unavailable',
+          },
+        }}
+      />
+    )
+    expect(within(dialog).getByRole('alert')).toHaveTextContent(
+      'Attachment unavailable'
+    )
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Retry' }))
+    expect(onFetchAttachment).toHaveBeenCalledTimes(2)
 
     rerender(
       <ExchangeCard
@@ -56,9 +75,10 @@ describe('ExchangeCard replay attachments', () => {
       />
     )
 
-    expect(
-      screen.getByRole('button', { name: /Image Loading…/ })
-    ).toBeDisabled()
+    expect(within(dialog).getByRole('status')).toHaveTextContent(
+      'Loading attachment…'
+    )
+    expect(within(dialog).queryByRole('button', { name: 'Retry' })).toBeNull()
 
     rerender(
       <ExchangeCard
@@ -76,10 +96,16 @@ describe('ExchangeCard replay attachments', () => {
       />
     )
 
-    expect(screen.queryByRole('button', { name: /Image/ })).toBeNull()
     expect(
-      screen.getByRole('img', { name: 'Attachment preview' })
+      within(dialog).getByRole('img', { name: 'Attachment preview' })
     ).toHaveAttribute('src', 'blob:image-preview')
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Close preview' })
+    )
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Attachment preview' })
+    ).toBeEnabled()
     expect(screen.queryByText('Loaded')).not.toBeInTheDocument()
     expect(screen.queryByText('Image')).not.toBeInTheDocument()
   })
@@ -123,7 +149,7 @@ describe('ExchangeCard replay attachments', () => {
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
   })
 
-  test('previews pasted text after loading replay attachment bytes', () => {
+  test('previews pasted text after loading replay attachment bytes', async () => {
     const file = {
       name: 'pasted-text-a2f180bb-d734-46f2-974e-71f804b1f1a1.txt',
       mimetype: 'text/plain',
@@ -137,7 +163,8 @@ describe('ExchangeCard replay attachments', () => {
     }
     const { rerender } = render(<ExchangeCard {...props} />)
 
-    fireEvent.click(screen.getByRole('button', { name: /Pasted text/ }))
+    const trigger = screen.getByRole('button', { name: /Pasted text/ })
+    fireEvent.click(trigger)
     expect(props.onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
     expect(screen.queryByText(file.name)).not.toBeInTheDocument()
 
@@ -152,7 +179,12 @@ describe('ExchangeCard replay attachments', () => {
         }}
       />
     )
-    const preview = screen.getByText(
+    const dialog = screen.getByRole('dialog', { name: 'Text preview' })
+    await within(dialog).findByText(/First few words/)
+    expect(dialog.querySelector('pre')?.textContent).toBe(
+      'First few words\nfrom the pasted reference'
+    )
+    const preview = within(trigger).getByText(
       'First few words from the pasted reference'
     )
     expect(preview).toHaveAttribute('title', file.name)

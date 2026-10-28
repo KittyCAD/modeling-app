@@ -1627,9 +1627,18 @@ describe('ZookeeperConversation', () => {
 
       const firstPreview = await screen.findByText(/^First reference /)
       expect(await screen.findByText(/^Second reference /)).toBeInTheDocument()
+      fireEvent.click(firstPreview)
+      const dialog = screen.getByRole('dialog', { name: 'Text preview' })
+      await within(dialog).findByText(/^First reference /)
+      expect(dialog.querySelector('pre')?.textContent).toHaveLength(10_001)
+      expect(handleProcess).not.toHaveBeenCalled()
       fireEvent.click(
-        within(firstPreview.parentElement as HTMLElement).getByRole('button')
+        within(dialog).getByRole('button', { name: 'Close preview' })
       )
+      fireEvent.click(
+        screen.getByRole('button', { name: `Remove ${firstPreview.title}` })
+      )
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
       expect(screen.queryByText(/^First reference /)).not.toBeInTheDocument()
       expect(screen.getByText(/^Second reference /)).toBeInTheDocument()
 
