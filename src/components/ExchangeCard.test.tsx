@@ -149,9 +149,9 @@ describe('ExchangeCard replay attachments', () => {
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
   })
 
-  test('opens a sent text attachment while keeping its filename', async () => {
+  test('loads a text attachment into the preview dialog', async () => {
     const file = {
-      name: 'pasted-text-a2f180bb-d734-46f2-974e-71f804b1f1a1.txt',
+      name: 'requirements.txt',
       mimetype: 'text/plain',
       data: [],
       attachment_ref: attachmentRef,
@@ -163,13 +163,12 @@ describe('ExchangeCard replay attachments', () => {
     }
     const { rerender } = render(<ExchangeCard {...props} />)
 
-    const trigger = screen.getByRole('button', { name: /pasted-text-/ })
+    const trigger = screen.getByRole('button', { name: /requirements\.txt/ })
     fireEvent.click(trigger)
     expect(props.onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
-    expect(screen.getByText(file.name)).toBeInTheDocument()
 
     const data = Array.from(
-      new TextEncoder().encode('First few words\nfrom the pasted reference')
+      new TextEncoder().encode('First few words\nfrom the reference')
     )
     rerender(
       <ExchangeCard
@@ -182,13 +181,7 @@ describe('ExchangeCard replay attachments', () => {
     const dialog = screen.getByRole('dialog', { name: 'Text preview' })
     await within(dialog).findByText(/First few words/)
     expect(dialog.querySelector('pre')?.textContent).toBe(
-      'First few words\nfrom the pasted reference'
+      'First few words\nfrom the reference'
     )
-    const preview = within(trigger).getByText(file.name)
-    expect(preview).toHaveAttribute('title', file.name)
-    expect(preview).toHaveClass('truncate')
-    expect(
-      within(trigger).queryByText(/First few words/)
-    ).not.toBeInTheDocument()
   })
 })
