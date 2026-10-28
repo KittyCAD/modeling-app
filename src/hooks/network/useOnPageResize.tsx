@@ -1,4 +1,4 @@
-import { useSignals } from '@preact/signals-react/runtime'
+import { useAppState } from '@src/AppState'
 import { EngineDebugger } from '@src/lib/debugger'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -26,15 +26,12 @@ export const useOnPageResize = ({
   const last = useRef<number>(Date.now())
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)
-  useSignals()
-  const readiness = engineCommandManager.streamReadiness.value
-  const connection =
-    readiness.type === 'accepting-input' ? readiness.connection : undefined
+  const { isStreamAcceptingInput } = useAppState()
   useEffect(() => {
     if (!videoWrapperRef.current) return
     if (!videoRef.current) return
     if (!canvasRef.current) return
-    if (!connection) {
+    if (!isStreamAcceptingInput) {
       console.warn('attempting to resize stream before it is ready')
       EngineDebugger.addLog({
         label: 'useOnPageResize',
@@ -43,19 +40,11 @@ export const useOnPageResize = ({
       return
     }
 
-    let active = true
-    const animationFrames = new Set<number>()
-    const canResize = () =>
-      active &&
-      engineCommandManager.connection === connection &&
-      engineCommandManager.isStreamAcceptingInput.peek()
     const wrapper = videoWrapperRef.current
     const observer = new ResizeObserver(() => {
       // Prevents:
       // `Uncaught ResizeObserver loop completed with undelivered notifications`
-      const frame = window.requestAnimationFrame(() => {
-        animationFrames.delete(frame)
-        if (!canResize()) return
+      window.requestAnimationFrame(() => {
         if (
           Date.now() - last.current <
           REASONABLE_TIME_TO_REFRESH_STREAM_SIZE
@@ -69,8 +58,6 @@ export const useOnPageResize = ({
 
           // Create new timeout to run after the debouncing stops
           const resizeTimeoutId = setTimeout(() => {
-            setSizeOneMoreTime.current = null
-            if (!canResize()) return
             const { width, height } = getDimensions(
               wrapper.clientWidth,
               wrapper.clientHeight
@@ -92,19 +79,18 @@ export const useOnPageResize = ({
           console.warn('handleResize', e)
         })
       })
-      animationFrames.add(frame)
     })
 
     observer.observe(wrapper)
 
     return () => {
-      active = false
       observer.disconnect()
-      animationFrames.forEach((frame) => window.cancelAnimationFrame(frame))
-      if (setSizeOneMoreTime.current) {
-        clearTimeout(setSizeOneMoreTime.current)
-        setSizeOneMoreTime.current = null
-      }
     }
-  }, [videoWrapperRef, videoRef, canvasRef, connection, engineCommandManager])
+  }, [
+    videoWrapperRef,
+    videoRef,
+    canvasRef,
+    isStreamAcceptingInput,
+    engineCommandManager,
+  ])
 }
