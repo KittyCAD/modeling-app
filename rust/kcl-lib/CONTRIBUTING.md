@@ -63,7 +63,7 @@ OK, let's start. Let's assume we're adding a new stdlib function called `cube`.
    ("solid", "cube") => (
        // `crate::std::solid_shapes::cube` is the fully-qualified Rust reference
        // to the Rust function for the stdlib body.
-       |e, a| Box::pin(crate::std::solid_shapes::cube(e, a).map(|r| r.map(KclValue::continue_))),
+       |e, a| Box::pin(crate::std::solid_shapes::cube(e, a).map(|r| r.map(KclValue::normal))),
        // This string is the fully-qualified name of the KCL function.
        StdFnProps::default("std::solid::cube"),
    ),

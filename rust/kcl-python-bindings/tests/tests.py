@@ -362,6 +362,33 @@ solid = extrude(disk, length = 10mm)
     assert images[0] != images[1], "highlight_edges must change the rendered image"
 
 
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_session_snapshot_cloned_transparent_solid_cpu_only(tmp_path):
+    code = """
+@settings(kclVersion = 3.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 0mm, var 1.14mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  vertical([circle1.start, circle1.center])
+  distance([circle1.start, circle1.center], labelPosition = [0.38mm, 2.59mm]) == 1.14mm
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(region001, length = 2) |> appearance(color = "#dba09a", metalness = 90, roughness = 50, opacity = 60)
+clone(extrude001) |> translate(x = 1)
+"""
+    async with await execute_with_retries(
+        kcl.new_kcl_session_code, code, geometry_only=True
+    ) as session:
+        snapshots = await session.snapshots(kcl.ImageFormat.Png, [])
+        assert len(snapshots) == 1
+        image = bytes(snapshots[0])
+        assert image.startswith(b"\x89PNG\r\n\x1a\n")
+        (tmp_path / "cloned_transparent_solid.png").write_bytes(image)
+
+
 @pytest.mark.asyncio
 async def test_kcl_session_sketch_constraint_report(tmp_path):
     source = tmp_path / "main.kcl"
