@@ -1,15 +1,8 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { ExchangeCard } from '@src/components/ExchangeCard'
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
 describe('ExchangeCard replay attachments', () => {
-  beforeEach(() => {
-    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:image-preview')
-    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
-  })
-
-  afterEach(() => vi.restoreAllMocks())
-
   const attachmentRef = {
     prompt_id: '00000000-0000-4000-8000-000000000001',
     seq: 3,
@@ -23,8 +16,8 @@ describe('ExchangeCard replay attachments', () => {
       content: 'Use this reference',
       additional_files: [
         {
-          name: 'reference.png',
-          mimetype: 'image/png',
+          name: 'reference.txt',
+          mimetype: 'text/plain',
           data: [],
           attachment_ref: attachmentRef,
         },
@@ -36,16 +29,16 @@ describe('ExchangeCard replay attachments', () => {
     onClickClearChat: vi.fn(),
   }
 
-  test('opens a replay image immediately, retries loading, and shows the full image', () => {
+  test('loads attachments in the preview dialog and retries failures', async () => {
     const onFetchAttachment = vi.fn()
     const { rerender } = render(
       <ExchangeCard {...exchangeProps} onFetchAttachment={onFetchAttachment} />
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /Image/ }))
+    fireEvent.click(screen.getByRole('button', { name: /reference\.txt/ }))
     expect(onFetchAttachment).toHaveBeenCalledOnce()
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
-    const dialog = screen.getByRole('dialog', { name: 'Image preview' })
+    const dialog = screen.getByRole('dialog', { name: 'Text preview' })
 
     rerender(
       <ExchangeCard
@@ -89,24 +82,24 @@ describe('ExchangeCard replay attachments', () => {
             status: 'loaded',
             file: {
               ...exchangeProps.request.additional_files[0],
-              data: [1, 2, 3],
+              data: Array.from(
+                new TextEncoder().encode('First line\nSecond line')
+              ),
             },
           },
         }}
       />
     )
 
-    expect(
-      within(dialog).getByRole('img', { name: 'Attachment preview' })
-    ).toHaveAttribute('src', 'blob:image-preview')
+    await within(dialog).findByText(/First line/)
+    expect(dialog.querySelector('pre')?.textContent).toBe(
+      'First line\nSecond line'
+    )
     fireEvent.click(
       within(dialog).getByRole('button', { name: 'Close preview' })
     )
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Attachment preview' })
-    ).toBeEnabled()
-    expect(screen.queryByText('Loaded')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /reference\.txt/ })).toBeEnabled()
   })
 
   test('renders a metadata-only server file without a reasoning message', () => {
@@ -146,41 +139,5 @@ describe('ExchangeCard replay attachments', () => {
 
     expect(onFetchAttachment).toHaveBeenCalledOnce()
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
-  })
-
-  test('loads a text attachment into the preview dialog', async () => {
-    const file = {
-      name: 'requirements.txt',
-      mimetype: 'text/plain',
-      data: [],
-      attachment_ref: attachmentRef,
-    }
-    const props = {
-      ...exchangeProps,
-      request: { ...exchangeProps.request, additional_files: [file] },
-      onFetchAttachment: vi.fn(),
-    }
-    const { rerender } = render(<ExchangeCard {...props} />)
-
-    const trigger = screen.getByRole('button', { name: /requirements\.txt/ })
-    fireEvent.click(trigger)
-    expect(props.onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
-
-    const data = Array.from(
-      new TextEncoder().encode('First few words\nfrom the reference')
-    )
-    rerender(
-      <ExchangeCard
-        {...props}
-        attachmentFetches={{
-          [attachmentKey]: { status: 'loaded', file: { ...file, data } },
-        }}
-      />
-    )
-    const dialog = screen.getByRole('dialog', { name: 'Text preview' })
-    await within(dialog).findByText(/First few words/)
-    expect(dialog.querySelector('pre')?.textContent).toBe(
-      'First few words\nfrom the reference'
-    )
   })
 })

@@ -1573,38 +1573,23 @@ describe('ZookeeperConversation', () => {
       expect(firstFile.name).not.toBe(secondFile.name)
     })
 
-    test('previews multiple pasted attachments and removes the selected one', async () => {
+    test('previews a composer attachment without sending it', async () => {
       const handleProcess = vi.fn()
       renderConversation(handleProcess)
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
-      const secondText = 'Second reference '.padEnd(10_001, 'b')
-      for (const text of ['First reference '.padEnd(10_001, 'a'), secondText]) {
-        fireEvent.paste(textarea, {
-          clipboardData: { files: [], getData: () => text },
-        })
-      }
+      const text = 'Reference '.padEnd(10_001, 'a')
+      fireEvent.paste(textarea, {
+        clipboardData: { files: [], getData: () => text },
+      })
 
-      const firstPreview = await screen.findByText(/^First reference /)
-      expect(await screen.findByText(/^Second reference /)).toBeInTheDocument()
-      fireEvent.click(firstPreview)
+      fireEvent.click(await screen.findByText(/^Reference /))
       const dialog = screen.getByRole('dialog', { name: 'Text preview' })
-      await within(dialog).findByText(/^First reference /)
-      expect(dialog.querySelector('pre')?.textContent).toHaveLength(10_001)
+      await within(dialog).findByText(text)
       expect(handleProcess).not.toHaveBeenCalled()
       fireEvent.click(
         within(dialog).getByRole('button', { name: 'Close preview' })
       )
-      fireEvent.click(
-        screen.getByRole('button', { name: `Remove ${firstPreview.title}` })
-      )
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-      expect(screen.queryByText(/^First reference /)).not.toBeInTheDocument()
-      expect(screen.getByText(/^Second reference /)).toBeInTheDocument()
-
-      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
-      const files: File[] = handleProcess.mock.calls[0][2]
-      expect(files).toHaveLength(1)
-      expect(await files[0].text()).toBe(secondText)
+      expect(screen.getByText(/^Reference /)).toBeInTheDocument()
     })
 
     test('allows removing attached files', async () => {

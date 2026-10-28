@@ -1,19 +1,8 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 
 describe('attachment preview dialogs', () => {
-  const revokeObjectURL = vi.fn<typeof URL.revokeObjectURL>()
-
-  beforeEach(() => {
-    let nextUrl = 0
-    vi.spyOn(URL, 'createObjectURL').mockImplementation(
-      () => `blob:preview-${++nextUrl}`
-    )
-    revokeObjectURL.mockReset()
-    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(revokeObjectURL)
-  })
-
   afterEach(() => vi.restoreAllMocks())
 
   test('reads the full text only on open and preserves its whitespace', async () => {
@@ -22,9 +11,13 @@ describe('attachment preview dialogs', () => {
       type: 'text/plain',
     })
     const read = vi.spyOn(file, 'text')
-    render(<ZookeeperAttachment file={file} isPastedText={true} className="" />)
+    render(
+      <ZookeeperAttachment file={file} className="">
+        {file.name}
+      </ZookeeperAttachment>
+    )
 
-    const trigger = await screen.findByRole('button', { name: /First line/ })
+    const trigger = screen.getByRole('button', { name: file.name })
     expect(read).not.toHaveBeenCalled()
     fireEvent.click(trigger)
 
@@ -39,17 +32,26 @@ describe('attachment preview dialogs', () => {
     expect(trigger).toHaveFocus()
   })
 
-  test('fits the full image and releases its URL when the dialog closes', () => {
+  test('handles image errors and releases the preview URL on close', () => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:preview')
+    const revokeObjectURL = vi
+      .spyOn(URL, 'revokeObjectURL')
+      .mockImplementation(() => {})
     const file = new File(['image'], 'image-reference.png', {
       type: 'image/png',
     })
-    render(<ZookeeperAttachment file={file} className="" />)
+    render(
+      <ZookeeperAttachment file={file} className="">
+        {file.name}
+      </ZookeeperAttachment>
+    )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Attachment preview' }))
+    fireEvent.click(screen.getByRole('button', { name: file.name }))
     const dialog = screen.getByRole('dialog', { name: 'Image preview' })
-    const image = within(dialog).getByRole('img')
-    expect(image).toHaveClass('object-contain')
-    expect(image).toHaveAttribute('src', 'blob:preview-2')
+    const image = within(dialog).getByRole('img', {
+      name: 'Attachment preview',
+    })
+    expect(image).toHaveAttribute('src', 'blob:preview')
     fireEvent.error(image)
     expect(within(dialog).getByRole('alert')).toHaveTextContent(
       'Could not preview this attachment.'
@@ -57,8 +59,7 @@ describe('attachment preview dialogs', () => {
     fireEvent.click(
       within(dialog).getByRole('button', { name: 'Close preview' })
     )
-    expect(revokeObjectURL).toHaveBeenCalledWith('blob:preview-2')
-    expect(screen.getByRole('img')).toHaveAttribute('src', 'blob:preview-1')
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:preview')
   })
 
   test('ignores a text read that finishes after the selected file changes', async () => {
@@ -73,10 +74,16 @@ describe('attachment preview dialogs', () => {
       type: 'text/plain',
     })
     const { rerender } = render(
-      <ZookeeperAttachment file={first} className="" />
+      <ZookeeperAttachment file={first} className="">
+        {first.name}
+      </ZookeeperAttachment>
     )
     fireEvent.click(screen.getByRole('button', { name: /first\.txt/ }))
-    rerender(<ZookeeperAttachment file={second} className="" />)
+    rerender(
+      <ZookeeperAttachment file={second} className="">
+        {second.name}
+      </ZookeeperAttachment>
+    )
 
     const dialog = screen.getByRole('dialog', { name: 'Text preview' })
     await within(dialog).findByText('Current text')

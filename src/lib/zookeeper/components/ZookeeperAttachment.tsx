@@ -1,22 +1,21 @@
 import { Dialog } from '@headlessui/react'
 import type { MlCopilotFile } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import type { ZookeeperAttachmentFetchState } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { reportRejection } from '@src/lib/trap'
-import { useEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 type AttachmentFile = File | MlCopilotFile
 
 export function ZookeeperAttachment({
   file,
-  isPastedText = false,
+  children,
   className,
   fetchState,
   onFetch,
 }: {
   file: AttachmentFile
-  isPastedText?: boolean
+  children: ReactNode
   className: string
   fetchState?: ZookeeperAttachmentFetchState
   onFetch?: () => void
@@ -41,28 +40,6 @@ export function ZookeeperAttachment({
     fetchState?.status !== 'loaded'
   const canFetch = needsFetch && onFetch !== undefined
   const previewFile = fetchState?.status === 'loaded' ? fetchState.file : file
-  const contents = (
-    <>
-      <ZookeeperAttachmentPreview
-        file={previewFile}
-        isPastedText={isPastedText}
-      />
-      {fetchState?.status === 'loading' && (
-        <span
-          className={
-            isImage ? 'sr-only' : 'text-chalkboard-70 dark:text-chalkboard-40'
-          }
-        >
-          Loading…
-        </span>
-      )}
-      {fetchState?.status === 'loaded' && !isImage && (
-        <span className="text-chalkboard-70 dark:text-chalkboard-40">
-          Loaded
-        </span>
-      )}
-    </>
-  )
 
   return (
     <>
@@ -78,10 +55,10 @@ export function ZookeeperAttachment({
             if (canFetch && fetchState?.status !== 'loading') onFetch()
           }}
         >
-          {contents}
+          {children}
         </button>
       ) : (
-        <div className={className}>{contents}</div>
+        <div className={className}>{children}</div>
       )}
       {open && (
         <Dialog

@@ -9,6 +9,7 @@ import {
 } from '@src/components/Thinking'
 import Tooltip from '@src/components/Tooltip'
 import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
+import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import {
   type Exchange,
   getZookeeperAttachmentKey,
@@ -328,7 +329,32 @@ export const RequestCard = (props: RequestCardProps) => {
                     getZookeeperAttachmentKey(attachmentRef)
                   ]
                 : undefined
-              const className = `flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 text-xs ${isImage ? '' : 'px-2 py-1'}`
+              const contents = (
+                <>
+                  <ZookeeperAttachmentPreview
+                    file={
+                      fetchState?.status === 'loaded' ? fetchState.file : file
+                    }
+                  />
+                  {fetchState?.status === 'loading' && (
+                    <span
+                      className={
+                        isImage
+                          ? 'sr-only'
+                          : 'text-chalkboard-70 dark:text-chalkboard-40'
+                      }
+                    >
+                      Loading…
+                    </span>
+                  )}
+                  {fetchState?.status === 'loaded' && !isImage && (
+                    <span className="text-chalkboard-70 dark:text-chalkboard-40">
+                      Loaded
+                    </span>
+                  )}
+                </>
+              )
+              const className = `m-0 flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 text-xs ${isImage ? 'p-0' : 'px-2 py-1'}`
 
               return (
                 <ZookeeperAttachment
@@ -341,7 +367,9 @@ export const RequestCard = (props: RequestCardProps) => {
                       ? () => props.onFetchAttachment?.(attachmentRef)
                       : undefined
                   }
-                />
+                >
+                  {contents}
+                </ZookeeperAttachment>
               )
             })}
             {hasHiddenAttachments && (
