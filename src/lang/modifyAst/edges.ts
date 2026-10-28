@@ -76,7 +76,7 @@ import {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
 } from '@src/lib/primitiveBodySelection'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
@@ -3589,7 +3589,8 @@ export function retrieveEdgeSelectionsFromOpArg(
   for (const value of edgesArg.value.value) {
     if (value.type !== 'Object' || !value.value) continue
     const selection = retrieveEdgeSelectionFromOpValue(value, artifactGraph)
-    if (err(selection)) return selection
+    // Edit recovery is best-effort: keep other edges when one lacks a graph anchor.
+    if (isErr(selection)) continue
     graphSelections.push(selection)
   }
   return { graphSelections, otherSelections: [] }

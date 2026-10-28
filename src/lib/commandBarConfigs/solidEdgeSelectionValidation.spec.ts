@@ -165,7 +165,7 @@ describe.each(['Fillet', 'Chamfer', 'GDT Straightness'] as const)(
         ).toBe(true)
         expect(
           await validation({ data: codeSegment, context, machineContext })
-        ).toBe(false)
+        ).toBe('Sketch segments cannot be used as solid-edge selections.')
         const editContext = {
           ...context,
           argumentsToSubmit: {

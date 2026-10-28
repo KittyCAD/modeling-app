@@ -358,67 +358,84 @@ hide(sketch002)`
   expect(world.kclManager.errors).toEqual([])
 }, 30_000)
 
-it('preserves single-face edge bounds and index when recovering edit selections', () => {
-  const codeRef = {
-    range: [0, 0, 0] as [number, number, number],
-    pathToNode: [],
-    nodePath: { steps: [] },
-  }
-  const graph: ArtifactGraph = new Map([
-    [
-      'segment',
-      {
-        type: 'segment',
-        id: 'segment',
-        pathId: 'path',
-        edgeIds: [],
-        commonSurfaceIds: [],
-        codeRef,
-      },
-    ],
-  ])
-  removeObsoleteEdges(graph)
-  const selections = retrieveEdgeSelectionsFromOpArg(
-    {
-      sourceRange: [0, 0, 0],
+it.each(['before', 'after'] as const)(
+  'preserves recoverable edge bounds and index when an untracked edge comes %s',
+  (position) => {
+    const codeRef = {
+      range: [0, 0, 0] as [number, number, number],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    }
+    const graph: ArtifactGraph = new Map([
+      [
+        'segment',
+        {
+          type: 'segment',
+          id: 'segment',
+          pathId: 'path',
+          edgeIds: [],
+          commonSurfaceIds: [],
+          codeRef,
+        },
+      ],
+    ])
+    removeObsoleteEdges(graph)
+    const untrackedEdge = {
+      type: 'Object' as const,
       value: {
-        type: 'Array',
-        value: [
-          {
-            type: 'Object',
-            value: {
-              sideFaces: {
-                type: 'Array',
-                value: [{ type: 'Uuid', value: 'segment' }],
+        sideFaces: {
+          type: 'Array' as const,
+          value: ['untracked-a', 'untracked-b'].map((value) => ({
+            type: 'Uuid' as const,
+            value,
+          })),
+        },
+      },
+    }
+    const selections = retrieveEdgeSelectionsFromOpArg(
+      {
+        sourceRange: [0, 0, 0],
+        value: {
+          type: 'Array',
+          value: [
+            ...(position === 'before' ? [untrackedEdge] : []),
+            {
+              type: 'Object',
+              value: {
+                sideFaces: {
+                  type: 'Array',
+                  value: [{ type: 'Uuid', value: 'segment' }],
+                },
+                endFaces: {
+                  type: 'Array',
+                  value: [
+                    { type: 'Uuid', value: 'bound-a' },
+                    { type: 'Uuid', value: 'bound-b' },
+                  ],
+                },
+                index: { type: 'Number', value: 2, ty: { type: 'Any' } },
               },
-              endFaces: {
-                type: 'Array',
-                value: [
-                  { type: 'Uuid', value: 'bound-a' },
-                  { type: 'Uuid', value: 'bound-b' },
-                ],
-              },
-              index: { type: 'Number', value: 2, ty: { type: 'Any' } },
             },
-          },
-        ],
+            ...(position === 'after' ? [untrackedEdge] : []),
+          ],
+        },
       },
-    },
-    graph
-  )
-  if (isErr(selections)) throw selections
-  expect(selections.graphSelections).toEqual([
-    {
-      codeRef,
-      entityRef: {
-        type: 'edge',
-        side_faces: ['segment'],
-        end_faces: ['bound-a', 'bound-b'],
-        index: 2,
+      graph
+    )
+    if (isErr(selections)) throw selections
+    expect(selections.graphSelections).toEqual([
+      {
+        codeRef,
+        entityRef: {
+          type: 'edge',
+          side_faces: ['segment'],
+          end_faces: ['bound-a', 'bound-b'],
+          index: 2,
+        },
       },
-    },
-  ])
-})
+    ])
+  }
+)
 
 // Compatibility: editing an existing call must not revalidate or rebuild tags.
 it.each(['Fillet', 'Chamfer'] as const)(
