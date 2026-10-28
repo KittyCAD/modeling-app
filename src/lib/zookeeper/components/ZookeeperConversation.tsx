@@ -633,14 +633,17 @@ export const ZookeeperConversationInput = (
                   <button
                     type="button"
                     onClick={() => onRemoveAttachment(index)}
-                    className="absolute right-0 top-0 m-0 flex h-6 w-6 items-center justify-center rounded-bl rounded-tr border-0 bg-chalkboard-100/80 p-0 text-chalkboard-10 hover:bg-chalkboard-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ml-green"
+                    className="group absolute right-0 top-0 m-0 flex h-6 w-6 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
                     aria-label={
                       isImage
                         ? `Remove image ${index + 1}`
                         : `Remove ${file.name}`
                     }
                   >
-                    <CustomIcon name="close" className="w-4 h-4" />
+                    <CustomIcon
+                      name="close"
+                      className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+                    />
                   </button>
                 </div>
               )
