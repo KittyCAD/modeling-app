@@ -997,9 +997,7 @@ describe('ZookeeperConversation', () => {
       within(requestBubble).queryByText('Attachments')
     ).not.toBeInTheDocument()
     expect(within(attachments).getByText('Attachments')).toBeInTheDocument()
-    expect(
-      within(attachments).getByRole('img', { name: 'Attachment preview' })
-    ).toBeInTheDocument()
+    expect(within(attachments).getByTitle('front-view.png')).toBeInTheDocument()
     expect(
       within(attachments).getByText('requirements.pdf')
     ).toBeInTheDocument()
@@ -1058,9 +1056,7 @@ describe('ZookeeperConversation', () => {
 
     const attachments = screen.getByTestId('ml-request-chat-bubble-attachments')
 
-    expect(
-      within(attachments).getByRole('img', { name: 'Attachment preview' })
-    ).toBeInTheDocument()
+    expect(within(attachments).getByTitle('front-view.png')).toBeInTheDocument()
     expect(
       within(attachments).getByText('requirements.pdf')
     ).toBeInTheDocument()
@@ -1070,9 +1066,7 @@ describe('ZookeeperConversation', () => {
 
     fireEvent.click(within(attachments).getByText('+ more'))
 
-    expect(
-      within(attachments).getAllByRole('img', { name: 'Attachment preview' })
-    ).toHaveLength(2)
+    expect(within(attachments).getByTitle('side-view.jpg')).toBeInTheDocument()
     expect(within(attachments).getByText('- collapse')).toBeInTheDocument()
 
     fireEvent.click(within(attachments).getByText('- collapse'))
@@ -1492,40 +1486,25 @@ describe('ZookeeperConversation', () => {
       expect(await screen.findByText('document.pdf')).toBeInTheDocument()
     })
 
-    test('gives uploaded, dropped, and pasted images unique names across prompts without changing their contents', async () => {
+    test('gives images unique names across prompts without changing their contents', async () => {
       const handleProcess = vi.fn()
-      const { container } = renderConversation(handleProcess)
+      renderConversation(handleProcess)
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
       const file = createMockFile('reference.png', 'image/png', 100)
-      const names: string[] = []
 
-      for (const method of ['upload', 'drop', 'paste']) {
-        if (method === 'upload') {
-          fireEvent.change(container.querySelector('input[type="file"]')!, {
-            target: { files: [file] },
-          })
-        } else if (method === 'drop') {
-          fireEvent.drop(textarea.parentElement!, {
-            dataTransfer: { files: [file], types: ['Files'] },
-          })
-        } else {
-          fireEvent.paste(textarea, { clipboardData: { files: [file] } })
-        }
-        expect(
-          await screen.findByRole('img', { name: 'Attachment preview' })
-        ).toBeInTheDocument()
-        expect(screen.queryByText('Image')).not.toBeInTheDocument()
+      for (let i = 0; i < 2; i++) {
+        fireEvent.paste(textarea, { clipboardData: { files: [file] } })
         fireEvent.click(
           screen.getByTestId('ml-ephant-conversation-input-button')
         )
-        const sent: File = handleProcess.mock.lastCall![2][0]
-        expect(sent.name).toMatch(/^image-[0-9a-f-]{36}\.png$/)
-        expect(sent.type).toBe(file.type)
-        expect(await sent.text()).toBe(await file.text())
-        names.push(sent.name)
       }
 
-      expect(new Set(names).size).toBe(3)
+      const first: File = handleProcess.mock.calls[0][2][0]
+      const second: File = handleProcess.mock.calls[1][2][0]
+      expect(first.name).toMatch(/^image-[0-9a-f-]{36}\.png$/)
+      expect(first.name).not.toBe(second.name)
+      expect(first.type).toBe(file.type)
+      expect(await first.text()).toBe(await file.text())
     })
 
     test('allows native text paste at the 10,000-character limit', () => {

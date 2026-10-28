@@ -407,7 +407,7 @@ export const ZookeeperConversationInput = (
     { isPastedText = false }: { isPastedText?: boolean } = {}
   ) => {
     if (!files.length) return
-    // Image names also persist across prompts, including screenshots and pastes.
+    // Keep image names unique across prompts.
     const namedFiles = files.map((file) => {
       if (!file.type.startsWith('image/')) return file
       const dotIndex = file.name.lastIndexOf('.')
@@ -627,37 +627,34 @@ export const ZookeeperConversationInput = (
         ></textarea>
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {attachments.map(({ file, isPastedText }, index) => {
-              const isImage = file.type.startsWith('image/')
-              return (
-                <div
-                  key={`${file.name}-${file.lastModified}-${file.size}`}
-                  className={`relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs ${isImage ? '' : 'py-1 pl-2 pr-8'}`}
-                  title={file.name}
+            {attachments.map(({ file, isPastedText }, index) => (
+              <div
+                key={`${file.name}-${file.lastModified}-${file.size}`}
+                className={`relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs ${file.type.startsWith('image/') ? '' : 'py-1 pl-2 pr-8'}`}
+                title={file.name}
+              >
+                <ZookeeperAttachment
+                  file={file}
+                  isPastedText={isPastedText}
+                  className="m-0 flex min-w-0 items-center gap-1 border-0 bg-transparent p-0 text-left text-xs focus-visible:ring-2 focus-visible:ring-ml-green"
+                />
+                <button
+                  type="button"
+                  onClick={() => onRemoveAttachment(index)}
+                  className="group absolute right-0 top-0 m-0 flex h-6 w-6 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
+                  aria-label={
+                    file.type.startsWith('image/')
+                      ? `Remove image ${index + 1}`
+                      : `Remove ${file.name}`
+                  }
                 >
-                  <ZookeeperAttachment
-                    file={file}
-                    isPastedText={isPastedText}
-                    className="m-0 flex min-w-0 items-center gap-1 border-0 bg-transparent p-0 text-left text-xs focus-visible:ring-2 focus-visible:ring-ml-green"
+                  <CustomIcon
+                    name="close"
+                    className="w-5 h-5 rounded-sm bg-chalkboard-20 text-chalkboard-80 dark:bg-chalkboard-80 dark:text-chalkboard-20 group-hover:brightness-110"
                   />
-                  <button
-                    type="button"
-                    onClick={() => onRemoveAttachment(index)}
-                    className="group absolute right-0 top-0 m-0 flex h-6 w-6 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
-                    aria-label={
-                      isImage
-                        ? `Remove image ${index + 1}`
-                        : `Remove ${file.name}`
-                    }
-                  >
-                    <CustomIcon
-                      name="close"
-                      className="w-5 h-5 rounded-sm bg-chalkboard-20 text-chalkboard-80 dark:bg-chalkboard-80 dark:text-chalkboard-20 group-hover:brightness-110"
-                    />
-                  </button>
-                </div>
-              )
-            })}
+                </button>
+              </div>
+            ))}
           </div>
         )}
         <div

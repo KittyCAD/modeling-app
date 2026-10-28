@@ -53,7 +53,6 @@ export const ZookeeperAttachmentPreview = ({
   }, [file, isPastedText])
 
   const imageUrl = imagePreview?.file === file ? imagePreview.url : undefined
-  const fileIcon = <CustomIcon name="file" className="w-4 h-4 shrink-0" />
   if (isImage) {
     return (
       <span
@@ -73,7 +72,7 @@ export const ZookeeperAttachmentPreview = ({
           />
         ) : (
           <>
-            {fileIcon}
+            <CustomIcon name="file" className="w-4 h-4 shrink-0" />
             <span className="sr-only">Image</span>
           </>
         )}
@@ -89,7 +88,7 @@ export const ZookeeperAttachmentPreview = ({
 
   return (
     <>
-      {fileIcon}
+      <CustomIcon name="file" className="w-4 h-4 shrink-0" />
       <span
         className={`min-w-0 max-w-[160px] ${isPastedText ? 'line-clamp-2 break-words whitespace-normal text-left' : 'truncate'}`}
         title={file.name}

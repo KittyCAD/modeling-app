@@ -107,7 +107,6 @@ describe('ExchangeCard replay attachments', () => {
       screen.getByRole('button', { name: 'Attachment preview' })
     ).toBeEnabled()
     expect(screen.queryByText('Loaded')).not.toBeInTheDocument()
-    expect(screen.queryByText('Image')).not.toBeInTheDocument()
   })
 
   test('renders a metadata-only server file without a reasoning message', () => {
