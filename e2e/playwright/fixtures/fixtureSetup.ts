@@ -113,7 +113,6 @@ export class AuthenticatedApp {
         return
       }
       localStorage.setItem('persistCode', code)
-      ;(window as any).playwrightSkipFilePicker = true
     }, code)
 
     await this.page.setViewportSize(this.viewPortSize)

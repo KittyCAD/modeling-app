@@ -334,7 +334,6 @@ extrude002 = extrude(profile002, length = 150)`
       await page.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          ;(window as any).playwrightSkipFilePicker = true
         },
         { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
       )
@@ -415,7 +414,6 @@ extrude002 = extrude(profile002, length = 150)`
         await page.addInitScript(
           async ({ code }) => {
             localStorage.setItem('persistCode', code)
-            ;(window as any).playwrightSkipFilePicker = true
           },
           {
             code: bracket,
