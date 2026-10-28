@@ -252,6 +252,8 @@ export function buildCommandArgument<
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'kcl' }
+  } else if (arg.inputType === 'camera') {
+    return { inputType: arg.inputType, ...baseCommandArgument }
   } else if (arg.inputType === 'vector3d') {
     return {
       inputType: arg.inputType,
