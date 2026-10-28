@@ -336,18 +336,6 @@ export function getSweepEdgeCodeRef(
   return seg.codeRef
 }
 /** Read consumed edge id from EdgeCut; Rust bindings use camelCase (edgeIds). */
-export function getEdgeCutConsumedEdgeId(
-  edge:
-    | EdgeCut
-    | { edgeIds?: string[]; edge_ids?: string[]; consumedEdgeId?: string }
-): string | null {
-  const edgeIds =
-    (edge as { edgeIds?: string[] }).edgeIds ??
-    (edge as { edge_ids?: string[] }).edge_ids
-  const first = edgeIds?.length ? edgeIds[0] : null
-  return first ?? (edge as { consumedEdgeId?: string }).consumedEdgeId ?? null
-}
-
 export function getSegmentForEdgeCut(
   edgeCutId: string,
   artifactGraph: ArtifactGraph
@@ -356,25 +344,7 @@ export function getSegmentForEdgeCut(
     if (artifact.type === 'segment' && artifact.edgeCutId === edgeCutId)
       return artifact
   }
-  // Retain compatibility with old executions until their graph fields are removed.
-  for (const artifact of artifactGraph.values()) {
-    if (artifact.type !== 'wall' && artifact.type !== 'cap') continue
-    const asAny = artifact as {
-      edgeCutEdgeIds?: string[]
-      edge_cut_edge_ids?: string[]
-      segId?: string
-      seg_id?: string
-    }
-    const ids = asAny.edgeCutEdgeIds ?? asAny.edge_cut_edge_ids
-    if (!ids?.includes(edgeCutId)) continue
-    const segId = asAny.segId ?? asAny.seg_id
-    if (segId == null) continue
-    const seg = getArtifactOfTypes(
-      { key: segId, types: ['segment'] },
-      artifactGraph
-    )
-    if (!err(seg)) return seg
-  }
+
   return null
 }
 
@@ -382,13 +352,6 @@ export function getSegmentArtifactForEdgeCut(
   edge: EdgeCut,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'segment' }> | null {
-  if (!edge.consumedEdgeId) return getSegmentForEdgeCut(edge.id, artifactGraph)
-  const consumedArtifact = artifactGraph.get(edge.consumedEdgeId)
-  if (consumedArtifact?.type === 'segment') return consumedArtifact
-  if (consumedArtifact?.type === 'sweepEdge') {
-    const segment = artifactGraph.get(consumedArtifact.segId)
-    if (segment?.type === 'segment') return segment
-  }
   return getSegmentForEdgeCut(edge.id, artifactGraph)
 }
 
@@ -457,6 +420,14 @@ export function getSweepFromSuspectedSweepSurface(
     }
     return getArtifactOfTypes({ key: sweepId, types: ['sweep'] }, artifactGraph)
   }
+  // Treatment faces belong to the same body as the original sweep faces.
+  for (const artifact of artifactGraph.values()) {
+    if (
+      artifact.type === 'sweep' &&
+      artifact.surfaceIds.includes(faceArtifact.id)
+    )
+      return artifact
+  }
   const segment = getSegmentArtifactForEdgeCut(faceArtifact, artifactGraph)
   if (segment == null) {
     if (faceArtifact.surfaceId) {
@@ -470,18 +441,6 @@ export function getSweepFromSuspectedSweepSurface(
           artifactGraph
         )
       }
-    }
-    // Legacy executions may only link a treatment from a cap, with no
-    // consumed segment or surfaceId. Keep that body lookup until those
-    // compatibility fields are removed from the graph.
-    for (const surface of artifactGraph.values()) {
-      if (surface.type !== 'wall' && surface.type !== 'cap') continue
-      const legacyIds = (surface as { edge_cut_edge_ids?: string[] })
-        .edge_cut_edge_ids
-      if (!(surface.edgeCutEdgeIds ?? legacyIds)?.includes(faceArtifact.id))
-        continue
-      const sweep = artifactGraph.get(surface.sweepId)
-      if (sweep?.type === 'sweep') return sweep
     }
     return new Error('edgeCut has no consumed segment')
   }

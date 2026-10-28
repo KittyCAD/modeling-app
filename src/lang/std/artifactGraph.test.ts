@@ -212,27 +212,33 @@ describe('getMergedSweepBodyArtifact', () => {
 })
 
 describe('getSweepArtifactFromSelection', () => {
-  it.each(['edgeCutEdgeIds', 'edge_cut_edge_ids'])(
-    'recovers a legacy treatment body from a cap with only %s',
-    (field) => {
-      const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
-      addMappedRegion(artifactGraph, sourceSegment, 'legacy', true)
-      const cap = artifactGraph.get('cap-legacy')!
-      Reflect.deleteProperty(cap, 'edgeCutEdgeIds')
-      Reflect.set(cap, field, ['legacy-cut'])
-      const cut: Extract<Artifact, { type: 'edgeCut' }> = {
-        type: 'edgeCut',
-        id: 'legacy-cut',
-        subType: 'fillet',
-        edgeIds: [],
-        codeRef,
-      }
-      artifactGraph.set(cut.id, cut)
-      expect(
-        getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
-      ).toBe(artifactGraph.get('sweep-legacy'))
+  it('recovers a treatment body through its face membership without edge metadata', () => {
+    const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+    addMappedRegion(artifactGraph, sourceSegment, 'treated', true)
+    const sweep = artifactGraph.get('sweep-treated')
+    if (sweep?.type !== 'sweep') throw new Error('Missing sweep')
+    const cut: Extract<Artifact, { type: 'edgeCut' }> = {
+      type: 'edgeCut',
+      id: 'cut-face',
+      subType: 'fillet',
+      edgeIds: [],
+      codeRef,
     }
-  )
+    sweep.surfaceIds.push(cut.id)
+    artifactGraph.set(cut.id, cut)
+    for (const artifact of artifactGraph.values()) {
+      for (const field of [
+        'edgeIds',
+        'commonSurfaceIds',
+        'edgeCutEdgeIds',
+        'consumedEdgeId',
+      ])
+        Reflect.deleteProperty(artifact, field)
+    }
+    expect(
+      getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
+    ).toBe(sweep)
+  })
 
   it('should return sweep from edgeCut -> segment selection', () => {
     const artifactGraph: ArtifactGraph = new Map()
@@ -605,7 +611,7 @@ describe('coerceSelectionsToBody', () => {
       },
       pathId: 'path-1',
       subType: 'extrusion',
-      surfaceIds: [],
+      surfaceIds: ['edge-cut-1'],
       edgeIds: [],
       method: 'merge',
       trajectoryId: null,
@@ -622,7 +628,6 @@ describe('coerceSelectionsToBody', () => {
     const edgeCut: Artifact = {
       type: 'edgeCut',
       id: 'edge-cut-1',
-      consumedEdgeId: 'segment-1',
       subType: 'chamfer',
       edgeIds: [],
       codeRef: { range: [90, 95, 0], pathToNode: [], nodePath: { steps: [] } },

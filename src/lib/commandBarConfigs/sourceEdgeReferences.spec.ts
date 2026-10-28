@@ -15,6 +15,7 @@ import {
   type ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { artifactToEntityRef } from '@src/lang/queryAst'
+import { getSweepFromSuspectedSweepSurface } from '@src/lang/std/artifactGraph'
 import { getCodeRefsFromEntityReference } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
@@ -541,6 +542,9 @@ hide(sketch001)`
     )
     if (cut?.type !== 'edgeCut') throw new Error('Treatment artifact not found')
     removeObsoleteEdges(artifactGraph)
+    const body = getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)
+    if (isErr(body)) throw body
+    expect(body.surfaceIds).toContain(cut.id)
     const originalCode = recast(ast, world.instance)
     const x = await stringToKclExpression('5', world.rustContext)
     if (isErr(x) || 'errors' in x) throw new Error('Could not parse distance')
