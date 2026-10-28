@@ -60,22 +60,13 @@ import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
+import { bundledElectronPluginRegistrations } from '@src/registry/electronPlugins'
 import {
-  type ElectronPluginContext,
   PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
   type PluginIpcChannel,
   type PluginIpcHandler,
 } from '@src/registry/pluginIpc'
 import { configureSystemCertificates } from '@src/systemCertificates'
-
-type ElectronPluginModule = {
-  register?: (context: ElectronPluginContext) => void
-}
-
-const electronPluginModules: Record<string, ElectronPluginModule> =
-  import.meta.glob('./registry/plugins/*/electron.ts', {
-    eager: true,
-  })
 
 const activeElectronPluginIds = new Set<string>()
 
@@ -101,8 +92,8 @@ function handlePluginInvoke(
 }
 
 function registerElectronPluginModules() {
-  for (const pluginModule of Object.values(electronPluginModules)) {
-    pluginModule.register?.({
+  for (const register of bundledElectronPluginRegistrations) {
+    register({
       ipcMain,
       isPluginEnabled,
       handlePluginInvoke,
