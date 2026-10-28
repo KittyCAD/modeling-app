@@ -153,4 +153,15 @@ describe('resolveArguments', () => {
     })
     expect(result.optional).toBeUndefined()
   })
+
+  it('normalizes tag names and validates them with the KCL parser', async () => {
+    const args = {
+      tag: { inputType: 'tagDeclarator', required: false },
+    } satisfies NonNullable<Command['args']>
+    expect(await resolve(args, { tag: ' $endFace ' })).toEqual({
+      tag: 'endFace',
+    })
+    expect(await resolve(args, { tag: 'not a tag' })).toBeInstanceOf(Error)
+    expect(await resolve(args, { tag: '' })).toEqual({ tag: undefined })
+  })
 })
