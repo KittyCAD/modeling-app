@@ -26,6 +26,7 @@ import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import { DprDetector } from '@src/lib/DprDetector'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -43,7 +44,6 @@ import {
   OrthographicCamera,
   PerspectiveCamera,
   Scene,
-  Sphere,
   Texture,
   Vector3,
 } from 'three'
@@ -131,7 +131,7 @@ export class LocalRenderer {
   private executionVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
-  private hasFittedModel = false
+  private hasResetCamera = false
   private previewCamera: PerspectiveCamera | OrthographicCamera | null = null
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
@@ -1071,6 +1071,7 @@ export class LocalRenderer {
       this.clearModel()
       this.loadedSceneGeneration = sceneGeneration
       this.rebuildSelectionTargets()
+      this.resetCameraOnFirstLoad()
       this.onModelLoadSettled?.(true)
       return
     }
@@ -1126,10 +1127,7 @@ export class LocalRenderer {
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
       this.updateAmbientOcclusionScale(bounds)
-      if (!this.hasFittedModel && !bounds.isEmpty()) {
-        this.fitSharedCameraToModel(bounds)
-        this.hasFittedModel = true
-      }
+      this.resetCameraOnFirstLoad()
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
       this.onModelLoadSettled?.(true)
@@ -1146,42 +1144,18 @@ export class LocalRenderer {
     this.onModelLoadSettled?.()
   }
 
-  private fitSharedCameraToModel(bounds: Box3) {
-    const controls = this.kclManager.sceneInfra.camControls
-    const camera = controls.camera
-    const sphere = bounds.getBoundingSphere(new Sphere())
-    // glTF is Y-up in meters; the shared navigation camera is Z-up in mm.
-    const center = new Vector3(
-      sphere.center.x,
-      -sphere.center.z,
-      sphere.center.y
-    ).divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
-    const radius = Math.max(
-      sphere.radius / ENGINE_MILLIMETERS_TO_GLTF_METERS,
-      0.001
-    )
-    const direction = camera.position.clone().sub(controls.target)
-    if (direction.lengthSq() === 0) direction.set(1, -1, 1)
-    direction.normalize()
-    let distance = radius * 3
-    if (camera instanceof PerspectiveCamera) {
-      const halfFovY = (camera.getEffectiveFOV() * Math.PI) / 360
-      const aspect =
-        Math.max(this.container.clientWidth, 1) /
-        Math.max(this.container.clientHeight, 1)
-      const halfFovX = Math.atan(Math.tan(halfFovY) * aspect)
-      distance = (radius * 1.2) / Math.sin(Math.min(halfFovX, halfFovY))
-    } else {
-      camera.zoom =
-        Math.min(camera.right - camera.left, camera.top - camera.bottom) /
-        (2 * radius * 1.2)
+  /**
+   * The reset that follows opening a file runs before the local model has
+   * loaded, so the first load, empty or not, resets the camera again.
+   */
+  private resetCameraOnFirstLoad() {
+    if (!this.hasResetCamera) {
+      this.hasResetCamera = true
+      resetCameraPosition({
+        sceneInfra: this.kclManager.sceneInfra,
+        settingsActor: this.kclManager.systemDeps.settings,
+      }).catch(reportRejection)
     }
-    controls.target.copy(center)
-    camera.position.copy(center).addScaledVector(direction, distance)
-    camera.lookAt(center)
-    camera.updateProjectionMatrix()
-    camera.updateMatrixWorld(true)
-    controls.onCameraChange()
   }
 }
 

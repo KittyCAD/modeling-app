@@ -24,9 +24,13 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
   jsAppSettings: () => ({ settings: { modeling: { base_unit: 'mm' } } }),
 }))
 vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
+vi.mock('@src/lib/resetCameraPosition', () => ({
+  resetCameraPosition: vi.fn(async () => {}),
+}))
 
 import { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { Artifact } from '@src/lang/wasm'
 
 // Exercise the real export/GLTFLoader lifecycle without requesting a GPU device.
@@ -309,9 +313,10 @@ describe('local GLB loading', () => {
     expect(mesh.material).toBeInstanceOf(MeshStandardMaterial)
     expect(mesh.material.metalness).toBe(0.3)
     expect(mesh.material.roughness).toBe(0.4)
-    expect(f.manager.sceneInfra.camControls.target.toArray()).toEqual([
-      500, -0, 500,
-    ])
+    expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
+      sceneInfra: f.manager.sceneInfra,
+      settingsActor: f.manager.systemDeps.settings,
+    })
     expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
     f.renderer.dispose()
   })
