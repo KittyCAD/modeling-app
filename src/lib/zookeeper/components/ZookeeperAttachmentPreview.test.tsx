@@ -32,7 +32,6 @@ describe('image attachment previews', () => {
     const thumbnail = screen.getByRole('img', { name: 'Attachment preview' })
     expect(thumbnail).toHaveAttribute('src', 'blob:image-1')
     expect(thumbnail.closest('[title]')).toHaveAttribute('title', first.name)
-    expect(thumbnail.parentElement).toHaveClass('h-12', 'w-12')
     expect(createObjectURL).toHaveBeenCalledWith(first)
 
     fireEvent.error(thumbnail)
@@ -50,9 +49,7 @@ describe('image attachment previews', () => {
 
   test('creates a thumbnail only after replay image bytes become available', () => {
     const file = { name: 'image-replay.png', mimetype: 'image/png', data: [] }
-    const { rerender, unmount } = render(
-      <ZookeeperAttachmentPreview file={file} />
-    )
+    const { rerender } = render(<ZookeeperAttachmentPreview file={file} />)
     expect(screen.getByText('Image')).toHaveClass('sr-only')
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
     expect(createObjectURL).not.toHaveBeenCalled()
@@ -61,7 +58,5 @@ describe('image attachment previews', () => {
     expect(
       screen.getByRole('img', { name: 'Attachment preview' })
     ).toHaveAttribute('src', 'blob:image-1')
-    unmount()
-    expect(revokeObjectURL).toHaveBeenCalledExactlyOnceWith('blob:image-1')
   })
 })

@@ -21,7 +21,6 @@ export const ZookeeperAttachmentPreview = ({
     file: File | MlCopilotFile
     url: string
   }>()
-  const [failedImageUrl, setFailedImageUrl] = useState<string>()
 
   useEffect(() => {
     if (!isImage) return
@@ -60,12 +59,16 @@ export const ZookeeperAttachmentPreview = ({
         className="inline-flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded"
         title={file.name}
       >
-        {imageUrl && failedImageUrl !== imageUrl ? (
+        {imageUrl ? (
           <img
             src={imageUrl}
             alt="Attachment preview"
             className="h-full w-full object-cover"
-            onError={() => setFailedImageUrl(imageUrl)}
+            onError={() =>
+              setImagePreview((current) =>
+                current === imagePreview ? undefined : current
+              )
+            }
           />
         ) : (
           <>

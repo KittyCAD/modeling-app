@@ -618,31 +618,34 @@ export const ZookeeperConversationInput = (
         ></textarea>
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {attachments.map((file, index) => (
-              <div
-                key={`${file.name}-${file.lastModified}-${file.size}`}
-                className={`relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs ${file.type.startsWith('image/') ? '' : 'px-2 py-1'}`}
-                title={file.name}
-              >
-                <ZookeeperAttachmentPreview file={file} />
-                <button
-                  type="button"
-                  onClick={() => onRemoveAttachment(index)}
-                  className={
-                    file.type.startsWith('image/')
-                      ? 'absolute right-0 top-0 m-0 flex h-6 w-6 items-center justify-center rounded-bl rounded-tr border-0 bg-chalkboard-100/80 p-0 text-chalkboard-10 hover:bg-chalkboard-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ml-green'
-                      : 'ml-1 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20'
-                  }
-                  aria-label={
-                    file.type.startsWith('image/')
-                      ? `Remove image ${index + 1}`
-                      : `Remove ${file.name}`
-                  }
+            {attachments.map((file, index) => {
+              const isImage = file.type.startsWith('image/')
+              return (
+                <div
+                  key={`${file.name}-${file.lastModified}-${file.size}`}
+                  className={`relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs ${isImage ? '' : 'px-2 py-1'}`}
+                  title={file.name}
                 >
-                  <CustomIcon name="close" className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
+                  <ZookeeperAttachmentPreview file={file} />
+                  <button
+                    type="button"
+                    onClick={() => onRemoveAttachment(index)}
+                    className={
+                      isImage
+                        ? 'absolute right-0 top-0 m-0 flex h-6 w-6 items-center justify-center rounded-bl rounded-tr border-0 bg-chalkboard-100/80 p-0 text-chalkboard-10 hover:bg-chalkboard-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ml-green'
+                        : 'ml-1 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20'
+                    }
+                    aria-label={
+                      isImage
+                        ? `Remove image ${index + 1}`
+                        : `Remove ${file.name}`
+                    }
+                  >
+                    <CustomIcon name="close" className="w-4 h-4" />
+                  </button>
+                </div>
+              )
+            })}
           </div>
         )}
         <div
