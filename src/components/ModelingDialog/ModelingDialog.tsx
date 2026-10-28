@@ -9,6 +9,7 @@ import {
 } from '@src/components/CommandBar/CommandKclInput'
 import { CommandCameraInput } from '@src/components/CommandBar/CommandCameraInput'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { ErrorBanner } from '@src/components/ErrorBanner'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
 import Tooltip from '@src/components/Tooltip'
@@ -89,6 +90,8 @@ export default function ModelingDialog({
     selectionRanges,
     modelingSend,
   })
+  const latestDraft = useRef(selection.draft)
+  latestDraft.current = selection.draft
   const context = {
     ...state.context,
     argumentsToSubmit: {
@@ -96,6 +99,9 @@ export default function ModelingDialog({
       ...selection.draft,
     },
   }
+  useEffect(() => {
+    commands.send({ type: 'Dialog draft changed' })
+  }, [commands, selection.draft])
   const visible = getDialogFields(context)
   const firstFieldName = visible.find(
     ({ arg }) =>
@@ -141,6 +147,7 @@ export default function ModelingDialog({
       const current = commands.actor.getSnapshot().context
       return (
         mounted.current &&
+        latestDraft.current === selection.draft &&
         current.selectedCommand === command &&
         current.argumentsToSubmit === state.context.argumentsToSubmit
       )
@@ -442,16 +449,19 @@ export default function ModelingDialog({
             </details>
           )}
         </div>
+        {state.context.reviewValidationError && (
+          <div className="shrink-0 px-3 pb-3">
+            <ErrorBanner
+              title="Check these arguments"
+              message={state.context.reviewValidationError}
+            />
+          </div>
+        )}
         <footer className="flex shrink-0 items-center justify-between gap-2 border-t border-chalkboard-30 p-3 dark:border-chalkboard-70">
-          <span
-            role={state.context.reviewValidationError ? 'alert' : undefined}
-          >
-            {state.context.reviewValidationError}
-          </span>
           <button
             type="submit"
             disabled={initializing || submitting || checking || invalid}
-            className="m-0 rounded-sm bg-primary px-3 py-1 text-white enabled:hover:bg-primary/90 disabled:opacity-50"
+            className="m-0 ml-auto rounded-sm bg-primary px-3 py-1 text-white enabled:hover:bg-primary/90 disabled:opacity-50"
           >
             {checking || submitting ? 'Checking...' : 'Submit'}
           </button>
