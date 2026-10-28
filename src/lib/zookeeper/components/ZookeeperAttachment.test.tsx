@@ -18,11 +18,11 @@ describe('attachment preview dialogs', () => {
 
   test('reads the full text only on open and preserves its whitespace', async () => {
     const content = `First line\n\n  ${'long reference '.repeat(1000)}\nLast line`
-    const file = new File([content], 'pasted-text-reference.txt', {
+    const file = new File([content], 'reference.txt', {
       type: 'text/plain',
     })
     const read = vi.spyOn(file, 'text')
-    render(<ZookeeperAttachment file={file} className="" />)
+    render(<ZookeeperAttachment file={file} isPastedText={true} className="" />)
 
     const trigger = await screen.findByRole('button', { name: /First line/ })
     expect(read).not.toHaveBeenCalled()

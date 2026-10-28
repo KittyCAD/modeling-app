@@ -2,6 +2,22 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
+test.each(['reference.txt', 'pasted-text-upload.txt'])(
+  'uses explicit paste intent rather than the filename: %s',
+  async (name) => {
+    const file = new File(['Pasted reference contents'], name, {
+      type: 'text/plain',
+    })
+    const { rerender } = render(<ZookeeperAttachmentPreview file={file} />)
+    expect(screen.getByText(name)).toHaveClass('truncate')
+
+    rerender(<ZookeeperAttachmentPreview file={file} isPastedText={true} />)
+    expect(await screen.findByText('Pasted reference contents')).toHaveClass(
+      'line-clamp-2'
+    )
+  }
+)
+
 describe('image attachment previews', () => {
   const createObjectURL = vi.fn<typeof URL.createObjectURL>()
   const revokeObjectURL = vi.fn<typeof URL.revokeObjectURL>()

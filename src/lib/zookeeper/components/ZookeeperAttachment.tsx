@@ -10,11 +10,13 @@ type AttachmentFile = File | MlCopilotFile
 
 export function ZookeeperAttachment({
   file,
+  isPastedText = false,
   className,
   fetchState,
   onFetch,
 }: {
   file: AttachmentFile
+  isPastedText?: boolean
   className: string
   fetchState?: ZookeeperAttachmentFetchState
   onFetch?: () => void
@@ -41,7 +43,10 @@ export function ZookeeperAttachment({
   const previewFile = fetchState?.status === 'loaded' ? fetchState.file : file
   const contents = (
     <>
-      <ZookeeperAttachmentPreview file={previewFile} />
+      <ZookeeperAttachmentPreview
+        file={previewFile}
+        isPastedText={isPastedText}
+      />
       {fetchState?.status === 'loading' && (
         <span
           className={
