@@ -171,10 +171,37 @@ obstruction = extrude(region002, length = 20mm)`
     })
     await scene.settled()
 
+    await editor.selectText('helix(')
     await toolbar.translateButton.click()
     await expect(dialog).toBeVisible()
-    await page.keyboard.press('Escape')
+    const scalarX = dialog.locator('#command-kcl-input-x').getByRole('textbox')
+    await scalarX.fill('')
+    const vector = dialog.getByRole('group', { name: 'Xyz', exact: true })
+    await vector
+      .getByRole('textbox', { name: 'X', exact: true })
+      .fill('missingCoordinate')
+    await expect(submit).toBeDisabled()
+    await vector.getByRole('textbox', { name: 'Y', exact: true }).fill('4mm')
+    await vector.getByRole('textbox', { name: 'Z', exact: true }).fill('5mm')
+    await vector
+      .getByRole('textbox', { name: 'X', exact: true })
+      .fill('1mm + 2mm')
+    await expect(submit).toBeEnabled()
+    await submit.click()
     await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('xyz = [1mm + 2mm, 4mm, 5mm]')
+    await scene.settled()
+    await toolbar.openFeatureTreePane()
+    await (await toolbar.getFeatureTreeOperation('Translate', 0)).dblclick()
+    await expect(
+      vector.getByRole('textbox', { name: 'X', exact: true })
+    ).toHaveValue('1mm + 2mm')
+    await scalarX.fill('')
+    await vector.getByRole('textbox', { name: 'Y', exact: true }).fill('6mm')
+    await expect(submit).toBeEnabled()
+    await submit.click()
+    await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('xyz = [1mm + 2mm, 6mm, 5mm]')
   })
 
   test('Keeps Boolean target and tool selections when switching collectors', async ({
