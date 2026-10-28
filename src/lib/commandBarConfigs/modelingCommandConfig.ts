@@ -704,6 +704,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           except: {
             inputType: 'selection',
             displayName: 'Exceptions',
+            selectionFilter: ['object'],
             selectionTypes: [
               'path',
               'pathRegion',
