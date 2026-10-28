@@ -1195,6 +1195,38 @@ export class CameraControls {
     this.onCameraChange()
   }
 
+  /**
+   * Points the camera from `vantage` at `center`, keeping its projection, as
+   * the engine's default_camera_look_at does.
+   */
+  async lookAt(look: {
+    center: Point3d
+    vantage: Point3d
+    up: Point3d
+  }): Promise<void> {
+    if (this.effectiveCameraMode === 'local') {
+      lookAtLocalCamera(this.camera, this.target, look, this.lastPerspectiveFov)
+      this.onCameraChange()
+      return
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...look,
+      },
+    })
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
   private async setCameraViewAlongZ(
     direction: StandardView,
     overrides?: { pivotPosition?: Point3d; eyeOffset?: number }
@@ -1282,23 +1314,7 @@ export class CameraControls {
       vantage.y -= eyeDistance
     }
 
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        center,
-        vantage,
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
+    await this.lookAt({ center, vantage, up: { x: 0, y: 0, z: 1 } })
   }
 
   async resetCameraPosition(): Promise<void> {
@@ -2260,8 +2276,36 @@ function setLocalCameraPose(
     .set(0, 0, view.eye_offset)
     .applyQuaternion(camera.quaternion)
     .add(target)
+  // The local renderer orients its camera from up, position and target.
+  camera.up.set(0, 1, 0).applyQuaternion(camera.quaternion)
   if (camera instanceof OrthographicCamera) {
     camera.zoom = getLocalOrthoZoom(camera, view.eye_offset, view.fov_y)
+  }
+  camera.updateProjectionMatrix()
+}
+
+/**
+ * Points the camera from `vantage` at `center` as the engine's lookAt does. An
+ * orthographic camera shows what the engine's would from that distance.
+ */
+function lookAtLocalCamera(
+  camera: PerspectiveCamera | OrthographicCamera,
+  target: Vector3,
+  { center, vantage, up }: { center: Point3d; vantage: Point3d; up: Point3d },
+  perspectiveFov: number
+) {
+  target.set(center.x, center.y, center.z)
+  camera.position.set(vantage.x, vantage.y, vantage.z)
+  camera.up.set(up.x, up.y, up.z)
+  camera.lookAt(target)
+  // The local renderer orients its camera from up, position and target.
+  camera.up.set(0, 1, 0).applyQuaternion(camera.quaternion)
+  if (camera instanceof OrthographicCamera) {
+    camera.zoom = getLocalOrthoZoom(
+      camera,
+      camera.position.distanceTo(target),
+      perspectiveFov
+    )
   }
   camera.updateProjectionMatrix()
 }

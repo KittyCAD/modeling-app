@@ -84,7 +84,6 @@ export async function applyNamedViewCamera({
       target,
       distance,
       sceneInfra,
-      engineCommandManager,
     })
   }
 
@@ -110,14 +109,12 @@ async function lookAlongDirection({
   target,
   distance,
   sceneInfra,
-  engineCommandManager,
 }: {
   direction: ArtifactPoint3d
   up: ArtifactPoint3d
   target: { x: number; y: number; z: number } | undefined
   distance: number | undefined
   sceneInfra: SceneInfra
-  engineCommandManager: ConnectionManager
 }): Promise<void> {
   const center = target ?? {
     x: sceneInfra.camControls.target.x,
@@ -130,21 +127,15 @@ async function lookAlongDirection({
       sceneInfra.camControls.target
     )
 
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      center,
-      vantage: {
-        x: center.x - direction.x * eyeDistance,
-        y: center.y - direction.y * eyeDistance,
-        z: center.z - direction.z * eyeDistance,
-      },
-      up: enginePoint(up),
+  await sceneInfra.camControls.lookAt({
+    center,
+    vantage: {
+      x: center.x - direction.x * eyeDistance,
+      y: center.y - direction.y * eyeDistance,
+      z: center.z - direction.z * eyeDistance,
     },
+    up: enginePoint(up),
   })
-  await getCameraSettings(engineCommandManager)
 }
 
 async function getCameraSettings(

@@ -659,6 +659,8 @@ async function expectViewRestored(
   expect(position.y).toBeCloseTo(20)
   expect(position.z).toBeCloseTo(100)
   expect(controls.camera.getWorldDirection(new Vector3()).z).toBeCloseTo(-1)
+  // The local renderer orients its camera from up, position and target.
+  expect(controls.camera.up.distanceTo(new Vector3(0, 1, 0))).toBeCloseTo(0)
 
   const restored = await controls.getCameraView()
   if (restored instanceof Error) {

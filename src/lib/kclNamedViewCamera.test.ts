@@ -71,6 +71,7 @@ function fakes() {
   const setCameraProjection = vi.fn().mockResolvedValue(undefined)
   const getCameraView = vi.fn().mockResolvedValue(FITTED_ISOMETRIC_VIEW)
   const setCameraView = vi.fn().mockResolvedValue(undefined)
+  const lookAt = vi.fn().mockResolvedValue(undefined)
   const sendSceneCommand = vi.fn().mockResolvedValue(null)
 
   const sceneInfra = {
@@ -79,6 +80,7 @@ function fakes() {
       setCameraProjection,
       getCameraView,
       setCameraView,
+      lookAt,
       target: CURRENT_TARGET,
       camera: { position: { distanceTo: () => CURRENT_DISTANCE } },
     },
@@ -95,6 +97,7 @@ function fakes() {
     setCameraProjection,
     getCameraView,
     setCameraView,
+    lookAt,
     sendSceneCommand,
   }
 }
@@ -261,21 +264,12 @@ describe('applyNamedViewCamera', () => {
         engineCommandManager: f.engineCommandManager,
       })
 
-      expect(f.sendSceneCommand).toHaveBeenNthCalledWith(
-        1,
-        expect.objectContaining({
-          cmd: {
-            type: 'default_camera_look_at',
-            center: { x: 5, y: 5, z: 5 },
-            vantage: { x: 5, y: 1, z: 5 },
-            up: { x: 0, y: 0, z: 1 },
-          },
-        })
-      )
-      expect(sentCommandTypes(f.sendSceneCommand)).toEqual([
-        'default_camera_look_at',
-        'default_camera_get_settings',
-      ])
+      expect(f.lookAt).toHaveBeenCalledWith({
+        center: { x: 5, y: 5, z: 5 },
+        vantage: { x: 5, y: 1, z: 5 },
+        up: { x: 0, y: 0, z: 1 },
+      })
+      expect(f.sendSceneCommand).not.toHaveBeenCalled()
     })
 
     it("falls back to the camera's current target and distance", async () => {
@@ -285,17 +279,14 @@ describe('applyNamedViewCamera', () => {
         engineCommandManager: f.engineCommandManager,
       })
 
-      expect(f.sendSceneCommand).toHaveBeenNthCalledWith(
-        1,
+      expect(f.lookAt).toHaveBeenCalledWith(
         expect.objectContaining({
-          cmd: expect.objectContaining({
-            center: CURRENT_TARGET,
-            vantage: {
-              x: CURRENT_TARGET.x - CURRENT_DISTANCE,
-              y: CURRENT_TARGET.y,
-              z: CURRENT_TARGET.z,
-            },
-          }),
+          center: CURRENT_TARGET,
+          vantage: {
+            x: CURRENT_TARGET.x - CURRENT_DISTANCE,
+            y: CURRENT_TARGET.y,
+            z: CURRENT_TARGET.z,
+          },
         })
       )
     })
@@ -345,7 +336,7 @@ describe('applyNamedViewCamera', () => {
       })
 
       expect(f.setCameraProjection.mock.invocationCallOrder[0]).toBeLessThan(
-        f.sendSceneCommand.mock.invocationCallOrder[0]
+        f.lookAt.mock.invocationCallOrder[0]
       )
     })
   })
