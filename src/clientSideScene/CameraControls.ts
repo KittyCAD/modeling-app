@@ -1135,6 +1135,9 @@ export class CameraControls {
     if (signal?.aborted) {
       return new Error('Camera capture cancelled')
     }
+    if (this.effectiveCameraMode === 'local') {
+      return this.getLocalCameraView()
+    }
 
     const connection = this.engineCommandManager.connection
     const cmdId = uuidv4()
@@ -1192,19 +1195,46 @@ export class CameraControls {
     return modelingResponse.data.view
   }
 
+  /**
+   * The client camera as the engine's Camera::getView describes its own: the
+   * camera looks along its local -Z from eye_offset away on its local +Z.
+   */
+  private getLocalCameraView(): CameraViewState {
+    const { quaternion } = this.camera
+    const fovY =
+      this.camera instanceof PerspectiveCamera
+        ? this.camera.fov
+        : this.lastPerspectiveFov
+    // An orthographic view's height comes from the eye offset, as in the
+    // engine; onCameraChange() keeps the camera that far away.
+    const eyeOffset =
+      this.camera instanceof OrthographicCamera
+        ? (this.camera.top - this.camera.bottom) /
+          (2 * this.camera.zoom * viewHeightFactor(fovY))
+        : this.camera.position.distanceTo(this.target)
+    return {
+      pivot_rotation: {
+        x: quaternion.x,
+        y: quaternion.y,
+        z: quaternion.z,
+        w: quaternion.w,
+      },
+      pivot_position: { x: this.target.x, y: this.target.y, z: this.target.z },
+      eye_offset: eyeOffset,
+      fov_y: fovY,
+      is_ortho: this.camera instanceof OrthographicCamera,
+      // The engine's camera has none of these, and its views always carry the
+      // defaults.
+      ortho_scale_factor: 1.6,
+      ortho_scale_enabled: true,
+      world_coord_system: EXPECTED_WORLD_COORD_SYSTEM,
+    }
+  }
+
   async setCameraView(view: CameraViewState): Promise<void> {
-    // In local mode the settings reply below only updates the pose, so take
-    // the projection and field of view from the view here.
-    // This can go away if the followsEngineProjection logic is updated
-    // to take the projection also.
     if (this.effectiveCameraMode === 'local') {
-      this.lastPerspectiveFov = view.fov_y
-      if (this.camera instanceof PerspectiveCamera) {
-        this.camera.fov = view.fov_y
-      }
-      await this.setCameraProjection(
-        view.is_ortho ? 'orthographic' : 'perspective'
-      )
+      await this.setLocalCameraView(view)
+      return
     }
 
     await this.engineCommandManager.sendSceneCommand({
@@ -1223,6 +1253,34 @@ export class CameraControls {
         type: 'default_camera_get_settings',
       },
     })
+  }
+
+  /** Applies a view to the client camera as Camera::setView does in the engine. */
+  private async setLocalCameraView(view: CameraViewState) {
+    this.lastPerspectiveFov = view.fov_y
+    if (this.camera instanceof PerspectiveCamera) {
+      this.camera.fov = view.fov_y
+    }
+    await this.setCameraProjection(
+      view.is_ortho ? 'orthographic' : 'perspective'
+    )
+
+    const { pivot_rotation: rotation, pivot_position: pivot } = view
+    this.target.set(pivot.x, pivot.y, pivot.z)
+    this.camera.quaternion
+      .set(rotation.x, rotation.y, rotation.z, rotation.w)
+      .normalize()
+    this.camera.position
+      .set(0, 0, view.eye_offset)
+      .applyQuaternion(this.camera.quaternion)
+      .add(this.target)
+    if (this.camera instanceof OrthographicCamera) {
+      this.camera.zoom =
+        (this.camera.top - this.camera.bottom) /
+        (2 * view.eye_offset * viewHeightFactor(view.fov_y))
+    }
+    this.camera.updateProjectionMatrix()
+    this.onCameraChange()
   }
 
   private async setCameraViewAlongZ(
@@ -1268,22 +1326,7 @@ export class CameraControls {
       cameraViewTarget.eye_offset = overrides.eyeOffset
     }
 
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_view',
-        view: cameraViewTarget,
-      },
-    })
-
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
+    await this.setCameraView(cameraViewTarget)
   }
 
   async updateCameraToAxis(
