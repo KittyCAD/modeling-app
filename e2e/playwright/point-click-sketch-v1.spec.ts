@@ -241,8 +241,11 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 100)`
 
     // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
-    const testPoint = { x: 564, y: 364 }
-    const [clickOnEdge] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const testPoint = { x: 564, y: 371 }
+    const [clickOnEdge, moveToEdge] = scene.makeMouseHelpers(
+      testPoint.x,
+      testPoint.y
+    )
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -256,11 +259,13 @@ extrude001 = extrude(profile001, length = 100)`
       await toolbar.helixButton.click()
       await modelingDialog.options(/^mode\b/i).selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
+      await moveToEdge()
       await clickOnEdge()
-      await modelingDialog.input(/^revolutions\b/i).fill('20')
-      await modelingDialog.input(/^angle start\b/i).fill('0')
-      await modelingDialog.input(/^radius\b/i).fill('1')
-      await modelingDialog.input(/^length\b/i).fill('')
+      await expect(modelingDialog.selection('Edge')).toHaveText('1 edge')
+      await modelingDialog.fillInput(/^revolutions\b/i, '20')
+      await modelingDialog.fillInput(/^angle start\b/i, '0')
+      await modelingDialog.fillInput(/^radius\b/i, '1')
+      await modelingDialog.fillInput(/^length\b/i, '')
       await expect(modelingDialog.submitButton).toBeEnabled()
 
       await modelingDialog
@@ -296,7 +301,7 @@ extrude001 = extrude(profile001, length = 100)`
       const initialInput = '1'
       const newInput = '5'
       await expect(modelingDialog.input(/^radius\b/i)).toHaveText(initialInput)
-      await modelingDialog.input(/^radius\b/i).fill(newInput)
+      await modelingDialog.fillInput(/^radius\b/i, newInput)
 
       await expect(modelingDialog.submitButton).toBeEnabled()
 
@@ -328,6 +333,7 @@ extrude001 = extrude(profile001, length = 100)`
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
       await operationButton.click({ button: 'left' })
+      await toolbar.expectSelection('1 helix')
       await page.keyboard.press('Delete')
       await editor.expectEditor.not.toContain('helix')
       await expect(
