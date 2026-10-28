@@ -105,7 +105,6 @@ export async function activateNamedView({
     await applyNamedViewCamera({
       camera: target.view.artifact.camera,
       sceneInfra: kclManager.sceneInfra,
-      engineCommandManager: kclManager.engineCommandManager,
     })
     installReapplyEffect(kclManager)
   } else {
@@ -246,7 +245,6 @@ export async function reapplyActiveViewAfterReconnect(
   await applyNamedViewCamera({
     camera: view.artifact.camera,
     sceneInfra: kclManager.sceneInfra,
-    engineCommandManager: kclManager.engineCommandManager,
   })
 
   return true

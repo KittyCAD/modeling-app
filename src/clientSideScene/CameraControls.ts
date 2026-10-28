@@ -40,6 +40,7 @@ import { reportRejection } from '@src/lib/trap'
 import { err, isErr } from '@src/lib/trap'
 import {
   engineStreamZoomToFit,
+  engineViewIsometric,
   getNormalisedCoordinates,
   isReducedMotion,
   roundOff,
@@ -1253,6 +1254,41 @@ export class CameraControls {
     }
 
     await engineStreamZoomToFit({
+      engineCommandManager: this.engineCommandManager,
+      padding,
+    })
+  }
+
+  /**
+   * Looks at the model from the isometric direction and frames it, as the
+   * engine's view_isometric does.
+   */
+  async viewIsometric({ padding }: { padding: number }): Promise<void> {
+    if (this.effectiveCameraMode === 'local') {
+      const bounds = this.getLocalModelBounds()
+      if (bounds) {
+        // The engine's isometric view looks along (-1, 1, -1) with Z up.
+        this.camera.quaternion.setFromRotationMatrix(
+          new Matrix4().lookAt(
+            new Vector3(1, -1, 1),
+            new Vector3(),
+            new Vector3(0, 0, 1)
+          )
+        )
+        frameLocalCamera(
+          this.camera,
+          this.target,
+          bounds,
+          padding,
+          this.lastPerspectiveFov,
+          this.normalizedViewportAspect()
+        )
+        this.onCameraChange()
+      }
+      return
+    }
+
+    await engineViewIsometric({
       engineCommandManager: this.engineCommandManager,
       padding,
     })

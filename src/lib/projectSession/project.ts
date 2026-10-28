@@ -257,7 +257,6 @@ export class ZDSProject {
       assertCurrent()
       await resetCameraPosition({
         sceneInfra: newEditor.sceneInfra,
-        engineCommandManager: newEditor.engineCommandManager,
         settingsActor: this.app.settings.actor,
       })
     }

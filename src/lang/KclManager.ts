@@ -1512,7 +1512,6 @@ export class KclManager extends File {
           if (shouldResetCamera) {
             await resetCameraPosition({
               sceneInfra: this.sceneInfra,
-              engineCommandManager: this.engineCommandManager,
               settingsActor: this.systemDeps.settings,
             })
           }

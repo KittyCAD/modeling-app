@@ -6,13 +6,7 @@ import type {
 
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { AxisNames } from '@src/lib/constants'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { err } from '@src/lib/trap'
-import {
-  engineStreamZoomToFit,
-  engineViewIsometric,
-  uuidv4,
-} from '@src/lib/utils'
 
 const ORIENTATION_AXES = {
   front: AxisNames.NEG_Y,
@@ -21,7 +15,7 @@ const ORIENTATION_AXES = {
   right: AxisNames.X,
   top: AxisNames.Z,
   bottom: AxisNames.NEG_Z,
-  isometric: null, // Engine positions this for us
+  isometric: null, // viewIsometric() positions this
 } satisfies Record<ArtifactOrientation, AxisNames | null>
 
 /**
@@ -41,11 +35,9 @@ function enginePoint(point: ArtifactPoint3d): {
 export async function applyNamedViewCamera({
   camera,
   sceneInfra,
-  engineCommandManager,
 }: {
   camera: ArtifactCameraView
   sceneInfra: SceneInfra
-  engineCommandManager: ConnectionManager
 }): Promise<void> {
   await applyProjection({ camera, sceneInfra })
 
@@ -56,8 +48,8 @@ export async function applyNamedViewCamera({
     const axis = ORIENTATION_AXES[camera.look.orientation]
 
     if (axis === null) {
-      // `view_isometric` frames the model itself.
-      await engineViewIsometric({ engineCommandManager, padding: FIT_PADDING })
+      // viewIsometric() frames the model itself.
+      await sceneInfra.camControls.viewIsometric({ padding: FIT_PADDING })
 
       if (target === undefined && distance === undefined) {
         return
@@ -88,8 +80,7 @@ export async function applyNamedViewCamera({
   }
 
   if (target === undefined || distance === undefined) {
-    await engineStreamZoomToFit({ engineCommandManager, padding: FIT_PADDING })
-    await getCameraSettings(engineCommandManager)
+    await sceneInfra.camControls.zoomToFit({ padding: FIT_PADDING })
   }
 }
 
@@ -135,17 +126,5 @@ async function lookAlongDirection({
       z: center.z - direction.z * eyeDistance,
     },
     up: enginePoint(up),
-  })
-}
-
-async function getCameraSettings(
-  engineCommandManager: ConnectionManager
-): Promise<void> {
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
   })
 }

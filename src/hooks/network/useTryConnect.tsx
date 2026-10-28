@@ -237,7 +237,6 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   if (!cameraState && !restoredNamedViewCamera) {
     await resetCameraPosition({
       sceneInfra,
-      engineCommandManager,
       settingsActor,
     })
   }
