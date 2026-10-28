@@ -7,7 +7,7 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
 use crate::execution::KclValueControlFlow;
-use crate::execution::control_continue;
+use crate::execution::control_normal;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
@@ -84,10 +84,10 @@ async fn inner_map(
         .await?;
         // If the callback exited, e.g. by calling exit(), stop mapping, and
         // propagate the exit so that it terminates the enclosing module.
-        let new_elem = control_continue!(new_elem_cf);
+        let new_elem = control_normal!(new_elem_cf);
         new_array.push(new_elem);
     }
-    Ok(map_result(new_array).continue_())
+    Ok(map_result(new_array).normal())
 }
 
 async fn call_map_closure(
@@ -172,10 +172,10 @@ async fn inner_reduce(
         .await?;
         // If the callback exited, e.g. by calling exit(), stop reducing, and
         // propagate the exit so that it terminates the enclosing module.
-        reduced = control_continue!(reduced_cf);
+        reduced = control_normal!(reduced_cf);
     }
 
-    Ok(reduced.continue_())
+    Ok(reduced.normal())
 }
 
 async fn call_reduce_closure(
