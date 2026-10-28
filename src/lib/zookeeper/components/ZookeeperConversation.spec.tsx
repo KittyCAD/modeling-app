@@ -1480,6 +1480,72 @@ describe('ZookeeperConversation', () => {
       expect(await screen.findByText('document.pdf')).toBeInTheDocument()
     })
 
+    test('allows native text paste at the 10,000-character limit', () => {
+      renderConversation()
+
+      const defaultAllowed = fireEvent.paste(
+        screen.getByTestId('ml-ephant-conversation-input'),
+        {
+          clipboardData: {
+            files: [],
+            getData: () => 'a'.repeat(10_000),
+          },
+        }
+      )
+
+      expect(defaultAllowed).toBe(true)
+      expect(
+        screen.queryByRole('button', { name: /^Remove pasted-text-/ })
+      ).not.toBeInTheDocument()
+    })
+
+    test('sends a paste over the limit as an attachment alongside the existing prompt', async () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const prompt = 'Use these requirements.'
+      const text = 'first line\r\nsecond line\n'.padEnd(10_001, 'a')
+      fireEvent.change(textarea, { target: { value: prompt } })
+
+      const defaultAllowed = fireEvent.paste(textarea, {
+        clipboardData: { files: [], getData: () => text },
+      })
+
+      expect(defaultAllowed).toBe(false)
+      expect(textarea).toHaveValue(prompt)
+      const preview = await screen.findByText(/^first line second line /)
+      expect(preview.textContent.length).toBeLessThan(256)
+
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+      expect(handleProcess).toHaveBeenCalledWith(prompt, undefined, [
+        expect.any(File),
+      ])
+      const file: File = handleProcess.mock.calls[0][2][0]
+      expect(file.name).toMatch(/^pasted-text-[0-9a-f-]{36}\.txt$/)
+      expect(file.type).toBe('text/plain')
+      expect(await file.text()).toBe(text)
+    })
+
+    test('gives large pastes unique filenames across submissions and allows an empty prompt', () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      for (const text of ['a'.repeat(10_001), 'b'.repeat(10_001)]) {
+        fireEvent.paste(textarea, {
+          clipboardData: { files: [], getData: () => text },
+        })
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+      }
+
+      expect(handleProcess).toHaveBeenCalledTimes(2)
+      const firstFile: File = handleProcess.mock.calls[0][2][0]
+      const secondFile: File = handleProcess.mock.calls[1][2][0]
+      expect(firstFile.name).not.toBe(secondFile.name)
+    })
+
     test('allows removing attached files', async () => {
       renderConversation()
 
