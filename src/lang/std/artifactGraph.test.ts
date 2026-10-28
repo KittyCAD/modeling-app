@@ -212,6 +212,28 @@ describe('getMergedSweepBodyArtifact', () => {
 })
 
 describe('getSweepArtifactFromSelection', () => {
+  it.each(['edgeCutEdgeIds', 'edge_cut_edge_ids'])(
+    'recovers a legacy treatment body from a cap with only %s',
+    (field) => {
+      const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+      addMappedRegion(artifactGraph, sourceSegment, 'legacy', true)
+      const cap = artifactGraph.get('cap-legacy')!
+      Reflect.deleteProperty(cap, 'edgeCutEdgeIds')
+      Reflect.set(cap, field, ['legacy-cut'])
+      const cut: Extract<Artifact, { type: 'edgeCut' }> = {
+        type: 'edgeCut',
+        id: 'legacy-cut',
+        subType: 'fillet',
+        edgeIds: [],
+        codeRef,
+      }
+      artifactGraph.set(cut.id, cut)
+      expect(
+        getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
+      ).toBe(artifactGraph.get('sweep-legacy'))
+    }
+  )
+
   it('should return sweep from edgeCut -> segment selection', () => {
     const artifactGraph: ArtifactGraph = new Map()
 

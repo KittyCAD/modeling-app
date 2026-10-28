@@ -471,6 +471,18 @@ export function getSweepFromSuspectedSweepSurface(
         )
       }
     }
+    // Legacy executions may only link a treatment from a cap, with no
+    // consumed segment or surfaceId. Keep that body lookup until those
+    // compatibility fields are removed from the graph.
+    for (const surface of artifactGraph.values()) {
+      if (surface.type !== 'wall' && surface.type !== 'cap') continue
+      const legacyIds = (surface as { edge_cut_edge_ids?: string[] })
+        .edge_cut_edge_ids
+      if (!(surface.edgeCutEdgeIds ?? legacyIds)?.includes(faceArtifact.id))
+        continue
+      const sweep = artifactGraph.get(surface.sweepId)
+      if (sweep?.type === 'sweep') return sweep
+    }
     return new Error('edgeCut has no consumed segment')
   }
   const pathId = segment.pathId
