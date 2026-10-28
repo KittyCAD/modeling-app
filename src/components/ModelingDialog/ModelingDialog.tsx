@@ -7,16 +7,18 @@ import {
   CommandKclInput,
   getKclInputValue,
 } from '@src/components/CommandBar/CommandKclInput'
+import { CommandCameraInput } from '@src/components/CommandBar/CommandCameraInput'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
 import Tooltip from '@src/components/Tooltip'
 import type { KclManager } from '@src/lang/KclManager'
 import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
+import type { CommandInputValidationState } from '@src/lib/commandTypes'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { getSelectionTypeDisplayText, isSelections } from '@src/lib/selections'
 import { isErr, trap } from '@src/lib/trap'
-import { capitaliseFC } from '@src/lib/utils'
+import { capitaliseFC, isRecord } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { CommandScopeService } from '@src/registry/contracts/commands'
@@ -70,6 +72,13 @@ export default function ModelingDialog({
   })
   const save = (name: string, value: unknown) =>
     setValues((previous) => ({ ...previous, [name]: value }))
+  const updateValidation = (name: string, next: CommandInputValidationState) =>
+    setValidity((previous) => {
+      const canSubmit = next.canSubmit && !next.isChecking
+      return previous[name] === canSubmit
+        ? previous
+        : { ...previous, [name]: canSubmit }
+    })
   const selection = useDialogSelection({
     context: state.context,
     fields,
@@ -119,7 +128,10 @@ export default function ModelingDialog({
   const checking = state.matches('Checking Arguments for Dialog')
   const invalid = visible.some(({ name, arg, required }) => {
     if (arg.inputType === 'kcl') return validity[name] === false
-    return required && !hasValue(context.argumentsToSubmit[name])
+    return (
+      (arg.inputType === 'camera' && validity[name] === false) ||
+      (required && !hasValue(context.argumentsToSubmit[name]))
+    )
   })
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -183,6 +195,21 @@ export default function ModelingDialog({
     )
     const machineContext = arg.machineActor?.getSnapshot().context
     switch (arg.inputType) {
+      case 'camera':
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <CommandCameraInput
+              id={fieldId}
+              controls={kclManager.sceneInfra.camControls}
+              saved={hasValue(value)}
+              captured={isRecord(value) && 'look' in value}
+              onChange={(camera) => save(name, camera)}
+              onValidationChange={(next) => updateValidation(name, next)}
+            />
+            {description}
+          </div>
+        )
       case 'kcl':
         return (
           <CommandKclInput
@@ -210,14 +237,7 @@ export default function ModelingDialog({
             }
             selectionRanges={selection.selectionRanges}
             onChange={(change) => save(name, change.value)}
-            onValidationChange={(next) =>
-              setValidity((previous) => {
-                const canSubmit = next.canSubmit && !next.isChecking
-                return previous[name] === canSubmit
-                  ? previous
-                  : { ...previous, [name]: canSubmit }
-              })
-            }
+            onValidationChange={(next) => updateValidation(name, next)}
           />
         )
       case 'selection':
