@@ -1570,7 +1570,7 @@ describe('ZookeeperConversation', () => {
         expect(defaultAllowed).toBe(false)
         expect(textarea).toHaveValue(prompt)
         const preview = await screen.findByText(/^first line second line /)
-        expect(preview).toHaveClass('truncate')
+        expect(preview).toHaveClass('line-clamp-2')
         expect(preview.textContent.length).toBeLessThan(256)
 
         fireEvent.click(
