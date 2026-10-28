@@ -156,7 +156,7 @@ it('keeps a failed draft, resets for another edit, and discards its pending subm
   )
 })
 
-it('submits zero, bare tag names, and an explicitly chosen black color', async () => {
+it('submits basic values and browser file handles', async () => {
   const onSubmit = vi.fn()
   const command = {
     name: 'Basic dialog inputs',
@@ -169,6 +169,11 @@ it('submits zero, bare tag names, and an explicitly chosen black color', async (
       count: { inputType: 'number', required: true, defaultValue: 0 },
       tag: { inputType: 'tagDeclarator', required: false },
       color: { inputType: 'color', required: false },
+      files: {
+        inputType: 'path',
+        required: true,
+        filters: [{ name: 'KCL', extensions: ['kcl'] }],
+      },
     },
   } satisfies Command
   const actor = world.commandBarActor
@@ -189,12 +194,22 @@ it('submits zero, bare tag names, and an explicitly chosen black color', async (
   const useDefault = screen.getByRole('checkbox', { name: 'Use default' })
   expect(useDefault).toBeChecked()
   fireEvent.click(useDefault)
+  fireEvent.click(screen.getByRole('button', { name: 'Open file' }))
+  expect(onSubmit).not.toHaveBeenCalled()
+  const file = new File(['local KCL'], 'part.kcl')
+  const picker = screen.getByLabelText('Choose a file')
+  expect(picker).toHaveAttribute('accept', '.kcl')
+  fireEvent.change(picker, { target: { files: [file] } })
+  expect(screen.getByRole('textbox', { name: 'Files *' })).toHaveValue(
+    'part.kcl'
+  )
   fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
   await waitFor(() =>
     expect(onSubmit).toHaveBeenCalledExactlyOnceWith({
       count: 0,
       tag: 'endFace',
       color: '#000000',
+      files: file,
     })
   )
 })
