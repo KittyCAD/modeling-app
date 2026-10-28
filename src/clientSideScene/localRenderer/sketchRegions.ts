@@ -47,6 +47,7 @@ export function createRegionMeshes(gltf: KITTYCAD_GLTF): Mesh[] {
     const mesh = new Mesh(geometry, material)
     mesh.name = `region_${region.regionId}`
     mesh.userData.faceUuid = region.regionId
+    mesh.userData.isSketchRegion = true
     return [mesh]
   })
   if (meshes.length === 0) {

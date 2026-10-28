@@ -89,12 +89,19 @@ export class IntegerIdPicker {
     sketchLines?: LineTargets
   ) {
     this.clearModel()
-    const createMaterial = (id: number) => {
+    const createMaterial = (id: number, isSketchRegion = false) => {
       const material = new NodeMaterial()
       material.fragmentNode = this.idOutput(uint(id))
       material.side = DoubleSide
       material.blending = NoBlending
       material.toneMapped = false
+      if (isSketchRegion) {
+        // A region is on the same plane as the face or plane it was sketched on, so
+        // without an offset the two z-fight and hover flickers between them.
+        material.polygonOffset = true
+        material.polygonOffsetFactor = -1
+        material.polygonOffsetUnits = -1
+      }
       this.materials.add(material)
       return material
     }
@@ -118,7 +125,10 @@ export class IntegerIdPicker {
     })
     for (const target of targets) {
       const id = this.targetById.push(target) - 1
-      addMesh(target, createMaterial(id))
+      addMesh(
+        target,
+        createMaterial(id, target.userData.isSketchRegion === true)
+      )
     }
     if (edges) {
       this.edgeObject = this.addLines(edges)
@@ -156,9 +166,10 @@ export class IntegerIdPicker {
     material.transparent = false
     material.blending = NoBlending
     material.toneMapped = false
+    // In front of sketch regions too, which are offset in front of faces.
     material.polygonOffset = true
-    material.polygonOffsetFactor = -1
-    material.polygonOffsetUnits = -1
+    material.polygonOffsetFactor = -2
+    material.polygonOffsetUnits = -2
     const selectionIndex = attribute(
       SELECTION_INDEX_ATTRIBUTE,
       'uint'
