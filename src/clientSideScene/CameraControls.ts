@@ -166,8 +166,8 @@ export class CameraControls {
   }
 
   /**
-   * In local mode the client owns the camera, as in clientToEngine, and keeps
-   * pushing it to the engine so that engine camera commands start from it.
+   * In local mode the client owns the camera, as in clientToEngine. The engine
+   * has no camera then: the connection drops the camera commands sent to it.
    */
   private get effectiveCameraMode(): CameraSyncDirection | 'local' {
     return this.localCameraMode ? 'local' : this.syncDirection
