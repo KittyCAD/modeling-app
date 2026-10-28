@@ -1,3 +1,4 @@
+import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import Loading from '@src/components/Loading'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -77,6 +78,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settingsValues = settings.useSettings()
+  const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
@@ -309,6 +311,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         tryConnecting({
           authToken: props.authToken || '',
           videoWrapperRef,
+          setAppState,
           videoRef,
           setIsSceneReady,
           isConnecting,
@@ -385,6 +388,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     tryConnecting({
       authToken: props.authToken || '',
       videoWrapperRef,
+      setAppState,
       videoRef,
       setIsSceneReady,
       isConnecting,
@@ -426,6 +430,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         tryConnecting({
           authToken: props.authToken || '',
           videoWrapperRef,
+          setAppState,
           videoRef,
           setIsSceneReady,
           isConnecting,
@@ -473,6 +478,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         tryConnecting({
           authToken: props.authToken || '',
           videoWrapperRef,
+          setAppState,
           videoRef,
           setIsSceneReady,
           isConnecting,
@@ -500,6 +506,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         tryConnecting({
           authToken: props.authToken || '',
           videoWrapperRef,
+          setAppState,
           videoRef,
           setIsSceneReady,
           isConnecting,
@@ -545,6 +552,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         tryConnecting({
           authToken: props.authToken || '',
           videoWrapperRef,
+          setAppState,
           videoRef,
           setIsSceneReady,
           isConnecting,
@@ -665,6 +673,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             tryConnecting({
               authToken: props.authToken || '',
               videoWrapperRef,
+              setAppState,
               videoRef,
               setIsSceneReady,
               isConnecting,

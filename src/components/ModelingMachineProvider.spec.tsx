@@ -12,6 +12,9 @@ vi.mock('@src/lib/boot', () => ({
   useApp: mocks.useApp,
   useSingletons: mocks.useSingletons,
 }))
+vi.mock('@src/AppState', () => ({
+  useAppState: () => ({ isStreamReady: true }),
+}))
 vi.mock('@src/hooks/useNetworkContext', () => ({
   useNetworkContext: () => ({ overallState: 'Ok' }),
 }))

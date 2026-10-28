@@ -1,14 +1,13 @@
-import { useSignals } from '@preact/signals-react/runtime'
+import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useSingletons } from '@src/lib/boot'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 
 export function useReliesOnEngine(isExecuting: boolean) {
-  useSignals()
   const { kclManager } = useSingletons()
   const { overallState, immediateState } = useNetworkContext()
-  const isStreamReady = kclManager.engineCommandManager.isStreamReady.value
+  const { isStreamReady } = useAppState()
   const reliesOnEngine =
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||

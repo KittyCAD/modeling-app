@@ -1,3 +1,4 @@
+import { useAppState } from '@src/AppState'
 import { useEffect } from 'react'
 import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
 
@@ -51,7 +52,7 @@ export default function useStateMachineCommands<
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
   useSignals()
-  const { commands, engineCommandManager, settings, userFeatures } = useApp()
+  const { commands, settings, userFeatures } = useApp()
   const { kclManager } = useSingletons()
   const kclProgramVersion = kclManager.kclProgramVersionSignal.value
   const showExperimentalCommands = userFeatures.useHas(
@@ -61,7 +62,7 @@ export default function useStateMachineCommands<
   const modelingDialogsEnabled = userFeatures.useHas('modeling_dialogs', false)
   const settingsValues = settings.useSettings()
   const { overallState } = useNetworkContext()
-  const isStreamReady = engineCommandManager.isStreamReady.value
+  const { isStreamReady } = useAppState()
   const disableForUnrenderedChanges = shouldDisableModelingForUnrenderedChanges(
     {
       settings: settingsValues,

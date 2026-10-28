@@ -1,4 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
+import { useAppState } from '@src/AppState'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
@@ -69,10 +70,11 @@ type ToolbarProps = {
   Pick<
     ReturnType<typeof useNetworkContext>,
     'overallState' | 'immediateState'
-  > & {
-    isStreamReady: boolean
-    isStreamAcceptingInput: boolean
-  }
+  > &
+  Pick<
+    ReturnType<typeof useAppState>,
+    'isStreamReady' | 'isStreamAcceptingInput'
+  >
 
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
@@ -1048,14 +1050,12 @@ const ToolbarItemTooltipRichContent = memo(
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
   const { kclManager } = useSingletons()
-  const { settings, engineCommandManager } = useApp()
+  const { settings } = useApp()
   const settingsValues = settings.useSettings()
   const { state, send, context, actor } = useModelingContext()
   const { overallState, immediateState } = useNetworkContext()
+  const { isStreamReady, isStreamAcceptingInput } = useAppState()
   useSignals()
-  const isStreamReady = engineCommandManager.isStreamReady.value
-  const isStreamAcceptingInput =
-    engineCommandManager.isStreamAcceptingInput.value
   const disableModelingForUnrenderedChanges =
     shouldDisableModelingForUnrenderedChanges({
       settings: settingsValues,
