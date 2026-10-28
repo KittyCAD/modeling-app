@@ -13,7 +13,7 @@ import type {
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
 import { ConnectionAvailability } from '@src/lib/engineConnection/connectionManager'
-import { useConnectionManagerAvailabilityAsSignal } from '@src/hooks/network/useConnectionManagerAvailability'
+import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,
@@ -52,7 +52,7 @@ export default function useStateMachineCommands<
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
   useSignals()
-  const { commands, engineCommandManager, settings, userFeatures } = useApp()
+  const { commands, registry, settings, userFeatures } = useApp()
   const { kclManager } = useSingletons()
   const kclProgramVersion = kclManager.kclProgramVersionSignal.value
   const showExperimentalCommands = userFeatures.useHas(
@@ -62,8 +62,9 @@ export default function useStateMachineCommands<
   const modelingDialogsEnabled = userFeatures.useHas('modeling_dialogs', false)
   const settingsValues = settings.useSettings()
   const { overallState } = useNetworkContext()
-  const engineConnectionAvailability =
-    useConnectionManagerAvailabilityAsSignal(engineCommandManager)
+  const engineConnectionAvailability = registry.get(
+    engineConnectionService
+  ).connectionAvailability
   const isStreamReady = useComputed(
     () =>
       engineConnectionAvailability.value === ConnectionAvailability.StreamReady

@@ -48,8 +48,8 @@ import type {
 import type { MouseEventHandler } from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useConnectionManagerAvailabilityAsSignal } from '@src/hooks/network/useConnectionManagerAvailability'
-import { useComputed } from '@preact/signals-react'
+import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
+import { useComputed, useSignals } from '@preact/signals-react/runtime'
 import { ConnectionAvailability } from '@src/lib/engineConnection/connectionManager'
 
 const TIME_TO_CONNECT = 30_000
@@ -71,6 +71,7 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
+  useSignals()
   const {
     settings,
     project,
@@ -78,14 +79,16 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     commands,
     fileOperations,
     engineCommandManager,
+    registry,
   } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const sceneInfra = kclManager.sceneInfra
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
-  const engineConnectionAvailability =
-    useConnectionManagerAvailabilityAsSignal(engineCommandManager)
+  const engineConnectionAvailability = registry.get(
+    engineConnectionService
+  ).connectionAvailability
   const isSceneReady = useComputed(
     () =>
       engineConnectionAvailability.value ===

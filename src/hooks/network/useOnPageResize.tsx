@@ -6,8 +6,9 @@ import {
 } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import { useEffect, useRef } from 'react'
-import { useConnectionManagerAvailabilityAsSignal } from '@src/hooks/network/useConnectionManagerAvailability'
-import { useComputed } from '@preact/signals-react'
+import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
+import { useComputed, useSignals } from '@preact/signals-react/runtime'
+import { useApp } from '@src/lib/boot'
 
 const TIME_TO_WAIT_AFTER_DEBOUNCE_IS_DONE = 250
 
@@ -26,12 +27,15 @@ export const useOnPageResize = ({
   canvasRef: React.RefObject<HTMLCanvasElement | null>
   engineCommandManager: ConnectionManager
 }) => {
+  useSignals()
+  const { registry } = useApp()
   const setSizeOneMoreTime = useRef<NodeJS.Timeout | null>(null)
   const last = useRef<number>(Date.now())
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)
-  const engineConnectionAvailability =
-    useConnectionManagerAvailabilityAsSignal(engineCommandManager)
+  const engineConnectionAvailability = registry.get(
+    engineConnectionService
+  ).connectionAvailability
   const isStreamAcceptingInput = useComputed(
     () =>
       engineConnectionAvailability.value ===

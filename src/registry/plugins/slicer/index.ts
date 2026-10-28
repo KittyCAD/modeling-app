@@ -1,12 +1,11 @@
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { useComputed, useSignals } from '@preact/signals-react/runtime'
-import { useConnectionManagerAvailabilityAsSignal } from '@src/hooks/network/useConnectionManagerAvailability'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
 import {
-  type ConnectionManager,
+  type EngineConnectionService,
   engineConnectionService,
 } from '@src/lib/engineConnection'
 import { ConnectionAvailability } from '@src/lib/engineConnection/connectionManager'
@@ -49,15 +48,15 @@ type ExportToSlicerCommandArgs = {
 
 function createUseExportToSlicerDisabled({
   getKclManager,
-  getEngineCommandManager,
+  getEngineConnection,
 }: {
   getKclManager: () => KclManager | undefined
-  getEngineCommandManager: () => ConnectionManager
+  getEngineConnection: () => EngineConnectionService
 }) {
   return function useExportToSlicerDisabled() {
     useSignals()
     const engineConnectionAvailability =
-      useConnectionManagerAvailabilityAsSignal(getEngineCommandManager())
+      getEngineConnection().connectionAvailability
     const isStreamReady = useComputed(
       () =>
         engineConnectionAvailability.value ===
@@ -71,7 +70,7 @@ function createUseExportToSlicerDisabled({
         overallState !== NetworkHealthState.Weak) ||
       kclManager.isExecutingSignal.value ||
       immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
-      !isStreamReady
+      !isStreamReady.value
 
     return engineIsBusyOrUnavailable
       ? 'Need engine connection to export'
@@ -137,8 +136,7 @@ function createExportToSlicerCommand({
 const exportToSlicerSidebarItem = defineRegistryItemFactory(
   (ctx) => {
     const getCommandSystem = () => ctx.services.get(commandSystemService)
-    const getEngineCommandManager = () =>
-      ctx.services.get(engineConnectionService).manager
+    const getEngineConnection = () => ctx.services.get(engineConnectionService)
     const getKclManager = () =>
       ctx.services.optional(projectSession)?.project.value?.executingEditor
         .value ?? undefined
@@ -148,7 +146,7 @@ const exportToSlicerSidebarItem = defineRegistryItemFactory(
     })
     const useExportToSlicerDisabled = createUseExportToSlicerDisabled({
       getKclManager,
-      getEngineCommandManager,
+      getEngineConnection,
     })
 
     return {

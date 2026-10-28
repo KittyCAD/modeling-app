@@ -62,7 +62,7 @@ import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useSelector } from '@xstate/react'
 import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
 import type { SnapshotFrom } from 'xstate'
-import { useConnectionManagerAvailabilityAsSignal } from '@src/hooks/network/useConnectionManagerAvailability'
+import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
 
 type ToolbarProps = {
   isExecuting: boolean
@@ -1044,12 +1044,13 @@ const ToolbarItemTooltipRichContent = memo(
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
   const { kclManager } = useSingletons()
-  const { settings, engineCommandManager } = useApp()
+  const { settings, registry } = useApp()
   const settingsValues = settings.useSettings()
   const { state, send, context, actor } = useModelingContext()
   const { overallState, immediateState } = useNetworkContext()
-  const engineConnectionAvailability =
-    useConnectionManagerAvailabilityAsSignal(engineCommandManager)
+  const engineConnectionAvailability = registry.get(
+    engineConnectionService
+  ).connectionAvailability
 
   useSignals()
   const disableModelingForUnrenderedChanges =

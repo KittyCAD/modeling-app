@@ -91,7 +91,22 @@ export enum ConnectionAvailability {
 
 export class ConnectionManager extends EventTarget {
   started: boolean
-  availability: ConnectionAvailability = ConnectionAvailability.Unavailable
+  private _availability = ConnectionAvailability.Unavailable
+
+  /** Publish availability changes without depending on a UI state library. */
+  get availability(): ConnectionAvailability {
+    return this._availability
+  }
+
+  set availability(value: ConnectionAvailability) {
+    if (value === this._availability) return
+
+    this._availability = value
+    // This allows us to subscribe from the outside for stuff like signals
+    this.dispatchEvent(
+      new Event(EngineConnectionManagerEvents.AvailabilityChanged)
+    )
+  }
   inSequence = 1
   _camControlsCameraChange = () => {}
   id: string
@@ -1282,6 +1297,7 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown(options: ManagerTearDown) {
+    this.availability = ConnectionAvailability.Unavailable
     const connection = this.connection
     const isFirstShutdownTrigger = this.recordShutdownTrigger(options)
 

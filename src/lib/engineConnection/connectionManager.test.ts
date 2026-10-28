@@ -12,7 +12,10 @@ import {
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { Connection } from '@src/lib/engineConnection/connection'
-import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import {
+  ConnectionAvailability,
+  ConnectionManager,
+} from '@src/lib/engineConnection/connectionManager'
 import {
   EngineConnectionManagerEvents,
   type EngineDisconnectEventDetail,
@@ -88,6 +91,27 @@ describe('ConnectionManager', () => {
     vi.unstubAllGlobals()
     reportClientError.mockClear()
     ReconnectTestWebSocket.instances = []
+  })
+
+  it('emits availability changes after updating the property and skips unchanged values', () => {
+    const manager = createConnectionManager()
+    const values: ConnectionAvailability[] = []
+    manager.addEventListener(
+      EngineConnectionManagerEvents.AvailabilityChanged,
+      () => values.push(manager.availability)
+    )
+
+    manager.availability = ConnectionAvailability.Unavailable
+    manager.availability = ConnectionAvailability.StreamReady
+    manager.availability = ConnectionAvailability.StreamReady
+    manager.availability = ConnectionAvailability.AcceptingInput
+    manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
+
+    expect(values).toEqual([
+      ConnectionAvailability.StreamReady,
+      ConnectionAvailability.AcceptingInput,
+      ConnectionAvailability.Unavailable,
+    ])
   })
 
   it('warns when Engine rejects a modeling command', async () => {

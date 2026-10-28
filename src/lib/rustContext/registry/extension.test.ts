@@ -3,7 +3,11 @@ import {
   provideService,
   Registry,
 } from '@kittycad/registry'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { signal } from '@preact/signals-core'
+import {
+  ConnectionAvailability,
+  type ConnectionManager,
+} from '@src/lib/engineConnection/connectionManager'
 import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
 import RustContext from '@src/lib/rustContext'
 import rustContextRegistryItem from '@src/lib/rustContext/registry'
@@ -38,7 +42,10 @@ describe('rust context extension', () => {
         provides: [provideWasmPromise(wasmPromise)],
         providesServices: [
           provideService(settingsService, settings),
-          provideService(engineConnectionService, engineConnection),
+          provideService(engineConnectionService, {
+            ...engineConnection,
+            connectionAvailability: signal(ConnectionAvailability.Unavailable),
+          }),
         ],
       }),
       rustContextRegistryItem,

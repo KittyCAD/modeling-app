@@ -30,7 +30,7 @@ import {
 } from '@src/lib/engineConnection/utils'
 import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import { keymapService } from '@src/registry/contracts/keymap'
-import { useConnectionManagerAvailabilityAsSignal } from '@src/hooks/network/useConnectionManagerAvailability'
+import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
 import { ConnectionAvailability } from '@src/lib/engineConnection/connectionManager'
 
 const MODELING_COMMAND_SCOPES = [MODE_MODELING_COMMAND_SCOPE] as const
@@ -51,7 +51,7 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { settings, layout, registry, engineCommandManager } = useApp()
+  const { settings, layout, registry } = useApp()
   const { kclManager } = useSingletons()
   const modelingActor =
     kclManager.modelingActor ?? use(kclManager.modelingActorPromise)
@@ -113,8 +113,9 @@ export const ModelingMachineProvider = ({
   useMenuListener(cb)
 
   const { overallState } = useNetworkContext()
-  const engineConnectionAvailability =
-    useConnectionManagerAvailabilityAsSignal(engineCommandManager)
+  const engineConnectionAvailability = registry.get(
+    engineConnectionService
+  ).connectionAvailability
   const isStreamReady = useComputed(
     () =>
       engineConnectionAvailability.value === ConnectionAvailability.StreamReady
