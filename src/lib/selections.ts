@@ -3832,6 +3832,10 @@ export function getCodeRefsFromEntityReference(
       return null
     }
 
+    if (faceArtifact.type === 'edgeCut') {
+      return getCodeRefsByArtifactId(faceArtifact.id, artifactGraph)
+    }
+
     // Wall artifacts have segId pointing to the segment
     if (faceArtifact.type === 'wall' && faceArtifact.segId) {
       const segArtifact = getArtifactOfTypes(

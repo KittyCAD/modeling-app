@@ -10,7 +10,15 @@ import {
 } from '@src/lang/wasm'
 import { retrieveEdgeSelectionsFromOpArg } from '@src/lang/modifyAst/edges'
 import { enterEditFlow } from '@src/lib/operations'
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import {
+  modelingMachineCommandConfig,
+  type ModelingCommandSchema,
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { artifactToEntityRef } from '@src/lang/queryAst'
+import { getCodeRefsFromEntityReference } from '@src/lib/selections'
+import { isArray } from '@src/lib/utils'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
+import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { isErr } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -47,6 +55,92 @@ afterAll(() => {
     initiatedBy: 'client',
   })
 })
+
+async function validateGdtObjects(objects: Selections) {
+  const config = modelingMachineCommandConfig['GDT Annotation']
+  if (!config || isArray(config))
+    throw new Error('Expected annotation command config')
+  const argument = config.args?.objects
+  if (argument?.inputType !== 'selection' || !argument.validation)
+    throw new Error('Expected selection validation')
+  return argument.validation({
+    data: { objects },
+    context: { argumentsToSubmit: {} } as CommandBarContext,
+    machineContext: { kclManager: world.kclManager } as ModelingMachineContext,
+  })
+}
+
+it.each(['fillet', 'chamfer'] as const)(
+  'creates annotations and profiles from a feature-tree %s face',
+  async (treatment) => {
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+profile = sketch(on = XY) {
+  bottom = line(start = [0mm, 0mm], end = [10mm, 0mm])
+  right = line(start = [10mm, 0mm], end = [10mm, 10mm])
+  top = line(start = [10mm, 10mm], end = [0mm, 10mm])
+  left = line(start = [0mm, 10mm], end = [0mm, 0mm])
+}
+box = region(point = [5mm, 5mm], sketch = profile)
+extrude001 = extrude(box, length = 10mm, tagEnd = $capEnd001)
+${treatment}001 = ${treatment}(
+  extrude001,
+  ${treatment === 'fillet' ? 'radius' : 'length'} = 1mm,
+  edges = [{ sideFaces = [extrude001.sketch.tags.bottom, extrude001.faces.capEnd001] }],
+)`
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    removeObsoleteEdges(artifactGraph)
+    const cut = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'edgeCut'
+    )
+    if (cut?.type !== 'edgeCut') throw new Error('Expected treatment face')
+    const entityRef = artifactToEntityRef(cut.type, cut.id)
+    expect(entityRef).toEqual({ type: 'face', face_id: cut.id })
+    if (!entityRef) throw new Error('Expected face reference')
+    expect(
+      getCodeRefsFromEntityReference(entityRef, artifactGraph)
+    ).toContainEqual(cut.codeRef)
+    const objects: Selections = {
+      graphSelections: [{ artifact: cut, codeRef: cut.codeRef, entityRef }],
+      otherSelections: [],
+    }
+    expect(await validateGdtObjects(objects)).toBe(true)
+    const tolerance = await stringToKclExpression('0.1mm', world.rustContext)
+    if (isErr(tolerance) || 'errors' in tolerance)
+      throw new Error('Invalid tolerance')
+    for (const kind of ['annotation', 'profile'] as const) {
+      const context = {
+        ast,
+        kclManager: world.kclManager,
+        wasmInstance: world.instance,
+      }
+      const result =
+        kind === 'annotation'
+          ? await modelingCommandCodemods['GDT Annotation'].run({
+              ...context,
+              args: { objects, annotation: 'Treatment face', framePlane: 'XZ' },
+            })
+          : await modelingCommandCodemods['GDT Profile'].run({
+              ...context,
+              args: { objects, tolerance, framePlane: 'XZ' },
+            })
+      if (isErr(result)) throw result
+      const output = recast(result.modifiedAst, world.instance)
+      if (isErr(output)) throw output
+      expect(output).toContain(
+        kind === 'annotation' ? 'gdt::annotation(' : 'gdt::profileSurface('
+      )
+      expect(output).toContain('faces = [')
+      await getAstAndArtifactGraph(output, world.instance, world.kclManager)
+      expect(world.kclManager.errors).toEqual([])
+    }
+  },
+  60_000
+)
 
 // Neither extrusion direction makes a source segment an unambiguous solid edge.
 it.each(
@@ -106,6 +200,9 @@ extrude001 = extrude(region001, length = ${length})`
       graphSelections: [{ artifact: segment, codeRef: segment.codeRef }],
       otherSelections: [],
     }
+    expect(await validateGdtObjects(selection)).toBe(
+      'Sketch segments cannot be used as solid-edge selections.'
+    )
     const size = (await stringToKclExpression(
       '1',
       world.rustContext

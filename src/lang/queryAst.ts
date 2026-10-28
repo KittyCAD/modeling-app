@@ -1692,8 +1692,7 @@ export function artifactToEntityRef(
   // Wall and cap are faces from the engine's perspective; map to face entity ref.
   if (artifactType === 'wall' || artifactType === 'cap')
     return { type: 'face', face_id: artifactId }
-  if (artifactType === 'edgeCut')
-    return { type: 'solid2d_edge', edge_id: artifactId }
+  if (artifactType === 'edgeCut') return { type: 'face', face_id: artifactId }
   return undefined
 }
 

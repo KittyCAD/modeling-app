@@ -216,7 +216,7 @@ const validateSolidEdgeSelectionArg =
     data: unknown
     context: CommandBarContext
     machineContext?: ModelingMachineContext
-  }): Promise<boolean> => {
+  }): Promise<boolean | string> => {
     // Editing preserves the original selection expression; recovered selections
     // are display-only and must not prevent parameter edits on legacy calls.
     if (context.argumentsToSubmit.nodeToEdit) return true
@@ -224,14 +224,12 @@ const validateSolidEdgeSelectionArg =
     const selections = hasProperty(data, selectionKey)
       ? data[selectionKey]
       : data
-    return (
-      isSelections(selections) &&
-      !!machineContext &&
-      !validateSolidEdgeSelections(
-        selections,
-        machineContext.kclManager.artifactGraph
-      )
+    if (!isSelections(selections) || !machineContext) return false
+    const error = validateSolidEdgeSelections(
+      selections,
+      machineContext.kclManager.artifactGraph
     )
+    return error ? error.message : true
   }
 
 // Edit flows pass this as hidden command-bar metadata, not as a KCL stdlib arg.

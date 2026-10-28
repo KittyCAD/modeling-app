@@ -38,6 +38,16 @@ describe('validateSolidEdgeSelections', () => {
     ).toBeInstanceOf(Error)
   })
 
+  it('rejects actual Solid2D edges, which are still sketch geometry', () => {
+    expect(
+      validate({
+        entityRef: { type: 'solid2d_edge', edge_id: segment.id },
+        artifact: segment,
+        codeRef,
+      })
+    ).toBeInstanceOf(Error)
+  })
+
   it('rejects unswept sketch segments too', () => {
     expect(
       validate({ artifact: { ...segment, surfaceId: undefined }, codeRef })
