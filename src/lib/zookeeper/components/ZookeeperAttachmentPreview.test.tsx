@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, expect, test, vi } from 'vitest'
 
 test('shows text excerpts for pastes and filenames for uploads', async () => {
   const contents = 'Pasted reference contents'
@@ -15,47 +15,39 @@ test('shows text excerpts for pastes and filenames for uploads', async () => {
   expect(await screen.findByText(contents)).toBeInTheDocument()
 })
 
-describe('image attachment previews', () => {
-  const createObjectURL = vi.fn<typeof URL.createObjectURL>()
-  const revokeObjectURL = vi.fn<typeof URL.revokeObjectURL>()
+afterEach(() => vi.restoreAllMocks())
 
-  beforeEach(() => {
-    let nextUrl = 0
-    createObjectURL
-      .mockReset()
-      .mockImplementation(() => `blob:image-${++nextUrl}`)
-    revokeObjectURL.mockReset()
-    vi.spyOn(URL, 'createObjectURL').mockImplementation(createObjectURL)
-    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(revokeObjectURL)
+test('previews images, handles decode errors, and releases object URLs', () => {
+  let nextUrl = 0
+  const createObjectURL = vi
+    .spyOn(URL, 'createObjectURL')
+    .mockImplementation(() => `blob:image-${++nextUrl}`)
+  const revokeObjectURL = vi
+    .spyOn(URL, 'revokeObjectURL')
+    .mockImplementation(() => {})
+  const first = new File(['first'], 'image-first.png', { type: 'image/png' })
+  const second = new File(['second'], 'image-second.png', {
+    type: 'image/png',
   })
+  const { rerender, unmount } = render(
+    <ZookeeperAttachmentPreview file={first} />
+  )
 
-  afterEach(() => vi.restoreAllMocks())
+  expect(screen.queryByText('Image')).not.toBeInTheDocument()
+  expect(screen.queryByText(first.name)).not.toBeInTheDocument()
+  const thumbnail = screen.getByRole('img', { name: 'Attachment preview' })
+  expect(thumbnail).toHaveAttribute('src', 'blob:image-1')
+  expect(createObjectURL).toHaveBeenCalledWith(first)
 
-  test('falls back on decode failure and releases replaced and removed image URLs', () => {
-    const first = new File(['first'], 'image-first.png', { type: 'image/png' })
-    const second = new File(['second'], 'image-second.png', {
-      type: 'image/png',
-    })
-    const { rerender, unmount } = render(
-      <ZookeeperAttachmentPreview file={first} />
-    )
+  fireEvent.error(thumbnail)
+  expect(screen.queryByRole('img')).not.toBeInTheDocument()
+  expect(screen.getByText('Image')).toHaveClass('sr-only')
 
-    expect(screen.queryByText('Image')).not.toBeInTheDocument()
-    expect(screen.queryByText(first.name)).not.toBeInTheDocument()
-    const thumbnail = screen.getByRole('img', { name: 'Attachment preview' })
-    expect(thumbnail).toHaveAttribute('src', 'blob:image-1')
-    expect(createObjectURL).toHaveBeenCalledWith(first)
-
-    fireEvent.error(thumbnail)
-    expect(screen.queryByRole('img')).not.toBeInTheDocument()
-    expect(screen.getByText('Image')).toHaveClass('sr-only')
-
-    rerender(<ZookeeperAttachmentPreview file={second} />)
-    expect(revokeObjectURL).toHaveBeenCalledWith('blob:image-1')
-    expect(
-      screen.getByRole('img', { name: 'Attachment preview' })
-    ).toHaveAttribute('src', 'blob:image-2')
-    unmount()
-    expect(revokeObjectURL).toHaveBeenCalledWith('blob:image-2')
-  })
+  rerender(<ZookeeperAttachmentPreview file={second} />)
+  expect(revokeObjectURL).toHaveBeenCalledWith('blob:image-1')
+  expect(
+    screen.getByRole('img', { name: 'Attachment preview' })
+  ).toHaveAttribute('src', 'blob:image-2')
+  unmount()
+  expect(revokeObjectURL).toHaveBeenCalledWith('blob:image-2')
 })
