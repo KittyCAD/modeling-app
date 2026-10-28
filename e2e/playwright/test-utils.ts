@@ -409,20 +409,9 @@ export const getMovementUtils = (opts: any) => {
   return { toSU, toU, click00r }
 }
 
-async function waitForAuthAndLsp(page: Page) {
-  const waitForLspPromise = page.waitForEvent('console', {
-    predicate: async (message: any) => {
-      // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
-      // but that doesn't seem to make it to the console for macos/safari :(
-      if (message.text().includes('start kcl lsp')) {
-        await new Promise((resolve) => setTimeout(resolve, 200))
-        return true
-      }
-      return false
-    },
-    timeout: 45_000,
-  })
-
+async function waitForAuthenticatedApp(page: Page) {
+  // Home is ready without an LSP worker. The project starts its language
+  // session when an editor mounts, after this initial authentication step.
   if (process.env.VERCEL_BASE_URL) {
     // set bypass secret for the page's requests based on the hostname
     let secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
@@ -453,7 +442,6 @@ async function waitForAuthAndLsp(page: Page) {
 
   await page.goto('/')
   await waitForAppLoad(page)
-  return waitForLspPromise
 }
 
 /**
@@ -504,7 +492,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
   }
 
   const util = {
-    waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
+    waitForAuthSkipAppStart: () => waitForAuthenticatedApp(page),
     waitForPageLoad: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),

@@ -1,6 +1,12 @@
 import { fsArchiveFile } from '@src/editor/plugins/fs'
 import type { Feature } from '@kittycad/lib'
-import { pluginsValueSpec } from '@kittycad/registry'
+import { ViewPlugin } from '@codemirror/view'
+import { lspService } from '@src/lang/lsp/registry/contract'
+import {
+  defineRegistryItem,
+  provideService,
+  pluginsValueSpec,
+} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
@@ -480,6 +486,93 @@ describe('project system', () => {
     }
   })
 
+  it('owns language sessions per project and rebinds reused editors to their current file', async () => {
+    const opened: string[] = []
+    const closed: string[] = []
+    const dispose = vi.fn()
+    const onFileCreate = vi.fn()
+    const onFileRename = vi.fn()
+    const onFileDelete = vi.fn()
+    const createSession = vi.fn(() => ({
+      editorExtension: (uri: string) =>
+        ViewPlugin.define(() => {
+          opened.push(uri)
+          return {
+            destroy: () => {
+              closed.push(uri)
+            },
+          }
+        }),
+      onFileCreate,
+      onFileRename,
+      onFileDelete,
+      dispose,
+    }))
+    const app = createAppForTest({
+      registryOverrides: [
+        defineRegistryItem({
+          id: 'lsp',
+          providesServices: [
+            provideService(lspService, { createProjectSession: createSession }),
+          ],
+        }),
+      ],
+    })
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'read'
+    ).mockResolvedValue('')
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'write'
+    ).mockResolvedValue(undefined)
+    try {
+      expect(createSession).not.toHaveBeenCalled()
+      const project = await app.openProject(mockProject)
+      expect(createSession).toHaveBeenCalledExactlyOnceWith({
+        name: 'test',
+        path: '/some-dir/test',
+      })
+      expect(opened).toEqual([])
+      const firstPath = '/some-dir/test/main.kcl'
+      const secondPath = '/some-dir/test/second.kcl'
+      const editor = await project.openEditor(
+        firstPath,
+        app.singletons.kclManager,
+        ''
+      )
+      expect(opened).toEqual(['file:///some-dir/test/main.kcl'])
+      expect(await app.openProject(mockProject)).toBe(project)
+      await project.openEditor(secondPath, editor, '')
+      expect(opened.at(-1)).toBe('file:///some-dir/test/second.kcl')
+      expect(closed).toContain('file:///some-dir/test/main.kcl')
+      expect(await app.openProject(mockProject)).toBe(project)
+      await project.openEditor(firstPath, editor, '')
+      expect(createSession).toHaveBeenCalledTimes(1)
+      expect(opened.at(-1)).toBe('file:///some-dir/test/main.kcl')
+      expect(closed).toContain('file:///some-dir/test/second.kcl')
+      // Confirmed operations and duplicate disk events must not notify twice.
+      project.notifyFileCreated(secondPath)
+      project.notifyFileCreated(secondPath)
+      expect(onFileCreate).toHaveBeenCalledExactlyOnceWith(secondPath)
+      project.notifyFileRenamed(secondPath, '/some-dir/test/renamed.kcl')
+      expect(onFileRename).toHaveBeenCalledExactlyOnceWith(
+        secondPath,
+        '/some-dir/test/renamed.kcl'
+      )
+      project.notifyFileDeleted('/some-dir/test/renamed.kcl')
+      project.notifyFileDeleted('/some-dir/test/renamed.kcl')
+      expect(onFileDelete).toHaveBeenCalledTimes(1)
+      app.closeProject()
+      expect(dispose).toHaveBeenCalledTimes(1)
+      expect(closed.at(-1)).toBe('file:///some-dir/test/main.kcl')
+      project.notifyFileCreated('/some-dir/test/late.kcl')
+      expect(onFileCreate).toHaveBeenCalledTimes(1)
+    } finally {
+      app.dispose()
+    }
+  })
+
   it('follows the executing project editor and releases it on close', async () => {
     const app = createAppForTest()
     try {
@@ -707,6 +800,9 @@ describe('project system', () => {
     const read = vi
       .spyOn(app.registry.get(projectSession).textFileIO, 'read')
       .mockResolvedValue('')
+    const write = vi
+      .spyOn(app.registry.get(projectSession).textFileIO, 'write')
+      .mockResolvedValue(undefined)
     const editor = app.singletons.kclManager
     try {
       const first = await app.openProject(mockProject)
@@ -738,6 +834,7 @@ describe('project system', () => {
       )
     } finally {
       read.mockRestore()
+      write.mockRestore()
       app.dispose()
     }
   })
