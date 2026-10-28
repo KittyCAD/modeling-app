@@ -93,11 +93,14 @@ export function ZookeeperAttachment({
                 </Dialog.Title>
                 <button
                   type="button"
-                  className="m-0 flex h-6 w-6 shrink-0 items-center justify-center p-0"
+                  className="group m-0 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
                   aria-label="Close preview"
                   onClick={() => setOpen(false)}
                 >
-                  <CustomIcon name="close" className="h-4 w-4" />
+                  <CustomIcon
+                    name="close"
+                    className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+                  />
                 </button>
               </div>
               <div className="min-h-0 overflow-auto p-4">
