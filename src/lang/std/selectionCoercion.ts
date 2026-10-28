@@ -15,18 +15,36 @@ import {
 import { err } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
-const objectSelectionTypes = new Set<CommandSelectionType>([
-  'path',
-  'pathRegion',
-  'solid2d',
-  'sketchBlock',
-  'sweep',
-  'compositeSolid',
-  'gdtAnnotation',
-  'helix',
-  'plane',
-  'importedGeometry',
-])
+// Classify every selection type so additions require an explicit decision.
+const objectSelectionTypes: Record<CommandSelectionType, boolean> = {
+  path: true,
+  pathRegion: true,
+  solid2d: true,
+  sketchBlock: true,
+  sweep: true,
+  compositeSolid: true,
+  gdtAnnotation: true,
+  helix: true,
+  plane: true,
+  importedGeometry: true,
+  segment: false,
+  primitiveFace: false,
+  primitiveEdge: false,
+  planeOfFace: false,
+  startSketchOnFace: false,
+  startSketchOnPlane: false,
+  sketchBlockConstraint: false,
+  wall: false,
+  cap: false,
+  sweepEdge: false,
+  edgeCut: false,
+  edgeCutEdge: false,
+  namedView: false,
+  pattern: false,
+  enginePrimitiveFace: false,
+  enginePrimitiveEdge: false,
+  engineRegion: false,
+}
 
 /**
  * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).
@@ -125,7 +143,7 @@ export function coerceSelectionsToBody(
     }
 
     if (
-      objectSelectionTypes.has(selection.artifact.type) &&
+      objectSelectionTypes[selection.artifact.type] &&
       selection.artifact.type !== 'sweep' &&
       selection.artifact.type !== 'compositeSolid'
     ) {
@@ -245,8 +263,8 @@ export function coerceSelectionsForBodyOnlySelectionTypes(
     return selections
   }
 
-  const onlyAcceptsBodyLikeObjects = selectionTypes?.every((type) =>
-    objectSelectionTypes.has(type)
+  const onlyAcceptsBodyLikeObjects = selectionTypes?.every(
+    (type) => objectSelectionTypes[type]
   )
   if (!onlyAcceptsBodyLikeObjects) {
     return selections
