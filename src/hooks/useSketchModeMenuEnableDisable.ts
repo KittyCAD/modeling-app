@@ -71,5 +71,5 @@ export function useSketchModeMenuEnableDisable(
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [currentMode, commandList, overallState, isExecuting, isStreamReady])
+  }, [currentMode, commandList])
 }
