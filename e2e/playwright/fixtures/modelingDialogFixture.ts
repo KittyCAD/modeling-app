@@ -2,8 +2,10 @@ import { expect, type Locator, type Page } from '@playwright/test'
 import { escapeRegExp } from '@e2e/playwright/test-utils'
 
 // Match the full label, ignoring case and the required-field marker.
-const fieldLabel = (label: string) =>
-  new RegExp(`^${escapeRegExp(label)}(?: \\*)?$`, 'i')
+const fieldLabel = (label: string | RegExp) =>
+  typeof label === 'string'
+    ? new RegExp(`^${escapeRegExp(label)}(?: \\*)?$`, 'i')
+    : label
 
 export class ModelingDialogFixture {
   readonly locator: Locator
@@ -42,7 +44,7 @@ export class ModelingDialogFixture {
     )
   }
 
-  input(label: string) {
+  input(label: string | RegExp) {
     return this.locator.getByRole('textbox', { name: fieldLabel(label) })
   }
 
@@ -57,7 +59,7 @@ export class ModelingDialogFixture {
     }
   }
 
-  options(label: string) {
+  options(label: string | RegExp) {
     return this.locator.getByRole('combobox', { name: fieldLabel(label) })
   }
 

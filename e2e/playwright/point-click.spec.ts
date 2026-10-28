@@ -3767,7 +3767,6 @@ test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
     scene,
     editor,
     toolbar,
-    modelingDialog,
   }) => {
     const code = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
@@ -3781,17 +3780,19 @@ region001 = region(segments = [sketch001.circle1])`
     const pane = page.locator(`#${DefaultLayoutPaneID.NamedViews}-pane`)
     await pane.getByTestId('named-view-create').click()
 
-    const dialog = modelingDialog.locator
-    const name = modelingDialog.input('name')
+    const dialog = page.getByTestId('modeling-dialog')
+    const name = dialog.getByRole('textbox', { name: /^name/i })
     const exceptions = dialog.getByRole('button', {
       name: 'Select Exceptions',
       exact: true,
     })
     const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
     await name.fill('Inspection')
-    await modelingDialog.options('orientation').selectOption({ label: 'Front' })
+    await dialog
+      .getByRole('combobox', { name: /^orientation/i })
+      .selectOption({ label: 'Front' })
     await dialog.getByText('Advanced', { exact: true }).click()
-    await modelingDialog.input('distance').fill('200mm')
+    await dialog.getByRole('textbox', { name: /^distance/i }).fill('200mm')
     await dialog
       .locator('#command-kcl-input-distance-variable-checkbox')
       .check()
@@ -3832,8 +3833,12 @@ region001 = region(segments = [sketch001.circle1])`
     await name.fill('Inspection updated')
     await expect(exceptions).toBeDisabled()
     await expect(exceptions).toContainText(/1 region/i)
-    await modelingDialog.options('orientation').selectOption({ label: 'Top' })
-    await modelingDialog.options('baseline').selectOption({ label: 'Hide all' })
+    await dialog
+      .getByRole('combobox', { name: /^orientation/i })
+      .selectOption({ label: 'Top' })
+    await dialog
+      .getByRole('combobox', { name: /^baseline/i })
+      .selectOption({ label: 'Hide all' })
     await scene.waitForExecutionDoneAfter(() => submit.click())
     await expect(dialog).not.toBeAttached()
     await expect(row).toContainText('Inspection updated')
