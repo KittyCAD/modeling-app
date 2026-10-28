@@ -157,6 +157,9 @@ export async function buildTheWorldAndConnectToEngine({
         token: env().VITE_ZOO_API_TOKEN || '',
         width: 256,
         height: 256,
+        setStreamIsReady: () => {
+          console.log('no op for a unit test')
+        },
         callbackOnUnitTestingConnection: (message: string) => {
           if (message === 'auth_token_invalid') {
             const reason =

@@ -87,7 +87,7 @@ export async function activateNamedView({
   target: ActivationTarget
   kclManager: KclManager
 }): Promise<void> {
-  if (!kclManager.engineCommandManager.isTransportReady) {
+  if (!kclManager.engineCommandManager.isReady) {
     return
   }
 
@@ -261,7 +261,7 @@ function reapplyContext(kclManager: KclManager): {
 
   if (
     active === null ||
-    !kclManager.engineCommandManager.isTransportReady ||
+    !kclManager.engineCommandManager.isReady ||
     kclManager.errors.length > 0 ||
     isSketchSessionOpen(kclManager.modelingState)
   ) {

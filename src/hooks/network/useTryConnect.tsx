@@ -1,5 +1,5 @@
-import type { Connection } from '@src/lib/engineConnection/connection'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
+import type { useAppState } from '@src/AppState'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import type { KclManager } from '@src/lang/KclManager'
@@ -27,6 +27,7 @@ import { useRef } from 'react'
 const attemptToConnectToEngine = async ({
   authToken,
   videoWrapperRef,
+  setAppState,
   videoRef,
   setIsSceneReady,
   timeToConnect,
@@ -34,17 +35,16 @@ const attemptToConnectToEngine = async ({
   kclVersion,
   rustContext,
   prepareForReconnect,
-  onConnectionStarted,
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
+  setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
   videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   engineCommandManager: ConnectionManager
   kclVersion?: KclVersion
   rustContext: RustContext
-  onConnectionStarted: (connection: Connection | undefined) => void
   prepareForReconnect: (signal: AbortSignal) => Promise<undefined | Error>
 }) => {
   const codecError = await preflightEngineVideoCodecSupport()
@@ -62,10 +62,8 @@ const attemptToConnectToEngine = async ({
     return Promise.reject(codecError)
   }
 
-  const connection = new Promise<Connection>((resolve, reject) => {
-    let timedOut = false
+  const connection = new Promise<boolean>((resolve, reject) => {
     const cancelTimeout = setTimeout(() => {
-      timedOut = true
       EngineDebugger.addLog({
         label: 'useTryConnect.tsx',
         message: 'Took too long to connect, cancelTimeout',
@@ -91,24 +89,17 @@ const attemptToConnectToEngine = async ({
           videoWrapperRef.current.clientHeight
         )
 
-        const starting = engineCommandManager.start({
+        await engineCommandManager.start({
           width,
           height,
           token: authToken,
+          setStreamIsReady: () => {
+            setAppState({ isStreamReady: true })
+          },
           rustContext,
           kclVersion,
           prepareForReconnect,
         })
-        const currentConnection = engineCommandManager.connection
-        onConnectionStarted(currentConnection)
-        await starting
-        if (
-          timedOut ||
-          !currentConnection ||
-          engineCommandManager.connection !== currentConnection
-        ) {
-          return reject(new Error('Connection attempt is no longer current'))
-        }
 
         if (!videoRef.current) {
           EngineDebugger.addLog({
@@ -143,11 +134,10 @@ const attemptToConnectToEngine = async ({
           message: 'setIsSceneReady(true)',
         })
         clearTimeout(cancelTimeout)
-        return resolve(currentConnection)
+        return resolve(true)
       } catch (err) {
-        return reject(err)
-      } finally {
         clearTimeout(cancelTimeout)
+        return reject(err)
       }
     })()
   })
@@ -155,21 +145,19 @@ const attemptToConnectToEngine = async ({
 }
 
 const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
-  connection,
   sceneInfra,
   settingsActor,
   engineCommandManager,
   kclManager,
   rustContext,
 }: {
-  connection: Connection
   sceneInfra: SceneInfra
   settingsActor: SettingsActorType
   engineCommandManager: ConnectionManager
   kclManager: KclManager
   rustContext: RustContext
 }) => {
-  if (engineCommandManager.connection !== connection) return
+  const connection = engineCommandManager.connection
   const reconnectCameraState = sceneInfra.camControls.reconnectCameraState
   sceneInfra.camControls.reconnectCameraState = undefined
   if (!reconnectCameraState && sceneInfra.camControls.oldCameraState) {
@@ -260,6 +248,7 @@ export async function tryConnecting({
   numberOfConnectionAttempts,
   authToken,
   videoWrapperRef,
+  setAppState,
   videoRef,
   setIsSceneReady,
   timeToConnect,
@@ -275,6 +264,7 @@ export async function tryConnecting({
   numberOfConnectionAttempts: React.RefObject<number>
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
+  setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
   videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
@@ -297,17 +287,14 @@ export async function tryConnecting({
         numberOfConnectionAttempts.current =
           numberOfConnectionAttempts.current + 1
 
-        let attemptConnection: Connection | undefined
         try {
           const instance = await rustContext.wasmInstancePromise
           const kclVersion = getKclLanguageVersion(kclManager.code, instance)
           // Has a time to connect window, if it does not connect, it will go to the next attempt
-          const connected = await attemptToConnectToEngine({
-            onConnectionStarted: (connection) => {
-              attemptConnection = connection
-            },
+          await attemptToConnectToEngine({
             authToken: authToken,
             videoWrapperRef,
+            setAppState,
             videoRef,
             setIsSceneReady,
             timeToConnect,
@@ -321,7 +308,6 @@ export async function tryConnecting({
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
           await setupSceneAndExecuteCodeAfterOpenedEngineConnection({
-            connection: connected,
             sceneInfra,
             settingsActor,
             engineCommandManager,
@@ -329,11 +315,16 @@ export async function tryConnecting({
             rustContext,
           })
 
-          if (!engineCommandManager.markStreamAcceptingInput(connected)) {
-            if (engineCommandManager.connection) {
-              isConnecting.current = false
-              return resolve('superseded')
-            }
+          /**
+           * Attempt is a longer lifecycle promise that cannot be interrupted directly from external code.
+           * It can break if a user disconnects their internet during this attempt process. We need to check by
+           * the time it gets to this line did someone disconnect the engine, if they did, throw an error to exit this attempt.
+           */
+          if (
+            engineCommandManager.started === false &&
+            engineCommandManager.connection === undefined
+          ) {
+            // This attempt needs to throw an error to use the internal logic for retry for the next attempt.
             // eslint-disable-next-line suggest-no-throw/suggest-no-throw
             throw new Error(
               'engine disconnected before it finished the attempt'
@@ -342,23 +333,16 @@ export async function tryConnecting({
 
           abnormalCloseRetries.current = 0
           isConnecting.current = false
+          setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0
           setShowManualConnect(false)
           EngineDebugger.addLog({
             label: 'tryConnecting',
-            message: 'Stream accepting input',
+            message: 'setAppState({ isStreamAcceptingInput: true })',
           })
           resolve('connected')
         } catch (e) {
-          // A late failure must not tear down a replacement connection.
-          if (
-            attemptConnection &&
-            engineCommandManager.connection &&
-            engineCommandManager.connection !== attemptConnection
-          ) {
-            isConnecting.current = false
-            return resolve('superseded')
-          }
+          setAppState({ isStreamAcceptingInput: false })
           const terminalConnectionError =
             engineCommandManager.lastConnectionError?.terminal === true
               ? engineCommandManager.lastConnectionError

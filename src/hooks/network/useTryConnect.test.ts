@@ -5,9 +5,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import type { Connection } from '@src/lib/engineConnection/connection'
-import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   type EngineConnectionError,
   EngineConnectionErrorKind,
@@ -76,6 +74,7 @@ describe('tryConnecting', () => {
         videoWrapperRef: {
           current: { clientWidth: 256, clientHeight: 256 } as HTMLDivElement,
         },
+        setAppState: vi.fn(),
         videoRef: { current: null },
         setIsSceneReady: vi.fn(),
         timeToConnect: 1_000,
@@ -118,9 +117,6 @@ describe('reconnect camera restoration', () => {
         start: vi.fn(async () => {
           manager.started = true
         }),
-        markStreamAcceptingInput: vi.fn(
-          (connection) => manager.started && manager.connection === connection
-        ),
       }
       const camControls = {
         reconnectCameraState: source === 'idle' ? undefined : snapshot,
@@ -158,6 +154,7 @@ describe('reconnect camera restoration', () => {
         videoWrapperRef: {
           current: { clientWidth: 256, clientHeight: 256 } as HTMLDivElement,
         },
+        setAppState: vi.fn(),
         videoRef: { current: {} as HTMLVideoElement },
         setIsSceneReady: vi.fn(),
         timeToConnect: 1000,
@@ -202,101 +199,8 @@ describe('reconnect camera restoration', () => {
       }
       if (retired !== 'none')
         expect(camControls.clearOldCameraState).not.toHaveBeenCalled()
-      expect(manager.markStreamAcceptingInput.mock.results[0].value).toBe(
-        retired === 'none'
-      )
       expect(manager.start).toHaveBeenCalledWith(
         expect.objectContaining({ prepareForReconnect: expect.any(Function) })
-      )
-    }
-  )
-})
-
-describe('input readiness ownership', () => {
-  it.each(['complete', 'replace', 'replace-and-fail', 'disconnect'])(
-    'publishes readiness only for the connection that completed setup: %s',
-    async (outcome) => {
-      vi.mocked(getKclLanguageVersion).mockReturnValue('2.0')
-      const manager = new ConnectionManager({
-        settingsActor: {} as SettingsActorType,
-      })
-      const attach = () => {
-        const connection = {
-          mediaStream: {},
-          disconnectAll: vi.fn(),
-        } as unknown as Connection
-        manager.connection = connection
-        manager.started = true
-        manager.markStreamReady(connection)
-        return connection
-      }
-      const start = vi.spyOn(manager, 'start').mockImplementation(async () => {
-        attach()
-      })
-      const tearDown = vi.spyOn(manager, 'tearDown')
-      let finish!: () => void
-      let fail!: (error: Error) => void
-      const executing = new Promise<void>((resolve, reject) => {
-        finish = resolve
-        fail = reject
-      })
-      const executeCode = vi.fn(() => executing)
-      const attempts = { current: 0 }
-      const result = tryConnecting({
-        abnormalCloseRetries: { current: 0 },
-        isConnecting: { current: false },
-        numberOfConnectionAttempts: attempts,
-        authToken: 'token',
-        videoWrapperRef: {
-          current: { clientWidth: 256, clientHeight: 256 } as HTMLDivElement,
-        },
-        videoRef: { current: {} as HTMLVideoElement },
-        setIsSceneReady: vi.fn(),
-        timeToConnect: 1000,
-        settingsActor: {} as SettingsActorType,
-        setShowManualConnect: vi.fn(),
-        sceneInfra: {
-          camControls: {
-            oldCameraState: { pivot_position: { x: 1, y: 2, z: 3 } },
-            overrideOldCameraStateToPreventDesync: vi.fn(),
-            setCameraView: vi.fn(),
-            clearOldCameraState: vi.fn(),
-          },
-        } as unknown as SceneInfra,
-        engineCommandManager: manager,
-        kclManager: { executeCode } as unknown as KclManager,
-        rustContext: {
-          clearSceneAndBustCache: vi.fn(),
-        } as unknown as RustContext,
-      })
-      await vi.waitFor(() => expect(executeCode).toHaveBeenCalledOnce())
-      expect(manager.isStreamReady.value).toBe(true)
-      expect(manager.isStreamAcceptingInput.value).toBe(false)
-      if (outcome !== 'complete') {
-        manager.tearDown({ route: 'window-offline', initiatedBy: 'client' })
-        if (outcome !== 'disconnect') {
-          const replacement = attach()
-          manager.markStreamAcceptingInput(replacement)
-        } else {
-          attempts.current = NUMBER_OF_ENGINE_RETRIES
-        }
-      }
-      const settled =
-        outcome === 'disconnect'
-          ? expect(result).rejects.toThrow('engine disconnected')
-          : expect(result).resolves.toBe(
-              outcome === 'complete' ? 'connected' : 'superseded'
-            )
-      if (outcome === 'replace-and-fail')
-        fail(new Error('old execution failed'))
-      else finish()
-      await settled
-      expect(manager.isStreamAcceptingInput.value).toBe(
-        outcome !== 'disconnect'
-      )
-      expect(start).toHaveBeenCalledOnce()
-      expect(tearDown).toHaveBeenCalledTimes(
-        outcome === 'complete' ? 0 : outcome === 'disconnect' ? 2 : 1
       )
     }
   )
