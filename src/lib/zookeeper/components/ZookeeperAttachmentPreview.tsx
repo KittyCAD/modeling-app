@@ -7,10 +7,8 @@ const PREVIEW_BYTES = 256
 
 export const ZookeeperAttachmentPreview = ({
   file,
-  icon = 'file',
 }: {
   file: File | MlCopilotFile
-  icon?: 'file' | 'paperclip'
 }) => {
   const mimetype = file instanceof File ? file.type : file.mimetype
   const isImage = mimetype.startsWith('image/')
@@ -55,12 +53,7 @@ export const ZookeeperAttachmentPreview = ({
   }, [file, isPastedText])
 
   const imageUrl = imagePreview?.file === file ? imagePreview.url : undefined
-  const fileIcon = (
-    <CustomIcon
-      name={icon}
-      className={icon === 'file' ? 'w-4 h-4 shrink-0' : 'w-3 h-3 shrink-0'}
-    />
-  )
+  const fileIcon = <CustomIcon name="file" className="w-4 h-4 shrink-0" />
   if (isImage) {
     return (
       <span

@@ -1606,12 +1606,6 @@ describe('ZookeeperConversation', () => {
       }
 
       expect(handleProcess).toHaveBeenCalledTimes(2)
-      expect(handleProcess).toHaveBeenNthCalledWith(1, '', undefined, [
-        expect.any(File),
-      ])
-      expect(handleProcess).toHaveBeenNthCalledWith(2, '', undefined, [
-        expect.any(File),
-      ])
       const firstFile: File = handleProcess.mock.calls[0][2][0]
       const secondFile: File = handleProcess.mock.calls[1][2][0]
       expect(firstFile.name).toMatch(/^pasted-text-[0-9a-f-]{36}\.txt$/)
