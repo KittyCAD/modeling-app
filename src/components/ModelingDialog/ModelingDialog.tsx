@@ -411,7 +411,10 @@ export default function ModelingDialog({
           <div key={name} className="flex flex-col gap-1">
             {fieldLabel}
             <div className="relative">
-              <span aria-hidden="true" className="absolute left-2 top-1">
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute left-2 top-1"
+              >
                 $
               </span>
               <input
