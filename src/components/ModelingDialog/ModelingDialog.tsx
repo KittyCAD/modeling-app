@@ -133,16 +133,27 @@ export default function ModelingDialog({
 
   const checking = state.matches('Checking Arguments for Dialog')
   const invalid = visible.some(({ name, arg, required }) => {
-    if (
-      arg.inputType === 'kcl' ||
-      arg.inputType === 'vector2d' ||
-      arg.inputType === 'vector3d'
-    )
-      return validity[name] === false
-    return (
-      (arg.inputType === 'camera' && validity[name] === false) ||
-      (required && !hasValue(context.argumentsToSubmit[name]))
-    )
+    switch (arg.inputType) {
+      case 'kcl':
+      case 'vector2d':
+      case 'vector3d':
+        return validity[name] === false
+      case 'camera':
+        return (
+          validity[name] === false ||
+          (required && !hasValue(context.argumentsToSubmit[name]))
+        )
+      case 'selection':
+      case 'boolean':
+      case 'options':
+      case 'color':
+      case 'tagDeclarator':
+      case 'string':
+      case 'number':
+      case 'text':
+      case 'path':
+        return required && !hasValue(context.argumentsToSubmit[name])
+    }
   })
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
