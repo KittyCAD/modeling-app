@@ -1696,7 +1696,11 @@ entity_ids: Array<string>,
 /**
  * The file format to export to.
  */
-format: OutputFormat3d, };
+format: OutputFormat3d, 
+/**
+ * KCL source to embed in formats that support source metadata.
+ */
+kcl_source?: KclProject | null, };
 
 /**
  * Export a sketch to a file.
@@ -1724,7 +1728,11 @@ entity_ids: Array<string>,
 /**
  * The file format to export to.
  */
-format: OutputFormat3d, };
+format: OutputFormat3d, 
+/**
+ * KCL source to embed in formats that support source metadata.
+ */
+kcl_source?: KclProject | null, };
 
 /**
  * Extend a path by adding a new segment which starts at the path's "pen".
@@ -2159,6 +2167,34 @@ coords: System,
  * Defaults to `false` but is implicitly `true` when importing into the engine.
  */
 split_closed_faces: boolean, };
+
+/**
+ * A file in a KCL project.
+ */
+export type KclFile = { 
+/**
+ * Where is the file, relative to the project directory?
+ */
+path: SafeFilepath, 
+/**
+ * Raw file contents. KCL source is UTF-8; imported assets may be binary.
+ */
+contents: Array<number>, };
+
+/**
+ * A KCL project.
+ */
+export type KclProject = { 
+/**
+ * All files in the project.
+ */
+files: Array<KclFile>, 
+/**
+ * Which file is the entrypoint?
+ * This is the first KCL file to be executed,
+ * the root of the KCL module tree.
+ */
+entrypoint: SafeFilepath, };
 
 /**
  * A length unit is wrapper around an f64 that represents a length in some unit.
@@ -3247,6 +3283,11 @@ angle: Angle,
  * Origin of the rotation. If one isn't provided, the object will rotate about its own bounding box center.
  */
 origin: OriginType, };
+
+/**
+ * Filepath which is guaranteed to be relative and not contain parent directory jumps like '..'
+ */
+export type SafeFilepath = string;
 
 /**
  * Removes all of the Objects in the scene

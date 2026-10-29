@@ -3165,8 +3165,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.253"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers%2Fplanar-face-api#73edff2de4220765b3dfda06187340d60fc0a107"
+version = "0.2.254"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers%2Fplanar-face-api#fd5f39aad5dfb7ff4c9eedba662d32d356e1468c"
 dependencies = [
  "anyhow",
  "bon",
@@ -3200,7 +3200,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.14"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers%2Fplanar-face-api#73edff2de4220765b3dfda06187340d60fc0a107"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers%2Fplanar-face-api#fd5f39aad5dfb7ff4c9eedba662d32d356e1468c"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -3211,7 +3211,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.15"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers%2Fplanar-face-api#73edff2de4220765b3dfda06187340d60fc0a107"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers%2Fplanar-face-api#fd5f39aad5dfb7ff4c9eedba662d32d356e1468c"
 dependencies = [
  "proc-macro2",
  "quote",
