@@ -7,6 +7,7 @@ import {
   decode as msgpackDecode,
   encode as msgpackEncode,
 } from '@msgpack/msgpack'
+import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import { defaultSourceRange } from '@src/lang/sourceRange'
@@ -120,6 +121,7 @@ export class ConnectionManager extends EventTarget {
     | undefined
   private reconnectPreparation: AbortController | undefined
   private reconnectPreparationFinished = false
+  private localSelectionCommandHandler: LocalSelectionCommandHandler | undefined
   private readonly activeExecutions = new Set<symbol>()
   private readonly activeRecoveries = new Set<symbol>()
 
@@ -557,6 +559,10 @@ export class ConnectionManager extends EventTarget {
    */
   handleOnDataChannelMessage(event: MessageEvent<any>) {
     const result: UnreliableResponses = JSON.parse(event.data)
+    this.dispatchUnreliableSubscribers(result)
+  }
+
+  private dispatchUnreliableSubscribers(result: UnreliableResponses) {
     Object.values(this.unreliableSubscriptions[result.type] || {}).forEach(
       // Hover/highlight responses may arrive out of order on the unreliable
       // channel. Only apply the newest sequenced result we have seen.
@@ -576,6 +582,15 @@ export class ConnectionManager extends EventTarget {
         }
       }
     )
+  }
+
+  private dispatchReliableSubscribers(result: {
+    type: string
+    data: Record<string, unknown>
+  }) {
+    Object.values(this.subscriptions[result.type] || {}).forEach((callback) => {
+      callback(result)
+    })
   }
 
   generateWebsocketURL(geometryOnly = false, kclVersion?: KclVersion) {
@@ -825,10 +840,45 @@ export class ConnectionManager extends EventTarget {
     debugLog('done')
   }
 
+  /**
+   * Lets the local renderer answer selection commands in place of the engine.
+   * Returns a function that removes the handler again.
+   */
+  setLocalSelectionCommandHandler(handler: LocalSelectionCommandHandler) {
+    this.localSelectionCommandHandler = handler
+    return () => {
+      if (this.localSelectionCommandHandler === handler) {
+        this.localSelectionCommandHandler = undefined
+      }
+    }
+  }
+
   async sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
   ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
+    // The handler declines without a promise, so a command it does not want
+    // (or any command when there is no handler) is still sent in this step.
+    const localSelection = this.localSelectionCommandHandler?.(command, {
+      streamDimensions: this.streamDimensions,
+    })
+    if (localSelection) {
+      const localSelectionResult = await localSelection
+      if (localSelectionResult) {
+        if (localSelectionResult.unreliableModelingResponse) {
+          this.dispatchUnreliableSubscribers(
+            localSelectionResult.unreliableModelingResponse as UnreliableResponses
+          )
+        }
+        if (localSelectionResult.modelingResponse) {
+          this.dispatchReliableSubscribers(
+            localSelectionResult.modelingResponse
+          )
+        }
+        return Promise.resolve(localSelectionResult.websocketResponse ?? null)
+      }
+    }
+
     if (
       this.connection === undefined ||
       !this.started ||
