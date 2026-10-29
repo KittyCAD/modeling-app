@@ -353,6 +353,7 @@ fn merge_cap(old: &mut Cap, new: Artifact) -> Option<Artifact> {
 fn merge_edge_cut(old: &mut EdgeCut, new: Artifact) -> Option<Artifact> {
     let Artifact::EdgeCut(new) = new else { return Some(new) };
     merge_opt_id(&mut old.body_id, new.body_id);
+    merge_opt_id(&mut old.source_edge_cut_id, new.source_edge_cut_id);
     merge_opt_id(&mut old.surface_id, new.surface_id);
     merge_ids(&mut old.edge_ids, new.edge_ids);
     None
@@ -972,6 +973,7 @@ fn remap_artifact_for_clone(
         Artifact::EdgeCut(source) => Artifact::EdgeCut(EdgeCut {
             id: remap_id_for_clone(source.id, entity_id_map),
             body_id: remap_opt_id_for_clone(source.body_id, entity_id_map),
+            source_edge_cut_id: source.source_edge_cut_id.or(Some(source.id)),
             sub_type: source.sub_type,
             source_selector_index: source.source_selector_index,
             consumed_edge_id: remap_opt_id_for_clone(source.consumed_edge_id, entity_id_map),
@@ -2459,6 +2461,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 body_id: Some(ArtifactId::new(cmd.object_id)),
+                source_edge_cut_id: None,
                 sub_type: edge_cut_sub_type(cmd.cut_type),
                 source_selector_index: None,
                 consumed_edge_id: Some(edge_id),
@@ -2489,6 +2492,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 body_id: Some(ArtifactId::new(cmd.object_id)),
+                source_edge_cut_id: None,
                 sub_type: edge_cut_sub_type_v2(cmd.cut_type),
                 source_selector_index: None,
                 consumed_edge_id: Some(edge_id),
@@ -2518,6 +2522,7 @@ fn artifacts_to_update(
                     Artifact::EdgeCut(EdgeCut {
                         id: face_id,
                         body_id: Some(ArtifactId::new(cmd.object_id)),
+                        source_edge_cut_id: None,
                         sub_type: edge_cut_sub_type_v2(cmd.cut_type),
                         source_selector_index: Some(source_selector_index),
                         consumed_edge_id: None,

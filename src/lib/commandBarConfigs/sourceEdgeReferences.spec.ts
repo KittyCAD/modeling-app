@@ -1,5 +1,5 @@
 import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
-import { afterAll, beforeAll, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, expect, it, vi } from 'vitest'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { getAstAndArtifactGraph } from '@src/lib/testHelpers'
@@ -24,7 +24,7 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { isErr } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 // TODO: Remove this pruning once PR4 removes obsolete edges from the graph producer.
 function removeObsoleteEdges(graph: ArtifactGraph) {
@@ -43,6 +43,8 @@ function removeObsoleteEdges(graph: ArtifactGraph) {
     }
   }
 }
+
+afterEach(() => vi.restoreAllMocks())
 
 let world: Awaited<ReturnType<typeof buildTheWorldAndConnectToEngine>>
 beforeAll(async () => {
@@ -717,41 +719,121 @@ it('translates a treatment body without selecting a nested sketch segment', asyn
   expect(world.kclManager.errors).toEqual([])
 }, 60_000)
 
-it('rejects a copied chamfer face rather than materializing a different face', async () => {
-  const code =
-    chainedTreatmentCode +
-    'copy = clone(fillet001) |> translate(x = 50mm, global = true)'
-  const { ast, artifactGraph } = await getAstAndArtifactGraph(
-    code,
-    world.instance,
-    world.kclManager
-  )
-  expect(world.kclManager.errors).toEqual([])
-  const cut = [...artifactGraph.values()].find(
-    (a) =>
-      a.type === 'edgeCut' &&
-      a.subType === 'chamfer' &&
-      code.slice(a.codeRef.range[0], a.codeRef.range[1]).includes('clone')
-  )
-  if (cut?.type !== 'edgeCut') throw new Error('Copied chamfer not found')
-  const original = recast(ast, world.instance)
-  const result = sketchBlockOnExtrudedFace(
-    ast,
-    {
+it.each(['chamfer', 'fillet'])(
+  'references the exact copied %s face in annotations',
+  async (treatment) => {
+    const code =
+      chainedTreatmentCode +
+      'copy = clone(fillet001) |> translate(x = 50mm, global = true)'
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    const cut = [...artifactGraph.values()].find(
+      (a) =>
+        a.type === 'edgeCut' && a.subType === treatment && a.sourceEdgeCutId
+    )
+    if (cut?.type !== 'edgeCut')
+      throw new Error('Copied treatment face not found')
+    const selection: Selection = {
       artifact: cut,
-      entityRef: { type: 'face', face_id: cut.id },
       codeRef: cut.codeRef,
-    },
-    cut.codeRef.pathToNode,
-    cut.codeRef.pathToNode,
-    artifactGraph,
-    world.instance
-  )
-  expect(result).toEqual(
-    new Error('Cannot create a sketch on this copied treatment face.')
-  )
-  expect(recast(ast, world.instance)).toBe(original)
-}, 60_000)
+      entityRef: { type: 'face', face_id: cut.id },
+    }
+    const result = await modelingCommandCodemods['GDT Annotation'].run({
+      ast,
+      kclManager: world.kclManager,
+      wasmInstance: world.instance,
+      args: {
+        objects: { graphSelections: [selection], otherSelections: [] },
+        annotation: 'Copied face',
+        framePlane: 'XZ',
+      },
+    })
+    if (isErr(result)) throw result
+    const output = recast(result.modifiedAst, world.instance)
+    if (isErr(output)) throw output
+    expect(output).toContain(`copy.faces.${treatment}Face01`)
+    const sent = vi.spyOn(world.engineCommandManager, 'sendCommand')
+    await getAstAndArtifactGraph(
+      output +
+        `\ngdt::annotation(faces = [fillet001.faces.${treatment}Face01], annotation = "Original after copy", framePlane = XZ)`,
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    const commands = sent.mock.calls.flatMap(([, message]) =>
+      message.command.type === 'modeling_cmd_req'
+        ? [message.command.cmd]
+        : message.command.type === 'modeling_cmd_batch_req'
+          ? message.command.requests.map((request) => request.cmd)
+          : []
+    )
+    expect(commands).toContainEqual(
+      expect.objectContaining({
+        type: 'new_annotation',
+        options: expect.objectContaining({
+          feature_control: expect.objectContaining({ entity_id: cut.id }),
+        }),
+      })
+    )
+    expect(commands).toContainEqual(
+      expect.objectContaining({
+        type: 'new_annotation',
+        options: expect.objectContaining({
+          feature_control: expect.objectContaining({
+            entity_id: cut.sourceEdgeCutId,
+          }),
+        }),
+      })
+    )
+    const unsupportedCut = structuredClone(cut)
+    delete unsupportedCut.sourceEdgeCutId
+    expect(
+      sketchBlockOnExtrudedFace(
+        ast,
+        { ...selection, artifact: unsupportedCut },
+        cut.codeRef.pathToNode,
+        cut.codeRef.pathToNode,
+        artifactGraph,
+        world.instance
+      )
+    ).toEqual(
+      new Error('Cannot create a sketch on this copied treatment face.')
+    )
+    if (treatment !== 'chamfer') return
+    const sketch = sketchBlockOnExtrudedFace(
+      ast,
+      selection,
+      cut.codeRef.pathToNode,
+      cut.codeRef.pathToNode,
+      artifactGraph,
+      world.instance
+    )
+    if (isErr(sketch)) throw sketch
+    const sketchCode = recast(sketch.modifiedAst, world.instance)
+    if (isErr(sketchCode)) throw sketchCode
+    expect(sketchCode).toContain(
+      'faceOf(copy, face = copy.faces.chamferFace01)'
+    )
+    await getAstAndArtifactGraph(
+      sketchCode.replace(
+        /(sketch\d+ = sketch\(on = faceOf[^\n]+\) \{)\n/,
+        '$1\n  circle(start = [0.1mm, 0mm], center = [0mm, 0mm])\n'
+      ),
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    expect(world.kclManager.variables.sketch001).toMatchObject({
+      type: 'Object',
+      value: { meta: { value: { sketch: { value: { on: { id: cut.id } } } } } },
+    })
+  },
+  60_000
+)
 
 it('sketches on the treatment face of the Boolean output body', async () => {
   const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
@@ -811,3 +893,109 @@ chamfer001 = chamfer(plateWithHole, length = 1mm, edges = [{ sideFaces = [plate.
     value: { meta: { value: { sketch: { value: { on: { id: cut.id } } } } } },
   })
 }, 60_000)
+
+it.each([
+  { operation: 'mirror3d(fillet001, across = YZ)', body: 'copy' },
+  {
+    operation:
+      'patternLinear3d(fillet001, instances = 3, distance = 50mm, axis = X)',
+    body: 'copy[1]',
+  },
+  {
+    operation:
+      'patternCircular3d(fillet001, instances = 3, axis = Z, center = [0mm, 0mm, 0mm], arcDegrees = 360deg)',
+    body: 'copy[1]',
+  },
+])(
+  'preserves treatment instance identity for $operation',
+  async ({ operation, body }) => {
+    const code =
+      chainedTreatmentCode +
+      `copy = ${operation}
+sketchOnCopy = sketch(on = faceOf(${body}, face = ${body}.faces.chamferFace01)) {
+  circle(start = [0.1mm, 0mm], center = [0mm, 0mm])
+}
+gdt::annotation(faces = [${body}.faces.chamferFace01], annotation = "Copied chamfer", framePlane = XZ)
+gdt::annotation(faces = [${body}.faces.filletFace01], annotation = "Copied fillet", framePlane = XZ)
+gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", framePlane = XZ)
+`
+    const sent = vi.spyOn(world.engineCommandManager, 'sendCommand')
+    const { artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    const owner = [...artifactGraph.values()].find(
+      (a) =>
+        (a.type === 'pattern' || a.type === 'sweep') &&
+        code
+          .slice(a.codeRef.range[0], a.codeRef.range[1])
+          .includes(operation.split('(')[0])
+    )
+    if (owner?.type !== 'sweep' && owner?.type !== 'pattern')
+      throw new Error('Missing copied body')
+    const original = [...artifactGraph.values()].find(
+      (a) => a.type === 'edgeCut' && a.subType === 'chamfer'
+    )
+    if (!original) throw new Error('Missing original chamfer')
+    const commands = sent.mock.calls.flatMap(([, message]) =>
+      message.command.type === 'modeling_cmd_req'
+        ? [message.command.cmd]
+        : message.command.type === 'modeling_cmd_batch_req'
+          ? message.command.requests.map((request) => request.cmd)
+          : []
+    )
+    expect(commands).toContainEqual(
+      expect.objectContaining({
+        type: 'new_annotation',
+        options: expect.objectContaining({
+          feature_control: expect.objectContaining({
+            entity_id:
+              owner.type === 'sweep'
+                ? expect.toBeOneOf(owner.surfaceIds)
+                : original.id,
+            prefix: 'Bare tag after copy',
+          }),
+        }),
+      })
+    )
+    const bodyId = owner.type === 'sweep' ? owner.id : owner.copyIds[0]
+    const faceIds =
+      owner.type === 'sweep' ? owner.surfaceIds : owner.copyFaceIds
+    for (const prefix of ['Copied chamfer', 'Copied fillet']) {
+      expect(commands).toContainEqual(
+        expect.objectContaining({
+          type: 'new_annotation',
+          options: expect.objectContaining({
+            feature_control: expect.objectContaining({
+              entity_id: expect.toBeOneOf(faceIds),
+              prefix,
+            }),
+          }),
+        })
+      )
+    }
+
+    expect(world.kclManager.variables.sketchOnCopy).toMatchObject({
+      type: 'Object',
+      value: {
+        meta: {
+          value: {
+            sketch: {
+              value: {
+                on: {
+                  type: 'face',
+                  id: expect.toBeOneOf(faceIds),
+                  value: 'chamferFace01',
+                  parentSolid: { solidId: bodyId },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+  },
+  60_000
+)

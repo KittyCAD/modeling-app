@@ -721,6 +721,34 @@ function modifyAstWithTagForFaceSelection(
   }
   // CASE 3: Handle an edgeCut face by tagging its operation.
   else if (selection.artifact.type === 'edgeCut') {
+    if (selection.artifact.sourceEdgeCutId) {
+      const source = artifactGraph.get(selection.artifact.sourceEdgeCutId)
+      if (source?.type !== 'edgeCut')
+        return new Error('Source treatment face is unavailable')
+      const body = getVariableExprsFromSelection(
+        { graphSelections: [selection], otherSelections: [] },
+        artifactGraph,
+        ast,
+        wasmInstance,
+        undefined,
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['sweep', 'compositeSolid'],
+        }
+      )
+      if (err(body)) return body
+      if (body.exprs.length !== 1)
+        return new Error('Cannot resolve copied treatment body')
+      const result = modifyAstWithTagForEdgeCutFace(ast, source, wasmInstance)
+      if (err(result)) return result
+      return {
+        modifiedAst: result.modifiedAst,
+        expr: createMemberExpression(
+          createMemberExpression(body.exprs[0], 'faces'),
+          result.tag
+        ),
+      }
+    }
     // Each handler function creates its own clone and returns a new AST
     const result = modifyAstWithTagForEdgeCutFace(
       ast,

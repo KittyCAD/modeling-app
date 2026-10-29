@@ -155,7 +155,11 @@ export type EdgeCut = { id: ArtifactId,
 /**
  * Body instance on which this treatment face was created.
  */
-bodyId?: ArtifactId | null, subType: EdgeCutSubType, 
+bodyId?: ArtifactId | null, 
+/**
+ * Original treatment operation used to tag a copied face.
+ */
+sourceEdgeCutId?: ArtifactId | null, subType: EdgeCutSubType, 
 /**
  * Index of the source selector in an `edges` argument, when this edge cut
  * was created from an edge-reference command.
