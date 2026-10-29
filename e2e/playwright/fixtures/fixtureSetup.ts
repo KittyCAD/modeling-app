@@ -150,6 +150,37 @@ export interface ElectronZooLaunchOptions {
   executablePath?: string
 }
 
+/** Tagged renderer coverage must not inherit a previous test's renderer choice. */
+async function applyTestSceneMode(page: Page, localRendererEnabled?: boolean) {
+  if (localRendererEnabled === undefined) return
+  await page.waitForFunction(() =>
+    window.app?.settings.actor.getSnapshot().matches('idle')
+  )
+  const changed = await page.evaluate((value) => {
+    const actor = window.app.settings.actor
+    if (
+      actor.getSnapshot().context.modeling.useLocalRenderer.current === value
+    ) {
+      return false
+    }
+    actor.send({
+      type: 'set.modeling.useLocalRenderer',
+      data: { level: 'user', value },
+    })
+    return true
+  }, localRendererEnabled)
+  if (!changed) return
+  await page.waitForFunction((value) => {
+    const snapshot = window.app.settings.actor.getSnapshot()
+    return (
+      snapshot.matches('idle') &&
+      snapshot.context.modeling.useLocalRenderer.current === value
+    )
+  }, localRendererEnabled)
+  // Renderer choice is captured when the scene mounts, so reload after saving.
+  await page.reload()
+}
+
 export class ElectronZoo {
   private disposed = false
   private disposal: Promise<void> | undefined
@@ -432,6 +463,9 @@ export class ElectronZoo {
 
     // Force a hard reload, destroying the stream and other state
     await this.page.reload()
+    // Reused Electron windows can reload before the settings file is settled.
+    // Verify the live setting before the test opens a modeling scene.
+    await applyTestSceneMode(this.page, this.useLocalRenderer)
   }
 
   async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
@@ -583,28 +617,9 @@ const fixturesForWeb = {
     const webApp = new AuthenticatedApp(context, page, testInfo)
     await webApp.initialise('', userFeatures)
 
-    const localRendererEnabled = geometryOnlyForTestTags(testInfo.tags)
-    if (localRendererEnabled !== undefined) {
-      // Web settings live in OPFS; the localStorage seed alone cannot select
-      // a renderer. Persist the choice before a modeling scene mounts.
-      await page.waitForFunction(() =>
-        window.app?.settings.actor.getSnapshot().matches('idle')
-      )
-      await page.evaluate((value) => {
-        window.app.settings.actor.send({
-          type: 'set.modeling.useLocalRenderer',
-          data: { level: 'user', value },
-        })
-      }, localRendererEnabled)
-      await page.waitForFunction((value) => {
-        const snapshot = window.app.settings.actor.getSnapshot()
-        return (
-          snapshot.matches('idle') &&
-          snapshot.context.modeling.useLocalRenderer.current === value
-        )
-      }, localRendererEnabled)
-      await page.reload()
-    }
+    // Web settings live in OPFS; the localStorage seed alone cannot select
+    // a renderer. Persist the choice before a modeling scene mounts.
+    await applyTestSceneMode(page, geometryOnlyForTestTags(testInfo.tags))
 
     await use(page)
   },
