@@ -5,7 +5,7 @@ import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
-import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
+import { activeFocusIsInput } from '@src/lib/utils'
 import type { authMachine } from '@src/machines/authMachine'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
@@ -237,16 +237,8 @@ export function modelingMenuCallbackMostActions({
     } else if (
       data.menuLabel === 'View.Standard views.Center view on selection'
     ) {
-      // Gotcha: out of band from modelingMachineProvider, has no state or extra workflows. I am taking the function's logic and porting it here.
-      kclManager.engineCommandManager
-        .sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_center_to_selection',
-            camera_movement: 'vantage',
-          },
-        })
+      kclManager.sceneInfra.camControls
+        .centerOnSelection()
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Named views.Create named view') {
       commandBarActor.send({

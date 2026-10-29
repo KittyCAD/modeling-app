@@ -617,9 +617,18 @@ describe('local camera view restore', () => {
     return controls
   }
 
-  // Only the projection fields matter here; the pose comes back from the engine.
-  const view = (isOrtho: boolean) =>
-    ({ is_ortho: isOrtho, fov_y: 30 }) as CameraViewState
+  // Looking straight down from 100 mm above the pivot. The engine's camera
+  // looks along its local -Z, so no rotation means looking down the world Z.
+  const view = (isOrtho: boolean): CameraViewState => ({
+    pivot_rotation: { x: 0, y: 0, z: 0, w: 1 },
+    pivot_position: { x: 10, y: 20, z: 0 },
+    eye_offset: 100,
+    fov_y: 30,
+    is_ortho: isOrtho,
+    ortho_scale_factor: 1.6,
+    ortho_scale_enabled: true,
+    world_coord_system: 'right_handed_up_z',
+  })
 
   it('restores a perspective view onto an orthographic camera', async () => {
     const controls = setup()
@@ -627,6 +636,7 @@ describe('local camera view restore', () => {
     await controls.setCameraView(view(false))
     expect(controls.camera).toBeInstanceOf(PerspectiveCamera)
     expect((controls.camera as PerspectiveCamera).fov).toBe(30)
+    await expectViewRestored(controls, view(false))
   })
 
   it('restores an orthographic view onto a perspective camera', async () => {
@@ -634,5 +644,28 @@ describe('local camera view restore', () => {
     await controls.setCameraView(view(true))
     expect(controls.camera).toBeInstanceOf(OrthographicCamera)
     expect(controls.lastPerspectiveFov).toBe(30)
+    await expectViewRestored(controls, view(true))
   })
 })
+
+/** Placed as the engine places its camera, and read back as the same view. */
+async function expectViewRestored(
+  controls: CameraControls,
+  view: CameraViewState
+) {
+  expect(controls.target.toArray()).toEqual([10, 20, 0])
+  const position = controls.camera.position
+  expect(position.x).toBeCloseTo(10)
+  expect(position.y).toBeCloseTo(20)
+  expect(position.z).toBeCloseTo(100)
+  expect(controls.camera.getWorldDirection(new Vector3()).z).toBeCloseTo(-1)
+  // The local renderer orients its camera from up, position and target.
+  expect(controls.camera.up.distanceTo(new Vector3(0, 1, 0))).toBeCloseTo(0)
+
+  const restored = await controls.getCameraView()
+  if (restored instanceof Error) {
+    throw restored
+  }
+  expect(restored.eye_offset).toBeCloseTo(view.eye_offset)
+  expect({ ...restored, eye_offset: view.eye_offset }).toEqual(view)
+}
