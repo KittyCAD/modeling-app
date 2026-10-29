@@ -341,22 +341,13 @@ export const FileExplorerRowElement = ({
     removeDragPreviewElement(dragPreviewId)
   }, [dragPreviewId])
 
-  const delayRef = useRef<ReturnType<typeof setTimeout>>(undefined)
-  const delayedRowOpen = useCallback(
-    (timeout: number) => {
-      const handler = () => row.onOpen()
-      delayRef.current = setTimeout(handler, timeout)
-    },
-    [row]
-  )
+  const openingRowRef = useRef<string | null>(null)
 
   // Clean up any missed drag preview elements
   useEffect(() => {
     return () => {
       removeDragPreviewElem()
-      if (delayRef.current) {
-        clearTimeout(delayRef.current)
-      }
+      openingRowRef.current = null
     }
   }, [removeDragPreviewElem])
 
@@ -386,14 +377,13 @@ export const FileExplorerRowElement = ({
     onDeleteEnd()
   }, [onDeleteEnd])
 
-  // Complaining about role="treeitem" focus but it is reimplemented aria labels
-  /* eslint-disable */
   return (
+    // eslint-disable-next-line jsx-a11y/interactive-supports-focus -- The tree owner implements keyboard focus with its active row index.
     <div
       ref={rowElementRef}
       role="treeitem"
       data-testid="file-tree-item"
-      className={`h-5 flex flex-row items-center text-xs -outline-offset-1 ${outlineCSS} ${interactionCSS} ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS} transition-all duration-100`}
+      className={`h-5 flex flex-row items-center text-xs -outline-offset-1 ${outlineCSS} ${interactionCSS} ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS}`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}
@@ -437,8 +427,15 @@ export const FileExplorerRowElement = ({
           }
         } else {
           // Handle internal drag (reordering files)
-          if (!row.isOpen && row.isFolder && !delayRef.current) {
-            delayedRowOpen(400)
+          if (
+            !row.isOpen &&
+            row.isFolder &&
+            openingRowRef.current !== row.key
+          ) {
+            // Native dragover repeats before React publishes the opened row.
+            // Opening is a toggle, so the current gesture must issue it once.
+            openingRowRef.current = row.key
+            row.onOpen()
           }
           event.dataTransfer.dropEffect = 'move'
           event.currentTarget.classList.add('bg-primary/10')
@@ -450,16 +447,20 @@ export const FileExplorerRowElement = ({
         }
         event.preventDefault()
 
+        if (
+          event.relatedTarget instanceof Node &&
+          event.currentTarget.contains(event.relatedTarget)
+        ) {
+          return
+        }
+
         if (isExternalFileDrag(event)) {
           return
         }
 
         // Handle internal drag (existing behavior)
         event.currentTarget.classList.remove('bg-primary/10')
-        if (delayRef.current) {
-          clearTimeout(delayRef.current)
-          delayRef.current = undefined
-        }
+        openingRowRef.current = null
       }}
       onDragStart={(event) => {
         if (isInteractionDisabled) {
@@ -482,9 +483,11 @@ export const FileExplorerRowElement = ({
         })
       }}
       onDragEnd={() => {
+        openingRowRef.current = null
         removeDragPreviewElem()
       }}
       onDrop={(event) => {
+        openingRowRef.current = null
         if (isInteractionDisabled) {
           return
         }
@@ -500,9 +503,8 @@ export const FileExplorerRowElement = ({
         try {
           droppedData = JSON.parse(event.dataTransfer.getData('json'))
           if (!('name' in droppedData) || !('path' in droppedData)) {
-            throw new Error(
-              'malformed drop data: ' + JSON.stringify(droppedData)
-            )
+            console.error('malformed drop data: ' + JSON.stringify(droppedData))
+            return
           }
         } catch (e) {
           console.error('invalid JSON in drop event', e)
