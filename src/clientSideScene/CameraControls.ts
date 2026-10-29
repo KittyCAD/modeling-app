@@ -10,7 +10,7 @@ import { getLocalCameraSceneScale } from '@src/clientSideScene/cameraSceneScale'
 
 import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
-import type { Camera, Object3D } from 'three'
+import type { Box3, Camera, Object3D } from 'three'
 import { Matrix4 } from 'three'
 import {
   Euler,
@@ -39,6 +39,8 @@ import { Signal as LegacySignal } from '@src/lib/signal'
 import { reportRejection } from '@src/lib/trap'
 import { err, isErr } from '@src/lib/trap'
 import {
+  engineStreamZoomToFit,
+  engineViewIsometric,
   getNormalisedCoordinates,
   isReducedMotion,
   roundOff,
@@ -102,6 +104,14 @@ type ScreenPoint = {
   target?: EventTarget | null
 }
 
+/** What the camera needs from the local renderer, in the camera's world. */
+interface LocalCameraScene {
+  /** What zoom to fit frames. */
+  getFitBounds(): Box3 | undefined
+  /** What center view on selection centers on. */
+  getSelectionBounds(): Box3 | undefined
+}
+
 class CameraRateLimiter {
   lastSend?: Date = undefined
   rateLimitMs: number = 16 //60 FPS
@@ -158,6 +168,7 @@ export class CameraControls {
   touchControlManager: HammerManager | null = null
   enableTouchControls = true
   getSettings: () => SettingsType
+  private readonly getLocalScene: () => LocalCameraScene | null
 
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
@@ -166,8 +177,8 @@ export class CameraControls {
   }
 
   /**
-   * In local mode the client owns the camera, as in clientToEngine, and keeps
-   * pushing it to the engine so that engine camera commands start from it.
+   * In local mode the client owns the camera, as in clientToEngine. The engine
+   * has no camera then: the connection drops the camera commands sent to it.
    */
   private get effectiveCameraMode(): CameraSyncDirection | 'local' {
     return this.localCameraMode ? 'local' : this.syncDirection
@@ -347,11 +358,12 @@ export class CameraControls {
     domElement: HTMLCanvasElement,
     engineCommandManager: ConnectionManager,
     getSettings: typeof this.getSettings,
-    isOrtho = false
+    getLocalScene: typeof this.getLocalScene = () => null
   ) {
     this.engineCommandManager = engineCommandManager
     this.getSettings = getSettings
-    this.camera = isOrtho ? new OrthographicCamera() : new PerspectiveCamera()
+    this.getLocalScene = getLocalScene
+    this.camera = new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
     this.target = new Vector3()
@@ -638,7 +650,13 @@ export class CameraControls {
     }
 
     if (this.effectiveCameraMode === 'local' && interaction === 'rotate') {
-      this.orbitLocalCamera(deltaMove)
+      orbitLocalCamera(
+        this.camera,
+        this.target,
+        deltaMove,
+        this.domElement,
+        this.orbitDragUpInverted
+      )
       this.update(true)
       return
     }
@@ -786,9 +804,7 @@ export class CameraControls {
     const fovFactor = 45 / this.lastPerspectiveFov
     this.camera.zoom =
       this.effectiveCameraMode === 'local'
-        ? ORTHOGRAPHIC_CAMERA_SIZE /
-          (Math.max(distance, 0.001) *
-            viewHeightFactor(this.lastPerspectiveFov))
+        ? getLocalOrthoZoom(this.camera, distance, this.lastPerspectiveFov)
         : (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
 
     this.camera.quaternion.set(qx, qy, qz, qw)
@@ -1043,51 +1059,6 @@ export class CameraControls {
     // damping would be implemented here in update if we choose to add it.
   }
 
-  private orbitLocalCamera(delta: Vector2) {
-    // Match engine spherical orbit: canvas dragging can continue through
-    // both poles, unlike the cube gizmo's clamped rotation.
-    const rotation = this.camera.quaternion
-    const worldUp = new Vector3(0, 0, 1)
-    const back = new Vector3(0, 0, 1).applyQuaternion(rotation)
-    const up = new Vector3(0, 1, 0).applyQuaternion(rotation)
-    const distance = this.camera.position.distanceTo(this.target)
-
-    // Remove roll for spherical orbit while retaining the current up/down
-    // hemisphere. At a pole keep the existing orientation: lookAt is singular.
-    if (Math.abs(back.dot(worldUp)) < 1 - 1e-10) {
-      const upright = worldUp.clone().multiplyScalar(up.z < 0 ? -1 : 1)
-      rotation.setFromRotationMatrix(
-        new Matrix4().lookAt(back, new Vector3(), upright)
-      )
-    }
-
-    const right = new Vector3(1, 0, 0).applyQuaternion(rotation)
-    // Engine drag speeds are calibrated to a 1024 x 768 viewport.
-    const yaw = MathUtils.degToRad(
-      -delta.x *
-        0.25 *
-        (1024 / Math.max(this.domElement.clientWidth, 1)) *
-        (this.orbitDragUpInverted ? -1 : 1)
-    )
-    const pitch = MathUtils.degToRad(
-      -delta.y * 0.25 * (768 / Math.max(this.domElement.clientHeight, 1))
-    )
-    rotation
-      .premultiply(
-        new Quaternion()
-          .setFromAxisAngle(worldUp, yaw)
-          .multiply(new Quaternion().setFromAxisAngle(right, pitch))
-      )
-      .normalize()
-
-    this.camera.position
-      .set(0, 0, distance)
-      .applyQuaternion(rotation)
-      .add(this.target)
-    // The local renderer copies up as well as position; don't force Z-up here.
-    this.camera.up.set(0, 1, 0).applyQuaternion(rotation)
-  }
-
   rotateCamera = (deltaX: number, deltaY: number) => {
     const quat = new Quaternion().setFromUnitVectors(
       new Vector3(0, 0, 1),
@@ -1134,6 +1105,13 @@ export class CameraControls {
   async getCameraView(signal?: AbortSignal): Promise<CameraViewState | Error> {
     if (signal?.aborted) {
       return new Error('Camera capture cancelled')
+    }
+    if (this.effectiveCameraMode === 'local') {
+      return getLocalCameraView(
+        this.camera,
+        this.target,
+        this.lastPerspectiveFov
+      )
     }
 
     const connection = this.engineCommandManager.connection
@@ -1193,18 +1171,9 @@ export class CameraControls {
   }
 
   async setCameraView(view: CameraViewState): Promise<void> {
-    // In local mode the settings reply below only updates the pose, so take
-    // the projection and field of view from the view here.
-    // This can go away if the followsEngineProjection logic is updated
-    // to take the projection also.
     if (this.effectiveCameraMode === 'local') {
-      this.lastPerspectiveFov = view.fov_y
-      if (this.camera instanceof PerspectiveCamera) {
-        this.camera.fov = view.fov_y
-      }
-      await this.setCameraProjection(
-        view.is_ortho ? 'orthographic' : 'perspective'
-      )
+      await this.setLocalCameraView(view)
+      return
     }
 
     await this.engineCommandManager.sendSceneCommand({
@@ -1221,6 +1190,139 @@ export class CameraControls {
       cmd_id: uuidv4(),
       cmd: {
         type: 'default_camera_get_settings',
+      },
+    })
+  }
+
+  /** Applies a view to the client camera as Camera::setView does in the engine. */
+  private async setLocalCameraView(view: CameraViewState) {
+    this.lastPerspectiveFov = view.fov_y
+    if (this.camera instanceof PerspectiveCamera) {
+      this.camera.fov = view.fov_y
+    }
+    await this.setCameraProjection(
+      view.is_ortho ? 'orthographic' : 'perspective'
+    )
+    setLocalCameraPose(this.camera, this.target, view)
+    this.onCameraChange()
+  }
+
+  /**
+   * Points the camera from `vantage` at `center`, keeping its projection, as
+   * the engine's default_camera_look_at does.
+   */
+  async lookAt(look: {
+    center: Point3d
+    vantage: Point3d
+    up: Point3d
+  }): Promise<void> {
+    if (this.effectiveCameraMode === 'local') {
+      lookAtLocalCamera(this.camera, this.target, look, this.lastPerspectiveFov)
+      this.onCameraChange()
+      return
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...look,
+      },
+    })
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
+  /**
+   * Frames the model without turning the camera, as the engine's zoom_to_fit
+   * does. `padding` grows the model's bounds by that fraction of their size.
+   */
+  async zoomToFit({ padding }: { padding: number }): Promise<void> {
+    if (this.effectiveCameraMode === 'local') {
+      const bounds = this.getLocalScene()?.getFitBounds()
+      if (bounds) {
+        frameLocalCamera(
+          this.camera,
+          this.target,
+          bounds,
+          padding,
+          this.lastPerspectiveFov,
+          this.normalizedViewportAspect()
+        )
+        this.onCameraChange()
+      }
+      return
+    }
+
+    await engineStreamZoomToFit({
+      engineCommandManager: this.engineCommandManager,
+      padding,
+    })
+  }
+
+  /**
+   * Looks at the model from the isometric direction and frames it, as the
+   * engine's view_isometric does.
+   */
+  async viewIsometric({ padding }: { padding: number }): Promise<void> {
+    if (this.effectiveCameraMode === 'local') {
+      const bounds = this.getLocalScene()?.getFitBounds()
+      if (bounds) {
+        // The engine's isometric view looks along (-1, 1, -1) with Z up.
+        this.camera.quaternion.setFromRotationMatrix(
+          new Matrix4().lookAt(
+            new Vector3(1, -1, 1),
+            new Vector3(),
+            new Vector3(0, 0, 1)
+          )
+        )
+        frameLocalCamera(
+          this.camera,
+          this.target,
+          bounds,
+          padding,
+          this.lastPerspectiveFov,
+          this.normalizedViewportAspect()
+        )
+        this.onCameraChange()
+      }
+      return
+    }
+
+    await engineViewIsometric({
+      engineCommandManager: this.engineCommandManager,
+      padding,
+    })
+  }
+
+  /**
+   * Looks at the center of the selection, or at the origin when nothing is
+   * selected, keeping the view's direction and distance, as the engine's
+   * default_camera_center_to_selection does.
+   */
+  async centerOnSelection(): Promise<void> {
+    if (this.effectiveCameraMode === 'local') {
+      const center =
+        this.getLocalScene()?.getSelectionBounds()?.getCenter(new Vector3()) ??
+        new Vector3()
+      this.camera.position.add(center).sub(this.target)
+      this.target.copy(center)
+      this.onCameraChange()
+      return
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_center_to_selection',
+        camera_movement: 'vantage',
       },
     })
   }
@@ -1268,22 +1370,7 @@ export class CameraControls {
       cameraViewTarget.eye_offset = overrides.eyeOffset
     }
 
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_view',
-        view: cameraViewTarget,
-      },
-    })
-
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
+    await this.setCameraView(cameraViewTarget)
   }
 
   async updateCameraToAxis(
@@ -1327,50 +1414,20 @@ export class CameraControls {
       vantage.y -= eyeDistance
     }
 
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        center,
-        vantage,
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
+    await this.lookAt({ center, vantage, up: { x: 0, y: 0, z: 1 } })
   }
 
   async resetCameraPosition(): Promise<void> {
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        center: this.target,
-        vantage: {
-          x: this.target.x,
-          y: this.target.y - 128,
-          z: this.target.z + 64,
-        },
-        up: { x: 0, y: 0, z: 1 },
+    await this.lookAt({
+      center: this.target,
+      vantage: {
+        x: this.target.x,
+        y: this.target.y - 128,
+        z: this.target.z + 64,
       },
+      up: { x: 0, y: 0, z: 1 },
     })
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'zoom_to_fit',
-        object_ids: [], // leave empty to zoom to all objects
-        padding: 0.2, // padding around the objects
-        animated: false, // don't animate the zoom for now
-      },
-    })
+    await this.zoomToFit({ padding: 0.2 })
   }
 
   /**
@@ -1539,30 +1596,19 @@ export class CameraControls {
     }
     this.pendingSketchCamera = undefined
 
-    const camera = this.camera
-    const distance = Math.max(camera.position.distanceTo(this.target), 0.001)
-    const halfHeight =
-      camera instanceof PerspectiveCamera
-        ? distance * viewHeightFactor(camera.getEffectiveFOV())
-        : (camera.top - camera.bottom) / (2 * camera.zoom)
-    const frame = getSketchCameraFrame(sketch, camera.position, faceCenter)
-    const targetHalfHeight =
-      frame.distance *
-      viewHeightFactor(
-        camera instanceof PerspectiveCamera
-          ? camera.getEffectiveFOV()
-          : this.lastPerspectiveFov
-      )
+    const frame = getSketchCameraFrame(sketch, this.camera.position, faceCenter)
     this.pendingPan = null
     this.pendingRotation = null
     this.pendingZoom = null
+    // In local mode this keeps the visible scale.
     this.useOrthographicCamera()
     if (!(this.camera instanceof OrthographicCamera)) return
-    // Preserve the visible scale when switching projection before the tween.
-    this.camera.zoom = ORTHOGRAPHIC_CAMERA_SIZE / halfHeight
-    this.camera.updateProjectionMatrix()
     await this._tweenCameraToQuaternion(frame.quaternion, frame.target, 500, {
-      zoom: ORTHOGRAPHIC_CAMERA_SIZE / targetHalfHeight,
+      zoom: getLocalOrthoZoom(
+        this.camera,
+        frame.distance,
+        this.lastPerspectiveFov
+      ),
       distance: frame.distance,
       signal,
     })
@@ -1747,30 +1793,9 @@ export class CameraControls {
   }, 200)
 
   onCameraChange = (forceUpdate = false) => {
-    let distance = this.target.distanceTo(this.camera.position)
+    const distance = this.target.distanceTo(this.camera.position)
     if (this.effectiveCameraMode === 'local') {
-      if (this.camera instanceof OrthographicCamera) {
-        // Match engine orthographic zoom, derived from FOV and eye distance.
-        // Keep these in sync so entry/exit preserves zoom after wheel navigation.
-        distance =
-          (this.camera.top - this.camera.bottom) /
-          (2 * this.camera.zoom * viewHeightFactor(this.lastPerspectiveFov))
-        this.camera.position
-          .sub(this.target)
-          .setLength(distance)
-          .add(this.target)
-        this.camera.updateMatrixWorld()
-      }
-      const scale = getLocalCameraSceneScale(distance)
-      // Match engine clipping, including the mirrored orthographic near plane.
-      // Distances here are in mm.
-      const far = scale * 10000
-      const near = this.camera instanceof OrthographicCamera ? -far : scale
-      if (this.camera.near !== near || this.camera.far !== far) {
-        this.camera.near = near
-        this.camera.far = far
-        this.camera.updateProjectionMatrix()
-      }
+      updateLocalCameraDepth(this.camera, this.target, this.lastPerspectiveFov)
     } else if (
       this.camera.far / 2.1 < distance ||
       this.camera.far / 1.9 > distance
@@ -1908,7 +1933,7 @@ export class CameraControls {
       const direction = ev.angle
 
       if (
-        this.effectiveCameraMode === 'engineToClient' &&
+        this.syncDirection === 'engineToClient' &&
         ev.maxPointers === 1 &&
         this.enableRotate &&
         velocity > 0
@@ -1989,29 +2014,30 @@ export class CameraControls {
           this.setDragAnchor(center)
         }
         lastScale = ev.scale
-      } else {
-        const scaleDelta = lastScale - ev.scale
-        const isUnderVelocityLimit = ev.velocity < velocityLimit
-        // The faster you move the less you zoom
-        const velocityFactor =
-          Math.abs(
-            velocityLimit - Math.min(velocityLimit, Math.abs(ev.velocity))
-          ) * 0.5
-        const normalizedScale = Math.ceil(scaleDelta * 2000 * velocityFactor)
-        const isOverNormalizedScaleLimit =
-          Math.abs(normalizedScale) > normalizedScaleThreshold
+        return
+      }
 
-        if (
-          this.effectiveCameraMode === 'engineToClient' &&
-          this.enableZoom &&
-          isUnderVelocityLimit &&
-          isOverNormalizedScaleLimit
-        ) {
-          this.zoomSender.send(() => {
-            this.doZoom(normalizedScale)
-          })
-          lastScale = ev.scale
-        }
+      const scaleDelta = lastScale - ev.scale
+      const isUnderVelocityLimit = ev.velocity < velocityLimit
+      // The faster you move the less you zoom
+      const velocityFactor =
+        Math.abs(
+          velocityLimit - Math.min(velocityLimit, Math.abs(ev.velocity))
+        ) * 0.5
+      const normalizedScale = Math.ceil(scaleDelta * 2000 * velocityFactor)
+      const isOverNormalizedScaleLimit =
+        Math.abs(normalizedScale) > normalizedScaleThreshold
+
+      if (
+        this.syncDirection === 'engineToClient' &&
+        this.enableZoom &&
+        isUnderVelocityLimit &&
+        isOverNormalizedScaleLimit
+      ) {
+        this.zoomSender.send(() => {
+          this.doZoom(normalizedScale)
+        })
+        lastScale = ev.scale
       }
     })
     hammertime.on('pinchend pinchcancel', () => {
@@ -2173,4 +2199,232 @@ function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
   let quaternion = new Quaternion().setFromRotationMatrix(lookAtMatrix)
 
   return quaternion
+}
+
+// Local mode helpers. The client camera stands in for the engine's, so these
+// follow the engine's camera. Both look along the camera's local -Z with +Y up.
+// `perspectiveFov` is the field of view an orthographic camera's zoom is
+// measured against, as the engine keeps its fov_y in orthographic mode.
+
+/**
+ * Orbits like the engine's spherical orbit: dragging can continue through
+ * both poles, unlike the cube gizmo's clamped rotation. `delta` is in pixels.
+ */
+function orbitLocalCamera(
+  camera: Camera,
+  target: Vector3,
+  delta: Vector2,
+  viewport: Pick<HTMLElement, 'clientWidth' | 'clientHeight'>,
+  dragUpInverted: boolean
+) {
+  const rotation = camera.quaternion
+  const worldUp = new Vector3(0, 0, 1)
+  const back = new Vector3(0, 0, 1).applyQuaternion(rotation)
+  const up = new Vector3(0, 1, 0).applyQuaternion(rotation)
+  const distance = camera.position.distanceTo(target)
+
+  // Remove roll for spherical orbit while retaining the current up/down
+  // hemisphere. At a pole keep the existing orientation: lookAt is singular.
+  if (Math.abs(back.dot(worldUp)) < 1 - 1e-10) {
+    const upright = worldUp.clone().multiplyScalar(up.z < 0 ? -1 : 1)
+    rotation.setFromRotationMatrix(
+      new Matrix4().lookAt(back, new Vector3(), upright)
+    )
+  }
+
+  const right = new Vector3(1, 0, 0).applyQuaternion(rotation)
+  // Engine drag speeds are calibrated to a 1024 x 768 viewport.
+  const yaw = MathUtils.degToRad(
+    -delta.x *
+      0.25 *
+      (1024 / Math.max(viewport.clientWidth, 1)) *
+      (dragUpInverted ? -1 : 1)
+  )
+  const pitch = MathUtils.degToRad(
+    -delta.y * 0.25 * (768 / Math.max(viewport.clientHeight, 1))
+  )
+  rotation
+    .premultiply(
+      new Quaternion()
+        .setFromAxisAngle(worldUp, yaw)
+        .multiply(new Quaternion().setFromAxisAngle(right, pitch))
+    )
+    .normalize()
+
+  camera.position.set(0, 0, distance).applyQuaternion(rotation).add(target)
+  // The local renderer copies up as well as position; don't force Z-up here.
+  camera.up.set(0, 1, 0).applyQuaternion(rotation)
+}
+
+/**
+ * The zoom at which an orthographic camera shows what the engine's does from
+ * `eyeOffset` away: a view 2 * tan(fovY / 2) * eyeOffset high.
+ */
+function getLocalOrthoZoom(
+  camera: OrthographicCamera,
+  eyeOffset: number,
+  perspectiveFov: number
+) {
+  return (
+    (camera.top - camera.bottom) /
+    (2 * Math.max(eyeOffset, 0.001) * viewHeightFactor(perspectiveFov))
+  )
+}
+
+/** The engine's eye offset for an orthographic camera's zoom. */
+function getLocalOrthoEyeOffset(
+  camera: OrthographicCamera,
+  perspectiveFov: number
+) {
+  return (
+    (camera.top - camera.bottom) /
+    (2 * camera.zoom * viewHeightFactor(perspectiveFov))
+  )
+}
+
+/** Places the camera at the engine's eye offset and clips as the engine does. */
+function updateLocalCameraDepth(
+  camera: PerspectiveCamera | OrthographicCamera,
+  target: Vector3,
+  perspectiveFov: number
+) {
+  let eyeOffset = camera.position.distanceTo(target)
+  if (camera instanceof OrthographicCamera) {
+    // Match engine orthographic zoom, derived from FOV and eye distance.
+    // Keep these in sync so entry/exit preserves zoom after wheel navigation.
+    eyeOffset = getLocalOrthoEyeOffset(camera, perspectiveFov)
+    camera.position.sub(target).setLength(eyeOffset).add(target)
+    camera.updateMatrixWorld()
+  }
+  const scale = getLocalCameraSceneScale(eyeOffset)
+  // Match engine clipping, including the mirrored orthographic near plane.
+  // Distances here are in mm.
+  const far = scale * 10000
+  const near = camera instanceof OrthographicCamera ? -far : scale
+  if (camera.near !== near || camera.far !== far) {
+    camera.near = near
+    camera.far = far
+    camera.updateProjectionMatrix()
+  }
+}
+
+/**
+ * The camera's view as the engine's Camera::getView describes its own: the
+ * camera looks along its local -Z from eye_offset away on its local +Z.
+ */
+function getLocalCameraView(
+  camera: PerspectiveCamera | OrthographicCamera,
+  target: Vector3,
+  perspectiveFov: number
+): CameraViewState {
+  const { quaternion } = camera
+  const isOrtho = camera instanceof OrthographicCamera
+  const fovY = isOrtho ? perspectiveFov : camera.fov
+  // An orthographic view's height comes from the eye offset, as in the
+  // engine; updateLocalCameraDepth() keeps the camera that far away.
+  const eyeOffset = isOrtho
+    ? getLocalOrthoEyeOffset(camera, fovY)
+    : camera.position.distanceTo(target)
+  return {
+    pivot_rotation: {
+      x: quaternion.x,
+      y: quaternion.y,
+      z: quaternion.z,
+      w: quaternion.w,
+    },
+    pivot_position: { x: target.x, y: target.y, z: target.z },
+    eye_offset: eyeOffset,
+    fov_y: fovY,
+    is_ortho: isOrtho,
+    // The engine's camera has none of these, and its views always carry the
+    // defaults.
+    ortho_scale_factor: 1.6,
+    ortho_scale_enabled: true,
+    world_coord_system: EXPECTED_WORLD_COORD_SYSTEM,
+  }
+}
+
+/**
+ * Applies a view's pose, and its scale to an orthographic camera, as the
+ * engine's Camera::setView does. The caller sets the projection first.
+ */
+function setLocalCameraPose(
+  camera: PerspectiveCamera | OrthographicCamera,
+  target: Vector3,
+  view: CameraViewState
+) {
+  const { pivot_rotation: rotation, pivot_position: pivot } = view
+  target.set(pivot.x, pivot.y, pivot.z)
+  camera.quaternion
+    .set(rotation.x, rotation.y, rotation.z, rotation.w)
+    .normalize()
+  camera.position
+    .set(0, 0, view.eye_offset)
+    .applyQuaternion(camera.quaternion)
+    .add(target)
+  // The local renderer orients its camera from up, position and target.
+  camera.up.set(0, 1, 0).applyQuaternion(camera.quaternion)
+  if (camera instanceof OrthographicCamera) {
+    camera.zoom = getLocalOrthoZoom(camera, view.eye_offset, view.fov_y)
+  }
+  camera.updateProjectionMatrix()
+}
+
+/**
+ * Points the camera from `vantage` at `center` as the engine's lookAt does. An
+ * orthographic camera shows what the engine's would from that distance.
+ */
+function lookAtLocalCamera(
+  camera: PerspectiveCamera | OrthographicCamera,
+  target: Vector3,
+  { center, vantage, up }: { center: Point3d; vantage: Point3d; up: Point3d },
+  perspectiveFov: number
+) {
+  target.set(center.x, center.y, center.z)
+  camera.position.set(vantage.x, vantage.y, vantage.z)
+  camera.up.set(up.x, up.y, up.z)
+  camera.lookAt(target)
+  // The local renderer orients its camera from up, position and target.
+  camera.up.set(0, 1, 0).applyQuaternion(camera.quaternion)
+  if (camera instanceof OrthographicCamera) {
+    camera.zoom = getLocalOrthoZoom(
+      camera,
+      camera.position.distanceTo(target),
+      perspectiveFov
+    )
+  }
+  camera.updateProjectionMatrix()
+}
+
+/**
+ * Frames `bounds` without turning the camera, as the engine's
+ * Camera::frameObject does. The bounds grow by `padding` times their size.
+ * Half their diagonal then fills half the view's height, or half its width
+ * when the viewport is taller than it is wide.
+ */
+function frameLocalCamera(
+  camera: PerspectiveCamera | OrthographicCamera,
+  target: Vector3,
+  bounds: Box3,
+  padding: number,
+  perspectiveFov: number,
+  aspect: number
+) {
+  const fov = camera instanceof PerspectiveCamera ? camera.fov : perspectiveFov
+  const radius = 0.5 * (1 + padding) * bounds.getSize(new Vector3()).length()
+  let eyeOffset = radius / viewHeightFactor(fov)
+  if (aspect < 1) {
+    eyeOffset /= aspect
+  }
+  bounds.getCenter(target)
+  camera.position
+    .set(0, 0, eyeOffset)
+    .applyQuaternion(camera.quaternion)
+    .add(target)
+  // The local renderer orients its camera from up, position and target.
+  camera.up.set(0, 1, 0).applyQuaternion(camera.quaternion)
+  if (camera instanceof OrthographicCamera) {
+    camera.zoom = getLocalOrthoZoom(camera, eyeOffset, perspectiveFov)
+  }
+  camera.updateProjectionMatrix()
 }

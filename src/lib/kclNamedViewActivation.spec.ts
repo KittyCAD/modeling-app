@@ -146,7 +146,8 @@ function flush(): Promise<void> {
 function fakes({ isReady = true }: { isReady?: boolean } = {}) {
   const setObjectsHidden = vi.fn().mockResolvedValue(null)
   const setCameraToAxis = vi.fn().mockResolvedValue(undefined)
-  const sendSceneCommand = vi.fn().mockResolvedValue(null)
+  const zoomToFit = vi.fn().mockResolvedValue(undefined)
+  const viewIsometric = vi.fn().mockResolvedValue(undefined)
   const setCameraProjection = vi.fn().mockResolvedValue(undefined)
   const engineSceneGenerationSignal = signal(0)
   const modelingStateSignal = signal<ModelingStateFake>(null)
@@ -173,11 +174,13 @@ function fakes({ isReady = true }: { isReady?: boolean } = {}) {
     },
     modelingStateSignal,
     engineSceneGenerationSignal,
-    engineCommandManager: { setObjectsHidden, sendSceneCommand, isReady },
+    engineCommandManager: { setObjectsHidden, isReady },
     sceneInfra: {
       camControls: {
         setCameraToAxis,
         setCameraProjection,
+        zoomToFit,
+        viewIsometric,
         target: new Vector3(),
         camera,
         cameraChange: new Signal(),
@@ -190,7 +193,7 @@ function fakes({ isReady = true }: { isReady?: boolean } = {}) {
     kclManager: raw as unknown as KclManager,
     setObjectsHidden,
     setCameraToAxis,
-    sendSceneCommand,
+    zoomToFit,
     engineSceneGenerationSignal,
   }
 }
@@ -202,7 +205,7 @@ async function activateFront(f: ReturnType<typeof fakes>) {
   })
   f.setObjectsHidden.mockClear()
   f.setCameraToAxis.mockClear()
-  f.sendSceneCommand.mockClear()
+  f.zoomToFit.mockClear()
 }
 
 describe('moduleKeyOf', () => {
@@ -505,7 +508,7 @@ describe('reapplying the active view after an execution', () => {
 
     expect(f.setObjectsHidden).toHaveBeenCalledOnce()
     expect(f.setCameraToAxis).not.toHaveBeenCalled()
-    expect(f.sendSceneCommand).not.toHaveBeenCalled()
+    expect(f.zoomToFit).not.toHaveBeenCalled()
   })
 
   it('does nothing when the execution reported errors', async () => {
