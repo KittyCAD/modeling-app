@@ -10,7 +10,7 @@ import {
   type FileWorkflowService,
   waitForIdleState,
 } from '@src/lib/fileSystem/workflows/utils'
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 
 const collectProjectFiles = (
   args: Omit<
@@ -46,23 +46,18 @@ beforeAll(async () => {
   })
 })
 
-describe('System IO Utils', () => {
-  it('cancels an idle-state subscription', async () => {
-    const unsubscribe = vi.fn()
+describe('File workflow utilities', () => {
+  it('allows canceling a wait for pending file operations', async () => {
     const fileWorkflows = {
-      getSnapshot: () => ({ matches: () => false }),
-      subscribe: () => ({ unsubscribe }),
+      whenIdle: () => new Promise<void>(() => {}),
     } as unknown as FileWorkflowService
-    const abortController = new AbortController()
-
+    const controller = new AbortController()
     const waiting = waitForIdleState({
-      abortSignal: abortController.signal,
       fileWorkflows,
+      abortSignal: controller.signal,
     })
-    abortController.abort()
+    controller.abort()
     await waiting
-
-    expect(unsubscribe).toHaveBeenCalledOnce()
   })
 
   it('Properly reconstructs paths from Zookeeper new file requests', () => {

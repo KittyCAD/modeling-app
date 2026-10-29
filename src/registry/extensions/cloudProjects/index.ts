@@ -1,3 +1,5 @@
+import toast from 'react-hot-toast'
+import fsZds from '@src/lib/fs-zds'
 import { CloudSaveStatus } from '@src/components/CloudSaveStatus'
 
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
@@ -37,7 +39,7 @@ import { getProjectInfo, readAppSettingsFile } from '@src/lib/desktop'
 
 import { newKclFile } from '@src/lang/project'
 
-import { collectLocalProjectFilesForCloudSync } from '@src/lib/fileSystem/projectFiles'
+import { collectProjectFilesForUpload } from '@src/lib/fileSystem/projectFiles'
 
 import {
   PROJECT_ENTRYPOINT,
@@ -59,15 +61,21 @@ export default defineRegistryItemFactory((ctx) => {
     Promise.reject(new Error('Missing WASM promise.'))
   const auth = ctx.services.signal(authService)
   const router = ctx.services.signal(routerService)
-  const stop = effect(() => {
-    const loggedIn = auth.value?.isLoggedIn.value
-    const token = auth.value?.token.value
-    const location = router.value?.location.value
-    if (loggedIn && location?.pathname === '/home') {
-      void cloud().listProjects().catch(reportRejection)
-    }
-    void token
+  let disposed = false
+  let stop = () => {}
+  queueMicrotask(() => {
+    if (disposed) return
+    stop = effect(() => {
+      const loggedIn = auth.value?.isLoggedIn.value
+      const token = auth.value?.token.value
+      const location = router.value?.location.value
+      if (loggedIn && location?.pathname === '/home') {
+        void cloud().listProjects().catch(reportRejection)
+      }
+      void token
+    })
   })
+
   const entries = computed<readonly HomeProjectEntryContribution[]>(() => {
     if (!auth.value?.isLoggedIn.value) return []
     return cloud()
@@ -130,7 +138,6 @@ export default defineRegistryItemFactory((ctx) => {
         icon: 'cloud',
         order: 10,
         defaultSetting: getDefaultCloudProjectLibrarySetting(),
-        hideInSettingsOnPlatform: 'both',
         readRealizations: async () => [],
         operations: {
           createProject: {
@@ -224,7 +231,7 @@ export default defineRegistryItemFactory((ctx) => {
           },
           moveProjectTo: {
             run: async ({ source, project }) => {
-              const archive = await collectLocalProjectFilesForCloudSync({
+              const archive = await collectProjectFilesForUpload({
                 fileOperations: operations(),
                 projectRoot: source.localProjectPath,
               })
@@ -234,7 +241,32 @@ export default defineRegistryItemFactory((ctx) => {
               )
               const info = await projectInfo(created.id)
               // The source is removed only after the destination is acknowledged and readable.
-              await operations().remove(source.localProjectPath)
+              const included = new Set(archive.map((file) => file.relativePath))
+              const containsExcludedFiles = async (
+                directory: string
+              ): Promise<boolean> => {
+                for (const name of await operations().readDirectory(
+                  directory
+                )) {
+                  const path = fsZds.join(directory, name)
+                  if ((await operations().stat(path)).kind === 'directory') {
+                    if (await containsExcludedFiles(path)) return true
+                  } else if (
+                    !included.has(
+                      fsZds
+                        .relative(source.localProjectPath, path)
+                        .replaceAll('\\', '/')
+                    )
+                  )
+                    return true
+                }
+                return false
+              }
+              if (await containsExcludedFiles(source.localProjectPath))
+                toast(
+                  'Cloud project saved. Local files were kept because the upload excludes some files.'
+                )
+              else await operations().remove(source.localProjectPath)
               invalidateProjectLibraryRealizations()
               return {
                 localProjectPath: info.path,
@@ -246,6 +278,7 @@ export default defineRegistryItemFactory((ctx) => {
       }),
     ],
     dispose: () => {
+      disposed = true
       stop()
       window.removeEventListener('beforeunload', beforeUnload)
     },

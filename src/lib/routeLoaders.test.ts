@@ -59,4 +59,23 @@ describe('fileLoader legacy web bookmarks', () => {
       expect(loadAndValidateSettings).not.toHaveBeenCalled()
     }
   )
+  it('canonicalizes an explicit local id without requesting cloud services', async () => {
+    const app = new App(App.getDefaultSystems())
+    const registryGet = vi.spyOn(app.registry, 'get')
+    const id = 'local:/projects/example/main.kcl'
+    const result = await fileLoader({ app })({
+      request: new Request(
+        `https://app.zoo.dev/file/${encodeURIComponent(id)}/onboarding/desktop/scene?mode=test`
+      ),
+      params: { id },
+      context: undefined,
+      unstable_pattern: '/file/:id',
+    })
+    expect(result).toBeInstanceOf(Response)
+    expect((result as Response).headers.get('Location')).toBe(
+      '/file/%2Fprojects%2Fexample%2Fmain.kcl/onboarding/desktop/scene?mode=test'
+    )
+    expect(registryGet).not.toHaveBeenCalled()
+    expect(loadAndValidateSettings).not.toHaveBeenCalled()
+  })
 })

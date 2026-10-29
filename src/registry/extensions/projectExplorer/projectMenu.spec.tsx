@@ -68,7 +68,7 @@ function createProjectMenuApp() {
         send: vi.fn(),
       },
       fileWorkflows: {
-        send: vi.fn(),
+        duplicateProject: vi.fn(async () => undefined),
       },
       settings: {
         actor: {},
@@ -155,13 +155,10 @@ describe('project explorer project menu', () => {
       }
       fireEvent.click(duplicateButton)
 
-      expect(app.fileWorkflows.run).toHaveBeenCalledWith({
-        type: 'duplicate project',
-        data: {
-          projectName: projectWellFormed.name,
-          projectPath: projectWellFormed.path,
-          requestedProjectName: projectWellFormed.title,
-        },
+      expect(app.fileWorkflows.duplicateProject).toHaveBeenCalledWith({
+        projectName: projectWellFormed.name,
+        projectPath: projectWellFormed.path,
+        requestedProjectName: projectWellFormed.title,
       })
     } finally {
       dispose()

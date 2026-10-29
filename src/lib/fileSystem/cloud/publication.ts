@@ -6,7 +6,7 @@ import {
 } from '@src/lib/fileSystem/cloud/cloudApi'
 import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
-import { collectLocalProjectFilesForCloudSync } from '@src/lib/fileSystem/projectFiles'
+import { collectProjectFilesForUpload } from '@src/lib/fileSystem/projectFiles'
 import {
   getMimeType,
   prepareProjectFilesForCloudUpload,
@@ -29,6 +29,8 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 import toast from 'react-hot-toast'
 
 export type PublishCurrentProjectArgs = {
+  expectedRevision?: string
+  deletedPaths?: string[]
   fileOperations: FileOperationsRegistryService
   token: string
   project: Project | undefined
@@ -242,7 +244,8 @@ async function ensureCurrentProjectUploaded(
           projectPath: project.path,
           project: remote,
           files: uploadFiles,
-          expectedRevision: String(remote.revision),
+          expectedRevision: args.expectedRevision ?? String(remote.revision),
+          deletedPaths: args.deletedPaths,
           publicationMetadata: getProjectUploadPublicationMetadata(
             args.submission
           ),
@@ -324,7 +327,7 @@ async function buildProjectUploadFiles({
 }): Promise<ProjectArchiveFile[] | Error> {
   let files: ProjectArchiveFile[]
   try {
-    files = await collectLocalProjectFilesForCloudSync({
+    files = await collectProjectFilesForUpload({
       fileOperations,
       projectRoot: project.path,
     })

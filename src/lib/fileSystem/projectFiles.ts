@@ -25,7 +25,7 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
  * paths, respects `.gitignore` rules, and returns normalized files in stable
  * relative-path order.
  */
-export async function collectLocalProjectFilesForCloudSync({
+export async function collectProjectFilesForUpload({
   fileOperations,
   projectRoot,
 }: {

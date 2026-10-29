@@ -10,6 +10,7 @@ import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultProjectLibrarySettings,
@@ -140,7 +141,7 @@ function warnMissingProjectLibraryTypeHandler(
 /**
  * Reads one configured library for one discovery pass. The result is still only
  * a set of local observations; the ValueSpec combiner later merges observations
- * of the same normalized path and cloudSync handles cloud identity.
+ * of the same normalized path. Cloud entries are contributed from the server.
  */
 async function readConfiguredProjectLibraryRealizations({
   library,
@@ -194,6 +195,7 @@ function projectLibraryWatchTargetsFromLibraries(
   const targetsByPath = new Map<string, ProjectLibraryWatchTarget>()
 
   for (const library of libraries) {
+    if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) continue
     const path = library.path.trim()
     const normalizedPath = normalizeProjectLibraryWatchPath(path)
     if (!path || !normalizedPath || normalizedPath === fsZds.sep) {

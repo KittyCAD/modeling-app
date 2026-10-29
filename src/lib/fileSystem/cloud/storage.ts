@@ -56,6 +56,7 @@ export function createCloudStorage(
   const runtime = createFileOperationsRuntime(memory)
   const files = runtime.operations
   let listGeneration = 0
+  let pendingRequests = 0
   const projects = signal<readonly RemoteProjectSummary[]>([])
   const saves = signal<ReadonlyMap<string, CloudSaveState>>(new Map())
   const opened = new Map<string, OpenCloudProject>()
@@ -181,15 +182,17 @@ export function createCloudStorage(
       return Promise.reject(
         new Error('Reload to open cloud projects after changing accounts.')
       )
+    pendingRequests += 1
     const result = project.queue
       .catch(() => undefined)
       .then(async () => {
+        const previousState = saves.peek().get(id)
         state(id, { state: 'saving' })
         try {
-          if (config().accountId !== requestConfig.accountId)
-            return Promise.reject(
-              new Error('Cloud account changed before save.')
-            )
+          if (config().accountId !== requestConfig.accountId) {
+            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+            throw new Error('Cloud account changed before save.')
+          }
           const before = new Map(
             (await collect(pathFor(id))).map((file) => [
               file.relativePath,
@@ -219,11 +222,16 @@ export function createCloudStorage(
               eventType: 'unlink',
             })
           notify(changes)
+          if (!persist && saves.peek().get(id)?.state === 'saving')
+            state(id, previousState ?? { state: 'saved' })
           return value
         } catch (error) {
           state(id, { state: 'failed', error })
           return Promise.reject(error)
         }
+      })
+      .finally(() => {
+        pendingRequests -= 1
       })
     project.queue = result
     return result
@@ -242,6 +250,7 @@ export function createCloudStorage(
   }
   const operations: FileOperationsRegistryService = {
     ...files,
+    pending: async () => (await files.pending()) + pendingRequests,
     stat: (path) => read(path, () => files.stat(path)),
     exists: (path) => read(path, () => files.exists(path)),
     readDirectory: (path) =>
@@ -318,10 +327,16 @@ export function createCloudStorage(
   }
   const deleteProject = async (id: string) => {
     await opened.get(id)?.queue.catch(() => undefined)
-    await api.deleteRemoteProject(config(), id)
+    const requestConfig = config()
+    await api.deleteRemoteProject(requestConfig, id)
+    if (config().accountId !== requestConfig.accountId)
+      return Promise.reject(new Error('Cloud account changed during deletion.'))
     // Releasing an in-memory mount cannot remove any historical disk mirror.
     if (await files.exists(pathFor(id))) await files.remove(pathFor(id))
     opened.delete(id)
+    const remainingSaves = new Map(saves.peek())
+    remainingSaves.delete(id)
+    saves.value = remainingSaves
     listGeneration += 1
     projects.value = projects.peek().filter((p) => p.id !== id)
     notify([{ path: pathFor(id), eventType: 'unlinkDir' }])
@@ -370,11 +385,16 @@ export function createCloudStorage(
         (contents) => prepareProjectTomlForDuplication(contents, title, v4())
       )
       if (filesWithTitle instanceof Error) return Promise.reject(filesWithTitle)
+      const requestConfig = config()
       const remote = await api.createRemoteProject(
-        config(),
+        requestConfig,
         title,
         filesWithTitle
       )
+      if (config().accountId !== requestConfig.accountId)
+        return Promise.reject(
+          new Error('Cloud account changed during creation.')
+        )
       await hydrate(remote.id, filesWithTitle)
       acknowledge(remote.id, remote, filesWithTitle)
       notify([{ path: pathFor(remote.id), eventType: 'addDir' }])
@@ -398,7 +418,16 @@ export function createCloudStorage(
         (contents) => prepareProjectTomlForDuplication(contents, title, v4())
       )
       if (archive instanceof Error) return Promise.reject(archive)
-      const remote = await api.createRemoteProject(config(), title, archive)
+      const requestConfig = config()
+      const remote = await api.createRemoteProject(
+        requestConfig,
+        title,
+        archive
+      )
+      if (config().accountId !== requestConfig.accountId)
+        return Promise.reject(
+          new Error('Cloud account changed during duplication.')
+        )
       await hydrate(remote.id, archive)
       acknowledge(remote.id, remote, archive)
       return { id: remote.id, path: pathFor(remote.id) }
@@ -443,9 +472,17 @@ export function createCloudStorage(
           const publication = await import(
             '@src/lib/fileSystem/cloud/publication'
           )
+          const project = opened.get(id)!
+          const currentPaths = new Set(
+            (await collect(pathFor(id))).map((file) => file.relativePath)
+          )
           const result = await publication.publishCurrentProject({
             ...args,
             remoteProjectId: id,
+            expectedRevision: String(project.remote.revision),
+            deletedPaths: [...project.acknowledgedPaths].filter(
+              (path) => !currentPaths.has(path)
+            ),
           })
           if (result) {
             const remote = await api.getRemoteProject(config(), id)
@@ -466,7 +503,17 @@ export function createCloudStorage(
     },
     thumbnail: (project: RemoteProjectSummary) =>
       api.getRemoteProjectThumbnailUrl(config(), project),
-    dispose: () => runtime.dispose(),
+    dispose: async () => {
+      await Promise.all(
+        [...opening.values()].map((request) => request.catch(() => undefined))
+      )
+      await Promise.all(
+        [...opened.values()].map((project) =>
+          project.queue.catch(() => undefined)
+        )
+      )
+      await runtime.dispose()
+    },
   }
 }
 

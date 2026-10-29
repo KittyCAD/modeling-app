@@ -45,7 +45,7 @@ const mockState = vi.hoisted(() => ({
       description: '',
     })
   ),
-  updateProject: vi.fn(async () => makeRemoteProject()),
+  updateProject: vi.fn(async (_input?: unknown) => makeRemoteProject()),
   getProject: vi.fn(async () => makeRemoteProject()),
   publishProject: vi.fn(async () =>
     makeRemoteProject({
@@ -67,7 +67,7 @@ const mockState = vi.hoisted(() => ({
     return new TextEncoder().encode(`raw:${path}`)
   }),
   fsWriteFile: vi.fn(async (_path: string, _data: Uint8Array) => {}),
-  collectLocalProjectFilesForCloudSync: vi.fn(async () => [
+  collectProjectFilesForUpload: vi.fn(async () => [
     {
       relativePath: '.gitignore',
       data: new TextEncoder().encode('thumbnail.png\n'),
@@ -85,9 +85,23 @@ const mockState = vi.hoisted(() => ({
   ]),
 }))
 
+vi.mock('@src/lib/fileSystem/cloud/cloudApi', () => ({
+  getRemoteProject: async (_config: unknown, id: string) => ({
+    ...(await mockState.getProject()),
+    id,
+  }),
+  updateRemoteProject: async (input: {
+    project: { id: string }
+    expectedRevision: string
+  }) =>
+    mockState.updateProject({
+      id: input.project.id,
+      expectedRevision: input.expectedRevision,
+    }),
+}))
+
 vi.mock('@src/lib/fileSystem/projectFiles', () => ({
-  collectLocalProjectFilesForCloudSync:
-    mockState.collectLocalProjectFilesForCloudSync,
+  collectProjectFilesForUpload: mockState.collectProjectFilesForUpload,
 }))
 
 vi.mock('@src/env', async () => {
@@ -300,7 +314,7 @@ describe('publishCurrentProject', () => {
     expect(mockState.publishProject).not.toHaveBeenCalled()
   })
 
-  it('publishes the project identity returned by an awaited cloud sync', async () => {
+  it('publishes the acknowledged cloud identity with a revision guard', async () => {
     const published = await publishCurrentProject({
       token: 'token-123',
       project: makeProject(),
@@ -313,11 +327,15 @@ describe('publishCurrentProject', () => {
         categoryIds: ['category-a'],
       },
       remoteProjectId: 'project-synced',
+      expectedRevision: 'acknowledged-revision',
     })
 
     expect(published).toEqual({ remoteProjectId: 'project-synced' })
     expect(mockState.updateProject).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'project-synced' })
+      expect.objectContaining({
+        id: 'project-synced',
+        expectedRevision: 'acknowledged-revision',
+      })
     )
     expect(mockState.createProject).not.toHaveBeenCalled()
     expect(mockState.readProjectSettingsFile).not.toHaveBeenCalled()

@@ -1,4 +1,5 @@
 import type * as ArchiveModule from '@src/lib/fileSystem/cloud/projectArchive'
+import { parseProjectArchive } from '@src/lib/fileSystem/cloud/projectArchive'
 import { posix } from '@chainner/node-path'
 import { createCloudStorage } from '@src/lib/fileSystem/cloud/storage'
 import * as api from '@src/lib/fileSystem/cloud/cloudApi'
@@ -131,5 +132,34 @@ describe('memory cloud storage', () => {
         .mocked(api.updateRemoteProject)
         .mock.calls.map(([input]) => input.expectedRevision)
     ).toEqual(['1', '2'])
+  })
+  it('does not expose a project response received after switching accounts', async () => {
+    let accountId = 'first'
+    const storage = createCloudStorage({ ...nodefs.impl, ...posix }, () => ({
+      enabled: true,
+      accountId,
+    }))
+    runtimes.push(storage)
+    const gate = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.getRemoteProject).mockReturnValueOnce(gate.promise)
+    const opening = storage.openProject('one')
+    await vi.waitFor(() => expect(api.getRemoteProject).toHaveBeenCalledOnce())
+    accountId = 'second'
+    gate.resolve(remote)
+    await expect(opening).rejects.toThrow('Cloud account changed')
+    expect(await storage.operations.exists(storage.pathFor('one'))).toBe(false)
+    expect(storage.projects.value).toEqual([])
+  })
+
+  it('rejects archive traversal before hydrating any files', async () => {
+    const { storage } = setup()
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+      { relativePath: 'main.kcl', data: new Uint8Array([1]) },
+      { relativePath: '../outside.kcl', data: new Uint8Array([2]) },
+    ])
+    await expect(storage.openProject('one')).rejects.toThrow(
+      'outside its project'
+    )
+    expect(await storage.operations.exists(storage.pathFor('one'))).toBe(false)
   })
 })

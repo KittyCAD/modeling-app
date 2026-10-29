@@ -10,7 +10,6 @@ import {
   type FileWorkflowHost,
 } from '@src/lib/fileSystem/workflows/utils'
 import { reportSystemIOError } from '@src/lib/fileSystem/workflows/errorReporting'
-import fsZds from '@src/lib/fs-zds'
 import toast from 'react-hot-toast'
 
 type Inputs = {
@@ -36,6 +35,7 @@ export type FileWorkflowService = {
   readonly status: ReadonlySignal<States>
   readonly snapshot: ReadonlySignal<Snapshot>
   readonly getSnapshot: () => Snapshot
+  readonly dispose: () => Promise<void>
   readonly whenIdle: () => Promise<void>
 }
 
@@ -44,6 +44,8 @@ export function createFileWorkflows(
   host: Omit<FileWorkflowHost, 'fileWorkflows'>
 ): FileWorkflowService {
   let queue: Promise<unknown> = Promise.resolve()
+  let publishNavigation = true
+  let disposed = false
   const status = signal(States.idle)
   const state = signal<FileWorkflowContext>({
     host: {
@@ -106,6 +108,8 @@ export function createFileWorkflows(
     run: (context: FileWorkflowContext) => Promise<T>,
     complete?: (result: T) => void
   ): Promise<T> => {
+    if (disposed)
+      return Promise.reject(new Error('File operations are disposed.'))
     // Capture identity at submission, before waiting for earlier operations.
     const submitted = state.peek()
     const project = host.project
@@ -122,6 +126,8 @@ export function createFileWorkflows(
     const result = queue
       .catch(() => undefined)
       .then(async () => {
+        if (disposed)
+          return Promise.reject(new Error('File operations are disposed.'))
         status.value = operation
         try {
           const result =
@@ -136,9 +142,20 @@ export function createFileWorkflows(
                   })
                 )
               : await run(context)
-          await refresh(context)
-          update({ lastOperation: operation })
-          complete?.(result)
+          if (!disposed) await refresh(context)
+          const current =
+            !disposed &&
+            state.peek().projectDirectoryPath ===
+              context.projectDirectoryPath &&
+            host.project === project
+          if (current) update({ lastOperation: operation })
+          const previousNavigation = publishNavigation
+          publishNavigation = current
+          try {
+            complete?.(result)
+          } finally {
+            publishNavigation = previousNavigation
+          }
           return result
         } catch (error) {
           reportSystemIOError({
@@ -158,17 +175,25 @@ export function createFileWorkflows(
     queue = result
     return result
   }
-  const projectNavigation = (name: string, path?: string, subRoute?: string) =>
-    update({ requestedProjectName: { name, path, subRoute } })
+  const projectNavigation = (
+    name: string,
+    path?: string,
+    subRoute?: string
+  ) => {
+    if (publishNavigation)
+      update({ requestedProjectName: { name, path, subRoute } })
+  }
   const fileNavigation = (
     project: string,
     file: string,
     subRoute?: string,
     onProjectLoaderComplete?: () => void
-  ) =>
+  ) => {
+    if (!publishNavigation) return
     update({
       requestedFileName: { project, file, subRoute, onProjectLoaderComplete },
     })
+  }
   const input = (context: FileWorkflowContext) => ({
     context,
     host: context.host,
@@ -261,6 +286,10 @@ export function createFileWorkflows(
         default:
           return Promise.reject(new Error('Unknown file workflow.'))
       }
+    },
+    dispose: async () => {
+      disposed = true
+      await queue.catch(() => undefined)
     },
     state,
     status,

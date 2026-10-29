@@ -160,7 +160,7 @@ function PublishPopoverContent({
 
       return details
     },
-    [app.fileOperations, kclManager, project, token]
+    [app.fileOperations, app.registry, kclManager, project, token]
   )
 
   useEffect(() => {

@@ -31,7 +31,9 @@ export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
     const cloud = createCloudStorage(backing, () => ({
       enabled: true,
       token: ctx.services.optional(authService)?.token.peek(),
-      accountId: ctx.services.optional(authService)?.user.peek()?.id,
+      accountId:
+        ctx.services.optional(authService)?.user.peek()?.id ||
+        ctx.services.optional(authService)?.token.peek(),
     }))
     mounted.mount({ root: cloud.root, operations: cloud.operations })
     const projects = createProjectOperations({
@@ -81,6 +83,7 @@ export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
       // The registry owns the mounted node; the Effect runtime owns and
       // finalizes every scoped resource used by that node.
       dispose: async () => {
+        await workflows.dispose()
         await cloud.dispose()
         await fileOperations.dispose()
       },

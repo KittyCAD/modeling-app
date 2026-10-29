@@ -1,4 +1,5 @@
 import fsZds from '@src/lib/fs-zds'
+import { authService } from '@src/registry/contracts/auth'
 import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import { resolveProjectLocation } from '@src/lib/fileSystem/mounts'
 import { reportRejection } from '@src/lib/trap'
@@ -84,11 +85,31 @@ export const fileLoader =
     } = app
     const { kclManager } = app.singletons
     const params = { ...routerData.params }
+    // Old web bookmarks encode /browser/... as the file route's id. These
+    // paths no longer identify projects, so return home before filesystem I/O.
+    if (params.id?.startsWith('/browser')) {
+      return redirect(PATHS.HOME)
+    }
+
+    if (params.id?.startsWith('local:')) {
+      const url = new URL(routerData.request.url)
+      url.pathname = url.pathname.replace(
+        encodeURIComponent(params.id),
+        encodeURIComponent(params.id.slice(6))
+      )
+      return redirect(url.pathname + url.search)
+    }
+    const waitForCloudAuth = async () => {
+      const auth = app.registry.optional(authService)
+      if (auth)
+        await waitFor(auth.actor, (state) => !state.matches('checkIfLoggedIn'))
+      assertCurrent()
+    }
     if (
       params.id?.startsWith('cloud:') ||
-      params.id?.startsWith('local:') ||
       (params.id && !params.id.includes('/') && !params.id.includes('\\'))
     ) {
+      await waitForCloudAuth()
       const cloud = app.registry.get(cloudStorageService)
       const location = await resolveProjectLocation(params.id, cloud.exists)
       assertCurrent()
@@ -105,14 +126,9 @@ export const fileLoader =
 
     const cloudStorage = app.registry.get(cloudStorageService)
     if (params.id?.startsWith(`${cloudStorage.root}${fsZds.sep}`)) {
+      await waitForCloudAuth()
       await cloudStorage.openProject(cloudStorage.idFor(params.id))
       assertCurrent()
-    }
-
-    // Old web bookmarks encode /browser/... as the file route's id. These
-    // paths no longer identify projects, so return home before filesystem I/O.
-    if (params.id?.startsWith('/browser')) {
-      return redirect(PATHS.HOME)
     }
 
     const wasmInstance = await kclManager.wasmInstancePromise

@@ -14,6 +14,19 @@ vi.mock('@src/lib/kcClient', () => ({
     }),
 }))
 
+vi.mock('@src/lib/boot', async () => {
+  const publication = await import('@src/lib/fileSystem/cloud/publication')
+  const registry = {
+    get: () => ({
+      getProjectStatus: (id: string) =>
+        publication.getCloudPublicationStatus(id, 'token-123'),
+      getProjectStatuses: () =>
+        publication.getCloudPublicationStatuses('token-123'),
+    }),
+  }
+  return { useApp: () => ({ registry }) }
+})
+
 function respond(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,

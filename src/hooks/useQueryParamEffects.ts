@@ -16,10 +16,6 @@ import {
   LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
   SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
-import {
-  downloadProjectById,
-  getPublicProjectNameById,
-} from '@src/lib/fileSystem/cloud/publicProject'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { downloadKclSample } from '@src/lib/kclSamples'

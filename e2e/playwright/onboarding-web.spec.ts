@@ -1,12 +1,9 @@
 import { expect, test } from '@e2e/playwright/base-test'
 import {
   type CloudProject,
-  opfsPathExists,
-  PROJECT_DIR,
   projectToml,
   routeCloudProjects,
-  seedCloudSyncState,
-} from '@e2e/playwright/lib/cloudSyncTestUtils'
+} from '@e2e/playwright/lib/cloudProjectTestUtils'
 import {
   mockClientErrorReports,
   setup,
@@ -31,44 +28,43 @@ test(
       },
     ]
     await mockClientErrorReports(context)
-    await routeCloudProjects(context, { remoteProjects })
+    await routeCloudProjects(context, {
+      remoteProjects,
+      updateProject: async () => ({
+        status: 200,
+        body: {
+          ...remoteProjects[0],
+          description: '',
+          category_ids: [],
+          revision: 'next',
+        },
+      }),
+    })
     await setup(context, page, testInfo)
     await page.goto('/')
 
-    await seedCloudSyncState(page, {
-      projects: [
-        {
-          projectName: 'tutorial-project',
-          files: tutorialProjectFiles,
-        },
-      ],
-      metadata: [
-        {
-          projectName: 'tutorial-project',
-          remoteProjectId: TUTORIAL_PROJECT_ID,
-          remoteRevision: `${TUTORIAL_PROJECT_ID}-rev-1`,
-          baseFiles: tutorialProjectFiles,
-        },
-      ],
-    })
     // Avoid interrupting WebKit's in-flight billing request when onboarding
     // replaces the current document.
     await waitForWebKitBillingToSettle(page)
 
     await page.goto(
       `/file/${encodeURIComponent(
-        `${PROJECT_DIR}/tutorial-project/main.kcl`
+        `/__zoo_cloud__/${TUTORIAL_PROJECT_ID}/main.kcl`
       )}/onboarding/desktop/scene`
     )
 
     await expect(page).toHaveURL(
-      /tutorial-project%2Fblank\.kcl\/onboarding\/desktop\/scene/,
+      /__zoo_cloud__.*%2Fblank\.kcl\/onboarding\/desktop\/scene/,
       { timeout: 15_000 }
     )
     await expect(page.getByRole('heading', { name: 'Scene' })).toBeVisible()
     await expect
       .poll(() =>
-        opfsPathExists(page, `${PROJECT_DIR}/tutorial-project/blank.kcl`)
+        page.evaluate(
+          (id) =>
+            window.app.fileOperations.exists(`/__zoo_cloud__/${id}/blank.kcl`),
+          TUTORIAL_PROJECT_ID
+        )
       )
       .toBe(true)
     await expect(page.getByTestId('onboarding-next')).toBeVisible()

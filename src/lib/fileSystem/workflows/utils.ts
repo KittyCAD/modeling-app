@@ -93,28 +93,6 @@ export enum FileWorkflowStates {
   movingRecursiveAndNavigate = 'moving recursive and navigate',
 }
 
-export enum FileWorkflowActions {
-  setFolders = 'set folders',
-  setProjectDirectoryPath = 'set project directory path',
-  setRequestedProjectName = 'set requested project name',
-  setRequestedFileName = 'set requested file name',
-  setDefaultProjectFolderName = 'set default project folder name',
-  toastSuccess = 'toastSuccess',
-  toastError = 'toastError',
-  toastErrorZookeeperFileWrite = 'toastErrorZookeeperFileWrite',
-  reportError = 'reportError',
-  setReadWriteProjectDirectory = 'set read write project directory',
-  setRequestedZookeeperGeneration = 'set requested zookeeper generation',
-  setLastProjectDeleteRequest = 'set last project delete request',
-  toastProjectNameTooLong = 'toast project name too long',
-  deferSystemIOEvent = 'defer system IO event',
-  flushDeferredSystemIOEvent = 'flush deferred system IO event',
-}
-
-export enum FileWorkflowGuards {
-  projectNameIsValidLength = 'project name is valid length',
-}
-
 export const NO_PROJECT_DIRECTORY = ''
 
 /** Capabilities used by legacy filesystem workflows, supplied by the registry. */
@@ -211,7 +189,16 @@ export const waitForIdleState = async ({
   fileWorkflows: FileWorkflowService
   abortSignal?: AbortSignal
 }) => {
-  if (!abortSignal?.aborted) await fileWorkflows.whenIdle()
+  if (abortSignal?.aborted) return
+  if (!abortSignal) return fileWorkflows.whenIdle()
+  await new Promise<void>((resolve, reject) => {
+    const abort = () => resolve()
+    abortSignal.addEventListener('abort', abort, { once: true })
+    void fileWorkflows
+      .whenIdle()
+      .then(resolve, reject)
+      .finally(() => abortSignal.removeEventListener('abort', abort))
+  })
 }
 
 export const determineProjectFilePathFromPrompt = (

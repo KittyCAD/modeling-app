@@ -5,7 +5,6 @@ import type { CommandArgumentOption } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import { FileWorkflowEvents } from '@src/lib/fileSystem/workflows/utils'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -42,7 +41,11 @@ function createFileWorkflowService(folders: Project[] = []) {
         folders,
       },
     }),
-    send: vi.fn(),
+    run: vi.fn(),
+    createProject: vi.fn(async () => undefined),
+    renameProject: vi.fn(async () => undefined),
+    navigateToProject: vi.fn(async () => undefined),
+    importFileFromURL: vi.fn(async () => undefined),
   } as unknown as FileWorkflowService
 }
 
@@ -150,12 +153,9 @@ describe('project command config', () => {
       name: ' My Cool Project! ',
     })
 
-    expect(fileWorkflows.run).toHaveBeenCalledWith({
-      type: FileWorkflowEvents.createProject,
-      data: {
-        requestedProjectName: 'my-cool-project',
-        requestedProjectTitle: 'My Cool Project!',
-      },
+    expect(fileWorkflows.createProject).toHaveBeenCalledWith({
+      requestedProjectName: 'my-cool-project',
+      requestedProjectTitle: 'My Cool Project!',
     })
   })
 
@@ -395,13 +395,10 @@ describe('project command config', () => {
       newName: 'Retitled Bracket',
     })
 
-    expect(fileWorkflows.run).toHaveBeenCalledWith({
-      type: FileWorkflowEvents.renameProject,
-      data: {
-        projectName: 'bracket-directory',
-        requestedProjectName: 'Retitled Bracket',
-        redirect: true,
-      },
+    expect(fileWorkflows.renameProject).toHaveBeenCalledWith({
+      projectName: 'bracket-directory',
+      requestedProjectName: 'Retitled Bracket',
+      redirect: true,
     })
   })
 

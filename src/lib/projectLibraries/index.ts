@@ -456,7 +456,12 @@ export function projectLibrariesFromSettings(
 ): ProjectLibrary[] {
   const defaultProjectDirectory =
     getDefaultDirectoryProjectLibraryPath(libraries)
-  return libraries.map((library, index) =>
+  const configured = libraries.some(
+    (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
+  )
+    ? libraries
+    : [...libraries, getDefaultCloudProjectLibrarySetting()]
+  return configured.map((library, index) =>
     projectLibraryFromSetting(library, index, {
       defaultProjectDirectory,
     })
