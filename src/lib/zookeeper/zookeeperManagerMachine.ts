@@ -1628,6 +1628,7 @@ export const zookeeperManagerMachine = setup({
         selections: event.selections,
         applicationProjectDirectory: event.applicationProjectDirectory,
         projectFiles: event.projectFiles,
+        includeProjectFiles: !event.projectForPromptOutput.cloudProjectId,
         artifactGraph: event.artifactGraph,
         projectName: event.projectForPromptOutput.name,
         currentFile: event.fileSelectedDuringPrompting,
@@ -1715,7 +1716,10 @@ export const zookeeperManagerMachine = setup({
       const filesAsByteArrays: Record<string, number[]> = {}
       const files: KittyCadLibFile[] = []
 
-      event.projectFiles.forEach((file) => {
+      const projectFiles = event.projectId?.startsWith('cloud:')
+        ? []
+        : event.projectFiles
+      projectFiles.forEach((file) => {
         let data: Blob
         if (file.type === 'other') {
           data = file.data
