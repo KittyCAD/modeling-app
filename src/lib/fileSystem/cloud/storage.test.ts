@@ -4,6 +4,8 @@ import { posix } from '@chainner/node-path'
 import { createCloudStorage } from '@src/lib/fileSystem/cloud/storage'
 import * as api from '@src/lib/fileSystem/cloud/cloudApi'
 import nodefs from '@src/lib/fs-zds/nodefs'
+import { publishCurrentProject } from '@src/lib/fileSystem/cloud/publication'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/fileSystem/cloud/cloudApi', () => ({
@@ -17,6 +19,9 @@ vi.mock('@src/lib/fileSystem/cloud/cloudApi', () => ({
   CloudApiError: class extends Error {
     status = 404
   },
+}))
+vi.mock('@src/lib/fileSystem/cloud/publication', () => ({
+  publishCurrentProject: vi.fn(),
 }))
 vi.mock('@src/lib/fileSystem/cloud/projectArchive', async (original) => ({
   ...(await original<typeof ArchiveModule>()),
@@ -95,7 +100,9 @@ describe('memory cloud storage', () => {
     )
     await expect(
       storage.operations.writeFile(posix.join(root, 'main.kcl'), 'unsaved')
-    ).rejects.toThrow('Conflict')
+    ).rejects.toMatchObject({
+      cause: expect.objectContaining({ message: 'Conflict' }),
+    })
     expect(storage.saves.value.get('one')?.state).toBe('failed')
     expect(
       new TextDecoder().decode(
@@ -166,6 +173,76 @@ describe('memory cloud storage', () => {
     )
     expect(await storage.operations.exists(storage.pathFor('one'))).toBe(false)
   })
+  it('moves a file with one save and does not retry filesystem work after a rejected acknowledgement', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    const source = posix.join(root, 'main.kcl')
+    const destination = posix.join(root, 'nested', 'renamed.kcl')
+    vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+      new Error('Revision conflict')
+    )
+    await expect(storage.operations.move(source, destination)).rejects.toThrow(
+      'Revision conflict'
+    )
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    expect(api.updateRemoteProject).toHaveBeenCalledWith(
+      expect.objectContaining({ deletedPaths: ['main.kcl'] })
+    )
+    expect(await storage.operations.exists(source)).toBe(false)
+    expect(
+      new TextDecoder().decode(await storage.operations.readFile(destination))
+    ).toBe('original')
+    expect(storage.saves.value.get('one')?.state).toBe('failed')
+  })
+
+  it('publishes a serialized memory snapshot without deadlocking a queued edit', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    const started = Promise.withResolvers<undefined>()
+    const gate = Promise.withResolvers<undefined>()
+    vi.mocked(publishCurrentProject).mockImplementationOnce(async (args) => {
+      expect(args.expectedRevision).toBe('1')
+      expect(args.deletedPaths).toEqual([])
+      started.resolve(undefined)
+      await gate.promise
+      expect(await args.fileOperations.readDirectory(root)).toEqual([
+        'main.kcl',
+        'project.toml',
+      ])
+      expect(
+        new TextDecoder().decode(
+          await args.fileOperations.readFile(posix.join(root, 'main.kcl'))
+        )
+      ).toBe('original')
+      return { remoteProjectId: 'one' }
+    })
+    const publication = storage.publishCurrentProject({
+      fileOperations: storage.operations,
+      token: 'token',
+      remoteProjectId: 'one',
+      project: undefined,
+      currentFilePath: posix.join(root, 'main.kcl'),
+      currentFileContents: 'original',
+      wasmInstance: {} as ModuleType,
+      submission: { title: 'Published', description: '', categoryIds: [] },
+    })
+    await started.promise
+    const write = storage.operations.writeFile(
+      posix.join(root, 'main.kcl'),
+      'after publication'
+    )
+    await vi.waitFor(() => expect(storage.fileSystem.pending()).toBe(2))
+    vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
+      ...remote,
+      revision: '3',
+    })
+    gate.resolve(undefined)
+    await Promise.all([publication, write])
+    expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+      expect.objectContaining({ expectedRevision: '3' })
+    )
+  })
+
   it('loads thumbnails only for visible cards and shares requests between watchers', async () => {
     const { storage, diskWrite } = setup()
     await storage.listProjects()
@@ -281,7 +358,9 @@ describe('memory cloud storage', () => {
     )
     await expect(
       storage.operations.writeFile(posix.join(root, 'main.kcl'), 'unsaved')
-    ).rejects.toThrow('Conflict')
+    ).rejects.toMatchObject({
+      cause: expect.objectContaining({ message: 'Conflict' }),
+    })
     vi.mocked(api.downloadRemoteProjectArchive).mockClear()
     await expect(storage.refreshProject('one')).rejects.toThrow(
       'preserve unsaved changes'

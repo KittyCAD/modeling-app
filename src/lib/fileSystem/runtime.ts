@@ -7,6 +7,7 @@ import {
   createUniqueFile as createUniqueFileOperation,
   exists as existsOperation,
   type FileOperations,
+  type FileOperationsOptions,
   fileOperationsLayer,
   move as moveOperation,
   pendingFileOperations,
@@ -45,10 +46,13 @@ export interface FileOperationsRuntime {
  * consumers use the conventional FileOperations Promise facade.
  */
 export function createFileOperationsRuntime(
-  backing: IZooDesignStudioFS
+  backing: IZooDesignStudioFS,
+  options: FileOperationsOptions = {}
 ): FileOperationsRuntime {
   const baseLayer = fileSystemLayer(backing)
-  const layer = fileOperationsLayer(backing).pipe(Layer.provide(baseLayer))
+  const layer = fileOperationsLayer(backing, options).pipe(
+    Layer.provide(baseLayer)
+  )
   const runtime = ManagedRuntime.make(layer)
 
   const runRuntimePromise = async <A, E, R extends FileOperations>(

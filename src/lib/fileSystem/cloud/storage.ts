@@ -1,64 +1,44 @@
-import type * as Publication from '@src/lib/fileSystem/cloud/publication'
-import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
-
-import { v4 } from 'uuid'
-
-import type { PublishCurrentProjectArgs } from '@src/lib/fileSystem/cloud/publication'
-
 import { effect, signal } from '@preact/signals-core'
-import { reportRejection } from '@src/lib/trap'
-
+import type * as Publication from '@src/lib/fileSystem/cloud/publication'
+import type { PublishCurrentProjectArgs } from '@src/lib/fileSystem/cloud/publication'
 import * as api from '@src/lib/fileSystem/cloud/cloudApi'
-
-import {
-  parseProjectArchive,
-  withProjectTitleInArchiveFiles,
-  withUpdatedProjectTomlInArchiveFiles,
-} from '@src/lib/fileSystem/cloud/projectArchive'
-
 import type {
   CloudApiConfig,
-  ProjectArchiveFile,
-  RemoteProject,
   RemoteProjectSummary,
 } from '@src/lib/fileSystem/cloud/types'
-
-import { createMemoryFileSystem } from '@src/lib/fileSystem/memoryFileSystem'
-
+import { createCloudFileSystem } from '@src/lib/fs-zds/cloud'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
-
-import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
-
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import { reportRejection } from '@src/lib/trap'
 
-export interface CloudFileChange {
-  readonly path: string
-  readonly eventType: 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir'
-}
+export type { CloudSaveState, CloudFileChange } from '@src/lib/fs-zds/cloud'
 
-export interface CloudSaveState {
-  readonly state: 'saved' | 'saving' | 'failed'
-  readonly error?: unknown
-}
-interface OpenCloudProject {
-  remote: RemoteProject
-  owner: string | undefined
-  acknowledgedPaths: Set<string>
-  queue: Promise<unknown>
-}
-
-/** Cloud persistence owns memory and HTTP; it never materializes a project on disk. */
+/** Project-level cloud services owned by the fileOperations plugin. */
 export function createCloudStorage(
   paths: IZooDesignStudioFS,
   config: () => CloudApiConfig
 ) {
-  const root = paths.resolve('/__zoo_cloud__')
-  const memory = createMemoryFileSystem(paths)
-  const runtime = createFileOperationsRuntime(memory)
-  const files = runtime.operations
   let listGeneration = 0
-  let pendingRequests = 0
   const projects = signal<readonly RemoteProjectSummary[]>([])
+  const fileSystem = createCloudFileSystem(
+    paths,
+    config,
+    (remote) => {
+      listGeneration += 1
+      projects.value = [
+        ...projects.peek().filter((project) => project.id !== remote.id),
+        remote,
+      ]
+    },
+    (id) => {
+      listGeneration += 1
+      projects.value = projects.peek().filter((project) => project.id !== id)
+    }
+  )
+  const runtime = createFileOperationsRuntime(fileSystem, {
+    atomicFileReads: true,
+  })
   const thumbnails = signal<ReadonlyMap<string, string>>(new Map())
   const thumbnailWatches = signal<ReadonlyMap<string, number>>(new Map())
   const thumbnailVersions = new Map<string, string>()
@@ -112,296 +92,37 @@ export function createCloudStorage(
     for (const project of projects.value)
       if (watched.has(project.id)) loadThumbnail(project)
   })
-  const saves = signal<ReadonlyMap<string, CloudSaveState>>(new Map())
-  const opened = new Map<string, OpenCloudProject>()
-  const opening = new Map<string, Promise<string>>()
-  const listeners = new Set<(changes: readonly CloudFileChange[]) => void>()
-  const ready = memory.mkdir(root, { recursive: true })
-  const pathFor = (id: string) => paths.join(root, id)
-  const idFor = (path: string) => {
-    const relative = paths.relative(root, paths.resolve(path))
-    const id = relative.match(/^[^\\/]+/)?.[0]
-    if (!id || relative === '..' || relative.startsWith(`..${paths.sep}`)) {
-      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-      throw new Error('Path is outside cloud project storage.')
-    }
-    return id
-  }
-  const state = (id: string, value: CloudSaveState) => {
-    saves.value = new Map(saves.peek()).set(id, value)
-  }
-  const notify = (changed: readonly CloudFileChange[]) => {
-    for (const listener of listeners) listener(changed)
-  }
-  const collect = async (
-    directory: string,
-    base = directory
-  ): Promise<ProjectArchiveFile[]> => {
-    const result: ProjectArchiveFile[] = []
-    for (const name of await files.readDirectory(directory)) {
-      const path = paths.join(directory, name)
-      if ((await files.stat(path)).kind === 'directory')
-        result.push(...(await collect(path, base)))
-      else
-        result.push({
-          relativePath: paths.relative(base, path).replaceAll('\\', '/'),
-          data: await files.readFile(path),
-        })
-    }
-    return result
-  }
-  const hydrate = async (
-    id: string,
-    archive: readonly ProjectArchiveFile[]
+  const withFileOperations = async <T>(
+    backing: IZooDesignStudioFS,
+    run: (operations: FileOperationsRegistryService) => Promise<T>
   ) => {
-    const projectRoot = pathFor(id)
-    // Validate the complete archive before inserting any bytes.
-    const entries = archive.map((file) => {
-      const path = paths.resolve(projectRoot, file.relativePath)
-      const relative = paths.relative(projectRoot, path)
-      if (
-        !relative ||
-        relative === '..' ||
-        relative.startsWith(`..${paths.sep}`)
-      ) {
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-        throw new Error('Cloud archive contains a path outside its project.')
-      }
-      return { path, data: file.data }
-    })
-    memory.replaceDirectory(projectRoot, entries)
-  }
-  const acknowledge = (
-    id: string,
-    remote: RemoteProject,
-    archive: readonly ProjectArchiveFile[]
-  ) => {
-    listGeneration += 1
-    const project = opened.get(id)
-    opened.set(id, {
-      remote,
-      owner: config().accountId,
-      acknowledgedPaths: new Set(archive.map((f) => f.relativePath)),
-      queue: project?.queue ?? Promise.resolve(),
-    })
-    projects.value = [...projects.peek().filter((p) => p.id !== id), remote]
-    state(id, { state: 'saved' })
-  }
-  const commit = async (
-    id: string,
-    snapshot?: ProjectArchiveFile[],
-    requestConfig = config()
-  ) => {
-    const project = opened.get(id)
-    if (!project) return Promise.reject(new Error('Cloud project is not open.'))
-    const revision = project.remote.revision
-    if (
-      revision === undefined ||
-      revision === null ||
-      String(revision) === ''
-    ) {
-      return Promise.reject(
-        new Error('Cloud project is missing its revision; save canceled.')
-      )
+    const scoped = createFileOperationsRuntime(backing)
+    try {
+      return await run(scoped.operations)
+    } finally {
+      await scoped.dispose()
     }
-    const archive = snapshot ?? (await collect(pathFor(id)))
-    const currentPaths = new Set(archive.map((f) => f.relativePath))
-    const remote = await api.updateRemoteProject({
-      config: requestConfig,
-      projectPath: pathFor(id),
-      project: project.remote,
-      files: archive,
-      expectedRevision: String(revision),
-      deletedPaths: [...project.acknowledgedPaths].filter(
-        (path) => !currentPaths.has(path)
-      ),
-    })
-    if (config().accountId !== requestConfig.accountId)
-      return Promise.reject(new Error('Cloud account changed during save.'))
-    acknowledge(id, remote, archive)
-  }
-  const enqueue = <T>(
-    id: string,
-    work: (previousState: CloudSaveState | undefined) => Promise<T>,
-    persist = true,
-    reportSaveFailure = true
-  ): Promise<T> => {
-    const project = opened.get(id)
-    if (!project) return Promise.reject(new Error('Cloud project is not open.'))
-    const requestConfig = config()
-    if (project.owner !== requestConfig.accountId)
-      return Promise.reject(
-        new Error('Reload to open cloud projects after changing accounts.')
-      )
-    pendingRequests += 1
-    const result = project.queue
-      .catch(() => undefined)
-      .then(async () => {
-        const previousState = saves.peek().get(id)
-        if (reportSaveFailure) state(id, { state: 'saving' })
-        try {
-          if (config().accountId !== requestConfig.accountId) {
-            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-            throw new Error('Cloud account changed before save.')
-          }
-          const before = new Map(
-            (await collect(pathFor(id))).map((file) => [
-              file.relativePath,
-              file.data,
-            ])
-          )
-          const value = await work(previousState)
-          const after = await collect(pathFor(id))
-          if (persist) await commit(id, after, requestConfig)
-          const changes: CloudFileChange[] = []
-          for (const file of after) {
-            const old = before.get(file.relativePath)
-            if (
-              !old ||
-              old.length !== file.data.length ||
-              !old.every((byte, index) => byte === file.data[index])
-            )
-              changes.push({
-                path: paths.join(pathFor(id), file.relativePath),
-                eventType: old ? 'change' : 'add',
-              })
-            before.delete(file.relativePath)
-          }
-          for (const relativePath of before.keys())
-            changes.push({
-              path: paths.join(pathFor(id), relativePath),
-              eventType: 'unlink',
-            })
-          notify(changes)
-          if (!persist && saves.peek().get(id)?.state === 'saving')
-            state(id, previousState ?? { state: 'saved' })
-          return value
-        } catch (error) {
-          state(
-            id,
-            reportSaveFailure
-              ? { state: 'failed', error }
-              : (previousState ?? { state: 'saved' })
-          )
-          return Promise.reject(error)
-        }
-      })
-      .finally(() => {
-        pendingRequests -= 1
-      })
-    project.queue = result
-    return result
-  }
-  const mutate = <T>(path: string, work: () => Promise<T>) =>
-    enqueue(idFor(path), work)
-  const read = async <T>(path: string, run: () => Promise<T>): Promise<T> => {
-    if (path !== root) {
-      const project = opened.get(idFor(path))
-      if (project && project.owner !== config().accountId)
-        return Promise.reject(
-          new Error('Cloud project belongs to a different account.')
-        )
-    }
-    return run()
-  }
-  const operations: FileOperationsRegistryService = {
-    ...files,
-    pending: async () => (await files.pending()) + pendingRequests,
-    stat: (path) => read(path, () => files.stat(path)),
-    exists: (path) => read(path, () => files.exists(path)),
-    readDirectory: (path) =>
-      read(path, async () =>
-        path === root
-          ? [...opened]
-              .filter(([, project]) => project.owner === config().accountId)
-              .map(([id]) => id)
-          : files.readDirectory(path)
-      ),
-    readFile: (path) => read(path, () => files.readFile(path)),
-    writeFile: (path, contents) => {
-      const owned =
-        typeof contents === 'string' ? contents : new Uint8Array(contents)
-      return mutate(path, () => files.writeFile(path, owned))
-    },
-    createFile: (path, contents) => {
-      const owned =
-        typeof contents === 'string' ? contents : new Uint8Array(contents)
-      return mutate(path, () => files.createFile(path, owned))
-    },
-    createUniqueFile: (parent, name, contents) => {
-      const owned =
-        typeof contents === 'string' ? contents : new Uint8Array(contents)
-      return mutate(parent, () => files.createUniqueFile(parent, name, owned))
-    },
-    createDirectory: (path) => mutate(path, () => files.createDirectory(path)),
-    createUniqueDirectory: (parent, name) =>
-      mutate(parent, () => files.createUniqueDirectory(parent, name)),
-    remove: (path) =>
-      path === pathFor(idFor(path))
-        ? deleteProject(idFor(path))
-        : mutate(path, () => files.remove(path)),
-    copy: (source, destination, options) =>
-      mutate(destination, () => files.copy(source, destination, options)),
-    rename: (source, destination) => {
-      if (idFor(source) !== idFor(destination))
-        return Promise.reject(new Error('Rename cannot cross cloud projects.'))
-      return mutate(source, () => files.rename(source, destination))
-    },
-    move: (source, destination) => {
-      if (idFor(source) !== idFor(destination))
-        return Promise.reject(new Error('Move cannot cross cloud projects.'))
-      return mutate(source, () => files.move(source, destination))
-    },
-  }
-  const openProject = (id: string): Promise<string> => {
-    const existing = opened.get(id)
-    if (existing)
-      return existing.owner === config().accountId
-        ? Promise.resolve(pathFor(id))
-        : Promise.reject(
-            new Error('Reload to open cloud projects after changing accounts.')
-          )
-    const pending = opening.get(id)
-    if (pending) return pending
-    const requestConfig = config()
-    const result = (async () => {
-      await ready
-      const remote = await api.getRemoteProject(requestConfig, id)
-      const archive = await parseProjectArchive(
-        await api.downloadRemoteProjectArchive(requestConfig, id)
-      )
-      if (config().accountId !== requestConfig.accountId)
-        return Promise.reject(
-          new Error('Cloud account changed while opening project.')
-        )
-      await hydrate(id, archive)
-      acknowledge(id, remote, archive)
-      return pathFor(id)
-    })().finally(() => opening.delete(id))
-    opening.set(id, result)
-    return result
-  }
-  const deleteProject = async (id: string) => {
-    await opened.get(id)?.queue.catch(() => undefined)
-    const requestConfig = config()
-    await api.deleteRemoteProject(requestConfig, id)
-    if (config().accountId !== requestConfig.accountId)
-      return Promise.reject(new Error('Cloud account changed during deletion.'))
-    // Releasing an in-memory mount cannot remove any historical disk mirror.
-    if (await files.exists(pathFor(id))) await files.remove(pathFor(id))
-    opened.delete(id)
-    const remainingSaves = new Map(saves.peek())
-    remainingSaves.delete(id)
-    saves.value = remainingSaves
-    listGeneration += 1
-    projects.value = projects.peek().filter((p) => p.id !== id)
-    notify([{ path: pathFor(id), eventType: 'unlinkDir' }])
   }
   return {
-    root,
-    pathFor,
-    idFor,
-    operations,
+    fileSystem,
+    root: fileSystem.root,
+    pathFor: fileSystem.pathFor,
+    idFor: fileSystem.idFor,
+    operations: {
+      ...runtime.operations,
+      // Move may issue mkdir, rename, or copy/remove. Persist the whole operation
+      // once so a failed acknowledgement cannot be mistaken for rename failure.
+      move: (source: string, destination: string) =>
+        fileSystem.idFor(source) !== fileSystem.idFor(destination)
+          ? Promise.reject(new Error('Move cannot cross cloud projects.'))
+          : fileSystem.batch(source, (memory) =>
+              withFileOperations(memory, (operations) =>
+                operations.move(source, destination)
+              )
+            ),
+      pending: async () =>
+        (await runtime.operations.pending()) + fileSystem.pending(),
+    },
     projects,
     thumbnails,
     watchThumbnail: (id: string) => {
@@ -420,11 +141,20 @@ export function createCloudStorage(
         thumbnailWatches.value = next
       }
     },
-    saves,
-    subscribe: (listener: (changes: readonly CloudFileChange[]) => void) => {
-      listeners.add(listener)
-      return () => listeners.delete(listener)
-    },
+    saves: fileSystem.saves,
+    subscribe: fileSystem.subscribe,
+    openProject: fileSystem.openProject,
+    refreshProject: fileSystem.refreshProject,
+    createProject: fileSystem.createProject,
+    deleteProject: fileSystem.deleteProject,
+    renameProject: fileSystem.renameProject,
+    duplicateProject: fileSystem.duplicateProject,
+    retry: fileSystem.retry,
+    snapshot: fileSystem.snapshot,
+    batch: <T>(
+      path: string,
+      run: (operations: FileOperationsRegistryService) => Promise<T>
+    ) => fileSystem.batch(path, (memory) => withFileOperations(memory, run)),
     listProjects: async () => {
       const generation = ++listGeneration
       const requestConfig = config()
@@ -446,116 +176,6 @@ export function createCloudStorage(
         return Promise.reject(error)
       }
     },
-    openProject,
-    refreshProject: async (
-      id: string,
-      isCurrent: () => boolean = () => true
-    ) => {
-      await openProject(id)
-      return enqueue(
-        id,
-        async (previousState) => {
-          if (!isCurrent()) return
-          if (previousState?.state === 'failed')
-            return Promise.reject(
-              new Error(
-                'Cloud refresh skipped to preserve unsaved changes. Retry saving before refreshing.'
-              )
-            )
-          const requestConfig = config()
-          // Metadata and archive use separate requests. Recheck the revision so a
-          // concurrent cloud mutation cannot mix one snapshot with another revision.
-          for (let attempt = 0; attempt < 3; attempt += 1) {
-            const remote = await api.getRemoteProject(requestConfig, id)
-            const archive = await parseProjectArchive(
-              await api.downloadRemoteProjectArchive(requestConfig, id)
-            )
-            const latest = await api.getRemoteProject(requestConfig, id)
-            if (config().accountId !== requestConfig.accountId)
-              return Promise.reject(
-                new Error('Cloud account changed during refresh.')
-              )
-            if (!isCurrent()) return
-            if (String(remote.revision) !== String(latest.revision)) continue
-            await hydrate(id, archive)
-            acknowledge(id, latest, archive)
-            return
-          }
-          return Promise.reject(
-            new Error('Cloud project kept changing during refresh. Try again.')
-          )
-        },
-        false,
-        false
-      )
-    },
-    deleteProject,
-    createProject: async (
-      title: string,
-      archive: readonly ProjectArchiveFile[]
-    ) => {
-      await ready
-      const filesWithTitle = withUpdatedProjectTomlInArchiveFiles(
-        [...archive],
-        (contents) => prepareProjectTomlForDuplication(contents, title, v4())
-      )
-      if (filesWithTitle instanceof Error) return Promise.reject(filesWithTitle)
-      const requestConfig = config()
-      const remote = await api.createRemoteProject(
-        requestConfig,
-        title,
-        filesWithTitle
-      )
-      if (config().accountId !== requestConfig.accountId)
-        return Promise.reject(
-          new Error('Cloud account changed during creation.')
-        )
-      await hydrate(remote.id, filesWithTitle)
-      acknowledge(remote.id, remote, filesWithTitle)
-      notify([{ path: pathFor(remote.id), eventType: 'addDir' }])
-      return { id: remote.id, path: pathFor(remote.id) }
-    },
-    renameProject: async (id: string, title: string) => {
-      await openProject(id)
-      await enqueue(id, async () => {
-        const archive = withProjectTitleInArchiveFiles(
-          await collect(pathFor(id)),
-          title
-        )
-        await hydrate(id, archive)
-      })
-    },
-    duplicateProject: async (id: string, title: string) => {
-      await openProject(id)
-      await opened.get(id)?.queue.catch(() => undefined)
-      const archive = withUpdatedProjectTomlInArchiveFiles(
-        await collect(pathFor(id)),
-        (contents) => prepareProjectTomlForDuplication(contents, title, v4())
-      )
-      if (archive instanceof Error) return Promise.reject(archive)
-      const requestConfig = config()
-      const remote = await api.createRemoteProject(
-        requestConfig,
-        title,
-        archive
-      )
-      if (config().accountId !== requestConfig.accountId)
-        return Promise.reject(
-          new Error('Cloud account changed during duplication.')
-        )
-      await hydrate(remote.id, archive)
-      acknowledge(remote.id, remote, archive)
-      return { id: remote.id, path: pathFor(remote.id) }
-    },
-    batch: <T>(
-      path: string,
-      run: (operations: FileOperationsRegistryService) => Promise<T>
-    ) => enqueue(idFor(path), () => run(files)),
-    retry: (id: string) => enqueue(id, async () => {}),
-    snapshot: async (id: string) => {
-      await openProject(id)
-      return collect(pathFor(id))
-    },
     getProjectStatus: async (id: string) =>
       (
         await import('@src/lib/fileSystem/cloud/publication')
@@ -575,37 +195,27 @@ export function createCloudStorage(
     publishCurrentProject: async (args: PublishCurrentProjectArgs) => {
       const id =
         args.remoteProjectId ??
-        (args.project?.path ? idFor(args.project.path) : undefined)
+        (args.project?.path ? fileSystem.idFor(args.project.path) : undefined)
       if (!id)
         return Promise.reject(
           new Error('A cloud project must be open before publishing.')
         )
-      await openProject(id)
-      return enqueue(
-        id,
-        async () => {
+      return fileSystem.withProject(id, (snapshot) =>
+        withFileOperations(snapshot.backing, async (fileOperations) => {
           const publication = await import(
             '@src/lib/fileSystem/cloud/publication'
           )
-          const project = opened.get(id)!
-          const currentPaths = new Set(
-            (await collect(pathFor(id))).map((file) => file.relativePath)
-          )
           const result = await publication.publishCurrentProject({
             ...args,
+            fileOperations,
             remoteProjectId: id,
-            expectedRevision: String(project.remote.revision),
-            deletedPaths: [...project.acknowledgedPaths].filter(
-              (path) => !currentPaths.has(path)
-            ),
+            expectedRevision: String(snapshot.remote.revision),
+            deletedPaths: snapshot.deletedPaths,
           })
-          if (result) {
-            const remote = await api.getRemoteProject(config(), id)
-            acknowledge(id, remote, await collect(pathFor(id)))
-          }
+          if (result)
+            snapshot.acknowledge(await api.getRemoteProject(config(), id))
           return result
-        },
-        false
+        })
       )
     },
     getCurrentProjectPublicationDetails: async (
@@ -621,14 +231,7 @@ export function createCloudStorage(
     dispose: async () => {
       disposed = true
       stopThumbnailWatcher()
-      await Promise.all(
-        [...opening.values()].map((request) => request.catch(() => undefined))
-      )
-      await Promise.all(
-        [...opened.values()].map((project) =>
-          project.queue.catch(() => undefined)
-        )
-      )
+      await fileSystem.detach()
       await runtime.dispose()
     },
   }
