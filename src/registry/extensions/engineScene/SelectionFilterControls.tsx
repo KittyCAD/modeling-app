@@ -88,7 +88,7 @@ export function SelectionFilterControls() {
   )
 
   return (
-    <Popover className="relative">
+    <Popover className="relative flex">
       {(popover) => (
         <>
           <Popover.Button
