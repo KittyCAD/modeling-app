@@ -28,6 +28,7 @@ function useEstimatedBillingBalance(billingContext: BillingContext) {
     }
 
     setNow(Date.now())
+    // zds-performance-exception: background-polling -- Update the displayed time until billing balance refresh; this does not gate opening or using the menu.
     const id = setInterval(() => {
       setNow(Date.now())
     }, BILLING_BALANCE_TICK_MS)

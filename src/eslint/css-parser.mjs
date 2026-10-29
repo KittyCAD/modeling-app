@@ -1,8 +1,8 @@
 import postcss from 'postcss'
 
 /** Let ESLint inspect @apply and honor local suppression comments without treating CSS as JS. */
-export function parseForESLint(text) {
-  const css = postcss.parse(text)
+export function parseForESLint(text, options = {}) {
+  const css = postcss.parse(text, { from: options.filePath })
   const lines = text.split('\n')
   const comments = []
   css.walkComments((node) => {
@@ -34,4 +34,9 @@ export function parseForESLint(text) {
     },
     services: { css },
   }
+}
+
+export default {
+  meta: { name: 'zds-postcss', version: '1.0.0' },
+  parseForESLint,
 }

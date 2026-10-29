@@ -80,6 +80,7 @@ function StatusBarItem(
             'icon' in props
               ? props.icon && {
                   icon: props.icon,
+                  // zds-performance-exception: activity-indicator -- Keep an explicitly loading status icon active while its owner performs asynchronous work.
                   iconClassName: props.icon === 'loading' ? 'animate-spin' : '',
                   bgClassName: 'bg-transparent dark:bg-transparent',
                 }
@@ -110,6 +111,7 @@ function StatusBarItem(
                 ? props.icon && {
                     icon: props.icon,
                     iconClassName:
+                      // zds-performance-exception: activity-indicator -- Animate only the loading status marker, not popover opening or any completed result.
                       props.icon === 'loading' ? 'animate-spin' : '',
                     bgClassName: 'bg-transparent dark:bg-transparent',
                   }
@@ -144,6 +146,7 @@ function StatusBarItem(
           {'icon' in props && props.icon && (
             <ActionIcon
               icon={props.icon}
+              // zds-performance-exception: activity-indicator -- Rotate only an explicit loading icon while the status owner remains busy; other icons are static.
               iconClassName={props.icon === 'loading' ? 'animate-spin' : ''}
               bgClassName="bg-transparent dark:bg-transparent"
             />
