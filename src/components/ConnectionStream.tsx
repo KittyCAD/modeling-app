@@ -62,7 +62,7 @@ const stringHash = (value: string) => {
 
 interface ConnectionStreamProps {
   authToken: string | undefined
-  sketchSolveStreamDimming?: number
+  sketchSolveDimming?: number
   streamClassName?: string
   streamLayers: readonly EngineSceneStreamLayer[]
   streamLayerProps: EngineSceneExtensionContext
@@ -670,7 +670,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         enableTouchControls={
           settingsValues.modeling.enableTouchControls.current
         }
-        sketchSolveStreamDimming={props.sketchSolveStreamDimming}
+        sketchSolveDimming={props.sketchSolveDimming}
       />
       {props.streamLayers.map((layer) => {
         return (

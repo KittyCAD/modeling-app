@@ -31,3 +31,4 @@ export const SEGMENT_LENGTH_LABEL = 'segment-length-label'
 export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
 export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
 export const SKETCH_POINT_HANDLE = 'sketch-point-handle'
+export const DEFAULT_SKETCH_SOLVE_DIMMING = 0.8
