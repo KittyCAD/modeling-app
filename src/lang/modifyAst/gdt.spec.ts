@@ -79,6 +79,21 @@ const executeCode = async (
   const ast = assertParse(code, instance)
   await kclManager.executeAst({ ast })
   const artifactGraph = kclManager.artifactGraph
+  // All GD&T creation fixtures must work without obsolete solid-edge records.
+  for (const [id, artifact] of artifactGraph) {
+    if (artifact.type === 'sweepEdge' || artifact.type === 'edgeCutEdge') {
+      artifactGraph.delete(id)
+      continue
+    }
+    for (const field of [
+      'edgeIds',
+      'commonSurfaceIds',
+      'edgeCutEdgeIds',
+      'consumedEdgeId',
+    ]) {
+      Reflect.deleteProperty(artifact, field)
+    }
+  }
   await new Promise((resolve) => setTimeout(resolve, 100))
   return { ast, artifactGraph }
 }
@@ -112,14 +127,20 @@ function getSweepCapAndWalls(artifactGraph: ArtifactGraph) {
   return endCap && walls.length > 0 ? { endCap, walls } : null
 }
 
-function selectionFromSideFaces(sideFaceGroups: Artifact[][]): Selections {
+function selectionFromSideFaces(
+  sideFaceGroups: Artifact[][],
+  faces?: Selections
+): Selections {
   return {
-    graphSelections: sideFaceGroups.map((sideFaces) => ({
-      entityRef: {
-        type: 'edge' as const,
-        side_faces: sideFaces.map((face) => face.id),
-      },
-    })),
+    graphSelections: [
+      ...(faces?.graphSelections ?? []),
+      ...sideFaceGroups.map((sideFaces) => ({
+        entityRef: {
+          type: 'edge' as const,
+          side_faces: sideFaces.map((face) => face.id),
+        },
+      })),
+    ],
     otherSelections: [],
   }
 }
@@ -719,10 +740,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!face || !edgeFaces) {
         throw new Error('Expected a cap face and sweep edge')
       }
 
@@ -734,7 +756,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addStraightnessGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: selectionFromSideFaces(
+          [edgeFaces],
+          createSelectionFromArtifacts([face], artifactGraph)
+        ),
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -759,10 +784,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!edgeFaces) {
         throw new Error('Expected a sweep edge')
       }
 
@@ -779,7 +805,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
             {
               entityRef: {
                 type: 'edge',
-                side_faces: edge.commonSurfaceIds ?? [],
+                side_faces: edgeFaces.map(({ id }) => id),
               },
             },
           ],
@@ -945,10 +971,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!face || !edgeFaces) {
         throw new Error('Expected a cap face and sweep edge')
       }
 
@@ -960,7 +987,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addCircularityGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: selectionFromSideFaces(
+          [edgeFaces],
+          createSelectionFromArtifacts([face], artifactGraph)
+        ),
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1119,10 +1149,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!face || !edgeFaces) {
         throw new Error('Expected a cap face and sweep edge')
       }
 
@@ -1134,7 +1165,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addCylindricityGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: selectionFromSideFaces(
+          [edgeFaces],
+          createSelectionFromArtifacts([face], artifactGraph)
+        ),
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1281,10 +1315,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'segment'
-      )
-      if (!edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!edgeFaces) {
         throw new Error('Expected a sketch segment')
       }
 
@@ -1301,7 +1336,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addProfileGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        objects: selectionFromSideFaces([edgeFaces]),
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
@@ -1388,10 +1423,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!face || !edgeFaces) {
         throw new Error('Expected a cap face and sweep edge')
       }
 
@@ -1403,7 +1439,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addProfileGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: selectionFromSideFaces(
+          [edgeFaces],
+          createSelectionFromArtifacts([face], artifactGraph)
+        ),
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1426,10 +1465,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'segment'
-      )
-      if (!face || !edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!face || !edgeFaces) {
         throw new Error('Expected a cap face and sketch segment')
       }
 
@@ -1446,7 +1486,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addPositionGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: selectionFromSideFaces(
+          [edgeFaces],
+          createSelectionFromArtifacts([face], artifactGraph)
+        ),
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
@@ -1748,10 +1791,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!face || !edgeFaces) {
         throw new Error('Expected a cap face and sweep edge')
       }
 
@@ -1768,7 +1812,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addAngularityGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: selectionFromSideFaces(
+          [edgeFaces],
+          createSelectionFromArtifacts([face], artifactGraph)
+        ),
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
@@ -1802,10 +1849,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!face || !edgeFaces) {
         throw new Error('Expected a cap face and sweep edge')
       }
 
@@ -1822,7 +1870,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addConcentricityGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: selectionFromSideFaces(
+          [edgeFaces],
+          createSelectionFromArtifacts([face], artifactGraph)
+        ),
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
@@ -1856,10 +1907,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!face || !edgeFaces) {
         throw new Error('Expected a cap face and sweep edge')
       }
 
@@ -1876,7 +1928,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addSymmetryGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: selectionFromSideFaces(
+          [edgeFaces],
+          createSelectionFromArtifacts([face], artifactGraph)
+        ),
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
@@ -1910,10 +1965,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!face || !edgeFaces) {
         throw new Error('Expected a cap face and sweep edge')
       }
 
@@ -1930,7 +1986,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addRunoutGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: selectionFromSideFaces(
+          [edgeFaces],
+          createSelectionFromArtifacts([face], artifactGraph)
+        ),
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
@@ -1964,10 +2023,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'segment'
-      )
-      if (!face || !edge) {
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      const edgeFaces = sweepFaces
+        ? [sweepFaces.walls[0], sweepFaces.endCap]
+        : null
+      if (!face || !edgeFaces) {
         throw new Error('Expected a cap face and sketch segment')
       }
 
@@ -1984,7 +2044,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addPerpendicularityGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: selectionFromSideFaces(
+          [edgeFaces],
+          createSelectionFromArtifacts([face], artifactGraph)
+        ),
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
@@ -2061,6 +2124,43 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addAnnotationGdt', () => {
+    it('does not infer a solid edge from sketch-segment adjacency metadata', async () => {
+      const code = `@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  bottom = line(start = [0mm, 0mm], end = [20mm, 0mm])
+  right = line(start = [20mm, 0mm], end = [20mm, 20mm])
+  top = line(start = [20mm, 20mm], end = [0mm, 20mm])
+  left = line(start = [0mm, 20mm], end = [0mm, 0mm])
+}
+region001 = region(point = [10mm, 10mm], sketch = profile)
+body = extrude(region001, length = 10mm)`
+      const { ast, artifactGraph } = await executeCode(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces) throw new Error('Expected extruded faces')
+      const segment = artifactGraph.get(sweepFaces.walls[0].segId)
+      if (segment?.type !== 'segment')
+        throw new Error('Expected a swept sketch segment')
+      // Obsolete adjacency must not turn a sketch source into a selected solid edge.
+      Reflect.set(segment, 'commonSurfaceIds', [
+        sweepFaces.walls[0].id,
+        sweepFaces.endCap.id,
+      ])
+      const originalCode = recast(ast, instanceInThisFile)
+      const result = addAnnotationGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([segment], artifactGraph),
+        annotation: 'Ambiguous sketch source',
+        wasmInstance: instanceInThisFile,
+      })
+      expect(result).toBeInstanceOf(Error)
+      expect(recast(ast, instanceInThisFile)).toBe(originalCode)
+    })
+
     it('should add annotations to selected faces and edges', async () => {
       const { artifactGraph, ast } = await executeCode(
         boxWithOneTagAndChamfer,
