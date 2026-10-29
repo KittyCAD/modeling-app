@@ -387,7 +387,7 @@ export const FileExplorerRowElement = ({
   }, [onDeleteEnd])
 
   // Complaining about role="treeitem" focus but it is reimplemented aria labels
-  /* eslint-disable */
+  /* eslint-disable jsx-a11y/interactive-supports-focus, suggest-no-throw/suggest-no-throw */
   return (
     <div
       ref={rowElementRef}

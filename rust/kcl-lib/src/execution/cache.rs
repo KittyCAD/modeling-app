@@ -13,7 +13,11 @@ use tokio::sync::RwLock;
 use crate::ExecOutcome;
 use crate::ExecutorContext;
 use crate::SourceRange;
+use crate::engine::EngineBatchContext;
+use crate::engine::engine_manager::EngineManager;
+use crate::engine::engine_manager::EngineSessionId;
 use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
 use crate::execution::ConstraintKey;
 use crate::execution::ConstraintState;
 use crate::execution::EnvironmentRef;
@@ -37,6 +41,7 @@ use crate::walk::Node as WalkNode;
 
 #[derive(Debug, Default)]
 struct CacheInner {
+    owner: Option<ExecutionOwner>,
     /// Last successful execution state for the cache.
     pub old_ast: Option<GlobalState>,
     // The last successful run's memory. Not cleared after an unsuccessful run.
@@ -48,13 +53,25 @@ struct CacheInner {
     pub engine_scene_generation: usize,
 }
 
+#[derive(Debug, Clone, PartialEq)]
+struct ExecutionOwner {
+    engine_session: EngineSessionId,
+    current_file: Option<crate::TypedPath>,
+    project_directory: Option<crate::TypedPath>,
+}
+
 /// Cached execution state for one engine session and its associated mock execution.
 ///
 /// Clones share the same state. A default cache is empty and independent of all
 /// other caches. Callers must serialize executions that share an engine session;
 /// this cache only locks individual state accesses.
 #[derive(Debug, Clone)]
-pub struct Cache(Arc<dyn CacheStorage>);
+pub struct Cache {
+    storage: Arc<dyn CacheStorage>,
+    // Executions hold a session-bound handle so a retired future cannot publish
+    // its old IDs or clear a replacement engine's cache during error cleanup.
+    owner: Option<ExecutionOwner>,
+}
 
 // Hide the cache's concrete state graph from Send/Sync proofs in callers.
 trait CacheStorage: std::fmt::Debug + Send + Sync {
@@ -69,49 +86,128 @@ impl CacheStorage for RwLock<CacheInner> {
 
 impl Default for Cache {
     fn default() -> Self {
-        Self(Arc::new(RwLock::new(CacheInner::default())))
+        Self {
+            storage: Arc::new(RwLock::new(CacheInner::default())),
+            owner: None,
+        }
     }
 }
 
 impl Cache {
+    pub(super) async fn for_execution(
+        &self,
+        engine: &EngineManager,
+        batch: &EngineBatchContext,
+        settings: &ExecutorSettings,
+    ) -> Result<(Self, bool), KclError> {
+        let mut inner = self.storage.inner().write().await;
+        // Check after acquiring the lock: reconnect may have happened while
+        // this future was waiting. A stale scoped handle cannot reclaim state.
+        engine.validate_session(batch, SourceRange::default())?;
+        if !self.owns(&inner) {
+            return Err(KclError::new_engine(KclErrorDetails::new(
+                "Execution cache owner was superseded.".to_owned(),
+                vec![SourceRange::default()],
+            )));
+        }
+        let owner = ExecutionOwner {
+            engine_session: batch
+                .expected_session()
+                .cloned()
+                .unwrap_or_else(|| engine.session_identity()),
+            current_file: settings.current_file.clone(),
+            project_directory: settings.project_directory.clone(),
+        };
+        if owner.current_file.is_none()
+            && inner.owner.as_ref().is_some_and(|registered| {
+                registered.engine_session == owner.engine_session && registered.current_file.is_some()
+            })
+        {
+            // Missing file information is not a file switch. Reject before
+            // discarding the registered file's cache or changing its scene.
+            return Err(KclError::new_engine(KclErrorDetails::new(
+                "Anonymous execution cannot replace a file-backed execution in the same engine session.".to_owned(),
+                vec![SourceRange::default()],
+            )));
+        }
+        let changed = inner.owner.as_ref() != Some(&owner);
+        if changed {
+            inner.old_ast = None;
+            inner.prev_memory = None;
+            inner.owner = Some(owner.clone());
+        }
+        Ok((
+            Self {
+                storage: self.storage.clone(),
+                owner: Some(owner),
+            },
+            changed,
+        ))
+    }
+
+    fn owns(&self, inner: &CacheInner) -> bool {
+        self.owner.is_none() || self.owner == inner.owner
+    }
+
     /// Read the old AST state from the cache.
     pub(super) async fn read_old_ast(&self) -> Option<GlobalState> {
-        self.0.inner().read().await.old_ast.clone()
+        let inner = self.storage.inner().read().await;
+        if self.owns(&inner) { inner.old_ast.clone() } else { None }
     }
 
     pub(super) async fn write_old_ast(&self, old_state: GlobalState) {
-        let mut inner = self.0.inner().write().await;
+        let mut inner = self.storage.inner().write().await;
+        if !self.owns(&inner) {
+            return;
+        }
         inner.old_ast = Some(old_state);
     }
 
     pub(crate) async fn read_old_memory(&self) -> Option<SketchModeState> {
-        self.0.inner().read().await.prev_memory.clone()
+        let inner = self.storage.inner().read().await;
+        if self.owns(&inner) {
+            inner.prev_memory.clone()
+        } else {
+            None
+        }
     }
 
     pub(crate) async fn write_old_memory(&self, mem: SketchModeState) {
-        let mut inner = self.0.inner().write().await;
+        let mut inner = self.storage.inner().write().await;
+        if !self.owns(&inner) {
+            return;
+        }
         inner.prev_memory = Some(mem);
     }
 
     /// The number of runs that have changed the engine scene.
     pub(crate) async fn engine_scene_generation(&self) -> usize {
-        self.0.inner().read().await.engine_scene_generation
+        self.storage.inner().read().await.engine_scene_generation
     }
 
     pub(super) async fn bump_engine_scene_generation(&self) {
-        let mut inner = self.0.inner().write().await;
+        let mut inner = self.storage.inner().write().await;
+        if !self.owns(&inner) {
+            return;
+        }
         inner.engine_scene_generation = inner.engine_scene_generation.wrapping_add(1);
     }
 
     /// Invalidate live execution state while preserving usable sketch-mode memory.
     pub async fn bust_cache(&self) {
-        let mut inner = self.0.inner().write().await;
+        let mut inner = self.storage.inner().write().await;
+        if !self.owns(&inner) {
+            return;
+        }
         inner.old_ast = None;
     }
 
     /// Clear the memory reused by mock execution.
     pub async fn clear_mem_cache(&self) {
-        let mut inner = self.0.inner().write().await;
+        let mut inner = self.storage.inner().write().await;
+        if !self.owns(&inner) {
+            return;
+        }
         inner.prev_memory = None;
     }
 
@@ -332,6 +428,18 @@ pub(super) enum CacheResult {
 /// the cache.
 pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInformation<'_>) -> CacheResult {
     let mut reapply_settings = false;
+
+    if old.settings.current_file != new.settings.current_file
+        || old.settings.project_directory != new.settings.project_directory
+    {
+        // The same source bytes in another file are a different root module,
+        // with different import resolution and source/selection ownership.
+        return CacheResult::ReExecute {
+            clear_scene: true,
+            reapply_settings: true,
+            program: new.ast.clone(),
+        };
+    }
 
     if old.kcl_version != new.kcl_version {
         // If the KCL version differs, we need to send the version and

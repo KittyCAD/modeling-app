@@ -1,4 +1,7 @@
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { ParsedExecutionSource } from '@rust/kcl-lib/bindings/ParsedExecutionSource'
+import { Connection } from '@src/lib/engineConnection/connection'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -50,6 +53,9 @@ function runtime(
       .fn<NativeContextContract['remove_file']>()
       .mockResolvedValue(undefined)
     get_project = vi.fn(async () => ({ module: label }))
+    parseForExecution = vi
+      .fn<NativeContextContract['parseForExecution']>()
+      .mockResolvedValue(parsedPlanes(1))
     new_sketch = vi
       .fn<NativeContextContract['new_sketch']>()
       .mockRejectedValue(new Error('Native sketch boundary reached'))
@@ -72,6 +78,157 @@ function owner(module: Promise<ModuleType>) {
   const manager = new ConnectionManager({ settingsActor })
   return new RustContext(module, manager, settingsActor)
 }
+
+const planes: DefaultPlanes = {
+  xy: 'xy',
+  xz: 'xz',
+  yz: 'yz',
+  negXy: '-xy',
+  negXz: '-xz',
+  negYz: '-yz',
+}
+
+function parsedPlanes(
+  generation: number,
+  value: DefaultPlanes | null = planes
+): ParsedExecutionSource {
+  return {
+    program: null,
+    kcl_version: null,
+    issues: [],
+    default_planes: value,
+    engine_scene_generation: generation,
+  }
+}
+
+function planeOwner() {
+  const first = runtime('planes')
+  const settingsActor = new Actor(settingsMachine)
+  const manager = new ConnectionManager({ settingsActor })
+  const context = new RustContext(
+    Promise.resolve(first.module),
+    manager,
+    settingsActor
+  )
+  const notification = vi.fn()
+  context.planesCreated.add(notification)
+  const parse = () => context.parseForExecution('', {})
+  return { first, manager, context, notification, parse }
+}
+
+describe('RustContext plane notifications', () => {
+  it('suppresses only an unchanged owned scene, not recreated planes with the same IDs', async () => {
+    const { first, context, notification, parse } = planeOwner()
+    await parse()
+    await parse()
+    expect(notification).toHaveBeenCalledTimes(1)
+    first.instances[0].parseForExecution.mockResolvedValue(parsedPlanes(2))
+    await parse()
+    expect(notification).toHaveBeenCalledTimes(2)
+    expect(context.defaultPlanes).toEqual(planes)
+    context.destroy()
+  })
+
+  it('publishes changed plane IDs even within one scene generation', async () => {
+    const { first, context, notification, parse } = planeOwner()
+    await parse()
+    const changed = { ...planes, xy: 'new-xy' }
+    first.instances[0].parseForExecution.mockResolvedValue(
+      parsedPlanes(1, changed)
+    )
+    await parse()
+    expect(notification).toHaveBeenCalledTimes(2)
+    expect(context.defaultPlanes).toEqual(changed)
+    context.destroy()
+  })
+
+  it('does not let a retired scene receipt overwrite a newer scene', async () => {
+    const { first, context, notification, parse } = planeOwner()
+    await parse()
+    const changed = { ...planes, xy: 'new-xy' }
+    first.instances[0].parseForExecution.mockResolvedValue(
+      parsedPlanes(2, changed)
+    )
+    await parse()
+    first.instances[0].parseForExecution.mockResolvedValue(parsedPlanes(1))
+    await parse()
+    expect(notification).toHaveBeenCalledTimes(2)
+    expect(context.defaultPlanes).toEqual(changed)
+    context.destroy()
+  })
+
+  it.each(['connection', 'project', 'destroy'])(
+    'does not publish an old result after its %s owner retires',
+    async (retired) => {
+      const { first, manager, context, notification, parse } = planeOwner()
+      await context.sendOpenProject(main.path, [main])
+      const pending = Promise.withResolvers<ParsedExecutionSource>()
+      first.instances[0].parseForExecution.mockReturnValueOnce(pending.promise)
+      const oldResult = parse()
+      await vi.waitFor(() =>
+        expect(first.instances[0].parseForExecution).toHaveBeenCalledOnce()
+      )
+      if (retired === 'connection') {
+        manager.connection = new Connection({
+          url: 'ws://localhost/planes',
+          token: 'test-token',
+          handleOnDataChannelMessage: vi.fn(),
+          recordShutdownTrigger: () => false,
+          tearDownManager: vi.fn(),
+          rejectPendingCommand: vi.fn(),
+          handleMessage: vi.fn(),
+          getCloudProjectId: () => undefined,
+        })
+      } else if (retired === 'project') {
+        await context.sendOpenProject('/replacement/main.kcl', [
+          { ...main, path: '/replacement/main.kcl' },
+        ])
+      } else context.destroy()
+      if (retired !== 'destroy') await parse()
+      const before = notification.mock.calls.length
+      pending.resolve(parsedPlanes(1, { ...planes, xy: 'retired-xy' }))
+      await oldResult
+      expect(notification).toHaveBeenCalledTimes(before)
+      expect(context.defaultPlanes).toEqual(
+        retired === 'destroy' ? null : planes
+      )
+      if (retired !== 'destroy') {
+        await parse()
+        expect(notification).toHaveBeenCalledTimes(before)
+      }
+      context.destroy()
+    }
+  )
+
+  it('replays after a null result and conservatively publishes errors without a generation', async () => {
+    const { first, context, notification, parse } = planeOwner()
+    await parse()
+    first.instances[0].parseForExecution.mockResolvedValueOnce(
+      parsedPlanes(1, null)
+    )
+    await parse()
+    expect(context.defaultPlanes).toBeNull()
+    await parse()
+    expect(notification).toHaveBeenCalledTimes(2)
+    const known = Object.assign(new Error('known scene'), {
+      defaultPlanes: planes,
+      engineSceneGeneration: 1,
+    })
+    first.instances[0].parseForExecution.mockRejectedValueOnce(known)
+    expect(await parse()).toBe(known)
+    expect(notification).toHaveBeenCalledTimes(2)
+    const unknown = Object.assign(new Error('unknown scene'), {
+      defaultPlanes: planes,
+      engineSceneGeneration: null,
+    })
+    first.instances[0].parseForExecution.mockRejectedValueOnce(unknown)
+    expect(await parse()).toBe(unknown)
+    expect(notification).toHaveBeenCalledTimes(3)
+    await parse()
+    expect(notification).toHaveBeenCalledTimes(4)
+    context.destroy()
+  })
+})
 
 describe('RustContext module lifecycle', () => {
   it.each(['newSketch', 'editSketch', 'exitSketch'])(

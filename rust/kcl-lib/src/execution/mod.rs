@@ -407,6 +407,19 @@ pub struct ExecOutcome {
     pub default_planes: Option<DefaultPlanes>,
 }
 
+/// Parsing an execution source also owns file-switch and engine-session semantics.
+/// The Rust scene generation distinguishes recreated planes with deterministic
+/// reused IDs from an unchanged scene observed by another parse.
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct ParsedExecutionSource {
+    pub program: Option<crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>>,
+    pub kcl_version: Option<KclVersion>,
+    pub issues: Vec<CompilationIssue>,
+    pub default_planes: Option<DefaultPlanes>,
+    pub engine_scene_generation: usize,
+}
+
 /// Per-segment freedom used by the constraint report. Mirrors
 /// [`kcl_api::Freedom`] but adds an `Error` variant for when
 /// a point lookup fails.
@@ -1179,6 +1192,8 @@ struct CachedExecution {
     preserve_mem: PreserveMem,
 }
 
+type ImportedModuleResult = (ModuleId, Result<ModuleRepr, KclError>);
+
 impl ExecutorContext {
     /// Use an existing cache for another handle to the same session, or for
     /// associated mock execution. Independent sessions must use independent caches.
@@ -1211,7 +1226,7 @@ impl ExecutorContext {
         Self {
             engine: self.engine.clone(),
             cache: self.cache.clone(),
-            engine_batch: EngineBatchContext::new(),
+            engine_batch: self.engine_batch.fresh(),
             fs: self.fs.clone(),
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
@@ -1545,8 +1560,11 @@ impl ExecutorContext {
         Ok(())
     }
 
+    /// WARNING: NO ONE CAN CALL THIS FUNCTION WITHOUT FIRST ASKING @jessfraz.
+    ///
     /// Clear the KCL-lib internal cache and clear the entire engine scene.
     /// Only executors sharing this session cache are affected.
+    /// Do not expose this escape hatch to JavaScript. Fix cache validity in Rust.
     pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
         self.cache.bust_cache().await;
 
@@ -1701,13 +1719,71 @@ impl ExecutorContext {
         Ok((exec_state, main_ref))
     }
 
+    /// Parse the next entry point without discarding a usable model for an
+    /// incomplete edit in the same file. A different invalid file must never
+    /// display the previous file's geometry or inherit its mock memory.
+    pub async fn parse_for_execution(&self, source: &str) -> Result<ParsedExecutionSource, KclErrorWithOutputs> {
+        let parsed = crate::Program::parse(source);
+        let invalid = match &parsed {
+            Ok((program, issues)) => program.is_none() || issues.iter().any(|issue| issue.severity.is_err()),
+            Err(_) => true,
+        };
+        if invalid {
+            let session = self
+                .engine_batch
+                .expected_session()
+                .cloned()
+                .unwrap_or_else(|| self.engine.session_identity());
+            let batch = EngineBatchContext::for_session(session);
+            let (cache, owner_changed) = self
+                .cache
+                .for_execution(&self.engine, &batch, &self.settings)
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
+            let mut ctx = self.clone().with_cache(cache);
+            ctx.engine_batch = batch;
+            if owner_changed {
+                // Ordinary empty execution applies the normal Rust scene and
+                // cache lifecycle. JavaScript never decides what to invalidate.
+                ctx.run_with_caching(crate::Program::empty()).await?;
+            }
+        }
+        let default_planes = self.engine.get_default_planes().read().await.clone();
+        let engine_scene_generation = self.cache.engine_scene_generation().await;
+        let (program, issues) = parsed.map_err(|error| KclErrorWithOutputs {
+            default_planes: default_planes.clone(),
+            engine_scene_generation: Some(engine_scene_generation),
+            ..KclErrorWithOutputs::no_outputs(error)
+        })?;
+        Ok(ParsedExecutionSource {
+            kcl_version: program.as_ref().map(|program| program.kcl_version),
+            program: program.map(|program| program.ast),
+            issues,
+            default_planes,
+            engine_scene_generation,
+        })
+    }
+
     /// Plan, execute, and save in separate phases so cache-management stack
     /// frames are not held underneath deep KCL execution in debug builds.
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
-        let exec_fut = self.run_with_caching_inner(program);
-        let result = if self.configure_engine_render {
-            self.with_engine_execution(Box::pin(exec_fut)).await
+        let session = self
+            .engine_batch
+            .expected_session()
+            .cloned()
+            .unwrap_or_else(|| self.engine.session_identity());
+        let batch = EngineBatchContext::for_session(session);
+        let (cache, _) = self
+            .cache
+            .for_execution(&self.engine, &batch, &self.settings)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        let mut ctx = self.clone().with_cache(cache);
+        ctx.engine_batch = batch;
+        let exec_fut = ctx.run_with_caching_inner(program);
+        let result = if ctx.configure_engine_render {
+            ctx.with_engine_execution(Box::pin(exec_fut)).await
         } else {
             exec_fut.await
         };
@@ -1715,8 +1791,8 @@ impl ExecutorContext {
         match result {
             Ok(outcome) => Ok(outcome),
             Err(mut err) => {
-                self.cache.bust_cache().await;
-                err.engine_scene_generation = Some(self.cache.engine_scene_generation().await);
+                ctx.cache.bust_cache().await;
+                err.engine_scene_generation = Some(ctx.cache.engine_scene_generation().await);
                 Err(err)
             }
         }
@@ -1725,6 +1801,9 @@ impl ExecutorContext {
     async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let original_program = program.clone();
         let prepared = self.prepare_cached_execution(program).await;
+        self.engine
+            .validate_session(&self.engine_batch, SourceRange::default())
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         if !matches!(prepared, Ok(PreparedCachedExecution::Cached(_))) {
             // Anything but a cache hit may have changed the engine scene, even
             // if it went on to fail.
@@ -2084,7 +2163,7 @@ impl ExecutorContext {
         // Their IDs must not consume or collide with the model's stable artifact IDs.
         self.engine
             .send_modeling_cmd(
-                &EngineBatchContext::new(),
+                &self.engine_batch.fresh(),
                 uuid::Uuid::new_v4(),
                 SourceRange::synthetic(),
                 &cmd,
@@ -2183,11 +2262,7 @@ impl ExecutorContext {
             #[cfg(not(target_arch = "wasm32"))]
             let mut set = tokio::task::JoinSet::new();
 
-            #[allow(clippy::type_complexity)]
-            let (results_tx, mut results_rx): (
-                tokio::sync::mpsc::Sender<(ModuleId, ModulePath, Result<ModuleRepr, KclError>)>,
-                tokio::sync::mpsc::Receiver<_>,
-            ) = tokio::sync::mpsc::channel(1);
+            let (results_tx, results_rx) = tokio::sync::mpsc::channel::<ImportedModuleResult>(1);
 
             for module in modules {
                 let Some((import_stmt, module_id, module_path, repr)) = universe.get(&module) else {
@@ -2267,10 +2342,7 @@ impl ExecutorContext {
                         )
                         .await;
 
-                        results_tx
-                            .send((module_id, module_path, result))
-                            .await
-                            .unwrap_or_default();
+                        results_tx.send((module_id, result)).await.unwrap_or_default();
                     });
                 }
                 #[cfg(not(target_arch = "wasm32"))]
@@ -2289,45 +2361,14 @@ impl ExecutorContext {
                         )
                         .await;
 
-                        results_tx
-                            .send((module_id, module_path, result))
-                            .await
-                            .unwrap_or_default();
+                        results_tx.send((module_id, result)).await.unwrap_or_default();
                     });
                 }
             }
 
             drop(results_tx);
 
-            while let Some((module_id, _, result)) = results_rx.recv().await {
-                match result {
-                    Ok(new_repr) => {
-                        let mut repr = exec_state.global.module_infos[&module_id].take_repr();
-
-                        match &mut repr {
-                            ModuleRepr::Kcl(_, cache) => {
-                                let ModuleRepr::Kcl(_, session_data) = new_repr else {
-                                    unreachable!();
-                                };
-                                *cache = session_data;
-                            }
-                            ModuleRepr::Foreign(_, cache) => {
-                                let ModuleRepr::Foreign(_, session_data) = new_repr else {
-                                    unreachable!();
-                                };
-                                *cache = session_data;
-                            }
-                            ModuleRepr::Dummy | ModuleRepr::Root => unreachable!(),
-                        }
-
-                        exec_state.global.module_infos[&module_id].restore_repr(repr);
-                    }
-                    Err(e) => {
-                        let e = import_graph::add_import_backtrace(e, module_id, &universe);
-                        return Err(exec_state.error_with_outputs(e, None, default_planes));
-                    }
-                }
-            }
+            Self::settle_import_stage(results_rx, exec_state, &universe, &default_planes).await?;
         }
 
         // The early-pushed ModuleInstance operations have already served their
@@ -2361,6 +2402,51 @@ impl ExecutorContext {
                 }
                 error
             })
+    }
+
+    async fn settle_import_stage(
+        mut results_rx: tokio::sync::mpsc::Receiver<ImportedModuleResult>,
+        exec_state: &mut ExecState,
+        universe: &Universe,
+        default_planes: &Option<DefaultPlanes>,
+    ) -> Result<(), KclErrorWithOutputs> {
+        let mut first_error = None;
+        while let Some((module_id, result)) = results_rx.recv().await {
+            match result {
+                Ok(new_repr) => {
+                    let mut repr = exec_state.global.module_infos[&module_id].take_repr();
+
+                    match &mut repr {
+                        ModuleRepr::Kcl(_, cache) => {
+                            let ModuleRepr::Kcl(_, session_data) = new_repr else {
+                                unreachable!();
+                            };
+                            *cache = session_data;
+                        }
+                        ModuleRepr::Foreign(_, cache) => {
+                            let ModuleRepr::Foreign(_, session_data) = new_repr else {
+                                unreachable!();
+                            };
+                            *cache = session_data;
+                        }
+                        ModuleRepr::Dummy | ModuleRepr::Root => unreachable!(),
+                    }
+
+                    exec_state.global.module_infos[&module_id].restore_repr(repr);
+                }
+                Err(e) => {
+                    if first_error.is_none() {
+                        first_error = Some(import_graph::add_import_backtrace(e, module_id, universe));
+                    }
+                }
+            }
+        }
+        // Wasm's spawned siblings are not cancelled by dropping a join handle.
+        // Drain their results before ending execution or clearing its scene.
+        if let Some(error) = first_error {
+            return Err(exec_state.error_with_outputs(error, None, default_planes.clone()));
+        }
+        Ok(())
     }
 
     /// Get the universe & universe map of the program.
@@ -5432,6 +5518,101 @@ solid7 = extrude(r7, length = width)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_contract_retired_future_cannot_overwrite_or_clear_replacement() {
+        let first = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let original = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        first.run_with_caching(original).await.unwrap();
+        let (stale, _) = first
+            .cache
+            .for_execution(
+                &first.engine,
+                &EngineBatchContext::for_session(first.engine.session_identity()),
+                &first.settings,
+            )
+            .await
+            .unwrap();
+        let old_ast = stale.read_old_ast().await.unwrap();
+        let old_memory = stale.read_old_memory().await.unwrap();
+        let replacement = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default())
+            .with_cache(first.cache.clone());
+        let updated = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 7").unwrap();
+        let replacement_outcome = replacement.run_with_caching(updated.clone()).await.unwrap();
+        // Complete every kind of old continuation after the replacement wins.
+        stale.write_old_ast(old_ast).await;
+        stale.write_old_memory(old_memory).await;
+        stale.bust_cache().await;
+        stale.clear_mem_cache().await;
+        stale.bump_engine_scene_generation().await;
+        assert_eq!(
+            replacement.cache.engine_scene_generation().await,
+            replacement_outcome.engine_scene_generation,
+            "a retired execution cannot advance the replacement scene's generation"
+        );
+        assert!(stale.read_old_ast().await.is_none());
+        assert!(stale.read_old_memory().await.is_none());
+        let error = stale
+            .for_execution(
+                &first.engine,
+                &EngineBatchContext::for_session(first.engine.session_identity()),
+                &first.settings,
+            )
+            .await
+            .unwrap_err();
+        assert!(
+            matches!(error, KclError::Engine { details } if details.message == "Execution cache owner was superseded.")
+        );
+        let cached = replacement.run_with_caching(updated).await.unwrap();
+        assert_eq!(
+            cached.engine_scene_generation,
+            replacement_outcome.engine_scene_generation
+        );
+        assert_number_variable(&cached.variables, "x", 7.0);
+        let mock = ExecutorContext::new_mock(None)
+            .await
+            .with_cache(replacement.cache.clone());
+        let expression = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\ny = x + 1").unwrap();
+        assert_number_variable(
+            &mock
+                .run_mock(&expression, &MockConfig::default())
+                .await
+                .unwrap()
+                .variables,
+            "y",
+            8.0,
+        );
+        first.close().await;
+        replacement.close().await;
+        mock.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn parsing_another_valid_entry_preserves_the_cached_owner_and_mock_memory() {
+        use std::sync::atomic::Ordering::Relaxed;
+
+        let project = tempfile::tempdir().unwrap();
+        let mut settings = ExecutorSettings::default();
+        settings.with_current_file(crate::TypedPath(project.path().join("main.kcl")));
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), settings);
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        let original = ctx.run_with_caching(program.clone()).await.unwrap();
+        let mut probe = ctx.clone_with_fresh_execution_batch();
+        probe
+            .settings
+            .with_current_file(crate::TypedPath(project.path().join("other.kcl")));
+        let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+        probe
+            .parse_for_execution("@settings(kclVersion = 3.0)\nx = 7")
+            .await
+            .unwrap();
+        assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+        assert!(ctx.cache.read_old_memory_var("x").await.is_some());
+        let cached = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, original.engine_scene_generation);
+        assert_number_variable(&cached.variables, "x", 2.0);
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn session_cache_shares_clones_and_associated_mock_memory() {
         let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
@@ -5473,6 +5654,50 @@ solid7 = extrude(r7, length = width)
         assert_number_variable(&outcome.variables, "y", 3.0);
         ctx.close().await;
         mock.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn failed_import_stage_waits_for_its_pending_sibling() {
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let mut exec_state = ExecState::new(&ctx);
+        let root_range = SourceRange::new(0, 10, ModuleId::default());
+        let imported_range = SourceRange::new(20, 30, ModuleId::from_usize(1));
+        let first_error = KclError::new_engine(KclErrorDetails::new(
+            "first import failed".to_owned(),
+            vec![imported_range],
+        ))
+        .add_import_location("bad.kcl", root_range);
+        let (sender, receiver) = tokio::sync::mpsc::channel(1);
+        sender
+            .send((ModuleId::from_usize(1), Err(first_error.clone())))
+            .await
+            .unwrap();
+        let universe = Universe::default();
+        let default_planes = None;
+        let settling = ExecutorContext::settle_import_stage(receiver, &mut exec_state, &universe, &default_planes);
+        tokio::pin!(settling);
+        assert!(
+            futures::poll!(settling.as_mut()).is_pending(),
+            "the execution cannot end while a sibling still owns its sender"
+        );
+
+        sender
+            .send((
+                ModuleId::from_usize(2),
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    "later sibling failed".to_owned(),
+                    vec![SourceRange::new(40, 50, ModuleId::from_usize(2))],
+                ))),
+            ))
+            .await
+            .unwrap();
+        drop(sender);
+        let result = settling.await.unwrap_err();
+        assert_eq!(
+            result.error, first_error,
+            "preserve the first kind, ranges, and import backtrace"
+        );
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
