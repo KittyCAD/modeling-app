@@ -753,7 +753,7 @@ impl EngineManager {
         })
     }
 
-    fn parse_websocket_response(
+    pub(crate) fn parse_websocket_response(
         &self,
         response: WebSocketResponse,
         source_range: SourceRange,
