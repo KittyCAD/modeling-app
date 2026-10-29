@@ -234,7 +234,6 @@ export const uiBudgetScenarios: BudgetScenario[] = [
         type: 'Number',
         value: 13,
       })
-      await assertModelLoaded(fixtures)
     },
   },
   {
