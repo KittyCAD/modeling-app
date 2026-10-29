@@ -265,6 +265,25 @@ test(
       [DefaultLayoutPaneID.Code, DefaultLayoutPaneID.Files]
     )
     const originalProject = await page.evaluateHandle(() => window.app.project)
+    const releaseBuffer = await page.evaluateHandle(() => {
+      const target = window.app.project?.files.find((file) =>
+        file.path.endsWith('/other.kcl')
+      )
+      if (!target) throw new Error('Missing target file')
+      const read = target.read.bind(target)
+      let release!: () => void
+      const gate = new Promise<void>((resolve) => {
+        release = resolve
+      })
+      target.read = async () => {
+        await gate
+        return read()
+      }
+      return () => {
+        target.read = read
+        release()
+      }
+    })
     const save = Promise.withResolvers<undefined>()
     let blockedSave = false
     await context.route('**/user/projects/**', async (route) => {
@@ -315,10 +334,20 @@ test(
       await page
         .getByRole('treeitem', { name: 'other.kcl', exact: true })
         .click()
+      await expect(
+        page.getByRole('status', { name: 'Loading file' })
+      ).toBeVisible()
+      await expect(
+        page.locator('#code-mirror-override').locator('..')
+      ).toHaveAttribute('inert', '')
+      await releaseBuffer.evaluate((release) => release())
       await expect(page.locator('.cm-content').first()).toContainText(
         '// target buffer',
         { timeout: 1_500 }
       )
+      await expect(
+        page.getByRole('status', { name: 'Loading file' })
+      ).toBeHidden()
       expect(
         await originalProject.evaluate(
           (project) => window.app.project === project
@@ -343,6 +372,7 @@ test(
         { timeout: 1_500 }
       )
     } finally {
+      await releaseBuffer.evaluate((release) => release())
       save.resolve(undefined)
       expect(await releaseModeling.evaluate((release) => release())).toBe(0)
     }

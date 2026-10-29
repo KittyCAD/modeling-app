@@ -12,7 +12,7 @@ import { createContext, useEffect, useState } from 'react'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: route lifecycle and missing-project navigation (useLocation, useNavigate, useNavigation).
 import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 
-export const RouteProviderContext = createContext({})
+export const RouteProviderContext = createContext({ isFileLoading: false })
 
 export function RouteProvider({ children }: { children: ReactNode }) {
   useSignals()
@@ -30,6 +30,10 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   const navigation = useNavigation()
   const navigate = useNavigate()
   const location = useLocation()
+  const isFileLoading =
+    navigation.state !== 'idle' &&
+    navigation.location?.pathname.startsWith(`${PATHS.FILE}/`) === true &&
+    navigation.location.pathname !== location.pathname
 
   useEffect(() => {
     // On initialization, the react-router-dom does not send a 'loading' state event.
@@ -147,7 +151,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   )
 
   return (
-    <RouteProviderContext.Provider value={{}}>
+    <RouteProviderContext.Provider value={{ isFileLoading }}>
       {children}
       <SessionExpiredDialogHost />
     </RouteProviderContext.Provider>
