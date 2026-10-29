@@ -1,3 +1,5 @@
+import * as screenshot from '@src/lib/screenshot'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import { signal } from '@preact/signals-core'
 import { createProjectForTest } from '@src/unitTestUtils'
 import type { Diagnostic } from '@codemirror/lint'
@@ -32,6 +34,9 @@ const toastMocks = vi.hoisted(() => ({
   success: vi.fn(),
   error: vi.fn(),
 }))
+
+// Headless editor tests must not bootstrap the global browser App.
+vi.mock('@src/lib/boot', () => ({ useApp: vi.fn(), useSingletons: vi.fn() }))
 
 vi.mock('@src/lib/fileSystem/operationErrors', () => ({
   reportFileOperationError: clientErrorMocks.reportFileOperationError,
@@ -511,6 +516,47 @@ describe('KclManager settings ownership', () => {
 })
 
 describe('KclManager live operation updates', () => {
+  it.each([false, true])(
+    'routes generated thumbnails through the project session (cloud: %s)',
+    async (cloud) => {
+      const { app } = createKclManagerTestHarness()
+      const originalDirectory = projectFsManager.dir
+      const thumbnail = vi
+        .spyOn(screenshot, 'createProjectThumbnail')
+        .mockImplementation(() => {})
+      const read = vi
+        .spyOn(app.projectSession.textFileIO, 'read')
+        .mockResolvedValue('')
+      try {
+        const metadata = {
+          ...createProjectForTest('/project'),
+          cloudProjectId: cloud ? 'remote' : undefined,
+        }
+        const project = await app.openProject(metadata)
+        const editor = await project.openEditor(
+          metadata.default_file,
+          undefined,
+          '',
+          false
+        )
+        projectFsManager.dir = metadata.path
+        editor.engineCommandManager.started = true
+        vi.spyOn(editor.rustContext, 'execute').mockResolvedValue(
+          editor.execState
+        )
+        await editor.executeAst({ ast: createEmptyAst(), executionId: 101 })
+        expect(thumbnail).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({ writeThumbnail: expect.any(Function) })
+        )
+      } finally {
+        projectFsManager.dir = originalDirectory
+        thumbnail.mockRestore()
+        read.mockRestore()
+        app.dispose()
+      }
+    }
+  )
+
   it('finishes execution when a live UI publication throws', async () => {
     const { kclManager } = createKclManagerTestHarness()
     const liveOperations = liveOperationTestApi(kclManager)
@@ -1296,7 +1342,7 @@ describe('KclManager diagnostics', () => {
       shouldResetCamera: false,
     })
 
-    await vi.advanceTimersByTimeAsync(999)
+    await vi.advanceTimersByTimeAsync(1_499)
     expect(writeSpy).not.toHaveBeenCalled()
 
     await vi.advanceTimersByTimeAsync(1)
@@ -1336,7 +1382,7 @@ describe('KclManager diagnostics', () => {
     expect(writeSpy).toHaveBeenCalledTimes(1)
     expect(writeSpy).toHaveBeenCalledWith('full generated extrusion')
 
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1_500)
     expect(writeSpy).toHaveBeenCalledTimes(1)
   })
 
@@ -1358,7 +1404,7 @@ describe('KclManager diagnostics', () => {
     kclManager.path = destinationPath
     ;(kclManager as any).markFileCodeAsSynced(destinationCode)
 
-    await vi.advanceTimersByTimeAsync(1_000)
+    await vi.advanceTimersByTimeAsync(1_500)
     await pendingWrite
 
     expect(writeSpy).not.toHaveBeenCalled()
@@ -1581,7 +1627,7 @@ describe('KclManager diagnostics', () => {
 
     expect(kclManager.code).toBe('')
 
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1_500)
 
     const defaultVersionLiteral = DEFAULT_KCL_VERSION.includes('preview')
       ? JSON.stringify(DEFAULT_KCL_VERSION)
@@ -1591,7 +1637,7 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe(expectedCode)
     expect(writeSpy).not.toHaveBeenCalled()
 
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1_500)
 
     expect(writeSpy).toHaveBeenCalledTimes(1)
     expect(writeSpy).toHaveBeenCalledWith(expectedCode)
@@ -1907,7 +1953,7 @@ describe('KclManager diagnostics', () => {
       shouldResetCamera: false,
     })
 
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1_500)
 
     expect(writeSpy).not.toHaveBeenCalled()
     expect(kclManager.code).toBe('local newer')

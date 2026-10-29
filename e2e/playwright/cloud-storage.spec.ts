@@ -170,6 +170,74 @@ test(
 )
 
 test(
+  'combines cloud editor saves with thumbnails and flushes idle thumbnails',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    const remote = await mockCloud(context)
+    await setup(context, page, testInfo)
+    await page.goto('/home')
+    await page
+      .getByTestId('project-link')
+      .filter({ has: page.getByText('Cloud memory model', { exact: true }) })
+      .click()
+    await expect(page).toHaveURL(/__zoo_cloud__.*main\.kcl/)
+    await expect
+      .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
+      .toBe(0)
+    await page.clock.install()
+    const uploadsBeforeEditing = remote.uploads.length
+    const edit = async (comment: string) =>
+      page.evaluate((comment) => {
+        window.app.singletons.kclManager.updateCodeEditor(
+          `@settings(kclVersion = 3.0)\n// ${comment}\n`,
+          {
+            shouldExecute: false,
+            shouldWriteToDisk: true,
+            shouldResetCamera: false,
+          }
+        )
+      }, comment)
+    await edit('first')
+    await page.evaluate(async () => {
+      await window.app.projectSession.writeThumbnail(
+        window.app.project!.path,
+        new TextEncoder().encode('first thumbnail')
+      )
+    })
+    await page.clock.runFor(1_000)
+    expect(remote.uploads).toHaveLength(uploadsBeforeEditing)
+    await edit('latest')
+    await page.clock.runFor(1_499)
+    expect(remote.uploads).toHaveLength(uploadsBeforeEditing)
+    await page.clock.runFor(1)
+    await expect
+      .poll(() => remote.project.files['main.kcl'])
+      .toContain('// latest')
+    await page.clock.runFor(3_000)
+    await expect
+      .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
+      .toBe(0)
+    expect(remote.uploads).toHaveLength(uploadsBeforeEditing + 1)
+    expect(remote.project.files['thumbnail.png']).toBe('first thumbnail')
+    await page.evaluate(async () => {
+      await window.app.projectSession.writeThumbnail(
+        window.app.project!.path,
+        new TextEncoder().encode('idle thumbnail')
+      )
+    })
+    await page.clock.runFor(2_999)
+    expect(remote.uploads).toHaveLength(uploadsBeforeEditing + 1)
+    await page.clock.runFor(1)
+    await expect
+      .poll(() => remote.project.files['thumbnail.png'])
+      .toBe('idle thumbnail')
+    expect(remote.uploads).toHaveLength(uploadsBeforeEditing + 2)
+    expect(remote.project.files['.gitignore']).toBeUndefined()
+  }
+)
+
+test(
   'cloud MCP returns refresh authoritative files and ignore streamed edit snapshots',
   { tag: ['@web', '@zookeeper'] },
   async ({ context, page }, testInfo) => {

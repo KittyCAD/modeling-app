@@ -1,3 +1,4 @@
+import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import { signal } from '@preact/signals-core'
 import { v4 } from 'uuid'
 import * as api from '@src/lib/fs-zds/cloud/api'
@@ -43,6 +44,14 @@ export function createCloudFileSystem(
   let pendingRequests = 0
   const saves = signal<ReadonlyMap<string, CloudSaveState>>(new Map())
   const opened = new Map<string, OpenCloudProject>()
+  const pendingThumbnails = new Map<
+    string,
+    { bytes: Uint8Array<ArrayBuffer>; timer?: ReturnType<typeof setTimeout> }
+  >()
+  const clearThumbnail = (id: string) => {
+    clearTimeout(pendingThumbnails.get(id)?.timer)
+    pendingThumbnails.delete(id)
+  }
   const opening = new Map<string, Promise<string>>()
   const listeners = new Set<(changes: readonly CloudFileChange[]) => void>()
   const ready = memory.mkdir(root, { recursive: true })
@@ -132,7 +141,13 @@ export function createCloudFileSystem(
         new Error('Cloud project is missing its revision; save canceled.')
       )
     }
-    const archive = snapshot ?? (await collect(pathFor(id)))
+    let archive = snapshot ?? (await collect(pathFor(id)))
+    const thumbnail = pendingThumbnails.get(id)
+    if (thumbnail)
+      archive = [
+        ...archive.filter((file) => file.relativePath !== PROJECT_IMAGE_NAME),
+        { relativePath: PROJECT_IMAGE_NAME, data: thumbnail.bytes },
+      ]
     const currentPaths = new Set(archive.map((f) => f.relativePath))
     const remote = await api.updateRemoteProject({
       config: requestConfig,
@@ -146,6 +161,13 @@ export function createCloudFileSystem(
     })
     if (config().accountId !== requestConfig.accountId)
       return Promise.reject(new Error('Cloud account changed during save.'))
+    if (thumbnail) {
+      await memory.writeFile(
+        paths.join(pathFor(id), PROJECT_IMAGE_NAME),
+        thumbnail.bytes
+      )
+      if (pendingThumbnails.get(id) === thumbnail) clearThumbnail(id)
+    }
     acknowledge(id, remote, archive)
   }
   const enqueue = <T>(
@@ -220,6 +242,25 @@ export function createCloudFileSystem(
     project.queue = result
     return result
   }
+  const flushThumbnail = (id: string) =>
+    enqueue(
+      id,
+      async () => {
+        // A preceding editor save may already have included the staged thumbnail.
+        if (pendingThumbnails.has(id)) await commit(id)
+      },
+      false
+    )
+  const deferThumbnail = (id: string) => {
+    const thumbnail = pendingThumbnails.get(id)
+    if (!thumbnail) return
+    clearTimeout(thumbnail.timer)
+    thumbnail.timer = setTimeout(() => {
+      thumbnail.timer = undefined
+      // Failure stays visible in saves and retains the bytes for explicit retry.
+      void flushThumbnail(id).catch(() => undefined)
+    }, 3_000)
+  }
   const mutate = <T>(path: string, work: () => Promise<T>) =>
     enqueue(idFor(path), work)
   const read = async <T>(path: string, run: () => Promise<T>): Promise<T> => {
@@ -275,6 +316,12 @@ export function createCloudFileSystem(
     },
     detach: async () => {
       await Promise.all(
+        [...pendingThumbnails.keys()].map((id) => {
+          clearTimeout(pendingThumbnails.get(id)?.timer)
+          return flushThumbnail(id).catch(() => undefined)
+        })
+      )
+      await Promise.all(
         [...opening.values()].map((request) => request.catch(() => undefined))
       )
       await Promise.all(
@@ -319,6 +366,8 @@ export function createCloudFileSystem(
       return Promise.reject(
         new Error('Cloud project belongs to a different account.')
       )
+    // A delayed preview must not race the project's deletion request.
+    clearTimeout(pendingThumbnails.get(id)?.timer)
     await project?.queue.catch(() => undefined)
     if (config().accountId !== requestConfig.accountId)
       return Promise.reject(new Error('Cloud account changed before deletion.'))
@@ -328,6 +377,7 @@ export function createCloudFileSystem(
     // Releasing an in-memory mount cannot remove any historical disk mirror.
     if (opened.has(id))
       await memory.rm(pathFor(id), { recursive: true, force: true })
+    clearThumbnail(id)
     opened.delete(id)
     const remainingSaves = new Map(saves.peek())
     remainingSaves.delete(id)
@@ -341,6 +391,18 @@ export function createCloudFileSystem(
     pathFor,
     idFor,
     saves,
+    stageThumbnail: async (path: string, bytes: Uint8Array) => {
+      const id = idFor(path)
+      const project = opened.get(id)
+      if (!project || project.owner !== config().accountId)
+        return Promise.reject(
+          new Error('Cloud project is not open for this account.')
+        )
+      clearThumbnail(id)
+      pendingThumbnails.set(id, { bytes: new Uint8Array(bytes) })
+      deferThumbnail(id)
+    },
+    editorChanged: (path: string) => deferThumbnail(idFor(path)),
     pending: () => pendingRequests,
     subscribe: (listener: (changes: readonly CloudFileChange[]) => void) => {
       listeners.add(listener)
@@ -377,6 +439,7 @@ export function createCloudFileSystem(
               )
             if (!isCurrent()) return
             if (String(remote.revision) !== String(latest.revision)) continue
+            clearThumbnail(id)
             await hydrate(id, archive)
             acknowledge(id, latest, archive)
             return

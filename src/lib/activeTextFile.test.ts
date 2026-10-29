@@ -240,11 +240,14 @@ describe('scheduleActiveTextFileWrite', () => {
     await openReady('/proj/readme.md')
 
     mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'a')
+    await vi.advanceTimersByTimeAsync(1_000)
     mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'ab')
+    await vi.advanceTimersByTimeAsync(1_000)
     mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'abc')
+    await vi.advanceTimersByTimeAsync(1_499)
     expect(mocks.writeFile).not.toHaveBeenCalled()
 
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1)
 
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
     const [path, bytes] = mocks.writeFile.mock.calls[0]
@@ -257,7 +260,7 @@ describe('scheduleActiveTextFileWrite', () => {
     await openReady('/proj/readme.md')
 
     mod.scheduleActiveTextFileWrite(fileOperations, '/proj/other.md', 'nope')
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1500)
 
     expect(mocks.writeFile).not.toHaveBeenCalled()
   })
@@ -269,7 +272,7 @@ describe('scheduleActiveTextFileWrite', () => {
 
     mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'edited')
     // Must not throw / reject even though the write fails with ENOENT.
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1500)
 
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
     expect(mocks.reportFileOperationError).not.toHaveBeenCalled()
@@ -286,7 +289,7 @@ describe('scheduleActiveTextFileWrite', () => {
       '/proj/readme.md',
       'private contents'
     )
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1500)
 
     expect(mocks.reportFileOperationError).toHaveBeenCalledWith({
       error,
@@ -324,7 +327,7 @@ describe('flushActiveTextFileWrite', () => {
     expect(decode(mocks.writeFile.mock.calls[0][1])).toBe('flushed')
 
     // The debounce timer must not fire a second (duplicate) write.
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1500)
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
   })
 })

@@ -162,7 +162,7 @@ function TextFileEditor({
 }: {
   activeTextFile: ActiveTextFile
 }) {
-  const { fileOperations, settings } = useApp()
+  const { fileOperations, settings, projectSession } = useApp()
   const settingsValues = settings.useSettings()
   const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
   const editorParent = useRef<HTMLDivElement>(null)
@@ -198,6 +198,7 @@ function TextFileEditor({
           keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
+              projectSession.editorChanged(path)
               scheduleActiveTextFileWrite(
                 fileOperations,
                 path,

@@ -1,5 +1,5 @@
 import fsZds from '@src/lib/fs-zds'
-import { getProjectInfo } from '@src/lib/desktop'
+import { getProjectInfo, writeProjectThumbnailFile } from '@src/lib/desktop'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   PROJECT_ID_QUERY_PARAM,
@@ -65,6 +65,21 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const cloudWatchers = new Map<string, () => void>()
 
   const serviceImpl: ProjectSessionService = {
+    editorChanged: (path) => {
+      const cloud = ctx.services.optional(cloudStorageService)
+      if (cloud?.root && path.startsWith(`${cloud.root}${fsZds.sep}`))
+        cloud.editorChanged(path)
+    },
+    writeThumbnail: (path, bytes) => {
+      const cloud = ctx.services.optional(cloudStorageService)
+      return cloud?.root && path.startsWith(`${cloud.root}${fsZds.sep}`)
+        ? cloud.stageThumbnail(path, bytes)
+        : writeProjectThumbnailFile(
+            ctx.services.get(fileOperationsService),
+            bytes,
+            path
+          )
+    },
     get textFileIO() {
       return (textFileIO ??= createTextFileIO(
         ctx.services.get(fileOperationsService),

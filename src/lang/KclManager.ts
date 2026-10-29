@@ -47,6 +47,7 @@ import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  EDITOR_SAVE_DEBOUNCE_MS,
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
@@ -179,7 +180,7 @@ import { isPathNotFoundError } from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { createProjectThumbnail } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import type {
@@ -2385,11 +2386,12 @@ export class KclManager extends File {
       markOnce('code/endExecuteAst')
       this.notifyExecutionCompletion('completed')
 
-      // Update project thumbnail after successful execution
+      // Cloud thumbnails join the next editor save or flush after inactivity.
       if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
-        createThumbnailPNGOnDesktop({
+        createProjectThumbnail({
           fileOperations: this.systemDeps.fileOperations,
           projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+          writeThumbnail: this.systemDeps.projectSession?.writeThumbnail,
         })
       }
     } finally {
@@ -3810,12 +3812,11 @@ export class KclManager extends File {
     options: { suppressConflictToast?: boolean } = {}
   ) {
     if (this.path !== '') {
+      this.systemDeps.projectSession?.editorChanged(this.path)
       // KclManager is reused across file navigation. Bind this save to the
       // file that owned the buffer when the debounce was scheduled.
       const requestedPath = this.path
-      // Only write our buffer contents to file once per second. Any faster
-      // and file-system watchers which read, will receive empty data during
-      // writes.
+      // Reset the timer on every edit; save only after uninterrupted inactivity.
       clearTimeout(this.timeoutWriter)
       clearTimeout(this.timeoutRewatch)
       return new Promise((resolve, reject) => {
@@ -3827,7 +3828,7 @@ export class KclManager extends File {
             requestedPath,
             options,
           }).then(resolve, reject)
-        }, 1000)
+        }, EDITOR_SAVE_DEBOUNCE_MS)
       }).catch((err: unknown) => {
         if (isPathNotFoundError(err)) {
           return

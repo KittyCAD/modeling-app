@@ -168,12 +168,15 @@ export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
   return new File([buf], fileName, { type: mime })
 }
 
-export function createThumbnailPNGOnDesktop({
+export function createProjectThumbnail({
   fileOperations,
   projectDirectoryWithoutEndingSlash,
+  writeThumbnail = (path, bytes) =>
+    writeProjectThumbnailFile(fileOperations, bytes, path),
 }: {
   fileOperations: FileOperationsRegistryService
   projectDirectoryWithoutEndingSlash: string
+  writeThumbnail?: (path: string, bytes: Uint8Array) => Promise<void>
 }) {
   setTimeout(() => {
     if (!projectDirectoryWithoutEndingSlash) {
@@ -183,10 +186,9 @@ export function createThumbnailPNGOnDesktop({
     takeScreenshotOfVideoStreamCanvas()
       .then(async (thumbnail) => {
         if (!thumbnail) return
-        await writeProjectThumbnailFile(
-          fileOperations,
-          new Uint8Array(await thumbnail.arrayBuffer()),
-          projectDirectoryWithoutEndingSlash
+        await writeThumbnail(
+          projectDirectoryWithoutEndingSlash,
+          new Uint8Array(await thumbnail.arrayBuffer())
         )
       })
       .catch((e) => {

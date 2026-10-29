@@ -37,6 +37,7 @@ beforeEach(() => {
 afterEach(async () => {
   await Promise.all(instances.splice(0).map((fs) => fs.detach()))
   vi.resetAllMocks()
+  vi.useRealTimers()
 })
 
 describe.each([
@@ -84,6 +85,145 @@ describe.each([
     )
     expect(diskWrite).not.toHaveBeenCalled()
     expect(diskRemove).not.toHaveBeenCalled()
+  })
+
+  it('includes a staged thumbnail in the next file save without another PUT', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    vi.useFakeTimers()
+    const thumbnail = new Uint8Array([1, 2])
+    await fs.stageThumbnail(root, thumbnail)
+    thumbnail.fill(9)
+    expect(api.updateRemoteProject).not.toHaveBeenCalled()
+    await fs.writeFile(paths.join(root, 'main.kcl'), encoder.encode('edited'))
+    expect(api.updateRemoteProject).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        files: expect.arrayContaining([
+          { relativePath: 'thumbnail.png', data: new Uint8Array([1, 2]) },
+          { relativePath: 'main.kcl', data: encoder.encode('edited') },
+        ]),
+      })
+    )
+    await vi.advanceTimersByTimeAsync(3_000)
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    expect(await fs.readFile(paths.join(root, 'thumbnail.png'))).toEqual(
+      new Uint8Array([1, 2])
+    )
+  })
+
+  it('defers the newest thumbnail until three seconds after typing stops', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    vi.useFakeTimers()
+    await fs.stageThumbnail(root, new Uint8Array([1]))
+    await fs.stageThumbnail(root, new Uint8Array([2]))
+    await vi.advanceTimersByTimeAsync(2_000)
+    fs.editorChanged(paths.join(root, 'main.kcl'))
+    await vi.advanceTimersByTimeAsync(2_999)
+    expect(api.updateRemoteProject).not.toHaveBeenCalled()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(api.updateRemoteProject).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        files: expect.arrayContaining([
+          { relativePath: 'thumbnail.png', data: new Uint8Array([2]) },
+        ]),
+      })
+    )
+  })
+
+  it('keeps a thumbnail generated during an in-flight save for the next save', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    vi.useFakeTimers()
+    const gate = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
+    await fs.stageThumbnail(root, new Uint8Array([1]))
+    const saving = fs.writeFile(
+      paths.join(root, 'main.kcl'),
+      encoder.encode('edited')
+    )
+    await vi.advanceTimersByTimeAsync(0)
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    await fs.stageThumbnail(root, new Uint8Array([2]))
+    gate.resolve({ ...remote, revision: '2' })
+    await saving
+    await vi.advanceTimersByTimeAsync(3_000)
+    expect(api.updateRemoteProject).toHaveBeenCalledTimes(2)
+    expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        files: expect.arrayContaining([
+          { relativePath: 'thumbnail.png', data: new Uint8Array([2]) },
+        ]),
+      })
+    )
+  })
+
+  it('does not upload again when the idle timer fires during a save that includes its thumbnail', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    vi.useFakeTimers()
+    const gate = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
+    await fs.stageThumbnail(root, new Uint8Array([1]))
+    const saving = fs.writeFile(
+      paths.join(root, 'main.kcl'),
+      encoder.encode('edited')
+    )
+    await vi.advanceTimersByTimeAsync(3_000)
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    gate.resolve({ ...remote, revision: '2' })
+    await saving
+    await vi.advanceTimersByTimeAsync(0)
+    expect(fs.pending()).toBe(0)
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+  })
+
+  it('cancels delayed thumbnail uploads before deleting a cloud project', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    vi.useFakeTimers()
+    const gate = Promise.withResolvers<undefined>()
+    vi.mocked(api.deleteRemoteProject).mockReturnValueOnce(gate.promise)
+    await fs.stageThumbnail(root, new Uint8Array([1]))
+    const deleting = fs.deleteProject('one')
+    await vi.advanceTimersByTimeAsync(3_000)
+    expect(api.deleteRemoteProject).toHaveBeenCalledOnce()
+    expect(api.updateRemoteProject).not.toHaveBeenCalled()
+    gate.resolve(undefined)
+    await deleting
+  })
+
+  it('flushes a pending thumbnail and cancels its timer when storage is disposed', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    vi.useFakeTimers()
+    await fs.stageThumbnail(root, new Uint8Array([1]))
+    await fs.detach()
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    await vi.advanceTimersByTimeAsync(3_000)
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+  })
+
+  it('retains a failed thumbnail upload for explicit retry', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    vi.useFakeTimers()
+    await fs.stageThumbnail(root, new Uint8Array([3]))
+    vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+      new Error('Offline')
+    )
+    await vi.advanceTimersByTimeAsync(3_000)
+    expect(fs.saves.value.get('one')?.state).toBe('failed')
+    await fs.retry('one')
+    expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        files: expect.arrayContaining([
+          { relativePath: 'thumbnail.png', data: new Uint8Array([3]) },
+        ]),
+      })
+    )
+    await vi.advanceTimersByTimeAsync(3_000)
+    expect(api.updateRemoteProject).toHaveBeenCalledTimes(2)
   })
 
   it('persists nested directory operations and exact deletion intent through raw fs-zds calls', async () => {

@@ -144,6 +144,8 @@ export function createCloudStorage(
       }
     },
     saves: fileSystem.saves,
+    stageThumbnail: fileSystem.stageThumbnail,
+    editorChanged: fileSystem.editorChanged,
     subscribe: fileSystem.subscribe,
     openProject: fileSystem.openProject,
     refreshProject: fileSystem.refreshProject,

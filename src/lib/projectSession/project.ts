@@ -26,7 +26,10 @@ import type { App } from '@src/lib/app'
 import type { MachineManager } from '@src/lib/MachineManager'
 import { File } from '@src/lib/projectSession/file'
 import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
-import { projectSession } from '@src/registry/contracts/projectSession'
+import {
+  projectSession,
+  type ProjectSessionService,
+} from '@src/registry/contracts/projectSession'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
@@ -38,6 +41,10 @@ export interface ProjectSystemDeps {
   /** Storage access for editor-owned export and thumbnail workflows. */
   fileOperations: FileOperationsRegistryService
   textFileIO: TextFileIO
+  projectSession?: Pick<
+    ProjectSessionService,
+    'editorChanged' | 'writeThumbnail'
+  >
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
@@ -175,6 +182,7 @@ export class ZDSProject {
       project: this.projectIORefSignal,
       fileOperations: this.app.fileOperations,
       textFileIO: this.textFileIO,
+      projectSession: this.app.projectSession,
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,

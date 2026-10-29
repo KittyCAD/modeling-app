@@ -1,6 +1,7 @@
 import { signal } from '@preact/signals-core'
 
 import { isPathNotFoundError } from '@src/lib/desktop'
+import { EDITOR_SAVE_DEBOUNCE_MS } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
 import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
@@ -45,9 +46,6 @@ const decoder = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true })
 export const MAX_EDITABLE_TEXT_FILE_BYTES = 1024 * 1024
 const FILE_TOO_LARGE_MESSAGE = 'Text files larger than 1 MiB cannot be edited.'
 const UNSUPPORTED_TEXT_MESSAGE = 'This file is binary or is not UTF-8 text.'
-
-/** Debounce for writing edits to disk, mirroring `KclManager.writeToFile`. */
-const WRITE_DEBOUNCE_MS = 1000
 
 /**
  * Guards the async read in `openActiveTextFile` against races: if a newer open
@@ -139,7 +137,7 @@ export function scheduleActiveTextFileWrite(
     if (write) {
       void performWrite(write.fileOperations, write.path, write.text)
     }
-  }, WRITE_DEBOUNCE_MS)
+  }, EDITOR_SAVE_DEBOUNCE_MS)
 }
 
 /** Clear the active text file, persisting any pending edits first. */

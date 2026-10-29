@@ -25,7 +25,10 @@ import { createRouterRegistryService } from '@src/registry/extensions/router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
-vi.mock('@src/lib/desktop', () => ({ getProjectInfo: vi.fn() }))
+vi.mock('@src/lib/desktop', () => ({
+  getProjectInfo: vi.fn(),
+  writeProjectThumbnailFile: vi.fn(async () => {}),
+}))
 vi.mock('@src/lib/activeTextFile', () => ({
   flushActiveTextFileWrite: vi.fn(async () => {}),
 }))
@@ -94,6 +97,27 @@ function setup(cloud?: CloudStorageService) {
 }
 
 describe('direct project session file actions', () => {
+  it('stages cloud thumbnails and forwards editor activity without file writes', async () => {
+    const stageThumbnail = vi.fn(async () => {})
+    const editorChanged = vi.fn()
+    const s = setup({
+      root: '/cloud',
+      stageThumbnail,
+      editorChanged,
+    } as unknown as CloudStorageService)
+    const bytes = new Uint8Array([1, 2])
+    await s.session.writeThumbnail('/cloud/project', bytes)
+    s.session.editorChanged('/cloud/project/main.kcl')
+    s.session.editorChanged('/local/main.kcl')
+    expect(stageThumbnail).toHaveBeenCalledExactlyOnceWith(
+      '/cloud/project',
+      bytes
+    )
+    expect(editorChanged).toHaveBeenCalledExactlyOnceWith(
+      '/cloud/project/main.kcl'
+    )
+  })
+
   it('preserves cloud identity and library ownership when refreshing the tree', async () => {
     const s = setup()
     s.project.projectIORefSignal.value = {
