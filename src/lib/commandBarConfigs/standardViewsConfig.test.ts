@@ -2,7 +2,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
 import * as utils from '@src/lib/utils'
 import { fitSketch3dView } from '@src/clientSideScene/sketch3dView'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/clientSideScene/sketch3dView', () => ({
   fitSketch3dView: vi.fn(() => true),
@@ -10,8 +10,10 @@ vi.mock('@src/clientSideScene/sketch3dView', () => ({
 
 describe('zoom to fit with spatial sketches', () => {
   beforeEach(() => {
-    vi.mocked(fitSketch3dView).mockClear()
+    vi.clearAllMocks()
+    vi.mocked(fitSketch3dView).mockReturnValue(true)
   })
+  afterEach(() => vi.restoreAllMocks())
   function manager(spatial: boolean, hasPath = false) {
     return {
       engineCommandManager: {},
