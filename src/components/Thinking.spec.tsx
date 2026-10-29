@@ -357,7 +357,7 @@ describe('FilesSnapshot', () => {
     expect(revokeObjectURLMock).toHaveBeenCalledTimes(1)
   })
 
-  test('image has download button with correct title', () => {
+  test('image opens a viewer and retains its download filename', () => {
     const files: MlCopilotFile[] = [
       {
         name: 'clickable-image.png',
@@ -368,9 +368,12 @@ describe('FilesSnapshot', () => {
 
     render(<FilesSnapshot files={files} />)
 
-    const imageButton = screen.getByTitle(
-      'Click to download clickable-image.png'
-    )
+    const imageButton = screen.getByRole('button', {
+      name: 'View clickable-image.png',
+    })
+    expect(
+      screen.getByRole('link', { name: 'Download clickable-image.png' })
+    ).toHaveAttribute('download', 'clickable-image.png')
     expect(imageButton).toBeInTheDocument()
     expect(imageButton.tagName).toBe('BUTTON')
   })
