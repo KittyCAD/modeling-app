@@ -31,6 +31,7 @@ import {
   activateZoodleRuntimeExtension,
   deactivateZoodleRuntimeExtension,
 } from '@src/registry/extensions/engineScene/zoodleRuntimeExtension'
+import { extname } from 'path'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -543,8 +544,7 @@ export const ZookeeperConversationInput = (
       // Clipboard image names can repeat across prompts.
       const pastedFiles = files.map((file) => {
         if (!isImageMimetype(file.type)) return file
-        const dotIndex = file.name.lastIndexOf('.')
-        const extension = dotIndex > 0 ? file.name.slice(dotIndex) : ''
+        const extension = extname(file.name)
         return new File([file], `image-${crypto.randomUUID()}${extension}`, {
           type: file.type,
           lastModified: file.lastModified,
