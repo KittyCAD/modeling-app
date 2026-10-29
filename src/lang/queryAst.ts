@@ -1580,11 +1580,16 @@ export function getVariableExprsFromSelection(
       }
 
       if (!variable) {
+        // A body can have sketches attached to its faces. Those sketches and
+        // their local segments are not later versions of the selected solid.
         const lastChildVariable = getLastVariable(
           children,
           ast,
           wasmInstance,
-          artifactTypeFilter,
+          artifactTypeFilter ??
+            (artifactForLastChildLookup.type === 'sweep'
+              ? ['sweep', 'compositeSolid', 'edgeCut']
+              : undefined),
           nodeToEdit
         )
         if (!lastChildVariable) {

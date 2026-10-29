@@ -1,3 +1,4 @@
+import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import { afterAll, beforeAll, expect, it, vi } from 'vitest'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
@@ -653,3 +654,100 @@ hide(sketch001)`
   },
   30_000
 )
+
+const chainedTreatmentCode = `@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  bottom = line(start = [0mm, 0mm], end = [30mm, 0mm])
+  right = line(start = [30mm, 0mm], end = [30mm, 20mm])
+  top = line(start = [30mm, 20mm], end = [0mm, 20mm])
+  left = line(start = [0mm, 20mm], end = [0mm, 0mm])
+}
+region001 = region(point = [15mm, 10mm], sketch = profile)
+body = extrude(region001, length = 12mm, tagEnd = $topCap)
+chamfer001 = chamfer(body, edges = [{ sideFaces = [region001.tags.bottom, body.faces.topCap] }], length = 1mm, tag = $chamferFace01)
+fillet001 = fillet(chamfer001, edges = [{ sideFaces = [region001.tags.top, body.faces.topCap] }], radius = 1mm, tag = $filletFace01)
+hide(profile)
+gdt::annotation(faces = [chamferFace01], annotation = "chamf", fontSize = 1.4933mm)
+gdt::annotation(faces = [filletFace01], annotation = "fillet", fontSize = 1.4933mm)
+`
+
+it('translates a treatment body without selecting a nested sketch segment', async () => {
+  const code =
+    chainedTreatmentCode +
+    `sketch001 = sketch(on = faceOf(chamfer001, face = chamferFace01)) {
+  circle1 = circle(start = [var 1.3mm, var 11.17mm], center = [var 4.43mm, var 8.34mm])
+}`
+  const { ast, artifactGraph } = await getAstAndArtifactGraph(
+    code,
+    world.instance,
+    world.kclManager
+  )
+  expect(world.kclManager.errors).toEqual([])
+  const cut = [...artifactGraph.values()].find(
+    (a) => a.type === 'edgeCut' && a.subType === 'fillet'
+  )
+  if (cut?.type !== 'edgeCut') throw new Error('Fillet not found')
+  const sweep = getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)
+  if (isErr(sweep)) throw sweep
+  const x = await stringToKclExpression('5mm', world.rustContext)
+  if (isErr(x) || 'errors' in x) throw new Error('Invalid distance')
+  const result = await modelingCommandCodemods.Translate.run({
+    ast,
+    kclManager: world.kclManager,
+    wasmInstance: world.instance,
+    args: {
+      objects: {
+        graphSelections: [
+          {
+            entityRef: { type: 'solid3d', solid3d_id: sweep.id },
+            codeRef: cut.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      x,
+    },
+  })
+  if (isErr(result)) throw result
+  const output = recast(result.modifiedAst, world.instance)
+  if (isErr(output)) throw output
+  expect(output).toContain('translate(fillet001, x = 5mm)')
+  await getAstAndArtifactGraph(output, world.instance, world.kclManager)
+  expect(world.kclManager.errors).toEqual([])
+}, 60_000)
+
+it('rejects a copied chamfer face rather than materializing a different face', async () => {
+  const code =
+    chainedTreatmentCode +
+    'copy = clone(fillet001) |> translate(x = 50mm, global = true)'
+  const { ast, artifactGraph } = await getAstAndArtifactGraph(
+    code,
+    world.instance,
+    world.kclManager
+  )
+  expect(world.kclManager.errors).toEqual([])
+  const cut = [...artifactGraph.values()].find(
+    (a) =>
+      a.type === 'edgeCut' &&
+      a.subType === 'chamfer' &&
+      code.slice(a.codeRef.range[0], a.codeRef.range[1]).includes('clone')
+  )
+  if (cut?.type !== 'edgeCut') throw new Error('Copied chamfer not found')
+  const original = recast(ast, world.instance)
+  const result = sketchBlockOnExtrudedFace(
+    ast,
+    {
+      artifact: cut,
+      entityRef: { type: 'face', face_id: cut.id },
+      codeRef: cut.codeRef,
+    },
+    cut.codeRef.pathToNode,
+    cut.codeRef.pathToNode,
+    artifactGraph,
+    world.instance
+  )
+  expect(result).toEqual(
+    new Error('Cannot create a sketch on this copied treatment face.')
+  )
+  expect(recast(ast, world.instance)).toBe(original)
+}, 60_000)
