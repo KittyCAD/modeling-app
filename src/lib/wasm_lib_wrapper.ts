@@ -1,13 +1,7 @@
-/**
- * This wrapper file is to enable reloading of the wasm_lib.js file.
- * When the wasm instance bricks there is no API or interface to restart,
- * restore, or re init the WebAssembly instance. The entire application would need
- * to restart.
- * A way to bypass this is by reloading the entire .js file so the global wasm variable
- * gets reinitialized and we do not use that old reference
- */
+/** Utility calls follow the active runtime without exposing native context allocation. */
 import type {
   base64_decode as Base64Decode,
+  calculate_circle_from_3_points as CalculateCircleFrom3Points,
   change_default_units as ChangeDefaultUnits,
   change_experimental_features as ChangeExperimentalFeatures,
   change_kcl_version as ChangeKclVersion,
@@ -37,25 +31,12 @@ import type {
   sketch_checkpoint_limit as SketchCheckpointLimit,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-export type ModuleType = typeof import('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib')
+import { getPublicModule } from '@src/lib/wasmRuntime'
+export type { ModuleType } from '@src/lib/wasmRuntime'
+export const getModule = getPublicModule
 
-// Stores the result of the import of the wasm_lib file
-let data: ModuleType
-
-// Imports the .js file again which will clear the old import
-// This allows us to reinitialize the wasm instance
-export async function reloadModule() {
-  data = await import(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
-}
-
-export function getModule(): ModuleType {
-  return data
-}
-
-export async function init(module_or_path: any) {
-  return await getModule().default(module_or_path)
-}
+export const calculate_circle_from_3_points: typeof CalculateCircleFrom3Points =
+  (...args) => getModule().calculate_circle_from_3_points(...args)
 export const parse_wasm: typeof ParseWasm = (...args) => {
   return getModule().parse_wasm(...args)
 }

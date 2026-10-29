@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
+import type * as WasmUtilities from '@src/lib/wasm_lib_wrapper'
 
-vi.mock('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib', () => ({
+vi.mock('@src/lib/wasm_lib_wrapper', async (importOriginal) => ({
+  ...(await importOriginal<typeof WasmUtilities>()),
   calculate_circle_from_3_points: () => ({
     center_x: 1,
     center_y: 0,

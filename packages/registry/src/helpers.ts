@@ -30,11 +30,19 @@ export const precedenceRank: Record<Precedence, number> = {
   lowest: 4,
 }
 
-/** Narrow unknown values to signal-like objects. */
+/** A .value payload alone is not a signal (React adds it to promises). */
 export function isReadonlySignal<T>(
   value: unknown
 ): value is ReadonlyPreactSignal<T> {
-  return !!value && typeof value === 'object' && 'value' in value
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    'value' in value &&
+    'peek' in value &&
+    typeof value.peek === 'function' &&
+    'subscribe' in value &&
+    typeof value.subscribe === 'function'
+  )
 }
 
 /** Resolve either a static value or a Preact-signal-backed value to a snapshot. */
