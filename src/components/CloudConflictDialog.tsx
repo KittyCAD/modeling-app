@@ -191,9 +191,7 @@ function ChangedFilesList({
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-chalkboard-20 text-chalkboard-70 dark:bg-chalkboard-80 dark:text-chalkboard-20">
                   <CustomIcon
                     name="caretDown"
-                    className={`h-4 w-4 transition-transform ${
-                      expanded ? '' : '-rotate-90'
-                    }`}
+                    className={`h-4 w-4 ${expanded ? '' : '-rotate-90'}`}
                   />
                 </span>
                 <span className="flex min-w-0 flex-1 items-center gap-2">

@@ -554,7 +554,7 @@ function EditorToolbarButton({
       aria-pressed={pressed}
       disabled={disabled}
       onClick={onClick}
-      className={`m-0 flex h-7 w-7 items-center justify-center rounded border px-0 text-xs leading-none transition-colors focus-visible:outline-appForeground disabled:opacity-50 ${
+      className={`m-0 flex h-7 w-7 items-center justify-center rounded border px-0 text-xs leading-none focus-visible:outline-appForeground disabled:opacity-50 ${
         pressed
           ? 'border-chalkboard-50 bg-chalkboard-20 text-chalkboard-100 dark:border-transparent dark:bg-chalkboard-70 dark:text-chalkboard-10'
           : 'border-transparent bg-transparent text-chalkboard-70 hover:border-chalkboard-20 hover:bg-chalkboard-20/60 hover:text-chalkboard-100 dark:border-transparent dark:text-chalkboard-30 dark:hover:border-transparent dark:hover:bg-chalkboard-80/70 dark:hover:text-chalkboard-10'
