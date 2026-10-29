@@ -36,10 +36,12 @@ export const createOnWebSocketOpen = ({
   send,
   token,
   dispatchEvent,
+  onOpen,
 }: {
   send: (message: WebSocketRequest) => void
   token: string | undefined
   dispatchEvent: (event: Event) => boolean
+  onOpen?: () => void
 }) => {
   const onWebSocketOpen = (event: Event) => {
     // This is required for when the app is running stand-alone / within desktop app.
@@ -71,6 +73,7 @@ export const createOnWebSocketOpen = ({
         })
       )
     }
+    onOpen?.()
   }
   return onWebSocketOpen
 }
@@ -107,6 +110,8 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject,
   setApiCallId,
   getCloudProjectId,
+  webrtc,
+  onWebSocketReady,
   getConnectionContext,
   tearDownManager,
   requestReconnect,
@@ -126,6 +131,8 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject: (value: any) => void
   setApiCallId: (apiCallId: string) => void
   getCloudProjectId: () => string | undefined
+  webrtc: boolean
+  onWebSocketReady: () => void
   getConnectionContext: () => {
     connectionId: string
     modelingApiCallId: string | null
@@ -247,6 +254,9 @@ export const createOnWebSocketMessage = ({
           })
         )
         setPing(undefined)
+        if (!webrtc) {
+          onWebSocketReady()
+        }
         break
       }
       case 'modeling_session_data':
@@ -270,6 +280,10 @@ export const createOnWebSocketMessage = ({
         break
       // Only fires on successful authentication.
       case 'ice_server_info':
+        if (!webrtc) {
+          break
+        }
+
         const iceServers = resp.data.ice_servers
         // Now that we have some ICE servers it makes sense
         // to start initializing the RTCPeerConnection. RTCPeerConnection
