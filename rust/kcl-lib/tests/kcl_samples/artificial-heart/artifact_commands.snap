@@ -4592,7 +4592,8 @@ description: Artifact commands artificial-heart.kcl
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
-        "relative_to": "trajectory_curve"
+        "relative_to": "sketch_plane",
+        "version": 2
       }
     },
     {
@@ -4920,7 +4921,8 @@ description: Artifact commands artificial-heart.kcl
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
-        "relative_to": "trajectory_curve"
+        "relative_to": "sketch_plane",
+        "version": 2
       }
     },
     {
