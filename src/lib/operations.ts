@@ -853,7 +853,8 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     return { reason: radius.error }
   }
 
-  const tag = extractStringArgument(code, operation, 'tag')
+  const tagValue = operation.labeledArgs.tag?.value
+  const tag = tagValue?.type === 'TagDeclarator' ? tagValue.name : undefined
   const toleranceResult = await extractOptionalKclArgument(
     code,
     operation,
@@ -947,7 +948,8 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     'error' in arg ? undefined : arg
   )
 
-  const tag = extractStringArgument(code, operation, 'tag')
+  const tagValue = operation.labeledArgs.tag?.value
+  const tag = tagValue?.type === 'TagDeclarator' ? tagValue.name : undefined
 
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
@@ -3755,11 +3757,6 @@ export function getOperationVariableName(
 ): string | undefined {
   if (op.type === 'VariableDeclaration') {
     return op.name
-  }
-
-  // Handle GDT operations - they don't have variable names as they're standalone statements
-  if (op.type === 'StdLibCall' && op.name.startsWith('gdt::')) {
-    return undefined
   }
 
   if (

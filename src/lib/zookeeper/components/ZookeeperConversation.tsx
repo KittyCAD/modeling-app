@@ -34,7 +34,7 @@ import type { ChangeEvent, ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
-const MAX_INLINE_PASTE_LENGTH = 10_000
+const MAX_INLINE_PASTE_LENGTH = 5_000
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 export type { QueuedMessage }

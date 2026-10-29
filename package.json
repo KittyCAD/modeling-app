@@ -165,6 +165,9 @@
       "last 1 safari version"
     ]
   },
+  "overrides": {
+    "tar": "^7.5.19"
+  },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^8.0.6",
@@ -220,7 +223,7 @@
     "eslint-plugin-vitest": "^0.5.4",
     "fake-indexeddb": "^6.2.5",
     "fast-check": "^4.9.0",
-    "happy-dom": "^20.9.0",
+    "happy-dom": "^21.0.4",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "msw": "^2.14.6",

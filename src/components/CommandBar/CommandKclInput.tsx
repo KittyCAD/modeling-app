@@ -31,7 +31,11 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import type { AppSettingsSystem } from '@src/lib/app'
-import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
+import type {
+  CommandArgument,
+  CommandInputValidationState,
+  KclCommandValue,
+} from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
@@ -105,7 +109,7 @@ export function CommandKclInput({
   submittedValue?: unknown
   autoFocus?: boolean
   onChange: (change: CommandKclChange) => void
-  onValidationChange: (state: CommandKclValidationState) => void
+  onValidationChange: (state: CommandInputValidationState) => void
 }) {
   useSignals()
   const wasmInstance = use(wasmPromise)
@@ -462,7 +466,7 @@ export function CommandKclInput({
   }, [resolvedKclValue, value])
 
   useEffect(() => {
-    const nextValidationState: CommandKclValidationState = {
+    const nextValidationState: CommandInputValidationState = {
       canSubmit: canSubmitKclValue,
       isChecking: !isEmpty && isExecuting,
       message: validationMessage,
@@ -628,12 +632,6 @@ export type CommandKclChange = {
   source: 'edit' | 'calculation'
   // Keep the raw text while its expression is empty, invalid, or calculating.
   value: KclCommandValue | string
-}
-
-export type CommandKclValidationState = {
-  canSubmit: boolean
-  isChecking: boolean
-  message?: string
 }
 
 export type CommandKclArgument = Extract<
