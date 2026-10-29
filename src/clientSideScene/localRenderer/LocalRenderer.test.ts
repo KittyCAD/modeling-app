@@ -168,6 +168,9 @@ describe('local GLB loading', () => {
     vi.spyOn(prototype, 'scheduleRender').mockImplementation(() => {})
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
     vi.spyOn(console, 'warn').mockImplementation(() => {})
+    // The unit project keeps mock calls between tests, which run shuffled, so
+    // clear the camera reset mock.
+    vi.mocked(resetCameraPosition).mockClear()
   })
   afterEach(() => vi.restoreAllMocks())
 
