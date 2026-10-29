@@ -10,6 +10,7 @@ import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { isImageMimetype } from '@src/lib/mimeTypes'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
@@ -541,7 +542,7 @@ export const ZookeeperConversationInput = (
       e.preventDefault()
       // Clipboard image names can repeat across prompts.
       const pastedFiles = files.map((file) => {
-        if (!file.type.startsWith('image/')) return file
+        if (!isImageMimetype(file.type)) return file
         const dotIndex = file.name.lastIndexOf('.')
         const extension = dotIndex > 0 ? file.name.slice(dotIndex) : ''
         return new File([file], `image-${crypto.randomUUID()}${extension}`, {
@@ -630,7 +631,7 @@ export const ZookeeperConversationInput = (
             {attachments.map(({ file, isPastedText }, index) => (
               <div
                 key={`${file.name}-${file.lastModified}-${file.size}`}
-                className={`relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs ${file.type.startsWith('image/') ? '' : 'py-1 pl-2 pr-8'}`}
+                className={`relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs ${isImageMimetype(file.type) ? '' : 'py-1 pl-2 pr-8'}`}
                 title={file.name}
               >
                 <ZookeeperAttachmentPreview
@@ -642,7 +643,7 @@ export const ZookeeperConversationInput = (
                   onClick={() => onRemoveAttachment(index)}
                   className="group absolute right-0 top-0 m-0 flex h-6 w-6 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
                   aria-label={
-                    file.type.startsWith('image/')
+                    isImageMimetype(file.type)
                       ? `Remove image ${index + 1}`
                       : `Remove ${file.name}`
                   }

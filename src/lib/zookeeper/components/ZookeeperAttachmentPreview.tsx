@@ -1,5 +1,6 @@
 import type { MlCopilotFile } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { isImageMimetype } from '@src/lib/mimeTypes'
 import { reportRejection } from '@src/lib/trap'
 import { useEffect, useState } from 'react'
 
@@ -13,7 +14,7 @@ export const ZookeeperAttachmentPreview = ({
   isPastedText?: boolean
 }) => {
   const mimetype = file instanceof File ? file.type : file.mimetype
-  const isImage = mimetype.startsWith('image/')
+  const isImage = isImageMimetype(mimetype)
   const [localPreview, setLocalPreview] = useState<{
     file: File
     text: string

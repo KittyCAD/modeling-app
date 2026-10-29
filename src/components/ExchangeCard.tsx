@@ -8,6 +8,7 @@ import {
   Thinking,
 } from '@src/components/Thinking'
 import Tooltip from '@src/components/Tooltip'
+import { isImageMimetype } from '@src/lib/mimeTypes'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import {
   type Exchange,
@@ -321,7 +322,7 @@ export const RequestCard = (props: RequestCardProps) => {
               Attachments
             </div>
             {visibleAttachments.map((file, index) => {
-              const isImage = file.mimetype.startsWith('image/')
+              const isImage = isImageMimetype(file.mimetype)
               const attachmentRef = file.attachment_ref
               const fetchState = attachmentRef
                 ? props.attachmentFetches?.[
