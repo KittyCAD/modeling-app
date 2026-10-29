@@ -3,8 +3,8 @@ import { isDesktop } from '@src/lib/isDesktop'
 
 export type SystemIOErrorRisk = 'read' | 'write' | 'destructive'
 
-export class ExpectedSystemIOError extends Error {
-  override name = 'ExpectedSystemIOError'
+export class ExpectedFileOperationError extends Error {
+  override name = 'ExpectedFileOperationError'
 }
 
 const SAFE_ERROR_LABEL = /^[A-Za-z][A-Za-z0-9_.-]{0,63}$/
@@ -132,7 +132,7 @@ export function reportSystemIOError(args: {
 }) {
   if (
     systemIOErrorChain(args.error).some(
-      (error) => error instanceof ExpectedSystemIOError
+      (error) => error instanceof ExpectedFileOperationError
     )
   ) {
     return

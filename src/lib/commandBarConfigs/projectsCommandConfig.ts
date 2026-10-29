@@ -1,3 +1,5 @@
+import type { FileWorkflowService } from '@src/lib/fileSystem/workflows/service'
+import { reportRejection } from '@src/lib/trap'
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
@@ -17,8 +19,6 @@ import {
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -29,7 +29,7 @@ import type {
   ProjectLibraryOperation,
 } from '@src/registry/contracts/projectLibraries'
 import toast from 'react-hot-toast'
-import type { ActorRefFrom, ContextFrom } from 'xstate'
+import type { ContextFrom } from 'xstate'
 export type ProjectsCommandSchema = {
   'Create project': {
     name: string
@@ -63,7 +63,7 @@ interface HomeProjectCommandTarget {
 }
 
 export function createProjectCommands({
-  systemIOActor,
+  fileWorkflows,
   getCurrentProjectDirectoryName,
   getCurrentProjectPath,
   getCurrentProjectLibraryId,
@@ -72,7 +72,7 @@ export function createProjectCommands({
   getHomeProjectActions,
   getHomeProjectEntries,
 }: {
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  fileWorkflows: FileWorkflowService
   getCurrentProjectDirectoryName?: () => string | undefined
   getCurrentProjectPath?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
@@ -88,12 +88,12 @@ export function createProjectCommands({
    * TODO: https://github.com/KittyCAD/modeling-app/issues/6032
    */
   const folderSnapshot = () => {
-    const { folders } = systemIOActor.getSnapshot().context
+    const { folders } = fileWorkflows.getSnapshot().context
     return folders
   }
 
   const defaultProjectFolderNameSnapshot = () => {
-    const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
+    const { defaultProjectFolderName } = fileWorkflows.getSnapshot().context
     return defaultProjectFolderName
   }
 
@@ -330,10 +330,7 @@ export function createProjectCommands({
           })
         }
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.navigateToProject,
-          data: { requestedProjectName: record.name },
-        })
+        fileWorkflows.navigateToProject({ requestedProjectName: record.name }).catch(reportRejection)
       }
     },
     args: {
@@ -390,13 +387,10 @@ export function createProjectCommands({
           })
         }
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.createProject,
-          data: {
+        fileWorkflows.createProject({
             requestedProjectName,
             requestedProjectTitle,
-          },
-        })
+          }).catch(reportRejection)
       }
     },
     args: {
@@ -517,10 +511,7 @@ export function createProjectCommands({
           return target.actions.delete(target.project)
         }
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.deleteProject,
-          data: { requestedProjectName: record.name },
-        })
+        fileWorkflows.deleteProject({ requestedProjectName: record.name }).catch(reportRejection)
       }
     },
     reviewMessage: ({ argumentsToSubmit }) => {
@@ -570,14 +561,11 @@ export function createProjectCommands({
           ? hash.replace(/^#/, '')
           : window.location.pathname
         const isOnHomePage = pathname.startsWith(PATHS.HOME)
-        systemIOActor.send({
-          type: SystemIOMachineEvents.renameProject,
-          data: {
+        fileWorkflows.renameProject({
             requestedProjectName: record.newName,
             projectName: record.oldName,
             redirect: !isOnHomePage, // only redirect when renaming from within a project
-          },
-        })
+          }).catch(reportRejection)
       }
     },
     args: {
@@ -645,14 +633,11 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.importFileFromURL,
-          data: {
+        fileWorkflows.importFileFromURL({
             requestedProjectName: record.projectName,
             requestedCode: record.code,
             requestedFileNameWithExtension: record.name,
-          },
-        })
+          }).catch(reportRejection)
       }
     },
     args: {

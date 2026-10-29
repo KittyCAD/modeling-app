@@ -23,7 +23,7 @@ const applyZookeeperEditPatch = (
     fileOperations: testFileOperations,
   })
 
-vi.mock('@src/machines/systemIO/errorReporting', () => ({
+vi.mock('@src/lib/fileSystem/workflows/errorReporting', () => ({
   reportSystemIOError: clientErrorMocks.reportSystemIOError,
 }))
 

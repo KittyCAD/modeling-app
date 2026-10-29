@@ -20,12 +20,11 @@ import { reportRejection } from '@src/lib/trap'
 import {
   useFolders,
   useProjectDirectoryPath,
-} from '@src/machines/systemIO/hooks'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+} from '@src/lib/fileSystem/workflows/hooks'
 import { use, useCallback, useEffect, useRef, useState } from 'react'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands, fileOperations, project, systemIOActor, layout } = useApp()
+  const { commands, fileOperations, project, fileWorkflows, layout } = useApp()
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
@@ -48,9 +47,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
     const loadedProject = project.projectIORefSignal.value
     if (projects === undefined) {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
+      fileWorkflows.readFoldersFromProjectDirectory().catch(reportRejection)
     }
 
     const duplicated = getProjectExplorerProjectWithPlaceholders({
@@ -62,7 +59,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       return
     }
     setTheProject(duplicated)
-  }, [file, projects, project, systemIOActor])
+  }, [file, projects, project, fileWorkflows])
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
@@ -115,13 +112,10 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         const name = projectRef.current.value.name.slice()
 
         const navigateHelper = () => {
-          systemIOActor.send({
-            type: SystemIOMachineEvents.navigateToFile,
-            data: {
+          fileWorkflows.navigateToFile({
               requestedProjectName: name,
               requestedFileName: requestedFileName,
-            },
-          })
+            }).catch(reportRejection)
         }
         const navigateAfterFlush = () => {
           void kclManager
@@ -163,7 +157,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       modelingSend,
       openCodeEditorPaneIfClosed,
       projectDirectoryPath,
-      systemIOActor,
+      fileWorkflows,
     ]
   )
 

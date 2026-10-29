@@ -1,3 +1,4 @@
+import { reportRejection } from '@src/lib/trap'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
@@ -23,19 +24,18 @@ import {
   useProjectDirectoryPath,
   useRequestedFileName,
   useRequestedProjectName,
-} from '@src/machines/systemIO/hooks'
+} from '@src/lib/fileSystem/workflows/hooks'
 import {
   NO_PROJECT_DIRECTORY,
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
+  FileWorkflowStates,
+} from '@src/lib/fileSystem/workflows/utils'
 import { shouldNavigateToRequestedPath } from '@src/routes/Onboarding/navigation'
 import { useEffect } from 'react'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: SystemIO file navigation and query forwarding (useLocation, useNavigate, useNavigation).
 import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 
-export function SystemIOMachineLogicListener() {
-  const { settings, systemIOActor, registry } = useApp()
+export function FileOperationsNavigation() {
+  const { settings, fileWorkflows, registry } = useApp()
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -122,7 +122,7 @@ export function SystemIOMachineLogicListener() {
     url.searchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
     if (
       lastOperation ===
-      SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
+      FileWorkflowStates.bulkImportingProjectFilesAndNavigateToFile
     ) {
       url.searchParams.delete(PROJECT_ID_QUERY_PARAM)
     }
@@ -147,17 +147,17 @@ export function SystemIOMachineLogicListener() {
 
       // Active-file archive navigation is published by requestedFileName only
       // after the machine has committed its refreshed project snapshot.
-      if (lastOperation === SystemIOMachineStates.movingRecursiveAndNavigate) {
+      if (lastOperation === FileWorkflowStates.movingRecursiveAndNavigate) {
         return
       }
 
       const fileNavigationOperations = [
-        SystemIOMachineStates.importFileFromURL,
-        SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
-        SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
-        SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile,
-        SystemIOMachineStates.renamingFileAndNavigateToFile,
-        SystemIOMachineStates.renamingFolderAndNavigateToFile,
+        FileWorkflowStates.importFileFromURL,
+        FileWorkflowStates.bulkCreatingKCLFilesAndNavigateToFile,
+        FileWorkflowStates.bulkImportingProjectFilesAndNavigateToFile,
+        FileWorkflowStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile,
+        FileWorkflowStates.renamingFileAndNavigateToFile,
+        FileWorkflowStates.renamingFolderAndNavigateToFile,
       ]
       if (
         requestedFileName.project &&
@@ -168,10 +168,10 @@ export function SystemIOMachineLogicListener() {
       }
 
       const isCreating = [
-        SystemIOMachineStates.creatingProject,
-        SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
-        SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
-        SystemIOMachineStates.importFileFromURL,
+        FileWorkflowStates.creatingProject,
+        FileWorkflowStates.bulkCreatingKCLFilesAndNavigateToProject,
+        FileWorkflowStates.bulkImportingProjectFilesAndNavigateToFile,
+        FileWorkflowStates.importFileFromURL,
       ].includes(lastOperation)
       const isHomeAndNotCreating = pathname === PATHS.HOME && !isCreating
       if (isHomeAndNotCreating) {
@@ -234,12 +234,11 @@ export function SystemIOMachineLogicListener() {
   const useApplicationProjectDirectory = () => {
     useEffect(() => {
       if (pathname === PATHS.HOME || pathname === PATHS.HOME_SETTINGS) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.setProjectDirectoryPath,
-          data: {
+        fileWorkflows
+          .setProjectDirectoryPath({
             requestedProjectDirectoryPath: defaultDirectoryLibraryPath,
-          },
-        })
+          })
+          .catch(reportRejection)
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [defaultDirectoryLibraryPath, pathname])
@@ -247,13 +246,12 @@ export function SystemIOMachineLogicListener() {
 
   const useDefaultProjectName = () => {
     useEffect(() => {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.setDefaultProjectFolderName,
-        data: {
+      fileWorkflows
+        .setDefaultProjectFolderName({
           requestedDefaultProjectFolderName:
             settingsValues.projects.defaultProjectName.current || '',
-        },
-      })
+        })
+        .catch(reportRejection)
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [settingsValues.projects.defaultProjectName.current])
   }
@@ -272,7 +270,7 @@ export function SystemIOMachineLogicListener() {
         }
 
         const folderName =
-          systemIOActor.getSnapshot().context.lastProjectDeleteRequest.project
+          fileWorkflows.getSnapshot().context.lastProjectDeleteRequest.project
         const folderPath = `${projectDirectoryPath}${fsZds.sep}${folderName}`
         if (
           folderName !== NO_PROJECT_DIRECTORY &&
@@ -283,9 +281,7 @@ export function SystemIOMachineLogicListener() {
           // once this event is processed after the deletion.
         } else {
           // Prevents spamming reading from disk twice on deletion due to files and folders being deleted async
-          systemIOActor.send({
-            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-          })
+          fileWorkflows.readFoldersFromProjectDirectory().catch(reportRejection)
         }
       },
       defaultDirectoryLibraryPath ? [defaultDirectoryLibraryPath] : []

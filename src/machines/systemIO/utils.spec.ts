@@ -7,9 +7,9 @@ import {
   collectProjectFiles as collectProjectFilesWithFileOperations,
   normalizeKCLFileDeletePath,
   prepareZookeeperNewFileRequest,
-  type SystemIOActor,
+  type FileWorkflowService,
   waitForIdleState,
-} from '@src/machines/systemIO/utils'
+} from '@src/lib/fileSystem/workflows/utils'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 
 const collectProjectFiles = (
@@ -49,15 +49,15 @@ beforeAll(async () => {
 describe('System IO Utils', () => {
   it('cancels an idle-state subscription', async () => {
     const unsubscribe = vi.fn()
-    const systemIOActor = {
+    const fileWorkflows = {
       getSnapshot: () => ({ matches: () => false }),
       subscribe: () => ({ unsubscribe }),
-    } as unknown as SystemIOActor
+    } as unknown as FileWorkflowService
     const abortController = new AbortController()
 
     const waiting = waitForIdleState({
       abortSignal: abortController.signal,
-      systemIOActor,
+      fileWorkflows,
     })
     abortController.abort()
     await waiting

@@ -33,7 +33,7 @@ const toastMocks = vi.hoisted(() => ({
   error: vi.fn(),
 }))
 
-vi.mock('@src/machines/systemIO/errorReporting', () => ({
+vi.mock('@src/lib/fileSystem/workflows/errorReporting', () => ({
   reportSystemIOError: clientErrorMocks.reportSystemIOError,
 }))
 vi.mock('react-hot-toast', () => ({

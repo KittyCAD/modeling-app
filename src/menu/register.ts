@@ -10,9 +10,8 @@ import type { authMachine } from '@src/machines/authMachine'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import {
-  SystemIOMachineEvents,
-  type SystemIOActor,
-} from '@src/machines/systemIO/utils'
+  type FileWorkflowService,
+} from '@src/lib/fileSystem/workflows/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 import type { ActorRefFrom } from 'xstate'
@@ -26,7 +25,7 @@ export function modelingMenuCallbackMostActions({
   currentProject,
   kclManager,
   settingsActor,
-  systemIOActor,
+  fileWorkflows,
 }: {
   settings: SettingsType
   navigate: NavigateFunction
@@ -36,7 +35,7 @@ export function modelingMenuCallbackMostActions({
   currentProject?: Project
   kclManager: KclManager
   settingsActor: SettingsActorType
-  systemIOActor: SystemIOActor
+  fileWorkflows: FileWorkflowService
 }) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -55,16 +54,13 @@ export function modelingMenuCallbackMostActions({
       if (!currentProject) {
         return
       }
-      systemIOActor.send({
-        type: SystemIOMachineEvents.duplicateProject,
-        data: {
+      fileWorkflows.duplicateProject({
           projectName: currentProject.name,
           projectPath: currentProject.path,
           requestedProjectName: getProjectDisplayName(currentProject),
           currentFilePath: filePath,
           currentFileContents: kclManager.code,
-        },
-      })
+        }).catch(reportRejection)
     } else if (data.menuLabel === 'File.Open project') {
       commandBarActor.send({
         type: 'Find and select command',

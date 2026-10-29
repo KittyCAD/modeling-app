@@ -9,7 +9,7 @@ test.describe('Local Drive picker', () => {
     async ({ page, homePage, toolbar, cmdBar, fs }) => {
       await homePage.createAndGoToProject('local-drive')
       await page.waitForFunction(() =>
-        window.app.systemIOActor
+        window.app.fileWorkflows
           .getSnapshot()
           .context.folders?.some(
             (project) => project.name === window.app.project?.name
@@ -50,7 +50,7 @@ test.describe('Local Drive picker', () => {
     async ({ page, homePage, toolbar, cmdBar, editor }) => {
       await homePage.createAndGoToProject('local-kcl')
       await page.waitForFunction(() =>
-        window.app.systemIOActor
+        window.app.fileWorkflows
           .getSnapshot()
           .context.folders?.some(
             (project) => project.name === window.app.project?.name

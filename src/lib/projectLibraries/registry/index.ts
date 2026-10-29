@@ -39,11 +39,11 @@ import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import {
-  ExpectedSystemIOError,
+  ExpectedFileOperationError,
   reportSystemIOError,
   type SystemIOErrorRisk,
-} from '@src/machines/systemIO/errorReporting'
-import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
+} from '@src/lib/fileSystem/workflows/errorReporting'
+import { FileWorkflowOperations } from '@src/lib/fileSystem/workflows/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
@@ -582,23 +582,23 @@ function withReportedDirectoryProjectOperations(
   return {
     ...operations,
     createProject: report(operations.createProject, {
-      operation: SystemIOMachineActors.createProject,
+      operation: FileWorkflowOperations.createProject,
       risk: 'write',
     }),
     duplicateProject: report(operations.duplicateProject, {
-      operation: SystemIOMachineActors.duplicateProject,
+      operation: FileWorkflowOperations.duplicateProject,
       risk: 'write',
     }),
     renameProject: report(operations.renameProject, {
-      operation: SystemIOMachineActors.renameProject,
+      operation: FileWorkflowOperations.renameProject,
       risk: 'write',
     }),
     deleteProject: report(operations.deleteProject, {
-      operation: SystemIOMachineActors.deleteProject,
+      operation: FileWorkflowOperations.deleteProject,
       risk: 'destructive',
     }),
     moveProjectTo: report(operations.moveProjectTo, {
-      operation: SystemIOMachineActors.moveRecursive,
+      operation: FileWorkflowOperations.moveRecursive,
       risk: 'destructive',
     }),
   }
@@ -613,7 +613,7 @@ function reportDirectoryProjectStatFailures({
 }) {
   reportSystemIOError({
     error,
-    operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+    operation: FileWorkflowOperations.readFoldersFromProjectDirectory,
     risk: 'read',
     source: 'DirectoryProjectLibrary',
     dedupeKey:
@@ -637,7 +637,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   }
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    new ExpectedSystemIOError('Missing WASM promise registry value.')
+    new ExpectedFileOperationError('Missing WASM promise registry value.')
   /**
    * Directory operations know the configured library they changed, so they
    * refresh that library's local realization discovery directly.
@@ -747,7 +747,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           cloudSyncActions?.status.value.enabled !== true
         ) {
           return Promise.reject(
-            new ExpectedSystemIOError('Cloud sync is not enabled.')
+            new ExpectedFileOperationError('Cloud sync is not enabled.')
           )
         }
 
@@ -815,7 +815,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           return runReportedDirectoryProjectOperation({
-            operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+            operation: FileWorkflowOperations.readFoldersFromProjectDirectory,
             risk: 'read',
             run: async () => {
               const projects = await readProjectsFromProjectDirectory({

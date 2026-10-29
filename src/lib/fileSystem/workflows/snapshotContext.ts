@@ -2,10 +2,10 @@ import fsZds from '@src/lib/fs-zds'
 import { isExtensionAnImportExtension } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { isArray } from '@src/lib/utils'
-import type { SystemIOContext } from '@src/machines/systemIO/utils'
+import type { FileWorkflowContext } from '@src/lib/fileSystem/workflows/utils'
 
 export function getAllSubDirectoriesAtProjectRoot(
-  context: SystemIOContext,
+  context: FileWorkflowContext,
   { projectFolderName }: { projectFolderName: string }
 ): FileEntry[] {
   const subDirectories: FileEntry[] = []
@@ -36,7 +36,7 @@ export function getAllSubDirectoriesAtProjectRoot(
 }
 
 export function listAllImportFilesWithinProject(
-  context: SystemIOContext,
+  context: FileWorkflowContext,
   {
     projectFolderName,
     importExtensions,

@@ -25,9 +25,9 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
-import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import { collectProjectFiles } from '@src/lib/fileSystem/workflows/utils'
 import { S } from '@src/machines/utils'
-import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
+import type { FileWorkflowService as SystemIORegistryService } from '@src/lib/fileSystem/workflows/service'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
@@ -146,7 +146,7 @@ class SessionController implements ZookeeperSessionController {
       },
       isSessionCurrent: () => this.active && this.getZdsProject() !== undefined,
       kclManager: deps.kclManager,
-      systemIOActor: deps.systemIO.actor,
+      fileWorkflows: deps.systemIO,
       onQueueIdle: () => {
         const snapshot = this.actor.getSnapshot()
         this.continueCheck(snapshot, this.resumeInterruptedTurnPending)

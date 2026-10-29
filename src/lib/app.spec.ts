@@ -17,7 +17,7 @@ import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { FileWorkflowEvents } from '@src/lib/fileSystem/workflows/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
@@ -504,7 +504,7 @@ describe('project system', () => {
         '',
         false
       )
-      const getSnapshot = vi.spyOn(app.systemIOActor, 'getSnapshot')
+      const getSnapshot = vi.spyOn(app.fileWorkflows, 'getSnapshot')
       restoreSnapshot = () => getSnapshot.mockRestore()
       for (const title of ['Opened project', 'Updated project']) {
         project.projectIORefSignal.value = {
@@ -1035,12 +1035,12 @@ describe('project system', () => {
           },
         })
       )
-      const send = vi.spyOn(app.systemIOActor, 'send')
+      const send = vi.spyOn(app.fileWorkflows, 'run')
 
       kclManager.undo()
       await waitForHistoryIdle(kclManager)
       expect(send).toHaveBeenCalledWith({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        type: FileWorkflowEvents.readFoldersFromProjectDirectory,
       })
       await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
 
@@ -1048,7 +1048,7 @@ describe('project system', () => {
       kclManager.redo()
       await waitForHistoryIdle(kclManager)
       expect(send).toHaveBeenCalledWith({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        type: FileWorkflowEvents.readFoldersFromProjectDirectory,
       })
       await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
         'created = true\n'

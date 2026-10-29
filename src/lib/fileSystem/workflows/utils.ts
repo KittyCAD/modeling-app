@@ -23,17 +23,16 @@ import {
   isZookeeperProjectEntrypointPath,
   normalizeZookeeperPatchPath,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/lib/fileSystem/workflows/snapshotContext'
+import type { FileWorkflowService } from '@src/lib/fileSystem/workflows/service'
+export type { FileWorkflowService } from '@src/lib/fileSystem/workflows/service'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import toast from 'react-hot-toast'
-import type { ActorRefFrom, EventObject } from 'xstate'
+type EventObject = { type: string }
 
-export { SystemIOMachineEvents } from '@src/machines/systemIO/events'
+export { FileWorkflowEvents } from '@src/lib/fileSystem/workflows/events'
 
-export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
-
-export enum SystemIOMachineActors {
+export enum FileWorkflowOperations {
   readFoldersFromProjectDirectory = 'read folders from project directory',
   setProjectDirectoryPath = 'set project directory path',
   createProject = 'create project',
@@ -63,7 +62,7 @@ export enum SystemIOMachineActors {
   moveRecursive = 'move recursive',
 }
 
-export enum SystemIOMachineStates {
+export enum FileWorkflowStates {
   idle = 'idle',
   readingFolders = 'readingFolders',
   settingProjectDirectoryPath = 'settingProjectDirectoryPath',
@@ -94,7 +93,7 @@ export enum SystemIOMachineStates {
   movingRecursiveAndNavigate = 'moving recursive and navigate',
 }
 
-export enum SystemIOMachineActions {
+export enum FileWorkflowActions {
   setFolders = 'set folders',
   setProjectDirectoryPath = 'set project directory path',
   setRequestedProjectName = 'set requested project name',
@@ -112,26 +111,30 @@ export enum SystemIOMachineActions {
   flushDeferredSystemIOEvent = 'flush deferred system IO event',
 }
 
-export enum SystemIOMachineGuards {
+export enum FileWorkflowGuards {
   projectNameIsValidLength = 'project name is valid length',
 }
 
 export const NO_PROJECT_DIRECTORY = ''
 
 /** Capabilities used by legacy filesystem workflows, supplied by the registry. */
-export interface SystemIOHost {
+export interface FileWorkflowHost {
   readonly fileOperations: FileOperationsRegistryService
   readonly project: ZDSProject | undefined
+  readonly batch?: <T>(
+    root: string,
+    run: (operations: FileOperationsRegistryService) => Promise<T>
+  ) => Promise<T>
   readonly wasmPromise: Promise<ModuleType>
-  readonly systemIOActor: SystemIOActor
+  readonly fileWorkflows: FileWorkflowService
 }
 
-export type SystemIOInput = {
+export type FileWorkflowInput = {
   wasmInstancePromise: Promise<ModuleType>
-  host: SystemIOHost
+  host: FileWorkflowHost
 }
 
-export type SystemIOContext = SystemIOInput & {
+export type FileWorkflowContext = FileWorkflowInput & {
   /** Only store folders under the projectDirectory, do not maintain folders outside this directory */
   folders?: Project[]
   /** For this machines runtime, this is the default string when creating a project
@@ -202,47 +205,17 @@ export type RequestedProjectFile = {
 }
 
 export const waitForIdleState = async ({
+  fileWorkflows,
   abortSignal,
-  systemIOActor,
 }: {
+  fileWorkflows: FileWorkflowService
   abortSignal?: AbortSignal
-  systemIOActor: SystemIOActor
 }) => {
-  // Check if already idle before setting up subscription
-  if (
-    abortSignal?.aborted ||
-    systemIOActor.getSnapshot().matches(SystemIOMachineStates.idle)
-  ) {
-    return Promise.resolve()
-  }
-
-  const waitForIdlePromise = new Promise((resolve) => {
-    let subscription: ReturnType<SystemIOActor['subscribe']> | undefined
-    let finished = false
-    const finish = () => {
-      if (finished) {
-        return
-      }
-      finished = true
-      subscription?.unsubscribe()
-      abortSignal?.removeEventListener('abort', finish)
-      resolve(undefined)
-    }
-    abortSignal?.addEventListener('abort', finish, { once: true })
-    subscription = systemIOActor.subscribe((state) => {
-      if (state.matches(SystemIOMachineStates.idle)) {
-        finish()
-      }
-    })
-    if (finished) {
-      subscription.unsubscribe()
-    }
-  })
-  return waitForIdlePromise
+  if (!abortSignal?.aborted) await fileWorkflows.whenIdle()
 }
 
 export const determineProjectFilePathFromPrompt = (
-  context: SystemIOContext,
+  context: FileWorkflowContext,
   args: {
     requestedPrompt: string
     existingProjectName?: string

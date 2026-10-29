@@ -37,8 +37,8 @@ import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
-import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
-import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import { listAllImportFilesWithinProject } from '@src/lib/fileSystem/workflows/snapshotContext'
+import type { FileWorkflowService } from '@src/lib/fileSystem/workflows/utils'
 import { FILE_AND_CODE_EDITOR_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 interface KclCommandConfig {
@@ -48,7 +48,7 @@ interface KclCommandConfig {
     providedOptions: ReadonlyArray<CommandArgumentOption<string>>
   }
   kclManager: KclManager
-  systemIOActor: SystemIOActor
+  fileWorkflows: FileWorkflowService
   wasmInstance: ModuleType
   projectData: IndexLoaderData
   settings: {
@@ -211,7 +211,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           options: () => {
             const providedOptions: { name: string; value: string }[] = []
-            const context = commandProps.systemIOActor.getSnapshot().context
+            const context = commandProps.fileWorkflows.getSnapshot().context
             const projectName = commandProps.project?.name
             const sep = fsZds.sep
             const relevantFiles = relevantFileExtensions(

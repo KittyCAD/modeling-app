@@ -44,8 +44,8 @@ import {
   useCanReadWriteProjectDirectory,
   useFolders,
   useState as useSystemIOState,
-} from '@src/machines/systemIO/hooks'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
+} from '@src/lib/fileSystem/workflows/hooks'
+import { FileWorkflowStates } from '@src/lib/fileSystem/workflows/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -827,7 +827,7 @@ function shouldShowLoadingMoreProjects(
   state: ReturnType<typeof useSystemIOState>
 ) {
   return (
-    state.matches(SystemIOMachineStates.readingFolders) &&
+    state.matches(FileWorkflowStates.readingFolders) &&
     !state.context.hasListedProjects
   )
 }

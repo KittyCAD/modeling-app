@@ -67,7 +67,7 @@ function createProjectMenuApp() {
         actor: commandsActor,
         send: vi.fn(),
       },
-      systemIOActor: {
+      fileWorkflows: {
         send: vi.fn(),
       },
       settings: {
@@ -155,7 +155,7 @@ describe('project explorer project menu', () => {
       }
       fireEvent.click(duplicateButton)
 
-      expect(app.systemIOActor.send).toHaveBeenCalledWith({
+      expect(app.fileWorkflows.run).toHaveBeenCalledWith({
         type: 'duplicate project',
         data: {
           projectName: projectWellFormed.name,

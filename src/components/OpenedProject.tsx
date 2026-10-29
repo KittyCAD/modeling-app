@@ -36,15 +36,17 @@ import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 
-import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
+import {
+  useFolders,
+  useLastOperation,
+} from '@src/lib/fileSystem/workflows/hooks'
+import { FileWorkflowStates } from '@src/lib/fileSystem/workflows/utils'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { useApplyRememberedOnboardingWorkflow } from '@src/routes/Onboarding/utils'
-import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import ModalContainer from 'react-modal-promise'
@@ -61,7 +63,7 @@ export function OpenedProject() {
       )
     }
   }, [app.fileOperations])
-  const { auth, billing, settings, layout, project, systemIOActor, registry } =
+  const { auth, billing, settings, layout, project, fileWorkflows, registry } =
     app
   const { kclManager } = useSingletons()
   const defaultAreaLibrary = useDefaultAreaLibrary()
@@ -82,12 +84,12 @@ export function OpenedProject() {
   const projectName = project?.name || null
   const projectPath = project?.path || null
 
-  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
+  const systemIOState = fileWorkflows.status.value
 
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {
     if (
-      systemIOState !== SystemIOMachineStates.idle ||
+      systemIOState !== FileWorkflowStates.idle ||
       !projectPath ||
       !projects
     ) {
@@ -96,9 +98,9 @@ export function OpenedProject() {
 
     if (
       [
-        SystemIOMachineStates.creatingProject,
-        SystemIOMachineStates.renamingProject,
-        SystemIOMachineStates.importFileFromURL,
+        FileWorkflowStates.creatingProject,
+        FileWorkflowStates.renamingProject,
+        FileWorkflowStates.importFileFromURL,
       ].includes(lastOperation)
     ) {
       return

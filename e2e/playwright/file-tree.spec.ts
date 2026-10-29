@@ -1,3 +1,4 @@
+import { reportRejection } from '@src/lib/trap'
 import {
   createProject,
   executorInputPath,
@@ -149,7 +150,7 @@ test.describe(
         .poll(
           async () =>
             await page.evaluate(() => {
-              const snapshot = window.app.systemIOActor.getSnapshot()
+              const snapshot = window.app.fileWorkflows.getSnapshot()
               return {
                 hasFolders: snapshot.context.folders !== undefined,
                 state: snapshot.value,
@@ -171,20 +172,19 @@ test.describe(
       await partsFolder.click()
       await page.evaluate(() => {
         const appWindow = window as any
-        const systemIOActor = window.app.systemIOActor as any
-        const originalSend = systemIOActor.send.bind(systemIOActor)
+        const fileWorkflows = window.app.fileWorkflows as any
+        const originalSetDirectory = fileWorkflows.setProjectDirectoryPath.bind(fileWorkflows)
         appWindow.__setProjectDirectoryPathEvents = []
-        systemIOActor.send = (event: any) => {
+        fileWorkflows.setProjectDirectoryPath = (data: any) => {
+          const event = { type: 'set project directory path', data }
           if (event?.type === 'set project directory path') {
             appWindow.__setProjectDirectoryPathEvents.push(event)
           }
-          return originalSend(event)
+          return originalSetDirectory(data)
         }
       })
       await page.evaluate(() => {
-        window.app.systemIOActor.send({
-          type: 'read folders from project directory' as any,
-        })
+        window.app.fileWorkflows.readFoldersFromProjectDirectory().catch(reportRejection)
       })
 
       await page.getByTestId('create-file-button').click()
@@ -434,7 +434,7 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     const projectDirectoryPath = () =>
       page.evaluate(
         () =>
-          window.app.systemIOActor.getSnapshot().context.projectDirectoryPath
+          window.app.fileWorkflows.getSnapshot().context.projectDirectoryPath
       )
     const nestedProjectSettingsFile = async () =>
       fs.join(nestedDir, PROJECT_SETTINGS_FILE_NAME)

@@ -12,7 +12,7 @@ import { createZookeeperRuntime } from '@src/lib/zookeeper/registry/runtime'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
-import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
+import type { FileWorkflowService as SystemIORegistryService } from '@src/lib/fileSystem/workflows/service'
 import { describe, expect, it, vi } from 'vitest'
 
 const projectId = '24d8709c-8d07-4855-9357-f20d7d35a499'

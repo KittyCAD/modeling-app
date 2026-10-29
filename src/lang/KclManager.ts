@@ -77,7 +77,7 @@ import {
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import { reportSystemIOError } from '@src/lib/fileSystem/workflows/errorReporting'
 import type {
   PlaneVisibilityMap,
   Selection,

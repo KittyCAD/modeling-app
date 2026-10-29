@@ -2,8 +2,8 @@ import { signal, type Signal } from '@preact/signals-core'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import type { BulkFileWriteProgress } from '@src/machines/systemIO/utils'
-import type * as SystemIOUtilsModule from '@src/machines/systemIO/utils'
+import type { BulkFileWriteProgress } from '@src/lib/fileSystem/workflows/utils'
+import type * as SystemIOUtilsModule from '@src/lib/fileSystem/workflows/utils'
 import { S } from '@src/machines/utils'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
@@ -46,7 +46,7 @@ vi.mock(
   })
 )
 
-vi.mock('@src/machines/systemIO/utils', async (importOriginal) => ({
+vi.mock('@src/lib/fileSystem/workflows/utils', async (importOriginal) => ({
   ...(await importOriginal<typeof SystemIOUtilsModule>()),
   collectProjectFiles: projectFilesMocks.collect,
 }))

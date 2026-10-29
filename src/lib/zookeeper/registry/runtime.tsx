@@ -42,9 +42,9 @@ import {
   settingsService,
 } from '@src/registry/contracts/settings'
 import {
-  type SystemIORegistryService,
-  systemIOService,
-} from '@src/registry/contracts/systemIO'
+  type FileWorkflowService as SystemIORegistryService,
+  fileWorkflowsService,
+} from '@src/registry/contracts/fileOperations'
 import { lazy, Suspense } from 'react'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 
@@ -419,7 +419,7 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
     fileOperations: ctx.services.signal(fileOperationsService),
     projectSession: ctx.services.signal(projectSession),
     settings: ctx.services.signal(settingsService),
-    systemIO: ctx.services.signal(systemIOService),
+    systemIO: ctx.services.signal(fileWorkflowsService),
   })
 
   const PaneOutlet = (props: AreaTypeComponentProps) => (

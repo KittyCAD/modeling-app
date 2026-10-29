@@ -28,10 +28,10 @@ import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
 import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
+  FileWorkflowEvents,
+  FileWorkflowStates,
   waitForIdleState,
-} from '@src/machines/systemIO/utils'
+} from '@src/lib/fileSystem/workflows/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -51,7 +51,7 @@ export type CreateFileSchemaMethodOptional = Omit<
 let pendingWebLayoutProjectCreation: Promise<string> | undefined
 
 async function createFreshWebLayoutProject(app: App) {
-  await waitForIdleState({ systemIOActor: app.systemIOActor })
+  await waitForIdleState({ fileWorkflows: app.fileWorkflows })
   await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
   const targets = app.getCreateProjectLibraryTargets()
@@ -153,7 +153,7 @@ export function useQueryParamEffects() {
       // File navigation removes the project-id param while preserving the new
       // file route. Calling setSearchParams here can re-navigate from the
       // original query-param route and reopen the project default file.
-      await waitForIdleState({ systemIOActor: app.systemIOActor })
+      await waitForIdleState({ fileWorkflows: app.fileWorkflows })
       if (cancelled) {
         return
       }
@@ -309,7 +309,7 @@ export function useQueryParamEffects() {
       let cancelled = false
 
       void (async () => {
-        await waitForIdleState({ systemIOActor: app.systemIOActor })
+        await waitForIdleState({ fileWorkflows: app.fileWorkflows })
         if (cancelled) {
           return
         }
@@ -405,7 +405,7 @@ export function useQueryParamEffects() {
       const projectNameArg = String(commandData.argDefaultValues.projectName)
       const projectFolderName = fsZds.basename(projectNameArg)
 
-      const systemIO = app.systemIOActor
+      const systemIO = app.fileWorkflows
       const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
         (folders ?? []).some((f) => f.name === projectFolderName)
       let hasRequestedProjectCreate = false
@@ -421,12 +421,12 @@ export function useQueryParamEffects() {
           shouldCreateDefaultWebProject &&
           !hasRequestedProjectCreate &&
           projectFolderName === DEFAULT_WEB_PROJECT_NAME &&
-          snapshot.matches(SystemIOMachineStates.idle) &&
+          snapshot.matches(FileWorkflowStates.idle) &&
           snapshot.context.folders !== undefined
         ) {
           hasRequestedProjectCreate = true
-          systemIO.send({
-            type: SystemIOMachineEvents.createProject,
+          void systemIO.run({
+            type: FileWorkflowEvents.createProject,
             data: {
               requestedProjectName: DEFAULT_WEB_PROJECT_NAME,
             },
@@ -440,12 +440,13 @@ export function useQueryParamEffects() {
         return
       }
 
-      const subscription = systemIO.subscribe((snapshot) => {
+      let unsubscribe = () => {}
+      unsubscribe = systemIO.snapshot.subscribe((snapshot) => {
         if (sendOrCreateProject(snapshot)) {
-          subscription.unsubscribe()
+          unsubscribe()
         }
       })
-      return () => subscription.unsubscribe()
+      return () => unsubscribe()
     }
 
     sendCommand()

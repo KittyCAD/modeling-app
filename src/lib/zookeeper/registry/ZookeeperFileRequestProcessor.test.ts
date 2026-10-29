@@ -11,11 +11,11 @@ import {
   ZookeeperManagerTransitions,
   zookeeperManagerMachine,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import type * as SystemIOUtils from '@src/machines/systemIO/utils'
+import type * as SystemIOUtils from '@src/lib/fileSystem/workflows/utils'
 import {
-  type SystemIOActor,
+  type FileWorkflowService,
   waitForIdleState,
-} from '@src/machines/systemIO/utils'
+} from '@src/lib/fileSystem/workflows/utils'
 import { waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { createActor, fromPromise, waitFor as waitForActor } from 'xstate'
@@ -43,7 +43,7 @@ vi.mock('@src/lib/fs-zds', () => ({
   },
 }))
 
-vi.mock('@src/machines/systemIO/utils', async (importOriginal) => {
+vi.mock('@src/lib/fileSystem/workflows/utils', async (importOriginal) => {
   const original = await importOriginal<typeof SystemIOUtils>()
 
   return {
@@ -74,9 +74,9 @@ const history = {
   reserve: mocks.historyReserve,
 } as unknown as ZookeeperEditPatchHistory
 
-const systemIOActor = {
-  send: mocks.systemIOSend,
-} as unknown as SystemIOActor
+const fileWorkflows = {
+  bulkCreateAndDeleteKCLFilesAndNavigateToFile: async (data: unknown) => mocks.systemIOSend({ data }),
+} as unknown as FileWorkflowService
 
 function patchBackedZookeeperEdit(
   code: string
@@ -160,7 +160,7 @@ function createProcessor(
     isEditorCurrent,
     isSessionCurrent,
     kclManager,
-    systemIOActor,
+    fileWorkflows,
     onEditApplied: mocks.onEditApplied,
   })
 }
@@ -403,7 +403,7 @@ describe('ZookeeperFileRequestProcessor', () => {
       isSessionCurrent: () => true,
       isEditorCurrent: () => true,
       kclManager,
-      systemIOActor,
+      fileWorkflows,
       onEditApplied: (response) =>
         actor.send({ type: ZookeeperManagerTransitions.EditApplied, response }),
     })

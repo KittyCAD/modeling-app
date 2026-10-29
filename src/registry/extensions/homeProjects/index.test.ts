@@ -46,9 +46,9 @@ import {
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import {
-  type SystemIORegistryService,
-  systemIOService,
-} from '@src/registry/contracts/systemIO'
+  type FileWorkflowService as SystemIORegistryService,
+  fileWorkflowsService,
+} from '@src/registry/contracts/fileOperations'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import homeProjectsExtension, {
   deriveHomeProjectEntryContributions,
@@ -899,7 +899,7 @@ describe('home project actions', () => {
       }),
       defineRegistryItem({
         id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
+        providesServices: [provideService(fileWorkflowsService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -978,7 +978,7 @@ describe('home project actions', () => {
       }),
       defineRegistryItem({
         id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
+        providesServices: [provideService(fileWorkflowsService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -1035,7 +1035,7 @@ describe('home project actions', () => {
       }),
       defineRegistryItem({
         id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
+        providesServices: [provideService(fileWorkflowsService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -1093,7 +1093,7 @@ describe('home project actions', () => {
       defineRegistryItem({
         id: 'test.system-io',
         providesServices: [
-          provideService(systemIOService, createSystemIOService().service),
+          provideService(fileWorkflowsService, createSystemIOService().service),
         ],
       }),
       defineRegistryItem({
@@ -1166,7 +1166,7 @@ describe('home project actions', () => {
       }),
       defineRegistryItem({
         id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
+        providesServices: [provideService(fileWorkflowsService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -1244,7 +1244,7 @@ describe('home project actions', () => {
       }),
       defineRegistryItem({
         id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
+        providesServices: [provideService(fileWorkflowsService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -1311,7 +1311,7 @@ describe('home project actions', () => {
       }),
       defineRegistryItem({
         id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
+        providesServices: [provideService(fileWorkflowsService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -1408,7 +1408,7 @@ describe('home project actions', () => {
       }),
       defineRegistryItem({
         id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
+        providesServices: [provideService(fileWorkflowsService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -1494,7 +1494,7 @@ describe('home project actions', () => {
       }),
       defineRegistryItem({
         id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
+        providesServices: [provideService(fileWorkflowsService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -1601,7 +1601,7 @@ describe('home project actions', () => {
       }),
       defineRegistryItem({
         id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
+        providesServices: [provideService(fileWorkflowsService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',

@@ -1,11 +1,7 @@
-import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
+import { reportRejection } from '@src/lib/trap'
 
 type HomeLoaderApp = {
-  systemIOActor: {
-    send: (event: {
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory
-    }) => void
-  }
+  fileWorkflows: { readFoldersFromProjectDirectory: () => Promise<unknown> }
   closeProject: () => void
   settings: {
     actor: {
@@ -15,9 +11,7 @@ type HomeLoaderApp = {
 }
 
 export function loadHomeProjects(app: HomeLoaderApp) {
-  app.systemIOActor.send({
-    type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-  })
+  app.fileWorkflows.readFoldersFromProjectDirectory().catch(reportRejection)
   app.closeProject()
   app.settings.actor.send({
     type: 'clear.project',

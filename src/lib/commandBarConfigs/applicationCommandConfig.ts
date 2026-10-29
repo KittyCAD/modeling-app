@@ -1,3 +1,4 @@
+import type { FileWorkflowService } from '@src/lib/fileSystem/workflows/service'
 import env from '@src/env'
 import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
@@ -29,10 +30,8 @@ import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/lib/fileSystem/workflows/snapshotContext'
+import type { RequestedKCLFile } from '@src/lib/fileSystem/workflows/utils'
 import {
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
   GLOBAL_COMMAND_SCOPES,
@@ -40,17 +39,16 @@ import {
 } from '@src/registry/contracts/commands'
 import { routerService } from '@src/registry/contracts/router'
 import toast from 'react-hot-toast'
-import type { ActorRefFrom } from 'xstate'
 
 function onSubmitKCLSampleCreation({
   sample,
   uniqueNameIfNeeded,
-  systemIOActor,
+  fileWorkflows,
   isProjectNew,
 }: {
   sample: string
   uniqueNameIfNeeded: string
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  fileWorkflows: FileWorkflowService
   isProjectNew: boolean
 }) {
   void downloadKclSample(sample, {
@@ -72,7 +70,7 @@ function onSubmitKCLSampleCreation({
         requestedFiles.forEach((requestedFile) => {
           const subDirectoryName = projectPathPart
           const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(
-            systemIOActor.getSnapshot().context,
+            fileWorkflows.getSnapshot().context,
             { projectFolderName: requestedFile.requestedProjectName }
           )
           const uniqueSubDirectoryName = getUniqueProjectName(
@@ -87,25 +85,19 @@ function onSubmitKCLSampleCreation({
       }
 
       if (requestedFiles.length === 1) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.importFileFromURL,
-          data: {
+        fileWorkflows.importFileFromURL({
             requestedProjectName: requestedFiles[0].requestedProjectName,
             requestedFileNameWithExtension: requestedFiles[0].requestedFileName,
             requestedCode: requestedFiles[0].requestedCode,
-          },
-        })
+          }).catch(reportRejection)
       } else {
         /**
          * Bulk create the assembly and navigate to the project
          */
-        systemIOActor.send({
-          type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-          data: {
+        fileWorkflows.bulkCreateKCLFilesAndNavigateToProject({
             files: requestedFiles,
             requestedProjectName: uniqueNameIfNeeded,
-          },
-        })
+          }).catch(reportRejection)
       }
     })
     .catch(reportError)
@@ -146,7 +138,7 @@ export function createApplicationCommands({
          * KCL samples
          */
         const error = "The command couldn't be submitted, check the arguments."
-        const folders = app.systemIOActor.getSnapshot().context.folders
+        const folders = app.fileWorkflows.getSnapshot().context.folders
         const isProjectNew = !!data.newProjectName
         const requestedProjectName = data.newProjectName || data.projectName
         const uniqueNameIfNeeded = isProjectNew
@@ -161,7 +153,7 @@ export function createApplicationCommands({
             onSubmitKCLSampleCreation({
               sample: data.sample,
               uniqueNameIfNeeded,
-              systemIOActor: app.systemIOActor,
+              fileWorkflows: app.fileWorkflows,
               isProjectNew,
             })
           }
@@ -184,7 +176,7 @@ export function createApplicationCommands({
           const isKCL = extension === 'kcl'
           const fileOperations = app.fileOperations
           const projectDirectoryPath =
-            app.systemIOActor.getSnapshot().context.projectDirectoryPath
+            app.fileWorkflows.getSnapshot().context.projectDirectoryPath
 
           try {
             const content =
@@ -192,14 +184,11 @@ export function createApplicationCommands({
                 ? new Uint8Array(await selectedFile.arrayBuffer())
                 : await fileOperations.readFile(selectedFile)
             if (isKCL) {
-              app.systemIOActor.send({
-                type: SystemIOMachineEvents.importFileFromURL,
-                data: {
+              app.fileWorkflows.importFileFromURL({
                   requestedProjectName: uniqueNameIfNeeded,
                   requestedFileNameWithExtension: fileNameWithExtension,
                   requestedCode: new TextDecoder().decode(content),
-                },
-              })
+                }).catch(reportRejection)
             } else {
               const { path } = await getNextFileName({
                 fileOperations,
@@ -209,9 +198,7 @@ export function createApplicationCommands({
                 preserveUnknownExtension: true,
               })
               await fileOperations.writeFile(path, content)
-              app.systemIOActor.send({
-                type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-              })
+              app.fileWorkflows.readFoldersFromProjectDirectory().catch(reportRejection)
             }
           } catch (cause) {
             trap(new Error(error, { cause }))
@@ -290,7 +277,7 @@ export function createApplicationCommands({
         skip: true,
         defaultValue: () => app.project?.name,
         options: (_, _context) => {
-          const { folders } = app.systemIOActor.getSnapshot().context
+          const { folders } = app.fileWorkflows.getSnapshot().context
           return getProjectDirectoryOptions(folders)
         },
       },

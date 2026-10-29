@@ -1,3 +1,4 @@
+import { reportRejection } from '@src/lib/trap'
 import { signal, type ReadonlySignal } from '@preact/signals-core'
 import type { MlCopilotServerMessage, MlToolResult } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
@@ -9,10 +10,9 @@ import {
   type BulkFileWriteProgress,
   normalizeKCLFileDeletePath,
   prepareZookeeperNewFileRequest,
-  type SystemIOActor,
-  SystemIOMachineEvents,
+  type FileWorkflowService,
   waitForIdleState,
-} from '@src/machines/systemIO/utils'
+} from '@src/lib/fileSystem/workflows/utils'
 
 interface ZookeeperFileRequestProcessorDependencies {
   history: ZookeeperEditPatchHistory
@@ -20,7 +20,7 @@ interface ZookeeperFileRequestProcessorDependencies {
   isEditorCurrent: () => boolean
   isSessionCurrent: () => boolean
   kclManager: KclManager
-  systemIOActor: SystemIOActor
+  fileWorkflows: FileWorkflowService
   onEditApplied: (response: MlCopilotServerMessage) => void
   onQueueIdle?: () => void
 }
@@ -188,7 +188,7 @@ export class ZookeeperFileRequestProcessor {
       return
     }
     const project = this.deps.getProject()
-    const { kclManager, systemIOActor } = this.deps
+    const { kclManager, fileWorkflows } = this.deps
     const abortSignal = this.abortController.signal
     const requestGeneration = this.generation
     const requestProjectPath = project?.path
@@ -365,7 +365,7 @@ export class ZookeeperFileRequestProcessor {
 
             await waitForIdleState({
               abortSignal,
-              systemIOActor,
+              fileWorkflows,
             })
             if (stopIfStale()) {
               return
@@ -373,9 +373,7 @@ export class ZookeeperFileRequestProcessor {
 
             kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
             dispatched = true
-            systemIOActor.send({
-              type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
-              data: {
+            fileWorkflows.bulkCreateAndDeleteKCLFilesAndNavigateToFile({
                 orderedId: request.orderedId,
                 files: payload.files,
                 filesToDelete: payload.filesToDelete,
@@ -530,8 +528,7 @@ export class ZookeeperFileRequestProcessor {
                       },
                     }
                   : {}),
-              },
-            })
+              }).catch(reportRejection)
           })().catch((error: unknown) => {
             if (stopIfStale()) {
               return

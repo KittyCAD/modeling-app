@@ -1,3 +1,4 @@
+import { reportRejection } from '@src/lib/trap'
 import { Popover, Transition } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { ActionButtonProps } from '@src/components/ActionButton'
@@ -15,7 +16,6 @@ import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -285,15 +285,12 @@ function ProjectMenuPopover({
                 </span>
               ),
               onClick: () => {
-                app.systemIOActor.send({
-                  type: SystemIOMachineEvents.duplicateProject,
-                  data: {
+                app.fileWorkflows.duplicateProject({
                     projectName: project.name,
                     projectPath: project.path,
                     requestedProjectName: getProjectDisplayName(project),
                     ...getCurrentFileForDuplicate(),
-                  },
-                })
+                  }).catch(reportRejection)
               },
             }
           : null,
@@ -498,7 +495,7 @@ function ProjectMenuPopover({
       getCurrentFileForDuplicate,
       contributedProjectMenuItems,
       commands.actor,
-      app.systemIOActor,
+      app.fileWorkflows,
       file,
       filePath,
       machineCount,

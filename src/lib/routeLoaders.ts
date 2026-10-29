@@ -1,3 +1,4 @@
+import { reportRejection } from '@src/lib/trap'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
@@ -18,9 +19,8 @@ import {
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import type { HomeLoaderData } from '@src/lib/types'
 import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
+  FileWorkflowStates,
+} from '@src/lib/fileSystem/workflows/utils'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
@@ -227,7 +227,7 @@ export const fileLoader =
     assertCurrent()
 
     const requestedFileName =
-      app.systemIOActor.getSnapshot().context.requestedFileName
+      app.fileWorkflows.getSnapshot().context.requestedFileName
     if (
       isRequestedFileLoaded({
         requestedFileName,
@@ -242,21 +242,18 @@ export const fileLoader =
     const requestedProjectDirectoryPath =
       projectRef.projectIORefSignal.value.libraryPath ??
       getParentAbsolutePath(project.path)
-    const systemIOSnapshot = app.systemIOActor.getSnapshot()
+    const systemIOSnapshot = app.fileWorkflows.getSnapshot()
     // Same-directory file navigation should not restart SystemIO's own
     // post-mutation folder refresh.
     const shouldSyncProjectDirectory =
       requestedProjectDirectoryPath !==
         systemIOSnapshot.context.projectDirectoryPath ||
-      (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
+      (systemIOSnapshot.matches(FileWorkflowStates.idle) &&
         systemIOSnapshot.context.folders === undefined)
     if (shouldSyncProjectDirectory) {
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
+      app.fileWorkflows.setProjectDirectoryPath({
           requestedProjectDirectoryPath,
-        },
-      })
+        }).catch(reportRejection)
     }
   }
 

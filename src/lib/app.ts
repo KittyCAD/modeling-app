@@ -33,9 +33,8 @@ import {
 } from '@src/lib/zookeeper/editorPlugin'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-} from '@src/machines/systemIO/utils'
+  type FileWorkflowService,
+} from '@src/lib/fileSystem/workflows/utils'
 import {
   UserFeaturesTransition,
   userFeaturesContextHas,
@@ -78,7 +77,7 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { systemIOService } from '@src/registry/contracts/systemIO'
+import { fileWorkflowsService } from '@src/registry/contracts/fileOperations'
 import {
   type UserFeaturesRegistryService,
   userFeaturesService,
@@ -92,7 +91,7 @@ import {
   appRegistryOverridesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
-import type { SnapshotFrom, Subscription } from 'xstate'
+import type { SnapshotFrom } from 'xstate'
 
 const appCommandsSlot = new Slot()
 
@@ -213,8 +212,8 @@ export class App implements AppSubsystems {
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
    */
-  get systemIOActor(): SystemIOActor {
-    return this.registry.get(systemIOService).actor
+  get fileWorkflows(): FileWorkflowService {
+    return this.registry.get(fileWorkflowsService)
   }
 
   private activeWasmInstance: ModuleType | undefined
@@ -353,7 +352,7 @@ export class App implements AppSubsystems {
     }
   }
 
-  private unsubscribeSystemIO: Subscription | undefined
+  private unsubscribeSystemIO: (() => void) | undefined
 
   async openProject(
     projectIORef: Project,
@@ -386,7 +385,7 @@ export class App implements AppSubsystems {
       }
 
       const disposeFSHistory = buildFSHistoryExtension(
-        this.systemIOActor,
+        this.fileWorkflows,
         executingEditor
       )
       const disposeZookeeperHistory = buildZookeeperHistoryExtension({
@@ -417,9 +416,9 @@ export class App implements AppSubsystems {
         onProjectFilesReplay: async (replayFiles) => {
           await project.syncReplayedFilesToRust(replayFiles)
           if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            this.systemIOActor.send({
-              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-            })
+            this.fileWorkflows
+              .readFoldersFromProjectDirectory()
+              .catch(reportRejection)
           }
         },
       })
@@ -430,27 +429,29 @@ export class App implements AppSubsystems {
       }
     })
 
-    // TODO: Rework the systemIOActor to fit into the system better,
+    // TODO: Rework the fileWorkflows to fit into the system better,
     // so that the project doesn't need to subscribe to it.
-    this.unsubscribeSystemIO?.unsubscribe()
-    this.unsubscribeSystemIO = this.systemIOActor.subscribe(({ context }) => {
-      const foundProject = (context.folders ?? []).find(
-        (p) =>
-          p.name === projectIORefSignal.value.name &&
-          p.path === projectIORefSignal.value.path
-      )
-      if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = {
-          ...foundProject,
-          ...(projectIORefSignal.value.libraryPath
-            ? { libraryPath: projectIORefSignal.value.libraryPath }
-            : {}),
-          ...(projectIORefSignal.value.libraryType
-            ? { libraryType: projectIORefSignal.value.libraryType }
-            : {}),
+    this.unsubscribeSystemIO?.()
+    this.unsubscribeSystemIO = this.fileWorkflows.snapshot.subscribe(
+      ({ context }) => {
+        const foundProject = (context.folders ?? []).find(
+          (p) =>
+            p.name === projectIORefSignal.value.name &&
+            p.path === projectIORefSignal.value.path
+        )
+        if (foundProject && projectIORefSignal.value !== foundProject) {
+          projectIORefSignal.value = {
+            ...foundProject,
+            ...(projectIORefSignal.value.libraryPath
+              ? { libraryPath: projectIORefSignal.value.libraryPath }
+              : {}),
+            ...(projectIORefSignal.value.libraryType
+              ? { libraryType: projectIORefSignal.value.libraryType }
+              : {}),
+          }
         }
       }
-    })
+    )
 
     return this.project
   }
@@ -485,7 +486,7 @@ export class App implements AppSubsystems {
   closeProject() {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
-    this.unsubscribeSystemIO?.unsubscribe()
+    this.unsubscribeSystemIO?.()
     this.unsubscribeSystemIO = undefined
     this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
@@ -559,7 +560,7 @@ export class App implements AppSubsystems {
             provideCommand
           ),
           ...createProjectCommands({
-            systemIOActor: this.systemIOActor,
+            fileWorkflows: this.fileWorkflows,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
             getCurrentProjectPath: () =>

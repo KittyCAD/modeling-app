@@ -1,12 +1,11 @@
+import type { FileWorkflowService } from '@src/lib/fileSystem/workflows/service'
 import { invertedEffects } from '@codemirror/commands'
 import type { Extension, Transaction } from '@codemirror/state'
 import { Annotation, Compartment, StateEffect } from '@codemirror/state'
 import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
 import type { KclManager } from '@src/lang/KclManager'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { FileWorkflowEvents } from '@src/lib/fileSystem/workflows/utils'
 import { EditorView } from 'codemirror'
-import type { ActorRefFrom } from 'xstate'
 
 const fsEffectCompartment = new Compartment()
 export const fsIgnoreAnnotationType = Annotation.define<true>()
@@ -56,7 +55,7 @@ export const fsMoveFile = (props: FSEffectProps) => h(moveFile.of(props))
  * actually call systemIO APIs.
  */
 export function buildFSHistoryExtension(
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>,
+  fileWorkflows: FileWorkflowService,
   kclManager: KclManager
 ) {
   const fsWiredListener = EditorView.updateListener.of((vu) => {
@@ -67,10 +66,10 @@ export function buildFSHistoryExtension(
       for (const e of tr.effects) {
         if (e.is(restoreFile) || e.is(archiveFile) || e.is(moveFile)) {
           const type = e.is(moveFile)
-            ? SystemIOMachineEvents.moveRecursive
-            : SystemIOMachineEvents.moveRecursiveAndNavigate
+            ? FileWorkflowEvents.moveRecursive
+            : FileWorkflowEvents.moveRecursiveAndNavigate
 
-          systemIOActor.send({
+          void fileWorkflows.run({
             type,
             data: {
               ...e.value,

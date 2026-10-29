@@ -75,7 +75,7 @@ import {
 } from '@src/lib/revealInFileExplorer'
 import { getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { FileWorkflowEvents } from '@src/lib/fileSystem/workflows/utils'
 import {
   type AppHeaderItemProps,
   appHeaderItemsValueSpec,
@@ -103,7 +103,7 @@ import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
-import { systemIOService } from '@src/registry/contracts/systemIO'
+import { fileWorkflowsService } from '@src/registry/contracts/fileOperations'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { useEffect, useState } from 'react'
@@ -1337,7 +1337,7 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const fileOperations = () => ctx.services.get(fileOperationsService)
-  const systemIO = ctx.services.signal(systemIOService)
+  const systemIO = ctx.services.signal(fileWorkflowsService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     new Error('Missing WASM promise registry value.')
@@ -1347,8 +1347,8 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   // configured Personal Cloud library scan (e.g. on desktop). Refresh both so
   // local mutations show up regardless of which surface owns the entry.
   const refreshLocalCloudProjectEntries = () => {
-    systemIO.value?.actor.send({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+    systemIO.value?.run({
+      type: FileWorkflowEvents.readFoldersFromProjectDirectory,
     })
     invalidateProjectLibraryRealizations()
   }

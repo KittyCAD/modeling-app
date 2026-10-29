@@ -27,7 +27,7 @@ vi.mock('@src/lib/desktop', () => ({
       (error as { code?: string }).code === 'ENOENT'),
 }))
 
-vi.mock('@src/machines/systemIO/errorReporting', () => ({
+vi.mock('@src/lib/fileSystem/workflows/errorReporting', () => ({
   reportSystemIOError: mocks.reportSystemIOError,
 }))
 
