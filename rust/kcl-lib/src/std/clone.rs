@@ -58,7 +58,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue> {
     Ok(cloned.into())
 }
 
-async fn inner_clone(
+pub(super) async fn inner_clone(
     geometries: Vec<GeometryWithImportedGeometry>,
     exec_state: &mut ExecState,
     args: Args,
