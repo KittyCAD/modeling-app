@@ -1407,6 +1407,7 @@ export class KclManager extends File {
   })
 
   private editorOwnershipVersion = 0
+  private scenePreferencesChangedDuringExecution = false
   private scheduleEditorExecution(request: EditorExecutionRequest) {
     if (this.closed) return
     if (
@@ -2302,7 +2303,9 @@ export class KclManager extends File {
 
     const finishExecution = this.engineCommandManager.trackExecution()
     const connection = this.engineCommandManager.connection
+    const path = this.path
     let completion: ExecutionCompletionStatus = 'cleanup'
+    this.scenePreferencesChangedDuringExecution = false
 
     try {
       const ast = args.ast || this.ast
@@ -2440,16 +2443,55 @@ export class KclManager extends File {
         })
       }
     } finally {
-      if (
-        this.engineCommandManager.connection === connection &&
-        !this.executeIsStale
-      ) {
-        // Invalid new code may never reach executeAst to clear this flag.
-        this.engineCommandManager.executionIsStale = false
+      try {
+        if (this.scenePreferencesChangedDuringExecution) {
+          this.scenePreferencesChangedDuringExecution = false
+          const isCurrent = () =>
+            !this.closed &&
+            this.sceneSettingsActive.peek() &&
+            this.path === path &&
+            this.engineCommandManager.connection === connection
+          if (isCurrent()) {
+            const settings = getSettingsFromActorContext(
+              this.systemDeps.settings
+            )
+            // A Rust run may have applied the preferences captured before its
+            // import I/O. Restore the latest preferences, never reexecute KCL.
+            await Promise.all([
+              this.engineCommandManager.setTheme(
+                settings.app.theme.current,
+                isCurrent
+              ),
+              this.engineCommandManager.setHighlightEdges(
+                settings.modeling.highlightEdges.current,
+                isCurrent
+              ),
+              this.engineCommandManager.setDefaultSystemProperties(
+                settings.modeling.backfaceColor.current,
+                isCurrent
+              ),
+              this.engineCommandManager.setShowScaleGrid(
+                settings.modeling.showScaleGrid.current,
+                settings.modeling.fixedSizeGrid.current,
+                this._fileSettingsSignal.peek().defaultLengthUnit ||
+                  DEFAULT_DEFAULT_LENGTH_UNIT,
+                isCurrent
+              ),
+            ]).catch(reportRejection)
+          }
+        }
+      } finally {
+        if (
+          this.engineCommandManager.connection === connection &&
+          !this.executeIsStale
+        ) {
+          // Invalid new code may never reach executeAst to clear this flag.
+          this.engineCommandManager.executionIsStale = false
+        }
+        this.isExecuting = false
+        this.notifyExecutionCompletion(completion)
+        finishExecution()
       }
-      this.isExecuting = false
-      this.notifyExecutionCompletion(completion)
-      finishExecution()
     }
   }
 
@@ -2938,7 +2980,7 @@ export class KclManager extends File {
     const disposers: Array<() => void> = []
     const watchValue = <T>(
       read: () => T,
-      apply: (value: T) => void,
+      apply: (value: T, isCurrent: () => boolean) => void,
       scene = false
     ) => {
       const value = computed(read)
@@ -2946,7 +2988,23 @@ export class KclManager extends File {
         effect(() => {
           if (scene && !this.sceneSettingsActive.value) return
           const current = value.value
-          untracked(() => apply(current))
+          const path = this.path
+          const projectPath = this.systemDeps.project.peek()?.path
+          let cancelled = false
+          const isCurrent = () =>
+            !cancelled &&
+            !this.closed &&
+            (!scene || this.sceneSettingsActive.peek()) &&
+            this.path === path &&
+            this.systemDeps.project.peek()?.path === projectPath
+          untracked(() => {
+            if (scene && this._isExecuting.peek())
+              this.scenePreferencesChangedDuringExecution = true
+            apply(current, isCurrent)
+          })
+          return () => {
+            cancelled = true
+          }
         })
       )
     }
@@ -2969,9 +3027,11 @@ export class KclManager extends File {
     )
     watchValue(
       () => theme.value,
-      (value) => {
+      (value, isCurrent) => {
         if (this.engineCommandManager.connection) {
-          this.engineCommandManager.setTheme(value).catch(reportRejection)
+          this.engineCommandManager
+            .setTheme(value, isCurrent)
+            .catch(reportRejection)
         }
       },
       true
@@ -3004,10 +3064,10 @@ export class KclManager extends File {
     )
     watchValue(
       () => highlightEdges.value,
-      (value) => {
+      (value, isCurrent) => {
         if (this.engineCommandManager.connection) {
           this.engineCommandManager
-            .setHighlightEdges(value)
+            .setHighlightEdges(value, isCurrent)
             .catch(reportRejection)
         }
       },
@@ -3015,10 +3075,10 @@ export class KclManager extends File {
     )
     watchValue(
       () => backfaceColor.value,
-      (value) => {
+      (value, isCurrent) => {
         if (this.engineCommandManager.connection?.connected) {
           this.engineCommandManager
-            .setDefaultSystemProperties(value)
+            .setDefaultSystemProperties(value, isCurrent)
             .catch(reportRejection)
         }
       },
@@ -3054,78 +3114,54 @@ export class KclManager extends File {
     const showScaleGrid = computed(
       () => settings.value.modeling.showScaleGrid.currentSignal.value
     )
-    // Inactive editors keep their render baseline current without issuing
-    // engine commands. Opening an editor alone does not request a rerender.
-    let previous = {
-      showScaleGrid: showScaleGrid.peek(),
-      fixedSizeGrid: fixedSizeGrid.peek(),
-      highlightEdges: highlightEdges.peek(),
-      backfaceColor: backfaceColor.peek(),
-    }
-    let pendingCacheClear: Promise<boolean> | undefined
+    const modelLengthUnit = computed(
+      () =>
+        this._fileSettingsSignal.value.defaultLengthUnit ||
+        DEFAULT_DEFAULT_LENGTH_UNIT
+    )
+    let previousGrid:
+      | { visible: boolean; fixedSize: boolean; unit: BaseUnit }
+      | undefined
     disposers.push(
       effect(() => {
         const active = this.sceneSettingsActive.value
         const current = {
-          showScaleGrid: showScaleGrid.value,
-          fixedSizeGrid: fixedSizeGrid.value,
-          highlightEdges: highlightEdges.value,
-          backfaceColor: backfaceColor.value,
+          visible: showScaleGrid.value,
+          fixedSize: fixedSizeGrid.value,
+          unit: modelLengthUnit.value,
         }
-        const backfaceChanged = current.backfaceColor !== previous.backfaceColor
-        const engineSettingsChanged =
-          current.showScaleGrid !== previous.showScaleGrid ||
-          current.fixedSizeGrid !== previous.fixedSizeGrid ||
-          current.highlightEdges !== previous.highlightEdges
-        previous = current
+        if (!active) {
+          previousGrid = undefined
+          return
+        }
+        if (
+          previousGrid?.visible === current.visible &&
+          previousGrid.fixedSize === current.fixedSize &&
+          previousGrid.unit === current.unit
+        ) {
+          return
+        }
+        previousGrid = current
         let cancelled = false
         untracked(() => {
-          if (!active || !this.engineCommandManager.connection) return
-          const path = this.path
-          const projectPath = this.systemDeps.project.peek()?.path
-          const isCurrent = () =>
-            !cancelled &&
-            this.sceneSettingsActive.peek() &&
-            this.path === path &&
-            this.systemDeps.project.peek()?.path === projectPath
-          const executeIfCurrent = () => {
-            if (isCurrent()) return this.executeCode()
-          }
-          if (backfaceChanged) {
-            const clearCache = () => {
-              if (!isCurrent()) return Promise.resolve(false)
-              return this.rustContext
-                .clearSceneAndBustCache(jsAppSettings(settings.peek()), path)
-                .then(() => true)
-                .catch((error) => {
-                  reportRejection(error)
-                  return false
-                })
-            }
-            // Serialize cache clears, and let later engine-setting updates
-            // wait for the pending clear before rendering the latest values.
-            const pending = pendingCacheClear
-              ? pendingCacheClear.then(clearCache)
-              : clearCache()
-            pendingCacheClear = pending
-            pending
-              .then((success) => {
-                if (pendingCacheClear === pending) pendingCacheClear = undefined
-                // Closing, switching editors/projects, or a newer settings
-                // update invalidates the continuation's ownership of the scene.
-                if (success) return executeIfCurrent()
-              })
+          if (this._isExecuting.peek())
+            this.scenePreferencesChangedDuringExecution = true
+          if (this.engineCommandManager.connection) {
+            const path = this.path
+            const projectPath = this.systemDeps.project.peek()?.path
+            const isCurrent = () =>
+              !cancelled &&
+              this.sceneSettingsActive.peek() &&
+              this.path === path &&
+              this.systemDeps.project.peek()?.path === projectPath
+            this.engineCommandManager
+              .setShowScaleGrid(
+                current.visible,
+                current.fixedSize,
+                current.unit,
+                isCurrent
+              )
               .catch(reportRejection)
-          } else if (engineSettingsChanged) {
-            if (pendingCacheClear) {
-              pendingCacheClear
-                .then((success) => {
-                  if (success) return executeIfCurrent()
-                })
-                .catch(reportRejection)
-            } else {
-              this.executeCode().catch(reportRejection)
-            }
           }
         })
         return () => {
