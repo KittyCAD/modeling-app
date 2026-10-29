@@ -47,6 +47,35 @@ test.beforeEach(async ({ context }) => {
 const projectUrl = `/project/${project.id}?file=parts%2Fother.kcl`
 
 test(
+  'opens a cloud Home card through its project URL and effective access',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    const { calls } = await routeCloudProjects(context, {
+      remoteProjects: [project],
+    })
+    await context.route(`**/user/projects/${project.id}`, (route) =>
+      route.fulfill({
+        json: { ...cloudProjectResponse(project), access: { can_edit: false } },
+      })
+    )
+    await setup(context, page, testInfo, [], { cloudSyncEnabled: true })
+    await page.goto('/home')
+    const link = page.getByTestId('project-link').filter({
+      has: page.getByTestId('project-title').filter({ hasText: project.title }),
+    })
+    await expect(link).toHaveAttribute('href', `/project/${project.id}`)
+    await link.click()
+    await expect(page).toHaveURL(new RegExp(`/project/${project.id}$`))
+    await expect(page.getByTestId('view-only-indicator')).toBeVisible()
+    const editor = new EditorFixture(page)
+    await editor.openPane()
+    await editor.expectEditor.toContain('linkedValue = 17')
+    expect(calls.creates).toHaveLength(0)
+    expect(calls.updates).toHaveLength(0)
+  }
+)
+
+test(
   'keeps readers view-only and reopens the same link with edit access',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {

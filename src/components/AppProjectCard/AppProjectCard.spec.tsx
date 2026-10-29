@@ -1,5 +1,6 @@
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
+import { isDesktop } from '@src/lib/isDesktop'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -19,6 +20,8 @@ import {
 import toast from 'react-hot-toast'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+
+vi.mock('@src/lib/isDesktop', () => ({ isDesktop: vi.fn(() => false) }))
 
 const fileOperations = {
   stat: vi.fn().mockResolvedValue({}),
@@ -162,6 +165,7 @@ function submitRenameProject() {
 describe('ProjectCard', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(isDesktop).mockReturnValue(false)
     fileOperations.readFile.mockResolvedValue(new Uint8Array())
     createObjectURLMock = vi.fn(() => 'blob:thumbnail')
     revokeObjectURLMock = vi.fn()
@@ -197,6 +201,58 @@ describe('ProjectCard', () => {
   })
 
   afterEach(() => vi.unstubAllGlobals())
+
+  test.each([
+    { name: 'cached browser', cached: true, desktop: false },
+    { name: 'remote-only browser', cached: false, desktop: false },
+    { name: 'remote-only desktop', cached: false, desktop: true },
+    { name: 'primary desktop cache', cached: true, desktop: true },
+  ])(
+    'opens $name cloud cards through the project route',
+    ({ cached, desktop }) => {
+      window.history.replaceState({}, '', '/home')
+      vi.mocked(isDesktop).mockReturnValue(desktop)
+      const { projectActions } = renderProjectCard({
+        project: {
+          ...cloudProject,
+          cloudRelationshipId: 'cloud:project-123',
+          canonicalCloudProjectPath: cloudProject.localProjectPath,
+          localProjectPath: cached ? cloudProject.localProjectPath : undefined,
+          defaultFile: cached ? cloudProject.defaultFile : undefined,
+        },
+      })
+      const link = screen.getByTestId('project-link')
+      expect(link).toHaveAttribute('href', '/project/project-123')
+      fireEvent.click(link)
+      expect(window.location.pathname).toBe('/project/project-123')
+      expect(projectActions.open).not.toHaveBeenCalled()
+    }
+  )
+
+  test.each(['additional cloud realization', 'directory copy'])(
+    'preserves local opening for a %s',
+    async (kind) => {
+      vi.mocked(isDesktop).mockReturnValue(true)
+      const project = {
+        ...cloudProject,
+        cloudRelationshipId:
+          kind === 'additional cloud realization'
+            ? 'cloud:project-123'
+            : undefined,
+        canonicalCloudProjectPath: '/cloud/prime',
+      }
+      const { projectActions } = renderProjectCard({ project })
+      const link = screen.getByTestId('project-link')
+      expect(link).toHaveAttribute(
+        'href',
+        '/file/%2Fprojects%2Fold-cloud-title%2Fmain.kcl'
+      )
+      fireEvent.click(link)
+      await waitFor(() =>
+        expect(projectActions.open).toHaveBeenCalledWith(project)
+      )
+    }
+  )
 
   test.each(['grid', 'library preview'])(
     'only loads thumbnails for in-view cards in the %s',
@@ -879,6 +935,7 @@ describe('ProjectCard', () => {
   test('opens conflicted project cards without resolving cloud conflicts on Home', async () => {
     const project = {
       ...cloudProject,
+      cloudRelationshipId: 'cloud:project-123',
       status: 'conflicted',
       conflict: {
         conflictProjectPath: '/projects/old-cloud-title conflict',
@@ -896,9 +953,8 @@ describe('ProjectCard', () => {
 
     fireEvent.click(screen.getByTestId('project-link'))
 
-    await waitFor(() =>
-      expect(projectActions.open).toHaveBeenCalledWith(project)
-    )
+    expect(projectActions.open).not.toHaveBeenCalled()
+    expect(window.location.pathname).toBe('/project/project-123')
     expect(
       screen.queryByTestId('cloud-conflict-dialog')
     ).not.toBeInTheDocument()
