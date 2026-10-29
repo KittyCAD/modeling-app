@@ -37,7 +37,7 @@ import type {
 } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
-  getCommonFacesForEdge,
+  getArtifactsOfTypes,
   getSourceSegmentArtifact,
   getSweepArtifactFromSelection,
   getMergedSweepBodyArtifact,
@@ -461,8 +461,18 @@ function modifyAstWithTagsForEdgeSelection(
 
   // Default: get common edge of 2 faces scenario
   if (!tagMethods || !tagMethods.includes('oppositeAndAdjacentEdges')) {
-    const selectedFaces = getCommonFacesForEdge(artifact, artifactGraph)
-    if (err(selectedFaces)) return selectedFaces
+    const reference = selection.entityRef
+    if (reference?.type !== 'edge' || reference.side_faces.length === 0) {
+      return new Error('Solid-edge selections require explicit face references')
+    }
+    const faces = getArtifactsOfTypes(
+      { keys: reference.side_faces, types: ['wall', 'cap'] },
+      artifactGraph
+    )
+    if (faces.size !== new Set(reference.side_faces).size) {
+      return new Error('Could not resolve all faces of the selected edge')
+    }
+    const selectedFaces = [...faces.values()]
 
     const edgeContext =
       options?.edgeContext ??

@@ -592,11 +592,8 @@ async function validateFaceApiReferenceExpr({
 function getTaggableEdgeArtifact(
   selection: Selection,
   artifactGraph: ArtifactGraph
-): Extract<Artifact, { type: 'segment' | 'sweepEdge' }> | null {
-  if (
-    selection.artifact?.type === 'segment' ||
-    selection.artifact?.type === 'sweepEdge'
-  ) {
+): Extract<Artifact, { type: 'segment' }> | null {
+  if (selection.artifact?.type === 'segment') {
     return selection.artifact
   }
 
@@ -605,25 +602,6 @@ function getTaggableEdgeArtifact(
   }
 
   return getSegmentArtifactForEdgeCut(selection.artifact, artifactGraph)
-}
-
-function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {
-  if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {
-    return createCallExpressionStdLibKw('getOppositeEdge', tag, [])
-  }
-
-  if (artifact.type === 'sweepEdge' && artifact.subType === 'adjacent') {
-    return createCallExpressionStdLibKw('getNextAdjacentEdge', tag, [])
-  }
-
-  if (
-    artifact.type === 'sweepEdge' &&
-    artifact.subType === 'previousAdjacent'
-  ) {
-    return createCallExpressionStdLibKw('getPreviousAdjacentEdge', tag, [])
-  }
-
-  return tag
 }
 
 function getSourceSurfaceExpr(
@@ -659,12 +637,7 @@ function getSegmentArtifactForTagReference(
     return artifact
   }
 
-  const segmentId =
-    artifact.type === 'sweepEdge'
-      ? artifact.segId
-      : artifact.type === 'wall'
-        ? artifact.segId
-        : null
+  const segmentId = artifact.type === 'wall' ? artifact.segId : null
   if (!segmentId) {
     return null
   }
@@ -850,7 +823,7 @@ function createDirectTaggedEdgeReferenceExpr(
   }
 
   const edgeArtifact = getTaggableEdgeArtifact(graphSelection, artifactGraph)
-  if (!edgeArtifact || edgeArtifact.type === 'sweepEdge') {
+  if (!edgeArtifact) {
     return null
   }
   const edgeSelection: ResolvedGraphSelection = {
@@ -876,74 +849,13 @@ function createDirectTaggedEdgeReferenceExpr(
   return tagExpr
 }
 
-function createAdjacentOrOppositeEdgeReferenceExpr({
-  primitiveSelection,
-  artifactGraph,
-  kclManager,
-  wasmInstance,
-}: SelectionExpressionBuilderContext): Expr | null {
-  if (primitiveSelection.primitiveType !== 'edge') {
-    return null
-  }
-
-  const graphSelection = primitiveSelection.graphSelection
-  if (!graphSelection?.codeRef) {
-    return null
-  }
-
-  const edgeArtifact = getTaggableEdgeArtifact(graphSelection, artifactGraph)
-  if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
-    return null
-  }
-
-  const segmentArtifact = getArtifactOfTypes(
-    { key: edgeArtifact.segId, types: ['segment'] },
-    artifactGraph
-  )
-  if (err(segmentArtifact)) {
-    return null
-  }
-
-  const segmentSelection: ResolvedGraphSelection = {
-    artifact: segmentArtifact,
-    codeRef: graphSelection.codeRef,
-  }
-
-  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-    segmentSelection,
-    artifactGraph
-  )
-  if (err(sourceSurfaceArtifact)) {
-    return null
-  }
-
-  const tagResult = modifyAstWithTagsForSelection(
-    kclManager.ast,
-    {
-      ...graphSelection,
-      artifact: segmentArtifact,
-      codeRef: graphSelection.codeRef,
-    },
-    artifactGraph,
-    wasmInstance,
-    ['oppositeAndAdjacentEdges']
-  )
-  const tagExpr = err(tagResult) ? null : tagResult.exprs[0]
-  if (!tagExpr) {
-    return null
-  }
-
-  return getEdgeTagCallExpr(tagExpr, edgeArtifact)
-}
-
 function createTagReferenceExpr(
   context: SelectionExpressionBuilderContext
 ): Expr | null {
   return (
     createExistingFaceReferenceExpr(context) ??
     createDirectTaggedFaceReferenceExpr(context) ??
-    createDirectTaggedEdgeReferenceExpr(context) ??
-    createAdjacentOrOppositeEdgeReferenceExpr(context)
+    createDirectTaggedEdgeReferenceExpr(context)
   )
 }
 
@@ -1864,23 +1776,16 @@ export async function getEventForQueryEntityTypeWithPoint(
   } else if (entityRef.type === 'region') {
     entityId = entityRef.region_id
   } else if (entityRef.type === 'edge' && entityRef.side_faces.length > 0) {
-    // For edges, we need to find the edge artifact from the faces
-    // Try to find an edge artifact that connects these faces
-    // This is a temporary approach - ideally we'd query the engine for the edge ID
-    // For now, we'll try to find it from the artifact graph
+    // An adjacent face anchors the source code; entityRef retains the selected edge.
     const faceArtifacts = entityRef.side_faces
       .map((faceId: string) => artifactGraph.get(faceId))
       .filter(Boolean)
     if (faceArtifacts.length > 0) {
-      // Try to find a sweepEdge that connects these faces
-      // This is a simplified approach
       const firstFace = faceArtifacts[0]
       if (
         firstFace &&
         (firstFace.type === 'wall' || firstFace.type === 'cap')
       ) {
-        // Look for edges in the commonSurfaceIds
-        // This is not ideal but works for now
         entityId = firstFace.id
       }
     }
@@ -1921,7 +1826,12 @@ export async function getEventForQueryEntityTypeWithPoint(
 
   const artifactByEventId = clickEntityId
     ? (artifactGraph.get(clickEntityId) ??
-      getPatternArtifactForCopyId(clickEntityId, artifactGraph))
+      getPatternArtifactForCopyId(
+        engineTopologyFallbackFromReference(reference)?.parentId ??
+          entityId ??
+          clickEntityId,
+        artifactGraph
+      ))
     : undefined
   // Edge + topology_fallback: keep graph SelectionV2 (with engineTopologyFallback) for fillet/chamfer.
   // Otherwise region selection wins and we never attach engine topology data (e.g. shell inner edges).
@@ -2968,13 +2878,7 @@ function getEngineEntityIdsForSelection(selection: Selection): ArtifactId[] {
     return [artifact.id]
   }
 
-  return [
-    ...new Set([
-      ...artifact.copyIds,
-      ...artifact.copyFaceIds,
-      ...artifact.copyEdgeIds,
-    ]),
-  ]
+  return [...new Set([...artifact.copyIds, ...artifact.copyFaceIds])]
 }
 
 export function codeToIdSelections(

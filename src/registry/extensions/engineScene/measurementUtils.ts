@@ -178,10 +178,7 @@ function getEntitiesForGraphSelection(
       case 'edge': {
         const id =
           selection.engineEntityId ??
-          (artifact &&
-          (artifact.type === 'primitiveEdge' ||
-            artifact.type === 'sweepEdge' ||
-            artifact.type === 'edgeCutEdge')
+          (artifact && artifact.type === 'primitiveEdge'
             ? artifact.id
             : undefined)
         return id ? [{ id, kind: 'edge' }] : []
@@ -251,7 +248,6 @@ function getEntitiesForGraphSelection(
   return dedupeMeasurementEntities([
     ...artifact.copyIds.map((id) => ({ id, kind: 'body' as const })),
     ...artifact.copyFaceIds.map((id) => ({ id, kind: 'face' as const })),
-    ...artifact.copyEdgeIds.map((id) => ({ id, kind: 'edge' as const })),
   ])
 }
 

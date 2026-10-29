@@ -405,50 +405,6 @@ function edgeCutSourceRangePrompt({
   ]
 }
 
-function sweepEdgeSourceRangePrompt({
-  selection,
-  artifactGraph,
-}: ArtifactSelectionPromptHandlerArgs): SourceRangePromptDraft[] {
-  const artifact = selection.artifact
-  if (artifact.type !== 'sweepEdge')
-    return selectedArtifactSourceRangePrompt({ selection, artifactGraph })
-
-  const prompts: SourceRangePromptDraft[] = [
-    {
-      prompt: `The user's main selection is the edge of a general sweep (that is an extrusion, revolve, sweep, or loft).
-It is an ${
-        artifact.subType
-      } edge. To refer to this edge in current KCL, add a tag to the source segment and pass that tag to ${
-        artifact.subType === 'opposite'
-          ? 'getOppositeEdge'
-          : artifact.subType === 'previousAdjacent'
-            ? 'getPreviousAdjacentEdge'
-            : 'getNextAdjacentEdge'
-      }, for example \`getOppositeEdge(someRegion.tags.segmentTag)\`.
-See later source ranges for more context. about the sweep`,
-      range: selection.codeRef.range,
-    },
-  ]
-
-  if (!artifact.sweepId) {
-    return prompts
-  }
-
-  const sweep = getArtifactOfTypes(
-    { key: artifact.sweepId, types: ['sweep'] },
-    artifactGraph
-  )
-  if (!isErr(sweep)) {
-    prompts.push({
-      prompt: `This is the sweep's source range from the user's main selection of the edge.`,
-      range: sweep.codeRef.range,
-      required: false,
-    })
-  }
-
-  return prompts
-}
-
 function segmentSourceRangePrompt({
   selection,
   artifactGraph,
@@ -513,7 +469,7 @@ export const zookeeperArtifactSelectionPromptHandlers = {
   sweep: selectedArtifactSourceRangePrompt,
   wall: wallSourceRangePrompt,
   cap: capSourceRangePrompt,
-  sweepEdge: sweepEdgeSourceRangePrompt,
+  sweepEdge: selectedArtifactSourceRangePrompt,
   edgeCut: edgeCutSourceRangePrompt,
   edgeCutEdge: selectedArtifactSourceRangePrompt,
   helix: selectedArtifactSourceRangePrompt,

@@ -930,6 +930,7 @@ async function prepareFeatureTreeEditCommand({
 
   return prepareEditCommand({
     artifactGraph: systemDeps.kclManager.artifactGraph,
+    edgeRefactorMetadata: systemDeps.kclManager.execState.edgeRefactorMetadata,
     code: systemDeps.kclManager.code,
     commandBarActor,
     operation: operationToEdit,

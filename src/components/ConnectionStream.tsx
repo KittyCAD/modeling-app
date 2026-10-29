@@ -231,6 +231,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
 
               await prepareEditCommand({
                 artifactGraph: kclManager.artifactGraph,
+                edgeRefactorMetadata: kclManager.execState.edgeRefactorMetadata,
                 code: kclManager.code,
                 commandBarActor: commands.actor,
                 operation,

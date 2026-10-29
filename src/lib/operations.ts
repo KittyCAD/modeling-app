@@ -46,6 +46,7 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import {
+  type EdgeRefactorMeta,
   type ArtifactGraph,
   type CallExpressionKw,
   type Program,
@@ -234,7 +235,8 @@ function extractFaceSelections(
 
 function extractDistanceTargetSelections(
   artifactGraph: ArtifactGraph,
-  targetArg: OpArg
+  targetArg: OpArg,
+  edgeRefactorMetadata: EdgeRefactorMeta[] = []
 ): Selection[] {
   const value = targetArg.value
 
@@ -247,7 +249,9 @@ function extractDistanceTargetSelections(
     return retrieveEdgeSelectionsFromLegacyOpArgs(
       null,
       targetArg,
-      artifactGraph
+      artifactGraph,
+      undefined,
+      edgeRefactorMetadata
     ).graphSelections
   }
 
@@ -268,7 +272,9 @@ function extractDistanceTargetSelections(
   const edgeSelections = retrieveEdgeSelectionsFromLegacyOpArgs(
     null,
     targetArg,
-    artifactGraph
+    artifactGraph,
+    undefined,
+    edgeRefactorMetadata
   ).graphSelections
   if (edgeSelections.length > 0) {
     return edgeSelections
@@ -280,7 +286,8 @@ function extractDistanceTargetSelections(
 function retrieveFaceAndEdgeSelectionsForEdit(
   artifactGraph: ArtifactGraph,
   facesArg?: OpArg,
-  edgesArg?: OpArg
+  edgesArg?: OpArg,
+  edgeRefactorMetadata: EdgeRefactorMeta[] = []
 ): Selections {
   const graphSelections: Selection[] = facesArg?.sourceRange
     ? extractFaceSelections(artifactGraph, facesArg).map((s) =>
@@ -305,7 +312,9 @@ function retrieveFaceAndEdgeSelectionsForEdit(
         const edges = retrieveEdgeSelectionsFromLegacyOpArgs(
           null,
           edgeArg,
-          artifactGraph
+          artifactGraph,
+          undefined,
+          edgeRefactorMetadata
         )
         graphSelections.push(...edges.graphSelections)
       }
@@ -457,6 +466,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
   const boundToUtf16 = (n: number) => toUtf16(n, code)
@@ -468,7 +478,16 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  const sketches = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
+  const sketches =
+    operation.unlabeledArg?.value.type === 'Uuid'
+      ? retrieveEdgeSelectionsFromLegacyOpArgs(
+          null,
+          operation.unlabeledArg,
+          artifactGraph,
+          code,
+          edgeRefactorMetadata
+        )
+      : retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the length argument from a string to a KCL expression
   let length: KclCommandValue | undefined
@@ -507,7 +526,8 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
   if ('direction' in operation.labeledArgs && operation.labeledArgs.direction) {
     const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
       operation.labeledArgs.direction,
-      artifactGraph
+      artifactGraph,
+      edgeRefactorMetadata
     )
     direction =
       isErr(axisEdgeSelection) || !axisEdgeSelection.edge
@@ -819,6 +839,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   rustContext,
   code,
   artifactGraph,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'Fillet',
@@ -842,7 +863,8 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
       operation.unlabeledArg,
       operation.labeledArgs.tags,
       artifactGraph,
-      code
+      code,
+      edgeRefactorMetadata
     )
   } else {
     selection = emptySelections()
@@ -906,6 +928,7 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
   rustContext,
   code,
   artifactGraph,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'Chamfer',
@@ -929,7 +952,8 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
       operation.unlabeledArg,
       operation.labeledArgs.tags,
       artifactGraph,
-      code
+      code,
+      edgeRefactorMetadata
     )
   } else {
     selection = emptySelections()
@@ -1563,6 +1587,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
   rustContext,
   code,
   artifactGraph,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'Helix',
@@ -1606,7 +1631,8 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
   } else if (axisArg) {
     const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
       axisArg,
-      artifactGraph
+      artifactGraph,
+      edgeRefactorMetadata
     )
     if (isErr(axisEdgeSelection)) {
       if (isExplicitAxisArgument(axisArg)) {
@@ -1724,6 +1750,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'Revolve',
@@ -1767,7 +1794,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   } else if (axisArg) {
     const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
       axisArg,
-      artifactGraph
+      artifactGraph,
+      edgeRefactorMetadata
     )
     if (isErr(axisEdgeSelection)) {
       if (isExplicitAxisArgument(axisArg)) {
@@ -2099,6 +2127,7 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Flatness',
@@ -2109,7 +2138,12 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   }
 
   const facesArg = operation.labeledArgs?.['faces']
-  const faces = retrieveFaceAndEdgeSelectionsForEdit(artifactGraph, facesArg)
+  const faces = retrieveFaceAndEdgeSelectionsForEdit(
+    artifactGraph,
+    facesArg,
+    undefined,
+    edgeRefactorMetadata
+  )
 
   const tolerance = await extractKclArgument(
     code,
@@ -2155,6 +2189,7 @@ const prepareToEditGdtStraightness: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Straightness',
@@ -2167,7 +2202,8 @@ const prepareToEditGdtStraightness: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     operation.labeledArgs?.faces,
-    operation.labeledArgs?.edges
+    operation.labeledArgs?.edges,
+    edgeRefactorMetadata
   )
 
   const tolerance = await extractKclArgument(
@@ -2215,6 +2251,7 @@ const prepareToEditGdtCircularity: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Circularity',
@@ -2227,7 +2264,8 @@ const prepareToEditGdtCircularity: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     operation.labeledArgs?.faces,
-    operation.labeledArgs?.edges
+    operation.labeledArgs?.edges,
+    edgeRefactorMetadata
   )
 
   const tolerance = await extractKclArgument(
@@ -2275,6 +2313,7 @@ const prepareToEditGdtCylindricity: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Cylindricity',
@@ -2287,7 +2326,8 @@ const prepareToEditGdtCylindricity: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     operation.labeledArgs?.faces,
-    operation.labeledArgs?.edges
+    operation.labeledArgs?.edges,
+    edgeRefactorMetadata
   )
 
   const tolerance = await extractKclArgument(
@@ -2335,6 +2375,7 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Datum',
@@ -2345,7 +2386,12 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   }
 
   const faceArg = operation.labeledArgs?.['face']
-  const faces = retrieveFaceAndEdgeSelectionsForEdit(artifactGraph, faceArg)
+  const faces = retrieveFaceAndEdgeSelectionsForEdit(
+    artifactGraph,
+    faceArg,
+    undefined,
+    edgeRefactorMetadata
+  )
 
   // Extract name argument as a plain string (strip quotes if present)
   const nameRaw = extractStringArgument(code, operation, 'name')
@@ -2385,6 +2431,7 @@ const prepareToEditGdtPosition: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Position',
@@ -2397,7 +2444,8 @@ const prepareToEditGdtPosition: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     operation.labeledArgs?.faces,
-    operation.labeledArgs?.edges
+    operation.labeledArgs?.edges,
+    edgeRefactorMetadata
   )
 
   const tolerance = await extractKclArgument(
@@ -2455,6 +2503,7 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Profile',
@@ -2469,7 +2518,8 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     facesArg,
-    edgesArg
+    edgesArg,
+    edgeRefactorMetadata
   )
 
   const tolerance = await extractKclArgument(
@@ -2533,6 +2583,7 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Distance',
@@ -2547,12 +2598,20 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
   const toArg = operation.labeledArgs?.['to']
   if (fromArg?.sourceRange) {
     graphSelections.push(
-      ...extractDistanceTargetSelections(artifactGraph, fromArg)
+      ...extractDistanceTargetSelections(
+        artifactGraph,
+        fromArg,
+        edgeRefactorMetadata
+      )
     )
   }
   if (toArg?.sourceRange) {
     graphSelections.push(
-      ...extractDistanceTargetSelections(artifactGraph, toArg)
+      ...extractDistanceTargetSelections(
+        artifactGraph,
+        toArg,
+        edgeRefactorMetadata
+      )
     )
   }
 
@@ -2562,7 +2621,8 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
       ...retrieveFaceAndEdgeSelectionsForEdit(
         artifactGraph,
         undefined,
-        edgesArg
+        edgesArg,
+        edgeRefactorMetadata
       ).graphSelections
     )
   }
@@ -2614,6 +2674,7 @@ const prepareToEditGdtPerpendicularity: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Perpendicularity',
@@ -2626,7 +2687,8 @@ const prepareToEditGdtPerpendicularity: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     operation.labeledArgs?.faces,
-    operation.labeledArgs?.edges
+    operation.labeledArgs?.edges,
+    edgeRefactorMetadata
   )
 
   const tolerance = await extractKclArgument(
@@ -2684,6 +2746,7 @@ const prepareToEditGdtAngularity: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Angularity',
@@ -2696,7 +2759,8 @@ const prepareToEditGdtAngularity: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     operation.labeledArgs?.faces,
-    operation.labeledArgs?.edges
+    operation.labeledArgs?.edges,
+    edgeRefactorMetadata
   )
 
   const tolerance = await extractKclArgument(
@@ -2754,6 +2818,7 @@ const prepareToEditGdtConcentricity: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Concentricity',
@@ -2766,7 +2831,8 @@ const prepareToEditGdtConcentricity: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     operation.labeledArgs?.faces,
-    operation.labeledArgs?.edges
+    operation.labeledArgs?.edges,
+    edgeRefactorMetadata
   )
 
   const datums = await extractKclArgument(
@@ -2827,6 +2893,7 @@ const prepareToEditGdtSymmetry: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Symmetry',
@@ -2839,7 +2906,8 @@ const prepareToEditGdtSymmetry: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     operation.labeledArgs?.faces,
-    operation.labeledArgs?.edges
+    operation.labeledArgs?.edges,
+    edgeRefactorMetadata
   )
 
   const datums = await extractKclArgument(
@@ -2900,6 +2968,7 @@ const prepareToEditGdtRunout: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Runout',
@@ -2912,7 +2981,8 @@ const prepareToEditGdtRunout: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     operation.labeledArgs?.faces,
-    operation.labeledArgs?.edges
+    operation.labeledArgs?.edges,
+    edgeRefactorMetadata
   )
 
   const datums = await extractKclArgument(
@@ -2973,6 +3043,7 @@ const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Parallelism',
@@ -2985,7 +3056,8 @@ const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     operation.labeledArgs?.faces,
-    operation.labeledArgs?.edges
+    operation.labeledArgs?.edges,
+    edgeRefactorMetadata
   )
 
   const tolerance = await extractKclArgument(
@@ -3043,6 +3115,7 @@ const prepareToEditGdtAnnotation: PrepareToEditCallback = async ({
   rustContext,
   artifactGraph,
   code,
+  edgeRefactorMetadata = [],
 }) => {
   const baseCommand = {
     name: 'GDT Annotation',
@@ -3055,7 +3128,8 @@ const prepareToEditGdtAnnotation: PrepareToEditCallback = async ({
   const objects = retrieveFaceAndEdgeSelectionsForEdit(
     artifactGraph,
     operation.labeledArgs?.faces,
-    operation.labeledArgs?.edges
+    operation.labeledArgs?.edges,
+    edgeRefactorMetadata
   )
 
   const annotationRaw = extractStringArgument(code, operation, 'annotation')
@@ -3818,6 +3892,7 @@ export interface EnterEditFlowProps {
   operation: Operation
   code: string
   artifactGraph: ArtifactGraph
+  edgeRefactorMetadata?: EdgeRefactorMeta[]
   artifact?: Artifact
   rustContext: RustContext
 }
@@ -3828,6 +3903,7 @@ export async function enterEditFlow({
   artifact,
   rustContext,
   artifactGraph,
+  edgeRefactorMetadata,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   // Operate on VariableDeclarations differently from StdLibCall's
   if (operation.type === 'VariableDeclaration') {
@@ -3864,6 +3940,7 @@ export async function enterEditFlow({
         artifact,
         rustContext,
         artifactGraph,
+        edgeRefactorMetadata,
       })
       if ('reason' in eventPayload) {
         return new Error(eventPayload.reason)

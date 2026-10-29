@@ -127,6 +127,7 @@ function createFaceAxisFixture() {
     type: 'edgeCut',
     id: 'cut',
     subType: 'fillet',
+    inputFaces: { sideFaces: ['wall', 'end-cap'] },
     edgeIds: [],
     codeRef: codeRef(
       faceAxisCode.slice(faceAxisCode.indexOf('fillet(extrude001'))
@@ -384,11 +385,20 @@ profile001 = startProfile(sketch001, at = [0, 0])
     expect(result).toBeInstanceOf(Error)
   })
 
-  it('preserves edge-cut inference through its source sketch segment', () => {
+  it('preserves legacy treatment axis inference without graph edge adjacency', () => {
     const { ast, graph, wall, cut } = createFaceAxisFixture()
     const segment = graph.get(wall.segId)
     if (segment?.type !== 'segment') throw new Error('Missing source segment')
     segment.edgeCutId = cut.id
+    for (const artifact of graph.values()) {
+      for (const field of [
+        'edgeIds',
+        'commonSurfaceIds',
+        'edgeCutEdgeIds',
+        'consumedEdgeId',
+      ])
+        Reflect.deleteProperty(artifact, field)
+    }
     const code = generateAxis(ast, graph, {
       entityRef: { type: 'face', face_id: cut.id },
       codeRef: cut.codeRef,

@@ -17,7 +17,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { expect } from 'vitest'
+import { assert, expect } from 'vitest'
 
 export const clonedRegionBody = `@settings(kclVersion = 2.0)
 
@@ -156,22 +156,41 @@ export function createSelectionFromArtifacts(
   artifacts: Artifact[],
   artifactGraph: ArtifactGraph
 ): Selections {
-  const graphSelections = artifacts.flatMap((artifact) => {
-    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-    const codeRef =
-      codeRefs?.[0] ?? ('codeRef' in artifact ? artifact.codeRef : undefined)
-    return [
-      {
-        artifact,
-        entityRef: artifactToEntityRef(
-          artifact.type,
-          artifact.id,
-          artifact.type === 'segment' ? artifact.pathId : undefined
-        ),
-        codeRef,
-      },
-    ]
-  })
+  const graphSelections = artifacts.flatMap(
+    (artifact): Selections['graphSelections'] => {
+      // Legacy fixtures still contain graph edges. Present the explicit face
+      // reference that viewport selection supplies, rather than a graph edge.
+      if (artifact.type === 'sweepEdge') {
+        const segment = artifactGraph.get(artifact.segId)
+        const sideFaces = artifact.commonSurfaceIds
+        assert(
+          segment?.type === 'segment' && sideFaces?.length,
+          'Missing legacy fixture segment or faces'
+        )
+        return [
+          {
+            codeRef: segment.codeRef,
+            engineEntityId: artifact.id,
+            entityRef: { type: 'edge', side_faces: sideFaces },
+          },
+        ]
+      }
+      const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+      const codeRef =
+        codeRefs?.[0] ?? ('codeRef' in artifact ? artifact.codeRef : undefined)
+      return [
+        {
+          artifact,
+          entityRef: artifactToEntityRef(
+            artifact.type,
+            artifact.id,
+            artifact.type === 'segment' ? artifact.pathId : undefined
+          ),
+          codeRef,
+        },
+      ]
+    }
+  )
   return {
     graphSelections,
     otherSelections: [],

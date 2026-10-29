@@ -1,3 +1,4 @@
+import { getCommonFacesForEdge } from '@src/lang/std/artifactGraph.testFixtures'
 import type { KclManager } from '@src/lang/KclManager'
 import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
@@ -16,7 +17,6 @@ import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import {
   codeRefFromRange,
   getCodeRefsByArtifactId,
-  getCommonFacesForEdge,
   getOriginalSegmentArtifact,
 } from '@src/lang/std/artifactGraph'
 import { findKwArg, topLevelRange } from '@src/lang/util'
@@ -152,7 +152,7 @@ hidden002 = hide(sketch001)`
     if (!sideFaces || sideFaces.length < 2) {
       throw new Error('Sweep edge adjacent faces not found')
     }
-    const codeRef = getCodeRefsByArtifactId(edge.id, artifactGraph)?.[0]
+    const codeRef = getCodeRefsByArtifactId(edge.segId, artifactGraph)?.[0]
     if (!codeRef) throw new Error('Sweep edge code reference not found')
     return { entityRef: { type: 'edge', side_faces: sideFaces }, codeRef }
   }
@@ -508,7 +508,10 @@ part = subtract(extrude001, tools = extrude002)`
       if (!sideFaces || sideFaces.length < 2) {
         throw new Error('Source edge adjacent faces not found')
       }
-      const codeRef = getCodeRefsByArtifactId(sweepEdge.id, artifactGraph)?.[0]
+      const codeRef = getCodeRefsByArtifactId(
+        sweepEdge.segId,
+        artifactGraph
+      )?.[0]
       if (!codeRef) throw new Error('Source edge code reference not found')
 
       const selection: Selections = {
@@ -1173,7 +1176,8 @@ ${extrudedTriangle}`
         operation.unlabeledArg,
         operation.labeledArgs.tags,
         artifactGraph,
-        extrudedTriangleWithFillet
+        extrudedTriangleWithFillet,
+        kclManagerInThisFile.execState.edgeRefactorMetadata
       )
       expect(selection.graphSelections).toHaveLength(1)
       expect(selection.graphSelections[0].entityRef).toMatchObject({
@@ -1233,7 +1237,8 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         operation.unlabeledArg,
         operation.labeledArgs.tags,
         artifactGraph,
-        code
+        code,
+        kclManagerInThisFile.execState.edgeRefactorMetadata
       )
       expect(selection.graphSelections).toHaveLength(1)
       expect(selection.graphSelections[0].entityRef).toMatchObject({
@@ -2131,28 +2136,55 @@ ${command}001 = ${command}(extrude001, tags = [getOppositeEdge(seg01)], ${parame
         if (edgeValue?.type !== 'Uuid') {
           throw new Error('Legacy edge did not evaluate to a UUID')
         }
-        const edge = artifactGraph.get(edgeValue.value)
-        if (!edge || edge.type !== 'sweepEdge') {
-          throw new Error('Legacy UUID did not identify a sweep edge')
-        }
-        const segment = artifactGraph.get(edge.segId)
-        if (!segment || segment.type !== 'segment') {
-          throw new Error('Legacy edge source segment not found')
+        const metadata = kclManagerInThisFile.execState.edgeRefactorMetadata
+        const edge = metadata.find((entry) => entry.edgeId === edgeValue.value)
+        if (!edge) throw new Error('Legacy edge face metadata not recorded')
+        // Recovery and parameter editing must work after graph edge data is removed.
+        for (const [id, artifact] of artifactGraph) {
+          if (
+            artifact.type === 'sweepEdge' ||
+            artifact.type === 'edgeCutEdge'
+          ) {
+            artifactGraph.delete(id)
+          } else {
+            for (const field of [
+              'edgeIds',
+              'commonSurfaceIds',
+              'edgeCutEdgeIds',
+              'consumedEdgeId',
+            ]) {
+              Reflect.deleteProperty(artifact, field)
+            }
+          }
         }
 
         const selection = retrieveEdgeSelectionsFromLegacyOpArgs(
           operation.unlabeledArg,
           tagsArg,
           artifactGraph,
-          code
+          code,
+          kclManagerInThisFile.execState.edgeRefactorMetadata
         )
         expect(selection.graphSelections).toEqual([
           {
-            entityRef: { type: 'edge', side_faces: edge.commonSurfaceIds },
-            codeRef: segment.codeRef,
+            entityRef: { type: 'edge', side_faces: edge.faceIds },
+            engineEntityId: edgeValue.value,
+            codeRef: expect.any(Object),
           },
         ])
         expect(selection.otherSelections).toEqual([])
+        // A reused runtime UUID must not recover a different edge by accident.
+        const ambiguous = retrieveEdgeSelectionsFromLegacyOpArgs(
+          operation.unlabeledArg,
+          tagsArg,
+          artifactGraph,
+          code,
+          [
+            ...metadata,
+            { ...edge, faceIds: [crypto.randomUUID(), crypto.randomUUID()] },
+          ]
+        )
+        expect(ambiguous.graphSelections).toEqual([])
 
         const value = (await stringToKclExpression(
           '2',
@@ -2285,7 +2317,8 @@ chamfer001 = chamfer(
         op.unlabeledArg,
         op.labeledArgs.tags,
         artifactGraph,
-        code
+        code,
+        kclManagerInThisFile.execState.edgeRefactorMetadata
       )
 
       expect(selections.graphSelections).toHaveLength(2)

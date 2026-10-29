@@ -146,22 +146,6 @@ function sweepArtifact(id: string, pathId: string): Artifact {
   }
 }
 
-function sweepEdgeArtifact(
-  id: string,
-  segId: string,
-  sweepId: string
-): Artifact {
-  return {
-    type: 'sweepEdge',
-    id,
-    subType: 'opposite',
-    segId,
-    cmdId: '',
-    sweepId,
-    commonSurfaceIds: [],
-  }
-}
-
 function capArtifact(id: string, sweepId: string): Artifact {
   return {
     type: 'cap',
@@ -880,8 +864,17 @@ gdt::annotation(faces = [treatmentFace], annotation = "yoyo", fontSize = 1.54mm)
           pathArtifact('path-id'),
           segment,
           sweepArtifact('sweep-id', 'path-id'),
-          sweepEdgeArtifact('edge-id', 'segment-id', 'sweep-id'),
+          capArtifact('face-a', 'sweep-id'),
+          capArtifact('face-b', 'sweep-id'),
         ]),
+        edgeRefactorMetadata: [
+          {
+            edgeId: 'edge-id',
+            faceIds: ['face-a', 'face-b'],
+            sourceRange: operation.labeledArgs.direction.sourceRange,
+            stdlibFn: 'getOppositeEdge',
+          },
+        ],
         rustContext,
       })
       if (result instanceof Error) {
@@ -893,20 +886,20 @@ gdt::annotation(faces = [treatmentFace], annotation = "yoyo", fontSize = 1.54mm)
 
       const argDefaultValues = result.data.argDefaultValues as {
         sketches?: {
-          graphSelections: Array<{ artifact: Artifact }>
+          graphSelections: Array<{ engineEntityId?: string }>
         }
         direction?: {
-          graphSelections: Array<{ artifact: Artifact }>
+          graphSelections: Array<{ engineEntityId?: string }>
         }
         bodyType?: string
       }
       expect(result.data.name).toBe('Extrude')
-      expect(argDefaultValues.sketches?.graphSelections[0].artifact.id).toBe(
+      expect(argDefaultValues.sketches?.graphSelections[0].engineEntityId).toBe(
         'edge-id'
       )
-      expect(argDefaultValues.direction?.graphSelections[0].artifact.id).toBe(
-        'edge-id'
-      )
+      expect(
+        argDefaultValues.direction?.graphSelections[0].engineEntityId
+      ).toBe('edge-id')
       expect(argDefaultValues.bodyType).toBe('SURFACE')
     })
   })

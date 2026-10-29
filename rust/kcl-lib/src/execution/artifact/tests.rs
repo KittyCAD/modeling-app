@@ -1952,6 +1952,67 @@ fn edge_specifier_surface_extrude_creates_sweep_without_path_id() {
 }
 
 #[test]
+fn legacy_cut_retains_its_input_faces_without_an_edge_lookup_in_the_app() {
+    let edge_id = ArtifactId::new(Uuid::new_v4());
+    let face_ids = vec![ArtifactId::new(Uuid::new_v4()), ArtifactId::new(Uuid::new_v4())];
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        edge_id,
+        Artifact::Segment(Segment {
+            id: edge_id,
+            path_id: ArtifactId::new(Uuid::new_v4()),
+            source_segment_id: None,
+            original_seg_id: None,
+            surface_id: None,
+            edge_ids: Vec::new(),
+            edge_cut_id: None,
+            code_ref: placeholder_code_ref(),
+            common_surface_ids: face_ids.clone(),
+        }),
+    );
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::Solid3dCutEdges::builder()
+            .object_id(Uuid::new_v4())
+            .edge_ids(vec![edge_id.into()])
+            .cut_type(kcmc::shared::CutTypeV2::Fillet {
+                radius: kcmc::length_unit::LengthUnit(1.0),
+                second_length: None,
+            })
+            .tolerance(kcmc::length_unit::LengthUnit(0.0001))
+            .build(),
+    );
+    let command = ArtifactCommand {
+        cmd_id: Uuid::new_v4(),
+        range: SourceRange::synthetic(),
+        command,
+        entity_clone_info: None,
+        omit_from_graph: false,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let updates = artifacts_to_update(
+        &artifacts,
+        &command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+    let cut = updates
+        .iter()
+        .find_map(|artifact| match artifact {
+            Artifact::EdgeCut(cut) => Some(cut),
+            _ => None,
+        })
+        .expect("missing treatment face");
+    assert_eq!(cut.input_faces.as_ref().unwrap().side_faces, face_ids);
+}
+
+#[test]
 fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
     let cmd_id = Uuid::new_v4();
     let object_id = Uuid::new_v4();
@@ -2038,6 +2099,29 @@ fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
             ..
         }) if *id == ArtifactId::new(extra_face_id)
     ));
+    let Artifact::EdgeCut(cut) = &updated[0] else {
+        panic!("Missing cut face")
+    };
+    assert_eq!(
+        cut.input_faces.as_ref().unwrap().side_faces,
+        vec![ArtifactId::new(side_face_a), ArtifactId::new(side_face_b)]
+    );
+    let copied_a = ArtifactId::new(Uuid::new_v4());
+    let copied_b = ArtifactId::new(Uuid::new_v4());
+    let copied_cut = remap_artifact_for_clone(
+        &updated[0],
+        &AHashMap::from_iter([
+            (ArtifactId::new(side_face_a), copied_a),
+            (ArtifactId::new(side_face_b), copied_b),
+        ]),
+        &placeholder_code_ref(),
+        Uuid::new_v4(),
+        body_id,
+    );
+    let Artifact::EdgeCut(copied_cut) = copied_cut else {
+        panic!("Missing copied cut face")
+    };
+    assert_eq!(copied_cut.input_faces.unwrap().side_faces, vec![copied_a, copied_b]);
     let Some(Artifact::Sweep(body_update)) = updated.last() else {
         panic!("Missing treatment body update");
     };
