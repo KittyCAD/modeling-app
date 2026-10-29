@@ -70,14 +70,16 @@ export function createCloudStorage(
         const current = projects.peek().find((item) => item.id === project.id)
         if (
           disposed ||
-          !thumbnailWatches.peek().has(project.id) ||
           !current ||
           thumbnailVersion(current) !== version ||
           thumbnailRequests.get(project.id) !== version
         )
           return
+        if (url && !thumbnailWatches.peek().has(project.id)) return
+        // Remember missing thumbnails too, even if the card scrolled away.
+        // Project metadata or account changes produce a new cache version.
+        thumbnailVersions.set(project.id, version)
         if (url) {
-          thumbnailVersions.set(project.id, version)
           thumbnails.value = new Map(thumbnails.peek()).set(project.id, url)
         }
       })

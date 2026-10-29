@@ -268,6 +268,42 @@ describe('memory cloud storage', () => {
     expect(diskWrite).not.toHaveBeenCalled()
   })
 
+  it.each([false, true])(
+    'does not retry a missing thumbnail on scroll (completed offscreen: %s)',
+    async (offscreen) => {
+      const { storage } = setup()
+      await storage.listProjects()
+      // The API turns a thumbnail 404 into undefined.
+      const gate = Promise.withResolvers<string | undefined>()
+      vi.mocked(api.getRemoteProjectThumbnailUrl).mockReturnValueOnce(
+        gate.promise
+      )
+      const stop = storage.watchThumbnail('one')
+      if (offscreen) stop()
+      gate.resolve(undefined)
+      await gate.promise
+      await Promise.resolve()
+      await Promise.resolve()
+      stop()
+      await storage.listProjects()
+      const stopAgain = storage.watchThumbnail('one')
+      expect(api.getRemoteProjectThumbnailUrl).toHaveBeenCalledOnce()
+      expect(storage.thumbnails.value.has('one')).toBe(false)
+
+      vi.mocked(api.listRemoteProjects).mockResolvedValueOnce([
+        { ...remote, revision: '2' },
+      ])
+      await storage.listProjects()
+      await vi.waitFor(() =>
+        expect(storage.thumbnails.value.get('one')).toBe(
+          'data:image/png;base64,dGh1bWI='
+        )
+      )
+      expect(api.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(2)
+      stopAgain()
+    }
+  )
+
   it('refreshes a visible thumbnail when project metadata changes and ignores an older result', async () => {
     const { storage } = setup()
     await storage.listProjects()
