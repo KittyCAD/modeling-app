@@ -6,6 +6,7 @@ import decamelize from 'decamelize'
 import {
   CommandKclInput,
   getKclInputValue,
+  type CommandKclArgument,
 } from '@src/components/CommandBar/CommandKclInput'
 import { CommandCameraInput } from '@src/components/CommandBar/CommandCameraInput'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -184,14 +185,6 @@ export default function ModelingDialog({
   }
 
   function renderField({ name, arg, required }: DialogField) {
-    if (arg.inputType === 'vector2d' || arg.inputType === 'vector3d') {
-      arg = {
-        ...arg,
-        inputType: 'kcl',
-        allowArrays: true,
-        createVariable: 'disallow',
-      }
-    }
     const fieldId = `${fieldIdPrefix}-${name}`
     const label =
       arg.displayName || capitaliseFC(decamelize(name, { separator: ' ' }))
@@ -265,6 +258,43 @@ export default function ModelingDialog({
             onValidationChange={(next) => updateValidation(name, next)}
           />
         )
+      case 'vector2d':
+      case 'vector3d': {
+        const vectorArg: CommandKclArgument = {
+          ...arg,
+          inputType: 'kcl',
+          allowArrays: true,
+          createVariable: 'disallow',
+        }
+        return (
+          <CommandKclInput
+            key={name}
+            kclManager={kclManager}
+            settings={settings}
+            wasmPromise={wasmPromise}
+            commandScopes={commandScopes}
+            name={name}
+            arg={vectorArg}
+            label={label}
+            labelAction={help}
+            description={description}
+            placeholder={required ? undefined : 'Use defaults'}
+            isRequired={required}
+            inline={false}
+            autoFocus={name === firstFieldName}
+            value={getKclInputValue(vectorArg, value)}
+            submittedValue={state.context.argumentsToSubmit[name]}
+            nodeToEdit={state.context.argumentsToSubmit.nodeToEdit}
+            selectionRanges={selection.selectionRanges}
+            onChange={(change) =>
+              setValues((previous) =>
+                updateKclArgument(previous, name, vectorArg, change)
+              )
+            }
+            onValidationChange={(next) => updateValidation(name, next)}
+          />
+        )
+      }
       case 'selection':
         return (
           <div key={name} className="flex flex-col gap-1">
@@ -369,45 +399,63 @@ export default function ModelingDialog({
           </div>
         )
       }
-      case 'string':
-      case 'number':
-      case 'text':
-      case 'path':
       case 'color':
-      case 'tagDeclarator': {
-        const Input = arg.inputType === 'text' ? 'textarea' : 'input'
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <input
+              {...noAutofillInputProps}
+              id={fieldId}
+              type="color"
+              autoFocus={name === firstFieldName}
+              className="h-8 w-full cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
+              value={fieldText(value)}
+              onChange={(event) => save(name, event.target.value)}
+            />
+            {description}
+          </div>
+        )
+      case 'tagDeclarator':
         return (
           <div key={name} className="flex flex-col gap-1">
             {fieldLabel}
             <div className="relative">
-              {arg.inputType === 'tagDeclarator' && (
-                <span aria-hidden="true" className="absolute left-2 top-1">
-                  $
-                </span>
-              )}
-              <Input
+              <span aria-hidden="true" className="absolute left-2 top-1">
+                $
+              </span>
+              <input
                 {...noAutofillInputProps}
                 id={fieldId}
-                type={arg.inputType === 'color' ? 'color' : undefined}
-                rows={arg.inputType === 'text' ? 3 : undefined}
+                type="text"
                 autoFocus={name === firstFieldName}
-                className={`w-full rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70 ${arg.inputType === 'color' ? 'h-8 cursor-pointer' : ''} ${arg.inputType === 'tagDeclarator' ? 'pl-5' : ''}`}
-                placeholder={
-                  !required && arg.inputType === 'tagDeclarator'
-                    ? 'None'
-                    : undefined
-                }
+                className="w-full rounded-sm border border-chalkboard-30 bg-transparent py-1 pl-5 pr-2 text-xs dark:border-chalkboard-70"
+                placeholder={required ? undefined : 'None'}
                 value={fieldText(value)}
                 onChange={(event) =>
-                  save(
-                    name,
-                    arg.inputType === 'tagDeclarator'
-                      ? event.target.value.replace(/^\$/, '')
-                      : event.target.value
-                  )
+                  save(name, event.target.value.replace(/^\$/, ''))
                 }
               />
             </div>
+            {description}
+          </div>
+        )
+      case 'string':
+      case 'number':
+      case 'text':
+      case 'path': {
+        const Input = arg.inputType === 'text' ? 'textarea' : 'input'
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <Input
+              {...noAutofillInputProps}
+              id={fieldId}
+              rows={arg.inputType === 'text' ? 3 : undefined}
+              autoFocus={name === firstFieldName}
+              className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
+              value={fieldText(value)}
+              onChange={(event) => save(name, event.target.value)}
+            />
             {description}
           </div>
         )
