@@ -80,7 +80,6 @@ import {
   type processCodeMirrorRanges as processCodeMirrorRangesFn,
 } from '@src/lib/selections'
 import { err, reportRejection } from '@src/lib/trap'
-import { deferredCallback } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
 import type {
@@ -207,7 +206,7 @@ interface EditorExecutionRequest {
   executionOptions?: Pick<ExecuteArgs, 'updateThumbnail'>
 }
 
-interface DeferredEditorExecution extends EditorExecutionRequest {
+interface QueuedEditorExecution extends EditorExecutionRequest {
   requestedOwnershipVersion: number
   requestedPath: string
   requestedProjectPath: string | undefined
@@ -680,7 +679,6 @@ export class KclManager extends File {
    */
   artifactGraph: ArtifactGraph = new Map()
   artifactIndex: ArtifactIndex = []
-  private artifactGraphPublicationVersion = 0
 
   // INTERNAL BOOKKEEPING STATE
 
@@ -1148,7 +1146,7 @@ export class KclManager extends File {
         currentPath: this.path,
       })
     )
-    void this.updateArtifactGraph(execState.artifactGraph)
+    this.updateArtifactGraph(execState.artifactGraph)
   }
 
   private async refreshSketchSolveAst(
@@ -1232,6 +1230,7 @@ export class KclManager extends File {
 
       this.executionStartedAtMs = Date.now()
       this._executionElapsedMs.value = 0
+      // zds-performance-exception: activity-indicator -- Update elapsed execution time without delaying model execution.
       this.executionTimerIntervalId = setInterval(() => {
         if (this.executionStartedAtMs === null) {
           return
@@ -1375,7 +1374,7 @@ export class KclManager extends File {
   /**
    * This is a CodeMirror extension that watches for updates to the document,
    * discerns if the change is a kind that we want to re-execute on,
-   * then fires (and forgets) an execution with a debounce.
+   * then queues the latest edit behind any execution already in flight.
    */
   private async syncCurrentFileToRust(code: string) {
     const path = this.path
@@ -1430,7 +1429,7 @@ export class KclManager extends File {
       if (isDirectSketchHistoryReplay) return
       if (shouldSkipExecutionForAnnotation) return
 
-      this.scheduleEditorExecution({
+      this.queueEditorExecution({
         newCode,
         shouldResetCamera,
         requestedUserDocumentVersion: this._userDocumentVersion,
@@ -1441,8 +1440,17 @@ export class KclManager extends File {
   private editorOwnershipVersion = 0
   private cancelThumbnailCapture: (() => void) | undefined
   private scenePreferencesChangedDuringExecution = false
-  private scheduleEditorExecution(request: EditorExecutionRequest) {
+  private pendingEditorExecution: QueuedEditorExecution | null = null
+  private editorExecutionPromise: Promise<void> | null = null
+
+  private queueEditorExecution(request: EditorExecutionRequest) {
     if (this.closed) return
+    this.pendingEditorExecution = {
+      ...request,
+      requestedOwnershipVersion: this.editorOwnershipVersion,
+      requestedPath: this.path,
+      requestedProjectPath: this.systemDeps.projectPath.peek(),
+    }
     if (
       (this._automaticallyRenderEnabled || request.forceExecution) &&
       this.isExecuting &&
@@ -1457,19 +1465,31 @@ export class KclManager extends File {
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
     }
-    // Capture ownership before the delay, not when the callback starts.
-    this.deferredExecution({
-      ...request,
-      requestedOwnershipVersion: this.editorOwnershipVersion,
-      requestedPath: this.path,
-      requestedProjectPath: this.systemDeps.projectPath.peek(),
-    })
+    this.startEditorExecutionDrain()
   }
 
-  private deferredExecution = deferredCallback(
-    (request: DeferredEditorExecution) => this.runEditorExecution(request),
-    1000
-  )
+  private startEditorExecutionDrain() {
+    if (this.editorExecutionPromise || this.closed) return
+    // Start immediately. Only coalesce edits while real execution is in flight.
+    this.editorExecutionPromise = this.drainEditorExecutions().finally(() => {
+      this.editorExecutionPromise = null
+      if (this.pendingEditorExecution && !this.closed)
+        this.startEditorExecutionDrain()
+    })
+    this.editorExecutionPromise.catch(reportRejection)
+  }
+
+  private async drainEditorExecutions() {
+    while (this.pendingEditorExecution && !this.closed) {
+      const request = this.pendingEditorExecution
+      this.pendingEditorExecution = null
+      await this.waitForExecutionQueueToIdle()
+      if (this.closed) return
+      // Newer editor text may have arrived during an external execution.
+      if (this.pendingEditorExecution) continue
+      await this.runEditorExecution(request)
+    }
+  }
 
   private async runEditorExecution({
     newCode,
@@ -1480,10 +1500,7 @@ export class KclManager extends File {
     requestedPath,
     requestedProjectPath,
     requestedOwnershipVersion,
-  }: DeferredEditorExecution) {
-    if (this.isExecuting || this.executeIsStale) {
-      await this.waitForExecutionQueueToIdle()
-    }
+  }: QueuedEditorExecution) {
     const isCurrent = () =>
       !this.closed &&
       this.editorOwnershipVersion === requestedOwnershipVersion &&
@@ -1620,7 +1637,7 @@ export class KclManager extends File {
     shouldResetCamera: boolean,
     executionOptions: Pick<ExecuteArgs, 'updateThumbnail'> = {}
   ) {
-    this.scheduleEditorExecution({
+    this.queueEditorExecution({
       newCode: this.code,
       shouldResetCamera,
       requestedUserDocumentVersion: this._userDocumentVersion,
@@ -1637,7 +1654,7 @@ export class KclManager extends File {
     await this.systemDeps.modelingReady?.()
     while (true) {
       const userDocumentVersion = this._userDocumentVersion
-      await this.deferredExecution.flush()
+      await this.editorExecutionPromise
       await this.waitForExecutionQueueToIdle()
 
       if (userDocumentVersion === this._userDocumentVersion) {
@@ -1741,7 +1758,7 @@ export class KclManager extends File {
       return
     }
 
-    this.scheduleEditorExecution({
+    this.queueEditorExecution({
       newCode: code,
       shouldResetCamera: true,
       requestedUserDocumentVersion: this._userDocumentVersion,
@@ -1904,7 +1921,7 @@ export class KclManager extends File {
               replayAdditionalSpec
             )
           } else if (isNonSketchHistoryReplay) {
-            this.scheduleEditorExecution({
+            this.queueEditorExecution({
               newCode: effect.value.redoCode,
               shouldResetCamera: effect.value.options.shouldResetCamera,
               requestedUserDocumentVersion: this._userDocumentVersion,
@@ -2215,6 +2232,7 @@ export class KclManager extends File {
     this.editorOwnershipVersion += 1
     this.cancelThumbnailCapture?.()
     this.cancelThumbnailCapture = undefined
+    this.pendingEditorExecution = null
     this.notifyExecutionCompletion('cleanup')
     this.clearNamedViews()
     this.stopNamedViewInvalidation?.()
@@ -2325,46 +2343,25 @@ export class KclManager extends File {
     })
   }
 
-  private async updateArtifactGraph(
+  private updateArtifactGraph(
     execStateArtifactGraph: ExecState['artifactGraph']
   ) {
     this.setArtifactGraphState(execStateArtifactGraph)
-    const publicationVersion = this.artifactGraphPublicationVersion
-    const ownershipVersion = this.editorOwnershipVersion
-    const path = this.path
-    const projectPath = this.systemDeps.projectPath.peek()
-    const connection = this.engineCommandManager.connection
-    const isCurrent = () =>
-      !this.closed &&
-      this.editorOwnershipVersion === ownershipVersion &&
-      this.path === path &&
-      this.systemDeps.projectPath.peek() === projectPath &&
-      this.engineCommandManager.connection === connection &&
-      this.artifactGraphPublicationVersion === publicationVersion &&
-      this.artifactGraph === execStateArtifactGraph
-    const eventType = this.artifactGraph.size
-      ? 'Artifact graph populated'
-      : 'Artifact graph emptied'
-
-    // Keep the existing event delay, but never publish for an expired owner
-    // or a graph replaced while its notification was pending.
-    deferredCallback((_a?: null) => {
-      if (!isCurrent()) return
-      this.engineCommandManager.modelingSend({ type: eventType })
-    }, 200)(null)
-    deferredCallback((_a?: null) => {
-      if (isCurrent() && this.defaultPlanes) {
-        this.engineCommandManager.modelingSend({
-          type: 'Artifact graph initialized',
-        })
-      }
-    }, 200)(null)
+    this.engineCommandManager.modelingSend({
+      type: this.artifactGraph.size
+        ? 'Artifact graph populated'
+        : 'Artifact graph emptied',
+    })
+    if (this.defaultPlanes) {
+      this.engineCommandManager.modelingSend({
+        type: 'Artifact graph initialized',
+      })
+    }
   }
 
   private setArtifactGraphState(
     execStateArtifactGraph: ExecState['artifactGraph']
   ) {
-    this.artifactGraphPublicationVersion += 1
     this.artifactGraph = execStateArtifactGraph
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
 
@@ -2581,7 +2578,7 @@ export class KclManager extends File {
       this.endLiveOperationUpdates()
       this.ast = structuredClone(ast)
       // updateArtifactGraph relies on updated executeState/variables
-      await this.updateArtifactGraph(execState.artifactGraph)
+      this.updateArtifactGraph(execState.artifactGraph)
       if (!isCurrent()) return
       // Failed runs report their generation too. It is null only when no run
       // reached the engine, which leaves the scene as it was.
@@ -2812,7 +2809,7 @@ export class KclManager extends File {
       this.lastSuccessfulCode = codeThatExecuted
     }
     this.markCodeAsExecuted(codeThatExecuted)
-    await this.updateArtifactGraph(execState.artifactGraph)
+    this.updateArtifactGraph(execState.artifactGraph)
     return null
   }
   cancelAllExecutions() {
@@ -2859,6 +2856,7 @@ export class KclManager extends File {
     clearTimeout(this.executionTimeoutId)
 
     // We consider anything taking longer than 5 minutes a long execution.
+    // zds-performance-exception: activity-indicator -- Notify users of a long-running execution without delaying that execution.
     this.executionTimeoutId = setTimeout(() => {
       if (!this.isExecuting) {
         clearTimeout(this.executionTimeoutId)
@@ -4215,6 +4213,7 @@ export class KclManager extends File {
       // change the document before the quiet period ends, without being a save.
       const snapshot = this.captureFileSave(request, 'current')
       const save = new Promise<void>((resolve, reject) => {
+        // zds-performance-exception: storage-batching -- Batch disk writes so file watchers do not observe partially written contents.
         this.timeoutWriter = setTimeout(() => {
           this.timeoutWriter = undefined
           this.fileSaveQueue.save(snapshot).then(resolve, reject)
@@ -4448,11 +4447,13 @@ export class KclManager extends File {
       this.finishFileSave(request, newCode)
 
       // Navigation saves leave the target file's watcher alone.
-      if (mode === 'current')
+      if (mode === 'current') {
+        // zds-performance-exception: external-protocol -- Ignore our own filesystem notifications before resubscribing to external edits.
         this.timeoutRewatch = setTimeout(() => {
           this.watch()
           this.timeoutRewatch = undefined
         }, 1_000)
+      }
     } catch (err: unknown) {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
       if (!isCurrent()) return
