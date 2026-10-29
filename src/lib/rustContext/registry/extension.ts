@@ -1,6 +1,6 @@
 import type { EngineConnectionService } from '@src/lib/engineConnection/registry/contract'
 import { engineConnectionExtension } from '@src/lib/engineConnection/registry/extension'
-import RustContext from '@src/lib/rustContext'
+import { createRustContext } from '@src/lib/rustContext'
 import {
   type RustContextRegistryService,
   rustContextService,
@@ -40,7 +40,7 @@ export const createRustContextExtension = ({
           wasmInputs.wasmPromiseFacet.value ??
           Promise.reject(new Error('Missing WASM promise registry value.'))
         service = {
-          context: new RustContext(
+          context: createRustContext(
             wasmPromise,
             engineConnection.manager,
             settings.actor,
