@@ -1050,7 +1050,7 @@ extrude001 = extrude(region001, length = -12)`
       await test.step(`Select first edge`, async () => {
         const [clickOnFirstEdge] = await scene.makeSelectionHelpers({
           kind: 'edge',
-          index: 3,
+          index: 4,
           stream: { x: 600, y: 195, format: 'pixels' },
         })
         await clickOnFirstEdge()
@@ -1157,7 +1157,7 @@ extrude001 = extrude(region001, length = -12)`
 
       // Test 2: Command bar flow without preselected edges
       await test.step(`Open fillet UI without selecting edges`, async () => {
-        await page.waitForTimeout(100)
+        await scene.settled()
         const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
           format: 'ratio',
         })
@@ -1708,10 +1708,10 @@ extrude001 = extrude(region001, length = 5)`
       await test.step('Select edges and apply oversized fillet', async () => {
         await test.step(`Select the edge`, async () => {
           await toolbar.closePane(DefaultLayoutPaneID.Code)
-          // Third visible edge: the short segment's sweep edge (region tags line1 and line3).
+          // The short segment's sweep edge (region tags line1 and line3).
           const [clickOnTheEdge] = await scene.makeSelectionHelpers({
             kind: 'edge',
-            index: 2,
+            index: 3,
             stream: { x: 649, y: 283, format: 'pixels' },
           })
           await clickOnTheEdge()

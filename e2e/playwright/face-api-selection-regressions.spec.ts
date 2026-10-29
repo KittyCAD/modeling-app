@@ -96,7 +96,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
 
       const [clickChamferBoundaryEdge] = await scene.makeSelectionHelpers({
         kind: 'edge',
-        index: 9,
+        index: 10,
         stream: { x: 0.4091, y: 0.5557, format: 'ratio' },
       })
       await clickChamferBoundaryEdge()
