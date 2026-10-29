@@ -1132,7 +1132,7 @@ solid001 = extrude(sketch001, length = 5)`
         })
 
         await test.step('Configure center', async () => {
-          await expect(modelingDialog.input('center')).toHaveValue('[0, 0, 0]')
+          await expect(modelingDialog.input('center')).toHaveText('[0, 0, 0]')
           // Update center from [0, 0, 0] to [5, 0, 0]
           await modelingDialog.input('center').fill('[5, 0, 0]')
         })
@@ -1200,12 +1200,12 @@ solid001 = extrude(sketch001, length = 5)`
         )
         await patternOperation.dblclick()
         // Should open the modeling dialog in edit mode
-        await expect(modelingDialog.input('center')).toHaveValue('[5, 0, 0]')
+        await expect(modelingDialog.input('center')).toHaveText('[5, 0, 0]')
       })
 
       await test.step('Edit parameters', async () => {
         await test.step('Edit center', async () => {
-          await expect(modelingDialog.input('center')).toHaveValue('[5, 0, 0]')
+          await expect(modelingDialog.input('center')).toHaveText('[5, 0, 0]')
           // Update center from [5, 0, 0] to [5, 3+4, 0]
           await modelingDialog.input('center').fill('[5, 3+4, 0]')
 
@@ -1525,7 +1525,10 @@ extrude001 = extrude(sketch001, length = 30)
         })
 
         await test.step('Configure frame position', async () => {
-          await expect(modelingDialog.input('frame position')).toHaveValue('')
+          await expect(modelingDialog.input('frame position')).toHaveAttribute(
+            'aria-placeholder',
+            'Use defaults'
+          )
           // Update frame position from [0, 0] to [10, 10]
           await modelingDialog.input('frame position').fill('[10, 10]')
 
@@ -1592,14 +1595,14 @@ extrude001 = extrude(sketch001, length = 30)
         await test.step('Edit precision', async () => {
           await expect(modelingDialog.input('precision')).toHaveText('5')
           // Update precision from 5 to 3
-          await modelingDialog.input('precision').fill('3')
+          await modelingDialog.fillInput('precision', '3')
 
           // Review changes to precision
           await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit frame position', async () => {
-          await expect(modelingDialog.input('frame position')).toHaveValue(
+          await expect(modelingDialog.input('frame position')).toHaveText(
             '[10, 10]'
           )
           // Update frame position from [10, 10] to [20, 30]
@@ -1712,7 +1715,10 @@ extrude001 = extrude(sketch001, length = 30)
 
       await test.step('Configure optional parameters', async () => {
         await test.step('Configure frame position', async () => {
-          await expect(modelingDialog.input('frame position')).toHaveValue('')
+          await expect(modelingDialog.input('frame position')).toHaveAttribute(
+            'aria-placeholder',
+            'Use defaults'
+          )
           // Update frame position from [0, 0] to [5, 0]
           await modelingDialog.input('frame position').fill('[5, 0]')
 
@@ -1776,7 +1782,7 @@ extrude001 = extrude(sketch001, length = 30)
         })
 
         await test.step('Edit frame position', async () => {
-          await expect(modelingDialog.input('frame position')).toHaveValue(
+          await expect(modelingDialog.input('frame position')).toHaveText(
             '[5, 0]'
           )
           // Update frame position from [5, 0] to [10, 5]
