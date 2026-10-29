@@ -3255,7 +3255,7 @@ extrude001 = extrude(region001, length = 10)`
       await clickOnCap()
       await toolbar.expectSelection('1 face')
 
-      await expect(modelingDialog.input('cut at')).toHaveValue('[0, 0]')
+      await expect(modelingDialog.input('cut at')).toHaveText('[0, 0]')
 
       await expect(modelingDialog.options('hole body')).toBeVisible()
       await modelingDialog.options('hole body').selectOption({ label: 'Blind' })
@@ -3299,7 +3299,7 @@ hole001 = hole::hole(
       await holeOperation.dblclick()
       await expect(modelingDialog.submitButton).toBeEnabled()
 
-      await expect(modelingDialog.input('cut at')).toHaveValue('[0, 0]')
+      await expect(modelingDialog.input('cut at')).toHaveText('[0, 0]')
       // Update cut at from [0, 0] to [2, 2]
       await modelingDialog.input('cut at').fill('[2, 2]')
 
