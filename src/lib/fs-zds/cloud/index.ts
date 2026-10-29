@@ -385,6 +385,28 @@ export function createCloudFileSystem(
     onProjectDeleted(id)
     notify([{ path: pathFor(id), eventType: 'unlinkDir' }])
   }
+  const createProject = async (
+    title: string,
+    archive: readonly ProjectArchiveFile[]
+  ) => {
+    await ready
+    const filesWithTitle = withUpdatedProjectTomlInArchiveFiles(
+      [...archive],
+      (contents) => prepareProjectTomlForDuplication(contents, title, v4())
+    )
+    if (filesWithTitle instanceof Error) return Promise.reject(filesWithTitle)
+    const requestConfig = config()
+    const remote = await api.createRemoteProject(
+      requestConfig,
+      title,
+      filesWithTitle
+    )
+    if (config().accountId !== requestConfig.accountId)
+      return Promise.reject(new Error('Cloud account changed during creation.'))
+    await hydrate(remote.id, filesWithTitle)
+    acknowledge(remote.id, remote, filesWithTitle)
+    return { id: remote.id, path: pathFor(remote.id) }
+  }
   return {
     ...fs,
     root,
@@ -457,26 +479,9 @@ export function createCloudFileSystem(
       title: string,
       archive: readonly ProjectArchiveFile[]
     ) => {
-      await ready
-      const filesWithTitle = withUpdatedProjectTomlInArchiveFiles(
-        [...archive],
-        (contents) => prepareProjectTomlForDuplication(contents, title, v4())
-      )
-      if (filesWithTitle instanceof Error) return Promise.reject(filesWithTitle)
-      const requestConfig = config()
-      const remote = await api.createRemoteProject(
-        requestConfig,
-        title,
-        filesWithTitle
-      )
-      if (config().accountId !== requestConfig.accountId)
-        return Promise.reject(
-          new Error('Cloud account changed during creation.')
-        )
-      await hydrate(remote.id, filesWithTitle)
-      acknowledge(remote.id, remote, filesWithTitle)
-      notify([{ path: pathFor(remote.id), eventType: 'addDir' }])
-      return { id: remote.id, path: pathFor(remote.id) }
+      const result = await createProject(title, archive)
+      notify([{ path: result.path, eventType: 'addDir' }])
+      return result
     },
     renameProject: async (id: string, title: string) => {
       await openProject(id)
@@ -491,24 +496,7 @@ export function createCloudFileSystem(
     duplicateProject: async (id: string, title: string) => {
       await openProject(id)
       await opened.get(id)?.queue.catch(() => undefined)
-      const archive = withUpdatedProjectTomlInArchiveFiles(
-        await collect(pathFor(id)),
-        (contents) => prepareProjectTomlForDuplication(contents, title, v4())
-      )
-      if (archive instanceof Error) return Promise.reject(archive)
-      const requestConfig = config()
-      const remote = await api.createRemoteProject(
-        requestConfig,
-        title,
-        archive
-      )
-      if (config().accountId !== requestConfig.accountId)
-        return Promise.reject(
-          new Error('Cloud account changed during duplication.')
-        )
-      await hydrate(remote.id, archive)
-      acknowledge(remote.id, remote, archive)
-      return { id: remote.id, path: pathFor(remote.id) }
+      return createProject(title, await collect(pathFor(id)))
     },
     batch: <T>(
       path: string,

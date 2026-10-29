@@ -986,8 +986,17 @@ describe('project system', () => {
       gate.resolve(undefined)
       await refresh
       expect(execute).toHaveBeenCalledOnce()
-      await app.projectSession.refreshProject()
       expect(opened.projectIORefSignal.value.cloudProjectId).toBe('remote-one')
+      expect(
+        opened.projectIORefSignal.value.children?.some(
+          (file) => file.path === oldPath
+        )
+      ).toBe(false)
+      expect(
+        opened.projectIORefSignal.value.children?.some(
+          (file) => file.path === fsZds.dirname(nestedPath)
+        )
+      ).toBe(true)
     } finally {
       app.dispose()
       await fsZds.rm(projectPath, { recursive: true, force: true })

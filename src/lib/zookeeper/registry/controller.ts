@@ -638,8 +638,6 @@ class SessionController implements ZookeeperSessionController {
         if (!project) return
         await project.reloadFilesFromStorage(isCurrent)
         if (!isCurrent()) return
-        await this.deps.session.refreshProject()
-        if (!isCurrent()) return
         if (
           !(await this.deps.fileOperations.exists(this.deps.kclManager.path))
         ) {

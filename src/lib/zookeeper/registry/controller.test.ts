@@ -354,12 +354,13 @@ describe('Zookeeper session controller', () => {
     h.actor.emit('ready', {
       cloudProjectChange: { callId: 'call-2', projectId: 'other' },
     })
-    await waitFor(() => expect(h.readFolders).toHaveBeenCalledOnce())
+    await waitFor(() => expect(h.reloadFiles).toHaveBeenCalledOnce())
     expect(h.refreshProject).toHaveBeenCalledExactlyOnceWith(
       'remote-one',
       expect.any(Function)
     )
     expect(h.reloadFiles).toHaveBeenCalledOnce()
+    expect(h.readFolders).not.toHaveBeenCalled()
   })
 
   it('leaves local projects on the file-edit path', async () => {
