@@ -691,12 +691,12 @@ fn build_entity_clone_id_maps(
                     if pending_map.old_child_ids.is_none() && *entity_id == pending_map.old_entity_id {
                         pending_map.old_child_ids = Some(child_ids.clone());
                         if pending_map.source_topology_id == pending_map.old_entity_id {
-                            pending_map.source_topology_child_ids = Some(child_ids.clone());
+                            pending_map.source_topology_child_ids = Some(child_ids);
                         }
                         break;
                     }
                     if pending_map.source_topology_child_ids.is_none() && *entity_id == pending_map.source_topology_id {
-                        pending_map.source_topology_child_ids = Some(child_ids.clone());
+                        pending_map.source_topology_child_ids = Some(child_ids);
                         break;
                     }
                 }
