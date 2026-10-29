@@ -48,20 +48,25 @@ function projectMetadata(value: unknown): Record<string, unknown> | undefined {
 export function parseCloudProjectToolChange(
   message: unknown
 ): CloudProjectToolChange | undefined {
-  if (!isRecord(message) || !isRecord(message.zookeeper_recovery_tool_output))
-    return
-  const result = message.zookeeper_recovery_tool_output
   if (
-    typeof result.tool_name !== 'string' ||
-    typeof result.call_id !== 'string' ||
-    !result.call_id ||
-    typeof result.output !== 'string' ||
-    result.output_truncated === true
+    !isRecord(message) ||
+    !isRecord(message.tool_output) ||
+    !isRecord(message.tool_output.result)
   )
     return
-  const name = result.tool_name.replace(/^mcp__zoo[-_]cloud__/, '')
-  if (!mutations.has(name)) return
-  const metadata = projectMetadata(parseJson(result.output))
+  const result = message.tool_output.result
+  if (
+    typeof result.type !== 'string' ||
+    typeof result.call_id !== 'string' ||
+    !result.call_id ||
+    result.ok !== true ||
+    result.error != null ||
+    typeof result.project_id !== 'string'
+  )
+    return
+  if (!mutations.has(result.type)) return
+  const metadata = projectMetadata(result.output)
   if (typeof metadata?.id !== 'string' || !metadata.id) return
+  if (result.project_id !== `cloud:${metadata.id}`) return
   return { callId: result.call_id, projectId: metadata.id }
 }

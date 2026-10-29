@@ -2,14 +2,17 @@ import { parseCloudProjectToolChange } from '@src/lib/zookeeper/cloudProjectTool
 import { describe, expect, it } from 'vitest'
 
 const result = (
-  tool_name: string,
+  type: string,
   output: unknown = { id: 'one', revision: '2' }
 ) => ({
-  zookeeper_recovery_tool_output: {
-    call_id: 'call-1',
-    tool_name,
-    output: JSON.stringify(output),
-    project_updated: false,
+  tool_output: {
+    result: {
+      call_id: 'call-1',
+      type,
+      project_id: 'cloud:one',
+      ok: true,
+      output,
+    },
   },
 })
 
@@ -20,7 +23,6 @@ describe('cloud MCP mutation returns', () => {
     'project_rm',
     'project_cp',
     'project_mv',
-    'mcp__zoo-cloud__project_mv',
   ])('refreshes after an acknowledged %s result', (name) => {
     expect(parseCloudProjectToolChange(result(name))).toEqual({
       callId: 'call-1',
@@ -51,29 +53,38 @@ describe('cloud MCP mutation returns', () => {
   ])('ignores %s', (name) =>
     expect(parseCloudProjectToolChange(result(name))).toBeUndefined()
   )
-  it('ignores tool errors, truncated results, and malformed metadata', () => {
+  it('ignores failed calls, wrong projects, and malformed metadata', () => {
     for (const output of [
       { isError: true, id: 'one', revision: '2' },
       { error: 'Failed' },
       { id: 'one', revision: null },
+      { id: 'other', revision: '2' },
     ])
       expect(
         parseCloudProjectToolChange(result('project_rm', output))
       ).toBeUndefined()
     const message = result('project_rm')
+    for (const fields of [
+      { ok: false },
+      { error: 'Revision conflict' },
+      { call_id: '' },
+      { project_id: 'cloud:other' },
+      { project_id: 'local:one' },
+    ])
+      expect(
+        parseCloudProjectToolChange({
+          tool_output: { result: { ...message.tool_output.result, ...fields } },
+        })
+      ).toBeUndefined()
+  })
+  it('does not use internal recovery messages as public tool responses', () => {
     expect(
       parseCloudProjectToolChange({
         zookeeper_recovery_tool_output: {
-          ...message.zookeeper_recovery_tool_output,
-          output_truncated: true,
-        },
-      })
-    ).toBeUndefined()
-    expect(
-      parseCloudProjectToolChange({
-        zookeeper_recovery_tool_output: {
-          ...message.zookeeper_recovery_tool_output,
-          output: 'not json',
+          call_id: 'call-1',
+          tool_name: 'project_write_file',
+          output: JSON.stringify({ id: 'one', revision: '2' }),
+          project_updated: true,
         },
       })
     ).toBeUndefined()
