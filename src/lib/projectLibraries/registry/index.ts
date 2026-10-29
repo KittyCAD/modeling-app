@@ -39,10 +39,9 @@ import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import {
   ExpectedFileOperationError,
-  reportSystemIOError,
-  type SystemIOErrorRisk,
-} from '@src/lib/fileSystem/workflows/errorReporting'
-import { FileWorkflowOperations } from '@src/lib/fileSystem/workflows/utils'
+  reportFileOperationError,
+  type FileOperationRisk,
+} from '@src/lib/fileSystem/operationErrors'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import {
@@ -529,7 +528,7 @@ function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
 
 type DirectoryProjectOperationReport = {
   operation: string
-  risk: SystemIOErrorRisk
+  risk: FileOperationRisk
 }
 
 async function runReportedDirectoryProjectOperation<T>({
@@ -541,7 +540,7 @@ async function runReportedDirectoryProjectOperation<T>({
   try {
     return await run()
   } catch (error) {
-    reportSystemIOError({
+    reportFileOperationError({
       error,
       source: 'DirectoryProjectLibrary',
       ...report,
@@ -581,23 +580,23 @@ function withReportedDirectoryProjectOperations(
   return {
     ...operations,
     createProject: report(operations.createProject, {
-      operation: FileWorkflowOperations.createProject,
+      operation: 'create project',
       risk: 'write',
     }),
     duplicateProject: report(operations.duplicateProject, {
-      operation: FileWorkflowOperations.duplicateProject,
+      operation: 'duplicate project',
       risk: 'write',
     }),
     renameProject: report(operations.renameProject, {
-      operation: FileWorkflowOperations.renameProject,
+      operation: 'rename project',
       risk: 'write',
     }),
     deleteProject: report(operations.deleteProject, {
-      operation: FileWorkflowOperations.deleteProject,
+      operation: 'delete project',
       risk: 'destructive',
     }),
     moveProjectTo: report(operations.moveProjectTo, {
-      operation: FileWorkflowOperations.moveRecursive,
+      operation: 'move project',
       risk: 'destructive',
     }),
   }
@@ -610,13 +609,12 @@ function reportDirectoryProjectStatFailures({
   error: unknown
   count: number
 }) {
-  reportSystemIOError({
+  reportFileOperationError({
     error,
-    operation: FileWorkflowOperations.readFoldersFromProjectDirectory,
+    operation: 'list projects',
     risk: 'read',
     source: 'DirectoryProjectLibrary',
-    dedupeKey:
-      'SystemIO:DirectoryProjectLibrary:read folders from project directory:stat_project',
+    dedupeKey: 'DirectoryProjectLibrary:listProjects:stat_project',
     extra: {
       phase: 'stat_project',
       skippedProjectCount: count,
@@ -781,7 +779,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           return runReportedDirectoryProjectOperation({
-            operation: FileWorkflowOperations.readFoldersFromProjectDirectory,
+            operation: 'list projects',
             risk: 'read',
             run: async () => {
               const projects = await readProjectsFromProjectDirectory({

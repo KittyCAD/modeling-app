@@ -3,7 +3,7 @@ import { signal } from '@preact/signals-core'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
-import { reportSystemIOError } from '@src/lib/fileSystem/workflows/errorReporting'
+import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 /**
@@ -80,7 +80,7 @@ async function performWrite(
     if (isPathNotFoundError(error)) {
       return
     }
-    reportSystemIOError({
+    reportFileOperationError({
       error,
       operation: 'save_text_file',
       risk: 'write',

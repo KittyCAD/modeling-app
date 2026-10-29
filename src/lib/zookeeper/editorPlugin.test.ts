@@ -9,7 +9,7 @@ import { createTwoFilesPatch } from 'diff'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 const clientErrorMocks = vi.hoisted(() => ({
-  reportSystemIOError: vi.fn(),
+  reportFileOperationError: vi.fn(),
 }))
 
 const applyZookeeperEditPatch = (
@@ -23,8 +23,8 @@ const applyZookeeperEditPatch = (
     fileOperations: testFileOperations,
   })
 
-vi.mock('@src/lib/fileSystem/workflows/errorReporting', () => ({
-  reportSystemIOError: clientErrorMocks.reportSystemIOError,
+vi.mock('@src/lib/fileSystem/operationErrors', () => ({
+  reportFileOperationError: clientErrorMocks.reportFileOperationError,
 }))
 
 beforeAll(async () => {
@@ -36,7 +36,7 @@ beforeAll(async () => {
 
 afterEach(() => {
   vi.restoreAllMocks()
-  clientErrorMocks.reportSystemIOError.mockClear()
+  clientErrorMocks.reportFileOperationError.mockClear()
 })
 
 describe('Zookeeper history patch replay', () => {
@@ -655,7 +655,7 @@ describe('Zookeeper history patch replay', () => {
       await expect(fsZds.readFile(modifiedPath, 'utf8')).resolves.toBe(
         'length = 10\n'
       )
-      expect(clientErrorMocks.reportSystemIOError).toHaveBeenCalledWith({
+      expect(clientErrorMocks.reportFileOperationError).toHaveBeenCalledWith({
         error: expect.objectContaining({
           _tag: 'FileIoFailure',
           cause: writeError,

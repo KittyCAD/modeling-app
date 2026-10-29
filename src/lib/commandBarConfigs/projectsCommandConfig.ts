@@ -1,4 +1,5 @@
-import type { FileWorkflowService } from '@src/lib/fileSystem/workflows/service'
+import type { App } from '@src/lib/app'
+import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
@@ -63,7 +64,7 @@ interface HomeProjectCommandTarget {
 }
 
 export function createProjectCommands({
-  fileWorkflows,
+  app,
   getCurrentProjectDirectoryName,
   getCurrentProjectPath,
   getCurrentProjectLibraryId,
@@ -72,7 +73,14 @@ export function createProjectCommands({
   getHomeProjectActions,
   getHomeProjectEntries,
 }: {
-  fileWorkflows: FileWorkflowService
+  app: Pick<
+    App,
+    | 'projectOperations'
+    | 'projectSession'
+    | 'projectDirectoryPath'
+    | 'defaultProjectName'
+    | 'refreshProjects'
+  >
   getCurrentProjectDirectoryName?: () => string | undefined
   getCurrentProjectPath?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
@@ -81,21 +89,8 @@ export function createProjectCommands({
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
   getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
 }) {
-  /**
-   * Helper functions instead of importing these due to circular deps.
-   * unable to resolve this in a cleaner way at the moment.
-   * This is safe in terms of logic but visually ugly.
-   * TODO: https://github.com/KittyCAD/modeling-app/issues/6032
-   */
-  const folderSnapshot = () => {
-    const { folders } = fileWorkflows.getSnapshot().context
-    return folders
-  }
-
-  const defaultProjectFolderNameSnapshot = () => {
-    const { defaultProjectFolderName } = fileWorkflows.getSnapshot().context
-    return defaultProjectFolderName
-  }
+  const folderSnapshot = () => app.projectOperations.projects.value
+  const defaultProjectFolderNameSnapshot = () => app.defaultProjectName
 
   const currentProjectDirectoryNameSnapshot = () =>
     getCurrentProjectDirectoryName?.()
@@ -330,8 +325,8 @@ export function createProjectCommands({
           })
         }
 
-        fileWorkflows
-          .navigateToProject({ requestedProjectName: record.name })
+        app.projectSession
+          .openFile(fsZds.join(app.projectDirectoryPath, record.name))
           .catch(reportRejection)
       }
     },
@@ -389,11 +384,17 @@ export function createProjectCommands({
           })
         }
 
-        fileWorkflows
+        app.projectOperations
           .createProject({
-            requestedProjectName,
-            requestedProjectTitle,
+            directory: app.projectDirectoryPath,
+            name: requestedProjectName,
+            title: requestedProjectTitle,
           })
+          .then((project) =>
+            app.projectSession.openFile(project.default_file, {
+              projectPath: project.path,
+            })
+          )
           .catch(reportRejection)
       }
     },
@@ -515,8 +516,9 @@ export function createProjectCommands({
           return target.actions.delete(target.project)
         }
 
-        fileWorkflows
-          .deleteProject({ requestedProjectName: record.name })
+        app.projectOperations
+          .deleteProject(fsZds.join(app.projectDirectoryPath, record.name))
+          .then(() => app.refreshProjects())
           .catch(reportRejection)
       }
     },
@@ -567,11 +569,13 @@ export function createProjectCommands({
           ? hash.replace(/^#/, '')
           : window.location.pathname
         const isOnHomePage = pathname.startsWith(PATHS.HOME)
-        fileWorkflows
-          .renameProject({
-            requestedProjectName: record.newName,
-            projectName: record.oldName,
-            redirect: !isOnHomePage, // only redirect when renaming from within a project
+        const path = fsZds.join(app.projectDirectoryPath, record.oldName)
+        app.projectOperations
+          .renameProject(path, record.newName)
+          .then(async () => {
+            await app.refreshProjects()
+            if (!isOnHomePage)
+              await app.projectSession.openFile(path, { projectPath: path })
           })
           .catch(reportRejection)
       }
@@ -641,11 +645,17 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
-        fileWorkflows
-          .importFileFromURL({
-            requestedProjectName: record.projectName,
-            requestedCode: record.code,
-            requestedFileNameWithExtension: record.name,
+        const root = fsZds.join(
+          app.projectDirectoryPath,
+          record.projectName || app.defaultProjectName
+        )
+        app.projectOperations
+          .writeFiles(root, [
+            { path: record.name, contents: record.code ?? '' },
+          ])
+          .then(async (paths) => {
+            await app.refreshProjects()
+            await app.projectSession.openFile(paths[0], { projectPath: root })
           })
           .catch(reportRejection)
       }

@@ -1,4 +1,4 @@
-import type { FileWorkflowService } from '@src/lib/fileSystem/workflows/service'
+import { signal } from '@preact/signals-core'
 import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import type { CommandArgumentOption } from '@src/lib/commandTypes'
@@ -12,6 +12,10 @@ import type {
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import type { ContextFrom } from 'xstate'
+
+vi.mock('@src/lib/fs-zds', async () => ({
+  default: (await import('@chainner/node-path')).posix,
+}))
 
 function createProject({
   name,
@@ -33,20 +37,20 @@ function createProject({
   }
 }
 
-function createFileWorkflowService(folders: Project[] = []) {
+function createApp(folders: Project[] = []) {
   return {
-    getSnapshot: () => ({
-      context: {
-        defaultProjectFolderName: 'untitled',
-        folders,
-      },
-    }),
-    run: vi.fn(),
-    createProject: vi.fn(async () => undefined),
-    renameProject: vi.fn(async () => undefined),
-    navigateToProject: vi.fn(async () => undefined),
-    importFileFromURL: vi.fn(async () => undefined),
-  } as unknown as FileWorkflowService
+    projectDirectoryPath: '/projects',
+    defaultProjectName: 'untitled',
+    projectOperations: {
+      projects: signal(folders),
+      createProject: vi.fn(async () => createProject({ name: 'created' })),
+      renameProject: vi.fn(async () => undefined),
+      deleteProject: vi.fn(async () => undefined),
+      writeFiles: vi.fn(async () => ['/projects/demo/main.kcl']),
+    },
+    projectSession: { openFile: vi.fn(async () => {}) },
+    refreshProjects: vi.fn(async () => {}),
+  } as unknown as Parameters<typeof createProjectCommands>[0]['app']
 }
 
 function createLibrary(
@@ -129,7 +133,7 @@ function projectOptions(
 describe('project command config', () => {
   it('keeps URL import registered but hidden from search', () => {
     const commands = createProjectCommands({
-      fileWorkflows: createFileWorkflowService(),
+      app: createApp(),
     })
     const importCommand = commands.find(
       (command) => command.name === 'Import file from URL'
@@ -141,9 +145,9 @@ describe('project command config', () => {
   })
 
   it('creates project directories from project titles', () => {
-    const fileWorkflows = createFileWorkflowService()
+    const app = createApp()
     const commands = createProjectCommands({
-      fileWorkflows,
+      app,
     })
     const createCommand = commands.find(
       (command) => command.name === 'Create project'
@@ -153,20 +157,21 @@ describe('project command config', () => {
       name: ' My Cool Project! ',
     })
 
-    expect(fileWorkflows.createProject).toHaveBeenCalledWith({
-      requestedProjectName: 'my-cool-project',
-      requestedProjectTitle: 'My Cool Project!',
+    expect(app.projectOperations.createProject).toHaveBeenCalledWith({
+      directory: '/projects',
+      name: 'my-cool-project',
+      title: 'My Cool Project!',
     })
   })
 
   it('creates projects through the selected library target', () => {
-    const fileWorkflows = createFileWorkflowService()
+    const app = createApp()
     const library = createLibrary('client-projects', 'Client Projects')
     const createProject = {
       run: vi.fn(),
     }
     const commands = createProjectCommands({
-      fileWorkflows,
+      app,
       getCreateProjectLibraryTargets: () => [
         {
           library,
@@ -188,17 +193,17 @@ describe('project command config', () => {
       requestedProjectName: 'client-gear',
       requestedProjectTitle: 'Client Gear!',
     })
-    expect(fileWorkflows.run).not.toHaveBeenCalled()
+    expect(app.projectOperations.createProject).not.toHaveBeenCalled()
   })
 
   it('creates projects through the only library target when the picker is hidden', async () => {
-    const fileWorkflows = createFileWorkflowService()
+    const app = createApp()
     const library = createLibrary('client-projects', 'Client Projects')
     const createProjectOperation = {
       run: vi.fn(async () => createProject({ name: 'client-gear' })),
     }
     const commands = createProjectCommands({
-      fileWorkflows,
+      app,
       getCreateProjectLibraryTargets: () => [
         {
           library,
@@ -226,12 +231,12 @@ describe('project command config', () => {
       requestedProjectName: 'client-gear',
       requestedProjectTitle: 'Client Gear!',
     })
-    expect(fileWorkflows.run).not.toHaveBeenCalled()
+    expect(app.projectOperations.createProject).not.toHaveBeenCalled()
   })
 
   it('defaults create project to the current library context', () => {
     const commands = createProjectCommands({
-      fileWorkflows: createFileWorkflowService(),
+      app: createApp(),
       getCurrentProjectLibraryId: () => 'client-projects',
       getCreateProjectLibraryTargets: () => [
         {
@@ -273,7 +278,7 @@ describe('project command config', () => {
 
   it('shows a prepopulated library picker when creating into multiple libraries', () => {
     const commands = createProjectCommands({
-      fileWorkflows: createFileWorkflowService(),
+      app: createApp(),
       getCreateProjectLibraryTargets: () => [
         {
           library: createLibrary('default-projects', 'Default Projects'),
@@ -319,14 +324,14 @@ describe('project command config', () => {
   })
 
   it('labels existing project options by title while submitting directory names', () => {
-    const fileWorkflows = createFileWorkflowService([
+    const app = createApp([
       createProject({
         name: 'bracket-directory',
         title: 'Display Bracket',
       }),
     ])
     const commands = createProjectCommands({
-      fileWorkflows,
+      app,
     })
 
     const openCommand = commands.find(
@@ -363,14 +368,14 @@ describe('project command config', () => {
   })
 
   it('renames project titles without replacing the project directory identifier', () => {
-    const fileWorkflows = createFileWorkflowService([
+    const app = createApp([
       createProject({
         name: 'bracket-directory',
         title: 'Display Bracket',
       }),
     ])
     const commands = createProjectCommands({
-      fileWorkflows,
+      app,
     })
     const renameCommand = commands.find(
       (command) => command.name === 'Rename project'
@@ -395,11 +400,10 @@ describe('project command config', () => {
       newName: 'Retitled Bracket',
     })
 
-    expect(fileWorkflows.renameProject).toHaveBeenCalledWith({
-      projectName: 'bracket-directory',
-      requestedProjectName: 'Retitled Bracket',
-      redirect: true,
-    })
+    expect(app.projectOperations.renameProject).toHaveBeenCalledWith(
+      '/projects/bracket-directory',
+      'Retitled Bracket'
+    )
   })
 
   it('uses home project entries for project command options', () => {
@@ -411,7 +415,7 @@ describe('project command config', () => {
       libraryIds: ['client-projects'],
     })
     const commands = createProjectCommands({
-      fileWorkflows: createFileWorkflowService([
+      app: createApp([
         createProject({
           name: 'default-project',
           title: 'Default Project',
@@ -493,7 +497,7 @@ describe('project command config', () => {
         readWriteAccess: true,
       }
       const commands = createProjectCommands({
-        fileWorkflows: createFileWorkflowService(),
+        app: createApp(),
         getCurrentProjectDirectoryName: () => 'bracket',
         getCurrentProjectPath: () => clientProject.localProjectPath,
         getProjectLibraries: () => libraries,
@@ -539,7 +543,7 @@ describe('project command config', () => {
   )
 
   it('opens, renames, and deletes home project entries through project actions', async () => {
-    const fileWorkflows = createFileWorkflowService()
+    const app = createApp()
     const homeProject = createHomeProject({
       id: 'local:/client-projects/bracket',
       title: 'Client Bracket',
@@ -549,7 +553,7 @@ describe('project command config', () => {
     })
     const homeProjectActions = createHomeProjectActions()
     const commands = createProjectCommands({
-      fileWorkflows,
+      app,
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
     })
@@ -585,7 +589,7 @@ describe('project command config', () => {
         'Updated Client Bracket'
       )
       expect(homeProjectActions.delete).toHaveBeenCalledWith(homeProject)
-      expect(fileWorkflows.run).not.toHaveBeenCalled()
+      expect(app.projectOperations.createProject).not.toHaveBeenCalled()
     } finally {
       window.location.hash = ''
     }
@@ -606,7 +610,7 @@ describe('project command config', () => {
       deleteRemoteOnDelete: false,
     } satisfies HomeProjectEntry
     const commands = createProjectCommands({
-      fileWorkflows: createFileWorkflowService(),
+      app: createApp(),
       getHomeProjectActions: () => createHomeProjectActions(),
       getHomeProjectEntries: () => [homeProject],
     })
@@ -635,7 +639,7 @@ describe('project command config', () => {
   })
 
   it('moves home project entries to a selected library through project actions', async () => {
-    const fileWorkflows = createFileWorkflowService()
+    const app = createApp()
     const sourceLibrary = createLibrary('client-projects', 'Client Projects')
     const targetLibrary = createLibrary(
       'cloud-personal',
@@ -662,7 +666,7 @@ describe('project command config', () => {
       })),
     })
     const commands = createProjectCommands({
-      fileWorkflows,
+      app,
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
     })
@@ -754,7 +758,7 @@ describe('project command config', () => {
       homeProject,
       targetLibrary.id
     )
-    expect(fileWorkflows.run).not.toHaveBeenCalled()
+    expect(app.projectOperations.createProject).not.toHaveBeenCalled()
   })
 
   it('defaults home project rename titles from the selected entry', () => {
@@ -766,7 +770,7 @@ describe('project command config', () => {
       libraryIds: ['client-projects'],
     })
     const commands = createProjectCommands({
-      fileWorkflows: createFileWorkflowService(),
+      app: createApp(),
       getHomeProjectActions: () => createHomeProjectActions(),
       getHomeProjectEntries: () => [homeProject],
     })
@@ -789,7 +793,7 @@ describe('project command config', () => {
   })
 
   it('marks the current project directory option as current', () => {
-    const fileWorkflows = createFileWorkflowService([
+    const app = createApp([
       createProject({
         name: 'bracket-directory',
         title: 'Display Bracket',
@@ -800,7 +804,7 @@ describe('project command config', () => {
       }),
     ])
     const commands = createProjectCommands({
-      fileWorkflows,
+      app,
       getCurrentProjectDirectoryName: () => 'bracket-directory',
     })
     const renameCommand = commands.find(

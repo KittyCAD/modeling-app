@@ -5,9 +5,7 @@ describe('route loaders', () => {
   it('loads Home project state without touching the demo-project flow', () => {
     const closeProject = vi.fn()
     const app = {
-      fileWorkflows: {
-        readFoldersFromProjectDirectory: vi.fn(async () => undefined),
-      },
+      refreshProjects: vi.fn(async () => undefined),
       closeProject,
       settings: {
         actor: {
@@ -19,9 +17,7 @@ describe('route loaders', () => {
     const result = loadHomeProjects(app)
 
     expect(result).toEqual({})
-    expect(
-      app.fileWorkflows.readFoldersFromProjectDirectory
-    ).toHaveBeenCalledOnce()
+    expect(app.refreshProjects).toHaveBeenCalledOnce()
     expect(closeProject).toHaveBeenCalled()
     expect(app.settings.actor.send).toHaveBeenCalledWith({
       type: 'clear.project',

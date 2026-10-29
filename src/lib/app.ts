@@ -1,3 +1,7 @@
+import { isPathNotFoundError } from '@src/lib/desktop'
+import { routerService } from '@src/registry/contracts/router'
+import { PATHS } from '@src/lib/paths'
+import fsZds from '@src/lib/fs-zds'
 import {
   defineRegistryItem,
   pluginsValueSpec,
@@ -20,7 +24,10 @@ import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
+import {
+  getDefaultDirectoryProjectLibraryPath,
+  projectLibrariesFromSettings,
+} from '@src/lib/projectLibraries'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
@@ -32,7 +39,6 @@ import {
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
-import { type FileWorkflowService } from '@src/lib/fileSystem/workflows/utils'
 import {
   UserFeaturesTransition,
   userFeaturesContextHas,
@@ -51,6 +57,7 @@ import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engine
 import {
   type FileOperationsRegistryService,
   fileOperationsService,
+  projectOperationsService,
 } from '@src/registry/contracts/fileOperations'
 import {
   homeProjectActionsService,
@@ -74,7 +81,6 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { fileWorkflowsService } from '@src/registry/contracts/fileOperations'
 import {
   type UserFeaturesRegistryService,
   userFeaturesService,
@@ -161,7 +167,7 @@ export class App implements AppSubsystems {
 
   declare readonly interactionPerformance?: InteractionPerformanceService
 
-  private get projectSession(): ProjectSessionService {
+  public get projectSession(): ProjectSessionService {
     return this.registry.get(projectSession)
   }
   public get projectSignal(): Signal<ZDSProject | undefined> {
@@ -205,12 +211,41 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
   /** The registry system for the application */
   registry: AppRegistrySystem
-  /**
-   * The interface to reading/writing to IO.
-   * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
-   */
-  get fileWorkflows(): FileWorkflowService {
-    return this.registry.get(fileWorkflowsService)
+  get projectOperations() {
+    return this.registry.get(projectOperationsService)
+  }
+
+  get projectDirectoryPath(): string {
+    const project = this.project?.projectIORefSignal.value
+    return (
+      project?.libraryPath ??
+      (project
+        ? fsZds.dirname(project.path)
+        : (getDefaultDirectoryProjectLibraryPath(
+            this.settings.get().app.libraries.current
+          ) ?? ''))
+    )
+  }
+
+  get defaultProjectName(): string {
+    return this.settings.get().projects.defaultProjectName.current
+  }
+
+  async refreshProjects() {
+    const current = this.project
+    const directory = this.projectDirectoryPath
+    try {
+      await Promise.all([
+        directory
+          ? this.projectOperations.listProjects(directory)
+          : Promise.resolve([]),
+        this.projectSession.refreshProject(),
+      ])
+    } catch (error) {
+      if (current && this.project === current && isPathNotFoundError(error))
+        await this.registry.get(routerService).navigate(PATHS.HOME)
+      else return Promise.reject(error)
+    }
   }
 
   private activeWasmInstance: ModuleType | undefined
@@ -333,8 +368,6 @@ export class App implements AppSubsystems {
     }
   }
 
-  private unsubscribeSystemIO: (() => void) | undefined
-
   async openProject(
     projectIORef: Project,
     assertCurrent: () => void = () => {}
@@ -364,10 +397,7 @@ export class App implements AppSubsystems {
         return
       }
 
-      const disposeFSHistory = buildFSHistoryExtension(
-        this.fileWorkflows,
-        executingEditor
-      )
+      const disposeFSHistory = buildFSHistoryExtension(this, executingEditor)
       const disposeZookeeperHistory = buildZookeeperHistoryExtension({
         fileOperations: this.fileOperations,
         kclManager: executingEditor,
@@ -396,9 +426,7 @@ export class App implements AppSubsystems {
         onProjectFilesReplay: async (replayFiles) => {
           await project.syncReplayedFilesToRust(replayFiles)
           if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            this.fileWorkflows
-              .readFoldersFromProjectDirectory()
-              .catch(reportRejection)
+            this.refreshProjects().catch(reportRejection)
           }
         },
       })
@@ -408,33 +436,6 @@ export class App implements AppSubsystems {
         disposeZookeeperHistory()
       }
     })
-
-    // TODO: Rework the fileWorkflows to fit into the system better,
-    // so that the project doesn't need to subscribe to it.
-    this.unsubscribeSystemIO?.()
-    this.unsubscribeSystemIO = this.fileWorkflows.snapshot.subscribe(
-      ({ context }) => {
-        const foundProject = (context.folders ?? []).find(
-          (p) =>
-            p.name === projectIORefSignal.value.name &&
-            p.path === projectIORefSignal.value.path
-        )
-        if (foundProject && projectIORefSignal.value !== foundProject) {
-          projectIORefSignal.value = {
-            ...foundProject,
-            ...(projectIORefSignal.value.cloudProjectId
-              ? { cloudProjectId: projectIORefSignal.value.cloudProjectId }
-              : {}),
-            ...(projectIORefSignal.value.libraryPath
-              ? { libraryPath: projectIORefSignal.value.libraryPath }
-              : {}),
-            ...(projectIORefSignal.value.libraryType
-              ? { libraryType: projectIORefSignal.value.libraryType }
-              : {}),
-          }
-        }
-      }
-    )
 
     return this.project
   }
@@ -469,8 +470,6 @@ export class App implements AppSubsystems {
   closeProject() {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
-    this.unsubscribeSystemIO?.()
-    this.unsubscribeSystemIO = undefined
     this.project?.close()
     this.project = undefined
   }
@@ -542,7 +541,7 @@ export class App implements AppSubsystems {
             provideCommand
           ),
           ...createProjectCommands({
-            fileWorkflows: this.fileWorkflows,
+            app: this,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
             getCurrentProjectPath: () =>

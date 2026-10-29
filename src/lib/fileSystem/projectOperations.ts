@@ -1,4 +1,4 @@
-import { signal } from '@preact/signals-core'
+import { type ReadonlySignal, signal } from '@preact/signals-core'
 import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
@@ -34,9 +34,10 @@ export interface ProjectOperationsDependencies {
   ) => Promise<T>
 }
 
-/** Project workflows share one storage boundary and have no navigation effects. */
+/** Project operations share one storage boundary and have no navigation effects. */
 export function createProjectOperations(deps: ProjectOperationsDependencies) {
   const projects = signal<readonly Project[]>([])
+  let listGeneration = 0
   const pending = signal(0)
   const failure = signal<unknown>(undefined)
   const listeners = new Set<(change: FileOperationChange) => void>()
@@ -58,7 +59,7 @@ export function createProjectOperations(deps: ProjectOperationsDependencies) {
   }
   const { operations } = deps
   return {
-    projects,
+    projects: projects as ReadonlySignal<readonly Project[]>,
     pending,
     failure,
     subscribe: (listener: (change: FileOperationChange) => void) => {
@@ -71,12 +72,13 @@ export function createProjectOperations(deps: ProjectOperationsDependencies) {
         const { readProjectsFromProjectDirectory } = await import(
           '@src/lib/projectLibraries/directoryScanner'
         )
+        const generation = ++listGeneration
         const result = await readProjectsFromProjectDirectory({
           fileOperations: operations,
           projectDirectoryPath: directory,
           wasmInstancePromise: deps.wasm(),
         })
-        projects.value = result
+        if (generation === listGeneration) projects.value = result
         return result
       }),
     openProject: (path: string) =>
@@ -109,7 +111,11 @@ export function createProjectOperations(deps: ProjectOperationsDependencies) {
         notify([path])
         return { path, title }
       }),
-    duplicateProject: (project: Project, title: string) =>
+    duplicateProject: (
+      project: Project,
+      title: string,
+      editor?: { path: string; contents: string }
+    ) =>
       run(async () => {
         const { duplicateProjectInDirectory } = await import(
           '@src/lib/projectDuplication'
@@ -123,6 +129,8 @@ export function createProjectOperations(deps: ProjectOperationsDependencies) {
           },
           projectDirectoryPath: fsZds.dirname(project.path),
           requestedProjectTitle: title,
+          currentFilePath: editor?.path,
+          currentFileContents: editor?.contents,
           wasmInstance: await deps.wasm(),
         })
         const path = fsZds.join(fsZds.dirname(project.path), result.name)
@@ -134,7 +142,77 @@ export function createProjectOperations(deps: ProjectOperationsDependencies) {
         await operations.remove(path)
         notify([path])
       }),
-    applyEdits: (root: string, edits: readonly ProjectFileEdit[]) => {
+    writeFiles: (
+      root: string,
+      files: readonly { path: string; contents: FileContents }[],
+      options: {
+        overwrite?: boolean
+        onProgress?: (progress: { written: number; total: number }) => void
+      } = {}
+    ) => {
+      const owned = files.map((file) => ({
+        ...file,
+        contents:
+          typeof file.contents === 'string'
+            ? file.contents
+            : new Uint8Array(file.contents),
+      }))
+      return run(async () => {
+        for (const file of owned) {
+          const relative = fsZds.relative(root, fsZds.resolve(root, file.path))
+          if (
+            !relative ||
+            relative === '..' ||
+            relative.startsWith(`..${fsZds.sep}`)
+          )
+            return Promise.reject(
+              new Error('File edit is outside its project.')
+            )
+        }
+        const work = async (operations: FileOperationsRegistryService) => {
+          const paths: string[] = []
+          options.onProgress?.({ written: 0, total: owned.length })
+          for (const file of owned) {
+            const path = fsZds.resolve(root, file.path)
+            await ensureDirectory(operations, fsZds.dirname(path))
+            if (options.overwrite) {
+              await operations.writeFile(path, file.contents)
+              paths.push(path)
+            } else {
+              const extension = fsZds.extname(path)
+              paths.push(
+                await operations.createUniqueFile(
+                  fsZds.dirname(path),
+                  { stem: fsZds.basename(path, extension), extension },
+                  file.contents
+                )
+              )
+            }
+            options.onProgress?.({ written: paths.length, total: owned.length })
+          }
+          if (paths.length) {
+            const { ensureProjectTomlTitle } = await import('@src/lib/desktop')
+            await ensureProjectTomlTitle({
+              fileOperations: operations,
+              projectPath: root,
+              title: fsZds.basename(root),
+              defaultFile: fsZds.relative(root, paths[0]),
+            })
+          }
+          return paths
+        }
+        const paths = deps.batch
+          ? await deps.batch(root, work)
+          : await work(operations)
+        notify(paths)
+        return paths
+      })
+    },
+    applyEdits: (
+      root: string,
+      edits: readonly ProjectFileEdit[],
+      onProgress?: (progress: { written: number; total: number }) => void
+    ) => {
       // Snapshot inputs before queuing or yielding to asynchronous work.
       const owned = edits.map((edit) => ({
         ...edit,
@@ -157,10 +235,14 @@ export function createProjectOperations(deps: ProjectOperationsDependencies) {
               )
             }
           }
-          for (const edit of owned) {
+          const writes = owned.filter((edit) => edit.contents !== null)
+          onProgress?.({ written: 0, total: writes.length })
+          let written = 0
+          for (const edit of writes) {
             if (edit.contents === null) continue
             await ensureDirectory(operations, fsZds.dirname(edit.path))
             await operations.writeFile(edit.path, edit.contents)
+            onProgress?.({ written: ++written, total: writes.length })
           }
           // Delete only after all creates and writes have succeeded.
           for (const edit of owned) {

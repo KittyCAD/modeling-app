@@ -24,11 +24,6 @@ import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
-import {
-  FileWorkflowEvents,
-  FileWorkflowStates,
-  waitForIdleState,
-} from '@src/lib/fileSystem/workflows/utils'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: query-driven imports, project creation, and command dispatch (useNavigate, useSearchParams).
@@ -47,7 +42,7 @@ export type CreateFileSchemaMethodOptional = Omit<
 let pendingWebLayoutProjectCreation: Promise<string> | undefined
 
 async function createFreshWebLayoutProject(app: App) {
-  await waitForIdleState({ fileWorkflows: app.fileWorkflows })
+  await app.refreshProjects()
   await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
   const targets = app.getCreateProjectLibraryTargets()
@@ -149,7 +144,7 @@ export function useQueryParamEffects() {
       // File navigation removes the project-id param while preserving the new
       // file route. Calling setSearchParams here can re-navigate from the
       // original query-param route and reopen the project default file.
-      await waitForIdleState({ fileWorkflows: app.fileWorkflows })
+      await app.refreshProjects()
       if (cancelled) {
         return
       }
@@ -303,7 +298,7 @@ export function useQueryParamEffects() {
       let cancelled = false
 
       void (async () => {
-        await waitForIdleState({ fileWorkflows: app.fileWorkflows })
+        await app.refreshProjects()
         if (cancelled) {
           return
         }
@@ -399,48 +394,35 @@ export function useQueryParamEffects() {
       const projectNameArg = String(commandData.argDefaultValues.projectName)
       const projectFolderName = fsZds.basename(projectNameArg)
 
-      const systemIO = app.fileWorkflows
-      const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
-        (folders ?? []).some((f) => f.name === projectFolderName)
-      let hasRequestedProjectCreate = false
-      const sendOrCreateProject = (
-        snapshot: ReturnType<typeof systemIO.getSnapshot>
-      ) => {
-        if (foldersIncludeProject(snapshot.context.folders)) {
-          sendCommand()
-          return true
-        }
-
+      let cancelled = false
+      void (async () => {
+        await app.refreshProjects()
+        if (cancelled) return
         if (
+          !app.projectOperations.projects
+            .peek()
+            .some((project) => project.name === projectFolderName) &&
           shouldCreateDefaultWebProject &&
-          !hasRequestedProjectCreate &&
-          projectFolderName === DEFAULT_WEB_PROJECT_NAME &&
-          snapshot.matches(FileWorkflowStates.idle) &&
-          snapshot.context.folders !== undefined
+          projectFolderName === DEFAULT_WEB_PROJECT_NAME
         ) {
-          hasRequestedProjectCreate = true
-          void systemIO.run({
-            type: FileWorkflowEvents.createProject,
-            data: {
-              requestedProjectName: DEFAULT_WEB_PROJECT_NAME,
-            },
+          await app.projectOperations.createProject({
+            directory: app.projectDirectoryPath,
+            name: DEFAULT_WEB_PROJECT_NAME,
           })
+          await app.refreshProjects()
         }
-
-        return false
-      }
-
-      if (sendOrCreateProject(systemIO.getSnapshot())) {
-        return
-      }
-
-      let unsubscribe = () => {}
-      unsubscribe = systemIO.snapshot.subscribe((snapshot) => {
-        if (sendOrCreateProject(snapshot)) {
-          unsubscribe()
-        }
+        if (!cancelled) sendCommand()
+      })().catch((error) => {
+        if (!cancelled)
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : 'Could not prepare the project.'
+          )
       })
-      return () => unsubscribe()
+      return () => {
+        cancelled = true
+      }
     }
 
     sendCommand()

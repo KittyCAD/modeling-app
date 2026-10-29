@@ -1,7 +1,7 @@
 import { reportRejection } from '@src/lib/trap'
 
 type HomeLoaderApp = {
-  fileWorkflows: { readFoldersFromProjectDirectory: () => Promise<unknown> }
+  refreshProjects: () => Promise<unknown>
   closeProject: () => void
   settings: {
     actor: {
@@ -11,8 +11,8 @@ type HomeLoaderApp = {
 }
 
 export function loadHomeProjects(app: HomeLoaderApp) {
-  app.fileWorkflows.readFoldersFromProjectDirectory().catch(reportRejection)
   app.closeProject()
+  app.refreshProjects().catch(reportRejection)
   app.settings.actor.send({
     type: 'clear.project',
   })

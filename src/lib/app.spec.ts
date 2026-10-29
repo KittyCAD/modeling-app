@@ -1,3 +1,4 @@
+import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
@@ -201,6 +202,41 @@ function expectedRuntimeFlags() {
 }
 
 describe('project system', () => {
+  it.each([
+    {
+      error: new FileNotFound({
+        operation: 'stat',
+        path: mockProject.path,
+        cause: 'ENOENT',
+        message: 'Removed',
+      }),
+      missing: true,
+    },
+    { error: new Error('Permission denied'), missing: false },
+  ])(
+    'only returns home for a missing project ($missing)',
+    async ({ error, missing }) => {
+      const navigate = vi.fn(async () => {})
+      const app = {
+        project: {},
+        projectDirectoryPath: '/some-dir',
+        projectOperations: { listProjects: vi.fn(async () => []) },
+        projectSession: {
+          refreshProject: vi.fn(async () => Promise.reject(error)),
+        },
+        registry: { get: () => ({ navigate }) },
+      } as unknown as App
+      const refreshed = App.prototype.refreshProjects.call(app)
+      if (missing) {
+        await refreshed
+        expect(navigate).toHaveBeenCalledWith('/home')
+      } else {
+        await expect(refreshed).rejects.toBe(error)
+        expect(navigate).not.toHaveBeenCalled()
+      }
+    }
+  )
+
   it('always closes a the last project before opening a new one', async () => {
     const app = createAppForTest()
     vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})
@@ -432,12 +468,11 @@ describe('project system', () => {
     }
   })
 
-  it('resolves editor metadata from the open project signal without consulting SystemIO', async () => {
+  it('resolves editor metadata from the open project signal without consulting project listings', async () => {
     const app = createAppForTest()
     const read = vi
       .spyOn(app.registry.get(projectSession).textFileIO, 'read')
       .mockResolvedValue('')
-    let restoreSnapshot = () => {}
     try {
       expect(
         app.singletons.kclManager.modelingProjectRef.current
@@ -464,7 +499,6 @@ describe('project system', () => {
         )
       }
     } finally {
-      restoreSnapshot()
       read.mockRestore()
       app.dispose()
     }
@@ -845,24 +879,20 @@ describe('project system', () => {
           },
         })
       )
-      const operationStates: string[] = []
-      const stopObserving = app.fileWorkflows.status.subscribe((state) =>
-        operationStates.push(state)
-      )
+      const refresh = vi.spyOn(app, 'refreshProjects')
 
       kclManager.undo()
       await waitForHistoryIdle(kclManager)
-      expect(operationStates).toContain('readingFolders')
+      expect(refresh).toHaveBeenCalled()
       await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
 
-      operationStates.length = 0
+      refresh.mockClear()
       kclManager.redo()
       await waitForHistoryIdle(kclManager)
-      expect(operationStates).toContain('readingFolders')
+      expect(refresh).toHaveBeenCalled()
       await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
         'created = true\n'
       )
-      stopObserving()
     } finally {
       app.dispose()
       await fsZds.rm(projectPath, { recursive: true, force: true })
@@ -914,9 +944,7 @@ describe('project system', () => {
       gate.resolve(undefined)
       await refresh
       expect(execute).toHaveBeenCalledOnce()
-      await app.fileWorkflows.setFolders({
-        folders: [{ ...project, cloudProjectId: undefined }],
-      })
+      await app.projectSession.refreshProject()
       expect(opened.projectIORefSignal.value.cloudProjectId).toBe('remote-one')
     } finally {
       app.dispose()

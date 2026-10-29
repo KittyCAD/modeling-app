@@ -1,4 +1,5 @@
-import { reportRejection } from '@src/lib/trap'
+import type { ProjectOperationsService } from '@src/lib/fileSystem/projectOperations'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import { signal, type ReadonlySignal } from '@preact/signals-core'
 import type { MlCopilotServerMessage, MlToolResult } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
@@ -6,13 +7,11 @@ import fsZds from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import { normalizeKCLFileDeletePath } from '@src/lib/fileSystem/projectFiles'
 import {
-  type BulkFileWriteProgress,
-  normalizeKCLFileDeletePath,
   prepareZookeeperNewFileRequest,
-  type FileWorkflowService,
-  waitForIdleState,
-} from '@src/lib/fileSystem/workflows/utils'
+  type BulkFileWriteProgress,
+} from '@src/lib/zookeeper/projectFiles'
 
 interface ZookeeperFileRequestProcessorDependencies {
   history: ZookeeperEditPatchHistory
@@ -20,7 +19,8 @@ interface ZookeeperFileRequestProcessorDependencies {
   isEditorCurrent: () => boolean
   isSessionCurrent: () => boolean
   kclManager: KclManager
-  fileWorkflows: FileWorkflowService
+  projectOperations: Pick<ProjectOperationsService, 'applyEdits'>
+  session: Pick<ProjectSessionService, 'refreshProject' | 'openFile'>
   onEditApplied: (response: MlCopilotServerMessage) => void
   onQueueIdle?: () => void
 }
@@ -45,7 +45,6 @@ type QueuedZookeeperFileRequest = {
  * forwards actor snapshots; this helper owns the serialized write queue.
  */
 export class ZookeeperFileRequestProcessor {
-  private abortController = new AbortController()
   private disposed = false
   private generation = 0
   private lastMessageId: number | undefined
@@ -75,7 +74,6 @@ export class ZookeeperFileRequestProcessor {
     if (!this.disposed) {
       this.disposed = true
       this.fileWriteProgressSignal.value = undefined
-      this.abortController.abort()
     }
     return this.waitForQueuedRequests()
   }
@@ -86,8 +84,6 @@ export class ZookeeperFileRequestProcessor {
     }
     this.generation += 1
     this.fileWriteProgressSignal.value = undefined
-    this.abortController.abort()
-    this.abortController = new AbortController()
     this.lastMessageId = undefined
     return this.waitForQueuedRequests()
   }
@@ -189,8 +185,7 @@ export class ZookeeperFileRequestProcessor {
       return
     }
     const project = this.deps.getProject()
-    const { kclManager, fileWorkflows } = this.deps
-    const abortSignal = this.abortController.signal
+    const { kclManager, projectOperations, session } = this.deps
     const requestGeneration = this.generation
     const requestProjectPath = project?.path
     const requestProjectIsCurrent = () =>
@@ -278,271 +273,125 @@ export class ZookeeperFileRequestProcessor {
     this.queue.push({
       request,
       completed,
-      run: () =>
-        new Promise<void>((resolve) => {
-          let historyCanceled = false
-          let dispatched = false
-          let settled = false
-          let fileSystemCompleted = false
-          let fileSystemSucceeded = false
-          let historyCompleted = !shouldRecordHistory
-          let historySucceeded = !shouldRecordHistory
-          let postWriteCompleted = !shouldRefreshActiveEditor
-          const requestCanFinish = () =>
-            this.activeOrderedId === request.orderedId &&
-            (dispatched
-              ? requestProjectIsCurrent() && this.deps.isEditorCurrent()
-              : requestIsCurrent())
-
-          const settle = () => {
-            if (settled || !historyCompleted || !postWriteCompleted) {
-              return
-            }
-            settled = true
-            if (this.activeOrderedId === request.orderedId) {
-              this.activeOrderedId = undefined
-            }
-            abortSignal.removeEventListener('abort', cancelPostWrite)
-            resolve()
-            // The queued request and undo history now own everything needed
-            // for the edit. The transcript may release its redundant copy.
-            if (fileSystemSucceeded && historySucceeded && requestIsCurrent()) {
-              onApplied()
-            }
-          }
-          function cancelPostWrite() {
-            postWriteCompleted = true
-            settle()
-          }
-          const cancelHistory = () => {
-            if (historyCanceled || !shouldRecordHistory) {
-              return
-            }
-            historyCanceled = true
+      run: async () => {
+        let dispatched = false
+        const canFinish = () =>
+          dispatched
+            ? requestProjectIsCurrent() && this.deps.isEditorCurrent()
+            : requestIsCurrent()
+        const cancelHistory = () => {
+          if (shouldRecordHistory)
             this.deps.history.cancel({ exchangeId: request.exchangeId })
-          }
-          const stopIfStale = ({
-            fileSystemWriteFinished = false,
-          }: {
-            fileSystemWriteFinished?: boolean
-          } = {}) => {
-            if (settled) {
-              return true
-            }
-            if (requestCanFinish()) {
-              return false
-            }
-            if (fileSystemWriteFinished) {
-              kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
-            }
+        }
+        try {
+          if (!requestIsCurrent() || !requestProjectPath) {
             cancelHistory()
-            historyCompleted = true
-            postWriteCompleted = true
-            settle()
-            return true
-          }
-
-          if (stopIfStale()) {
             return
           }
-
-          void (async () => {
-            if (
-              shouldRecordHistory &&
-              requestProjectPath &&
-              payload.zookeeperEditPatch
-            ) {
-              await this.deps.history.begin({
-                activeFilePath,
-                exchangeId: request.exchangeId,
-                patch: payload.zookeeperEditPatch,
-                projectPath: requestProjectPath,
-                reserved: true,
-              })
-            }
-            if (stopIfStale()) {
-              return
-            }
-
-            await waitForIdleState({
-              abortSignal,
-              fileWorkflows,
+          if (shouldRecordHistory && payload.zookeeperEditPatch) {
+            await this.deps.history.begin({
+              activeFilePath,
+              exchangeId: request.exchangeId,
+              patch: payload.zookeeperEditPatch,
+              projectPath: requestProjectPath,
+              reserved: true,
             })
-            if (stopIfStale()) {
-              return
-            }
-
-            kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
-            dispatched = true
-            fileWorkflows
-              .bulkCreateAndDeleteKCLFilesAndNavigateToFile({
-                orderedId: request.orderedId,
-                files: payload.files,
-                filesToDelete: payload.filesToDelete,
-                override: true,
-                requestedProjectName: payload.requestedProjectName,
-                requestedProjectPath: requestProjectPath,
-                requestedFileNameWithExtension:
-                  payload.requestedFileNameWithExtension ?? '',
-                onFileWriteProgress: ({ written }) => {
-                  if (!settled && requestCanFinish())
-                    updateWriteProgress(written)
-                },
-                onFileSystemError: () => {
-                  if (settled || this.activeOrderedId !== request.orderedId) {
-                    console.warn(
-                      'Ignoring Zookeeper filesystem error callback for a settled or inactive edit.',
-                      {
-                        orderedId: request.orderedId,
-                        activeOrderedId: this.activeOrderedId,
-                        settled,
-                      }
-                    )
-                    return
-                  }
-                  if (fileSystemCompleted) {
-                    cancelPostWrite()
-                    return
-                  }
-                  fileSystemCompleted = true
-                  if (stopIfStale({ fileSystemWriteFinished: true })) {
-                    return
-                  }
-                  cancelHistory()
-                  historyCompleted = true
-                  postWriteCompleted = true
-                  settle()
-                },
-                onFileSystemSuccess: () => {
-                  if (
-                    fileSystemCompleted ||
-                    settled ||
-                    this.activeOrderedId !== request.orderedId
-                  ) {
-                    return
-                  }
-                  fileSystemCompleted = true
-                  if (
-                    stopIfStale({
-                      fileSystemWriteFinished: true,
-                    })
-                  ) {
-                    return
-                  }
-                  fileSystemSucceeded = true
-                  updateWriteProgress(payload.files.length)
-                  if (!postWriteCompleted) {
-                    if (
-                      abortSignal.aborted ||
-                      kclManager.path !== activeFilePath
-                    ) {
-                      cancelPostWrite()
-                    } else {
-                      abortSignal.addEventListener('abort', cancelPostWrite, {
-                        once: true,
-                      })
-                    }
-                  }
-
-                  if (
-                    shouldRecordHistory &&
-                    requestProjectPath &&
-                    payload.zookeeperEditPatch
-                  ) {
-                    const currentEditorRelativePath = kclManager.path
-                      ? normalizeKCLFileDeletePath(
-                          fsZds.relative(requestProjectPath, kclManager.path)
-                        )
-                      : ''
-                    const currentEditorFile = payload.files.find(
-                      (file) =>
-                        normalizeKCLFileDeletePath(file.requestedFileName) ===
-                        currentEditorRelativePath
-                    )
-
-                    void this.deps.history
-                      .complete({
-                        activeFileDeleted,
-                        activeFilePath,
-                        activeFileRequestedCode:
-                          activeFileOutput?.requestedCode,
-                        currentFilePath: currentEditorFile
-                          ? kclManager.path
-                          : undefined,
-                        currentFileRequestedCode:
-                          currentEditorFile?.requestedCode,
-                        exchangeId: request.exchangeId,
-                        requestIsCurrent: requestCanFinish,
-                        patch: payload.zookeeperEditPatch,
-                        projectPath: requestProjectPath,
-                      })
-                      .then(() => {
-                        historySucceeded = true
-                      })
-                      .catch((error: unknown) => {
-                        console.error(
-                          'Failed to complete Zookeeper history write.',
-                          error
-                        )
-                      })
-                      .finally(() => {
-                        historyCompleted = true
-                        settle()
-                      })
-                    return
-                  }
-
-                  historyCompleted = true
-                  if (!shouldRefreshActiveEditor) {
-                    postWriteCompleted = true
-                  }
-                  settle()
-                },
-                ...(shouldRefreshActiveEditor
-                  ? {
-                      onSuccess: () => {
-                        try {
-                          if (settled || !requestCanFinish()) {
-                            return
-                          }
-                          if (
-                            shouldRefreshActiveEditor &&
-                            activeFileOutput &&
-                            kclManager.path === activeFilePath &&
-                            kclManager.code !== activeFileOutput.requestedCode
-                          ) {
-                            kclManager.updateCodeEditor(
-                              activeFileOutput.requestedCode,
-                              {
-                                shouldAddToHistory: false,
-                                shouldClearHistory:
-                                  !shouldRecordHistory || !requestCanFinish(),
-                                shouldExecute: false,
-                                shouldResetCamera: true,
-                                shouldWriteToDisk: !shouldRecordHistory,
-                              }
-                            )
-                          }
-                        } finally {
-                          postWriteCompleted = true
-                          settle()
-                        }
-                      },
-                    }
-                  : {}),
-              })
-              .catch(reportRejection)
-          })().catch((error: unknown) => {
-            if (stopIfStale()) {
-              return
-            }
+          }
+          if (!requestIsCurrent()) {
             cancelHistory()
-            console.error('Failed to process Zookeeper file request.', error)
-            historyCompleted = true
-            postWriteCompleted = true
-            settle()
-          })
-        }).finally(() => finish(undefined)),
+            return
+          }
+          dispatched = true
+          kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
+          await projectOperations.applyEdits(
+            requestProjectPath,
+            [
+              ...payload.files.map((file) => ({
+                path: fsZds.join(requestProjectPath, file.requestedFileName),
+                contents: file.requestedCode,
+              })),
+              ...payload.filesToDelete.map((file) => ({
+                path: fsZds.join(requestProjectPath, file.requestedFileName),
+                contents: null,
+              })),
+            ],
+            ({ written }) => updateWriteProgress(written)
+          )
+          updateWriteProgress(payload.files.length)
+          if (!canFinish()) {
+            cancelHistory()
+            return
+          }
+          if (shouldRecordHistory && payload.zookeeperEditPatch) {
+            const currentRelative = kclManager.path
+              ? normalizeKCLFileDeletePath(
+                  fsZds.relative(requestProjectPath, kclManager.path)
+                )
+              : ''
+            const currentFile = payload.files.find(
+              (file) =>
+                normalizeKCLFileDeletePath(file.requestedFileName) ===
+                currentRelative
+            )
+            await this.deps.history.complete({
+              activeFileDeleted,
+              activeFilePath,
+              activeFileRequestedCode: activeFileOutput?.requestedCode,
+              currentFilePath: currentFile ? kclManager.path : undefined,
+              currentFileRequestedCode: currentFile?.requestedCode,
+              exchangeId: request.exchangeId,
+              requestIsCurrent: canFinish,
+              patch: payload.zookeeperEditPatch,
+              projectPath: requestProjectPath,
+            })
+          }
+          if (!requestIsCurrent() || !canFinish()) return
+          await session.refreshProject()
+          if (!requestIsCurrent() || !canFinish()) return
+          if (
+            shouldRefreshActiveEditor &&
+            activeFileOutput &&
+            kclManager.path === activeFilePath &&
+            kclManager.code !== activeFileOutput.requestedCode
+          ) {
+            kclManager.updateCodeEditor(activeFileOutput.requestedCode, {
+              shouldAddToHistory: false,
+              shouldClearHistory: !shouldRecordHistory,
+              shouldExecute: false,
+              shouldResetCamera: true,
+              shouldWriteToDisk: !shouldRecordHistory,
+            })
+          }
+          if (activeFileDeleted && kclManager.path === activeFilePath) {
+            await session.openFile(
+              fsZds.join(
+                requestProjectPath,
+                payload.requestedFileNameWithExtension || 'main.kcl'
+              ),
+              { projectPath: requestProjectPath }
+            )
+          }
+          if (requestIsCurrent() && canFinish()) {
+            const modeling = kclManager.modelingState
+            if (modeling?.matches('sketchSolveMode'))
+              kclManager.engineCommandManager.modelingSend({
+                type: 'Exit sketch',
+              })
+            else
+              kclManager.scheduleCurrentCodeExecution(
+                !modeling?.matches('Sketch')
+              )
+            onApplied()
+          }
+        } catch (error) {
+          cancelHistory()
+          console.error('Failed to apply Zookeeper file edits.', error)
+        } finally {
+          if (dispatched)
+            kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
+          finish(undefined)
+        }
+      },
     })
     // Reorder waiting edits on arrival. The active edit finishes before the
     // worker takes the next request from this sorted queue.

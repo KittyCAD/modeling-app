@@ -77,7 +77,7 @@ import {
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { reportSystemIOError } from '@src/lib/fileSystem/workflows/errorReporting'
+import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -691,7 +691,6 @@ export class KclManager extends File {
   /**
    * Watching the file system for updates and reacting to them.
    * TODO: might need to watch for deletions here or in the project eventually.
-   * It's currently handled elsewhere in SystemIOMachine I believe.
    *
    * NOTE: This listener is in *addition* to the base File class one, so it must have a distinct name and
    * In future, event listeners like `onWatchEvent` should be Facets in the CodeMirror sense.
@@ -3919,7 +3918,7 @@ export class KclManager extends File {
       if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
-        reportSystemIOError({
+        reportFileOperationError({
           error: err,
           operation: 'save_kcl_file',
           risk: 'write',
@@ -3983,7 +3982,7 @@ export class KclManager extends File {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
       console.warn('error saving file', err)
       if (!isPathNotFoundError(err)) {
-        reportSystemIOError({
+        reportFileOperationError({
           error: err,
           operation: 'save_kcl_file',
           risk: 'write',

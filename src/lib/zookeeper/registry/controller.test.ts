@@ -4,8 +4,8 @@ import { signal, type Signal } from '@preact/signals-core'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import type { BulkFileWriteProgress } from '@src/lib/fileSystem/workflows/utils'
-import type * as SystemIOUtilsModule from '@src/lib/fileSystem/workflows/utils'
+import type { BulkFileWriteProgress } from '@src/lib/zookeeper/projectFiles'
+import type * as ProjectFilesModule from '@src/lib/fileSystem/projectFiles'
 import { S } from '@src/machines/utils'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
@@ -48,8 +48,8 @@ vi.mock(
   })
 )
 
-vi.mock('@src/lib/fileSystem/workflows/utils', async (importOriginal) => ({
-  ...(await importOriginal<typeof SystemIOUtilsModule>()),
+vi.mock('@src/lib/fileSystem/projectFiles', async (importOriginal) => ({
+  ...(await importOriginal<typeof ProjectFilesModule>()),
   collectProjectFiles: projectFilesMocks.collect,
 }))
 
@@ -283,7 +283,8 @@ function createHarness({
     project: projectSignal,
     projectId: initialProjectId,
     projectPath,
-    systemIO: { readFoldersFromProjectDirectory: readFolders, navigateToFile },
+    session: { refreshProject: readFolders, openFile: navigateToFile },
+    projectOperations: { applyEdits: vi.fn() },
   } as unknown as ZookeeperSessionControllerDependencies
   const controller = createZookeeperSessionController(dependencies)
   activeControllers.add(controller)
@@ -432,10 +433,10 @@ describe('Zookeeper session controller', () => {
       cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
     })
     await waitFor(() =>
-      expect(h.navigateToFile).toHaveBeenCalledWith({
-        requestedProjectName: 'bracket',
-        requestedFileName: 'main.kcl',
-      })
+      expect(h.navigateToFile).toHaveBeenCalledWith(
+        '/projects/bracket/main.kcl',
+        { projectPath: '/projects/bracket' }
+      )
     )
   })
 

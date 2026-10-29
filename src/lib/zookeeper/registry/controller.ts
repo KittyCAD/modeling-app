@@ -9,7 +9,6 @@ import { type ZDSProject } from '@src/lib/projectSession'
 import { BillingTransition } from '@src/lib/billing'
 import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
 import { getParentAbsolutePath } from '@src/lib/paths'
-import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { reportRejection, trap } from '@src/lib/trap'
 import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
@@ -26,9 +25,10 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
-import { collectProjectFiles } from '@src/lib/fileSystem/workflows/utils'
+import { collectProjectFiles } from '@src/lib/fileSystem/projectFiles'
 import { S } from '@src/machines/utils'
-import type { FileWorkflowService as SystemIORegistryService } from '@src/lib/fileSystem/workflows/service'
+import type { ProjectOperationsService } from '@src/lib/fileSystem/projectOperations'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { CloudStorageService } from '@src/registry/contracts/fileOperations'
 import type { CloudProjectToolChange } from '@src/lib/zookeeper/cloudProjectTools'
@@ -46,7 +46,8 @@ export interface ZookeeperSessionControllerDependencies {
   project: ReadonlySignal<ZDSProject | undefined>
   projectId: string | undefined
   projectPath: string
-  systemIO: SystemIORegistryService
+  session: Pick<ProjectSessionService, 'refreshProject' | 'openFile'>
+  projectOperations: Pick<ProjectOperationsService, 'applyEdits'>
 }
 
 export interface QueuedMessage {
@@ -156,7 +157,8 @@ class SessionController implements ZookeeperSessionController {
       },
       isSessionCurrent: () => this.active && this.getZdsProject() !== undefined,
       kclManager: deps.kclManager,
-      fileWorkflows: deps.systemIO,
+      session: deps.session,
+      projectOperations: deps.projectOperations,
       onQueueIdle: () => {
         const snapshot = this.actor.getSnapshot()
         this.continueCheck(snapshot, this.resumeInterruptedTurnPending)
@@ -646,19 +648,15 @@ class SessionController implements ZookeeperSessionController {
         if (!project) return
         await project.reloadFilesFromStorage(isCurrent)
         if (!isCurrent()) return
-        await this.deps.systemIO.readFoldersFromProjectDirectory()
+        await this.deps.session.refreshProject()
         if (!isCurrent()) return
         if (
           !(await this.deps.fileOperations.exists(this.deps.kclManager.path))
         ) {
           const currentProject = this.getProject()
           if (!isCurrent() || !currentProject) return
-          await this.deps.systemIO.navigateToFile({
-            requestedProjectName: currentProject.name,
-            requestedFileName: fsZds.relative(
-              currentProject.path,
-              currentProject.default_file
-            ),
+          await this.deps.session.openFile(currentProject.default_file, {
+            projectPath: currentProject.path,
           })
         }
       })

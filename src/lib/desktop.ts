@@ -152,7 +152,7 @@ async function readProjectTomlMetadata(
   }
 }
 
-async function ensureProjectTomlTitle({
+export async function ensureProjectTomlTitle({
   fileOperations,
   projectPath,
   title,
@@ -693,9 +693,7 @@ export async function getProjectInfo(
     stats = await fileOperations.stat(projectPath)
   } catch (e) {
     if (isPathNotFoundError(e)) {
-      return Promise.reject(
-        new Error(`Project directory does not exist: ${projectPath}`)
-      )
+      return Promise.reject(e)
     }
   }
 

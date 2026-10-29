@@ -8,7 +8,6 @@ import type { App } from '@src/lib/app'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import {
-  getParentAbsolutePath,
   getRouterSearchFromRequestUrl,
   PATHS,
   parseProjectRoute,
@@ -16,13 +15,9 @@ import {
 } from '@src/lib/paths'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
-import {
-  getOnboardingChildRoute,
-  isRequestedFileLoaded,
-} from '@src/lib/routeLoaderNavigation'
+import { getOnboardingChildRoute } from '@src/lib/routeLoaderNavigation'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import type { HomeLoaderData } from '@src/lib/types'
-import { FileWorkflowStates } from '@src/lib/fileSystem/workflows/utils'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
@@ -270,43 +265,12 @@ export const fileLoader =
     )
     assertCurrent()
 
-    const requestedFileName =
-      app.fileWorkflows.getSnapshot().context.requestedFileName
-    if (
-      isRequestedFileLoaded({
-        requestedFileName,
-        projectName,
-        projectPath,
-        currentFilePath,
-      })
-    ) {
-      requestedFileName.onProjectLoaderComplete?.()
-    }
-
-    const requestedProjectDirectoryPath =
-      projectRef.projectIORefSignal.value.libraryPath ??
-      getParentAbsolutePath(project.path)
-    const systemIOSnapshot = app.fileWorkflows.getSnapshot()
-    // Same-directory file navigation should not restart SystemIO's own
-    // post-mutation folder refresh.
-    const shouldSyncProjectDirectory =
-      requestedProjectDirectoryPath !==
-        systemIOSnapshot.context.projectDirectoryPath ||
-      (systemIOSnapshot.matches(FileWorkflowStates.idle) &&
-        systemIOSnapshot.context.folders === undefined)
-    if (shouldSyncProjectDirectory) {
-      app.fileWorkflows
-        .setProjectDirectoryPath({
-          requestedProjectDirectoryPath,
-        })
-        .catch(reportRejection)
-    }
+    void app.refreshProjects().catch(reportRejection)
   }
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
 
-// Should also clear currently loaded projects in SystemIO. They may be stale.
 export const homeLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {

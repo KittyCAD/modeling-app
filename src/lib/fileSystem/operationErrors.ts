@@ -1,7 +1,7 @@
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { isDesktop } from '@src/lib/isDesktop'
 
-export type SystemIOErrorRisk = 'read' | 'write' | 'destructive'
+export type FileOperationRisk = 'read' | 'write' | 'destructive'
 
 export class ExpectedFileOperationError extends Error {
   override name = 'ExpectedFileOperationError'
@@ -121,10 +121,10 @@ function systemIOErrorDetails(error: unknown) {
   }
 }
 
-export function reportSystemIOError(args: {
+export function reportFileOperationError(args: {
   error: unknown
   operation: string
-  risk: SystemIOErrorRisk
+  risk: FileOperationRisk
   source: string
   eventType?: string
   dedupeKey?: string

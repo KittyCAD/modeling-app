@@ -5,6 +5,10 @@ import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
 
+vi.mock('@src/lib/desktop', () => ({
+  ensureProjectTomlTitle: vi.fn(async () => {}),
+}))
+
 describe('project file operations', () => {
   it('validates all paths before writing any files', async () => {
     const writeFile = vi.fn()
@@ -80,5 +84,63 @@ describe('project file operations', () => {
     expect(changes).toHaveBeenCalledOnce()
     expect(projects.pending.value).toBe(0)
     unsubscribe()
+  })
+  it('rejects an import traversal before writing any project files', async () => {
+    const writeFile = vi.fn()
+    const projects = createProjectOperations({
+      operations: { ...testFileOperations, writeFile },
+      wasm: vi.fn(),
+    })
+    await expect(
+      projects.writeFiles(
+        '/project',
+        [
+          { path: 'nested/valid.kcl', contents: '' },
+          { path: '../../outside.bin', contents: new Uint8Array([1]) },
+        ],
+        { overwrite: true }
+      )
+    ).rejects.toThrow('outside its project')
+    expect(writeFile).not.toHaveBeenCalled()
+  })
+
+  it('owns imported bytes and waits for the batch acknowledgement', async () => {
+    const gate = Promise.withResolvers<undefined>()
+    const written: Uint8Array[] = []
+    const projects = createProjectOperations({
+      operations: {
+        ...testFileOperations,
+        exists: vi.fn(async () => true),
+        writeFile: vi.fn(async (_path, contents) => {
+          written.push(contents as Uint8Array)
+        }),
+      },
+      wasm: vi.fn(),
+      batch: async (_root, run) => {
+        const operations = {
+          ...testFileOperations,
+          createDirectory: vi.fn(async () => {}),
+          exists: vi.fn(async () => true),
+          writeFile: vi.fn(async (_path: string, contents: unknown) => {
+            written.push(contents as Uint8Array)
+          }),
+        }
+        await gate.promise
+        return run(operations)
+      },
+    })
+    const bytes = new Uint8Array([0, 255])
+    const complete = vi.fn()
+    const importing = projects
+      .writeFiles('/project', [{ path: 'part.bin', contents: bytes }], {
+        overwrite: true,
+      })
+      .then(complete)
+    bytes.fill(3)
+    expect(complete).not.toHaveBeenCalled()
+    gate.resolve(undefined)
+    await importing
+    expect(written).toEqual([new Uint8Array([0, 255])])
+    expect(complete).toHaveBeenCalledOnce()
   })
 })

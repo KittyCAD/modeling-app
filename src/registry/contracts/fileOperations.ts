@@ -1,4 +1,3 @@
-import type { FileWorkflowService } from '@src/lib/fileSystem/workflows/service'
 import type { CloudStorageService } from '@src/registry/extensions/fileOperations/cloud'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ProjectOperationsService } from '@src/lib/fileSystem/projectOperations'
@@ -54,9 +53,6 @@ export interface FileOperationsRegistryService {
 }
 
 export const fileOperationsContract = defineContract({
-  fileWorkflowsService: defineService<FileWorkflowService>(
-    'fileOperations.workflows'
-  ),
   cloudStorageService: defineService<CloudStorageService>(
     'fileOperations.cloud'
   ),
@@ -72,10 +68,7 @@ export const {
   fileOperationsService,
   projectOperationsService,
   cloudStorageService,
-  fileWorkflowsService,
 } = fileOperationsContract
-
-export type { FileWorkflowService } from '@src/lib/fileSystem/workflows/service'
 
 export type { CloudStorageService } from '@src/registry/extensions/fileOperations/cloud'
 export type {
@@ -84,3 +77,5 @@ export type {
   CurrentProjectPublicationDetails,
   PublishedProject,
 } from '@src/registry/extensions/fileOperations/publication'
+
+export type { ProjectOperationsService } from '@src/lib/fileSystem/projectOperations'

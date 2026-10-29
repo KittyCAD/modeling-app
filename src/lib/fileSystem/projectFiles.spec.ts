@@ -6,10 +6,8 @@ import type { ZookeeperEditPatch } from '@src/lib/zookeeper/zookeeperEditPatch'
 import {
   collectProjectFiles as collectProjectFilesWithFileOperations,
   normalizeKCLFileDeletePath,
-  prepareZookeeperNewFileRequest,
-  type FileWorkflowService,
-  waitForIdleState,
-} from '@src/lib/fileSystem/workflows/utils'
+} from '@src/lib/fileSystem/projectFiles'
+import { prepareZookeeperNewFileRequest } from '@src/lib/zookeeper/projectFiles'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 const collectProjectFiles = (
@@ -46,20 +44,7 @@ beforeAll(async () => {
   })
 })
 
-describe('File workflow utilities', () => {
-  it('allows canceling a wait for pending file operations', async () => {
-    const fileWorkflows = {
-      whenIdle: () => new Promise<void>(() => {}),
-    } as unknown as FileWorkflowService
-    const controller = new AbortController()
-    const waiting = waitForIdleState({
-      fileWorkflows,
-      abortSignal: controller.signal,
-    })
-    controller.abort()
-    await waiting
-  })
-
+describe('Project file collection and cloud-tool patches', () => {
   it('Properly reconstructs paths from Zookeeper new file requests', () => {
     const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',

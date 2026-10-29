@@ -1,3 +1,4 @@
+import { canReadWriteDirectory } from '@src/lib/desktop'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
@@ -40,12 +41,6 @@ import { getSortFunction } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  useCanReadWriteProjectDirectory,
-  useFolders,
-  useState as useSystemIOState,
-} from '@src/lib/fileSystem/workflows/hooks'
-import { FileWorkflowStates } from '@src/lib/fileSystem/workflows/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -312,13 +307,29 @@ const Home = () => {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const readWriteProjectDir = useCanReadWriteProjectDirectory()
+  const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
+    value: boolean
+    error: unknown
+  }>({ value: true, error: undefined })
+  const directory = app.projectDirectoryPath
+  useEffect(() => {
+    let active = true
+    if (directory)
+      void canReadWriteDirectory(app.fileOperations, directory)
+        .then((access) => {
+          if (active) setReadWriteProjectDir(access)
+        })
+        .catch(reportRejection)
+    return () => {
+      active = false
+    }
+  }, [app, directory])
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
 
-  const projects = useFolders()
+  const localProjectsLoaded = app.projectOperations.pending.value === 0
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
   const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
   const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
@@ -749,7 +760,7 @@ const Home = () => {
           <ProjectGrid
             searchResults={searchResults ?? []}
             projects={scopedHomeProjectEntries}
-            localProjectsLoaded={projects !== undefined}
+            localProjectsLoaded={localProjectsLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
@@ -766,7 +777,7 @@ const Home = () => {
             libraries={projectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
-            localProjectsLoaded={projects !== undefined}
+            localProjectsLoaded={localProjectsLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
@@ -823,15 +834,6 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
 
-function shouldShowLoadingMoreProjects(
-  state: ReturnType<typeof useSystemIOState>
-) {
-  return (
-    state.matches(FileWorkflowStates.readingFolders) &&
-    !state.context.hasListedProjects
-  )
-}
-
 function ProjectLibraryOverview({
   libraries,
   searchResults,
@@ -848,7 +850,6 @@ function ProjectLibraryOverview({
   projectLibraryTypes,
   ...rest
 }: ProjectLibraryOverviewProps) {
-  const state = useSystemIOState()
   const libraryRows = libraries
     .map((library) => {
       const libraryProjects = getHomeProjectEntriesForLibrary(
@@ -869,7 +870,7 @@ function ProjectLibraryOverview({
       }
     })
     .filter(({ projects }) => query.length === 0 || projects.length > 0)
-  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
+  const loadingMore = !localProjectsLoaded ? (
     <div className="py-4">
       <Loading isDummy={true}>Loading more projects...</Loading>
     </div>
@@ -984,9 +985,8 @@ function ProjectGrid({
   projectLibraryEmptyTestId,
   ...rest
 }: ProjectGridProps) {
-  const state = useSystemIOState()
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
-  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
+  const loadingMore = !localProjectsLoaded ? (
     <div className="py-4">
       <Loading isDummy={true}>Loading more projects...</Loading>
     </div>

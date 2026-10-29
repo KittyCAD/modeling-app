@@ -2,7 +2,7 @@ import { AppStateProvider } from '@src/AppState'
 import { Auth } from '@src/Auth'
 import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
 import { RouteProvider } from '@src/components/RouteProvider'
-import { FileOperationsNavigation } from '@src/components/FileOperationsNavigation'
+import { ProjectFileWatcher } from '@src/components/ProjectFileWatcher'
 import { useApp } from '@src/lib/boot'
 import { routerService } from '@src/registry/contracts/router'
 import { RouterServiceSync } from '@src/registry/extensions/router/RouterServiceSync'
@@ -21,7 +21,7 @@ function RootLayout() {
         <RouteProvider>
           <Auth>
             <AppStateProvider>
-              <FileOperationsNavigation />
+              <ProjectFileWatcher />
               <Outlet />
             </AppStateProvider>
           </Auth>

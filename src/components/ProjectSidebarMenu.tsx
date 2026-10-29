@@ -285,13 +285,23 @@ function ProjectMenuPopover({
                 </span>
               ),
               onClick: () => {
-                app.fileWorkflows
-                  .duplicateProject({
-                    projectName: project.name,
-                    projectPath: project.path,
-                    requestedProjectName: getProjectDisplayName(project),
-                    ...getCurrentFileForDuplicate(),
-                  })
+                const editor = getCurrentFileForDuplicate()
+                app.projectOperations
+                  .duplicateProject(
+                    project,
+                    getProjectDisplayName(project),
+                    editor.currentFilePath
+                      ? {
+                          path: editor.currentFilePath,
+                          contents: editor.currentFileContents ?? '',
+                        }
+                      : undefined
+                  )
+                  .then((created) =>
+                    app.projectSession.openFile(created.path, {
+                      projectPath: created.path,
+                    })
+                  )
                   .catch(reportRejection)
               },
             }
@@ -497,7 +507,8 @@ function ProjectMenuPopover({
       getCurrentFileForDuplicate,
       contributedProjectMenuItems,
       commands.actor,
-      app.fileWorkflows,
+      app.projectOperations,
+      app.projectSession,
       file,
       filePath,
       machineCount,

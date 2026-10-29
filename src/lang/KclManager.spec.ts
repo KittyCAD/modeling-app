@@ -26,15 +26,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { waitFor } from 'xstate'
 
 const clientErrorMocks = vi.hoisted(() => ({
-  reportSystemIOError: vi.fn(),
+  reportFileOperationError: vi.fn(),
 }))
 const toastMocks = vi.hoisted(() => ({
   success: vi.fn(),
   error: vi.fn(),
 }))
 
-vi.mock('@src/lib/fileSystem/workflows/errorReporting', () => ({
-  reportSystemIOError: clientErrorMocks.reportSystemIOError,
+vi.mock('@src/lib/fileSystem/operationErrors', () => ({
+  reportFileOperationError: clientErrorMocks.reportFileOperationError,
 }))
 vi.mock('react-hot-toast', () => ({
   default: toastMocks,
@@ -1968,7 +1968,7 @@ describe('KclManager diagnostics', () => {
       })
     ).rejects.toBe(error)
 
-    expect(clientErrorMocks.reportSystemIOError).toHaveBeenCalledWith({
+    expect(clientErrorMocks.reportFileOperationError).toHaveBeenCalledWith({
       error,
       operation: 'save_kcl_file',
       risk: 'write',
@@ -1980,10 +1980,10 @@ describe('KclManager diagnostics', () => {
       },
     })
     expect(
-      JSON.stringify(clientErrorMocks.reportSystemIOError.mock.calls)
+      JSON.stringify(clientErrorMocks.reportFileOperationError.mock.calls)
     ).not.toContain(path)
     expect(
-      JSON.stringify(clientErrorMocks.reportSystemIOError.mock.calls)
+      JSON.stringify(clientErrorMocks.reportFileOperationError.mock.calls)
     ).not.toContain(newCode)
   })
 
@@ -2009,7 +2009,7 @@ describe('KclManager diagnostics', () => {
       })
     ).rejects.toBe(error)
 
-    expect(clientErrorMocks.reportSystemIOError).not.toHaveBeenCalled()
+    expect(clientErrorMocks.reportFileOperationError).not.toHaveBeenCalled()
   })
 
   it('restores the local recovery snapshot when reopening a file after unsaved edits', async () => {
