@@ -12,6 +12,8 @@ export interface SceneExecutionSettings {
   configuration: ReadonlySignal<ReturnType<typeof jsAppSettings>>
   executeRevision: ReadonlySignal<string>
   streamedRevision: ReadonlySignal<string>
+  legacyExecuteRevision: ReadonlySignal<string>
+  legacyStreamedRevision: ReadonlySignal<string>
   revision: (geometryOnly: () => boolean) => ReadonlySignal<string>
 }
 
@@ -30,14 +32,22 @@ export function createSceneExecutionSettings(
   const inputs = computed(() => {
     const execute: unknown[] = []
     const streamed: unknown[] = []
+    const legacyExecute: unknown[] = []
+    const legacyStreamed: unknown[] = []
     for (const input of declarations.value) {
       const value = [input.id, input.read(getSettings())]
       if (input.refresh === 'execute') execute.push(value)
       else streamed.push(value)
+      if (input.legacyRefresh !== 'direct') {
+        if (input.refresh === 'execute') legacyExecute.push(value)
+        else legacyStreamed.push(value)
+      }
     }
     return {
       execute: JSON.stringify(execute),
       streamed: JSON.stringify(streamed),
+      legacyExecute: JSON.stringify(legacyExecute),
+      legacyStreamed: JSON.stringify(legacyStreamed),
     }
   })
   const executeRevision = computed(() => inputs.value.execute)
@@ -46,6 +56,8 @@ export function createSceneExecutionSettings(
     configuration,
     executeRevision,
     streamedRevision,
+    legacyExecuteRevision: computed(() => inputs.value.legacyExecute),
+    legacyStreamedRevision: computed(() => inputs.value.legacyStreamed),
     revision: (geometryOnly: () => boolean) =>
       computed(() =>
         JSON.stringify([
