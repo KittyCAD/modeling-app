@@ -742,9 +742,12 @@ export class CameraControls {
     if (interaction === 'zoom') {
       this.pendingZoom = 1 + (deltaY / window.devicePixelRatio) * 0.001
 
-      // Record the world point under the mouse so we can keep it anchored during zoom
-      this._zoomFocus = this.screenToWorld(event)
-      this._zoomFocusPoint = event
+      // Record the world point under the mouse so we can keep it anchored during zoom.
+      // Only orthographic zoom uses it; perspective zooms toward the target.
+      if (this.camera instanceof OrthographicCamera) {
+        this._zoomFocus = this.screenToWorld(event)
+        this._zoomFocusPoint = event
+      }
     } else {
       // This case will get handled when we add pan and rotate using Apple trackpad.
       console.error(
