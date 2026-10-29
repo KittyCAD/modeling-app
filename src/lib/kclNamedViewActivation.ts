@@ -125,12 +125,10 @@ async function applyAndTrackCamera(
       await applyNamedViewCamera({
         camera: target.view.artifact.camera,
         sceneInfra: kclManager.sceneInfra,
-        engineCommandManager: kclManager.engineCommandManager,
       })
     } else {
       await resetCameraPosition({
         sceneInfra: kclManager.sceneInfra,
-        engineCommandManager: kclManager.engineCommandManager,
         settingsActor: kclManager.systemDeps.settings,
       })
     }
