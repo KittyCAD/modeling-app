@@ -85,6 +85,37 @@ function startConnectionManager(
 }
 
 describe('ConnectionManager', () => {
+  it('identifies actual connection replacement without treating scene resets as a new session', async () => {
+    const manager = createConnectionManager()
+    const createTransport = () =>
+      new Connection({
+        url: 'ws://localhost/modeling-session-identity',
+        token: 'test-token',
+        handleOnDataChannelMessage: vi.fn(),
+        recordShutdownTrigger: manager.recordShutdownTrigger.bind(manager),
+        tearDownManager: manager.tearDown.bind(manager),
+        rejectPendingCommand: vi.fn(),
+        handleMessage: vi.fn(),
+        getCloudProjectId: () => undefined,
+      })
+
+    expect(manager.engineSessionId).toBeUndefined()
+    const first = createTransport()
+    manager.connection = first
+    expect(manager.engineSessionId).toBe(first.id)
+
+    await manager.startNewSession()
+    expect(manager.engineSessionId).toBe(first.id)
+
+    const replacement = createTransport()
+    manager.connection = replacement
+    expect(manager.engineSessionId).toBe(replacement.id)
+    expect(manager.engineSessionId).not.toBe(first.id)
+
+    manager.connection = undefined
+    expect(manager.engineSessionId).toBeUndefined()
+  })
+
   afterEach(() => {
     vi.useRealTimers()
     vi.restoreAllMocks()

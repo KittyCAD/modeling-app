@@ -27,6 +27,9 @@ extern "C" {
     #[wasm_bindgen(constructor)]
     pub fn new() -> EngineCommandManager;
 
+    #[wasm_bindgen(method, getter, js_name = engineSessionId)]
+    fn engine_session_id(this: &EngineCommandManager) -> Option<String>;
+
     #[wasm_bindgen(method, js_name = fireModelingCommandFromWasm, catch)]
     fn fire_modeling_cmd_from_wasm(
         this: &EngineCommandManager,
@@ -174,6 +177,10 @@ unsafe impl Sync for WasmTransport {}
 
 #[async_trait::async_trait]
 impl EngineTransport for WasmTransport {
+    fn session_id(&self) -> Option<String> {
+        self.manager.engine_session_id()
+    }
+
     async fn inner_fire_modeling_cmd(
         &self,
         cmd_id: Uuid,

@@ -99,21 +99,14 @@ export function SystemIOMachineLogicListener() {
       EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
     )
 
-    /**
-     * Check that both paths are truthy strings and if they do not match
-     * then mark it is switchedFiles.
-     * If they do not match but the origin is falsey we do not want to mark as
-     * switchedFiles because checkIfSwitchedFilesShouldClear will trigger
-     * clearSceneAndBustCache if there is a parse error!
-     *
-     * i.e. Only do switchedFiles check against two file paths, not null and a file path
-     */
+    // Drop editor-derived state only when switching between actual files.
+    // Rust owns whether an invalid entry point preserves or clears geometry.
     if (
       filePathWithExtension &&
       requestedFilePathWithExtension &&
       filePathWithExtension !== requestedFilePathWithExtension
     ) {
-      kclManager.switchedFiles = true
+      kclManager.resetForFileSwitch()
     }
 
     kclManager.isExecuting = false
