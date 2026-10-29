@@ -11,6 +11,7 @@ import type {
   CloudApiConfig,
   ProjectArchiveFile,
   RemoteProject,
+  RemoteProjectSummary,
 } from '@src/lib/fs-zds/cloud/types'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
@@ -35,14 +36,14 @@ interface OpenCloudProject {
 /** A cloud filesystem backed by memory, with serialized revision-checked saves. */
 export function createCloudFileSystem(
   paths: IZooDesignStudioFS,
-  config: () => CloudApiConfig,
-  onProjectUpdated: (project: RemoteProject) => void = () => {},
-  onProjectDeleted: (id: string) => void = () => {}
+  config: () => CloudApiConfig
 ) {
   const root = paths.resolve('/__zoo_cloud__')
   const memory = createMemoryFileSystem(paths)
   let pendingRequests = 0
   const saves = signal<ReadonlyMap<string, CloudSaveState>>(new Map())
+  const projects = signal<readonly RemoteProjectSummary[]>([])
+  let listGeneration = 0
   const opened = new Map<string, OpenCloudProject>()
   const pendingThumbnails = new Map<
     string,
@@ -121,7 +122,11 @@ export function createCloudFileSystem(
       acknowledgedPaths: new Set(archive.map((f) => f.relativePath)),
       queue: project?.queue ?? Promise.resolve(),
     })
-    onProjectUpdated(remote)
+    listGeneration += 1
+    projects.value = [
+      ...projects.peek().filter((item) => item.id !== id),
+      remote,
+    ]
     state(id, { state: 'saved' })
   }
   const commit = async (
@@ -382,7 +387,8 @@ export function createCloudFileSystem(
     const remainingSaves = new Map(saves.peek())
     remainingSaves.delete(id)
     saves.value = remainingSaves
-    onProjectDeleted(id)
+    listGeneration += 1
+    projects.value = projects.peek().filter((project) => project.id !== id)
     notify([{ path: pathFor(id), eventType: 'unlinkDir' }])
   }
   const createProject = async (
@@ -410,6 +416,30 @@ export function createCloudFileSystem(
   return {
     ...fs,
     root,
+    projects,
+    listProjects: async () => {
+      const generation = ++listGeneration
+      const requestConfig = config()
+      const result = await api.listRemoteProjects(requestConfig)
+      if (
+        generation === listGeneration &&
+        requestConfig.accountId === config().accountId
+      )
+        projects.value = result
+      return result
+    },
+    exists: async (id: string) => {
+      try {
+        await api.getRemoteProject(config(), id)
+        return true
+      } catch (error) {
+        if (error instanceof api.CloudApiError && error.status === 404)
+          return false
+        return Promise.reject(error)
+      }
+    },
+    thumbnail: (project: RemoteProjectSummary) =>
+      api.getRemoteProjectThumbnailUrl(config(), project),
     pathFor,
     idFor,
     saves,
@@ -513,7 +543,7 @@ export function createCloudFileSystem(
         remote: RemoteProject
         backing: IZooDesignStudioFS
         deletedPaths: string[]
-        acknowledge: (remote: RemoteProject) => void
+        acknowledge: () => Promise<void>
       }) => Promise<T>
     ) => {
       await openProject(id)
@@ -530,7 +560,8 @@ export function createCloudFileSystem(
             deletedPaths: [...project.acknowledgedPaths].filter(
               (path) => !currentPaths.has(path)
             ),
-            acknowledge: (remote) => {
+            acknowledge: async () => {
+              const remote = await api.getRemoteProject(config(), id)
               if (config().accountId !== owner) {
                 // eslint-disable-next-line suggest-no-throw/suggest-no-throw
                 throw new Error(

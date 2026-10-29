@@ -461,15 +461,16 @@ export async function downloadRemoteProjectArchive(
 export async function createRemoteProject(
   config: CloudApiConfig,
   projectPath: string,
-  files: ProjectArchiveFile[]
+  files: ProjectArchiveFile[],
+  publicationMetadata: ProjectUploadPublicationMetadata = {
+    description: '',
+    category_ids: [],
+  }
 ) {
   return cloudJson<CreatedRemoteProject>(config, '/user/projects', {
     method: 'POST',
     body: buildProjectFormData(projectPath, files, {
-      publicationMetadata: {
-        description: '',
-        category_ids: [],
-      },
+      publicationMetadata,
     }),
   })
 }

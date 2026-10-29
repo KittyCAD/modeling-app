@@ -57,31 +57,38 @@ function projectResponse(projectId: string, revision: string) {
 }
 
 describe('remote project uploads', () => {
-  test('includes empty publication metadata defaults when creating cloud projects', async () => {
-    let uploadedBody: Record<string, unknown> | undefined
-    const fetchMock = vi.fn<typeof fetch>(async (_input, init) => {
-      uploadedBody = await uploadBodyFromRequest(init)
-      return projectResponse('project-created', 'rev-1')
-    })
-    vi.stubGlobal('fetch', fetchMock)
+  test.each([
+    undefined,
+    { description: 'A description', category_ids: ['category-a'] },
+  ])(
+    'creates cloud projects with publication metadata %j',
+    async (publicationMetadata) => {
+      let uploadedBody: Record<string, unknown> | undefined
+      const fetchMock = vi.fn<typeof fetch>(async (_input, init) => {
+        uploadedBody = await uploadBodyFromRequest(init)
+        return projectResponse('project-created', 'rev-1')
+      })
+      vi.stubGlobal('fetch', fetchMock)
 
-    await createRemoteProject(
-      {
-        enabled: true,
-        baseUrl: 'https://api.dev.zoo.dev',
-      },
-      '/projects/bracket',
-      projectFiles()
-    )
+      await createRemoteProject(
+        {
+          enabled: true,
+          baseUrl: 'https://api.dev.zoo.dev',
+        },
+        '/projects/bracket',
+        projectFiles(),
+        publicationMetadata
+      )
 
-    expect(uploadedBody).toEqual({
-      title: 'bracket',
-      description: '',
-      category_ids: [],
-      entrypoint_path: 'main.kcl',
-      project_toml_path: 'project.toml',
-    })
-  })
+      expect(uploadedBody).toEqual({
+        title: 'bracket',
+        description: publicationMetadata?.description ?? '',
+        category_ids: publicationMetadata?.category_ids ?? [],
+        entrypoint_path: 'main.kcl',
+        project_toml_path: 'project.toml',
+      })
+    }
+  )
 
   test('preserves existing publication metadata when updating cloud projects', async () => {
     let uploadedBody: Record<string, unknown> | undefined

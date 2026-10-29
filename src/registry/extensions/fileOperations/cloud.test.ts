@@ -1,7 +1,7 @@
 import type * as ArchiveModule from '@src/lib/fs-zds/cloud/archive'
 import { parseProjectArchive } from '@src/lib/fs-zds/cloud/archive'
 import { posix } from '@chainner/node-path'
-import { createCloudStorage } from '@src/registry/extensions/fileOperations/cloud'
+import { createFileOperationsServices } from '@src/registry/extensions/fileOperations'
 import * as api from '@src/lib/fs-zds/cloud/api'
 import nodefs from '@src/lib/fs-zds/nodefs'
 import { publishCurrentProject } from '@src/registry/extensions/fileOperations/publication'
@@ -35,7 +35,7 @@ vi.mock('@src/lib/fs-zds/cloud/archive', async (original) => ({
 }))
 
 const remote = { id: 'one', revision: '1', description: '', category_ids: [] }
-const runtimes: ReturnType<typeof createCloudStorage>[] = []
+const runtimes: ReturnType<typeof createFileOperationsServices>[] = []
 beforeEach(() => {
   vi.mocked(api.listRemoteProjects).mockResolvedValue([remote])
   vi.mocked(api.getRemoteProjectThumbnailUrl).mockResolvedValue(
@@ -54,14 +54,17 @@ afterEach(async () => {
   await Promise.all(runtimes.splice(0).map((r) => r.dispose()))
   vi.clearAllMocks()
 })
-const setup = () => {
+const setup = (accountId?: () => string) => {
   const diskWrite = vi.fn()
-  const storage = createCloudStorage(
+  const services = createFileOperationsServices(
     { ...nodefs.impl, ...posix, writeFile: diskWrite },
-    () => ({ enabled: true })
+    () => ({ enabled: true, accountId: accountId?.() })
   )
-  runtimes.push(storage)
-  return { storage, diskWrite }
+  runtimes.push(services)
+  return {
+    storage: { ...services.cloud, operations: services.operations },
+    diskWrite,
+  }
 }
 
 describe('memory cloud storage', () => {
@@ -146,11 +149,7 @@ describe('memory cloud storage', () => {
   })
   it('does not expose a project response received after switching accounts', async () => {
     let accountId = 'first'
-    const storage = createCloudStorage({ ...nodefs.impl, ...posix }, () => ({
-      enabled: true,
-      accountId,
-    }))
-    runtimes.push(storage)
+    const { storage } = setup(() => accountId)
     const gate = Promise.withResolvers<typeof remote>()
     vi.mocked(api.getRemoteProject).mockReturnValueOnce(gate.promise)
     const opening = storage.openProject('one')
@@ -231,7 +230,7 @@ describe('memory cloud storage', () => {
       posix.join(root, 'main.kcl'),
       'after publication'
     )
-    await vi.waitFor(() => expect(storage.fileSystem.pending()).toBe(2))
+    await vi.waitFor(() => expect(storage.pending()).toBe(2))
     vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
       ...remote,
       revision: '3',
@@ -331,11 +330,7 @@ describe('memory cloud storage', () => {
 
   it('does not publish thumbnail results for an account that has signed out', async () => {
     let accountId = 'first'
-    const storage = createCloudStorage({ ...nodefs.impl, ...posix }, () => ({
-      enabled: true,
-      accountId,
-    }))
-    runtimes.push(storage)
+    const { storage } = setup(() => accountId)
     await storage.listProjects()
     const gate = Promise.withResolvers<string>()
     vi.mocked(api.getRemoteProjectThumbnailUrl).mockReturnValueOnce(

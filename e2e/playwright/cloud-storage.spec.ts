@@ -10,6 +10,10 @@ import {
 import { decode } from '@msgpack/msgpack'
 import type { BrowserContext } from '@playwright/test'
 
+test.beforeEach(async ({ page }) => {
+  await page.routeWebSocket('**/ws/modeling/commands**', () => {})
+})
+
 const projectId = '12902000-0000-4000-8000-000000000091'
 
 async function mockCloud(context: BrowserContext) {

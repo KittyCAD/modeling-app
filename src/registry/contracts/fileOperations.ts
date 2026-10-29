@@ -1,4 +1,4 @@
-import type { CloudStorageService } from '@src/registry/extensions/fileOperations/cloud'
+import type { CloudStorageService } from '@src/registry/extensions/fileOperations'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ProjectOperationsService } from '@src/lib/fileSystem/projectOperations'
 import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
@@ -70,7 +70,7 @@ export const {
   cloudStorageService,
 } = fileOperationsContract
 
-export type { CloudStorageService } from '@src/registry/extensions/fileOperations/cloud'
+export type { CloudStorageService } from '@src/registry/extensions/fileOperations'
 export type {
   PublishCurrentProjectArgs,
   ProjectPublishSubmission,

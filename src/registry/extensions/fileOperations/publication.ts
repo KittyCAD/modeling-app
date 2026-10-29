@@ -1,16 +1,13 @@
 import type { ProjectSummaryResponse } from '@kittycad/lib'
 import { listClientItems } from '@src/lib/apiPagination'
 import {
+  createRemoteProject,
   getRemoteProject as getCloudProject,
   updateRemoteProject,
 } from '@src/lib/fs-zds/cloud/api'
 import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { collectProjectFilesForUpload } from '@src/lib/fileSystem/projectFiles'
-import {
-  getMimeType,
-  prepareProjectFilesForCloudUpload,
-} from '@src/lib/fs-zds/cloud/archive'
 import type {
   ProjectArchiveFile,
   ProjectUploadPublicationMetadata,
@@ -232,57 +229,37 @@ async function ensureCurrentProjectUploaded(
     return existingProjectId
   }
 
-  if (existingProjectId) {
-    const projectResp = await (async () => {
-      try {
-        const config = { enabled: true, token: args.token }
-        const remote = await getCloudProject(config, existingProjectId)
-        if (remote.revision === undefined || remote.revision === null)
-          return new Error('Cloud project is missing its revision.')
-        return await updateRemoteProject({
-          config,
-          projectPath: project.path,
-          project: remote,
-          files: uploadFiles,
-          expectedRevision: args.expectedRevision ?? String(remote.revision),
-          deletedPaths: args.deletedPaths,
-          publicationMetadata: getProjectUploadPublicationMetadata(
-            args.submission
-          ),
-        })
-      } catch (error) {
-        return error instanceof Error
-          ? error
-          : new Error('Publication save failed.')
-      }
-    })()
-    if (err(projectResp)) {
-      return projectResp
+  try {
+    const config = { enabled: true, token: args.token }
+    const publicationMetadata = getProjectUploadPublicationMetadata(
+      args.submission
+    )
+    if (existingProjectId) {
+      const remote = await getCloudProject(config, existingProjectId)
+      if (remote.revision === undefined || remote.revision === null)
+        return new Error('Cloud project is missing its revision.')
+      await updateRemoteProject({
+        config,
+        projectPath: project.path,
+        project: remote,
+        files: uploadFiles,
+        expectedRevision: args.expectedRevision ?? String(remote.revision),
+        deletedPaths: args.deletedPaths,
+        publicationMetadata,
+      })
+      return { client, projectId: existingProjectId }
     }
-
-    return {
-      client,
-      projectId: existingProjectId,
-    }
-  }
-
-  const projectResp = await kcCall(() =>
-    projects.create_project({
-      client,
-      files: toKittyCadFiles(
-        project.path,
-        uploadFiles,
-        getProjectUploadPublicationMetadata(args.submission)
-      ),
-    })
-  )
-  if (err(projectResp)) {
-    return projectResp
-  }
-
-  return {
-    client,
-    projectId: projectResp.id,
+    const remote = await createRemoteProject(
+      config,
+      project.path,
+      uploadFiles,
+      publicationMetadata
+    )
+    return { client, projectId: remote.id }
+  } catch (error) {
+    return error instanceof Error
+      ? error
+      : new Error('Publication save failed.')
   }
 }
 
@@ -394,30 +371,6 @@ async function getCloudProjectIdForEnvironment(
       `Failed to read local project settings: ${error instanceof Error ? error.message : String(error)}`
     )
   }
-}
-
-function toKittyCadFiles(
-  projectPath: string,
-  files: ProjectArchiveFile[],
-  publicationMetadata: ProjectUploadPublicationMetadata
-): Parameters<typeof projects.create_project>[0]['files'] {
-  const upload = prepareProjectFilesForCloudUpload(projectPath, files, {
-    publicationMetadata,
-  })
-  return [
-    {
-      name: 'body',
-      data: new Blob([JSON.stringify(upload.body)], {
-        type: 'application/json',
-      }),
-    },
-    ...upload.files.map((file) => ({
-      name: file.relativePath,
-      data: new Blob([Uint8Array.from(file.data)], {
-        type: getMimeType(file.relativePath),
-      }),
-    })),
-  ]
 }
 
 function getCurrentEnvironmentName(): string | Error {
