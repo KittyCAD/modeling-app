@@ -823,6 +823,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                       ) : lastExchange &&
                         !isEndOfStream &&
                         props.isProcessing ? (
+                        // zds-performance-exception: activity-indicator -- Indicate a processing conversation turn while streamed messages and completion are displayed as soon as available.
                         <div className="absolute z-10 bottom-0 h-[1px] bg-ml-green animate-shimmer w-full" />
                       ) : null}
                     </>

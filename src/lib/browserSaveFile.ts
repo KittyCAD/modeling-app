@@ -63,6 +63,7 @@ const saveWithDownloadLink = (
   document.body.append(a)
   a.click()
 
+  // zds-performance-exception: resource-cleanup -- Keep the blob URL alive while the native download consumes it, then release the URL and temporary anchor.
   setTimeout(() => {
     URL.revokeObjectURL(blobURL)
     a.remove()

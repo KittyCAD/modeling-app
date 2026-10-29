@@ -50,6 +50,7 @@ export function waitForActorSnapshot<TSnapshot>(
       subscription?.unsubscribe()
       resolve(matched)
     }
+    // zds-performance-exception: network-deadline -- Bound an actor-state subscription; a matching state or abort resolves immediately and releases the timer and subscription.
     const timeout = globalThis.setTimeout(() => finish(false), timeoutMs)
     subscription = actor.subscribe((snapshot) => {
       if (predicate(snapshot)) {

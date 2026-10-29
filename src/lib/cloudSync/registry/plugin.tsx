@@ -136,6 +136,7 @@ function useCloudSyncProjectIsStalled(
     if (!Number.isFinite(pendingSince)) {
       return
     }
+    // zds-performance-exception: network-deadline -- Mark pending cloud sync as stalled at its actual age without postponing the sync operation or local feedback.
     const timeout = setTimeout(
       () => setNow(Date.now()),
       Math.max(0, CLOUD_SYNC_STALLED_AFTER_MS - (Date.now() - pendingSince))
@@ -244,6 +245,7 @@ export function getCloudSyncStatusBarPresentation(
     label,
     icon,
     iconClassName:
+      // zds-performance-exception: activity-indicator -- Show an active cloud persistence operation without withholding local edits or available sync results.
       isSyncing || (!isBlocked && hasPendingChanges) ? 'animate-spin' : '',
     isBlocked,
     tooltip:

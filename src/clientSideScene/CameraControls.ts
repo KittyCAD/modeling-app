@@ -1311,6 +1311,7 @@ export class CameraControls {
       // indicates this, other than the amount of time between our request
       // and its response. Typically round-trip time is < 30ms. It seems safe
       // then to wait 1 magnitude of time before calling this request toasted.
+      // zds-performance-exception: network-deadline -- A disconnected engine must not block saving the camera before idle teardown.
       const timeoutId = setTimeout(reject, 300)
       ;(async () => {
         const cameraViewStateResponse =

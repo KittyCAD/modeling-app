@@ -976,6 +976,7 @@ export const Thinking = (
 
   if (props.thoughts === undefined) {
     return (
+      // zds-performance-exception: activity-indicator -- Display immediate pending reasoning activity while waiting for streamed thoughts, without withholding received content.
       <div className="animate-shimmer p-2">
         <Generic content={'Thinking...'} />
       </div>
@@ -1048,6 +1049,7 @@ export const Thinking = (
   )
 
   const ViewImmediate = (
+    // zds-performance-exception: activity-indicator -- Keep the live reasoning placeholder visibly active while content streams; its content is rendered immediately.
     <div data-testid="thinking-immediate" className="animate-shimmer p-2 pb-4">
       {componentLastGenericThought}
     </div>

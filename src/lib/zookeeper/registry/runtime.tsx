@@ -162,6 +162,7 @@ export function createZookeeperRuntime(
     if (controllerLoadRetry !== undefined) {
       return
     }
+    // zds-performance-exception: connection-retry -- Retry loading a failed controller without spinning; an available controller is reconciled immediately.
     controllerLoadRetry = setTimeout(() => {
       controllerLoadRetry = undefined
       reconcile()

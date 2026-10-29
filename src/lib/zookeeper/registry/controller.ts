@@ -957,6 +957,7 @@ class SessionController implements ZookeeperSessionController {
       return
     }
 
+    // zds-performance-exception: connection-retry -- Back off a failed Zookeeper transport before reconnecting; messages on an open connection are handled immediately.
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = undefined
       this.reconnect()

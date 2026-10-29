@@ -61,6 +61,7 @@ export class MachineManager implements IMachineManager {
           return
         }
 
+        // zds-performance-exception: background-polling -- Refresh the network machine listing after its previous request settles without blocking an already available machine action.
         this.#pulseTimeout.value = setTimeout(
           this.updateLoop,
           this.pulseTimeoutDurationMS

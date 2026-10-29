@@ -174,6 +174,7 @@ export const ExchangeCardStatus = (props: {
   const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
+    // zds-performance-exception: activity-indicator -- Refresh elapsed streaming status while work is pending, without postponing streamed content.
     const i = setInterval(() => {
       setTriggerRender(triggerRender + 1)
     }, 500)
@@ -540,6 +541,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
+    // zds-performance-exception: activity-indicator -- Refresh the displayed stream timestamp while content arrives, without delaying any received content.
     const id = setInterval(() => {
       if (isEndOfStream) {
         clearInterval(id)

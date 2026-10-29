@@ -960,7 +960,9 @@ app.on('ready', () => {
   }
   const oneSecond = 1000
   const fifteenMinutes = 15 * 60 * 1000
+  // zds-performance-exception: background-polling -- Schedule background update discovery after startup without gating app launch or any user interaction.
   setTimeout(checkForUpdatesBackground, oneSecond)
+  // zds-performance-exception: background-polling -- Poll the update provider on its refresh cadence rather than delaying any foreground action.
   setInterval(checkForUpdatesBackground, fifteenMinutes)
 
   appUpdater.on('checking-for-update', () => {

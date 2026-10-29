@@ -74,6 +74,7 @@ export function createOnIceCandidate({
 
     // Sometimes the remote end doesn't report the end of candidates.
     // They have 3 seconds to.
+    // zds-performance-exception: external-protocol -- Finish ICE negotiation if the peer never reports the end of its candidates.
     const id = setTimeout(() => {
       initiateConnectionExclusive().catch(reportRejection)
       console.warn('attempting initiateConnectionExclusive after 3 seconds')

@@ -147,6 +147,7 @@ export class WindowMenuManager {
   }
 
   private scheduleMenuGC() {
+    // zds-performance-exception: resource-cleanup -- Keep replaced native menu objects alive through their native dismissal lifecycle before releasing references.
     setTimeout(() => {
       this.oldMenus = []
     }, 10000)
