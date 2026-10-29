@@ -139,6 +139,11 @@ export class ConnectionManager extends EventTarget {
     return this.connection?.apiCallId
   }
 
+  /** Rendering mode of the active session; reevaluated after every reconnect. */
+  get geometryOnly(): boolean {
+    return this.connection?.geometryOnly ?? false
+  }
+
   /** True when a scene command sent now reaches the engine. */
   get isReady(): boolean {
     return (
@@ -352,6 +357,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc,
     unitTestGeometryOnly,
     rustContext,
+    geometryOnly = false,
     kclVersion,
     prepareForReconnect,
   }: {
@@ -363,6 +369,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc?: boolean
     unitTestGeometryOnly?: boolean
     rustContext?: RustContext
+    geometryOnly?: boolean
     kclVersion?: KclVersion
     prepareForReconnect?: (signal: AbortSignal) => Promise<undefined | Error>
   }) {
@@ -384,7 +391,8 @@ export class ConnectionManager extends EventTarget {
       )
     }
 
-    const invalidStreamDimensions = validateStreamDimensions({ width, height })
+    const invalidStreamDimensions =
+      !geometryOnly && validateStreamDimensions({ width, height })
     if (invalidStreamDimensions) {
       return Promise.reject(invalidStreamDimensions)
     }
@@ -403,10 +411,11 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
-    const url = this.generateWebsocketURL(kclVersion)
+    const url = this.generateWebsocketURL(geometryOnly, kclVersion)
     this.connection = new Connection({
       url,
       token,
+      geometryOnly,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
       tearDownManager: this.tearDown.bind(this),
@@ -450,7 +459,7 @@ export class ConnectionManager extends EventTarget {
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
 
-    if (!this.connection.peerConnection) {
+    if (!geometryOnly && !this.connection.peerConnection) {
       return Promise.reject(
         new Error('this.connection.peerConnection is undefined')
       )
@@ -570,13 +579,25 @@ export class ConnectionManager extends EventTarget {
     )
   }
 
-  generateWebsocketURL(kclVersion: KclVersion | undefined) {
+  generateWebsocketURL(geometryOnly = false, kclVersion?: KclVersion) {
+    const versionQuery =
+      kclVersion === undefined
+        ? ''
+        : `&kcl_version=${encodeURIComponent(kclVersion)}`
+    if (geometryOnly) {
+      // No video either, but the engine frames camera moves such as zoom to
+      // fit for this size.
+      const resolution = validateStreamDimensions(this.streamDimensions)
+        ? ''
+        : `&video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}`
+      return withKittycadWebSocketURL(
+        `?geometry_only=true&webrtc=false${resolution}${versionQuery}`
+      )
+    }
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
-    if (kclVersion !== undefined) {
-      additionalSettings += `&kcl_version=${encodeURIComponent(kclVersion)}`
-    }
+    additionalSettings += versionQuery
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
@@ -585,6 +606,8 @@ export class ConnectionManager extends EventTarget {
 
   // Set the engine's theme
   async setTheme(theme: Themes) {
+    if (this.geometryOnly) return
+
     if (!this.isReady) {
       EngineDebugger.addLog({
         label: 'connectionManager',
@@ -676,6 +699,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set default system properties in the engine, with debug logging */
   async setDefaultSystemProperties(backfaceColor: string) {
+    if (this.geometryOnly) return
+
     const backfaceRgbaColor = hexToRgba(backfaceColor)
     if (!backfaceRgbaColor) {
       EngineDebugger.addLog({
@@ -725,6 +750,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set the edge highlighting setting in the engine, with debug logging */
   async setHighlightEdges(shouldHighlight: boolean) {
+    if (this.geometryOnly) return
+
     const cmd = {
       type: 'edge_lines_visible',
       hidden: !shouldHighlight,
@@ -762,6 +789,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set the "show scale grid" setting in the engine, with debug logging */
   async setShowScaleGrid(shouldShowGrid: boolean) {
+    if (this.geometryOnly) return
+
     const cmd = {
       type: 'edge_lines_visible',
       hidden: !shouldShowGrid,
@@ -1214,6 +1243,15 @@ export class ConnectionManager extends EventTarget {
   }
 
   async handleResize({ width, height }: { width: number; height: number }) {
+    if (this.geometryOnly) {
+      // There is no video to resize, but the local renderer maps pointer
+      // positions through these dimensions.
+      if (!validateStreamDimensions({ width, height })) {
+        this.streamDimensions = { width, height }
+      }
+      return
+    }
+
     if (!this.connection) {
       console.warn('unable to resize, connection is not found')
       return
