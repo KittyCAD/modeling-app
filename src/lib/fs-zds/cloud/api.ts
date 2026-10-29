@@ -1,3 +1,4 @@
+import { viteEnv } from '@src/env'
 import {
   CloudStorageError,
   withCloudFailureContext,
@@ -72,8 +73,12 @@ async function cloudFetchUncategorized(
   }
 
   const headers = new Headers(init.headers)
-  if (config.token) {
-    headers.set('Authorization', `Bearer ${config.token}`)
+  const token =
+    (baseUrl === 'https://api.dev.zoo.dev' &&
+      viteEnv().VITE_ZOO_DEV_API_TOKEN) ||
+    config.token
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`)
   }
 
   const response = await fetchWithSessionExpiration(`${baseUrl}${targetPath}`, {
