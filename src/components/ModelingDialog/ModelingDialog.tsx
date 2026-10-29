@@ -351,14 +351,16 @@ export default function ModelingDialog({
       case 'path':
       case 'vector2d':
       case 'color':
-      case 'tagDeclarator':
+      case 'tagDeclarator': {
+        const Input = arg.inputType === 'text' ? 'textarea' : 'input'
         return (
           <div key={name} className="flex flex-col gap-1">
             {fieldLabel}
-            <input
+            <Input
               {...noAutofillInputProps}
               id={fieldId}
-              type={arg.inputType === 'color' ? 'color' : 'text'}
+              type={arg.inputType === 'color' ? 'color' : undefined}
+              rows={arg.inputType === 'text' ? 3 : undefined}
               autoFocus={name === firstFieldName}
               className={`rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70 ${arg.inputType === 'color' ? 'h-8 w-full cursor-pointer' : ''}`}
               placeholder={
@@ -372,6 +374,7 @@ export default function ModelingDialog({
             {description}
           </div>
         )
+      }
     }
   }
 
