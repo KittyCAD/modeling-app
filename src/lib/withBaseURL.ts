@@ -1,7 +1,8 @@
 import env from '@src/env'
 
 export function withAPIBaseURL(path: string): string {
-  return env().VITE_ZOO_API_BASE_URL + path
+  // Temporary: pin non-storage API traffic to the local instance in all runtimes.
+  return 'http://192.168.2.144:8088' + path
 }
 
 export function withSiteBaseURL(path: string): string {

@@ -1,15 +1,15 @@
 import { Client } from '@kittycad/lib'
 import type { ApiError } from '@kittycad/lib'
-import env from '@src/env'
 import { isDesktop } from '@src/lib/isDesktop'
 import { notifySessionExpiredFromResponse } from '@src/lib/sessionExpired'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import isomorphicFetch from 'isomorphic-fetch'
 
 export function createKCClient(
   token?: string,
   baseUrlOverride?: string
 ): Client {
-  const baseUrl = baseUrlOverride || env().VITE_ZOO_API_BASE_URL
+  const baseUrl = baseUrlOverride || withAPIBaseURL('')
   const injectedFetch = (async (input: any, init?: any) => {
     // Temporary: SDK project storage/publication requests also use dev.
     const url = new URL(input)
