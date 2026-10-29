@@ -3334,6 +3334,8 @@ export const modelingMachine = setup({
           const legacySketchBlock = sketchBlockOnExtrudedFace(
             kclManager.ast,
             {
+              artifact: legacyFaceArtifact,
+              entityRef: { type: 'face', face_id: legacyFaceArtifact.id },
               codeRef: legacyFaceCodeRef,
             },
             faceRequiringSourceMaterialization.sketchPathToNode,
@@ -3342,7 +3344,7 @@ export const modelingMachine = setup({
             wasmInstance
           )
           if (err(legacySketchBlock)) {
-            return reject(new Error('Incompatible face, please try another'))
+            return reject(legacySketchBlock)
           }
 
           await updateModelingState(
