@@ -1368,6 +1368,7 @@ describe('ZookeeperConversation', () => {
     })
 
     test('adds annotated viewport screenshot as an attachment', async () => {
+      const handleProcess = vi.fn()
       const OriginalImage = globalThis.Image
       class MockImage {
         onload: (() => void) | null = null
@@ -1388,7 +1389,7 @@ describe('ZookeeperConversation', () => {
         .mockImplementation(() => {})
       globalThis.Image = MockImage as typeof Image
       try {
-        renderConversation()
+        renderConversation(handleProcess)
 
         fireEvent.click(
           screen.getByTestId('ml-ephant-annotate-screenshot-button')
@@ -1437,6 +1438,12 @@ describe('ZookeeperConversation', () => {
         expect(
           await screen.findByRole('img', { name: 'Attachment preview' })
         ).toBeInTheDocument()
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+        expect(handleProcess.mock.calls[0][2][0].name).toMatch(
+          /^annotated-viewport-screenshot-[0-9a-f-]{36}\.png$/
+        )
       } finally {
         drawImageSpy.mockRestore()
         globalThis.Image = OriginalImage
@@ -1505,6 +1512,25 @@ describe('ZookeeperConversation', () => {
       expect(first.name).not.toBe(second.name)
       expect(first.type).toBe(file.type)
       expect(await first.text()).toBe(await file.text())
+    })
+
+    test('gives viewport screenshots unique names across prompts', () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+
+      for (let i = 0; i < 2; i++) {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Capture viewport screenshot' })
+        )
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+      }
+
+      const first: File = handleProcess.mock.calls[0][2][0]
+      const second: File = handleProcess.mock.calls[1][2][0]
+      expect(first.name).toMatch(/^viewport-screenshot-[0-9a-f-]{36}\.png$/)
+      expect(first.name).not.toBe(second.name)
     })
 
     test('allows native text paste at the 5,000-character limit', () => {
