@@ -2,6 +2,24 @@ import { writeFile } from 'node:fs/promises'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
+test(
+  'Home: creates a sample project from the command palette',
+  { tag: ['@web', '@desktop'] },
+  async ({ page, homePage, cmdBar, editor, toolbar }) => {
+    await homePage.projectsLoaded()
+    await page.keyboard.press('ControlOrMeta+k')
+    await expect(
+      cmdBar.cmdOptions.getByText('Add file to project')
+    ).toHaveCount(0)
+    await cmdBar.chooseCommand('Create a sample')
+    await cmdBar.selectOption({ name: 'Angle Gauge', exact: true }).click()
+    await cmdBar.toBeClosed()
+    await expect(page).toHaveURL(/angle-gauge/)
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
+    await editor.expectEditor.toContain('Angle Gauge')
+  }
+)
+
 test.describe('Local Drive picker', () => {
   test(
     'Web: opens the picker and adds a local file',
@@ -20,7 +38,7 @@ test.describe('Local Drive picker', () => {
 
       const fileName = 'notes.txt'
       const content = 'Imported local file'
-      await cmdBar.openCmdBar()
+      await page.keyboard.press('ControlOrMeta+k')
       await cmdBar.chooseCommand('Add file to project')
       const chooserPromise = page.waitForEvent('filechooser')
       await cmdBar.selectOption({ name: 'Local Drive', exact: true }).click()
@@ -88,7 +106,8 @@ test.describe('Local Drive picker', () => {
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.Files)
 
-      await toolbar.loadButton.click()
+      await page.keyboard.press('ControlOrMeta+k')
+      await cmdBar.chooseCommand('Add file to project')
       await cmdBar.selectOption({ name: 'Local Drive', exact: true }).click()
       await tronApp.electron.evaluate(({ dialog }, selectedPath) => {
         const originalOpenDialog = dialog.showOpenDialog.bind(dialog)
