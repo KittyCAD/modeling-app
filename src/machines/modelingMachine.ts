@@ -316,7 +316,12 @@ async function enterSketchSolveFromSketchBlockArtifact({
 
   const id =
     planeData.type === 'extrudeFace' ? planeData.faceId : planeData.planeId
-  await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+  await letEngineAnimateAndSyncCamAfter(
+    engineCommandManager,
+    id,
+    kclManager.sceneInfra.camControls,
+    planeData.type === 'extrudeFace'
+  )
   kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
   const project = projectRef?.current
@@ -3105,7 +3110,12 @@ export const modelingMachine = setup({
           }
 
           const id = plane.type === 'extrudeFace' ? plane.faceId : plane.planeId
-          await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+          await letEngineAnimateAndSyncCamAfter(
+            engineCommandManager,
+            id,
+            kclManager.sceneInfra.camControls,
+            plane.type === 'extrudeFace'
+          )
           kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
           return {
             sketchEntryNodePath: [],
@@ -3128,7 +3138,8 @@ export const modelingMachine = setup({
 
         await letEngineAnimateAndSyncCamAfter(
           engineCommandManager,
-          plane.planeId
+          plane.planeId,
+          kclManager.sceneInfra.camControls
         )
 
         return {
@@ -3414,7 +3425,12 @@ export const modelingMachine = setup({
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
-        await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+        await letEngineAnimateAndSyncCamAfter(
+          engineCommandManager,
+          id,
+          kclManager.sceneInfra.camControls,
+          result.type === 'extrudeFace'
+        )
 
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
         kclManager.updateCodeEditor(
@@ -3753,7 +3769,8 @@ export const modelingMachine = setup({
             )
             await letEngineAnimateAndSyncCamAfter(
               engineCommandManager,
-              artifact.id
+              artifact.id,
+              kclManager.sceneInfra.camControls
             )
             const normal = crossProduct(planeVar.xAxis, planeVar.yAxis)
             return {
@@ -3773,7 +3790,9 @@ export const modelingMachine = setup({
           )
         await letEngineAnimateAndSyncCamAfter(
           engineCommandManager,
-          info?.sketchDetails?.faceId || ''
+          info?.sketchDetails?.faceId || '',
+          kclManager.sceneInfra.camControls,
+          sketch.value.on.type !== 'plane'
         )
 
         const sketchArtifact = kclManager.artifactGraph.get(mainPath)
