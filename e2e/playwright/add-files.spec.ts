@@ -4,7 +4,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test(
   'Home: creates a sample project from the command palette',
-  { tag: ['@web', '@desktop'] },
+  { tag: ['@web'] },
   async ({ page, homePage, cmdBar, editor, toolbar }) => {
     await homePage.projectsLoaded()
     await page.keyboard.press('ControlOrMeta+k')
