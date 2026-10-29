@@ -134,6 +134,20 @@ function startConnectionManager(
   })
 }
 
+function createTransport(manager: ConnectionManager) {
+  return new Connection({
+    url: 'ws://localhost/modeling-test',
+    token: 'test-token',
+    handleOnDataChannelMessage: vi.fn(),
+    recordShutdownTrigger: manager.recordShutdownTrigger.bind(manager),
+    tearDownManager: manager.tearDown.bind(manager),
+    onReconnectRequested: vi.fn(),
+    rejectPendingCommand: vi.fn(),
+    handleMessage: vi.fn(),
+    getCloudProjectId: () => undefined,
+  })
+}
+
 describe('ConnectionManager', () => {
   afterEach(() => {
     vi.useRealTimers()
@@ -229,27 +243,16 @@ describe('ConnectionManager', () => {
 
   it('identifies actual connection replacement without treating scene resets as a new session', async () => {
     const manager = createConnectionManager()
-    const createTransport = () =>
-      new Connection({
-        url: 'ws://localhost/modeling-session-identity',
-        token: 'test-token',
-        handleOnDataChannelMessage: vi.fn(),
-        recordShutdownTrigger: manager.recordShutdownTrigger.bind(manager),
-        tearDownManager: manager.tearDown.bind(manager),
-        rejectPendingCommand: vi.fn(),
-        handleMessage: vi.fn(),
-        getCloudProjectId: () => undefined,
-      })
 
     expect(manager.engineSessionId).toBeUndefined()
-    const first = createTransport()
+    const first = createTransport(manager)
     manager.connection = first
     expect(manager.engineSessionId).toBe(first.id)
 
     await manager.startNewSession()
     expect(manager.engineSessionId).toBe(first.id)
 
-    const replacement = createTransport()
+    const replacement = createTransport(manager)
     manager.connection = replacement
     expect(manager.engineSessionId).toBe(replacement.id)
     expect(manager.engineSessionId).not.toBe(first.id)
