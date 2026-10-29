@@ -295,10 +295,14 @@ pub(super) async fn fix_pattern_face_tags(
     }
     let names = solid.faces.keys().cloned().collect::<Vec<_>>();
     let map = get_old_new_child_map(solid.id, source_topology_id, source_topology_id, exec_state, args).await?;
-    remap_sketchless_solid(solid, &map);
-    remap_edge_cuts(solid, &map);
-    solid.faces.clear();
-    restore_face_tags(solid, &names, exec_state);
+    // Keep the source surfaces used by legacy bare-tag binding. Only the
+    // body-qualified face map should refer to this pattern instance.
+    let mut remapped = solid.clone();
+    remap_sketchless_solid(&mut remapped, &map);
+    remap_edge_cuts(&mut remapped, &map);
+    remapped.faces.clear();
+    restore_face_tags(&mut remapped, &names, exec_state);
+    solid.faces = remapped.faces;
     Ok(())
 }
 
