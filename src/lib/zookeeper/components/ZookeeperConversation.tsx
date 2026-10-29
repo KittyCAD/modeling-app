@@ -11,6 +11,7 @@ import Tooltip from '@src/components/Tooltip'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { isImageMimetype } from '@src/lib/mimeTypes'
+import { fileNameHasExtension, getEXTWithPeriod } from '@src/lib/paths'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
@@ -32,7 +33,6 @@ import {
   activateZoodleRuntimeExtension,
   deactivateZoodleRuntimeExtension,
 } from '@src/registry/extensions/engineScene/zoodleRuntimeExtension'
-import { extname } from 'path'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -545,7 +545,9 @@ export const ZookeeperConversationInput = (
       // Clipboard image names can repeat across prompts.
       const pastedFiles = files.map((file) => {
         if (!isImageMimetype(file.type)) return file
-        const extension = extname(file.name)
+        const extension = fileNameHasExtension(file.name)
+          ? (getEXTWithPeriod(file.name) ?? '')
+          : ''
         return new File([file], `image-${crypto.randomUUID()}${extension}`, {
           type: file.type,
           lastModified: file.lastModified,
