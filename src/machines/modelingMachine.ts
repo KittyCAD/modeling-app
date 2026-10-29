@@ -2081,16 +2081,9 @@ export const modelingMachine = setup({
         return {}
       },
     }),
-    'Center camera on selection': ({ context: { engineCommandManager } }) => {
-      engineCommandManager
-        .sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_center_to_selection',
-            camera_movement: 'vantage',
-          },
-        })
+    'Center camera on selection': ({ context: { kclManager } }) => {
+      kclManager.sceneInfra.camControls
+        .centerOnSelection()
         .catch(reportRejection)
     },
     'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {

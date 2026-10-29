@@ -104,6 +104,14 @@ type ScreenPoint = {
   target?: EventTarget | null
 }
 
+/** What the camera needs from the local renderer, in the camera's world. */
+interface LocalCameraScene {
+  /** What zoom to fit frames. */
+  getFitBounds(): Box3 | undefined
+  /** What center view on selection centers on. */
+  getSelectionBounds(): Box3 | undefined
+}
+
 class CameraRateLimiter {
   lastSend?: Date = undefined
   rateLimitMs: number = 16 //60 FPS
@@ -160,8 +168,7 @@ export class CameraControls {
   touchControlManager: HammerManager | null = null
   enableTouchControls = true
   getSettings: () => SettingsType
-  /** What zoom to fit frames in local mode, in the camera's world. */
-  private readonly getLocalFitBounds: () => Box3 | undefined
+  private readonly getLocalScene: () => LocalCameraScene | null
 
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
@@ -351,11 +358,11 @@ export class CameraControls {
     domElement: HTMLCanvasElement,
     engineCommandManager: ConnectionManager,
     getSettings: typeof this.getSettings,
-    getLocalFitBounds: typeof this.getLocalFitBounds = () => undefined
+    getLocalScene: typeof this.getLocalScene = () => null
   ) {
     this.engineCommandManager = engineCommandManager
     this.getSettings = getSettings
-    this.getLocalFitBounds = getLocalFitBounds
+    this.getLocalScene = getLocalScene
     this.camera = new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
@@ -1238,7 +1245,7 @@ export class CameraControls {
    */
   async zoomToFit({ padding }: { padding: number }): Promise<void> {
     if (this.effectiveCameraMode === 'local') {
-      const bounds = this.getLocalFitBounds()
+      const bounds = this.getLocalScene()?.getFitBounds()
       if (bounds) {
         frameLocalCamera(
           this.camera,
@@ -1265,7 +1272,7 @@ export class CameraControls {
    */
   async viewIsometric({ padding }: { padding: number }): Promise<void> {
     if (this.effectiveCameraMode === 'local') {
-      const bounds = this.getLocalFitBounds()
+      const bounds = this.getLocalScene()?.getFitBounds()
       if (bounds) {
         // The engine's isometric view looks along (-1, 1, -1) with Z up.
         this.camera.quaternion.setFromRotationMatrix(
@@ -1291,6 +1298,32 @@ export class CameraControls {
     await engineViewIsometric({
       engineCommandManager: this.engineCommandManager,
       padding,
+    })
+  }
+
+  /**
+   * Looks at the center of the selection, or at the origin when nothing is
+   * selected, keeping the view's direction and distance, as the engine's
+   * default_camera_center_to_selection does.
+   */
+  async centerOnSelection(): Promise<void> {
+    if (this.effectiveCameraMode === 'local') {
+      const center =
+        this.getLocalScene()?.getSelectionBounds()?.getCenter(new Vector3()) ??
+        new Vector3()
+      this.camera.position.add(center).sub(this.target)
+      this.target.copy(center)
+      this.onCameraChange()
+      return
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_center_to_selection',
+        camera_movement: 'vantage',
+      },
     })
   }
 

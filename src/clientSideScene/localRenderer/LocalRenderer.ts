@@ -69,6 +69,17 @@ import type {
 
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
 
+/** glTF is Y-up in meters; the shared navigation camera is Z-up in mm. */
+function gltfToEngineBounds({ min, max }: Box3) {
+  const bounds = new Box3(
+    new Vector3(min.x, -max.z, min.y),
+    new Vector3(max.x, -min.z, max.y)
+  )
+  bounds.min.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
+  bounds.max.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
+  return bounds
+}
+
 // The installed typings omit support for reconstructing normals from depth.
 type CreateAmbientOcclusion = (
   depthNode: Node,
@@ -218,11 +229,14 @@ export class LocalRenderer {
     return plane?.group.visible ? plane.mesh : null
   }
 
-  private updateSelection() {
-    const targets = this.selectedEntityIds
+  private getSelectedTargets() {
+    return this.selectedEntityIds
       .map((id) => this.getPlaneTarget(id) ?? this.targetByEntityId.get(id))
       .filter(isNonNullable)
-    this.gpu?.selectionHighlightRenderer.setSelection(targets)
+  }
+
+  private updateSelection() {
+    this.gpu?.selectionHighlightRenderer.setSelection(this.getSelectedTargets())
     this.scheduleRender()
   }
 
@@ -840,17 +854,23 @@ export class LocalRenderer {
   getFitBounds(): Box3 | undefined {
     const bounds = this.gpu?.planeRenderer.getVisibleBounds() ?? new Box3()
     if (this.currentModel) {
-      const { min, max } = new Box3().setFromObject(this.currentModel)
-      // glTF is Y-up in meters; the shared navigation camera is Z-up in mm.
-      const modelBounds = new Box3(
-        new Vector3(min.x, -max.z, min.y),
-        new Vector3(max.x, -min.z, max.y)
+      bounds.union(
+        gltfToEngineBounds(new Box3().setFromObject(this.currentModel))
       )
-      modelBounds.min.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
-      modelBounds.max.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
-      bounds.union(modelBounds)
     }
     return bounds.isEmpty() ? undefined : bounds
+  }
+
+  /**
+   * What center view on selection centers on, as in the engine: the selected
+   * entities. In the engine's world: Z up, in mm.
+   */
+  getSelectionBounds(): Box3 | undefined {
+    const bounds = new Box3()
+    for (const target of this.getSelectedTargets()) {
+      bounds.union(new Box3().setFromObject(target))
+    }
+    return bounds.isEmpty() ? undefined : gltfToEngineBounds(bounds)
   }
 
   private clearModel() {
