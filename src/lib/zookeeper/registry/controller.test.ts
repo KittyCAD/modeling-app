@@ -5,6 +5,7 @@ import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperCon
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { BulkFileWriteProgress } from '@src/lib/zookeeper/projectFiles'
+import { parseCloudProjectToolChange } from '@src/lib/zookeeper/cloudProjectTools'
 import type * as ProjectFilesModule from '@src/lib/fileSystem/projectFiles'
 import { S } from '@src/machines/utils'
 import toast from 'react-hot-toast'
@@ -347,6 +348,10 @@ describe('Zookeeper session controller', () => {
     h.actor.emit('ready', { cloudProjectChange: change })
     h.actor.emit('ready', { cloudProjectChange: { ...change } })
     h.actor.emit('ready', {
+      lastMessageId: 1,
+      lastMessageType: 'end_of_stream',
+    })
+    h.actor.emit('ready', {
       cloudProjectChange: { callId: 'call-2', projectId: 'other' },
     })
     await waitFor(() => expect(h.readFolders).toHaveBeenCalledOnce())
@@ -369,8 +374,21 @@ describe('Zookeeper session controller', () => {
     expect(workerMocks.histories[0].handleActorSnapshot).toHaveBeenCalled()
   })
 
-  it('refreshes cloud state once when a turn ends without forwarded MCP results', async () => {
+  it('does not refresh cloud state after a read-only turn', async () => {
     const h = createHarness({ cloudProjectId: 'remote-one' })
+    const change = parseCloudProjectToolChange({
+      tool_output: {
+        result: {
+          type: 'project_read_file',
+          call_id: 'read-1',
+          project_id: 'cloud:remote-one',
+          ok: true,
+          output: { id: 'remote-one', revision: '2' },
+        },
+      },
+    })
+    expect(change).toBeUndefined()
+    h.actor.emit('ready', { cloudProjectChange: change })
     h.actor.emit('ready', {
       lastMessageId: 1,
       lastMessageType: 'end_of_stream',
@@ -379,8 +397,10 @@ describe('Zookeeper session controller', () => {
       lastMessageId: 1,
       lastMessageType: 'end_of_stream',
     })
-    await waitFor(() => expect(h.readFolders).toHaveBeenCalledOnce())
-    expect(h.refreshProject).toHaveBeenCalledOnce()
+    await flushPromises()
+    expect(h.refreshProject).not.toHaveBeenCalled()
+    expect(h.reloadFiles).not.toHaveBeenCalled()
+    expect(h.readFolders).not.toHaveBeenCalled()
     expect(workerMocks.histories[0].handleActorSnapshot).not.toHaveBeenCalled()
   })
 

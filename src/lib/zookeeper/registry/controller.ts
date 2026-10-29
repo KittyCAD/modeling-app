@@ -130,7 +130,6 @@ class SessionController implements ZookeeperSessionController {
   private cloudRefreshQueue: Promise<void> = Promise.resolve()
   private pendingCloudRefreshes = 0
   private lastCloudChange?: CloudProjectToolChange
-  private lastCloudTurnId?: number
   private readonly cloudToolCalls = new Set<string>()
 
   private readonly history: ZookeeperEditPatchHistory
@@ -621,15 +620,6 @@ class SessionController implements ZookeeperSessionController {
         this.cloudToolCalls.add(change.callId)
         refresh = true
       }
-    }
-    // The current backend invokes MCP inside its project-file tools, so it
-    // does not forward every nested return. A completed turn reconciles these.
-    if (
-      snapshot.context.lastMessageType === 'end_of_stream' &&
-      snapshot.context.lastMessageId !== this.lastCloudTurnId
-    ) {
-      this.lastCloudTurnId = snapshot.context.lastMessageId
-      refresh = true
     }
     if (!refresh) return
     const generation = this.clearOperationGeneration
