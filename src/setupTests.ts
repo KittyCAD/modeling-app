@@ -54,6 +54,7 @@ vi.mock('three', async () => {
   return {
     ...originalModule,
     WebGLRenderer: class {
+      debug = { checkShaderErrors: true }
       domElement: HTMLDivElement
       constructor() {
         // this.domElement = document.createElement('canvas')
