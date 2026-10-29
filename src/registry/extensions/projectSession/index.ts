@@ -172,12 +172,8 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       ctx.services
         .optional(engineConnectionService)
         ?.manager.rejectAllModelingCommands(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
-      // TODO: Move outgoing-editor invalidation into the session's file-switch
-      // lifecycle. switchedFiles clears the previous file's execution state and
-      // diagnostics; route navigation alone does not run that reset. Keep it here
-      // until the lifecycle resets the editor before the next file executes.
       if (editor) {
-        if (editor.path && editor.path !== path) editor.switchedFiles = true
+        if (editor.path && editor.path !== path) editor.resetForFileSwitch()
         editor.isExecuting = false
       }
       // TODO: Move share-link query consumption into route navigation and remove
