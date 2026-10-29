@@ -410,7 +410,7 @@ export default function ModelingDialog({
             <div className="relative">
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute left-2 top-1"
+                className="pointer-events-none absolute inset-y-px left-px flex items-center pl-2 text-xs"
               >
                 $
               </span>
@@ -419,7 +419,7 @@ export default function ModelingDialog({
                 id={fieldId}
                 type="text"
                 autoFocus={name === firstFieldName}
-                className="w-full rounded-sm border border-chalkboard-30 bg-transparent py-1 pl-5 pr-2 text-xs dark:border-chalkboard-70"
+                className="w-full rounded-sm border border-chalkboard-30 bg-transparent py-1 pl-4 pr-2 text-xs dark:border-chalkboard-70"
                 placeholder={required ? undefined : 'None'}
                 value={fieldText(value)}
                 onChange={(event) =>
