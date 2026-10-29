@@ -407,19 +407,9 @@ export const ZookeeperConversationInput = (
     { isPastedText = false }: { isPastedText?: boolean } = {}
   ) => {
     if (!files.length) return
-    // Keep image names unique across prompts.
-    const namedFiles = files.map((file) => {
-      if (!file.type.startsWith('image/')) return file
-      const dotIndex = file.name.lastIndexOf('.')
-      const extension = dotIndex > 0 ? file.name.slice(dotIndex) : ''
-      return new File([file], `image-${crypto.randomUUID()}${extension}`, {
-        type: file.type,
-        lastModified: file.lastModified,
-      })
-    })
     setAttachments((current) => {
       const next = [...current]
-      for (const file of namedFiles) {
+      for (const file of files) {
         const newName = deduplicateFileName(
           file.name,
           next.map((f) => f.file.name)
@@ -549,7 +539,17 @@ export const ZookeeperConversationInput = (
     const files = Array.from(e.clipboardData.files)
     if (files.length > 0) {
       e.preventDefault()
-      appendAttachments(files)
+      // Clipboard image names can repeat across prompts.
+      const pastedFiles = files.map((file) => {
+        if (!file.type.startsWith('image/')) return file
+        const dotIndex = file.name.lastIndexOf('.')
+        const extension = dotIndex > 0 ? file.name.slice(dotIndex) : ''
+        return new File([file], `image-${crypto.randomUUID()}${extension}`, {
+          type: file.type,
+          lastModified: file.lastModified,
+        })
+      })
+      appendAttachments(pastedFiles)
       return
     }
 
