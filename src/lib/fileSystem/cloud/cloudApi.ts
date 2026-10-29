@@ -3,12 +3,12 @@ import {
   CloudSyncError,
   withCloudSyncFailureContext,
   withCloudSyncFailureContextSync,
-} from '@src/lib/cloudSync/failureContext'
+} from '@src/lib/fileSystem/cloud/failureContext'
 import {
   getMimeType,
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
-} from '@src/lib/cloudSync/projectArchive'
+} from '@src/lib/fileSystem/cloud/projectArchive'
 import type {
   CloudSyncConfig,
   CreatedRemoteProject,
@@ -17,7 +17,7 @@ import type {
   RemoteProject,
   RemoteProjectSummary,
   Revision,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import { isArray } from '@src/lib/utils'
 

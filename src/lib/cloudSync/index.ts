@@ -5,7 +5,7 @@ import {
   notifyCloudSyncRenameMutation,
   notifyCloudSyncWriteLikeMutation,
 } from '@src/lib/cloudSync/engine'
-import type { CloudSyncConfig } from '@src/lib/cloudSync/types'
+import type { CloudSyncConfig } from '@src/lib/fileSystem/cloud/types'
 import fsZds from '@src/lib/fs-zds'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
@@ -19,7 +19,7 @@ export type {
   ProjectMetadata as CloudSyncProjectMetadata,
   ProjectSyncFailure,
   ProjectSyncFailureKind,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 
 let fsObserverInstalled = false
 

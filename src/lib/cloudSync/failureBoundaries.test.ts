@@ -3,18 +3,18 @@ import {
   CloudApiError,
   createRemoteProject,
   getRemoteProject,
-} from '@src/lib/cloudSync/cloudApi'
+} from '@src/lib/fileSystem/cloud/cloudApi'
 import {
   CloudSyncError,
   getCloudSyncFailureCause,
   getCloudSyncFailureContext,
-} from '@src/lib/cloudSync/failureContext'
+} from '@src/lib/fileSystem/cloud/failureContext'
 import {
   parseProjectArchive,
   projectManifestFromFiles,
-} from '@src/lib/cloudSync/projectArchive'
+} from '@src/lib/fileSystem/cloud/projectArchive'
 import { getAllOutboxEntries } from '@src/lib/cloudSync/syncDb'
-import type { CloudSyncConfig } from '@src/lib/cloudSync/types'
+import type { CloudSyncConfig } from '@src/lib/fileSystem/cloud/types'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const config: CloudSyncConfig = {

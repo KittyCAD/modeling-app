@@ -2,7 +2,7 @@ import {
   classifyCloudProjectDuplicateRisk,
   deriveCloudProjectRelationships,
 } from '@src/lib/cloudSync/relationships'
-import type { CloudSyncProjectMetadataIndexEntry } from '@src/lib/cloudSync/types'
+import type { CloudSyncProjectMetadataIndexEntry } from '@src/lib/fileSystem/cloud/types'
 import type { ProjectLibraryRealization } from '@src/registry/contracts/projectLibraries'
 import { describe, expect, test } from 'vitest'
 

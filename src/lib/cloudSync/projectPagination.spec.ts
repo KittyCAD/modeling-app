@@ -11,7 +11,7 @@ import {
 import {
   normalizeProjectArchiveFilesForCloudSync,
   projectManifestFromFiles,
-} from '@src/lib/cloudSync/projectArchive'
+} from '@src/lib/fileSystem/cloud/projectArchive'
 import {
   getAllOutboxEntries,
   putProjectMetadata,

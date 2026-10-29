@@ -2,7 +2,7 @@ import { normalizePathForSync } from '@src/lib/cloudSync/paths'
 import type {
   CloudSyncProjectMetadataIndexEntry,
   RemoteProjectSummary,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import type {
   CloudProjectDuplicateRisk,

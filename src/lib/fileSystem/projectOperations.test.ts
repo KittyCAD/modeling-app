@@ -52,7 +52,14 @@ describe('project file operations', () => {
       wasm: vi.fn(),
       batch: async (_root, run) => {
         await gate.promise
-        const result = await run()
+        const result = await run({
+          ...testFileOperations,
+          createDirectory: async () => {},
+          writeFile,
+          remove: async () => {
+            events.push('remove')
+          },
+        })
         events.push('commit')
         return result
       },

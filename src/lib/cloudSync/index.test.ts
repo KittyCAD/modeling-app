@@ -29,7 +29,7 @@ import {
 import {
   normalizeProjectArchiveFilesForCloudSync,
   projectManifestFromFiles,
-} from '@src/lib/cloudSync/projectArchive'
+} from '@src/lib/fileSystem/cloud/projectArchive'
 import {
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,

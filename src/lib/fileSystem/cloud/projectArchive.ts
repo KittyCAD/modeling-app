@@ -1,17 +1,21 @@
-import { withCloudSyncFailureContext } from '@src/lib/cloudSync/failureContext'
-import { normalizeRelativePath } from '@src/lib/cloudSync/paths'
+import { posix as archivePaths } from '@chainner/node-path'
+import { withCloudSyncFailureContext } from '@src/lib/fileSystem/cloud/failureContext'
+const normalizeRelativePath = (path: string) =>
+  path
+    .replaceAll('\\', '/')
+    .replace(/^\/+/, '')
+    .replace(/^(?:\.\/)+/g, '')
 import type {
   ProjectArchiveFile,
   ProjectManifest,
   ProjectUploadBody,
   ProjectUploadPublicationMetadata,
   Revision,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 import {
   PROJECT_ENTRYPOINT,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
-import opfs from '@src/lib/fs-zds/opfs'
 import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectDefaultFileFromProjectTomlContents,
@@ -21,7 +25,6 @@ import {
 import { isArray } from '@src/lib/utils'
 import JSZip from 'jszip'
 
-const localFs = opfs.impl
 export const CLOUD_SYNC_UNTITLED_PROJECT_TITLE = 'Untitled'
 
 export function getRemoteProjectTitleForProjectToml(title?: string) {
@@ -74,7 +77,9 @@ export function prepareProjectFilesForCloudUpload(
   const projectTomlPath = getUploadProjectTomlPath(normalizedFiles)
   const projectTitle =
     getProjectTomlTitle(normalizedFiles) ||
-    localFs.basename(projectPath.replaceAll('\\', '/').replace(/\/+$/g, ''))
+    archivePaths.basename(
+      projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
+    )
   const publicationMetadata =
     typeof optionsOrExpectedRevision === 'string'
       ? undefined
@@ -168,7 +173,8 @@ export function getProjectArchiveEntrypointPath(
   const fallbackKclFile = files
     .map((file) => file.relativePath)
     .filter(
-      (relativePath) => localFs.extname(relativePath).toLowerCase() === '.kcl'
+      (relativePath) =>
+        archivePaths.extname(relativePath).toLowerCase() === '.kcl'
     )
     .toSorted((a, b) => a.localeCompare(b))[0]
   if (fallbackKclFile) {
@@ -208,7 +214,7 @@ function getProjectTomlDefaultFile(files: ProjectArchiveFile[]) {
 }
 
 export function getMimeType(fileName: string) {
-  const extension = localFs.extname(fileName).toLowerCase()
+  const extension = archivePaths.extname(fileName).toLowerCase()
   if (extension === '.kcl' || extension === '.toml') {
     return 'text/plain'
   }

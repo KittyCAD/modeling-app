@@ -1,11 +1,11 @@
 import { normalizeRelativePath } from '@src/lib/cloudSync/paths'
-import { projectManifestFromFiles } from '@src/lib/cloudSync/projectArchive'
+import { projectManifestFromFiles } from '@src/lib/fileSystem/cloud/projectArchive'
 import type {
   AcknowledgedSyncBase,
   ProjectArchiveFile,
   ProjectManifest,
   RemoteProject,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 
 /**

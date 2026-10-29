@@ -12,7 +12,7 @@ import {
   retryCloudSync,
   setCloudSyncOpenedProject,
 } from '@src/lib/cloudSync'
-import { projectManifestFromFiles } from '@src/lib/cloudSync/projectArchive'
+import { projectManifestFromFiles } from '@src/lib/fileSystem/cloud/projectArchive'
 import {
   appendOutboxEntry,
   getAllOutboxEntries,

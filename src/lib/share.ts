@@ -4,11 +4,11 @@ import { collectLocalProjectFilesForCloudSync } from '@src/lib/cloudSync/localMa
 import {
   getMimeType,
   prepareProjectFilesForCloudUpload,
-} from '@src/lib/cloudSync/projectArchive'
+} from '@src/lib/fileSystem/cloud/projectArchive'
 import type {
   ProjectArchiveFile,
   ProjectUploadPublicationMetadata,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import { readProjectSettingsFile } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'

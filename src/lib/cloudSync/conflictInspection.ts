@@ -6,7 +6,7 @@ import type {
   ProjectArchiveFile,
   ProjectMetadata,
   Revision,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 import {
   PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,

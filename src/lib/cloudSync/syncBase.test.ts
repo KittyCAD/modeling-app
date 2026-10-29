@@ -1,5 +1,5 @@
 import { parseAcknowledgedSyncBase } from '@src/lib/cloudSync/syncBase'
-import type { ProjectManifest } from '@src/lib/cloudSync/types'
+import type { ProjectManifest } from '@src/lib/fileSystem/cloud/types'
 import { describe, expect, it } from 'vitest'
 
 const manifest: ProjectManifest = {

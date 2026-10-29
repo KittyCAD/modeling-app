@@ -1,6 +1,6 @@
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
-import { CloudApiError } from '@src/lib/cloudSync/cloudApi'
-import { withCloudSyncFailureContext } from '@src/lib/cloudSync/failureContext'
+import { CloudApiError } from '@src/lib/fileSystem/cloud/cloudApi'
+import { withCloudSyncFailureContext } from '@src/lib/fileSystem/cloud/failureContext'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({

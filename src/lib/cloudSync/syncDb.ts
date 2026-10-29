@@ -1,10 +1,10 @@
-import { withCloudSyncFailureContext } from '@src/lib/cloudSync/failureContext'
+import { withCloudSyncFailureContext } from '@src/lib/fileSystem/cloud/failureContext'
 import { normalizePathForSync } from '@src/lib/cloudSync/paths'
 import type {
   CloudSyncProjectMetadataIndexEntry,
   OutboxEntry,
   ProjectMetadata,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 
 const DB_NAME = 'zds-opfs-cloud-sync'
 const DB_VERSION = 1

@@ -9,7 +9,7 @@ import type {
   CloudSyncStatus,
   RemoteProjectSummary,
 } from '@src/lib/cloudSync'
-import type { CloudSyncProjectNowResult } from '@src/lib/cloudSync/types'
+import type { CloudSyncProjectNowResult } from '@src/lib/fileSystem/cloud/types'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import type { ProjectLibraryRealization } from '@src/registry/contracts/projectLibraries'
 

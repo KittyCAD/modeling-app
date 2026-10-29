@@ -28,7 +28,10 @@ export interface ProjectOperationsDependencies {
   readonly operations: FileOperationsRegistryService
   readonly wasm: () => Promise<ModuleType>
   /** Own a bulk edit's persistence boundary, when supplied by a backend. */
-  readonly batch?: <T>(root: string, run: () => Promise<T>) => Promise<T>
+  readonly batch?: <T>(
+    root: string,
+    run: (operations: FileOperationsRegistryService) => Promise<T>
+  ) => Promise<T>
 }
 
 /** Project workflows share one storage boundary and have no navigation effects. */
@@ -141,7 +144,7 @@ export function createProjectOperations(deps: ProjectOperationsDependencies) {
             : edit.contents,
       }))
       return run(async () => {
-        const work = async () => {
+        const work = async (operations: FileOperationsRegistryService) => {
           for (const edit of owned) {
             const relative = fsZds.relative(root, edit.path)
             if (
@@ -165,7 +168,7 @@ export function createProjectOperations(deps: ProjectOperationsDependencies) {
           }
         }
         if (deps.batch) await deps.batch(root, work)
-        else await work()
+        else await work(operations)
         notify(owned.map(({ path }) => path))
       })
     },

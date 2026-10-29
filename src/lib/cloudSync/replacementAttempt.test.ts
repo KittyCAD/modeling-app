@@ -1,6 +1,6 @@
-import { projectManifestFromFiles } from '@src/lib/cloudSync/projectArchive'
+import { projectManifestFromFiles } from '@src/lib/fileSystem/cloud/projectArchive'
 import { createProjectReplacementAttempt } from '@src/lib/cloudSync/replacementAttempt'
-import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
+import type { ProjectArchiveFile } from '@src/lib/fileSystem/cloud/types'
 import { describe, expect, it } from 'vitest'
 
 const encoder = new TextEncoder()

@@ -1,7 +1,7 @@
 import type {
   AcknowledgedSyncBase,
   ProjectMetadata,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 
 /**
  * Parse the independently optional fields in the persisted IndexedDB record

@@ -22,7 +22,7 @@ import {
   token,
 } from '@e2e/playwright/test-utils'
 import type { Page } from '@playwright/test'
-import type { CreatedRemoteProject } from '@src/lib/cloudSync/types'
+import type { CreatedRemoteProject } from '@src/lib/fileSystem/cloud/types'
 import JSZip from 'jszip'
 
 const CLOUD_SYNC_E2E_TIMEOUT = 20_000

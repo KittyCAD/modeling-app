@@ -1,10 +1,10 @@
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
-import { CloudApiError } from '@src/lib/cloudSync/cloudApi'
+import { CloudApiError } from '@src/lib/fileSystem/cloud/cloudApi'
 import {
   getCloudSyncFailureCause,
   getCloudSyncFailureContext,
-} from '@src/lib/cloudSync/failureContext'
-import type { ProjectManifest, Revision } from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/failureContext'
+import type { ProjectManifest, Revision } from '@src/lib/fileSystem/cloud/types'
 import { hashString } from '@src/lib/stringUtils'
 import { reportRejection } from '@src/lib/trap'
 

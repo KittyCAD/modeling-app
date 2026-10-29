@@ -3,7 +3,7 @@ import {
   getCloudSyncFailureCause,
   getCloudSyncFailureContext,
   withCloudSyncFailureContext,
-} from '@src/lib/cloudSync/failureContext'
+} from '@src/lib/fileSystem/cloud/failureContext'
 import { describe, expect, it } from 'vitest'
 
 describe('cloud sync failure context', () => {

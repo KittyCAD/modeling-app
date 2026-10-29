@@ -12,7 +12,7 @@ import {
 import {
   normalizeProjectArchiveFilesForCloudSync,
   projectManifestFromFiles,
-} from '@src/lib/cloudSync/projectArchive'
+} from '@src/lib/fileSystem/cloud/projectArchive'
 import {
   getAllOutboxEntries,
   putProjectMetadata,
@@ -24,7 +24,7 @@ import {
   getFetchUrl,
   jsonResponse,
 } from '@src/lib/cloudSync/testUtils'
-import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
+import type { ProjectArchiveFile } from '@src/lib/fileSystem/cloud/types'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type * as TrapModule from '@src/lib/trap'
 import { reportRejection } from '@src/lib/trap'

@@ -6,11 +6,11 @@ import {
   normalizeProjectArchiveFilesForCloudSync,
   projectManifestFromFiles,
   projectManifestsEqual,
-} from '@src/lib/cloudSync/projectArchive'
+} from '@src/lib/fileSystem/cloud/projectArchive'
 import type {
   ProjectArchiveFile,
   ProjectManifest,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 import fsZds from '@src/lib/fs-zds'
 import {
   appendGitignoreForDirectoryWithFs,

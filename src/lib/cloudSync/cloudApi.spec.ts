@@ -7,8 +7,8 @@ import {
   remoteProjectThumbnailTargetPathFromUrl,
   thumbnailUrlFromRemoteProjectPayload,
   updateRemoteProject,
-} from '@src/lib/cloudSync/cloudApi'
-import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/cloudApi'
+import type { ProjectArchiveFile } from '@src/lib/fileSystem/cloud/types'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
 afterEach(() => {

@@ -14,7 +14,7 @@ import {
   getRemoteProjectThumbnailUrl,
   listRemoteProjects,
   updateRemoteProject,
-} from '@src/lib/cloudSync/cloudApi'
+} from '@src/lib/fileSystem/cloud/cloudApi'
 import {
   buildConflictInspectionFromCloudFiles,
   type ConflictInspection,
@@ -24,7 +24,7 @@ import {
   getCloudSyncFailureCause,
   getCloudSyncFailureContext,
   withCloudSyncFailureContext,
-} from '@src/lib/cloudSync/failureContext'
+} from '@src/lib/fileSystem/cloud/failureContext'
 import {
   isCloudSyncExcludedPath,
   isProjectRootPath,
@@ -40,7 +40,7 @@ import {
   toArrayBuffer,
   withProjectTitleInArchiveFiles,
   withUpdatedProjectTomlInArchiveFiles,
-} from '@src/lib/cloudSync/projectArchive'
+} from '@src/lib/fileSystem/cloud/projectArchive'
 import {
   createProjectReplacementAttempt,
   type ProjectReplacementAttempt,
@@ -74,7 +74,7 @@ import type {
   RemoteProject,
   RemoteProjectSummary,
   Revision,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 import {
   DUPLICATE_PROJECT_TEMPORARY_PREFIX,
   PROJECT_IMAGE_NAME,
@@ -110,7 +110,7 @@ import { v4 } from 'uuid'
 export {
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
-} from '@src/lib/cloudSync/projectArchive'
+} from '@src/lib/fileSystem/cloud/projectArchive'
 export {
   getCloudSyncProjectMetadata,
   getCloudSyncProjectMetadataIndex,
@@ -125,7 +125,7 @@ export type {
   ProjectManifest,
   ProjectMetadata,
   RemoteProjectSummary,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fileSystem/cloud/types'
 
 export type CloudSyncConflictResolution = 'local' | 'cloud'
 
