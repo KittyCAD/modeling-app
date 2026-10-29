@@ -25,6 +25,52 @@ import {
 
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
+async function walkProjectFiles(
+  fileOperations: FileOperationsRegistryService,
+  projectRoot: string,
+  visit: (path: string, relativePath: string) => void | Promise<void>,
+  options: {
+    exclude?: (path: string) => boolean
+    normalize?: (path: string) => string
+    skipMissing?: boolean
+  } = {}
+) {
+  const gitignoreFs = fileOperationsGitignoreFs(fileOperations)
+  const normalize = options.normalize ?? normalizeRelativePath
+  const walk = async (directory: string, stack: GitignoreStackEntry[]) => {
+    for (const entry of await fileOperations.readDirectory(directory)) {
+      if (options.exclude?.(entry)) continue
+      const path = fsZds.join(directory, entry)
+      const relativePath = normalize(fsZds.relative(projectRoot, path))
+      let isDirectory: boolean
+      try {
+        isDirectory = (await fileOperations.stat(path)).kind === 'directory'
+      } catch (error) {
+        if (options.skipMissing && error instanceof FileNotFound) continue
+        return Promise.reject(error)
+      }
+      if (isPathIgnoredByGitignore(stack, relativePath, isDirectory)) continue
+      if (isDirectory) {
+        await walk(
+          path,
+          await appendGitignoreForDirectoryWithFs(
+            gitignoreFs,
+            stack,
+            path,
+            projectRoot
+          )
+        )
+      } else {
+        await visit(path, relativePath)
+      }
+    }
+  }
+  await walk(
+    projectRoot,
+    await createInitialGitignoreStackWithFs(gitignoreFs, projectRoot)
+  )
+}
+
 /**
  * Collects files from `projectRoot` for a cloud upload archive. The walk uses
  * coordinated reads, skips internal metadata and version-control paths,
@@ -38,58 +84,18 @@ export async function collectProjectFilesForUpload({
   projectRoot: string
 }) {
   const files: ProjectArchiveFile[] = []
-  const gitignoreFs = fileOperationsGitignoreFs(fileOperations)
-
-  const walk = async (
-    currentPath: string,
-    gitignoreStack: GitignoreStackEntry[]
-  ) => {
-    const entries = await fileOperations.readDirectory(currentPath)
-    for (const entry of entries) {
-      if (isExcludedProjectPath(entry)) {
-        continue
-      }
-
-      const absolutePath = fsZds.join(currentPath, entry)
-      const relativePath = normalizeUploadRelativePath(
-        fsZds.relative(projectRoot, absolutePath)
-      )
-      const isDirectory =
-        (await fileOperations.stat(absolutePath)).kind === 'directory'
-      if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)) {
-        continue
-      }
-
-      if (isDirectory) {
-        const childGitignoreStack = await appendGitignoreForDirectoryWithFs(
-          gitignoreFs,
-          gitignoreStack,
-          absolutePath,
-          projectRoot
-        )
-        await walk(absolutePath, childGitignoreStack)
-        continue
-      }
-
-      const data = await fileOperations.readFile(absolutePath)
+  await walkProjectFiles(
+    fileOperations,
+    projectRoot,
+    async (path, relativePath) => {
       files.push({
         relativePath,
-        data: Uint8Array.from(data),
+        data: Uint8Array.from(await fileOperations.readFile(path)),
       })
-    }
-  }
-
-  const gitignoreStack = await createInitialGitignoreStackWithFs(
-    gitignoreFs,
-    projectRoot
+    },
+    { exclude: isExcludedProjectPath, normalize: normalizeUploadRelativePath }
   )
-  await walk(projectRoot, gitignoreStack)
-  const { normalizeProjectArchiveFiles } = await import(
-    '@src/lib/fs-zds/cloud/archive'
-  )
-  return normalizeProjectArchiveFiles(files).sort((a, b) =>
-    a.relativePath.localeCompare(b.relativePath)
-  )
+  return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath))
 }
 
 export const normalizeKCLFileDeletePath = (filePath: string) =>
@@ -122,7 +128,6 @@ export const collectProjectFiles = async (args: {
   ]
   let basePath = ''
   if (args.projectContext) {
-    const gitignoreFs = fileOperationsGitignoreFs(args.fileOperations)
     // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
     basePath = args.projectContext?.path
     const execStateNameToIndexMap: { [fileName: string]: number } = {}
@@ -226,64 +231,9 @@ export const collectProjectFiles = async (args: {
       )
     }
 
-    const recursivelyPushFilePromisesFromPath = async (
-      path: string,
-      gitignoreStack: GitignoreStackEntry[]
-    ) => {
-      const entries = await args.fileOperations.readDirectory(path)
-      for (const entry of entries) {
-        const absolutePathToFileNameWithExtension = fsZds.join(path, entry)
-        const relativePath = (
-          fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
-        ).replace(/\\/g, '/')
-        let isDirectory: boolean
-        try {
-          isDirectory =
-            (
-              await args.fileOperations.stat(
-                absolutePathToFileNameWithExtension
-              )
-            ).kind === 'directory'
-        } catch (error) {
-          // Directory entries can disappear while a project is being collected.
-          if (
-            error instanceof FileNotFound &&
-            args.skipUnreadableFiles !== false
-          ) {
-            continue
-          }
-          return Promise.reject(error)
-        }
-
-        if (
-          isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)
-        ) {
-          continue
-        }
-
-        if (isDirectory) {
-          const childGitignoreStack = await appendGitignoreForDirectoryWithFs(
-            gitignoreFs,
-            gitignoreStack,
-            absolutePathToFileNameWithExtension,
-            basePath
-          )
-          await recursivelyPushFilePromisesFromPath(
-            absolutePathToFileNameWithExtension,
-            childGitignoreStack
-          )
-          continue
-        }
-
-        pushFilePromise(absolutePathToFileNameWithExtension)
-      }
-    }
-
-    const gitignoreStack = await createInitialGitignoreStackWithFs(
-      gitignoreFs,
-      basePath
-    )
-    await recursivelyPushFilePromisesFromPath(basePath, gitignoreStack)
+    await walkProjectFiles(args.fileOperations, basePath, pushFilePromise, {
+      skipMissing: args.skipUnreadableFiles !== false,
+    })
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
     const MB64 = 2 ** 20 * 64
     if (args.warnIfProjectExceeds64Mb !== false && uploadSize > MB64) {

@@ -5,6 +5,7 @@ import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ZookeeperEditPatch } from '@src/lib/zookeeper/zookeeperEditPatch'
 import {
   collectProjectFiles as collectProjectFilesWithFileOperations,
+  collectProjectFilesForUpload,
   normalizeKCLFileDeletePath,
 } from '@src/lib/fileSystem/projectFiles'
 import { prepareZookeeperNewFileRequest } from '@src/lib/zookeeper/projectFiles'
@@ -357,6 +358,18 @@ describe('Project file collection and cloud-tool patches', () => {
         'main.kcl',
         'project.toml',
       ])
+      await fsZds.mkdir(fsZds.join(projectPath, '.git'))
+      await fsZds.writeFile(
+        fsZds.join(projectPath, '.git', 'HEAD'),
+        new TextEncoder().encode('internal')
+      )
+      const upload = await collectProjectFilesForUpload({
+        fileOperations: testFileOperations,
+        projectRoot: projectPath,
+      })
+      expect(upload.map((file) => file.relativePath)).toEqual(
+        projectFiles.map((file) => file.relPath).sort()
+      )
     } finally {
       await fsZds.rm(projectPath, { recursive: true, force: true })
     }
