@@ -14,7 +14,12 @@ interface MemoryEntry {
 /** A filesystem backed exclusively by owned bytes. It never accesses disk or OPFS. */
 export function createMemoryFileSystem(
   paths: IZooDesignStudioFS
-): IZooDesignStudioFS {
+): IZooDesignStudioFS & {
+  replaceDirectory: (
+    root: string,
+    files: readonly { path: string; data: Uint8Array }[]
+  ) => void
+} {
   const entries = new Map<string, MemoryEntry>()
   let inode = 0
   const error = (code: string, path: string) =>
@@ -124,6 +129,38 @@ export function createMemoryFileSystem(
   }
   return {
     ...paths,
+    replaceDirectory: (root, files) => {
+      root = key(root)
+      const next = new Map<string, MemoryEntry>([[root, makeEntry()]])
+      for (const file of files) {
+        const path = key(file.path)
+        if (!path.startsWith(`${root}${paths.sep}`)) {
+          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+          throw error('EINVAL', path)
+        }
+        next.set(path, makeEntry(file.data))
+        let parent = paths.dirname(path)
+        while (parent !== root) {
+          if (next.get(parent)?.data) {
+            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+            throw error('ENOTDIR', parent)
+          }
+          next.set(parent, next.get(parent) ?? makeEntry())
+          parent = paths.dirname(parent)
+        }
+      }
+      // Validate file/directory collisions before publishing the new tree.
+      for (const path of next.keys()) {
+        if (path !== root && next.get(paths.dirname(path))?.data) {
+          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+          throw error('ENOTDIR', path)
+        }
+      }
+      for (const path of entries.keys())
+        if (path === root || path.startsWith(`${root}${paths.sep}`))
+          entries.delete(path)
+      for (const [path, entry] of next) entries.set(path, entry)
+    },
     readFile,
     writeFile,
     mkdir,

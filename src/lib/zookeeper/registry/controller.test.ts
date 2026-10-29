@@ -1,3 +1,5 @@
+import fsZds from '@src/lib/fs-zds'
+import { waitFor } from '@testing-library/react'
 import { signal, type Signal } from '@preact/signals-core'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
@@ -201,12 +203,14 @@ function createHarness({
   apiToken = 'initial-token',
   initialProjectId = projectId,
   storeGet = Promise.resolve(undefined),
+  cloudProjectId,
 }: {
   actorState?: TestState
   actorContext?: Partial<SnapshotContext>
   apiToken?: string
   initialProjectId?: string | undefined
   storeGet?: Promise<string | undefined>
+  cloudProjectId?: string
 } = {}) {
   const actor = new TestActor()
   actor.setSnapshot(actorState, actorContext)
@@ -227,6 +231,7 @@ function createHarness({
     name: 'bracket',
     path: projectPath,
     projectId: initialProjectId,
+    cloudProjectId,
     readWriteAccess: true,
   }
   const loaderFile = {
@@ -251,30 +256,45 @@ function createHarness({
     zookeeperHistoryRecordingInProgress: false,
   }
   const executingEditor = signal<typeof kclManager | undefined>(kclManager)
+  const reloadFiles = vi.fn(async () => undefined)
   const zdsProject = {
     executingEditor,
+    reloadFilesFromStorage: reloadFiles,
     executingFileEntry: signal(loaderFile),
     projectIORefSignal: signal(project),
   } as unknown as ZDSProject
   const projectSignal = signal<ZDSProject | undefined>(zdsProject)
+  const refreshProject = vi.fn(
+    async (_id: string, _isCurrent?: () => boolean) => undefined
+  )
+  const readFolders = vi.fn(async () => undefined)
+  const fileExists = vi.fn(async () => true)
+  const navigateToFile = vi.fn(async (_data: unknown) => undefined)
   const dependencies = {
     apiToken,
+    cloudStorage: { refreshProject },
     billing: { send: billingSend },
     conversationStore,
     fileOperations: {
       readFile: vi.fn(async () => new Uint8Array()),
+      exists: fileExists,
     },
     kclManager,
     project: projectSignal,
     projectId: initialProjectId,
     projectPath,
-    systemIO: { actor: {} },
+    systemIO: { readFoldersFromProjectDirectory: readFolders, navigateToFile },
   } as unknown as ZookeeperSessionControllerDependencies
   const controller = createZookeeperSessionController(dependencies)
   activeControllers.add(controller)
 
   return {
     actor,
+    fileExists,
+    reloadFiles,
+    navigateToFile,
+    refreshProject,
+    readFolders,
     billingSend,
     controller,
     conversationStore,
@@ -318,6 +338,105 @@ describe('Zookeeper session controller', () => {
     zookeeperPromptRunningSignal.value = false
     vi.useRealTimers()
     vi.restoreAllMocks()
+  })
+
+  it('refreshes a cloud mutation once and ignores another project', async () => {
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    const change = { callId: 'call-1', projectId: 'remote-one' }
+    h.actor.emit('ready', { cloudProjectChange: change })
+    h.actor.emit('ready', { cloudProjectChange: { ...change } })
+    h.actor.emit('ready', {
+      cloudProjectChange: { callId: 'call-2', projectId: 'other' },
+    })
+    await waitFor(() => expect(h.readFolders).toHaveBeenCalledOnce())
+    expect(h.refreshProject).toHaveBeenCalledExactlyOnceWith(
+      'remote-one',
+      expect.any(Function)
+    )
+    expect(h.reloadFiles).toHaveBeenCalledOnce()
+  })
+
+  it('leaves local projects on the file-edit path', async () => {
+    const h = createHarness()
+    h.actor.emit('ready', {
+      cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
+      lastMessageId: 1,
+      lastMessageType: 'end_of_stream',
+    })
+    await flushPromises()
+    expect(h.refreshProject).not.toHaveBeenCalled()
+    expect(workerMocks.histories[0].handleActorSnapshot).toHaveBeenCalled()
+  })
+
+  it('refreshes cloud state once when a turn ends without forwarded MCP results', async () => {
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    h.actor.emit('ready', {
+      lastMessageId: 1,
+      lastMessageType: 'end_of_stream',
+    })
+    h.actor.emit('ready', {
+      lastMessageId: 1,
+      lastMessageType: 'end_of_stream',
+    })
+    await waitFor(() => expect(h.readFolders).toHaveBeenCalledOnce())
+    expect(h.refreshProject).toHaveBeenCalledOnce()
+    expect(workerMocks.histories[0].handleActorSnapshot).not.toHaveBeenCalled()
+  })
+
+  it('waits for a pending cloud refresh before continuing a restored turn', async () => {
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    const gate = deferred<undefined>()
+    h.refreshProject.mockReturnValueOnce(gate.promise)
+    const context = {
+      cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
+      conversation: {
+        exchanges: [
+          { responses: [{ end_of_stream: {} }], deltasAggregated: '' },
+        ],
+      },
+    }
+    h.actor.emit('wait-for-continue-check', context)
+    await waitFor(() => expect(h.refreshProject).toHaveBeenCalledOnce())
+    expect(sentEvents(h.actor, ZookeeperManagerStates.ContinueCheck)).toEqual(
+      []
+    )
+    gate.resolve(undefined)
+    await waitFor(() =>
+      expect(
+        sentEvents(h.actor, ZookeeperManagerStates.ContinueCheck)
+      ).toHaveLength(1)
+    )
+  })
+
+  it('drains an in-flight refresh on dispose without updating a replacement session', async () => {
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    const gate = deferred<undefined>()
+    h.refreshProject.mockReturnValueOnce(gate.promise)
+    h.actor.emit('ready', {
+      cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
+    })
+    await waitFor(() => expect(h.refreshProject).toHaveBeenCalledOnce())
+    const disposed = h.controller.dispose()
+    expect(h.refreshProject.mock.calls[0][1]?.()).toBe(false)
+    gate.resolve(undefined)
+    await disposed
+    expect(h.readFolders).not.toHaveBeenCalled()
+    expect(h.reloadFiles).not.toHaveBeenCalled()
+  })
+
+  it('returns to the default file when a cloud tool removes the executing file', async () => {
+    vi.spyOn(fsZds, 'relative').mockReturnValue('main.kcl')
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    h.fileExists.mockResolvedValue(false)
+    h.actor.emit('ready', {
+      cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
+    })
+    await waitFor(() =>
+      expect(h.navigateToFile).toHaveBeenCalledWith({
+        requestedProjectName: 'bracket',
+        requestedFileName: 'main.kcl',
+      })
+    )
   })
 
   it('owns billing transitions and auth rotation without a mounted pane', () => {
@@ -989,6 +1108,7 @@ describe('Zookeeper session controller', () => {
         {
           type: ZookeeperManagerStates.ContinueCheck,
           projectName: 'bracket',
+          projectId: `local:${projectId}`,
           projectFiles: [],
         },
       ])

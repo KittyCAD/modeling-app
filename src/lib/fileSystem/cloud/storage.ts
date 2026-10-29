@@ -169,11 +169,7 @@ export function createCloudStorage(
       }
       return { path, data: file.data }
     })
-    await memory.mkdir(projectRoot, { recursive: true })
-    for (const entry of entries) {
-      await memory.mkdir(paths.dirname(entry.path), { recursive: true })
-      await memory.writeFile(entry.path, new Uint8Array(entry.data))
-    }
+    memory.replaceDirectory(projectRoot, entries)
   }
   const acknowledge = (
     id: string,
@@ -226,8 +222,9 @@ export function createCloudStorage(
   }
   const enqueue = <T>(
     id: string,
-    work: () => Promise<T>,
-    persist = true
+    work: (previousState: CloudSaveState | undefined) => Promise<T>,
+    persist = true,
+    reportSaveFailure = true
   ): Promise<T> => {
     const project = opened.get(id)
     if (!project) return Promise.reject(new Error('Cloud project is not open.'))
@@ -241,7 +238,7 @@ export function createCloudStorage(
       .catch(() => undefined)
       .then(async () => {
         const previousState = saves.peek().get(id)
-        state(id, { state: 'saving' })
+        if (reportSaveFailure) state(id, { state: 'saving' })
         try {
           if (config().accountId !== requestConfig.accountId) {
             // eslint-disable-next-line suggest-no-throw/suggest-no-throw
@@ -253,7 +250,7 @@ export function createCloudStorage(
               file.data,
             ])
           )
-          const value = await work()
+          const value = await work(previousState)
           const after = await collect(pathFor(id))
           if (persist) await commit(id, after, requestConfig)
           const changes: CloudFileChange[] = []
@@ -280,7 +277,12 @@ export function createCloudStorage(
             state(id, previousState ?? { state: 'saved' })
           return value
         } catch (error) {
-          state(id, { state: 'failed', error })
+          state(
+            id,
+            reportSaveFailure
+              ? { state: 'failed', error }
+              : (previousState ?? { state: 'saved' })
+          )
           return Promise.reject(error)
         }
       })
@@ -445,6 +447,48 @@ export function createCloudStorage(
       }
     },
     openProject,
+    refreshProject: async (
+      id: string,
+      isCurrent: () => boolean = () => true
+    ) => {
+      await openProject(id)
+      return enqueue(
+        id,
+        async (previousState) => {
+          if (!isCurrent()) return
+          if (previousState?.state === 'failed')
+            return Promise.reject(
+              new Error(
+                'Cloud refresh skipped to preserve unsaved changes. Retry saving before refreshing.'
+              )
+            )
+          const requestConfig = config()
+          // Metadata and archive use separate requests. Recheck the revision so a
+          // concurrent cloud mutation cannot mix one snapshot with another revision.
+          for (let attempt = 0; attempt < 3; attempt += 1) {
+            const remote = await api.getRemoteProject(requestConfig, id)
+            const archive = await parseProjectArchive(
+              await api.downloadRemoteProjectArchive(requestConfig, id)
+            )
+            const latest = await api.getRemoteProject(requestConfig, id)
+            if (config().accountId !== requestConfig.accountId)
+              return Promise.reject(
+                new Error('Cloud account changed during refresh.')
+              )
+            if (!isCurrent()) return
+            if (String(remote.revision) !== String(latest.revision)) continue
+            await hydrate(id, archive)
+            acknowledge(id, latest, archive)
+            return
+          }
+          return Promise.reject(
+            new Error('Cloud project kept changing during refresh. Try again.')
+          )
+        },
+        false,
+        false
+      )
+    },
     deleteProject,
     createProject: async (
       title: string,

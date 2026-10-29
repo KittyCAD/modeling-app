@@ -422,6 +422,9 @@ export class App implements AppSubsystems {
         if (foundProject && projectIORefSignal.value !== foundProject) {
           projectIORefSignal.value = {
             ...foundProject,
+            ...(projectIORefSignal.value.cloudProjectId
+              ? { cloudProjectId: projectIORefSignal.value.cloudProjectId }
+              : {}),
             ...(projectIORefSignal.value.libraryPath
               ? { libraryPath: projectIORefSignal.value.libraryPath }
               : {}),

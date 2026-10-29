@@ -175,6 +175,25 @@ describe('ZookeeperFileRequestProcessor', () => {
     kclManagerState.zookeeperManagerMachineBulkManipulatingFileSystem = false
   })
 
+  test('ignores edit snapshots for cloud projects without clearing selection or writing files', async () => {
+    const processor = new ZookeeperFileRequestProcessor({
+      getProject: () => ({ ...project, cloudProjectId: 'remote-one' }),
+      history,
+      isEditorCurrent: () => true,
+      isSessionCurrent: () => true,
+      kclManager,
+      fileWorkflows,
+      onEditApplied: mocks.onEditApplied,
+    })
+    emitZookeeperFileRequest(processor, 'stale snapshot', 1)
+    expect(processor.hasPendingRequests).toBe(false)
+    expect(mocks.systemIOSend).not.toHaveBeenCalled()
+    expect(mocks.historyReserve).not.toHaveBeenCalled()
+    expect(mocks.modelingSend).not.toHaveBeenCalled()
+    expect(mocks.onEditApplied).not.toHaveBeenCalled()
+    await processor.dispose()
+  })
+
   test('deletes files from the current patch and preserves files recreated by the next edit', async () => {
     const processor = createProcessor()
     const deletion = patchBackedZookeeperEdit('intermediate code')

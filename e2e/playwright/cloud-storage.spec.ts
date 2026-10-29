@@ -6,6 +6,7 @@ import {
   zipProject,
   type CloudProject,
 } from '@e2e/playwright/lib/cloudProjectTestUtils'
+import { decode } from '@msgpack/msgpack'
 import type { BrowserContext } from '@playwright/test'
 
 const projectId = '12902000-0000-4000-8000-000000000091'
@@ -165,5 +166,113 @@ test(
         }
       }, root)
     ).toBe(false)
+  }
+)
+
+test(
+  'cloud MCP returns refresh authoritative files and ignore streamed edit snapshots',
+  { tag: ['@web', '@zookeeper'] },
+  async ({ context, page }, testInfo) => {
+    test.setTimeout(180_000)
+    await mockClientErrorReports(context)
+    const remote = await mockCloud(context)
+    let connected = false
+    let send: (message: object) => void = () => {
+      throw new Error('Zookeeper socket has not connected')
+    }
+    await page.routeWebSocket('**/ws/ml/copilot**', (socket) => {
+      send = (message) => socket.send(JSON.stringify(message))
+      socket.onMessage((message) => {
+        const request =
+          typeof message === 'string' ? JSON.parse(message) : decode(message)
+        if (
+          request &&
+          typeof request === 'object' &&
+          'type' in request &&
+          request.type === 'list_modes'
+        ) {
+          connected = true
+          send({
+            conversation_id: {
+              conversation_id: '12902000-0000-4000-8000-000000000092',
+            },
+          })
+        }
+        if (
+          request &&
+          typeof request === 'object' &&
+          'type' in request &&
+          request.type === 'ping'
+        )
+          send({ pong: {} })
+      })
+    })
+    await setup(context, page, testInfo)
+    await page.goto('/home')
+    await page
+      .getByTestId('project-link')
+      .filter({ has: page.getByText('Cloud memory model', { exact: true }) })
+      .click()
+    await expect.poll(() => connected, { timeout: 30_000 }).toBe(true)
+    await expect
+      .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
+      .toBe(0)
+    const initialUploads = remote.uploads.length
+    send({
+      tool_output: {
+        result: {
+          type: 'edit_kcl_code',
+          status_code: 200,
+          outputs: { 'main.kcl': 'stale snapshot' },
+          zookeeper_edit_patch: {
+            run_id: 'remote-run',
+            changed_files: [
+              {
+                status: 'modified',
+                path: 'main.kcl',
+                contents: 'stale snapshot',
+              },
+            ],
+          },
+        },
+      },
+    })
+    remote.project.files['main.kcl'] =
+      '@settings(kclVersion = 3.0)\nwidth = 42\n'
+    remote.project.files['new/data.bin'] = 'binary import'
+    delete remote.project.files['parts/note.md']
+    remote.project.revision = String(Number(remote.project.revision) + 1)
+    send({
+      zookeeper_recovery_tool_output: {
+        call_id: 'cloud-write-1',
+        tool_name: 'project_write_file',
+        output: JSON.stringify(cloudProjectResponse(remote.project)),
+        output_truncated: false,
+        project_updated: false,
+      },
+    })
+    await expect
+      .poll(() => page.evaluate(() => window.app.singletons.kclManager.code), {
+        timeout: 30_000,
+      })
+      .toContain('width = 42')
+    const root = `/__zoo_cloud__/${projectId}`
+    await expect
+      .poll(() =>
+        page.evaluate(
+          async (root) => ({
+            added: await window.app.fileOperations.exists(
+              `${root}/new/data.bin`
+            ),
+            deleted: await window.app.fileOperations.exists(
+              `${root}/parts/note.md`
+            ),
+            id: window.app.project?.projectIORefSignal.value.cloudProjectId,
+          }),
+          root
+        )
+      )
+      .toEqual({ added: true, deleted: false, id: projectId })
+    expect(remote.uploads).toHaveLength(initialUploads)
   }
 )

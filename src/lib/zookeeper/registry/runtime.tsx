@@ -1,3 +1,5 @@
+import type { CloudStorageService } from '@src/lib/fileSystem/cloud/storage'
+import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import {
   computed,
@@ -58,6 +60,7 @@ const ZookeeperConversationPaneWrapper = lazy(async () => {
 type ZookeeperRuntime = ReturnType<typeof createZookeeperRuntime>
 
 type ZookeeperRuntimeServices = {
+  cloudStorage?: ReadonlySignal<CloudStorageService | undefined>
   auth: ReadonlySignal<AuthRegistryService | undefined>
   billing: ReadonlySignal<BillingRegistryService | undefined>
   fileOperations: ReadonlySignal<FileOperationsRegistryService | undefined>
@@ -307,6 +310,7 @@ export function createZookeeperRuntime(
             getEnvironmentNameFromEnv(env())
           ),
           fileOperations,
+          cloudStorage: services.cloudStorage?.value,
           kclManager: next.kclManager,
           project: next.project,
           projectId: next.projectId,
@@ -417,6 +421,7 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
     auth: ctx.services.signal(authService),
     billing: ctx.services.signal(billingService),
     fileOperations: ctx.services.signal(fileOperationsService),
+    cloudStorage: ctx.services.signal(cloudStorageService),
     projectSession: ctx.services.signal(projectSession),
     settings: ctx.services.signal(settingsService),
     systemIO: ctx.services.signal(fileWorkflowsService),

@@ -869,6 +869,61 @@ describe('project system', () => {
     }
   })
 
+  it('rebuilds cloud dependencies before executing and preserves cloud identity on folder refresh', async () => {
+    const projectPath = `/tmp/app-cloud-refresh-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const oldPath = fsZds.join(projectPath, 'old.kcl')
+    const nestedPath = fsZds.join(projectPath, 'parts', 'new.kcl')
+    const app = createAppForTest()
+    try {
+      await writeText(mainPath, '@settings(kclVersion = 3.0)\nwidth = 1\n')
+      await writeText(oldPath, '@settings(kclVersion = 3.0)\nsize = 1\n')
+      const project: Project = {
+        name: fsZds.basename(projectPath),
+        path: projectPath,
+        default_file: mainPath,
+        cloudProjectId: 'remote-one',
+        metadata: null,
+        directory_count: 0,
+        kcl_file_count: 2,
+        readWriteAccess: true,
+        children: [
+          { name: 'main.kcl', path: mainPath, children: null },
+          { name: 'old.kcl', path: oldPath, children: null },
+        ],
+      }
+      const opened = await app.openProject(project)
+      const editor = await opened.openEditor(mainPath)
+      await writeText(nestedPath, '@settings(kclVersion = 3.0)\nsize = 2\n')
+      await fsZds.rm(oldPath)
+      const gate = Promise.withResolvers<undefined>()
+      const snapshot = vi
+        .spyOn(editor.rustContext, 'sendOpenProject')
+        .mockReturnValueOnce(gate.promise)
+      const execute = vi
+        .spyOn(editor, 'executeCode')
+        .mockResolvedValue(undefined)
+      const refresh = opened.reloadFilesFromStorage(() => true)
+      await vi.waitFor(() => expect(snapshot).toHaveBeenCalledOnce())
+      expect(execute).not.toHaveBeenCalled()
+      const files = snapshot.mock.calls[0][1]
+      expect(files.map((file) => file.path)).toEqual(
+        expect.arrayContaining([mainPath, nestedPath])
+      )
+      expect(files.some((file) => file.path === oldPath)).toBe(false)
+      gate.resolve(undefined)
+      await refresh
+      expect(execute).toHaveBeenCalledOnce()
+      await app.fileWorkflows.setFolders({
+        folders: [{ ...project, cloudProjectId: undefined }],
+      })
+      expect(opened.projectIORefSignal.value.cloudProjectId).toBe('remote-one')
+    } finally {
+      app.dispose()
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it('waits for the Rust project snapshot before executing a reused editor after a file switch', async () => {
     const projectPath = `/tmp/app-file-switch-open-race-${crypto.randomUUID()}`
     const mainPath = fsZds.join(projectPath, 'main.kcl')

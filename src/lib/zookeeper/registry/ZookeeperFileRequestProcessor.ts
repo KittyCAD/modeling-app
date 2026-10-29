@@ -97,6 +97,7 @@ export class ZookeeperFileRequestProcessor {
   ) {
     if (
       this.disposed ||
+      Boolean(this.deps.getProject()?.cloudProjectId) ||
       snapshot.context.lastMessageId === this.lastMessageId
     ) {
       return
@@ -184,7 +185,7 @@ export class ZookeeperFileRequestProcessor {
   /** Queues an edit whose orderedId was assigned when it was received. */
   enqueue(request: ZookeeperNewFileRequest, onApplied: () => void) {
     // Re-ordering of the queue happens at the end of this function
-    if (this.disposed) {
+    if (this.disposed || this.deps.getProject()?.cloudProjectId) {
       return
     }
     const project = this.deps.getProject()

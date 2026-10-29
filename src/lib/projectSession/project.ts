@@ -1,3 +1,6 @@
+import { getProjectInfo } from '@src/lib/desktop'
+import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
+import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
   type Signal,
   type ReadonlySignal,
@@ -362,6 +365,51 @@ export class ZDSProject {
   /** Get all the KCL files in this project as a flat array. */
   private async getAllKclFiles(): Promise<ApiFile[]> {
     return Promise.all(this.files.map((file) => file.asRustApiFile()))
+  }
+
+  /** Rebuild the complete Rust snapshot after an authoritative storage refresh. */
+  async reloadFilesFromStorage(isCurrent: () => boolean) {
+    const editor = this.executingEditor.value
+    if (!editor || !isCurrent()) return
+    const project = await getProjectInfo(
+      this.app.fileOperations,
+      this.path,
+      await this.app.wasmPromise
+    )
+    if (!isCurrent()) return
+    const existing = new Map(this.files.map((file) => [file.path, file]))
+    const files = this.collectProjectFiles(project).map(
+      (file) => existing.get(file.path) ?? file
+    )
+    const apiFiles = await Promise.all(
+      files.map((file) => file.asRustApiFile())
+    )
+    if (!isCurrent() || this.executingEditor.value !== editor) return
+    this.files = files
+    this.projectIORefSignal.value = {
+      ...this.projectIORefSignal.value,
+      ...project,
+      cloudProjectId: this.projectIORefSignal.value.cloudProjectId,
+    }
+    for (const [, openEditor] of this.editors)
+      if (
+        openEditor !== editor &&
+        !files.some((file) => file.path === openEditor.path)
+      )
+        this.closeEditor(openEditor.path)
+    // The controller navigates to the default file when the executing file was
+    // removed. Never execute the deleted editor's stale buffer.
+    if (!files.some((file) => file.path === editor.path)) return
+    await editor.rustContext.sendOpenProject(editor.path, apiFiles)
+    if (!isCurrent() || this.executingEditor.value !== editor) return
+    if (
+      !editor.modelingState?.matches('Sketch') &&
+      !editor.modelingState?.matches('sketchSolveMode') &&
+      getAutomaticallyRenderEnabledFromSettings(
+        getSettingsFromActorContext(this.app.settings.actor)
+      )
+    )
+      await editor.executeCode(editor.code)
   }
 
   /**

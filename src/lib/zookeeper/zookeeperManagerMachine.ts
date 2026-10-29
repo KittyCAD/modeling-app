@@ -1,3 +1,7 @@
+import {
+  parseCloudProjectToolChange,
+  type CloudProjectToolChange,
+} from '@src/lib/zookeeper/cloudProjectTools'
 import type {
   AttachmentRef,
   MlCopilotAccessDeniedCode,
@@ -96,6 +100,7 @@ type MlCopilotUserRequest = Omit<
   // The generated client still narrows this to the initially-known mode ids,
   // but mode discovery intentionally treats the backend-provided id as opaque.
   mode?: MlCopilotModeId
+  project_id?: string
   active_file?: string
   correlation_id?: string
   engine_api_call_id?: string
@@ -112,6 +117,7 @@ type MlCopilotProjectContextRequest = Extract<
   MlCopilotClientMessage,
   { type: 'project_context' }
 > & {
+  project_id?: string
   active_file?: string
   correlation_id?: string
   engine_api_call_id?: string
@@ -232,6 +238,7 @@ export enum ZookeeperManagerTransitions {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   EditApplied = 'edit-applied',
+  CloudProjectChanged = 'cloud-project-changed',
   ModesReceive = 'modes-receive',
   ConversationClose = 'conversation-close',
   Cancel = 'cancel',
@@ -379,6 +386,7 @@ export type ZookeeperManagerEvents =
     }
   | {
       type: ZookeeperManagerStates.ContinueCheck
+      projectId?: string
       projectName: string
       projectFiles: FileMeta[]
       activeFile?: string
@@ -387,6 +395,10 @@ export type ZookeeperManagerEvents =
   | {
       type: ZookeeperManagerTransitions.ResponseReceive
       response: MlCopilotServerMessage
+    }
+  | {
+      type: ZookeeperManagerTransitions.CloudProjectChanged
+      change: CloudProjectToolChange
     }
   | {
       type: ZookeeperManagerTransitions.EditApplied
@@ -516,6 +528,7 @@ export interface ZookeeperManagerContext {
   conversation?: Conversation
   conversationId?: string
   lastMessageId?: number
+  cloudProjectChange?: CloudProjectToolChange
   lastMessageType?: TypeVariant<MlCopilotServerMessage>
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
@@ -1388,6 +1401,19 @@ export const zookeeperManagerMachine = setup({
               return
             }
 
+            const cloudChange = parseCloudProjectToolChange(response)
+            if (cloudChange) {
+              theRefParentSend({
+                type: ZookeeperManagerTransitions.CloudProjectChanged,
+                change: cloudChange,
+              })
+              return
+            }
+            if (
+              isRecord(response) &&
+              'zookeeper_recovery_tool_output' in response
+            )
+              return
             if (!isMlCopilotServerMessage(response)) return
 
             // Ignore the authorization bug
@@ -1632,6 +1658,9 @@ export const zookeeperManagerMachine = setup({
 
       const request: MlCopilotUserRequest = {
         type: 'user',
+        project_id: event.projectForPromptOutput.cloudProjectId
+          ? `cloud:${event.projectForPromptOutput.cloudProjectId}`
+          : `local:${event.projectForPromptOutput.projectId ?? event.projectForPromptOutput.path}`,
         ...createZookeeperCorrelation(event.engineCommandManager.apiCallId),
         content: requestData.body.prompt ?? '',
         project_name: requestData.body.project_name,
@@ -1708,6 +1737,7 @@ export const zookeeperManagerMachine = setup({
 
       const requestProjectContext: MlCopilotProjectContextRequest = {
         type: 'project_context',
+        ...(event.projectId ? { project_id: event.projectId } : {}),
         ...createZookeeperCorrelation(event.engineApiCallId),
         project_name: event.projectName,
         current_files: filesAsByteArrays,
@@ -1807,6 +1837,9 @@ export const zookeeperManagerMachine = setup({
         // This is bookkeeping, not a new server message or a completed turn.
         return { conversation: { ...context.conversation, exchanges } }
       }),
+    },
+    [ZookeeperManagerTransitions.CloudProjectChanged]: {
+      actions: assign(({ event }) => ({ cloudProjectChange: event.change })),
     },
     [ZookeeperManagerTransitions.AuthTokenChanged]: {
       actions: ['assignApiToken'],
