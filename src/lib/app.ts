@@ -1,6 +1,7 @@
 import {
   defineRegistryItem,
   pluginsValueSpec,
+  provideService,
   Registry,
   type RegistryItem,
   Slot,
@@ -24,6 +25,7 @@ import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
@@ -83,6 +85,7 @@ import {
   type UserFeaturesRegistryService,
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import {
   type ZdsPluginActivationSetting,
@@ -95,6 +98,7 @@ import {
 import type { SnapshotFrom, Subscription } from 'xstate'
 
 const appCommandsSlot = new Slot()
+const appViewportScreenshotSlot = new Slot()
 
 type AppRegistryOptions = {
   registryOverrides?: readonly RegistryItem[]
@@ -270,6 +274,7 @@ export class App implements AppSubsystems {
     appRegistry.configure([
       appRegistryOverridesSlot.of(...registryOverrides),
       appCommandsSlot.of(),
+      appViewportScreenshotSlot.of(),
       engineSceneRuntimeExtensionsSlot.of(),
       ...coreRegistryItems,
     ])
@@ -773,6 +778,17 @@ export class App implements AppSubsystems {
       keymap: this.registry.get(keymapService),
     })
 
+    this.registry.reconfigure(appViewportScreenshotSlot, [
+      defineRegistryItem({
+        id: 'app.viewport-screenshot',
+        providesServices: [
+          provideService(viewportScreenshotService, {
+            capture: () =>
+              takeViewportScreenshot(kclManager.sceneInfra.localRenderer),
+          }),
+        ],
+      }),
+    ])
     this.registry.get(lspService).attachKclManager(kclManager)
 
     return {

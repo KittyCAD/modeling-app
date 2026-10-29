@@ -7,6 +7,7 @@ interface ToggleProps {
   name: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   checked: boolean
+  disabled?: boolean
 }
 
 export const Toggle = ({
@@ -16,9 +17,14 @@ export const Toggle = ({
   name = '',
   onChange,
   checked,
+  disabled = false,
 }: ToggleProps) => {
   return (
-    <label className={`${styles.toggle} ${className}`}>
+    <label
+      className={`${styles.toggle} ${
+        disabled ? 'opacity-50 pointer-events-none' : ''
+      } ${className}`}
+    >
       <p
         className={checked ? 'text-chalkboard-70 dark:text-chalkboard-50' : ''}
       >
@@ -30,6 +36,7 @@ export const Toggle = ({
         id={name}
         checked={checked}
         onChange={onChange}
+        disabled={disabled}
       />
       <span></span>
       <p
