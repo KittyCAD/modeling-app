@@ -1,11 +1,11 @@
 import {
-  isCloudSyncExcludedPath,
+  isExcludedProjectPath,
   normalizeRelativePath,
-} from '@src/lib/fileSystem/cloud/paths'
+} from '@src/lib/fs-zds/cloud/paths'
 
-import { normalizeProjectArchiveFilesForCloudSync } from '@src/lib/fileSystem/cloud/projectArchive'
+import { normalizeProjectArchiveFiles } from '@src/lib/fs-zds/cloud/archive'
 
-import type { ProjectArchiveFile } from '@src/lib/fileSystem/cloud/types'
+import type { ProjectArchiveFile } from '@src/lib/fs-zds/cloud/types'
 
 import fsZds from '@src/lib/fs-zds'
 
@@ -20,10 +20,9 @@ import {
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 /**
- * Collects the files from `projectRoot` that cloud sync would include in an
- * upload archive. The walk uses coordinated reads, skips cloud-sync internal
- * paths, respects `.gitignore` rules, and returns normalized files in stable
- * relative-path order.
+ * Collects files from `projectRoot` for a cloud upload archive. The walk uses
+ * coordinated reads, skips internal metadata and version-control paths,
+ * respects `.gitignore` rules, and returns normalized files in stable order.
  */
 export async function collectProjectFilesForUpload({
   fileOperations,
@@ -41,7 +40,7 @@ export async function collectProjectFilesForUpload({
   ) => {
     const entries = await fileOperations.readDirectory(currentPath)
     for (const entry of entries) {
-      if (isCloudSyncExcludedPath(entry)) {
+      if (isExcludedProjectPath(entry)) {
         continue
       }
 
@@ -79,7 +78,7 @@ export async function collectProjectFilesForUpload({
     projectRoot
   )
   await walk(projectRoot, gitignoreStack)
-  return normalizeProjectArchiveFilesForCloudSync(files).sort((a, b) =>
+  return normalizeProjectArchiveFiles(files).sort((a, b) =>
     a.relativePath.localeCompare(b.relativePath)
   )
 }

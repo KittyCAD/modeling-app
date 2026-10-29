@@ -1,6 +1,6 @@
 import { createFileWorkflows } from '@src/lib/fileSystem/workflows/service'
 import { projectSession } from '@src/registry/contracts/projectSession'
-import { createCloudStorage } from '@src/lib/fileSystem/cloud/storage'
+import { createCloudStorage } from '@src/registry/extensions/fileOperations/cloud'
 import { authService } from '@src/registry/contracts/auth'
 import {
   defineRegistryItem,

@@ -1,17 +1,12 @@
 import { posix as archivePaths } from '@chainner/node-path'
-import { withCloudSyncFailureContext } from '@src/lib/fileSystem/cloud/failureContext'
-const normalizeRelativePath = (path: string) =>
-  path
-    .replaceAll('\\', '/')
-    .replace(/^\/+/, '')
-    .replace(/^(?:\.\/)+/g, '')
+import { withCloudFailureContext } from '@src/lib/fs-zds/cloud/failureContext'
+import { normalizeRelativePath } from '@src/lib/fs-zds/cloud/paths'
 import type {
   ProjectArchiveFile,
-  ProjectManifest,
   ProjectUploadBody,
   ProjectUploadPublicationMetadata,
   Revision,
-} from '@src/lib/fileSystem/cloud/types'
+} from '@src/lib/fs-zds/cloud/types'
 import {
   PROJECT_ENTRYPOINT,
   PROJECT_SETTINGS_FILE_NAME,
@@ -25,10 +20,10 @@ import {
 import { isArray } from '@src/lib/utils'
 import JSZip from 'jszip'
 
-export const CLOUD_SYNC_UNTITLED_PROJECT_TITLE = 'Untitled'
+export const UNTITLED_PROJECT_TITLE = 'Untitled'
 
 export function getRemoteProjectTitleForProjectToml(title?: string) {
-  return title?.trim() || CLOUD_SYNC_UNTITLED_PROJECT_TITLE
+  return title?.trim() || UNTITLED_PROJECT_TITLE
 }
 
 type PrepareProjectFilesForCloudUploadOptions = {
@@ -69,7 +64,7 @@ export function prepareProjectFilesForCloudUpload(
     typeof optionsOrExpectedRevision === 'string'
       ? undefined
       : optionsOrExpectedRevision?.entrypointPath
-  const normalizedFiles = normalizeProjectArchiveFilesForCloudSync(files)
+  const normalizedFiles = normalizeProjectArchiveFiles(files)
   const entrypointPath = getUploadEntrypointPath(
     normalizedFiles,
     preferredEntrypointPath
@@ -109,9 +104,7 @@ export function prepareProjectFilesForCloudUpload(
   }
 }
 
-export function normalizeProjectArchiveFilesForCloudSync(
-  files: ProjectArchiveFile[]
-) {
+export function normalizeProjectArchiveFiles(files: ProjectArchiveFile[]) {
   return files.map((file) => {
     const relativePath = normalizeRelativePath(file.relativePath)
     return {
@@ -281,68 +274,6 @@ export function withUpdatedProjectTomlInArchiveFiles(
   return nextFiles
 }
 
-export function projectManifestsEqual(
-  a: ProjectManifest | undefined,
-  b: ProjectManifest | undefined
-) {
-  if (!a || !b) {
-    return false
-  }
-  const aEntries = Object.entries(a.files).sort(([left], [right]) =>
-    left.localeCompare(right)
-  )
-  const bEntries = Object.entries(b.files).sort(([left], [right]) =>
-    left.localeCompare(right)
-  )
-  if (aEntries.length !== bEntries.length) {
-    return false
-  }
-
-  return aEntries.every(([aPath, aEntry], index) => {
-    const [bPath, bEntry] = bEntries[index]
-    return (
-      aPath === bPath &&
-      aEntry.byteSize === bEntry.byteSize &&
-      aEntry.sha256 === bEntry.sha256
-    )
-  })
-}
-
-export async function projectManifestFromFiles(files: ProjectArchiveFile[]) {
-  return withCloudSyncFailureContext(
-    { stage: 'manifest', point: 'hash-project-manifest' },
-    async () => {
-      const manifest: ProjectManifest = { files: {} }
-      for (const file of files) {
-        manifest.files[normalizeRelativePath(file.relativePath)] = {
-          byteSize: file.data.byteLength,
-          sha256: await sha256Hex(file.data),
-        }
-      }
-      return manifest
-    }
-  )
-}
-
-async function sha256Hex(data: Uint8Array) {
-  if (globalThis.crypto?.subtle) {
-    const hashBuffer = await globalThis.crypto.subtle.digest(
-      'SHA-256',
-      toArrayBuffer(data)
-    )
-    return Array.from(new Uint8Array(hashBuffer))
-      .map((byte) => byte.toString(16).padStart(2, '0'))
-      .join('')
-  }
-
-  let hash = 2166136261
-  for (const byte of data) {
-    hash ^= byte
-    hash = Math.imul(hash, 16777619)
-  }
-  return (hash >>> 0).toString(16).padStart(8, '0')
-}
-
 export function toArrayBuffer(data: Uint8Array): ArrayBuffer {
   const copy = new Uint8Array(data.byteLength)
   copy.set(data)
@@ -350,7 +281,7 @@ export function toArrayBuffer(data: Uint8Array): ArrayBuffer {
 }
 
 export async function parseProjectArchive(archive: ArrayBuffer) {
-  return withCloudSyncFailureContext(
+  return withCloudFailureContext(
     { stage: 'archive', point: 'parse-project-archive' },
     async () => {
       try {

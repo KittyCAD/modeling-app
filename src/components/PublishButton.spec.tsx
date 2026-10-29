@@ -1,7 +1,7 @@
 import type {
   ProjectPublishSubmission,
   PublishedProject,
-} from '@src/lib/fileSystem/cloud/publication'
+} from '@src/registry/extensions/fileOperations/publication'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
@@ -24,7 +24,7 @@ vi.mock('@src/hooks/useProjectStatus', () => ({
   useProjectStatus: mockState.useProjectStatus,
 }))
 
-vi.mock('@src/lib/fileSystem/cloud/publication', () => ({
+vi.mock('@src/registry/extensions/fileOperations/publication', () => ({
   publishCurrentProject: mockState.publishCurrentProject,
   getCurrentProjectPublicationDetails:
     mockState.getCurrentProjectPublicationDetails,

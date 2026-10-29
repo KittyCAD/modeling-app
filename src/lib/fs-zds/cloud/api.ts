@@ -1,14 +1,14 @@
 import env from '@src/env'
 import {
-  CloudSyncError,
-  withCloudSyncFailureContext,
-  withCloudSyncFailureContextSync,
-} from '@src/lib/fileSystem/cloud/failureContext'
+  CloudStorageError,
+  withCloudFailureContext,
+  withCloudFailureContextSync,
+} from '@src/lib/fs-zds/cloud/failureContext'
 import {
   getMimeType,
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
-} from '@src/lib/fileSystem/cloud/projectArchive'
+} from '@src/lib/fs-zds/cloud/archive'
 import type {
   CloudApiConfig,
   CreatedRemoteProject,
@@ -17,12 +17,12 @@ import type {
   RemoteProject,
   RemoteProjectSummary,
   Revision,
-} from '@src/lib/fileSystem/cloud/types'
+} from '@src/lib/fs-zds/cloud/types'
 import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import { isArray } from '@src/lib/utils'
 
 /** HTTP failure returned by the cloud API request boundary. */
-export class CloudApiError extends CloudSyncError {
+export class CloudApiError extends CloudStorageError {
   status: number
   retryAfterMs?: number
 
@@ -113,7 +113,7 @@ function cloudFetch(
   targetPath: string,
   init: RequestInit = {}
 ) {
-  return withCloudSyncFailureContext(
+  return withCloudFailureContext(
     { stage: 'network', point: 'cloud-api-request' },
     () => cloudFetchUncategorized(config, targetPath, init)
   )
@@ -124,7 +124,7 @@ async function cloudJson<T>(
   targetPath: string,
   init: RequestInit = {}
 ): Promise<T> {
-  return withCloudSyncFailureContext(
+  return withCloudFailureContext(
     { stage: 'network', point: 'parse-cloud-api-response' },
     async () => {
       const response = await cloudFetch(config, targetPath, init)
@@ -175,7 +175,7 @@ export async function listRemoteProjects(
     const items = legacy ? response : page?.items
     if (!isArray(items) || !items.every(isRemoteProjectSummary)) {
       return Promise.reject(
-        new CloudSyncError(
+        new CloudStorageError(
           { stage: 'network', point: 'parse-cloud-api-response' },
           'Invalid remote project list.'
         )
@@ -201,7 +201,7 @@ export async function listRemoteProjects(
       seenCursors.has(cursor)
     ) {
       return Promise.reject(
-        new CloudSyncError(
+        new CloudStorageError(
           { stage: 'network', point: 'parse-cloud-api-response' },
           'Invalid remote project pagination cursor.'
         )
@@ -561,7 +561,7 @@ function buildProjectFormData(
   files: ProjectArchiveFile[],
   options?: Revision | BuildProjectFormDataOptions
 ) {
-  return withCloudSyncFailureContextSync(
+  return withCloudFailureContextSync(
     { stage: 'archive', point: 'prepare-project-upload' },
     () => buildProjectFormDataUncategorized(projectPath, files, options)
   )

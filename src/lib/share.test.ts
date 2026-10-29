@@ -85,7 +85,7 @@ const mockState = vi.hoisted(() => ({
   ]),
 }))
 
-vi.mock('@src/lib/fileSystem/cloud/cloudApi', () => ({
+vi.mock('@src/lib/fs-zds/cloud/api', () => ({
   getRemoteProject: async (_config: unknown, id: string) => ({
     ...(await mockState.getProject()),
     id,
@@ -165,7 +165,7 @@ import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import {
   getCurrentProjectPublicationDetails as getCurrentProjectPublicationDetailsWithFileOperations,
   publishCurrentProject as publishCurrentProjectWithFileOperations,
-} from '@src/lib/fileSystem/cloud/publication'
+} from '@src/registry/extensions/fileOperations/publication'
 
 const publishCurrentProject = (
   args: Omit<

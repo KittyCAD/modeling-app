@@ -1,14 +1,14 @@
-import type * as ArchiveModule from '@src/lib/fileSystem/cloud/projectArchive'
-import { parseProjectArchive } from '@src/lib/fileSystem/cloud/projectArchive'
+import type * as ArchiveModule from '@src/lib/fs-zds/cloud/archive'
+import { parseProjectArchive } from '@src/lib/fs-zds/cloud/archive'
 import { posix } from '@chainner/node-path'
-import { createCloudStorage } from '@src/lib/fileSystem/cloud/storage'
-import * as api from '@src/lib/fileSystem/cloud/cloudApi'
+import { createCloudStorage } from '@src/registry/extensions/fileOperations/cloud'
+import * as api from '@src/lib/fs-zds/cloud/api'
 import nodefs from '@src/lib/fs-zds/nodefs'
-import { publishCurrentProject } from '@src/lib/fileSystem/cloud/publication'
+import { publishCurrentProject } from '@src/registry/extensions/fileOperations/publication'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@src/lib/fileSystem/cloud/cloudApi', () => ({
+vi.mock('@src/lib/fs-zds/cloud/api', () => ({
   getRemoteProject: vi.fn(),
   downloadRemoteProjectArchive: vi.fn(),
   updateRemoteProject: vi.fn(),
@@ -20,10 +20,10 @@ vi.mock('@src/lib/fileSystem/cloud/cloudApi', () => ({
     status = 404
   },
 }))
-vi.mock('@src/lib/fileSystem/cloud/publication', () => ({
+vi.mock('@src/registry/extensions/fileOperations/publication', () => ({
   publishCurrentProject: vi.fn(),
 }))
-vi.mock('@src/lib/fileSystem/cloud/projectArchive', async (original) => ({
+vi.mock('@src/lib/fs-zds/cloud/archive', async (original) => ({
   ...(await original<typeof ArchiveModule>()),
   parseProjectArchive: vi.fn(async () => [
     { relativePath: 'main.kcl', data: new TextEncoder().encode('original') },

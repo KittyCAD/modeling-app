@@ -1,4 +1,4 @@
-import type { CloudStorageService } from '@src/lib/fileSystem/cloud/storage'
+import type { CloudStorageService } from '@src/registry/contracts/fileOperations'
 import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import {

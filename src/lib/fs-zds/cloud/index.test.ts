@@ -1,18 +1,18 @@
 import { posix, win32 } from '@chainner/node-path'
-import * as api from '@src/lib/fileSystem/cloud/cloudApi'
-import { parseProjectArchive } from '@src/lib/fileSystem/cloud/projectArchive'
+import * as api from '@src/lib/fs-zds/cloud/api'
+import { parseProjectArchive } from '@src/lib/fs-zds/cloud/archive'
 import { createCloudFileSystem } from '@src/lib/fs-zds/cloud'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import noopfs from '@src/lib/fs-zds/noopfs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@src/lib/fileSystem/cloud/cloudApi', () => ({
+vi.mock('@src/lib/fs-zds/cloud/api', () => ({
   getRemoteProject: vi.fn(),
   downloadRemoteProjectArchive: vi.fn(),
   updateRemoteProject: vi.fn(),
   deleteRemoteProject: vi.fn(),
 }))
-vi.mock('@src/lib/fileSystem/cloud/projectArchive', () => ({
+vi.mock('@src/lib/fs-zds/cloud/archive', () => ({
   parseProjectArchive: vi.fn(),
 }))
 const remote = { id: 'one', revision: '1', description: '', category_ids: [] }

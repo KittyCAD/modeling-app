@@ -7,8 +7,8 @@ import {
   remoteProjectThumbnailTargetPathFromUrl,
   thumbnailUrlFromRemoteProjectPayload,
   updateRemoteProject,
-} from '@src/lib/fileSystem/cloud/cloudApi'
-import type { ProjectArchiveFile } from '@src/lib/fileSystem/cloud/types'
+} from '@src/lib/fs-zds/cloud/api'
+import type { ProjectArchiveFile } from '@src/lib/fs-zds/cloud/types'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
 afterEach(() => {

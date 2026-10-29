@@ -22,7 +22,7 @@ import {
   settingsService,
 } from '@src/registry/contracts/settings'
 import { cloudStorageService } from '@src/registry/contracts/fileOperations'
-import type { CloudStorageService } from '@src/lib/fileSystem/cloud/storage'
+import type { CloudStorageService } from '@src/registry/contracts/fileOperations'
 import homeProjectsExtension from '@src/registry/extensions/homeProjects'
 import { describe, expect, it, vi } from 'vitest'
 

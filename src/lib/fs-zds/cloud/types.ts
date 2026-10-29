@@ -2,17 +2,6 @@ import type { ProjectResponse } from '@kittycad/lib'
 
 export type Revision = string
 
-/** Content fingerprint for one file in a whole-project manifest. */
-export type ProjectManifestEntry = {
-  byteSize: number
-  sha256: string
-}
-
-/** Snapshot of project archive contents keyed by normalized relative path. */
-export type ProjectManifest = {
-  files: Record<string, ProjectManifestEntry>
-}
-
 /** One normalized file payload included in a cloud project archive upload. */
 export type ProjectArchiveFile = {
   relativePath: string
@@ -29,7 +18,7 @@ export type RemoteProjectSummary = {
   [key: string]: unknown
 }
 
-/** Full remote project metadata used by cloud sync before archive download. */
+/** Full remote project metadata used before archive download. */
 export type RemoteProject = RemoteProjectSummary
 
 export type CreatedRemoteProject = RemoteProject &

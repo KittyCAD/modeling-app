@@ -1,16 +1,16 @@
 import { signal } from '@preact/signals-core'
 import { v4 } from 'uuid'
-import * as api from '@src/lib/fileSystem/cloud/cloudApi'
+import * as api from '@src/lib/fs-zds/cloud/api'
 import {
   parseProjectArchive,
   withProjectTitleInArchiveFiles,
   withUpdatedProjectTomlInArchiveFiles,
-} from '@src/lib/fileSystem/cloud/projectArchive'
+} from '@src/lib/fs-zds/cloud/archive'
 import type {
   CloudApiConfig,
   ProjectArchiveFile,
   RemoteProject,
-} from '@src/lib/fileSystem/cloud/types'
+} from '@src/lib/fs-zds/cloud/types'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'

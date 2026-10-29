@@ -1,11 +1,11 @@
 import { effect, signal } from '@preact/signals-core'
-import type * as Publication from '@src/lib/fileSystem/cloud/publication'
-import type { PublishCurrentProjectArgs } from '@src/lib/fileSystem/cloud/publication'
-import * as api from '@src/lib/fileSystem/cloud/cloudApi'
+import type * as Publication from '@src/registry/extensions/fileOperations/publication'
+import type { PublishCurrentProjectArgs } from '@src/registry/extensions/fileOperations/publication'
+import * as api from '@src/lib/fs-zds/cloud/api'
 import type {
   CloudApiConfig,
   RemoteProjectSummary,
-} from '@src/lib/fileSystem/cloud/types'
+} from '@src/lib/fs-zds/cloud/types'
 import { createCloudFileSystem } from '@src/lib/fs-zds/cloud'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
@@ -178,19 +178,19 @@ export function createCloudStorage(
     },
     getProjectStatus: async (id: string) =>
       (
-        await import('@src/lib/fileSystem/cloud/publication')
+        await import('@src/registry/extensions/fileOperations/publication')
       ).getCloudPublicationStatus(id, config().token),
     getProjectStatuses: async () =>
       (
-        await import('@src/lib/fileSystem/cloud/publication')
+        await import('@src/registry/extensions/fileOperations/publication')
       ).getCloudPublicationStatuses(config().token),
     downloadProjectById: async (id: string) =>
-      (
-        await import('@src/lib/fileSystem/cloud/publicProject')
-      ).downloadProjectById(id),
+      (await import('@src/lib/fs-zds/cloud/publicProject')).downloadProjectById(
+        id
+      ),
     getPublicProjectNameById: async (id: string) =>
       (
-        await import('@src/lib/fileSystem/cloud/publicProject')
+        await import('@src/lib/fs-zds/cloud/publicProject')
       ).getPublicProjectNameById(id),
     publishCurrentProject: async (args: PublishCurrentProjectArgs) => {
       const id =
@@ -203,7 +203,7 @@ export function createCloudStorage(
       return fileSystem.withProject(id, (snapshot) =>
         withFileOperations(snapshot.backing, async (fileOperations) => {
           const publication = await import(
-            '@src/lib/fileSystem/cloud/publication'
+            '@src/registry/extensions/fileOperations/publication'
           )
           const result = await publication.publishCurrentProject({
             ...args,
@@ -223,7 +223,9 @@ export function createCloudStorage(
         typeof Publication.getCurrentProjectPublicationDetails
       >[0]
     ) => {
-      const publication = await import('@src/lib/fileSystem/cloud/publication')
+      const publication = await import(
+        '@src/registry/extensions/fileOperations/publication'
+      )
       return publication.getCurrentProjectPublicationDetails(args)
     },
     thumbnail: (project: RemoteProjectSummary) =>

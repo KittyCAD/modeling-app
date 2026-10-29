@@ -28,7 +28,7 @@ import {
   updateProjectTitleForPublication,
 } from '@src/lib/projectLibraries/moveOpenedProjectToCloudLibrary'
 
-import { type CurrentProjectPublicationDetails } from '@src/lib/fileSystem/cloud/publication'
+import { type CurrentProjectPublicationDetails } from '@src/registry/contracts/fileOperations'
 
 import { err } from '@src/lib/trap'
 

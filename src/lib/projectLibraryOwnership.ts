@@ -1,5 +1,5 @@
 import fsZds from '@src/lib/fs-zds'
-import { normalizePathForSync } from '@src/lib/fileSystem/cloud/paths'
+import { normalizeProjectPath } from '@src/lib/fs-zds/cloud/paths'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   isPathInDirectoryProjectLibrary,
@@ -19,7 +19,7 @@ async function getProjectLibraryLocalPath(library: ProjectLibrarySetting) {
   }
 
   return library.path.trim()
-    ? normalizePathForSync(library.path.trim())
+    ? normalizeProjectPath(library.path.trim())
     : undefined
 }
 
@@ -28,7 +28,7 @@ export async function getProjectLibraryOwnership(
   libraries: readonly ProjectLibrarySetting[],
   projectPath: string
 ): Promise<ProjectLibraryOwnership | undefined> {
-  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const normalizedProjectPath = normalizeProjectPath(projectPath)
   const candidates: ProjectLibraryOwnership[] = []
 
   for (const library of libraries) {

@@ -3,18 +3,18 @@ import { listClientItems } from '@src/lib/apiPagination'
 import {
   getRemoteProject as getCloudProject,
   updateRemoteProject,
-} from '@src/lib/fileSystem/cloud/cloudApi'
+} from '@src/lib/fs-zds/cloud/api'
 import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { collectProjectFilesForUpload } from '@src/lib/fileSystem/projectFiles'
 import {
   getMimeType,
   prepareProjectFilesForCloudUpload,
-} from '@src/lib/fileSystem/cloud/projectArchive'
+} from '@src/lib/fs-zds/cloud/archive'
 import type {
   ProjectArchiveFile,
   ProjectUploadPublicationMetadata,
-} from '@src/lib/fileSystem/cloud/types'
+} from '@src/lib/fs-zds/cloud/types'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import { readProjectSettingsFile } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
