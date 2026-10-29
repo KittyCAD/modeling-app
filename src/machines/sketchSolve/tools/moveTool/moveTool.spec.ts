@@ -25,9 +25,11 @@ import {
   createOnDragCallback,
   createOnDragEndCallback,
   createOnDragStartCallback,
+  isPointerWithinConstraintPopupBridge,
   setUpOnDragAndSelectionClickCallbacks,
 } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { Group, OrthographicCamera, Vector2, Vector3 } from 'three'
+import type { Object3D } from 'three'
 import { describe, expect, it, vi } from 'vitest'
 
 function createDeferred<T>() {
@@ -40,6 +42,50 @@ function createDeferred<T>() {
 
   return { promise, resolve, reject }
 }
+
+describe('constraint popup pointer ownership', () => {
+  it('keeps icons reachable through their gap and dismisses outside their bounds', () => {
+    const camera = new OrthographicCamera(-50, 50, 50, -50, 0.1, 100)
+    camera.position.set(0, 0, 10)
+    camera.lookAt(0, 0, 0)
+    camera.updateMatrixWorld(true)
+    const scene = new Group()
+    const sketchSolveGroup = new Group()
+    scene.add(sketchSolveGroup)
+    const icons = new Group()
+    const popup = { segmentId: 3, position: [0, 0] satisfies [number, number] }
+    icons.userData.constraintHoverPopup = popup
+    icons.userData.hitObjects = [
+      { type: 'screenRect', center: [20, 10, 0], sizePx: [12, 12] },
+    ]
+    sketchSolveGroup.add(icons)
+    const view = {
+      scene,
+      camera,
+      viewportSize: new Vector2(200, 200),
+      sketchSolveGroup,
+    }
+
+    expect(
+      isPointerWithinConstraintPopupBridge(popup, [0, 0], [10, 5], view)
+    ).toBe(true)
+    expect(
+      isPointerWithinConstraintPopupBridge(popup, [0, 0], [20, 10], view)
+    ).toBe(true)
+    expect(
+      isPointerWithinConstraintPopupBridge(popup, [0, 0], [35, 25], view)
+    ).toBe(false)
+    expect(
+      isPointerWithinConstraintPopupBridge(popup, [0, 0], [-10, 0], view)
+    ).toBe(false)
+
+    // Rendered icons belonging to another segment cannot keep this popup alive.
+    icons.userData.constraintHoverPopup = { segmentId: 4, position: [0, 0] }
+    expect(
+      isPointerWithinConstraintPopupBridge(popup, [0, 0], [10, 5], view)
+    ).toBe(false)
+  })
+})
 
 function createTestMouseEvent(detail = 1): MouseEvent {
   return new MouseEvent('click', {
@@ -210,18 +256,23 @@ function setUpMoveToolCallbacks({
     position: [number, number]
   }>
   snapToGrid?: boolean
-  getSceneObjectByName?: (name: string) => unknown
+  getSceneObjectByName?: (name: string) => Object3D | null
 }) {
   let callbacks: Record<string, unknown> = {}
   const gridRenderer = snapToGrid ? new InfiniteGridRenderer() : null
   if (gridRenderer) {
     vi.spyOn(gridRenderer, 'getPixelsPerBaseUnit').mockReturnValue(100)
   }
-  const getObjectByName = vi.fn(
-    (name: string) =>
-      getSceneObjectByName?.(name) ??
-      (name === 'InfiniteGridRenderer' ? gridRenderer : null)
-  )
+  const scene = new Group()
+  const getObjectByName = vi
+    .spyOn(scene, 'getObjectByName')
+    .mockImplementation(
+      (name: string) =>
+        getSceneObjectByName?.(name) ??
+        (name === 'InfiniteGridRenderer'
+          ? (gridRenderer ?? undefined)
+          : undefined)
+    )
   let planeIntersectPoint = {
     twoD: new Vector2(0, 0),
     threeD: new Vector3(0, 0, 0),
@@ -236,9 +287,7 @@ function setUpMoveToolCallbacks({
     setCallbacks: vi.fn((nextCallbacks) => {
       callbacks = nextCallbacks as Record<string, unknown>
     }),
-    scene: {
-      getObjectByName,
-    },
+    scene,
     camControls: { camera },
     renderer: {
       domElement: {
@@ -1505,20 +1554,26 @@ describe('createOnDragCallback', () => {
       source: { type: 'Simple', range: [0, 0, 0] },
     } as ApiObject
 
-    const { onMouseDownSelection, onDragStart, onDragEnd, rustContext, send } =
-      setUpMoveToolCallbacks({
-        apiObjects: [
-          lineTargetStart,
-          lineTargetEnd,
-          lineTarget,
-          draggedStart,
-          draggedPoint,
-          draggedLine,
-          coincidentConstraint,
-        ],
-        hoveredId: 4,
-        selectedIds: [4],
-      })
+    const {
+      onMouseDownSelection,
+      setPlaneIntersectPoint,
+      onDragStart,
+      onDragEnd,
+      rustContext,
+      send,
+    } = setUpMoveToolCallbacks({
+      apiObjects: [
+        lineTargetStart,
+        lineTargetEnd,
+        lineTarget,
+        draggedStart,
+        draggedPoint,
+        draggedLine,
+        coincidentConstraint,
+      ],
+      hoveredId: 4,
+      selectedIds: [4],
+    })
 
     const editResult = {
       kclSource: { text: 'edited' },
@@ -1540,6 +1595,7 @@ describe('createOnDragCallback', () => {
       checkpointId: 124,
     })
 
+    setPlaneIntersectPoint(new Vector2(50, 55))
     expect(onMouseDownSelection()).toBe(true)
 
     onDragStart({
@@ -1645,6 +1701,8 @@ describe('createOnDragCallback', () => {
     ])
     const {
       onMouseDownSelection,
+      setPlaneIntersectPoint,
+      sceneInfra,
       onDragStart,
       onDrag,
       onDragEnd,
@@ -1684,6 +1742,8 @@ describe('createOnDragCallback', () => {
         checkpointId: 123,
       })
 
+    vi.spyOn(sceneInfra, 'getClientSceneScaleFactor').mockReturnValue(0.1)
+    setPlaneIntersectPoint(new Vector2(5, 0))
     expect(onMouseDownSelection()).toBe(true)
     onDragStart({
       intersectionPoint: {
@@ -2337,13 +2397,18 @@ describe('createOnDragCallback', () => {
     })
     const draggedLine = createLineApiObject({ id: 11, start: 3, end: 4 })
 
-    const { onMouseDownSelection, onDragStart, onDragEnd, rustContext } =
-      setUpMoveToolCallbacks({
-        apiObjects: [draggedStart, draggedPoint, draggedLine],
-        hoveredId: 4,
-        selectedIds: [4],
-        snapToGrid: true,
-      })
+    const {
+      onMouseDownSelection,
+      setPlaneIntersectPoint,
+      onDragStart,
+      onDragEnd,
+      rustContext,
+    } = setUpMoveToolCallbacks({
+      apiObjects: [draggedStart, draggedPoint, draggedLine],
+      hoveredId: 4,
+      selectedIds: [4],
+      snapToGrid: true,
+    })
 
     const editResult = {
       kclSource: { text: 'grid snapped' },
@@ -2356,6 +2421,7 @@ describe('createOnDragCallback', () => {
     }
     ;(rustContext.editSegments as any).mockResolvedValue(editResult)
 
+    setPlaneIntersectPoint(new Vector2(20, 10))
     expect(onMouseDownSelection()).toBe(true)
 
     onDragStart({
@@ -2409,12 +2475,17 @@ describe('createOnDragCallback', () => {
     })
     const draggedLine = createLineApiObject({ id: 11, start: 3, end: 4 })
 
-    const { onMouseDownSelection, onDragStart, onDragEnd, rustContext } =
-      setUpMoveToolCallbacks({
-        apiObjects: [draggedStart, draggedPoint, draggedLine],
-        hoveredId: 4,
-        selectedIds: [4],
-      })
+    const {
+      onMouseDownSelection,
+      setPlaneIntersectPoint,
+      onDragStart,
+      onDragEnd,
+      rustContext,
+    } = setUpMoveToolCallbacks({
+      apiObjects: [draggedStart, draggedPoint, draggedLine],
+      hoveredId: 4,
+      selectedIds: [4],
+    })
 
     const editResult = {
       kclSource: { text: 'edited' },
@@ -2437,6 +2508,7 @@ describe('createOnDragCallback', () => {
     ;(rustContext.editSegments as any).mockResolvedValue(editResult)
     ;(rustContext.addConstraint as any).mockResolvedValue(addResult)
 
+    setPlaneIntersectPoint(new Vector2(20, 10))
     expect(onMouseDownSelection()).toBe(true)
 
     onDragStart({
@@ -2517,6 +2589,7 @@ describe('createOnDragCallback', () => {
     ])
     const {
       onMouseDownSelection,
+      setPlaneIntersectPoint,
       onDragStart,
       onDrag,
       onDragEnd,
@@ -2555,6 +2628,7 @@ describe('createOnDragCallback', () => {
       checkpointId: null,
     })
 
+    setPlaneIntersectPoint(new Vector2(20, 10))
     expect(onMouseDownSelection()).toBe(true)
     onDragStart({
       intersectionPoint: {
@@ -3417,6 +3491,7 @@ describe('createOnDragCallback', () => {
       }
       const {
         onMouseDownSelection,
+        setPlaneIntersectPoint,
         onDragStart,
         onDrag,
         onDragEnd,
@@ -3462,6 +3537,7 @@ describe('createOnDragCallback', () => {
         checkpointId: 123,
       })
 
+      setPlaneIntersectPoint(new Vector2(30, 10))
       expect(onMouseDownSelection()).toBe(true)
       // Drag start is reported after crossing the drag threshold, so its cursor
       // position can differ from the point's actual position.
@@ -4665,6 +4741,91 @@ describe('createOnClickCallback', () => {
   })
 })
 
+describe('setUpOnDragAndSelectionClickCallbacks mouse-down target', () => {
+  it.each([null, 4])(
+    'starts dragging the current line when cached hover is %s',
+    async (hoveredId) => {
+      const objects = [
+        createSketchApiObject({ id: 0 }),
+        createPointApiObject({ id: 1, x: 0, y: 0, owner: 3 }),
+        createPointApiObject({ id: 2, x: 40, y: 0, owner: 3 }),
+        createLineApiObject({ id: 3, start: 1, end: 2 }),
+        createPointApiObject({ id: 4, x: 80, y: 80 }),
+      ]
+      const {
+        onMouseDownSelection,
+        setPlaneIntersectPoint,
+        onDragStart,
+        onDrag,
+        onDragEnd,
+        rustContext,
+      } = setUpMoveToolCallbacks({ apiObjects: objects, hoveredId })
+      const edited = {
+        kclSource: { text: 'line moved' },
+        sceneGraphDelta: createSceneGraphDelta([
+          createSketchApiObject({ id: 0 }),
+          createPointApiObject({ id: 1, x: 0, y: 5, owner: 3 }),
+          createPointApiObject({ id: 2, x: 40, y: 5, owner: 3 }),
+          objects[3],
+          objects[4],
+        ]),
+      }
+      rustContext.editSegments
+        .mockResolvedValueOnce({ ...edited, checkpointId: null })
+        .mockResolvedValueOnce({ ...edited, checkpointId: 123 })
+
+      // SceneInfra updates the current pointer before mouse-down, even when
+      // asynchronous move processing has not published a new hover target.
+      setPlaneIntersectPoint(new Vector2(20, 0))
+      expect(onMouseDownSelection()).toBe(true)
+      onDragStart({
+        intersectionPoint: {
+          twoD: new Vector2(20, 0),
+          threeD: new Vector3(20, 0, 0),
+        },
+        mouseEvent: createTestMouseEvent(),
+        intersects: [],
+      })
+      setPlaneIntersectPoint(new Vector2(20, 5))
+      await onDrag({
+        intersectionPoint: {
+          twoD: new Vector2(20, 5),
+          threeD: new Vector3(20, 5, 0),
+        },
+        mouseEvent: createTestMouseEvent(),
+        intersects: [],
+      })
+      await onDragEnd({
+        intersectionPoint: {
+          twoD: new Vector2(20, 5),
+          threeD: new Vector3(20, 5, 0),
+        },
+        mouseEvent: createTestMouseEvent(),
+        intersects: [],
+      })
+
+      expect(rustContext.editSegments).toHaveBeenCalledTimes(2)
+      expect(rustContext.editSegments.mock.lastCall?.[2]).toEqual([
+        {
+          id: 3,
+          ctor: {
+            type: 'Line',
+            start: {
+              x: { type: 'Var', value: 0, units: 'Mm' },
+              y: { type: 'Var', value: 5, units: 'Mm' },
+            },
+            end: {
+              x: { type: 'Var', value: 40, units: 'Mm' },
+              y: { type: 'Var', value: 5, units: 'Mm' },
+            },
+          },
+        },
+      ])
+      expect(rustContext.addConstraint).not.toHaveBeenCalled()
+    }
+  )
+})
+
 describe('setUpOnDragAndSelectionClickCallbacks constraint label dragging', () => {
   it.each(['Radius', 'Angle'] as const)(
     'keeps dragging a %s label when drag start fires after the cursor leaves the label hit area',
@@ -4681,29 +4842,29 @@ describe('setUpOnDragAndSelectionClickCallbacks constraint label dragging', () =
         {
           type: 'line',
           line: [
-            [-8, -8],
-            [8, -8],
+            [22, -8],
+            [38, -8],
           ],
         },
         {
           type: 'line',
           line: [
-            [8, -8],
-            [8, 8],
+            [38, -8],
+            [38, 8],
           ],
         },
         {
           type: 'line',
           line: [
-            [8, 8],
-            [-8, 8],
+            [38, 8],
+            [22, 8],
           ],
         },
         {
           type: 'line',
           line: [
-            [-8, 8],
-            [-8, -8],
+            [22, 8],
+            [22, -8],
           ],
         },
       ]
@@ -4723,7 +4884,8 @@ describe('setUpOnDragAndSelectionClickCallbacks constraint label dragging', () =
           name === String(constraint.id) ? constraintGroup : null,
       })
 
-      setPlaneIntersectPoint(new Vector2(0, 0))
+      // Keep the label clear of the origin selection target.
+      setPlaneIntersectPoint(new Vector2(30, 0))
       expect(onMouseDownSelection()).toBe(true)
 
       setPlaneIntersectPoint(new Vector2(0, 30))
@@ -4903,7 +5065,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
     })
   })
 
-  it('should keep existing popups while showing a new popup for another segment', () => {
+  it('replaces a popup immediately when the pointer moves to an unrelated segment', () => {
     const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
     const lineEnd = createPointApiObject({ id: 2, x: 40, y: 0 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -4960,15 +5122,12 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
       type: 'update hovered id',
       data: {
         hoveredId: 10,
-        constraintHoverPopups: [
-          { segmentId: 3, position: [20, 0] },
-          { segmentId: 10, position: [60, 20] },
-        ],
+        constraintHoverPopups: [{ segmentId: 10, position: [60, 20] }],
       },
     })
   })
 
-  it('should keep an existing popup in place when hovering the same segment again', () => {
+  it('starts a fresh popup at the return point after the pointer has left', () => {
     const start = createPointApiObject({ id: 1, x: 0, y: 0 })
     const end = createPointApiObject({ id: 2, x: 40, y: 0 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -5008,12 +5167,12 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
       type: 'update hovered id',
       data: {
         hoveredId: 3,
-        constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
+        constraintHoverPopups: [{ segmentId: 3, position: [25, 0] }],
       },
     })
   })
 
-  it('should keep a revisited popup stable while newer popups stay on top', () => {
+  it('does not retain unrelated popups when revisiting a segment', () => {
     const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
     const lineEnd = createPointApiObject({ id: 2, x: 40, y: 0 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -5076,180 +5235,131 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
       type: 'update hovered id',
       data: {
         hoveredId: 3,
-        constraintHoverPopups: [
-          { segmentId: 3, position: [20, 0] },
-          { segmentId: 10, position: [60, 20] },
-        ],
+        constraintHoverPopups: [{ segmentId: 3, position: [25, 0] }],
       },
     })
   })
 
-  it('should only start hiding the preview after leaving the segment', () => {
-    vi.useFakeTimers()
+  it('keeps the preview while on its source and dismisses immediately after leaving', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const horizontalConstraint = createConstraintApiObject({
+      id: 20,
+      type: 'Horizontal',
+    })
 
-    try {
-      const start = createPointApiObject({ id: 1, x: 0, y: 0 })
-      const end = createPointApiObject({ id: 2, x: 40, y: 0 })
-      const line = createLineApiObject({ id: 3, start: 1, end: 2 })
-      const horizontalConstraint = createConstraintApiObject({
-        id: 20,
-        type: 'Horizontal',
-      })
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line, horizontalConstraint],
+      showNonVisualConstraints: false,
+    })
 
-      const { onMove, send } = setUpMoveToolCallbacks({
-        apiObjects: [start, end, line, horizontalConstraint],
-        showNonVisualConstraints: false,
-      })
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
+    })
 
-      onMove({
-        intersectionPoint: {
-          twoD: new Vector2(20, 0),
-          threeD: new Vector3(20, 0, 0),
-        },
-      })
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: {
+        hoveredId: 3,
+        constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
+      },
+    })
 
-      expect(send).toHaveBeenCalledWith({
-        type: 'update hovered id',
-        data: {
-          hoveredId: 3,
-          constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
-        },
-      })
+    send.mockClear()
 
-      send.mockClear()
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(25, 0),
+        threeD: new Vector3(25, 0, 0),
+      },
+    })
 
-      onMove({
-        intersectionPoint: {
-          twoD: new Vector2(25, 0),
-          threeD: new Vector3(25, 0, 0),
-        },
-      })
+    expect(send).not.toHaveBeenCalled()
 
-      expect(send).not.toHaveBeenCalled()
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(200, 200),
+        threeD: new Vector3(200, 200, 0),
+      },
+    })
 
-      vi.advanceTimersByTime(2000)
-
-      expect(send).not.toHaveBeenCalled()
-
-      onMove({
-        intersectionPoint: {
-          twoD: new Vector2(200, 200),
-          threeD: new Vector3(200, 200, 0),
-        },
-      })
-
-      expect(send).toHaveBeenCalledWith({
-        type: 'update hovered id',
-        data: {
-          hoveredId: null,
-          constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
-        },
-      })
-
-      send.mockClear()
-      vi.advanceTimersByTime(1999)
-      expect(send).not.toHaveBeenCalled()
-      vi.advanceTimersByTime(1)
-
-      expect(send).toHaveBeenCalledWith({
-        type: 'update hovered id',
-        data: {
-          hoveredId: null,
-          constraintHoverPopups: [],
-        },
-      })
-    } finally {
-      vi.useRealTimers()
-    }
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: {
+        hoveredId: null,
+        constraintHoverPopups: [],
+      },
+    })
   })
 
-  it('should keep the preview alive while hovering the icon and hide it 2 seconds after leaving', () => {
-    vi.useFakeTimers()
+  it('keeps the preview on its icon and dismisses immediately after leaving both', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const horizontalConstraint = createConstraintApiObject({
+      id: 20,
+      type: 'Horizontal',
+    })
+    const constraintGroup = new Group()
+    constraintGroup.name = '20'
+    const badgeChild = new Group()
+    badgeChild.userData.hitObjects = [
+      {
+        type: 'screenRect',
+        center: [32, 12, 0],
+        sizePx: [20, 20],
+      },
+    ]
+    constraintGroup.add(badgeChild)
 
-    try {
-      const start = createPointApiObject({ id: 1, x: 0, y: 0 })
-      const end = createPointApiObject({ id: 2, x: 40, y: 0 })
-      const line = createLineApiObject({ id: 3, start: 1, end: 2 })
-      const horizontalConstraint = createConstraintApiObject({
-        id: 20,
-        type: 'Horizontal',
-      })
-      const constraintGroup = new Group()
-      constraintGroup.name = '20'
-      const badgeChild = new Group()
-      badgeChild.userData.hitObjects = [
-        {
-          type: 'screenRect',
-          center: [32, 12, 0],
-          sizePx: [20, 20],
-        },
-      ]
-      constraintGroup.add(badgeChild)
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line, horizontalConstraint],
+      showNonVisualConstraints: false,
+      getSceneObjectByName: (name) => (name === '20' ? constraintGroup : null),
+    })
 
-      const { onMove, send } = setUpMoveToolCallbacks({
-        apiObjects: [start, end, line, horizontalConstraint],
-        showNonVisualConstraints: false,
-        getSceneObjectByName: (name) =>
-          name === '20' ? constraintGroup : null,
-      })
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
+    })
+    send.mockClear()
 
-      onMove({
-        intersectionPoint: {
-          twoD: new Vector2(20, 0),
-          threeD: new Vector3(20, 0, 0),
-        },
-      })
-      send.mockClear()
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(32, 12),
+        threeD: new Vector3(32, 12, 0),
+      },
+    })
 
-      onMove({
-        intersectionPoint: {
-          twoD: new Vector2(32, 12),
-          threeD: new Vector3(32, 12, 0),
-        },
-      })
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: {
+        hoveredId: 20,
+        constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
+      },
+    })
 
-      expect(send).toHaveBeenCalledWith({
-        type: 'update hovered id',
-        data: {
-          hoveredId: 20,
-          constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
-        },
-      })
+    send.mockClear()
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(45, 20),
+        threeD: new Vector3(45, 20, 0),
+      },
+    })
 
-      send.mockClear()
-      vi.advanceTimersByTime(2000)
-      expect(send).not.toHaveBeenCalled()
-
-      onMove({
-        intersectionPoint: {
-          twoD: new Vector2(45, 20),
-          threeD: new Vector3(45, 20, 0),
-        },
-      })
-
-      expect(send).toHaveBeenCalledWith({
-        type: 'update hovered id',
-        data: {
-          hoveredId: null,
-          constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
-        },
-      })
-
-      send.mockClear()
-      vi.advanceTimersByTime(1999)
-      expect(send).not.toHaveBeenCalled()
-      vi.advanceTimersByTime(1)
-
-      expect(send).toHaveBeenCalledWith({
-        type: 'update hovered id',
-        data: {
-          hoveredId: null,
-          constraintHoverPopups: [],
-        },
-      })
-    } finally {
-      vi.useRealTimers()
-    }
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: {
+        hoveredId: null,
+        constraintHoverPopups: [],
+      },
+    })
   })
 
   it('should clear the constraint hover popup when dragging starts', () => {
