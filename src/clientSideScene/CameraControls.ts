@@ -678,11 +678,11 @@ export class CameraControls {
   }
 
   onMouseUp = (event: PointerEvent) => {
-    if (event.pointerType === 'touch') {
-      // We support momentum flick gestures so we have to do these things after that completes
-      return
+    // A touch drag ends in Hammer's panend, after any momentum flick. A tap
+    // never pans, so it ends here.
+    if (event.pointerType !== 'touch' || !this.wasDragging) {
+      this.onMouseUpInner(event)
     }
-    this.onMouseUpInner(event)
   }
 
   onMouseUpInner = (event: PointerEvent) => {
