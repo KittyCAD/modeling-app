@@ -11,6 +11,11 @@ export function createKCClient(
 ): Client {
   const baseUrl = baseUrlOverride || env().VITE_ZOO_API_BASE_URL
   const injectedFetch = (async (input: any, init?: any) => {
+    // Temporary: SDK project storage/publication requests also use dev.
+    const url = new URL(input)
+    if (/^\/(?:user\/)?projects(?:\/|$)/.test(url.pathname)) {
+      input = new URL(url.pathname + url.search, 'https://api.dev.zoo.dev').href
+    }
     const impl = typeof fetch !== 'undefined' ? fetch : isomorphicFetch
     const opts: RequestInit = { ...(init || {}) }
     if (!isDesktop()) {

@@ -9,7 +9,8 @@ export function withSiteBaseURL(path: string): string {
 }
 
 export function withKittycadWebSocketURL(qs: string): string {
-  return mergeQueryString(env().VITE_KITTYCAD_WEBSOCKET_URL, qs)
+  // Temporary: use the dev engine alongside the local API.
+  return mergeQueryString('wss://api.dev.zoo.dev/ws/modeling/commands', qs)
 }
 
 export function withZookeeperWebSocketURL(qs: string): string {
