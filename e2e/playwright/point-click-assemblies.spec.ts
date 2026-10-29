@@ -237,10 +237,29 @@ test.describe(
       const selectedObjects = selectionType === 'scene' ? '1 path' : '1 other'
       async function selectBracket() {
         if (selectionType === 'scene') {
-          // The bracket is only visible in the lower-right of the default view
-          const [clickBracketInScene] = scene.makeMouseHelpers(0.75, 0.92, {
-            format: 'ratio',
+          // Pick the middle of the bracket's 5in shelf face, clear of its
+          // mounting holes. Project the known face point, not a startup view's
+          // screen position; the small transforms below leave it inside.
+          const point = await page.evaluate(() => {
+            const editor = window.app.project?.executingEditor.value
+            if (!editor) throw new Error('No executing editor')
+            const camera = editor.sceneInfra.camControls.camera
+            camera.updateMatrixWorld()
+            const point = camera.position
+              .clone()
+              .set((5 * 25.4) / 2, 0, 0)
+              .project(camera)
+            return { x: (point.x + 1) / 2, y: (1 - point.y) / 2 }
           })
+          expect(point.x).toBeGreaterThan(0)
+          expect(point.x).toBeLessThan(1)
+          expect(point.y).toBeGreaterThan(0)
+          expect(point.y).toBeLessThan(1)
+          const [clickBracketInScene] = scene.makeMouseHelpers(
+            point.x,
+            point.y,
+            { format: 'ratio' }
+          )
           await clickBracketInScene()
           await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
           return
@@ -287,6 +306,53 @@ test.describe(
           { shouldNormalise: true }
         )
         await scene.settled()
+        await page.evaluate(async () => {
+          const editor = window.app.project?.executingEditor.value
+          if (!editor) throw new Error('No executing editor')
+          await editor.flushPendingEditorExecution()
+        })
+        await expect
+          .poll(() =>
+            page.evaluate(() => {
+              const editor = window.app.project?.executingEditor.value
+              return Boolean(
+                editor &&
+                  editor.code.includes('import "bracket.kcl" as bracket') &&
+                  editor.lastSuccessfulCode === editor.code &&
+                  !editor.hasErrors() &&
+                  !editor.isExecuting &&
+                  editor.artifactGraph.size > 0
+              )
+            })
+          )
+          .toBe(true)
+        // Importing preserves the empty project's camera. Fit the loaded
+        // bracket before testing native scene selection and transforms.
+        await page.evaluate(() => {
+          window.app.project?.executingEditor.value?.engineCommandManager.clearCommandLogs()
+        })
+        expect(
+          await doAndWaitForImageDiff(
+            scene.streamWrapper,
+            async () => {
+              await cmdBar.openCmdBar()
+              await cmdBar.chooseCommand('Zoom to fit')
+              await cmdBar.expectState({ stage: 'commandBarClosed' })
+            },
+            300
+          )
+        ).toBe(true)
+        await expect
+          .poll(() =>
+            page.evaluate(() =>
+              window.app.project?.executingEditor.value?.engineCommandManager.commandLogs.some(
+                (log) =>
+                  log.type === 'receive-reliable' &&
+                  log.cmd_type === 'zoom_to_fit'
+              )
+            )
+          )
+          .toBe(true)
       })
 
       await test.step('Set translate on module', async () => {
