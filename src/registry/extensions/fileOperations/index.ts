@@ -3,6 +3,7 @@ import {
   defineRegistryItemFactory,
   provideService,
 } from '@kittycad/registry'
+import { createMountedFileOperations } from '@src/lib/fileSystem/mounts'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import fsZds from '@src/lib/fs-zds'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
@@ -17,8 +18,12 @@ export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
   defineRegistryItemFactory((ctx) => {
     const fileOperations = createFileOperationsRuntime(backing)
 
+    const mounted = createMountedFileOperations(
+      fileOperations.operations,
+      backing
+    )
     const projects = createProjectOperations({
-      operations: fileOperations.operations,
+      operations: mounted.operations,
       wasm: () =>
         ctx.valueSpecs.get(wasmPromiseValueSpec) ??
         Promise.reject(new Error('Missing WASM promise.')),
@@ -28,7 +33,7 @@ export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
       id: 'file-operations-extension',
       providesServices: [
         provideService(projectOperationsService, projects),
-        provideService(fileOperationsService, fileOperations.operations),
+        provideService(fileOperationsService, mounted.operations),
       ],
       // The registry owns the mounted node; the Effect runtime owns and
       // finalizes every scoped resource used by that node.
