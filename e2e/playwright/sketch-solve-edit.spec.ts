@@ -2378,7 +2378,7 @@ profile001 = startProfile(sketch001, at = [-2.05mm, -1.99mm])
   |> line(endAbsolute = [-2.05mm, 2.23mm], tag = $line3)
   |> close(tag = $line4)
 extrude001 = extrude(profile001, length = 5)`
-    const [clickUpperWall] = scene.makeMouseHelpers(0.5, 0.5, {
+    const [clickAboveCenter] = scene.makeMouseHelpers(0.5, 0.28, {
       format: 'ratio',
     })
 
@@ -2396,20 +2396,15 @@ extrude001 = extrude(profile001, length = 5)`
 
       await homePage.goToModelingScene()
       await scene.settled()
-      await scene.moveCameraTo(
-        { x: 10, y: -15, z: 15 },
-        { x: 0, y: -2.5, z: 2.23 }
-      )
     })
 
-    await test.step('Start sketch and click upper wall', async () => {
+    await test.step('Start sketch and click top face', async () => {
       await toolbar.startSketchPlaneSelection()
-      await clickUpperWall()
+      await clickAboveCenter()
     })
 
     await test.step('Expect sketch on wall', async () => {
       await expect(toolbar.exitSketchBtn).toBeEnabled()
-      // The upper XZ wall comes from line3 (Z = 2.23), not line1 (Z = -1.99).
       await editor.expectEditor.toContain(
         `
         sketch002 = sketch(on = faceOf(extrude001, face = line3)) {
