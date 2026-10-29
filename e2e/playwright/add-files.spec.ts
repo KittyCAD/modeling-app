@@ -38,7 +38,7 @@ test.describe('Local Drive picker', () => {
 
       const fileName = 'notes.txt'
       const content = 'Imported local file'
-      await page.keyboard.press('ControlOrMeta+k')
+      await cmdBar.openCmdBar()
       await cmdBar.chooseCommand('Add file to project')
       const chooserPromise = page.waitForEvent('filechooser')
       await cmdBar.selectOption({ name: 'Local Drive', exact: true }).click()
