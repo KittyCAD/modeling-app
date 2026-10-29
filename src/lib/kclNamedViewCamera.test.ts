@@ -8,7 +8,11 @@ import type {
 
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { applyNamedViewCamera } from '@src/lib/kclNamedViewCamera'
+import {
+  applyNamedViewCamera,
+  captureNamedViewCamera,
+} from '@src/lib/kclNamedViewCamera'
+import { PerspectiveCamera } from 'three'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const CURRENT_TARGET = { x: 10, y: 20, z: 30 }
@@ -102,6 +106,62 @@ function fakes() {
 function sentCommandTypes(sendSceneCommand: ReturnType<typeof vi.fn>) {
   return sendSceneCommand.mock.calls.map(([command]) => command.cmd.type)
 }
+
+describe('captureNamedViewCamera', () => {
+  it('captures direction and uses the engine eye offset to preserve orthographic zoom', async () => {
+    const camera = new PerspectiveCamera()
+    camera.position.set(0, -10, 0)
+    camera.up.set(0, 0, 1)
+    camera.lookAt(0, 0, 0)
+    camera.updateMatrixWorld()
+
+    const getCameraView = vi.fn().mockResolvedValue({
+      ...FITTED_ISOMETRIC_VIEW,
+      pivot_position: { x: 1, y: 2, z: 3 },
+      eye_offset: 25,
+    })
+    const result = await captureNamedViewCamera({
+      camera,
+      isPerspective: false,
+      getCameraView,
+    })
+    if (result instanceof Error) throw result
+
+    expect(result.look.type).toBe('directed')
+    expect(result.look.direction.x).toBeCloseTo(0)
+    expect(result.look.direction.y).toBeCloseTo(1)
+    expect(result.look.direction.z).toBeCloseTo(0)
+    expect(result.look.up.x).toBeCloseTo(0)
+    expect(result.look.up.y).toBeCloseTo(0)
+    expect(result.look.up.z).toBeCloseTo(1)
+    expect(result.target).toEqual(mm(1, 2, 3))
+    expect(camera.position.length()).toBe(10)
+    expect(result.distance).toBe(25)
+    expect(result.projection).toBe('orthographic')
+  })
+
+  it.each(['orbit', 'zoom'])(
+    'rejects a camera that changes during capture (%s)',
+    async (change) => {
+      const camera = new PerspectiveCamera()
+      let finish: (view: CameraViewState) => void = () => {}
+      const controls = {
+        camera,
+        isPerspective: false,
+        getCameraView: () =>
+          new Promise<CameraViewState>((resolve) => {
+            finish = resolve
+          }),
+      }
+      const capture = captureNamedViewCamera(controls)
+      if (change === 'orbit') camera.rotation.x = 1
+      else camera.zoom = 2
+      finish(FITTED_ISOMETRIC_VIEW)
+
+      expect(await capture).toBeInstanceOf(Error)
+    }
+  )
+})
 
 describe('applyNamedViewCamera', () => {
   let f: ReturnType<typeof fakes>

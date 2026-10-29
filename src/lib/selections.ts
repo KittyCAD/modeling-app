@@ -1298,7 +1298,9 @@ export async function getSelectionReferences({
               ? artifact.subType === 'region'
                 ? 'Region'
                 : 'Profile'
-              : undefined
+              : artifact?.type === 'gdtAnnotation'
+                ? 'Annotation'
+                : undefined
       if (label) {
         references.push(
           ...createExpressionReferences({
@@ -2627,6 +2629,13 @@ export function getSelectionCountByType(
       incrementOrInitializeSelectionType('helix')
       return true
     }
+    if (
+      artifact.type === 'gdtAnnotation' ||
+      artifact.type === 'importedGeometry'
+    ) {
+      incrementOrInitializeSelectionType(artifact.type)
+      return true
+    }
     if (artifact.type === 'path' && artifact.subType === 'region') {
       incrementOrInitializeSelectionType('pathRegion')
       return true
@@ -2699,6 +2708,11 @@ export function getSelectionCountByType(
       }
     } else if (inlineArtifact?.type === 'helix') {
       incrementOrInitializeSelectionType('helix')
+    } else if (
+      inlineArtifact?.type === 'gdtAnnotation' ||
+      inlineArtifact?.type === 'importedGeometry'
+    ) {
+      incrementOrInitializeSelectionType(inlineArtifact.type)
     } else if (
       inlineArtifact?.type === 'path' &&
       inlineArtifact.subType === 'region'
@@ -3238,6 +3252,8 @@ const semanticEntityNames: {
   ],
   point: [],
   plane: ['defaultPlane'],
+  annotation: ['gdtAnnotation'],
+  object: ['importedGeometry'],
 }
 
 function getSemanticEntityForSelectionType(
