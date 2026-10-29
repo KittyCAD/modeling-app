@@ -100,8 +100,8 @@ export default function ModelingDialog({
     },
   }
   useEffect(() => {
-    commands.send({ type: 'Dialog draft changed' })
-  }, [commands, selection.draft])
+    commands.actor.send({ type: 'Dialog draft changed' })
+  }, [commands.actor, selection.draft])
   const visible = getDialogFields(context)
   const firstFieldName = visible.find(
     ({ arg }) =>
