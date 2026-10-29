@@ -3240,7 +3240,7 @@ impl Node<MemberExpression> {
                                     ],
                                     ty: RuntimeType::any(),
                                 }
-                                .continue_())
+                                .normal())
                             }
                             _ => Err(KclError::new_undefined_value(
                                 KclErrorDetails::new(
@@ -3260,7 +3260,7 @@ impl Node<MemberExpression> {
                                     position[0].ty,
                                     segment.meta.clone(),
                                 )
-                                .continue_())
+                                .normal())
                             }
                             _ => Err(KclError::new_undefined_value(
                                 KclErrorDetails::new(
@@ -3306,7 +3306,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::Arc {
                             start,
                             ctor,
@@ -3332,7 +3332,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::Circle {
                             start,
                             ctor,
@@ -3358,7 +3358,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -3405,7 +3405,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::Arc {
                             start,
                             ctor,
@@ -3436,7 +3436,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::Circle {
                             start,
                             ctor,
@@ -3467,7 +3467,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -3511,7 +3511,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::Arc {
                             end,
                             ctor,
@@ -3537,7 +3537,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::Circle { .. } => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -3591,7 +3591,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::Arc {
                             end,
                             ctor,
@@ -3622,7 +3622,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::Circle { .. } => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -3666,7 +3666,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::Circle {
                             center,
                             ctor,
@@ -3692,7 +3692,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -3732,7 +3732,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::Circle {
                             center,
                             ctor,
@@ -3763,7 +3763,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -3808,7 +3808,7 @@ impl Node<MemberExpression> {
                                 .collect(),
                             ty: RuntimeType::segment(),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -3857,7 +3857,7 @@ impl Node<MemberExpression> {
                                 .collect(),
                             ty: RuntimeType::segment(),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -3909,7 +3909,7 @@ impl Node<MemberExpression> {
                                 .collect(),
                             ty: RuntimeType::segment(),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -3965,7 +3965,7 @@ impl Node<MemberExpression> {
                                 .collect(),
                             ty: RuntimeType::segment(),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -3986,19 +3986,19 @@ impl Node<MemberExpression> {
             (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
                 "zAxis" => {
                     let (p, u) = plane.info.z_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).normal())
                 }
                 "yAxis" => {
                     let (p, u) = plane.info.y_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).normal())
                 }
                 "xAxis" => {
                     let (p, u) = plane.info.x_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).normal())
                 }
                 "origin" => {
                     let (p, u) = plane.info.origin.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).normal())
                 }
                 other => Err(KclError::new_undefined_value(
                     KclErrorDetails::new(
@@ -4033,7 +4033,7 @@ impl Node<MemberExpression> {
                             annotations::WARN_DEPRECATED,
                         );
                     }
-                    Ok(value.to_owned().continue_())
+                    Ok(value.to_owned().normal())
                 } else {
                     Err(KclError::new_undefined_value(
                         KclErrorDetails::new(
@@ -4054,17 +4054,17 @@ impl Node<MemberExpression> {
                 if i == 0
                     && let Some(value) = map.get("x")
                 {
-                    return Ok(value.to_owned().continue_());
+                    return Ok(value.to_owned().normal());
                 }
                 if i == 1
                     && let Some(value) = map.get("y")
                 {
-                    return Ok(value.to_owned().continue_());
+                    return Ok(value.to_owned().normal());
                 }
                 if i == 2
                     && let Some(value) = map.get("z")
                 {
-                    return Ok(value.to_owned().continue_());
+                    return Ok(value.to_owned().normal());
                 }
                 let t = p.type_name();
                 let article = article_for(t);
@@ -4085,7 +4085,7 @@ impl Node<MemberExpression> {
                 );
                 if let Some(value) = value_of_arr {
                     // Indexing into the array was successful.
-                    Ok(value.to_owned().continue_())
+                    Ok(value.to_owned().normal())
                 } else if ctx.no_engine_commands().await
                     && !exec_state.is_sketch_mode_execution()
                     && mock_array_may_have_engine_dependent_cardinality(&ty)
@@ -4100,14 +4100,14 @@ impl Node<MemberExpression> {
                     // forbidden from contacting the engine, meaning array
                     // lengths are always accurate, and the OOB error is real.
                     let value = arr.first();
-                    value.map(|value| value.to_owned().continue_()).ok_or(oob_error)
+                    value.map(|value| value.to_owned().normal()).ok_or(oob_error)
                 } else {
                     Err(oob_error)
                 }
             }
             // Singletons and single-element arrays should be interchangeable, but only indexing by 0 should work.
             // This is kind of a silly property, but it's possible it occurs in generic code or something.
-            (obj, Property::UInt(0), _) => Ok(obj.continue_()),
+            (obj, Property::UInt(0), _) => Ok(obj.normal()),
             (KclValue::HomArray { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
@@ -4126,7 +4126,7 @@ impl Node<MemberExpression> {
                 Ok(KclValue::Sketch {
                     value: Box::new(sketch.clone()),
                 }
-                .continue_())
+                .normal())
             }
             (KclValue::Solid { value: solid }, Property::String(prop), false) if prop == "faces" => {
                 Ok(KclValue::Object {
@@ -4141,7 +4141,7 @@ impl Node<MemberExpression> {
                     constrainable: false,
                     object_kind: KclObjectKind::Default,
                 }
-                .continue_())
+                .normal())
             }
             (geometry @ KclValue::Solid { .. }, Property::String(prop), false) if prop == "tags" => {
                 // This is a common mistake.
@@ -4172,7 +4172,7 @@ impl Node<MemberExpression> {
                         .collect(),
                 },
             }
-            .continue_()),
+            .normal()),
             (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
                 Err(KclError::new_semantic(KclErrorDetails::new(
                     format!("Property `{property}` not found on {}", geometry.human_friendly_type()),
@@ -7024,6 +7024,7 @@ d = b + c
             execution_callbacks: Default::default(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 

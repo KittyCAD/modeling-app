@@ -32,9 +32,7 @@ export async function resetCameraPosition({
       settingsActor.getSnapshot().context.modeling.cameraProjection.current
 
     // We need to keep the users projection setting when resetting their camera
-    if (cameraProjection === 'perspective') {
-      await sceneInfra.camControls.usePerspectiveCamera()
-    }
+    await sceneInfra.camControls.setCameraProjection(cameraProjection)
 
     await engineViewIsometric({
       engineCommandManager,

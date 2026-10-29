@@ -606,7 +606,7 @@ describe('stdlib command arg derivation', () => {
 
     expect(args.target).toEqual(cameraArgs.target)
     expect(args.target.documentation).toBeTruthy()
-    expect(args).not.toHaveProperty('camera')
+    expect(args).toHaveProperty('camera')
   })
 
   it('only derives docs for fields backed by a single stdlib argument', () => {

@@ -157,6 +157,36 @@ jobs:
         run: |
           cd rust
           cargo nextest archive --workspace --features artifact-graph --archive-file nextest-archive.tar.zst
+      - name: Upload archive to workflow
+        uses: actions/upload-artifact@v7
+        with:
+          name: nextest-archive
+          path: rust/nextest-archive.tar.zst
+  check-bindings:
+    name: Check TypeScript-facing bindings against expected
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
+    needs: build-test-artifacts
+    steps:
+      - uses: runs-on/action@v2.5.0
+      - uses: actions/checkout@v7.0.1
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        with:
+          cache: false # Configured below.
+          rustflags: '' # Use .cargo/config.toml
+      - name: Rust cache on the Namespace volume
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            rust/target
+            ~/.cargo/registry
+            ~/.cargo/git
+      - name: Verify Rust cache is writable
+        run: .github/ci-cd-scripts/verify-rust-cache-writable.sh
       - name: Check TypeScript-facing bindings against expected
         shell: bash
         run: |
@@ -166,11 +196,6 @@ jobs:
           git diff --cached --exit-code -- rust/kcl-lib/expected-bindings/ \
             || (echo 'Generated bindings differ from rust/kcl-lib/expected-bindings/.' \
                      'If this API change is intentional, run `npm run bindings:update` and commit the result.' >&2; exit 1)
-      - name: Upload archive to workflow
-        uses: actions/upload-artifact@v7
-        with:
-          name: nextest-archive
-          path: rust/nextest-archive.tar.zst
   run-test-artifacts:
     name: cargo test (shard ${{ matrix.partitionIndex}})
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
