@@ -1332,6 +1332,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     })
 
     await test.step('Edit revolve feature via feature tree selection', async () => {
+      await scene.settled()
       const newAngle = '180deg'
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation(
