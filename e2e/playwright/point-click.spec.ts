@@ -585,6 +585,7 @@ extrude001 = extrude(region001, length = 100)`
         .poll(() => page.getByText('Please select one').count())
         .toBe(1)
       await clickOnEdge()
+      await toolbar.expectSelection('1 edge')
       await cmdBar.progressCmdBar()
       await cmdBar.argumentInput.focus()
       await page.keyboard.insertText('20')
@@ -4367,10 +4368,7 @@ extrude001 = extrude(region001, length = 30)`
     await test.step('Edit GDT Flatness', async () => {
       await test.step('Open edit mode from feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const gdtOperation = await toolbar.getFeatureTreeOperation(
-          'Flatness',
-          0
-        )
+        const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
         await gdtOperation.dblclick()
         // Should open the command bar in edit mode
         await cmdBar.expectState({
@@ -4570,7 +4568,7 @@ extrude001 = extrude(region001, length = 30)`
 
     await test.step('Delete GDT Flatness', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const gdtOperation = await toolbar.getFeatureTreeOperation('Flatness', 0)
+      const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
       // Delete the GDT operation
       await gdtOperation.click({ button: 'left' })
       await page.keyboard.press('Delete')
@@ -5877,4 +5875,207 @@ hole001 = hole::hole(
       })
     }
   )
+})
+
+test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
+  test.use({
+    userFeatures: ['modeling_dialogs'],
+  })
+
+  test('Selects objects and annotations from the feature tree for Named View exceptions', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(
+        '',
+        `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
+}
+body001 = extrude(region(segments = [sketch001.circle1]), length = 10mm)
+note001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontSize = 8mm)`
+      )
+    )
+    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+    await page.getByTestId('named-view-create').click()
+    const dialog = page.getByTestId('modeling-dialog')
+    await dialog.getByRole('textbox', { name: /^name/i }).fill('Inspection')
+    await dialog.getByText('Advanced', { exact: true }).click()
+
+    await (await toolbar.getFeatureTreeOperation('body001', 0)).click()
+    const exceptions = dialog.getByRole('button', {
+      name: 'Select Exceptions',
+      exact: true,
+    })
+    await expect(exceptions).toHaveText('1 sweep')
+    await (await toolbar.getFeatureTreeOperation('Note', 0)).click({
+      modifiers: ['Shift'],
+    })
+    await expect(exceptions).toHaveText('1 sweep, 1 annotation')
+    await scene.waitForExecutionDoneAfter(() =>
+      dialog.getByRole('button', { name: 'Submit', exact: true }).click()
+    )
+    await editor.expectEditor.toContain('except = [body001, note001]')
+  })
+
+  test('Creates, edits visibility, and removes a Named View from the pane', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    const code = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 2mm, var 10mm], center = [var 0mm, var 10mm])
+}
+region001 = region(segments = [sketch001.circle1])`
+    const oldVersionCode = code.replace('kclVersion = 3.0', 'kclVersion = 2.0')
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', oldVersionCode)
+    )
+    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+    const pane = page.locator(`#${DefaultLayoutPaneID.NamedViews}-pane`)
+    await expect(pane.getByTestId('named-view-create')).toHaveCount(0)
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(oldVersionCode, code)
+    )
+    await pane.getByTestId('named-view-create').click()
+
+    const dialog = page.getByTestId('modeling-dialog')
+    const name = dialog.getByRole('textbox', { name: /^name/i })
+    const exceptions = dialog.getByRole('button', {
+      name: 'Select Exceptions',
+      exact: true,
+    })
+    const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
+    const cameraMode = dialog.getByRole('combobox', { name: /^camera mode/i })
+    await name.fill('Inspection')
+    await cameraMode.selectOption({ label: 'Directed' })
+    await expect(submit).toBeDisabled()
+    await expect(dialog.getByRole('status')).toHaveText('No camera captured')
+    await dialog.getByRole('button', { name: 'Capture camera' }).click()
+    await expect(dialog.getByRole('status')).toHaveText(
+      'Current camera captured'
+    )
+    await cameraMode.selectOption({ label: 'Oriented' })
+    await dialog
+      .getByRole('combobox', { name: /^orientation/i })
+      .selectOption({ label: 'Front' })
+    await dialog.getByText('Advanced', { exact: true }).click()
+    await dialog.getByRole('textbox', { name: /^distance/i }).fill('200mm')
+    await dialog
+      .locator('#command-kcl-input-distance-variable-checkbox')
+      .check()
+    await dialog
+      .getByRole('textbox', { name: 'Variable name', exact: true })
+      .fill('viewDistance')
+    await editor.selectText('region(')
+    await expect(exceptions).toContainText(/1 region/i)
+    await cameraMode.selectOption({ label: 'Directed' })
+    await expect(dialog.getByRole('status')).toHaveText(
+      'Current camera captured'
+    )
+    await scene.waitForExecutionDoneAfter(() => submit.click())
+    await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('view::directed(')
+    await editor.expectEditor.not.toContain('viewDistance')
+    await editor.expectEditor.toContain('except = [region001]')
+
+    const row = pane
+      .getByTestId('named-view-row')
+      .filter({ hasText: 'Inspection' })
+    await expect(row.getByTestId('named-view-details')).toContainText(
+      'Directed'
+    )
+    await row
+      .getByRole('button', { name: 'Apply Inspection', exact: true })
+      .click()
+    await expect(row).toHaveAttribute('data-active', 'true')
+    await row.click({ button: 'right' })
+    await page.getByRole('button', { name: 'Edit', exact: true }).click()
+    await expect(dialog).toBeVisible()
+    await expect(row).toHaveAttribute('data-active', 'false')
+    await expect(
+      pane.getByTestId('named-view-row').filter({ hasText: 'Default View' })
+    ).toHaveAttribute('data-active', 'false')
+    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click()
+    await expect(dialog).not.toBeAttached()
+    await expect(row).toHaveAttribute('data-active', 'false')
+    await row
+      .getByRole('button', { name: 'Apply Inspection', exact: true })
+      .click()
+    await expect(row).toHaveAttribute('data-active', 'true')
+    await row.getByTestId('named-view-label').dblclick()
+    await expect(row).toHaveAttribute('data-active', 'false')
+    await expect(
+      row.getByRole('button', { name: 'Apply Inspection', exact: true })
+    ).toBeDisabled()
+    await name.fill('Inspection updated')
+    await expect(exceptions).toBeDisabled()
+    await expect(exceptions).toContainText(/1 region/i)
+    await cameraMode.selectOption({ label: 'Oriented' })
+    await dialog
+      .getByRole('combobox', { name: /^orientation/i })
+      .selectOption({ label: 'Top' })
+    await dialog.getByText('Advanced', { exact: true }).click()
+    await dialog.getByRole('textbox', { name: /^distance/i }).fill('200mm')
+    await dialog
+      .locator('#command-kcl-input-distance-variable-checkbox')
+      .check()
+    await dialog
+      .getByRole('textbox', { name: 'Variable name', exact: true })
+      .fill('viewDistance')
+    await dialog
+      .getByRole('combobox', { name: /^baseline/i })
+      .selectOption({ label: 'Hide all' })
+    await scene.waitForExecutionDoneAfter(() => submit.click())
+    await expect(dialog).not.toBeAttached()
+    await expect(row).toContainText('Inspection updated')
+    await expect(row).toHaveAttribute('data-active', 'false')
+    await editor.expectEditor.toContain('view::Orientation::Top')
+    await editor.expectEditor.toContain('viewDistance = 200mm')
+    await editor.expectEditor.toContain('distance = viewDistance')
+    await editor.expectEditor.toContain('view::Visibility::Hide')
+    await expect(row.getByTestId('named-view-details')).toHaveText(
+      'Top 200mm Orthographic'
+    )
+    await editor.expectEditor.toContain('except = [region001]')
+
+    await toolbar.openFeatureTreePane()
+    await expect(
+      page
+        .getByTestId('feature-tree-operation-item')
+        .filter({ hasText: /Named View/ })
+    ).toHaveCount(0)
+    await row.getByTestId('named-view-label').dblclick()
+    await cameraMode.selectOption({ label: 'Directed' })
+    await expect(
+      dialog.getByRole('combobox', { name: /^orientation/i })
+    ).toHaveCount(0)
+    await dialog.getByRole('button', { name: 'Capture camera' }).click()
+    await expect(dialog.getByRole('status')).toHaveText(
+      'Current camera captured'
+    )
+    await scene.waitForExecutionDoneAfter(() => submit.click())
+    await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('view::directed(')
+    await expect(row).toHaveAttribute('data-active', 'false')
+    await row.click({ button: 'right' })
+    await scene.waitForExecutionDoneAfter(() =>
+      page.getByRole('button', { name: 'Remove', exact: true }).click()
+    )
+    await expect(row).not.toBeAttached()
+    await editor.expectEditor.not.toContain('view::named(')
+  })
 })

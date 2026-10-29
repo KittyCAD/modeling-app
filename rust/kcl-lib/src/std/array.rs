@@ -7,7 +7,7 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
 use crate::execution::KclValueControlFlow;
-use crate::execution::control_continue;
+use crate::execution::control_normal;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
@@ -20,8 +20,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValueContr
     inner_map(array, f, exec_state, &args).await
 }
 
-/// Parse map's arguments. Shared by the recursive executor's `map` and the
-/// machine executor's resumable entry.
+/// Parse map's arguments for the native and resumable entries.
 pub(crate) fn map_parse_args(
     args: &Args,
     exec_state: &mut ExecState,
@@ -31,8 +30,7 @@ pub(crate) fn map_parse_args(
     Ok((array, f))
 }
 
-/// Build the per-element callback arguments for map. Shared by both
-/// executors.
+/// Build the per-element callback arguments for map.
 pub(crate) fn map_callback_args(
     input: KclValue,
     source_range: SourceRange,
@@ -51,7 +49,7 @@ pub(crate) fn map_callback_args(
     )
 }
 
-/// The result of map's whole iteration. Shared by both executors.
+/// The result of map's whole iteration.
 pub(crate) fn map_result(done: Vec<KclValue>) -> KclValue {
     KclValue::HomArray {
         value: done,
@@ -59,7 +57,7 @@ pub(crate) fn map_result(done: Vec<KclValue>) -> KclValue {
     }
 }
 
-/// Error when a map callback produces no value. Shared by both executors.
+/// Error when a map callback produces no value.
 pub(crate) fn map_missing_value_error(source_range: SourceRange) -> KclError {
     KclError::new_semantic(KclErrorDetails::new(
         "Map function must return a value".to_owned(),
@@ -86,10 +84,10 @@ async fn inner_map(
         .await?;
         // If the callback exited, e.g. by calling exit(), stop mapping, and
         // propagate the exit so that it terminates the enclosing module.
-        let new_elem = control_continue!(new_elem_cf);
+        let new_elem = control_normal!(new_elem_cf);
         new_array.push(new_elem);
     }
-    Ok(map_result(new_array).continue_())
+    Ok(map_result(new_array).normal())
 }
 
 async fn call_map_closure(
@@ -112,7 +110,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValueCo
     inner_reduce(array, initial, f, exec_state, &args).await
 }
 
-/// Parse reduce's arguments. Shared by both executors.
+/// Parse reduce's arguments.
 pub(crate) fn reduce_parse_args(
     args: &Args,
     exec_state: &mut ExecState,
@@ -123,8 +121,7 @@ pub(crate) fn reduce_parse_args(
     Ok((array, f, initial))
 }
 
-/// Build the per-element callback arguments for reduce. Shared by both
-/// executors.
+/// Build the per-element callback arguments for reduce.
 pub(crate) fn reduce_callback_args(
     elem: KclValue,
     accum: KclValue,
@@ -146,7 +143,7 @@ pub(crate) fn reduce_callback_args(
     )
 }
 
-/// Error when a reduce callback produces no value. Shared by both executors.
+/// Error when a reduce callback produces no value.
 pub(crate) fn reduce_missing_value_error(source_range: SourceRange) -> KclError {
     KclError::new_semantic(KclErrorDetails::new(
         "Reducer function must return a value".to_string(),
@@ -175,10 +172,10 @@ async fn inner_reduce(
         .await?;
         // If the callback exited, e.g. by calling exit(), stop reducing, and
         // propagate the exit so that it terminates the enclosing module.
-        reduced = control_continue!(reduced_cf);
+        reduced = control_normal!(reduced_cf);
     }
 
-    Ok(reduced.continue_())
+    Ok(reduced.normal())
 }
 
 async fn call_reduce_closure(

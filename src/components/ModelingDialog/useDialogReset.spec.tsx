@@ -76,7 +76,7 @@ it('keeps a failed draft, resets for another edit, and discards its pending subm
       failReview ? new Error('The codemod could not execute.') : undefined,
     onSubmit,
     args: {
-      name: { inputType: 'string', required: true },
+      name: { inputType: 'text', required: true },
       detail: {
         inputType: 'string',
         required: false,
@@ -98,14 +98,14 @@ it('keeps a failed draft, resets for another edit, and discards its pending subm
   edit('first')
   render(<Harness />)
   const name = await screen.findByRole('textbox', { name: 'Name *' })
-  fireEvent.change(name, { target: { value: 'failed draft' } })
+  fireEvent.change(name, { target: { value: 'failed\ndraft' } })
   fireEvent.click(screen.getByText('Advanced'))
   fireEvent.change(screen.getByRole('textbox', { name: 'Detail' }), {
     target: { value: 'keep this' },
   })
   fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
   await screen.findByRole('alert')
-  expect(name).toHaveValue('failed draft')
+  expect(name).toHaveValue('failed\ndraft')
   expect(screen.getByText('Advanced').parentElement).toHaveAttribute('open')
   expect(screen.getByRole('textbox', { name: 'Detail' })).toHaveValue(
     'keep this'
@@ -143,10 +143,13 @@ it('keeps a failed draft, resets for another edit, and discards its pending subm
     'second'
   )
   failReview = false
+  fireEvent.change(screen.getByRole('textbox', { name: 'Name *' }), {
+    target: { value: 'second\nline' },
+  })
   fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
   await waitFor(() =>
     expect(onSubmit).toHaveBeenCalledExactlyOnceWith({
-      name: 'second',
+      name: 'second\nline',
       nodeToEdit: 'second',
       detail: undefined,
     })

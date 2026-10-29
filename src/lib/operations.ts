@@ -14,9 +14,9 @@ import {
   deleteTopLevelStatement,
 } from '@src/lang/modifyAst'
 import {
-  retrieveEdgeSelectionsFromEdgeRefs,
-  retrieveEdgeSelectionsFromOpArgs,
-  retrieveEdgeSelectionsFromSingleEdgeRef,
+  retrieveEdgeSelectionsFromOpArg,
+  retrieveEdgeSelectionsFromLegacyOpArgs,
+  retrieveEdgeSelectionFromOpValue,
 } from '@src/lang/modifyAst/edges'
 import {
   retrieveFaceSelectionsFromOpArgs,
@@ -239,14 +239,16 @@ function extractDistanceTargetSelections(
   const value = targetArg.value
 
   if (value.type === 'Object') {
-    return selectionResultOrEmpty(
-      retrieveEdgeSelectionsFromSingleEdgeRef(targetArg, artifactGraph)
-    ).graphSelections
+    const selection = retrieveEdgeSelectionFromOpValue(value, artifactGraph)
+    return isErr(selection) ? [] : [selection]
   }
 
   if (value.type === 'Uuid') {
-    return retrieveEdgeSelectionsFromOpArgs(null, targetArg, artifactGraph)
-      .graphSelections
+    return retrieveEdgeSelectionsFromLegacyOpArgs(
+      null,
+      targetArg,
+      artifactGraph
+    ).graphSelections
   }
 
   if (value.type === 'Face') {
@@ -263,7 +265,7 @@ function extractDistanceTargetSelections(
     return faceSelections
   }
 
-  const edgeSelections = retrieveEdgeSelectionsFromOpArgs(
+  const edgeSelections = retrieveEdgeSelectionsFromLegacyOpArgs(
     null,
     targetArg,
     artifactGraph
@@ -296,13 +298,17 @@ function retrieveFaceAndEdgeSelectionsForEdit(
       edgesArg.value.type === 'Array' ? edgesArg.value.value : [edgesArg.value]
     for (const value of edgeValues) {
       const edgeArg = { ...edgesArg, value }
-      const edges =
-        value.type === 'Object'
-          ? selectionResultOrEmpty(
-              retrieveEdgeSelectionsFromSingleEdgeRef(edgeArg, artifactGraph)
-            )
-          : retrieveEdgeSelectionsFromOpArgs(null, edgeArg, artifactGraph)
-      graphSelections.push(...edges.graphSelections)
+      if (value.type === 'Object') {
+        const selection = retrieveEdgeSelectionFromOpValue(value, artifactGraph)
+        if (!isErr(selection)) graphSelections.push(selection)
+      } else {
+        const edges = retrieveEdgeSelectionsFromLegacyOpArgs(
+          null,
+          edgeArg,
+          artifactGraph
+        )
+        graphSelections.push(...edges.graphSelections)
+      }
     }
   }
 
@@ -829,10 +835,10 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   let selection: Selections
   if (edgesArg) {
     selection = selectionResultOrEmpty(
-      retrieveEdgeSelectionsFromEdgeRefs(edgesArg, artifactGraph)
+      retrieveEdgeSelectionsFromOpArg(edgesArg, artifactGraph)
     )
   } else if (operation.labeledArgs?.tags) {
-    selection = retrieveEdgeSelectionsFromOpArgs(
+    selection = retrieveEdgeSelectionsFromLegacyOpArgs(
       operation.unlabeledArg,
       operation.labeledArgs.tags,
       artifactGraph,
@@ -853,7 +859,8 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     return { reason: radius.error }
   }
 
-  const tag = extractStringArgument(code, operation, 'tag')
+  const tagValue = operation.labeledArgs.tag?.value
+  const tag = tagValue?.type === 'TagDeclarator' ? tagValue.name : undefined
   const toleranceResult = await extractOptionalKclArgument(
     code,
     operation,
@@ -915,10 +922,10 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
   let selection: Selections
   if (edgesArg) {
     selection = selectionResultOrEmpty(
-      retrieveEdgeSelectionsFromEdgeRefs(edgesArg, artifactGraph)
+      retrieveEdgeSelectionsFromOpArg(edgesArg, artifactGraph)
     )
   } else if (operation.labeledArgs?.tags) {
-    selection = retrieveEdgeSelectionsFromOpArgs(
+    selection = retrieveEdgeSelectionsFromLegacyOpArgs(
       operation.unlabeledArg,
       operation.labeledArgs.tags,
       artifactGraph,
@@ -947,7 +954,8 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     'error' in arg ? undefined : arg
   )
 
-  const tag = extractStringArgument(code, operation, 'tag')
+  const tagValue = operation.labeledArgs.tag?.value
+  const tag = tagValue?.type === 'TagDeclarator' ? tagValue.name : undefined
 
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
@@ -1581,19 +1589,20 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
       ? operation.labeledArgs.edgeRef
       : undefined
   const axisIsEdgeRefPayload =
-    axisArg?.value?.type === 'Object' &&
-    (axisArg.value.value?.sideFaces ?? axisArg.value.value?.side_faces)
+    axisArg?.value?.type === 'Object' && axisArg.value.value.sideFaces
   const edgeRefPayload = axisIsEdgeRefPayload ? axisArg : edgeRefArg
   if (edgeRefPayload) {
-    const { retrieveEdgeSelectionsFromSingleEdgeRef } = await import(
+    const { retrieveEdgeSelectionFromOpValue } = await import(
       '@src/lang/modifyAst/edges'
     )
-    const edgeSelections = retrieveEdgeSelectionsFromSingleEdgeRef(
-      edgeRefPayload,
+    const edgeSelection = retrieveEdgeSelectionFromOpValue(
+      edgeRefPayload.value,
       artifactGraph
     )
     mode = 'Edge'
-    edge = selectionResultOrEmpty(edgeSelections)
+    edge = isErr(edgeSelection)
+      ? emptySelections()
+      : { graphSelections: [edgeSelection], otherSelections: [] }
   } else if (axisArg) {
     const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
       axisArg,
@@ -1741,19 +1750,20 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       ? operation.labeledArgs.edgeRef
       : undefined
   const axisIsEdgeRefPayload =
-    axisArg?.value?.type === 'Object' &&
-    (axisArg.value.value?.sideFaces ?? axisArg.value.value?.side_faces)
+    axisArg?.value?.type === 'Object' && axisArg.value.value.sideFaces
   const edgeRefPayload = axisIsEdgeRefPayload ? axisArg : edgeRefArg
   if (edgeRefPayload) {
-    const { retrieveEdgeSelectionsFromSingleEdgeRef } = await import(
+    const { retrieveEdgeSelectionFromOpValue } = await import(
       '@src/lang/modifyAst/edges'
     )
-    const edgeSelections = retrieveEdgeSelectionsFromSingleEdgeRef(
-      edgeRefPayload,
+    const edgeSelection = retrieveEdgeSelectionFromOpValue(
+      edgeRefPayload.value,
       artifactGraph
     )
     axisOrEdge = 'Edge'
-    edge = selectionResultOrEmpty(edgeSelections)
+    edge = isErr(edgeSelection)
+      ? emptySelections()
+      : { graphSelections: [edgeSelection], otherSelections: [] }
   } else if (axisArg) {
     const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
       axisArg,
@@ -3761,11 +3771,6 @@ export function getOperationVariableName(
 ): string | undefined {
   if (op.type === 'VariableDeclaration') {
     return op.name
-  }
-
-  // Handle GDT operations - they don't have variable names as they're standalone statements
-  if (op.type === 'StdLibCall' && op.name.startsWith('gdt::')) {
-    return undefined
   }
 
   if (
