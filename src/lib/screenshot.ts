@@ -168,32 +168,107 @@ export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
   return new File([buf], fileName, { type: mime })
 }
 
+interface ThumbnailTaskState {
+  cancel: (() => void) | undefined
+  writes: Promise<void>
+}
+
+const thumbnailTasks = new WeakMap<
+  FileOperationsRegistryService,
+  ThumbnailTaskState
+>()
+
 export function createThumbnailPNGOnDesktop({
   fileOperations,
   projectDirectoryWithoutEndingSlash,
+  isCurrent,
 }: {
   fileOperations: FileOperationsRegistryService
   projectDirectoryWithoutEndingSlash: string
+  isCurrent: () => boolean
 }) {
-  setTimeout(() => {
-    if (!projectDirectoryWithoutEndingSlash) {
+  const state: ThumbnailTaskState = thumbnailTasks.get(fileOperations) ?? {
+    cancel: undefined,
+    writes: Promise.resolve(),
+  }
+  thumbnailTasks.set(fileOperations, state)
+  state.cancel?.()
+
+  const video = document.getElementById('video-stream')
+  const canvas = document.querySelector('[data-engine]')
+  if (
+    !projectDirectoryWithoutEndingSlash ||
+    !isCurrent() ||
+    !(video instanceof HTMLVideoElement) ||
+    !(canvas instanceof HTMLCanvasElement) ||
+    video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ||
+    video.paused ||
+    video.ended
+  ) {
+    return
+  }
+  const source = video.srcObject
+  const currentSrc = video.currentSrc
+  let cancelled = false
+  let frame: number | undefined
+  const cancel = () => {
+    cancelled = true
+    if (frame !== undefined) video.cancelVideoFrameCallback(frame)
+    window.removeEventListener('pagehide', cancel)
+    for (const event of ['pause', 'ended', 'emptied'])
+      video.removeEventListener(event, cancel)
+    if (state.cancel === cancel) state.cancel = undefined
+  }
+  const ownsCapture = () =>
+    !cancelled &&
+    isCurrent() &&
+    video.isConnected &&
+    canvas.isConnected &&
+    document.getElementById('video-stream') === video &&
+    document.querySelector('[data-engine]') === canvas &&
+    video.srcObject === source &&
+    video.currentSrc === currentSrc &&
+    video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+    !video.paused &&
+    !video.ended
+
+  state.cancel = cancel
+  window.addEventListener('pagehide', cancel, { once: true })
+  for (const event of ['pause', 'ended', 'emptied'])
+    video.addEventListener(event, cancel, { once: true })
+  // Require a newly presented frame after execution, not a guessed camera
+  // duration or an already decoded old model. This is not a command/frame ACK.
+  frame = video.requestVideoFrameCallback(() => {
+    frame = undefined
+    if (!ownsCapture()) {
+      cancel()
       return
     }
-    // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
     takeScreenshotOfVideoStreamCanvas()
       .then(async (thumbnail) => {
-        if (!thumbnail) return
-        await writeProjectThumbnailFile(
-          fileOperations,
-          new Uint8Array(await thumbnail.arrayBuffer()),
-          projectDirectoryWithoutEndingSlash
-        )
+        if (!thumbnail || !ownsCapture()) return
+        const bytes = new Uint8Array(await thumbnail.arrayBuffer())
+        // File writes cannot be cancelled once started. Serialize them so an
+        // older write cannot finish after a newer project's current capture.
+        state.writes = state.writes
+          .catch(() => {})
+          .then(async () => {
+            if (!ownsCapture()) return
+            await writeProjectThumbnailFile(
+              fileOperations,
+              bytes,
+              projectDirectoryWithoutEndingSlash
+            )
+          })
+        await state.writes
       })
-      .catch((e) => {
+      .catch((error) => {
         console.error(
           `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
         )
-        console.error(e)
+        console.error(error)
       })
-  }, 500)
+      .finally(cancel)
+  })
+  return cancel
 }
