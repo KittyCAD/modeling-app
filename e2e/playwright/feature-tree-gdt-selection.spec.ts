@@ -4,7 +4,15 @@ for (const treatment of ['fillet', 'chamfer'] as const) {
   test(
     `annotates a ${treatment} face selected in the feature tree`,
     { tag: '@web' },
-    async ({ page, homePage, scene, editor, toolbar, cmdBar }) => {
+    async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+      modelingDialog,
+    }) => {
       const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 profile = sketch(on = XY) {
   bottom = line(start = [0mm, 0mm], end = [10mm, 0mm])
@@ -34,13 +42,8 @@ ${treatment}001 = ${treatment}(
       await cmdBar.openCmdBar()
       await page.getByPlaceholder('Search commands').fill('GDT Annotation')
       await page.keyboard.press('Enter')
-      await cmdBar.continue()
-      await page
-        .getByRole('textbox', { name: 'annotation', exact: true })
-        .fill('Treatment face')
-      await cmdBar.continue()
-      await expect(page.getByTestId('command-bar-submit')).toBeVisible()
-      await scene.waitForExecutionDoneAfter(() => cmdBar.submit())
+      await modelingDialog.input('annotation').fill('Treatment face')
+      await scene.waitForExecutionDoneAfter(() => modelingDialog.submit())
       await scene.settled()
       await editor.expectEditor.toContain('gdt::annotation(')
       const source = await page.evaluate(
