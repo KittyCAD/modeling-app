@@ -92,8 +92,6 @@ export default function ModelingDialog({
     selectionRanges,
     modelingSend,
   })
-  const latestDraft = useRef(selection.draft)
-  latestDraft.current = selection.draft
   const context = {
     ...state.context,
     argumentsToSubmit: {
@@ -154,7 +152,6 @@ export default function ModelingDialog({
       const current = commands.actor.getSnapshot().context
       return (
         mounted.current &&
-        latestDraft.current === selection.draft &&
         current.selectedCommand === command &&
         current.argumentsToSubmit === state.context.argumentsToSubmit
       )
