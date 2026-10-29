@@ -278,7 +278,20 @@ copyEdgeIds: Array<ArtifactId>, codeRef: CodeRef, };
 
 export type PatternSubType = "circular" | "linear" | "transform";
 
-export type Plane = { id: ArtifactId, pathIds: Array<ArtifactId>, codeRef: CodeRef, };
+export type Plane = { id: ArtifactId, pathIds: Array<ArtifactId>, codeRef: CodeRef, 
+/**
+ * The evaluated transform from plane creation. Origin is in millimeters;
+ * axes are unitless. Absent for planes only referenced by sketch commands.
+ */
+planeInfo?: ArtifactPlaneInfo | null, 
+/**
+ * The unscaled plane size in millimeters, before view-dependent scaling.
+ */
+size?: number | null, 
+/**
+ * Visibility after plane creation and subsequent ObjectVisible commands.
+ */
+hidden?: boolean, };
 
 export type PlaneOfFace = { id: ArtifactId, faceId: ArtifactId, codeRef: CodeRef, };
 
