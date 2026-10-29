@@ -102,11 +102,15 @@ export function useDialogSelection({
     if (field?.arg.inputType === 'selection') select(field.name, field.arg)
   })
 
-  const draft = activeName
-    ? {
-        ...values,
-        [activeName]: hasValue(selection) ? selection : undefined,
-      }
-    : values
+  const draft = useMemo(
+    () =>
+      activeName
+        ? {
+            ...values,
+            [activeName]: hasValue(selection) ? selection : undefined,
+          }
+        : values,
+    [activeName, selection, values]
+  )
   return { activeName, selectionRanges: selection, draft, select, update }
 }

@@ -6,6 +6,8 @@ import {
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
+import { resolveToCodeRef, getNodeFromPath } from '@src/lang/queryAst'
+import type { CallExpressionKw } from '@src/lang/wasm'
 import { buildSolidsAndFacesExprs } from '@src/lang/modifyAst/faces'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
@@ -29,6 +31,21 @@ export function sketchBlockOnExtrudedFace(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
+  const resolved = resolveToCodeRef(faceSelection, artifactGraph)
+  if (resolved?.artifact?.type === 'edgeCut') {
+    const sourceCall = getNodeFromPath<CallExpressionKw>(
+      node,
+      resolved.artifact.codeRef.pathToNode,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
+    if (
+      err(sourceCall) ||
+      !['fillet', 'chamfer'].includes(sourceCall.node.callee.name.name)
+    ) {
+      return new Error('Cannot create a sketch on this copied treatment face.')
+    }
+  }
   let modifiedAst = structuredClone(node)
   const newSketchName = findUniqueName(
     node,
