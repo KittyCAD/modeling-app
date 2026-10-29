@@ -449,15 +449,15 @@ export default function ModelingDialog({
             </details>
           )}
         </div>
-        {state.context.reviewValidationError && (
-          <div className="shrink-0 px-3 pb-3">
-            <ErrorBanner
-              title="Check these arguments"
-              message={state.context.reviewValidationError}
-            />
-          </div>
-        )}
-        <footer className="flex shrink-0 items-center justify-between gap-2 border-t border-chalkboard-30 p-3 dark:border-chalkboard-70">
+        <footer className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-chalkboard-30 p-3 dark:border-chalkboard-70">
+          {state.context.reviewValidationError && (
+            <div className="w-full">
+              <ErrorBanner
+                title="Check these arguments"
+                message={state.context.reviewValidationError}
+              />
+            </div>
+          )}
           <button
             type="submit"
             disabled={initializing || submitting || checking || invalid}
