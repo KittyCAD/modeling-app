@@ -5,7 +5,7 @@ import { resolveProjectLocation } from '@src/lib/fileSystem/mounts'
 import { reportRejection } from '@src/lib/trap'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import {
   getRouterSearchFromRequestUrl,
@@ -93,6 +93,33 @@ export const fileLoader =
         encodeURIComponent(params.id.slice(6))
       )
       return redirect(url.pathname + url.search)
+    }
+    // A file already belonging to the open project needs no project/settings reload.
+    const current = app.project
+    const target = params.id
+    const requestPath = new URL(routerData.request.url).pathname
+    if (
+      current &&
+      !kclManager.modelingState?.matches('sketchSolveMode') &&
+      target?.endsWith(FILE_EXT) &&
+      fsZds
+        .resolve(target)
+        .startsWith(`${fsZds.resolve(current.path)}${fsZds.sep}`) &&
+      !requestPath.includes('/onboarding') &&
+      !requestPath.endsWith('/settings') &&
+      (await app.fileOperations.exists(target))
+    ) {
+      assertCurrent()
+      await current.openEditor(
+        target,
+        kclManager,
+        undefined,
+        true,
+        assertCurrent,
+        { deferModeling: true }
+      )
+      assertCurrent()
+      return
     }
     const waitForCloudAuth = async () => {
       const auth = app.registry.optional(authService)

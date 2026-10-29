@@ -1,3 +1,4 @@
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { expect, test } from '@e2e/playwright/base-test'
 import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
 import {
@@ -185,7 +186,12 @@ test(
     await expect
       .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
       .toBe(0)
-    await page.clock.install()
+    const clockStart = new Date()
+    await page.clock.install({ time: clockStart })
+    await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+    await expect
+      .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
+      .toBe(0)
     const uploadsBeforeEditing = remote.uploads.length
     const edit = async (comment: string) =>
       page.evaluate((comment) => {
@@ -238,6 +244,116 @@ test(
 )
 
 test(
+  'switches files without waiting for cloud acknowledgement or modeling',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    const remote = await mockCloud(context)
+    remote.project.files['other.kcl'] =
+      '@settings(kclVersion = 3.0)\n// target buffer\n'
+    await setup(context, page, testInfo)
+    await page.goto('/home')
+    await page
+      .getByTestId('project-link')
+      .filter({ has: page.getByText('Cloud memory model', { exact: true }) })
+      .click()
+    await expect(page).toHaveURL(/main\.kcl/)
+    await page.evaluate(
+      (ids) => {
+        for (const id of ids) window.app.layout.openPane(id)
+      },
+      [DefaultLayoutPaneID.Code, DefaultLayoutPaneID.Files]
+    )
+    const originalProject = await page.evaluateHandle(() => window.app.project)
+    const save = Promise.withResolvers<undefined>()
+    let blockedSave = false
+    await context.route('**/user/projects/**', async (route) => {
+      if (route.request().method() === 'PUT' && !blockedSave) {
+        blockedSave = true
+        await save.promise
+      }
+      await route.fallback()
+    })
+    const releaseModeling = await page.evaluateHandle(() => {
+      const rust = window.app.rustContext
+      const original = rust.sendOpenProject.bind(rust)
+      const originalUpdate = rust.sendUpdateFile.bind(rust)
+      const sourceId = window.app.singletons.kclManager.id
+      let updatesBeforeReady = 0
+      let ready = false
+      rust.sendUpdateFile = async (...args) => {
+        if (!ready && args[0] !== sourceId) updatesBeforeReady += 1
+        return originalUpdate(...args)
+      }
+      let release!: () => void
+      const gate = new Promise<void>((resolve) => {
+        release = resolve
+      })
+      rust.sendOpenProject = async (...args) => {
+        await gate
+        return original(...args)
+      }
+      return () => {
+        rust.sendOpenProject = original
+        rust.sendUpdateFile = originalUpdate
+        ready = true
+        release()
+        return updatesBeforeReady
+      }
+    })
+    try {
+      await page.evaluate(() =>
+        window.app.singletons.kclManager.updateCodeEditor(
+          '@settings(kclVersion = 3.0)\n// outgoing edit\n',
+          {
+            shouldExecute: false,
+            shouldWriteToDisk: true,
+            shouldResetCamera: false,
+          }
+        )
+      )
+      await page
+        .getByRole('treeitem', { name: 'other.kcl', exact: true })
+        .click()
+      await expect(page.locator('.cm-content').first()).toContainText(
+        '// target buffer',
+        { timeout: 1_500 }
+      )
+      expect(
+        await originalProject.evaluate(
+          (project) => window.app.project === project
+        )
+      ).toBe(true)
+      await expect.poll(() => blockedSave).toBe(true)
+      await page.evaluate(() =>
+        window.app.singletons.kclManager.updateCodeEditor(
+          '@settings(kclVersion = 3.0)\n// target buffer edited\n',
+          {
+            shouldExecute: false,
+            shouldWriteToDisk: false,
+            shouldSyncRust: true,
+          }
+        )
+      )
+      await page
+        .getByRole('treeitem', { name: 'main.kcl', exact: true })
+        .click()
+      await expect(page.locator('.cm-content').first()).toContainText(
+        '// outgoing edit',
+        { timeout: 1_500 }
+      )
+    } finally {
+      save.resolve(undefined)
+      expect(await releaseModeling.evaluate((release) => release())).toBe(0)
+    }
+    await expect
+      .poll(() => remote.project.files['main.kcl'])
+      .toContain('// outgoing edit')
+    expect(remote.project.files['other.kcl']).toContain('// target buffer')
+  }
+)
+
+test(
   'cloud MCP returns refresh authoritative files and ignore streamed edit snapshots',
   { tag: ['@web', '@zookeeper'] },
   async ({ context, page }, testInfo) => {
@@ -281,6 +397,7 @@ test(
       .getByTestId('project-link')
       .filter({ has: page.getByText('Cloud memory model', { exact: true }) })
       .click()
+    await expect(page).toHaveURL(/__zoo_cloud__.*main\.kcl/)
     await expect.poll(() => connected, { timeout: 30_000 }).toBe(true)
     await expect
       .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
@@ -311,12 +428,14 @@ test(
     delete remote.project.files['parts/note.md']
     remote.project.revision = String(Number(remote.project.revision) + 1)
     send({
-      zookeeper_recovery_tool_output: {
-        call_id: 'cloud-write-1',
-        tool_name: 'project_write_file',
-        output: JSON.stringify(cloudProjectResponse(remote.project)),
-        output_truncated: false,
-        project_updated: false,
+      tool_output: {
+        result: {
+          type: 'project_write_file',
+          call_id: 'cloud-write-1',
+          project_id: `cloud:${projectId}`,
+          ok: true,
+          output: cloudProjectResponse(remote.project),
+        },
       },
     })
     await expect

@@ -1457,6 +1457,208 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe(destinationCode)
   })
 
+  it('drops an outgoing file execution scheduled before the user switches buffers', async () => {
+    vi.useFakeTimers()
+    const { kclManager } = createKclManagerTestHarness('source')
+    kclManager.path = '/project/a.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('source')
+    const execute = vi
+      .spyOn(kclManager, 'executeCode')
+      .mockResolvedValue(undefined)
+    kclManager.scheduleCurrentCodeExecution(true)
+    await KclManager.fromFile(
+      new File('/project/b.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      'target',
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    await vi.advanceTimersByTimeAsync(1_000)
+    expect(kclManager.code).toBe('target')
+    expect(execute).not.toHaveBeenCalled()
+  })
+
+  it('displays the target buffer while an outgoing save is waiting for acknowledgement', async () => {
+    const { kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('original')
+    const gate = Promise.withResolvers<undefined>()
+    const read = vi
+      .spyOn(kclManager.textFileIO, 'read')
+      .mockImplementation(async (path) =>
+        path.endsWith('a.kcl') ? 'original' : 'target'
+      )
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockImplementation(async () => gate.promise)
+    kclManager.updateCodeEditor('edited source', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    await KclManager.fromFile(
+      new File('/project/b.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    expect(kclManager.path).toBe('/project/b.kcl')
+    expect(kclManager.code).toBe('target')
+    await vi.waitFor(() =>
+      expect(write).toHaveBeenCalledWith('/project/a.kcl', 'edited source')
+    )
+    await KclManager.fromFile(
+      new File('/project/a.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    expect(kclManager.code).toBe('edited source')
+    gate.resolve(undefined)
+    await vi.waitFor(() =>
+      expect(kclManager.getPendingFileCode('/project/a.kcl')).toBeUndefined()
+    )
+    expect(kclManager.code).toBe('edited source')
+    expect(write).toHaveBeenCalledTimes(1)
+    read.mockRestore()
+    write.mockRestore()
+  })
+
+  it('preserves newer outgoing edits while an earlier save is in flight', async () => {
+    const { kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('original')
+    const files = new Map([
+      ['/project/a.kcl', 'original'],
+      ['/project/b.kcl', 'target'],
+    ])
+    const gate = Promise.withResolvers<undefined>()
+    const read = vi
+      .spyOn(kclManager.textFileIO, 'read')
+      .mockImplementation(async (path) => files.get(path) ?? '')
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockImplementation(async (path, code) => {
+        files.set(path, code)
+        await gate.promise
+      })
+    kclManager.updateCodeEditor('first edit', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    const saving = kclManager.flushWriteToFile()
+    await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
+    kclManager.updateCodeEditor('latest edit', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    await KclManager.fromFile(
+      new File('/project/b.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    expect(kclManager.code).toBe('target')
+    gate.resolve(undefined)
+    await saving
+    await vi.waitFor(() =>
+      expect(files.get('/project/a.kcl')).toBe('latest edit')
+    )
+    expect(files.get('/project/b.kcl')).toBe('target')
+    read.mockRestore()
+    write.mockRestore()
+  })
+
+  it('recognizes its outgoing save when the file is selected and edited again', async () => {
+    const { kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('original')
+    let stored = 'original'
+    const gate = Promise.withResolvers<undefined>()
+    const read = vi
+      .spyOn(kclManager.textFileIO, 'read')
+      .mockImplementation(async (path) =>
+        path.endsWith('a.kcl') ? stored : 'target'
+      )
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockImplementation(async (_path, code) => {
+        stored = code
+        await gate.promise
+      })
+    kclManager.updateCodeEditor('outgoing edit', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    await KclManager.fromFile(
+      new File('/project/b.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
+    await KclManager.fromFile(
+      new File('/project/a.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    kclManager.updateCodeEditor('newer edit', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    kclManager.onWatchEvent.at(-1)?.('change', '/project/a.kcl')
+    await flushPromises()
+    expect(kclManager.code).toBe('newer edit')
+    expect(toastMocks.error).not.toHaveBeenCalled()
+    gate.resolve(undefined)
+    await kclManager.waitForFileSaves()
+    read.mockRestore()
+    write.mockRestore()
+  })
+
+  it('retains outgoing edits in memory if their background save fails', async () => {
+    const { kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('original')
+    const read = vi
+      .spyOn(kclManager.textFileIO, 'read')
+      .mockResolvedValue('original')
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockRejectedValue(new Error('Offline'))
+    kclManager.updateCodeEditor('unsaved source', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    await KclManager.fromFile(
+      new File('/project/b.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      'target',
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    await vi.waitFor(() =>
+      expect(toastMocks.error).toHaveBeenCalledWith(
+        'Could not save the outgoing file. Its edits remain in memory.'
+      )
+    )
+    await KclManager.fromFile(
+      new File('/project/a.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    expect(kclManager.code).toBe('unsaved source')
+    read.mockRestore()
+    write.mockRestore()
+  })
+
   it('reloads clean editor state from disk watcher updates', async () => {
     const { kclManager } = createKclManagerTestHarness('from disk')
 

@@ -464,6 +464,7 @@ export class App implements AppSubsystems {
   /** Stop the app and await registry-owned runtime resources. */
   async disposeAsync() {
     this.stopSubsystems()
+    await this.singletons.kclManager.waitForFileSaves()
     await this.registry.disposeAsync()
   }
 
@@ -746,6 +747,7 @@ export class App implements AppSubsystems {
       project: computed(() => this.project?.projectIORefSignal.value),
       fileOperations: this.fileOperations,
       textFileIO: this.projectSession.textFileIO,
+      modelingReady: () => this.project?.modelingReady ?? Promise.resolve(),
       projectSession: this.projectSession,
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,

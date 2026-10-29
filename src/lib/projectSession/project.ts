@@ -41,6 +41,7 @@ export interface ProjectSystemDeps {
   /** Storage access for editor-owned export and thumbnail workflows. */
   fileOperations: FileOperationsRegistryService
   textFileIO: TextFileIO
+  modelingReady?: () => Promise<void>
   projectSession?: Pick<
     ProjectSessionService,
     'editorChanged' | 'writeThumbnail'
@@ -82,6 +83,10 @@ export class ZDSProject {
     children: [],
   }))
 
+  private modelingPreparation: Promise<void> = Promise.resolve()
+  get modelingReady() {
+    return this.modelingPreparation
+  }
   private fileWatcherId = uuidv4()
 
   constructor(
@@ -161,7 +166,8 @@ export class ZDSProject {
      */
     providedCode?: string,
     isExecuting = true,
-    assertCurrent: () => void = () => {}
+    assertCurrent: () => void = () => {},
+    options: { deferModeling?: boolean } = {}
   ) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
@@ -170,7 +176,7 @@ export class ZDSProject {
       (!providedEditor || found !== providedEditor || found.path === path)
     ) {
       console.warn(`Attempted to overwrite editor with path "${path}"`)
-      if (isExecuting) {
+      if (isExecuting && !options.deferModeling) {
         await found.modelingActorPromise
         assertCurrent()
       }
@@ -182,6 +188,7 @@ export class ZDSProject {
       project: this.projectIORefSignal,
       fileOperations: this.app.fileOperations,
       textFileIO: this.textFileIO,
+      modelingReady: () => this.modelingPreparation,
       projectSession: this.app.projectSession,
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
@@ -193,6 +200,7 @@ export class ZDSProject {
 
     if (providedEditor) {
       providedEditor.systemDeps.project = systemDeps.project
+      providedEditor.systemDeps.modelingReady = systemDeps.modelingReady
     }
 
     const foundFileIndex = this.files.findIndex((f) => f.path === path)
@@ -220,6 +228,7 @@ export class ZDSProject {
       // before that snapshot has registered the file.
       {
         shouldSyncRustOnOpen: !providedEditor,
+        backgroundSave: options.deferModeling,
         assertCurrent,
       }
     )
@@ -237,9 +246,11 @@ export class ZDSProject {
       newEditor.path = path
     }
 
-    if (!foundEditor) {
-      this.set(signal(path), newEditor)
+    // A reused editor owns only its current path; older buffers live in its history/save cache.
+    for (const [key, editor] of this.editors) {
+      if (editor === newEditor && key.peek() !== path) this.editors.delete(key)
     }
+    this.set(this.findEditor(path)?.[0] ?? signal(path), newEditor)
 
     // Initialize a snapshot of the project for Rust
     // to have for executions and code mods
@@ -247,36 +258,67 @@ export class ZDSProject {
       this.executingPath = path
     }
 
-    markOnce('project/startCollectFiles')
-    const apiFiles = await this.getAllKclFiles()
-    markOnce('project/endCollectFiles')
-    assertCurrent()
-
-    markOnce('project/startSendProjectToWasm')
-    await newEditor.rustContext
-      .sendOpenProject(path, apiFiles)
-      .catch(reportRejection)
-    markOnce('project/endSendProjectToWasm')
-    assertCurrent()
-
-    if (
-      isExecuting &&
-      providedEditor &&
-      newEditor.engineCommandManager.connection?.connected
-    ) {
-      await newEditor.executeCode(newEditor.code)
+    const assertModelingCurrent = () => {
       assertCurrent()
-      await resetCameraPosition({
-        sceneInfra: newEditor.sceneInfra,
-        engineCommandManager: newEditor.engineCommandManager,
-        settingsActor: this.app.settings.actor,
-      })
+      if (
+        this.app.project !== this ||
+        (isExecuting && this.executingPath !== path)
+      ) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new DOMException('Superseded editor preparation', 'AbortError')
+      }
     }
-    if (isExecuting) {
-      // Finish preparing modeling before the route commits its view. Rendering
-      // an already loaded file must not introduce another Suspense loading screen.
-      await newEditor.modelingActorPromise
-      assertCurrent()
+    const prepareModeling = async () => {
+      assertModelingCurrent()
+      markOnce('project/startCollectFiles')
+      const apiFiles = await this.getAllKclFiles()
+      markOnce('project/endCollectFiles')
+      assertModelingCurrent()
+
+      markOnce('project/startSendProjectToWasm')
+      await newEditor.rustContext
+        .sendOpenProject(path, apiFiles)
+        .catch(reportRejection)
+      markOnce('project/endSendProjectToWasm')
+      assertModelingCurrent()
+    }
+    const renderModeling = async () => {
+      assertModelingCurrent()
+      if (
+        isExecuting &&
+        providedEditor &&
+        newEditor.engineCommandManager.connection?.connected
+      ) {
+        await newEditor.executeCode(newEditor.code)
+        assertModelingCurrent()
+        await resetCameraPosition({
+          sceneInfra: newEditor.sceneInfra,
+          engineCommandManager: newEditor.engineCommandManager,
+          settingsActor: this.app.settings.actor,
+        })
+      }
+      if (isExecuting) {
+        // Finish preparing modeling before the route commits its view. Rendering
+        // an already loaded file must not introduce another Suspense loading screen.
+        await newEditor.modelingActorPromise
+        assertModelingCurrent()
+      }
+    }
+    const reportPreparationFailure = (error: unknown) => {
+      if (!(error instanceof DOMException && error.name === 'AbortError'))
+        reportRejection(error)
+    }
+    if (options.deferModeling) {
+      this.modelingPreparation = this.modelingPreparation
+        .catch(() => undefined)
+        .then(prepareModeling)
+        .catch(reportPreparationFailure)
+      void this.modelingPreparation
+        .then(renderModeling)
+        .catch(reportPreparationFailure)
+    } else {
+      await prepareModeling()
+      await renderModeling()
     }
     return newEditor
   }
@@ -321,8 +363,9 @@ export class ZDSProject {
     if (path.endsWith('.kcl')) {
       switch (eventType) {
         case 'add':
-          const newFile = new File(path, this.textFileIO, this.nextFileId++)
-          this.files.push(newFile)
+          const newFile =
+            foundFile ?? new File(path, this.textFileIO, this.nextFileId++)
+          if (!foundFile) this.files.push(newFile)
           newFile
             .asRustApiFile()
             .then((file) => editor?.rustContext.sendAddFile(file))
@@ -372,7 +415,17 @@ export class ZDSProject {
 
   /** Get all the KCL files in this project as a flat array. */
   private async getAllKclFiles(): Promise<ApiFile[]> {
-    return Promise.all(this.files.map((file) => file.asRustApiFile()))
+    const editor = this.executingEditor.peek()
+    return Promise.all(
+      this.files.map(async (file) => {
+        if (editor?.path === file.path)
+          return { id: file.id, path: file.path, text: editor.code }
+        const pending = editor?.getPendingFileCode(file.path)
+        return pending === undefined
+          ? file.asRustApiFile()
+          : { id: file.id, path: file.path, text: pending }
+      })
+    )
   }
 
   /** Rebuild the complete Rust snapshot after an authoritative storage refresh. */

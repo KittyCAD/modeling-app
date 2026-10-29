@@ -345,7 +345,6 @@ describe('switching files', () => {
     save.resolve(undefined)
     await opening
     expect(mod.activeTextFileSignal.value).toBeNull()
-    expect(mocks.readFile).not.toHaveBeenCalledWith('/proj/b.json', undefined)
   })
 
   it('discards a pending stat when another file opens', async () => {
@@ -381,6 +380,30 @@ describe('switching files', () => {
       status: 'ready',
       text: 'B',
     })
+  })
+
+  it('displays another file and restores outgoing edits without waiting for a slow save', async () => {
+    mocks.readFile.mockResolvedValueOnce('A')
+    await mod.openActiveTextFile(fileOperations, '/proj/a.md')
+    const gate = Promise.withResolvers<undefined>()
+    mocks.writeFile.mockReturnValueOnce(gate.promise)
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/a.md', 'A edited')
+    mocks.readFile.mockResolvedValueOnce('B')
+    await mod.openActiveTextFile(fileOperations, '/proj/b.md')
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      path: '/proj/b.md',
+      text: 'B',
+      status: 'ready',
+    })
+    mocks.readFile.mockResolvedValueOnce('A')
+    await mod.openActiveTextFile(fileOperations, '/proj/a.md')
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      text: 'A edited',
+      status: 'ready',
+    })
+    gate.resolve(undefined)
+    await flushMicrotasks()
+    expect(mocks.writeFile).toHaveBeenCalledTimes(1)
   })
 
   it('clearActiveTextFile persists pending edits and clears the signal', async () => {

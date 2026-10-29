@@ -468,6 +468,48 @@ describe('project system', () => {
     }
   })
 
+  it('shows a selected buffer before the Rust project snapshot finishes', async () => {
+    const app = createAppForTest()
+    const read = vi
+      .spyOn(app.projectSession.textFileIO, 'read')
+      .mockResolvedValue('')
+    const gate = Promise.withResolvers<undefined>()
+    try {
+      const project = await app.openProject(mockProject)
+      const editor = await project.openEditor(
+        '/some-dir/test/main.kcl',
+        app.singletons.kclManager,
+        '',
+        false
+      )
+      read.mockImplementation(async (path) =>
+        path.endsWith('selected-target.kcl') ? '// target buffer' : ''
+      )
+      const snapshot = vi
+        .spyOn(editor.rustContext, 'sendOpenProject')
+        .mockImplementation(async () => {
+          await gate.promise
+        })
+      await project.openEditor(
+        '/some-dir/test/selected-target.kcl',
+        editor,
+        undefined,
+        true,
+        () => {},
+        { deferModeling: true }
+      )
+      expect(editor.code).toBe('// target buffer')
+      expect(project.executingPath).toBe('/some-dir/test/selected-target.kcl')
+      await vi.waitFor(() => expect(snapshot).toHaveBeenCalledOnce())
+    } finally {
+      gate.resolve(undefined)
+      await app.project?.modelingReady
+      await app.project?.executingEditor.peek()?.modelingActorPromise
+      read.mockRestore()
+      app.dispose()
+    }
+  })
+
   it('resolves editor metadata from the open project signal without consulting project listings', async () => {
     const app = createAppForTest()
     const read = vi
