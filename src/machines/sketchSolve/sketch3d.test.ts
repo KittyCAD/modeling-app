@@ -3,8 +3,11 @@ import {
   sampleSegment3d,
   sketch3dConstructor,
   sketch3dConstraintStatement,
+  fitSketch3dView,
 } from '@src/machines/sketchSolve/sketch3d'
 import { describe, expect, it } from 'vitest'
+import { vi } from 'vitest'
+import { OrthographicCamera, PerspectiveCamera, Vector3 } from 'three'
 
 describe('world-space circular geometry', () => {
   const arc: Segment3d = {
@@ -26,6 +29,40 @@ describe('world-space circular geometry', () => {
     expect(samples.at(-1)?.y).toBeCloseTo(10)
     expect(samples.every((p) => Math.abs(p.x) < 1e-10)).toBe(true)
     expect(samples[Math.floor(samples.length / 2)].z).toBeLessThan(0)
+  })
+
+  it('frames the full circular sweep in a narrow perspective viewport and syncs the engine camera', () => {
+    const camera = new PerspectiveCamera(45, 0.5, 0.1, 20000)
+    camera.position.set(200, -300, 200)
+    const controls = {
+      camera,
+      target: new Vector3(),
+      update: vi.fn(() => camera.updateMatrixWorld()),
+    }
+    expect(fitSketch3dView([arc], controls)).toBe(true)
+    expect(controls.update).toHaveBeenCalledWith(true)
+    for (const p of sampleSegment3d(arc)) {
+      const projected = p.clone().project(camera)
+      expect(Math.abs(projected.x)).toBeLessThan(1)
+      expect(Math.abs(projected.y)).toBeLessThan(1)
+    }
+  })
+
+  it('frames orthographic views without depending on engine geometry', () => {
+    const camera = new OrthographicCamera(-10, 10, 5, -5, 0.1, 20000)
+    camera.position.set(100, -200, 100)
+    const controls = {
+      camera,
+      target: new Vector3(),
+      update: vi.fn(() => camera.updateMatrixWorld()),
+    }
+    expect(fitSketch3dView([arc], controls)).toBe(true)
+    for (const p of sampleSegment3d(arc)) {
+      const projected = p.clone().project(camera)
+      expect(Math.abs(projected.x)).toBeLessThan(1)
+      expect(Math.abs(projected.y)).toBeLessThan(1)
+    }
+    expect(fitSketch3dView([], controls)).toBe(false)
   })
   it('generates solver blocks geometry with three variable coordinates', () => {
     expect(

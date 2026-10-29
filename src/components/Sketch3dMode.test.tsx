@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, cleanup } from '@testing-library/react'
+import { act, fireEvent, render, screen, cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { PerspectiveCamera } from 'three'
 
@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
     execState: { spatialSketches: [] as unknown[] },
     updateCodeEditor: vi.fn(),
     sceneInfra: {
+      retainRendering: vi.fn(() => vi.fn()),
       baseUnitMultiplier: 1,
       baseUnitChange: { add: vi.fn(), remove: vi.fn() },
       scene: { add: vi.fn(), remove: vi.fn() },
@@ -41,7 +42,9 @@ describe('3D sketch mode source edits', () => {
 
   it('creates a sketch3d block using the editor history and execution flow', () => {
     render(<Sketch3dMode disabled={false} onActiveChange={vi.fn()} />)
-    fireEvent.click(screen.getByRole('button', { name: '3D sketch' }))
+    act(() => {
+      sketch3dEditRequest.value = { editor: mocks.manager, label: '' }
+    })
     fireEvent.click(screen.getByRole('button', { name: 'New' }))
     expect(mocks.manager.updateCodeEditor).toHaveBeenCalledWith(
       expect.stringContaining('sketch3d1 = sketch3d() {'),
@@ -75,7 +78,9 @@ describe('3D sketch mode source edits', () => {
       },
     ]
     render(<Sketch3dMode disabled={false} onActiveChange={vi.fn()} />)
-    fireEvent.click(screen.getByRole('button', { name: '3D sketch' }))
+    act(() => {
+      sketch3dEditRequest.value = { editor: mocks.manager, label: '' }
+    })
     fireEvent.click(screen.getByRole('button', { name: 'Add geometry' }))
     expect(mocks.manager.updateCodeEditor.mock.calls[0][0]).toBe(
       '// π\nsketch3d1 = sketch3d() {\n  line1 = line(start = [var 0mm, var 0mm, var 0mm], end = [var 10mm, var 0mm, var 0mm])\n}\n'
@@ -84,7 +89,12 @@ describe('3D sketch mode source edits', () => {
 
   it('does not allow geometry edits while modeling is disabled', () => {
     render(<Sketch3dMode disabled onActiveChange={vi.fn()} />)
-    expect(screen.getByRole('button', { name: '3D sketch' })).toBeDisabled()
+    act(() => {
+      sketch3dEditRequest.value = { editor: mocks.manager, label: '' }
+    })
+    expect(
+      screen.queryByRole('dialog', { name: '3D sketch mode' })
+    ).not.toBeInTheDocument()
     expect(mocks.manager.updateCodeEditor).not.toHaveBeenCalled()
   })
 
@@ -108,7 +118,8 @@ describe('3D sketch mode source edits', () => {
     ]
     mocks.manager.sceneInfra.baseUnitMultiplier = 10
     const camera = new PerspectiveCamera(90, 1, 0.1, 100)
-    camera.position.set(0, 0, 10)
+    // Engine camera coordinates are millimeters, even when scene.scale is 10.
+    camera.position.set(0, 0, 100)
     camera.updateMatrixWorld()
     mocks.manager.sceneInfra.camControls.camera = camera
     const canvas = mocks.manager.sceneInfra.renderer.domElement!
@@ -125,7 +136,9 @@ describe('3D sketch mode source edits', () => {
     })
     document.body.append(canvas)
     render(<Sketch3dMode disabled={false} onActiveChange={vi.fn()} />)
-    fireEvent.click(screen.getByRole('button', { name: '3D sketch' }))
+    act(() => {
+      sketch3dEditRequest.value = { editor: mocks.manager, label: '' }
+    })
     fireEvent.change(screen.getByLabelText('3D geometry tool'), {
       target: { value: 'point' },
     })
@@ -155,5 +168,30 @@ describe('3D sketch mode source edits', () => {
       expect.anything()
     )
     canvas.remove()
+  })
+
+  it('opens from the sketch dropdown request, remains responsive, and releases rendering on finish', () => {
+    const release = vi.fn()
+    mocks.manager.sceneInfra.retainRendering.mockReturnValue(release)
+    const changed = vi.fn()
+    render(<Sketch3dMode disabled={false} onActiveChange={changed} />)
+    expect(
+      screen.queryByRole('button', { name: '3D sketch' })
+    ).not.toBeInTheDocument()
+    act(() => {
+      sketch3dEditRequest.value = { editor: mocks.manager, label: '' }
+    })
+    expect(screen.getByRole('dialog', { name: '3D sketch mode' })).toBeVisible()
+    expect(mocks.manager.sceneInfra.retainRendering).toHaveBeenCalledTimes(1)
+    fireEvent.click(screen.getByRole('button', { name: 'Finish sketch' }))
+    expect(
+      screen.queryByRole('dialog', { name: '3D sketch mode' })
+    ).not.toBeInTheDocument()
+    expect(release).toHaveBeenCalledOnce()
+    expect(changed.mock.calls.map(([value]) => value)).toEqual([
+      false,
+      true,
+      false,
+    ])
   })
 })

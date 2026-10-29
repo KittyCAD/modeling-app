@@ -160,10 +160,9 @@ const Toolbar_ = memo(
       platform
     )
     const disableSketchToolbar =
-      isSketch3dActive ||
-      (isSketchToolbarTransitioning(props.state) &&
-        (toolbarConfigurationName === 'sketching' ||
-          toolbarConfigurationName === 'sketchSolve'))
+      isSketchToolbarTransitioning(props.state) &&
+      (toolbarConfigurationName === 'sketching' ||
+        toolbarConfigurationName === 'sketchSolve')
 
     const showNonVisualConstraints =
       props.state.context.showNonVisualConstraints
@@ -294,6 +293,7 @@ const Toolbar_ = memo(
           disableAllButtons ||
           disableSketchToolbar ||
           !isConfiguredAvailable ||
+          isSketch3dActive ||
           maybeIconConfig.disabled?.(
             props.state,
             wasmInstance,
@@ -357,6 +357,7 @@ const Toolbar_ = memo(
       toolbarConfigurationName,
       disableAllButtons,
       disableSketchToolbar,
+      isSketch3dActive,
       configCallbackProps,
       wasmInstance,
       showNonVisualConstraints,
@@ -594,8 +595,12 @@ const Toolbar_ = memo(
               }
 
               const selectedIcon =
-                maybeIconConfig.array.find((c) => c.isActive) ||
-                maybeIconConfig.array[lastSelectedMultiActionItem.get(i) ?? 0]
+                maybeIconConfig.id === 'sketch-modes'
+                  ? maybeIconConfig.array[0]
+                  : maybeIconConfig.array.find((c) => c.isActive) ||
+                    maybeIconConfig.array[
+                      lastSelectedMultiActionItem.get(i) ?? 0
+                    ]
 
               return (
                 <ActionButtonDropdown

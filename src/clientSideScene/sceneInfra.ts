@@ -334,6 +334,8 @@ export class SceneInfra {
   private isRenderingPaused = false
   private lastFrameTime = 0
   private animationFrameId = -1
+  private animationRequested = false
+  private readonly renderingOwners = new Set<symbol>()
 
   constructor(
     engineCommandManager: ConnectionManager,
@@ -423,7 +425,31 @@ export class SceneInfra {
   }
 
   animate = () => {
-    this.animationFrameId = requestAnimationFrame(this.animate)
+    this.animationRequested = true
+    this.startAnimationLoop()
+  }
+
+  /** Keep overlays visible when modeling actions stop the sketch renderer. */
+  retainRendering(): () => void {
+    const owner = Symbol('scene-rendering')
+    this.renderingOwners.add(owner)
+    this.startAnimationLoop()
+    return () => {
+      this.renderingOwners.delete(owner)
+      if (!this.animationRequested && this.renderingOwners.size === 0) {
+        this.stop()
+      }
+    }
+  }
+
+  private startAnimationLoop() {
+    if (this.animationFrameId !== -1) return
+    this.animationFrameId = requestAnimationFrame(this.animateFrame)
+  }
+
+  private animateFrame = () => {
+    this.animationFrameId = -1
+    this.startAnimationLoop()
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       this.camControls.update()
@@ -457,6 +483,8 @@ export class SceneInfra {
   }
 
   stop = () => {
+    this.animationRequested = false
+    if (this.renderingOwners.size > 0) return
     if (this.animationFrameId !== -1) {
       cancelAnimationFrame(this.animationFrameId)
       this.animationFrameId = -1

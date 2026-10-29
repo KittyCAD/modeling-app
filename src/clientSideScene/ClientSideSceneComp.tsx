@@ -1,4 +1,5 @@
 import { Popover } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import {
   type CSSProperties,
   use,
@@ -53,12 +54,13 @@ import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
+  useSignals()
   const [isCamMoving, setIsCamMoving] = useState(false)
   const [isTween, setIsTween] = useState(false)
 
   const { state } = useModelingContext()
   const {
-    kclManager: { sceneInfra },
+    kclManager: { sceneInfra, execState },
   } = useSingletons()
 
   useEffect(() => {
@@ -77,7 +79,10 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
     hideServer = false
   }
 
-  return { hideClient: !hideServer, hideServer }
+  const hasSpatialSketches = execState.spatialSketches?.some(
+    (o) => o.kind.type === 'Sketch3d' && o.kind.segments.length > 0
+  )
+  return { hideClient: !hideServer && !hasSpatialSketches, hideServer }
 }
 
 export const DEFAULT_SKETCH_SOLVE_STREAM_DIMMING = 0.8

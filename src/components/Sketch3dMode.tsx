@@ -18,12 +18,13 @@ import {
   sketch3dVariableMask,
   sketch3dConstraintStatement,
   sketch3dDeleteRanges,
+  fitSketch3dView,
 } from '@src/machines/sketchSolve/sketch3d'
 import type {
   Position3d,
   Sketch3dTool,
 } from '@src/machines/sketchSolve/sketch3d'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
   BufferGeometry,
@@ -103,6 +104,7 @@ export function Sketch3dMode({
   const [constraint, setConstraint] = useState('distance')
   const [dimension, setDimension] = useState('10')
   const [message, setMessage] = useState('')
+  const hasFramed = useRef(false)
   const code = kclManager.code
   const blocks: { label: string; block: Node<SketchBlock> }[] = []
   for (const item of kclManager.ast.body) {
@@ -118,6 +120,7 @@ export function Sketch3dMode({
     }
   }
   const current = blocks.find((b) => b.label === label)
+  const firstLabel = blocks[0]?.label ?? ''
   const objects = kclManager.execState.spatialSketches ?? emptySpatialSketches
   const object = objects.find((o) => o.label === label && simpleRange(o.source))
   const sketch = object?.kind.type === 'Sketch3d' ? object.kind : null
@@ -153,23 +156,49 @@ export function Sketch3dMode({
 
   useEffect(() => {
     onActiveChange(active)
-    return () => onActiveChange(false)
   }, [active, onActiveChange])
+  useEffect(() => () => onActiveChange(false), [onActiveChange])
   useEffect(() => {
     setActive(false)
     setLabel('')
     setSelected([])
     setClicks([])
     setEditing(null)
-  }, [kclManager.id])
+    hasFramed.current = false
+  }, [kclManager.id, kclManager.path])
   useEffect(() => {
     if (editRequest?.editor !== kclManager || busy) return
-    setLabel(editRequest.label)
+    setLabel(editRequest.label || firstLabel)
     setActive(true)
     setSelected([])
     setEditing(null)
     sketch3dEditRequest.value = null
-  }, [editRequest, kclManager, busy])
+  }, [editRequest, kclManager, busy, firstLabel])
+
+  const isExecuting = kclManager.isExecuting
+  useEffect(() => {
+    const segments = objects.flatMap((o) =>
+      o.kind.type === 'Sketch3d' ? o.kind.segments : []
+    )
+    if (!segments.length) {
+      hasFramed.current = false
+      return
+    }
+    if (isExecuting || hasFramed.current) return
+    hasFramed.current = fitSketch3dView(
+      segments,
+      kclManager.sceneInfra.camControls
+    )
+  }, [objects, kclManager, isExecuting])
+
+  useEffect(() => {
+    if (
+      !active &&
+      !objects.some((o) => o.kind.type === 'Sketch3d' && o.kind.segments.length)
+    )
+      return
+    return kclManager.sceneInfra.retainRendering()
+  }, [objects, kclManager, active])
 
   // World-space sketches render alongside the engine scene, also after leaving sketch mode.
   useEffect(() => {
@@ -363,10 +392,7 @@ export function Sketch3dMode({
       const rect = scene.renderer.domElement.getBoundingClientRect()
       if (!drawing) {
         const screenPoint = (p: Vector3) => {
-          const projected = p
-            .clone()
-            .divideScalar(scene.baseUnitMultiplier)
-            .project(scene.camControls.camera)
+          const projected = p.clone().project(scene.camControls.camera)
           return new Vector2(
             rect.left + ((projected.x + 1) * rect.width) / 2,
             rect.top + ((1 - projected.y) * rect.height) / 2
@@ -442,7 +468,7 @@ export function Sketch3dMode({
       const normal = new Vector3(...sketch3dPlanes[plane].normal)
       const origin = new Vector3().setComponent(
         sketch3dPlanes[plane].axis,
-        offset / scene.baseUnitMultiplier
+        offset
       )
       const hit = ray.ray.intersectPlane(
         new Plane().setFromNormalAndCoplanarPoint(normal, origin),
@@ -454,10 +480,7 @@ export function Sketch3dMode({
       }
       const next = [
         ...clicks,
-        hit
-          .multiplyScalar(scene.baseUnitMultiplier)
-          .toArray()
-          .map((n) => Math.round(n * 1000) / 1000) as Position3d,
+        hit.toArray().map((n) => Math.round(n * 1000) / 1000) as Position3d,
       ]
       const count = tool === 'point' ? 1 : tool === 'arc' ? 3 : 2
       if (next.length === count) addGeometry(next)
@@ -579,23 +602,17 @@ export function Sketch3dMode({
   ]
   return (
     <>
-      <button
-        className={buttonClass}
-        disabled={busy && !active}
-        aria-pressed={active}
-        onClick={() => {
-          setActive(!active)
-          if (!label && blocks[0]) setLabel(blocks[0].label)
-        }}
-      >
-        3D sketch
-      </button>
       {active &&
         createPortal(
           <section
             role="dialog"
             aria-label="3D sketch mode"
-            className="fixed right-4 top-28 z-30 w-80 max-h-[75vh] overflow-auto border rounded bg-chalkboard-10 dark:bg-chalkboard-90 p-3 shadow-lg text-sm space-y-3"
+            className="absolute right-3 top-20 z-30 w-80 max-w-[calc(100%-1.5rem)] max-h-[calc(100%-6rem)] overflow-auto border rounded bg-chalkboard-10 dark:bg-chalkboard-90 p-3 shadow-lg text-sm space-y-3"
+            onPointerDown={(e) => e.stopPropagation()}
+            onPointerUp={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onMouseUp={(e) => e.stopPropagation()}
+            onWheel={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between">
               <strong>3D sketch</strong>
@@ -655,6 +672,19 @@ export function Sketch3dMode({
                 onClick={() => redo(kclManager.editorView)}
               >
                 Redo
+              </button>
+              <button
+                className={buttonClass}
+                disabled={busy || !sketch?.segments.length}
+                onClick={() => {
+                  if (sketch)
+                    fitSketch3dView(
+                      sketch.segments,
+                      kclManager.sceneInfra.camControls
+                    )
+                }}
+              >
+                Fit sketch
               </button>
             </div>
             <label className="block">
@@ -890,7 +920,8 @@ export function Sketch3dMode({
             </ul>
             {message && <p role="alert">{message}</p>}
           </section>,
-          document.body
+          kclManager.sceneInfra.renderer.domElement.parentElement
+            ?.parentElement ?? document.body
         )}
     </>
   )

@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast'
+import { selectedSketch3d, sketch3dEditRequest } from '@src/lib/sketch3dMode'
 import { Mesh, Vector2, Vector3 } from 'three'
 import {
   type AnyActorRef,
@@ -4750,6 +4751,28 @@ export const modelingMachine = setup({
           ],
         },
         'Enter sketch': [
+          {
+            guard: ({ context }) =>
+              Boolean(
+                selectedSketch3d(
+                  context.kclManager.execState.spatialSketches,
+                  context.kclManager.code,
+                  context.selectionRanges
+                )
+              ),
+            actions: ({ context }) => {
+              const sketch = selectedSketch3d(
+                context.kclManager.execState.spatialSketches,
+                context.kclManager.code,
+                context.selectionRanges
+              )
+              if (sketch)
+                sketch3dEditRequest.value = {
+                  editor: context.kclManager,
+                  label: sketch.label,
+                }
+            },
+          },
           {
             target: 'animating to existing sketch solve',
             actions: [

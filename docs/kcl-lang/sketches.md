@@ -173,7 +173,10 @@ parallel and perpendicular lines, equal lengths, equal radii, line and arc midpo
 and symmetry. `ORIGIN` means `[0mm, 0mm, 0mm]` inside a 3D block.
 Conflicting constraints produce an error; remove the constraint or undo the edit.
 
-In the app, choose **3D sketch**, then create or select a block. Add geometry
+In the app, open the dropdown beside **Start Sketch** and choose **3D Sketch**,
+then create or select a block. Loaded spatial sketches render without entering
+sketch mode and are framed automatically. Use **Fit sketch** to frame the selected
+block again. Add geometry
 with coordinate fields, or choose **Draw in view** and click points on an XY,
 XZ, or YZ working plane at the selected offset. Orbit to view the result from
 another direction. Arcs use center, start, and end clicks, in that order.

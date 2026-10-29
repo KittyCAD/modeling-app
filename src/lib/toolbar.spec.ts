@@ -1,4 +1,5 @@
 import { describe, expect, test, vi } from 'vitest'
+import { sketch3dEditRequest } from '@src/lib/sketch3dMode'
 import type { StateFrom } from 'xstate'
 
 vi.mock('@src/lib/boot', () => ({
@@ -64,10 +65,11 @@ function findModelingToolbarItem(
       send: () => {},
     },
     options
-  ).modeling.items.find(
-    (item): item is ToolbarItem =>
-      item !== 'break' && !('array' in item) && item.id === id
   )
+    .modeling.items.flatMap((item) =>
+      item === 'break' ? [] : 'array' in item ? item.array : [item]
+    )
+    .find((item) => item.id === id)
 
   if (!item) {
     throw new Error(`Could not find toolbar item ${id}`)
@@ -95,6 +97,27 @@ function getToolbarItems(
 }
 
 describe('toolbar state helpers', () => {
+  test('keeps 2D sketch as the primary action and enters 3D sketch from its dropdown', () => {
+    const dropdown = findModelingToolbarDropdown('sketch-modes')
+    expect(dropdown?.array.map((item) => item.id)).toEqual([
+      'sketch',
+      'sketch3d',
+    ])
+    const editor = {}
+    const modelingState = {
+      context: { kclManager: editor },
+    } as unknown as StateFrom<typeof modelingMachine>
+    findModelingToolbarItem('sketch3d').onClick({
+      modelingState,
+      modelingSend: vi.fn(),
+      sketchPathId: false,
+      editorHasFocus: false,
+      isActive: false,
+      keepSelection: false,
+    })
+    expect(sketch3dEditRequest.value).toEqual({ editor, label: '' })
+    sketch3dEditRequest.value = null
+  })
   test('uses registered command descriptions with toolbar text as a fallback', () => {
     const item = {
       command: 'test:Available',
