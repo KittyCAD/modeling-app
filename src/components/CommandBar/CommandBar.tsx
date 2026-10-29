@@ -1,5 +1,5 @@
-import { Dialog, Popover, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useState } from 'react'
+import { Dialog, Popover } from '@headlessui/react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: command-bar lifecycle follows pathname (useLocation).
 import { useLocation } from 'react-router-dom'
@@ -63,6 +63,18 @@ export const CommandBar = () => {
       reviewValidationDetails,
     },
   } = commandBarState
+  const isPaletteVisible =
+    isCommandBarOpen && !isModelingDialogCommand(selectedCommand)
+  const wasPaletteVisible = useRef(isPaletteVisible)
+  useEffect(() => {
+    const didClose = wasPaletteVisible.current && !isCommandBarOpen
+    wasPaletteVisible.current = isPaletteVisible
+    if (didClose) {
+      selectedCommand?.onCancel?.()
+      cmd.send({ type: 'Clear' })
+    }
+  }, [cmd, isCommandBarOpen, isPaletteVisible, selectedCommand])
+
   const showsCodemodReview =
     commandBarState.matches('Review') &&
     reviewValidationDetails?.type === 'codemod'
@@ -162,96 +174,80 @@ export const CommandBar = () => {
     }
   }
 
-  if (isModelingDialogCommand(selectedCommand)) return null
+  if (!isPaletteVisible) return null
 
   const commandBar = (
-    <Transition.Root
-      show={!commandBarState.matches('Closed') || false}
-      afterLeave={() => {
-        if (selectedCommand?.onCancel) selectedCommand.onCancel()
-        cmd.send({ type: 'Clear' })
+    <WrapperComponent
+      open={
+        !commandBarState.matches('Closed') ||
+        isArgumentThatShouldBeHardToDismiss
+      }
+      onClose={() => {
+        cmd.send({ type: 'Close' })
       }}
-      as={Fragment}
+      className={
+        'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
+        (isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : '')
+      }
+      data-testid="command-bar-wrapper"
     >
-      <WrapperComponent
-        open={
-          !commandBarState.matches('Closed') ||
-          isArgumentThatShouldBeHardToDismiss
-        }
-        onClose={() => {
-          cmd.send({ type: 'Close' })
-        }}
-        className={
-          'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
-          (isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : '')
-        }
-        data-testid="command-bar-wrapper"
+      <WrapperComponent.Panel
+        // The command actor owns visibility, not Popover's toggle state.
+        {...(isArgumentThatShouldBeHardToDismiss ? { static: true } : {})}
+        className={`relative z-50 pointer-events-auto w-full ${
+          showsCodemodReview ? 'max-w-3xl' : 'max-w-xl'
+        } pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70`}
+        as="div"
+        data-testid="command-bar"
       >
-        <Transition.Child
-          enter="duration-100 ease-out"
-          enterFrom="opacity-0 scale-95"
-          enterTo="opacity-100 scale-100"
-          leave="duration-75 ease-in"
-          leaveFrom="opacity-100 scale-100"
-          leaveTo="opacity-0 scale-95"
-        >
-          <WrapperComponent.Panel
-            className={`relative z-50 pointer-events-auto w-full ${
-              showsCodemodReview ? 'max-w-3xl' : 'max-w-xl'
-            } pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70`}
-            as="div"
-            data-testid="command-bar"
-          >
-            {commandBarState.matches('Selecting command') ? (
-              <CommandComboBox
-                options={commands.filter(
-                  (command: Command) =>
-                    isCommandVisibleInSearch(command) &&
-                    isCommandSearchable(command, effectiveCommandScopes)
-                )}
-              />
-            ) : commandBarState.matches('Gathering arguments') ? (
-              <CommandBarArgument stepBack={stepBack} />
-            ) : (
-              <>
-                {commandBarState.matches('Review') && (
-                  <CommandBarReview stepBack={stepBack} />
-                )}
-                {commandBarState.matches('Checking Arguments') && (
-                  <div
-                    className="py-4"
-                    data-testid="command-bar-loading-checking-arguments"
-                  >
-                    <Loading isDummy={true}>Checking arguments...</Loading>
-                  </div>
-                )}
-              </>
+        {commandBarState.matches('Selecting command') ? (
+          <CommandComboBox
+            options={commands.filter(
+              (command: Command) =>
+                isCommandVisibleInSearch(command) &&
+                isCommandSearchable(command, effectiveCommandScopes)
             )}
-            <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
-              <button
-                type="button"
-                data-testid={interactions.commandPaletteClose.testId}
-                data-interaction-id={interactions.commandPaletteClose.id}
-                data-expect-interaction-ms={
-                  interactions.commandPaletteClose.budgetMs
-                }
-                onClick={() => cmd.send({ type: 'Close' })}
-                className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
+          />
+        ) : commandBarState.matches('Gathering arguments') ? (
+          <CommandBarArgument stepBack={stepBack} />
+        ) : (
+          <>
+            {commandBarState.matches('Review') && (
+              <CommandBarReview stepBack={stepBack} />
+            )}
+            {commandBarState.matches('Checking Arguments') && (
+              <div
+                className="py-4"
+                data-testid="command-bar-loading-checking-arguments"
               >
-                <CustomIcon
-                  name="close"
-                  className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
-                />
-                <Tooltip position="bottom">
-                  Cancel{' '}
-                  <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
-                </Tooltip>
-              </button>
-            </div>
-          </WrapperComponent.Panel>
-        </Transition.Child>
-      </WrapperComponent>
-    </Transition.Root>
+                <Loading isDummy={true}>Checking arguments...</Loading>
+              </div>
+            )}
+          </>
+        )}
+        <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
+          <button
+            type="button"
+            data-testid={interactions.commandPaletteClose.testId}
+            data-interaction-id={interactions.commandPaletteClose.id}
+            data-expect-interaction-ms={
+              interactions.commandPaletteClose.budgetMs
+            }
+            onClick={() => cmd.send({ type: 'Close' })}
+            className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
+          >
+            <CustomIcon
+              name="close"
+              className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+            />
+            <Tooltip position="bottom">
+              Cancel{' '}
+              <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
+            </Tooltip>
+          </button>
+        </div>
+      </WrapperComponent.Panel>
+    </WrapperComponent>
   )
 
   return modalCommandBarHost

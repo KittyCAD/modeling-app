@@ -102,9 +102,12 @@ function CommandComboBox({
           static
           className="overflow-y-auto max-h-96 cursor-pointer"
         >
-          {filteredOptions?.map((option) => (
+          {filteredOptions?.map((option, index) => (
             <Combobox.Option
               key={option.groupId + option.name + (option.displayName || '')}
+              // The results already define keyboard order. Avoid Headless UI
+              // sorting the DOM again whenever an option mounts or unmounts.
+              order={index}
               value={option}
               className="flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50"
               disabled={optionIsDisabled(option)}
