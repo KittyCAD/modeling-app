@@ -326,16 +326,17 @@ openSketch = sketch(on = XY) {
     })
   })
 
-  test(`Shift-click to select and deselect faces @localRenderer`, async ({
-    context,
-    cmdBar,
-    toolbar,
-    page,
-    homePage,
-    scene,
-  }) => {
-    // Code samples
-    const initialCode = `sketch002 = sketch(on = XY) {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Shift-click to select and deselect faces ${rendererTag}`, async ({
+      context,
+      cmdBar,
+      toolbar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      // Code samples
+      const initialCode = `sketch002 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -348,33 +349,42 @@ hide(sketch002)
 region001 = region(segments = [sketch002.line1, sketch002.line2])
 sketch001 = extrude(region001, length = -12)`
 
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await scene.settled()
-    })
+      // Setup
+      await test.step(`Initial test setup`, async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await scene.settled()
+      })
 
-    await test.step('Select the face (Shift-click)', async () => {
-      await page.keyboard.down('Shift')
-      // The right-hand wall, matching the original pixel click.
-      const [clickOnFace] = await scene.findFace(1)
-      await clickOnFace()
-      await expect(toolbar.selectionStatus).toContainText('1 face')
-      await page.keyboard.up('Shift')
+      await test.step('Select the face (Shift-click)', async () => {
+        await page.keyboard.down('Shift')
+        // The right-hand wall, matching the original pixel click.
+        const [clickOnFace] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 1,
+          stream: { x: 630, y: 290, format: 'pixels' },
+        })
+        await clickOnFace()
+        await expect(toolbar.selectionStatus).toContainText('1 face')
+        await page.keyboard.up('Shift')
+      })
+      await test.step('Deselect the face (Shift-click)', async () => {
+        await page.keyboard.down('Shift')
+        const [clickOnFace] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 1,
+          stream: { x: 630, y: 290, format: 'pixels' },
+        })
+        await clickOnFace()
+        await expect(toolbar.selectionStatus).not.toContainText('1 face')
+        await page.keyboard.up('Shift')
+      })
     })
-    await test.step('Deselect the face (Shift-click)', async () => {
-      await page.keyboard.down('Shift')
-      const [clickOnFace] = await scene.findFace(1)
-      await clickOnFace()
-      await expect(toolbar.selectionStatus).not.toContainText('1 face')
-      await page.keyboard.up('Shift')
-    })
-  })
+  }
 
   test(
     `Offset plane point-and-click`,
@@ -1000,17 +1010,18 @@ region001 = region(segments = [sketch001.circle1])`
     })
   })
 
-  test(`Fillet point-and-click @localRenderer`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    // Code samples
-    const initialCode = `sketch001 = sketch(on = XY) {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Fillet point-and-click ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      // Code samples
+      const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -1022,237 +1033,246 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], radius=5,)`
+      const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
+      const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], radius=5,)`
 
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-    })
+      // Setup
+      await test.step(`Initial test setup`, async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+      })
 
-    // Test 1: Command bar flow with preselected edges
-    await test.step(`Select first edge`, async () => {
-      const [clickOnFirstEdge] = await scene.findEdge(3)
-      await clickOnFirstEdge()
-    })
+      // Test 1: Command bar flow with preselected edges
+      await test.step(`Select first edge`, async () => {
+        const [clickOnFirstEdge] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 3,
+          stream: { x: 600, y: 195, format: 'pixels' },
+        })
+        await clickOnFirstEdge()
+      })
 
-    await test.step(`Apply fillet to the preselected edge`, async () => {
-      await page.waitForTimeout(100)
-      await toolbar.filletButton.click()
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        highlightedHeaderArg: 'selection',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Radius: '',
-        },
-        stage: 'arguments',
+      await test.step(`Apply fillet to the preselected edge`, async () => {
+        await page.waitForTimeout(100)
+        await toolbar.filletButton.click()
+        await cmdBar.expectState({
+          commandName: 'Fillet',
+          highlightedHeaderArg: 'selection',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '',
+            Radius: '',
+          },
+          stage: 'arguments',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Fillet',
+          highlightedHeaderArg: 'radius',
+          currentArgKey: 'radius',
+          currentArgValue: '5',
+          headerArguments: {
+            Selection: '1 edge',
+            Radius: '',
+          },
+          stage: 'arguments',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Fillet',
+          headerArguments: {
+            Selection: '1 edge',
+            Radius: '5',
+          },
+          stage: 'review',
+        })
+        await cmdBar.progressCmdBar()
       })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        highlightedHeaderArg: 'radius',
-        currentArgKey: 'radius',
-        currentArgValue: '5',
-        headerArguments: {
-          Selection: '1 edge',
-          Radius: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        headerArguments: {
-          Selection: '1 edge',
-          Radius: '5',
-        },
-        stage: 'review',
-      })
-      await cmdBar.progressCmdBar()
-    })
 
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(firstFilletDeclaration, {
-        shouldNormalise: true,
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await editor.expectEditor.toContain(firstFilletDeclaration, {
+          shouldNormalise: true,
+        })
       })
-    })
 
-    // Test 1.1: Edit fillet (segment type)
-    async function editFillet(
-      featureTreeIndex: number,
-      oldValue: string,
-      newValue: string
-    ) {
-      await scene.settled()
-      // await scene.waitForExecutionDoneAfter(async () =>
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      // )
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'Fillet',
-        featureTreeIndex
-      )
-      await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        currentArgKey: 'radius',
-        currentArgValue: oldValue,
-        headerArguments: {
-          Radius: oldValue,
-        },
-        highlightedHeaderArg: 'radius',
-        stage: 'arguments',
-      })
-      await page.keyboard.insertText(newValue)
-      await cmdBar.progressCmdBar()
-      // await page.pause()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Radius: newValue,
-        },
-        commandName: 'Fillet',
-      })
-      await cmdBar.progressCmdBar()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-    }
-
-    await test.step('Edit fillet via feature tree selection works', async () => {
-      const firstFilletFeatureTreeIndex = 0
-      const editedRadius = '1'
-      await editFillet(firstFilletFeatureTreeIndex, '5', editedRadius)
-      await editor.expectEditor.toContain(
-        firstFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
-        { shouldNormalise: true }
-      )
-
-      // Edit back to original radius
-      await editFillet(firstFilletFeatureTreeIndex, editedRadius, '5')
-      await editor.expectEditor.toContain(firstFilletDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-
-    // Test 2: Command bar flow without preselected edges
-    await test.step(`Open fillet UI without selecting edges`, async () => {
-      await page.waitForTimeout(100)
-      const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
-        format: 'ratio',
-      })
-      await clearSelection()
-      await page.waitForTimeout(100)
-      await toolbar.filletButton.click()
-      await expect
-        .poll(() => page.getByText('Please select one').count())
-        .toBe(1)
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Radius: '',
-        },
-        highlightedHeaderArg: 'selection',
-        commandName: 'Fillet',
-      })
-    })
-
-    await test.step(`Select second edge`, async () => {
-      // Expose the cap-start edge after the first operation changes the model.
-      await editor.closePane()
-      const [clickOnSecondEdge] = await scene.findEdge(2)
-      await clickOnSecondEdge()
-      await toolbar.expectSelection('1 edge')
-    })
-
-    await test.step(`Apply fillet to the second edge`, async () => {
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        highlightedHeaderArg: 'selection',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Radius: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        highlightedHeaderArg: 'radius',
-        currentArgKey: 'radius',
-        currentArgValue: '5',
-        headerArguments: {
-          Selection: '1 edge',
-          Radius: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        headerArguments: {
-          Selection: '1 edge',
-          Radius: '5',
-        },
-        stage: 'review',
-      })
-      await cmdBar.progressCmdBar()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(secondFilletDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-
-    // Test 2.1: Edit fillet (edgeSweep type)
-    await test.step('Edit fillet via feature tree selection works', async () => {
-      const secondFilletFeatureTreeIndex = 1
-      const editedRadius = '2'
-      await editFillet(secondFilletFeatureTreeIndex, '5', editedRadius)
-      await editor.expectEditor.toContain(
-        secondFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
-        { shouldNormalise: true }
-      )
-
-      // Edit back to original radius
-      await editFillet(secondFilletFeatureTreeIndex, editedRadius, '5')
-      await editor.expectEditor.toContain(secondFilletDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-
-    // Test 3: Delete fillets
-    await test.step('Delete fillet via feature tree selection', async () => {
-      await test.step('Open Feature Tree Pane', async () => {
+      // Test 1.1: Edit fillet (segment type)
+      async function editFillet(
+        featureTreeIndex: number,
+        oldValue: string,
+        newValue: string
+      ) {
+        await scene.settled()
+        // await scene.waitForExecutionDoneAfter(async () =>
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        await page.waitForTimeout(500)
+        // )
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Fillet',
+          featureTreeIndex
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await cmdBar.expectState({
+          commandName: 'Fillet',
+          currentArgKey: 'radius',
+          currentArgValue: oldValue,
+          headerArguments: {
+            Radius: oldValue,
+          },
+          highlightedHeaderArg: 'radius',
+          stage: 'arguments',
+        })
+        await page.keyboard.insertText(newValue)
+        await cmdBar.progressCmdBar()
+        // await page.pause()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Radius: newValue,
+          },
+          commandName: 'Fillet',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      }
+
+      await test.step('Edit fillet via feature tree selection works', async () => {
+        const firstFilletFeatureTreeIndex = 0
+        const editedRadius = '1'
+        await editFillet(firstFilletFeatureTreeIndex, '5', editedRadius)
+        await editor.expectEditor.toContain(
+          firstFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
+          { shouldNormalise: true }
+        )
+
+        // Edit back to original radius
+        await editFillet(firstFilletFeatureTreeIndex, editedRadius, '5')
+        await editor.expectEditor.toContain(firstFilletDeclaration, {
+          shouldNormalise: true,
+        })
       })
-      await test.step('Delete fillet via feature tree selection', async () => {
+
+      // Test 2: Command bar flow without preselected edges
+      await test.step(`Open fillet UI without selecting edges`, async () => {
+        await page.waitForTimeout(100)
+        const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+          format: 'ratio',
+        })
+        await clearSelection()
+        await page.waitForTimeout(100)
+        await toolbar.filletButton.click()
+        await expect
+          .poll(() => page.getByText('Please select one').count())
+          .toBe(1)
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '',
+            Radius: '',
+          },
+          highlightedHeaderArg: 'selection',
+          commandName: 'Fillet',
+        })
+      })
+
+      await test.step(`Select second edge`, async () => {
+        // Expose the cap-start edge after the first operation changes the model.
+        await editor.closePane()
+        const [clickOnSecondEdge] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 2,
+          stream: { x: 600, y: 383, format: 'pixels' },
+        })
+        await clickOnSecondEdge()
+        await toolbar.expectSelection('1 edge')
+      })
+
+      await test.step(`Apply fillet to the second edge`, async () => {
+        await cmdBar.expectState({
+          commandName: 'Fillet',
+          highlightedHeaderArg: 'selection',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '',
+            Radius: '',
+          },
+          stage: 'arguments',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Fillet',
+          highlightedHeaderArg: 'radius',
+          currentArgKey: 'radius',
+          currentArgValue: '5',
+          headerArguments: {
+            Selection: '1 edge',
+            Radius: '',
+          },
+          stage: 'arguments',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Fillet',
+          headerArguments: {
+            Selection: '1 edge',
+            Radius: '5',
+          },
+          stage: 'review',
+        })
+        await cmdBar.progressCmdBar()
+      })
+
+      await test.step(`Confirm code is added to the editor`, async () => {
         await editor.expectEditor.toContain(secondFilletDeclaration, {
           shouldNormalise: true,
         })
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'Fillet',
-          1
+      })
+
+      // Test 2.1: Edit fillet (edgeSweep type)
+      await test.step('Edit fillet via feature tree selection works', async () => {
+        const secondFilletFeatureTreeIndex = 1
+        const editedRadius = '2'
+        await editFillet(secondFilletFeatureTreeIndex, '5', editedRadius)
+        await editor.expectEditor.toContain(
+          secondFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
+          { shouldNormalise: true }
         )
-        await operationButton.click({ button: 'left' })
-        await page.keyboard.press('Delete')
-        await page.waitForTimeout(500)
-        await editor.expectEditor.not.toContain(secondFilletDeclaration)
+
+        // Edit back to original radius
+        await editFillet(secondFilletFeatureTreeIndex, editedRadius, '5')
+        await editor.expectEditor.toContain(secondFilletDeclaration, {
+          shouldNormalise: true,
+        })
+      })
+
+      // Test 3: Delete fillets
+      await test.step('Delete fillet via feature tree selection', async () => {
+        await test.step('Open Feature Tree Pane', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+          await page.waitForTimeout(500)
+        })
+        await test.step('Delete fillet via feature tree selection', async () => {
+          await editor.expectEditor.toContain(secondFilletDeclaration, {
+            shouldNormalise: true,
+          })
+          const operationButton = await toolbar.getFeatureTreeOperation(
+            'Fillet',
+            1
+          )
+          await operationButton.click({ button: 'left' })
+          await page.keyboard.press('Delete')
+          await page.waitForTimeout(500)
+          await editor.expectEditor.not.toContain(secondFilletDeclaration)
+        })
       })
     })
-  })
+  }
 
   test(`Fillet point-and-click edit standalone expression`, async ({
     context,
@@ -1648,17 +1668,18 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
     })
   })
 
-  test(`Fillet with large radius should update code even if engine fails @localRenderer`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    // Create a cube with small edges that will cause some fillets to fail
-    const initialCode = `sketch001 = sketch(on = XY) {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Fillet with large radius should update code even if engine fails ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      // Create a cube with small edges that will cause some fillets to fail
+      const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -1mm])
   line2 = line(start = [var 0mm, var -1mm], end = [var -10mm, var -1mm])
   coincident([line1.end, line2.start])
@@ -1673,92 +1694,98 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5)`
 
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-    })
-
-    // Test
-    await test.step('Select edges and apply oversized fillet', async () => {
-      await test.step(`Select the edge`, async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        // Third visible edge: the short segment's sweep edge (region tags line1 and line3).
-        const [clickOnTheEdge] = await scene.findEdge(2)
-        await clickOnTheEdge()
-        await toolbar.expectSelection('1 edge')
+      // Setup
+      await test.step(`Initial test setup`, async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
       })
 
-      await test.step(`Apply fillet`, async () => {
-        await page.waitForTimeout(100)
-        await toolbar.filletButton.click()
-        await cmdBar.expectState({
-          commandName: 'Fillet',
-          highlightedHeaderArg: 'selection',
-          currentArgKey: 'selection',
-          currentArgValue: '',
-          headerArguments: {
-            Selection: '',
-            Radius: '',
-          },
-          stage: 'arguments',
+      // Test
+      await test.step('Select edges and apply oversized fillet', async () => {
+        await test.step(`Select the edge`, async () => {
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
+          // Third visible edge: the short segment's sweep edge (region tags line1 and line3).
+          const [clickOnTheEdge] = await scene.makeSelectionHelpers({
+            kind: 'edge',
+            index: 2,
+            stream: { x: 649, y: 283, format: 'pixels' },
+          })
+          await clickOnTheEdge()
+          await toolbar.expectSelection('1 edge')
         })
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          commandName: 'Fillet',
-          highlightedHeaderArg: 'radius',
-          currentArgKey: 'radius',
-          currentArgValue: '5',
-          headerArguments: {
-            Selection: '1 edge',
-            Radius: '',
-          },
-          stage: 'arguments',
+
+        await test.step(`Apply fillet`, async () => {
+          await page.waitForTimeout(100)
+          await toolbar.filletButton.click()
+          await cmdBar.expectState({
+            commandName: 'Fillet',
+            highlightedHeaderArg: 'selection',
+            currentArgKey: 'selection',
+            currentArgValue: '',
+            headerArguments: {
+              Selection: '',
+              Radius: '',
+            },
+            stage: 'arguments',
+          })
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            commandName: 'Fillet',
+            highlightedHeaderArg: 'radius',
+            currentArgKey: 'radius',
+            currentArgValue: '5',
+            headerArguments: {
+              Selection: '1 edge',
+              Radius: '',
+            },
+            stage: 'arguments',
+          })
+          // Set a large radius (1000)
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('1000')
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            commandName: 'Fillet',
+            headerArguments: {
+              Selection: '1 edge',
+              Radius: '1000',
+            },
+            stage: 'review',
+          })
+          // Apply fillet with large radius
+          await cmdBar.progressCmdBar()
         })
-        // Set a large radius (1000)
-        await cmdBar.currentArgumentInput.locator('.cm-content').fill('1000')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          commandName: 'Fillet',
-          headerArguments: {
-            Selection: '1 edge',
-            Radius: '1000',
-          },
-          stage: 'review',
-        })
-        // Apply fillet with large radius
-        await cmdBar.progressCmdBar()
+      })
+
+      await test.step('Verify code is updated regardless of execution errors', async () => {
+        const code = await editor.getCurrentCode()
+        const normalizedCode = code.replace(/\s+/g, '')
+
+        expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
+        expect(normalizedCode).toContain(
+          'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
+        )
+        expect(normalizedCode).toContain('radius=1000,')
+        expect(normalizedCode).not.toContain('tags=[')
       })
     })
+  }
 
-    await test.step('Verify code is updated regardless of execution errors', async () => {
-      const code = await editor.getCurrentCode()
-      const normalizedCode = code.replace(/\s+/g, '')
-
-      expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
-      expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
-      )
-      expect(normalizedCode).toContain('radius=1000,')
-      expect(normalizedCode).not.toContain('tags=[')
-    })
-  })
-
-  test(`Chamfer point-and-click @localRenderer`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Chamfer point-and-click ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      // Code samples
+      const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12in, var -6in], end = [var -12in, var 6in])
@@ -1772,241 +1799,253 @@ sketch001 = sketch(on = XY) {
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], length=5,)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], length=5,)`
+      const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], length=5,)`
+      const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], length=5,)`
 
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await editor.closePane()
+      // Setup
+      await test.step(`Initial test setup`, async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await editor.closePane()
+      })
+
+      // Test 1: Command bar flow with preselected edges
+      await test.step(`Select first edge`, async () => {
+        const [clickOnFirstEdge] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 4,
+          stream: { x: 600, y: 193, format: 'pixels' },
+        })
+        await clickOnFirstEdge()
+        await editor.openPane()
+      })
+
+      await test.step(`Apply chamfer to the preselected edge`, async () => {
+        await page.waitForTimeout(100)
+        await toolbar.chamferButton.click()
+        await cmdBar.expectState({
+          commandName: 'Chamfer',
+          highlightedHeaderArg: 'selection',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '',
+            Length: '',
+          },
+          stage: 'arguments',
+        })
+        await cmdBar.progressCmdBar()
+        await page.waitForTimeout(1000)
+        await cmdBar.expectState({
+          commandName: 'Chamfer',
+          highlightedHeaderArg: 'length',
+          currentArgKey: 'length',
+          currentArgValue: '5',
+          headerArguments: {
+            Selection: '1 edge',
+            Length: '',
+          },
+          stage: 'arguments',
+        })
+        await cmdBar.argumentInput.focus()
+        await page.waitForTimeout(1000)
+        await cmdBar.progressCmdBar()
+        await page.waitForTimeout(1000)
+        await cmdBar.expectState({
+          commandName: 'Chamfer',
+          headerArguments: {
+            Selection: '1 edge',
+            Length: '5',
+          },
+          stage: 'review',
+        })
+        await cmdBar.progressCmdBar()
+      })
+
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await editor.expectEditor.toContain(firstChamferDeclaration, {
+          shouldNormalise: true,
+        })
+        await editor.closePane()
+      })
+
+      // Test 1.1: Edit sweep
+      async function editChamfer(
+        operationName: string,
+        oldValue: string,
+        newValue: string
+      ) {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        await page.waitForTimeout(300)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          operationName,
+          0
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await cmdBar.expectState({
+          commandName: 'Chamfer',
+          currentArgKey: 'length',
+          currentArgValue: oldValue,
+          headerArguments: {
+            Length: oldValue,
+          },
+          highlightedHeaderArg: 'length',
+          stage: 'arguments',
+        })
+        await page.keyboard.insertText(newValue)
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Length: newValue,
+          },
+          commandName: 'Chamfer',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      }
+
+      await test.step('Edit chamfer via feature tree selection works', async () => {
+        const editedLength = '1'
+        await editChamfer('chamfer001', '5', editedLength)
+        await editor.expectEditor.toContain(
+          firstChamferDeclaration.replace('length=5', 'length=' + editedLength),
+          { shouldNormalise: true }
+        )
+
+        // Edit back to original length
+        await editChamfer('chamfer001', editedLength, '5')
+        await editor.expectEditor.toContain(firstChamferDeclaration, {
+          shouldNormalise: true,
+        })
+      })
+
+      // Test 2: Command bar flow without preselected edges
+      await test.step(`Open chamfer UI without selecting edges`, async () => {
+        // The preceding edit leaves its edge selected; clear it so this exercises
+        // opening Chamfer without a preselection.
+        const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+          format: 'ratio',
+        })
+        await clearSelection()
+        await expect(toolbar.selectionStatus).not.toContainText('edge')
+        await page.waitForTimeout(100)
+        await toolbar.chamferButton.click()
+        await expect
+          .poll(() => page.getByText('Please select one').count())
+          .toBe(1)
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '',
+            Length: '',
+          },
+          highlightedHeaderArg: 'selection',
+          commandName: 'Chamfer',
+        })
+      })
+
+      await test.step(`Select second edge`, async () => {
+        // Expose the cap-start edge after the first operation changes the model.
+        await editor.closePane()
+        const [clickOnSecondEdge] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 3,
+          stream: { x: 600, y: 383, format: 'pixels' },
+        })
+        await clickOnSecondEdge()
+        await toolbar.expectSelection('1 edge')
+      })
+
+      await test.step(`Apply chamfer to the second edge`, async () => {
+        await cmdBar.expectState({
+          commandName: 'Chamfer',
+          highlightedHeaderArg: 'selection',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '',
+            Length: '',
+          },
+          stage: 'arguments',
+        })
+        await editor.openPane()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Chamfer',
+          highlightedHeaderArg: 'length',
+          currentArgKey: 'length',
+          currentArgValue: '5',
+          headerArguments: {
+            Selection: '1 edge',
+            Length: '',
+          },
+          stage: 'arguments',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Chamfer',
+          headerArguments: {
+            Selection: '1 edge',
+            Length: '5',
+          },
+          stage: 'review',
+        })
+        await cmdBar.progressCmdBar()
+      })
+
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await editor.expectEditor.toContain(secondChamferDeclaration, {
+          shouldNormalise: true,
+        })
+        await editor.closePane()
+      })
+
+      // Test 2.1: Edit chamfer (edgeSweep type)
+      await test.step('Edit chamfer via feature tree selection works', async () => {
+        const editedLength = '2'
+        await editChamfer('chamfer002', '5', editedLength)
+        await editor.expectEditor.toContain(
+          secondChamferDeclaration.replace(
+            'length=5',
+            'length=' + editedLength
+          ),
+          { shouldNormalise: true }
+        )
+
+        // Edit back to original length
+        await editChamfer('chamfer002', editedLength, '5')
+        await editor.expectEditor.toContain(secondChamferDeclaration, {
+          shouldNormalise: true,
+        })
+        await editor.closePane()
+      })
+
+      // Test 3: Delete chamfer via feature tree selection
+      await test.step('Open Feature Tree Pane', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        await page.waitForTimeout(500)
+      })
+      await test.step('Delete chamfer via feature tree selection', async () => {
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'chamfer002',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await editor.expectEditor.not.toContain(secondChamferDeclaration, {
+          shouldNormalise: true,
+        })
+      })
     })
-
-    // Test 1: Command bar flow with preselected edges
-    await test.step(`Select first edge`, async () => {
-      const [clickOnFirstEdge] = await scene.findEdge(4)
-      await clickOnFirstEdge()
-      await editor.openPane()
-    })
-
-    await test.step(`Apply chamfer to the preselected edge`, async () => {
-      await page.waitForTimeout(100)
-      await toolbar.chamferButton.click()
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        highlightedHeaderArg: 'selection',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Length: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await page.waitForTimeout(1000)
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        highlightedHeaderArg: 'length',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        headerArguments: {
-          Selection: '1 edge',
-          Length: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.argumentInput.focus()
-      await page.waitForTimeout(1000)
-      await cmdBar.progressCmdBar()
-      await page.waitForTimeout(1000)
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        headerArguments: {
-          Selection: '1 edge',
-          Length: '5',
-        },
-        stage: 'review',
-      })
-      await cmdBar.progressCmdBar()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(firstChamferDeclaration, {
-        shouldNormalise: true,
-      })
-      await editor.closePane()
-    })
-
-    // Test 1.1: Edit sweep
-    async function editChamfer(
-      operationName: string,
-      oldValue: string,
-      newValue: string
-    ) {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      await page.waitForTimeout(300)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        operationName,
-        0
-      )
-      await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        currentArgKey: 'length',
-        currentArgValue: oldValue,
-        headerArguments: {
-          Length: oldValue,
-        },
-        highlightedHeaderArg: 'length',
-        stage: 'arguments',
-      })
-      await page.keyboard.insertText(newValue)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Length: newValue,
-        },
-        commandName: 'Chamfer',
-      })
-      await cmdBar.progressCmdBar()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-    }
-
-    await test.step('Edit chamfer via feature tree selection works', async () => {
-      const editedLength = '1'
-      await editChamfer('chamfer001', '5', editedLength)
-      await editor.expectEditor.toContain(
-        firstChamferDeclaration.replace('length=5', 'length=' + editedLength),
-        { shouldNormalise: true }
-      )
-
-      // Edit back to original length
-      await editChamfer('chamfer001', editedLength, '5')
-      await editor.expectEditor.toContain(firstChamferDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-
-    // Test 2: Command bar flow without preselected edges
-    await test.step(`Open chamfer UI without selecting edges`, async () => {
-      // The preceding edit leaves its edge selected; clear it so this exercises
-      // opening Chamfer without a preselection.
-      const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
-        format: 'ratio',
-      })
-      await clearSelection()
-      await expect(toolbar.selectionStatus).not.toContainText('edge')
-      await page.waitForTimeout(100)
-      await toolbar.chamferButton.click()
-      await expect
-        .poll(() => page.getByText('Please select one').count())
-        .toBe(1)
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Length: '',
-        },
-        highlightedHeaderArg: 'selection',
-        commandName: 'Chamfer',
-      })
-    })
-
-    await test.step(`Select second edge`, async () => {
-      // Expose the cap-start edge after the first operation changes the model.
-      await editor.closePane()
-      const [clickOnSecondEdge] = await scene.findEdge(3)
-      await clickOnSecondEdge()
-      await toolbar.expectSelection('1 edge')
-    })
-
-    await test.step(`Apply chamfer to the second edge`, async () => {
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        highlightedHeaderArg: 'selection',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Length: '',
-        },
-        stage: 'arguments',
-      })
-      await editor.openPane()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        highlightedHeaderArg: 'length',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        headerArguments: {
-          Selection: '1 edge',
-          Length: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        headerArguments: {
-          Selection: '1 edge',
-          Length: '5',
-        },
-        stage: 'review',
-      })
-      await cmdBar.progressCmdBar()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(secondChamferDeclaration, {
-        shouldNormalise: true,
-      })
-      await editor.closePane()
-    })
-
-    // Test 2.1: Edit chamfer (edgeSweep type)
-    await test.step('Edit chamfer via feature tree selection works', async () => {
-      const editedLength = '2'
-      await editChamfer('chamfer002', '5', editedLength)
-      await editor.expectEditor.toContain(
-        secondChamferDeclaration.replace('length=5', 'length=' + editedLength),
-        { shouldNormalise: true }
-      )
-
-      // Edit back to original length
-      await editChamfer('chamfer002', editedLength, '5')
-      await editor.expectEditor.toContain(secondChamferDeclaration, {
-        shouldNormalise: true,
-      })
-      await editor.closePane()
-    })
-
-    // Test 3: Delete chamfer via feature tree selection
-    await test.step('Open Feature Tree Pane', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      await page.waitForTimeout(500)
-    })
-    await test.step('Delete chamfer via feature tree selection', async () => {
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'chamfer002',
-        0
-      )
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await editor.expectEditor.not.toContain(secondChamferDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-  })
+  }
 
   test(`Chamfer point-and-click delete`, async ({
     context,
@@ -2181,39 +2220,40 @@ chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line2, ca
     })
   })
 
-  test(`Shell point-and-click @localRenderer`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = in)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Shell point-and-click ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
 }
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 30)`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled()
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
 
-    const shellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
-    const shellDeclaration2 =
-      'shell001 = shell(extrude001, faces = capStart001, thickness = 5)'
-    const secondaryShellFaceDeclaration =
-      'extrude001 = extrude(profile001, length = 500, tagStart = $capStart001)'
-    const editedShellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
-    const secondaryShellCode = `sketch001 = startSketchOn(-XZ)
+      const shellDeclaration =
+        'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
+      const shellDeclaration2 =
+        'shell001 = shell(extrude001, faces = capStart001, thickness = 5)'
+      const secondaryShellFaceDeclaration =
+        'extrude001 = extrude(profile001, length = 500, tagStart = $capStart001)'
+      const editedShellDeclaration =
+        'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
+      const secondaryShellCode = `sketch001 = startSketchOn(-XZ)
 profile001 = startProfile(sketch001, at = [-219, 25])
   |> angledLine(angle = 0deg, length = 488, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 472)
@@ -2222,235 +2262,257 @@ profile001 = startProfile(sketch001, at = [-219, 25])
   |> close()
 extrude001 = extrude(profile001, length = 500)`
 
-    await test.step(`Go through the command bar flow without preselected faces`, async () => {
-      await toolbar.shellButton.click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'faces',
-        currentArgValue: '',
-        headerArguments: {
-          Faces: '',
-          Thickness: '',
-        },
-        highlightedHeaderArg: 'faces',
-        commandName: 'Shell',
-      })
-      const [clickOnCap] = await scene.findFace(1)
-      await clickOnCap()
-      await toolbar.expectSelection('1 face')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'thickness',
-        currentArgValue: '5',
-        headerArguments: {
-          Faces: '1 face',
-          Thickness: '',
-        },
-        highlightedHeaderArg: 'thickness',
-        commandName: 'Shell',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Faces: '1 face',
-          Thickness: '5',
-        },
-        commandName: 'Shell',
-      })
-      await cmdBar.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await scene.settled()
-      await editor.expectEditor.toContain(shellDeclaration)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [shellDeclaration],
-      })
-    })
-
-    await test.step('Edit shell via feature tree selection works', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
-      await operationButton.dblclick()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'thickness',
-        currentArgValue: '5',
-        headerArguments: {
-          Thickness: '5',
-        },
-        highlightedHeaderArg: 'thickness',
-        commandName: 'Shell',
-      })
-      await page.keyboard.insertText('2')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Thickness: '2',
-        },
-        commandName: 'Shell',
-      })
-      await cmdBar.submit()
-      await scene.settled()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(editedShellDeclaration)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [editedShellDeclaration],
-      })
-    })
-
-    await test.step('Delete shell via feature tree selection', async () => {
-      await editor.closePane()
-      const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await editor.expectEditor.not.toContain(shellDeclaration)
-    })
-    await test.step('Replace modeling code with secondary shell snippet', async () => {
-      await editor.openPane()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', secondaryShellCode)
-      )
-      await editor.closePane()
-    })
-
-    await test.step('Repeat shell flow on secondary code (pause before selecting face)', async () => {
-      await toolbar.shellButton.click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'faces',
-        currentArgValue: '',
-        headerArguments: {
-          Faces: '',
-          Thickness: '',
-        },
-        highlightedHeaderArg: 'faces',
-        commandName: 'Shell',
+      await test.step(`Go through the command bar flow without preselected faces`, async () => {
+        await toolbar.shellButton.click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'faces',
+          currentArgValue: '',
+          headerArguments: {
+            Faces: '',
+            Thickness: '',
+          },
+          highlightedHeaderArg: 'faces',
+          commandName: 'Shell',
+        })
+        const [clickOnCap] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 1,
+          stream: { x: 575, y: 200, format: 'pixels' },
+        })
+        await clickOnCap()
+        await toolbar.expectSelection('1 face')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'thickness',
+          currentArgValue: '5',
+          headerArguments: {
+            Faces: '1 face',
+            Thickness: '',
+          },
+          highlightedHeaderArg: 'thickness',
+          commandName: 'Shell',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Faces: '1 face',
+            Thickness: '5',
+          },
+          commandName: 'Shell',
+        })
+        await cmdBar.submit()
       })
 
-      const [clickOnDebugCap] = await scene.findFace(2)
-      await clickOnDebugCap()
-      await toolbar.expectSelection('1 face')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'thickness',
-        currentArgValue: '5',
-        headerArguments: {
-          Faces: '1 face',
-          Thickness: '',
-        },
-        highlightedHeaderArg: 'thickness',
-        commandName: 'Shell',
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await scene.settled()
+        await editor.expectEditor.toContain(shellDeclaration)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [shellDeclaration],
+        })
       })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Faces: '1 face',
-          Thickness: '5',
-        },
-        commandName: 'Shell',
-      })
-      await cmdBar.submit()
-      await scene.settled()
-    })
 
-    await test.step('Confirm secondary shell code exists without diagnostics', async () => {
-      await editor.openPane()
-      await editor.expectEditor.toContain(secondaryShellFaceDeclaration)
-      await editor.expectEditor.toContain(shellDeclaration2)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [shellDeclaration2],
+      await test.step('Edit shell via feature tree selection works', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Shell',
+          0
+        )
+        await operationButton.dblclick()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'thickness',
+          currentArgValue: '5',
+          headerArguments: {
+            Thickness: '5',
+          },
+          highlightedHeaderArg: 'thickness',
+          commandName: 'Shell',
+        })
+        await page.keyboard.insertText('2')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Thickness: '2',
+          },
+          commandName: 'Shell',
+        })
+        await cmdBar.submit()
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(editedShellDeclaration)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [editedShellDeclaration],
+        })
       })
-      await editor.closePane()
-    })
-  })
 
-  test(`Delete Face point-and-click @localRenderer`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+      await test.step('Delete shell via feature tree selection', async () => {
+        await editor.closePane()
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Shell',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await editor.expectEditor.not.toContain(shellDeclaration)
+      })
+      await test.step('Replace modeling code with secondary shell snippet', async () => {
+        await editor.openPane()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', secondaryShellCode)
+        )
+        await editor.closePane()
+      })
+
+      await test.step('Repeat shell flow on secondary code (pause before selecting face)', async () => {
+        await toolbar.shellButton.click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'faces',
+          currentArgValue: '',
+          headerArguments: {
+            Faces: '',
+            Thickness: '',
+          },
+          highlightedHeaderArg: 'faces',
+          commandName: 'Shell',
+        })
+
+        const [clickOnDebugCap] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 2,
+          stream: { x: 0.4935, y: 0.5159, format: 'ratio' },
+        })
+        await clickOnDebugCap()
+        await toolbar.expectSelection('1 face')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'thickness',
+          currentArgValue: '5',
+          headerArguments: {
+            Faces: '1 face',
+            Thickness: '',
+          },
+          highlightedHeaderArg: 'thickness',
+          commandName: 'Shell',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Faces: '1 face',
+            Thickness: '5',
+          },
+          commandName: 'Shell',
+        })
+        await cmdBar.submit()
+        await scene.settled()
+      })
+
+      await test.step('Confirm secondary shell code exists without diagnostics', async () => {
+        await editor.openPane()
+        await editor.expectEditor.toContain(secondaryShellFaceDeclaration)
+        await editor.expectEditor.toContain(shellDeclaration2)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [shellDeclaration2],
+        })
+        await editor.closePane()
+      })
+    })
+  }
+
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Delete Face point-and-click ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
 
 sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
 }
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 30)`
-    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    await test.step(`Go through the command bar flow`, async () => {
-      await toolbar.selectSurface('delete-face')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'faces',
-        currentArgValue: '',
-        headerArguments: {
-          Faces: '',
-        },
-        highlightedHeaderArg: 'faces',
-        commandName: 'Delete Face',
-      })
-      const [clickOnCap] = await scene.findFace(1)
-      await clickOnCap()
-      await toolbar.expectSelection('1 face')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Faces: '1 face',
-        },
-        commandName: 'Delete Face',
-      })
-      await cmdBar.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
+      const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await homePage.goToModelingScene()
       await scene.settled()
-      await editor.expectEditor.toContain(deleteDeclaration)
-    })
 
-    await test.step('Delete delete face via feature tree selection', async () => {
-      await editor.closePane()
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'surface001',
-        0
-      )
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await editor.expectEditor.not.toContain(deleteDeclaration)
-    })
-  })
+      await test.step(`Go through the command bar flow`, async () => {
+        await toolbar.selectSurface('delete-face')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'faces',
+          currentArgValue: '',
+          headerArguments: {
+            Faces: '',
+          },
+          highlightedHeaderArg: 'faces',
+          commandName: 'Delete Face',
+        })
+        const [clickOnCap] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 1,
+          stream: { x: 575, y: 200, format: 'pixels' },
+        })
+        await clickOnCap()
+        await toolbar.expectSelection('1 face')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Faces: '1 face',
+          },
+          commandName: 'Delete Face',
+        })
+        await cmdBar.submit()
+      })
 
-  test(`Delete face on a face-API chamfer using its edge-cut tag @localRenderer`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow, kclVersion = "3.0-preview")
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await scene.settled()
+        await editor.expectEditor.toContain(deleteDeclaration)
+      })
+
+      await test.step('Delete delete face via feature tree selection', async () => {
+        await editor.closePane()
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'surface001',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await editor.expectEditor.not.toContain(deleteDeclaration)
+      })
+    })
+  }
+
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Delete face on a face-API chamfer using its edge-cut tag ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [-12in, -6in], end = [-12in, 6in])
@@ -2466,45 +2528,51 @@ chamfer001 = chamfer(
   length = 5in,
 )`
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await editor.replaceCode('', initialCode)
-    await scene.settled()
-    await editor.closePane()
-    await scene.moveCameraTo(
-      { x: 573.4, y: -539.4, z: 453.32 },
-      { x: 51.38, y: -17.36, z: -68.74 }
-    )
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await editor.replaceCode('', initialCode)
+      await scene.settled()
+      await editor.closePane()
+      await scene.moveCameraTo(
+        { x: 573.4, y: -539.4, z: 453.32 },
+        { x: 51.38, y: -17.36, z: -68.74 }
+      )
 
-    await toolbar.selectSurface('delete-face')
-    const [clickChamferFace] = await scene.findFace(2)
-    await clickChamferFace()
-    await toolbar.expectSelection('1 face')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      headerArguments: { Faces: '1 face' },
-      reviewValidationError: undefined,
-      commandName: 'Delete Face',
+      await toolbar.selectSurface('delete-face')
+      const [clickChamferFace] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 2,
+        stream: { x: 0.4948, y: 0.6468, format: 'ratio' },
+      })
+      await clickChamferFace()
+      await toolbar.expectSelection('1 face')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: { Faces: '1 face' },
+        reviewValidationError: undefined,
+        commandName: 'Delete Face',
+      })
+      await cmdBar.submit()
+      await scene.settled()
+
+      await editor.expectEditor.toContain('tag = $chamferFace01')
+      await editor.expectEditor.toContain(
+        'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
+      )
     })
-    await cmdBar.submit()
-    await scene.settled()
+  }
 
-    await editor.expectEditor.toContain('tag = $chamferFace01')
-    await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
-    )
-  })
-
-  test(`Delete face on an unmapped multi-selector chamfer face @localRenderer`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Delete face on an unmapped multi-selector chamfer face ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [24, 0])
@@ -2524,45 +2592,51 @@ chamfer001 = chamfer(
 )
 hide(sketch001)`
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await editor.replaceCode('', initialCode)
-    await scene.settled()
-    await editor.closePane()
-    await scene.moveCameraTo(
-      { x: 5.72, y: -14.38, z: 26.13 },
-      { x: 12, y: 8, z: 5 }
-    )
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await editor.replaceCode('', initialCode)
+      await scene.settled()
+      await editor.closePane()
+      await scene.moveCameraTo(
+        { x: 5.72, y: -14.38, z: 26.13 },
+        { x: 12, y: 8, z: 5 }
+      )
 
-    await toolbar.selectSurface('delete-face')
-    const [clickChamferFace] = await scene.findFace(2)
-    await clickChamferFace()
-    await toolbar.expectSelection('1 face')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      headerArguments: { Faces: '1 face' },
-      reviewValidationError: undefined,
-      commandName: 'Delete Face',
+      await toolbar.selectSurface('delete-face')
+      const [clickChamferFace] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 2,
+        stream: { x: 0.5631, y: 0.5459, format: 'ratio' },
+      })
+      await clickChamferFace()
+      await toolbar.expectSelection('1 face')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: { Faces: '1 face' },
+        reviewValidationError: undefined,
+        commandName: 'Delete Face',
+      })
+      await cmdBar.submit()
+      await scene.settled()
+
+      await editor.expectEditor.toContain('tag = $chamferFace01')
+      await editor.expectEditor.toContain(
+        'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
+      )
     })
-    await cmdBar.submit()
-    await scene.settled()
+  }
 
-    await editor.expectEditor.toContain('tag = $chamferFace01')
-    await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
-    )
-  })
-
-  test(`Delete face on an unmapped chained fillet face @localRenderer`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Delete face on an unmapped chained fillet face ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [30, 0])
@@ -2584,35 +2658,40 @@ fillet001 = fillet(
 )
 hide(sketch001)`
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await editor.replaceCode('', initialCode)
-    await scene.settled()
-    await editor.closePane()
-    await scene.moveCameraTo(
-      { x: 39.68, y: -7.24, z: 19.4 },
-      { x: 15, y: 10, z: 6 }
-    )
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await editor.replaceCode('', initialCode)
+      await scene.settled()
+      await editor.closePane()
+      await scene.moveCameraTo(
+        { x: 39.68, y: -7.24, z: 19.4 },
+        { x: 15, y: 10, z: 6 }
+      )
 
-    await toolbar.selectSurface('delete-face')
-    const [clickFilletFace] = await scene.findFace(4)
-    await clickFilletFace()
-    await toolbar.expectSelection('1 face')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      headerArguments: { Faces: '1 face' },
-      reviewValidationError: undefined,
-      commandName: 'Delete Face',
+      await toolbar.selectSurface('delete-face')
+      const [clickFilletFace] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 4,
+        stream: { x: 0.6532, y: 0.4954, format: 'ratio' },
+      })
+      await clickFilletFace()
+      await toolbar.expectSelection('1 face')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: { Faces: '1 face' },
+        reviewValidationError: undefined,
+        commandName: 'Delete Face',
+      })
+      await cmdBar.submit()
+      await scene.settled()
+
+      await editor.expectEditor.toContain('tag = $filletFace01')
+      await editor.expectEditor.toContain(
+        'surface001 = deleteFace(fillet001, faces = filletFace01)'
+      )
     })
-    await cmdBar.submit()
-    await scene.settled()
-
-    await editor.expectEditor.toContain('tag = $filletFace01')
-    await editor.expectEditor.toContain(
-      'surface001 = deleteFace(fillet001, faces = filletFace01)'
-    )
-  })
+  }
 
   test('Revolve point-and-click', async ({
     context,
@@ -4900,16 +4979,17 @@ extrude001 = extrude(region001, length = 30)`
     })
   })
 
-  test('Hole point-and-click @localRenderer', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `sketch001 = sketch(on = XZ) {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Hole point-and-click ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -5mm, var -5mm], end = [var 5mm, var -5mm])
   line2 = line(start = [var 5mm, var -5mm], end = [var 5mm, var 5mm])
   coincident([line1.end, line2.start])
@@ -4920,158 +5000,162 @@ extrude001 = extrude(region001, length = 30)`
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 10)`
-    await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
+      await test.step('Settle the scene', async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
 
-      // Close panes to ensure toolbar buttons are visible
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
+        // Close panes to ensure toolbar buttons are visible
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
 
-    await test.step('Add the hole through the command flow', async () => {
-      await toolbar.holeButton.click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'face',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '',
-          CutAt: '',
-          HoleBody: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'face',
+      await test.step('Add the hole through the command flow', async () => {
+        await toolbar.holeButton.click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'face',
+          currentArgValue: '',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '',
+            CutAt: '',
+            HoleBody: '',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'face',
+        })
+        const [clickOnCap] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 2,
+          stream: { x: 600, y: 250, format: 'pixels' },
+        })
+        await clickOnCap()
+        await toolbar.expectSelection('1 face')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'cutAt',
+          currentArgValue: '[0, 0]',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '',
+            HoleBody: '',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'cutAt',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'holeBody',
+          currentArgValue: '',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: '',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'holeBody',
+        })
+        await cmdBar.selectOption({ name: 'Blind' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'blindDepth',
+          currentArgValue: '2',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '',
+            BlindDiameter: '',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'blindDepth',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'blindDiameter',
+          currentArgValue: '1',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'blindDiameter',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'holeType',
+          currentArgValue: '',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'holeType',
+        })
+        await cmdBar.selectOption({ name: 'Simple' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'holeBottom',
+          currentArgValue: '',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'holeBottom',
+        })
+        await cmdBar.selectOption({ name: 'Flat' }).click()
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: 'flat',
+          },
+        })
+        await cmdBar.submit()
       })
-      const [clickOnCap] = await scene.findFace(2)
-      await clickOnCap()
-      await toolbar.expectSelection('1 face')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'cutAt',
-        currentArgValue: '[0, 0]',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '',
-          HoleBody: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'cutAt',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeBody',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'holeBody',
-      })
-      await cmdBar.selectOption({ name: 'Blind' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'blindDepth',
-        currentArgValue: '2',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '',
-          BlindDiameter: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'blindDepth',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'blindDiameter',
-        currentArgValue: '1',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'blindDiameter',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeType',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'holeType',
-      })
-      await cmdBar.selectOption({ name: 'Simple' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeBottom',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'holeBottom',
-      })
-      await cmdBar.selectOption({ name: 'Flat' }).click()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-      })
-      await cmdBar.submit()
-    })
 
-    await test.step('Expect hole call added to the editor', async () => {
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `extrude001 = extrude(region001, length = 10, tagEnd = $capEnd001)
+      await test.step('Expect hole call added to the editor', async () => {
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `extrude001 = extrude(region001, length = 10, tagEnd = $capEnd001)
 hole001 = hole::hole(
   extrude001,
   face = capEnd001,
@@ -5080,137 +5164,137 @@ hole001 = hole::hole(
   holeBody = hole::blind(depth = 2, diameter = 1),
   holeType = hole::simple(),
 )`,
-        { shouldNormalise: true }
-      )
-    })
+          { shouldNormalise: true }
+        )
+      })
 
-    await test.step('Edit the hole from the feature-tree', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const holeOperation = await toolbar.getFeatureTreeOperation('Hole', 0)
-      await holeOperation.dblclick()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-        commandName: 'Hole',
+      await test.step('Edit the hole from the feature-tree', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const holeOperation = await toolbar.getFeatureTreeOperation('Hole', 0)
+        await holeOperation.dblclick()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: 'flat',
+          },
+          commandName: 'Hole',
+        })
+        await page.getByRole('button', { name: 'Cut at' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'cutAt',
+          currentArgValue: '[0, 0]',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: 'flat',
+          },
+          highlightedHeaderArg: 'cutAt',
+        })
+        // Update cut at from [0, 0] to [2, 2]
+        await page.getByTestId('vector2d-x-input').fill('2')
+        await page.getByTestId('vector2d-y-input').fill('2')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[2, 2]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: 'flat',
+          },
+        })
+        await page.getByRole('button', { name: 'Hole type' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'holeType',
+          currentArgValue: '',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[2, 2]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: 'flat',
+          },
+          highlightedHeaderArg: 'holeType',
+        })
+        await cmdBar.selectOption({ name: 'Countersink' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'countersinkAngle',
+          currentArgValue: '90deg',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[2, 2]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'countersink',
+            CountersinkDiameter: '',
+            CountersinkAngle: '',
+            HoleBottom: 'flat',
+          },
+          highlightedHeaderArg: 'countersinkAngle',
+        })
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill('80deg')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'countersinkDiameter',
+          currentArgValue: '2',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[2, 2]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'countersink',
+            CountersinkDiameter: '',
+            CountersinkAngle: '80deg',
+            HoleBottom: 'flat',
+          },
+          highlightedHeaderArg: 'countersinkDiameter',
+        })
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill('3')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[2, 2]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'countersink',
+            CountersinkDiameter: '3',
+            CountersinkAngle: '80deg',
+            HoleBottom: 'flat',
+          },
+        })
+        await cmdBar.submit()
       })
-      await page.getByRole('button', { name: 'Cut at' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'cutAt',
-        currentArgValue: '[0, 0]',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'cutAt',
-      })
-      // Update cut at from [0, 0] to [2, 2]
-      await page.getByTestId('vector2d-x-input').fill('2')
-      await page.getByTestId('vector2d-y-input').fill('2')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-      })
-      await page.getByRole('button', { name: 'Hole type' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeType',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'holeType',
-      })
-      await cmdBar.selectOption({ name: 'Countersink' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'countersinkAngle',
-        currentArgValue: '90deg',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'countersink',
-          CountersinkDiameter: '',
-          CountersinkAngle: '',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'countersinkAngle',
-      })
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('80deg')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'countersinkDiameter',
-        currentArgValue: '2',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'countersink',
-          CountersinkDiameter: '',
-          CountersinkAngle: '80deg',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'countersinkDiameter',
-      })
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('3')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'countersink',
-          CountersinkDiameter: '3',
-          CountersinkAngle: '80deg',
-          HoleBottom: 'flat',
-        },
-      })
-      await cmdBar.submit()
-    })
 
-    await test.step('Expect hole call updated in the editor', async () => {
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `hole001 = hole::hole(
+      await test.step('Expect hole call updated in the editor', async () => {
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `hole001 = hole::hole(
   extrude001,
   face = capEnd001,
   cutAt = [2, 2],
@@ -5218,10 +5302,11 @@ hole001 = hole::hole(
   holeBody =   hole::blind(depth = 2, diameter = 1),
   holeType =   hole::countersink(angle = 80deg, diameter = 3),
 )`,
-        { shouldNormalise: true }
-      )
+          { shouldNormalise: true }
+        )
+      })
     })
-  })
+  }
 
   test(
     'Helical gear point-and-click with edit and delete',

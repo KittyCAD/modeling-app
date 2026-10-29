@@ -67,165 +67,183 @@ helix001 = helix(
 )`
 
 test.describe('Face API selection regressions', { tag: '@web' }, () => {
-  test('2.9 fillets a generated Chamfer boundary edge @localRenderer', async ({
-    context,
-    page,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-    tronApp,
-    homePage,
-  }) => {
-    if (tronApp) await tronApp.cleanProjectDir()
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, edgeTreatmentCode)
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', edgeTreatmentCode)
-    )
-    await editor.closePane()
-    await scene.moveCameraTo(
-      { x: -3.14, y: -11, z: 16.25 },
-      { x: 15, y: 10, z: 6 }
-    )
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`2.9 fillets a generated Chamfer boundary edge ${rendererTag}`, async ({
+      context,
+      page,
+      scene,
+      cmdBar,
+      editor,
+      toolbar,
+      tronApp,
+      homePage,
+    }) => {
+      if (tronApp) await tronApp.cleanProjectDir()
+      await context.addInitScript((code) => {
+        localStorage.setItem('persistCode', code)
+      }, edgeTreatmentCode)
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', edgeTreatmentCode)
+      )
+      await editor.closePane()
+      await scene.moveCameraTo(
+        { x: -3.14, y: -11, z: 16.25 },
+        { x: 15, y: 10, z: 6 }
+      )
 
-    const [clickChamferBoundaryEdge] = await scene.findEdge(9)
-    await clickChamferBoundaryEdge()
-    await expect(toolbar.selectionStatus).toContainText('1 edge')
-    await toolbar.filletButton.click()
-    await cmdBar.progressCmdBar()
-    await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.3')
-    await cmdBar.progressCmdBar()
-    await cmdBar.submit()
-    await scene.settled()
+      const [clickChamferBoundaryEdge] = await scene.makeSelectionHelpers({
+        kind: 'edge',
+        index: 9,
+        stream: { x: 0.4091, y: 0.5557, format: 'ratio' },
+      })
+      await clickChamferBoundaryEdge()
+      await expect(toolbar.selectionStatus).toContainText('1 edge')
+      await toolbar.filletButton.click()
+      await cmdBar.progressCmdBar()
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.3')
+      await cmdBar.progressCmdBar()
+      await cmdBar.submit()
+      await scene.settled()
 
-    await editor.expectEditor.toContain('tag = $')
-    await editor.expectEditor.toContain('fillet001 = fillet(')
-    await editor.expectEditor.toContain('edges = [')
-    await editor.expectEditor.not.toContain('edgeId(')
-  })
-
-  test('2.10 fillets an outer Shell rim edge @localRenderer', async ({
-    context,
-    page,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-    tronApp,
-    homePage,
-  }) => {
-    if (tronApp) await tronApp.cleanProjectDir()
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, shellCode)
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', shellCode)
-    )
-    await editor.closePane()
-    await scene.moveCameraTo({ x: 48, y: -38, z: 34 }, { x: 15, y: 11, z: 7 })
-
-    const [clickShellRimEdge] = await scene.findEdge(9)
-    await clickShellRimEdge()
-    await expect(toolbar.selectionStatus).toContainText('1 edge')
-    await toolbar.filletButton.click()
-    await cmdBar.progressCmdBar()
-
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Fillet',
-      currentArgKey: 'radius',
-      currentArgValue: '5',
-      headerArguments: {
-        Selection: '1 edge',
-        Radius: '',
-      },
-      highlightedHeaderArg: 'radius',
+      await editor.expectEditor.toContain('tag = $')
+      await editor.expectEditor.toContain('fillet001 = fillet(')
+      await editor.expectEditor.toContain('edges = [')
+      await editor.expectEditor.not.toContain('edgeId(')
     })
-    await cmdBar.currentArgumentInput.locator('.cm-content').fill('1')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Fillet',
-      headerArguments: {
-        Selection: '1 edge',
-        Radius: '1',
-      },
-      reviewValidationError: undefined,
+  }
+
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`2.10 fillets an outer Shell rim edge ${rendererTag}`, async ({
+      context,
+      page,
+      scene,
+      cmdBar,
+      editor,
+      toolbar,
+      tronApp,
+      homePage,
+    }) => {
+      if (tronApp) await tronApp.cleanProjectDir()
+      await context.addInitScript((code) => {
+        localStorage.setItem('persistCode', code)
+      }, shellCode)
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', shellCode)
+      )
+      await editor.closePane()
+      await scene.moveCameraTo({ x: 48, y: -38, z: 34 }, { x: 15, y: 11, z: 7 })
+
+      const [clickShellRimEdge] = await scene.makeSelectionHelpers({
+        kind: 'edge',
+        index: 9,
+        stream: { x: 0.3679, y: 0.3356, format: 'ratio' },
+      })
+      await clickShellRimEdge()
+      await expect(toolbar.selectionStatus).toContainText('1 edge')
+      await toolbar.filletButton.click()
+      await cmdBar.progressCmdBar()
+
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Fillet',
+        currentArgKey: 'radius',
+        currentArgValue: '5',
+        headerArguments: {
+          Selection: '1 edge',
+          Radius: '',
+        },
+        highlightedHeaderArg: 'radius',
+      })
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('1')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Fillet',
+        headerArguments: {
+          Selection: '1 edge',
+          Radius: '1',
+        },
+        reviewValidationError: undefined,
+      })
+      await cmdBar.submit()
+      await scene.settled()
+
+      await editor.expectEditor.toContain('edgeId(body001')
+      await editor.expectEditor.toContain('fillet001 = fillet(body001')
     })
-    await cmdBar.submit()
-    await scene.settled()
+  }
 
-    await editor.expectEditor.toContain('edgeId(body001')
-    await editor.expectEditor.toContain('fillet001 = fillet(body001')
-  })
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`2.12 surface-extrudes an untouched outer CSG edge ${rendererTag}`, async ({
+      context,
+      page,
+      scene,
+      cmdBar,
+      editor,
+      toolbar,
+      tronApp,
+      homePage,
+    }) => {
+      if (tronApp) await tronApp.cleanProjectDir()
+      await context.addInitScript((code) => {
+        localStorage.setItem('persistCode', code)
+      }, csgSurfaceExtrudeCode)
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', csgSurfaceExtrudeCode)
+      )
+      await editor.closePane()
+      await scene.moveCameraTo({ x: 48, y: -42, z: 34 }, { x: 13, y: 9, z: 5 })
 
-  test('2.12 surface-extrudes an untouched outer CSG edge @localRenderer', async ({
-    context,
-    page,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-    tronApp,
-    homePage,
-  }) => {
-    if (tronApp) await tronApp.cleanProjectDir()
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, csgSurfaceExtrudeCode)
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', csgSurfaceExtrudeCode)
-    )
-    await editor.closePane()
-    await scene.moveCameraTo({ x: 48, y: -42, z: 34 }, { x: 13, y: 9, z: 5 })
+      const [clickOuterCsgEdge] = await scene.makeSelectionHelpers({
+        kind: 'edge',
+        index: 2,
+        stream: { x: 0.6081, y: 0.4918, format: 'ratio' },
+      })
+      await clickOuterCsgEdge()
+      await toolbar.extrudeButton.click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Extrude',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '',
+          Length: '5',
+        },
+        highlightedHeaderArg: 'Profiles',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Extrude',
+        currentArgKey: 'length',
+        currentArgValue: '5',
+        headerArguments: {
+          Profiles: '1 edge',
+          Length: '5',
+        },
+        highlightedHeaderArg: 'length',
+      })
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('6')
+      await cmdBar.progressCmdBar()
+      await cmdBar.selectOption({ name: 'Surface' }).click()
+      await cmdBar.selectOption({ name: 'New' }).click()
+      await cmdBar.submit()
+      await scene.settled()
 
-    const [clickOuterCsgEdge] = await scene.findEdge(2)
-    await clickOuterCsgEdge()
-    await toolbar.extrudeButton.click()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'Profiles',
+      await editor.expectEditor.toContain('sideFaces = [')
+      await editor.expectEditor.toContain('method = NEW')
     })
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-    })
-    await cmdBar.currentArgumentInput.locator('.cm-content').fill('6')
-    await cmdBar.progressCmdBar()
-    await cmdBar.selectOption({ name: 'Surface' }).click()
-    await cmdBar.selectOption({ name: 'New' }).click()
-    await cmdBar.submit()
-    await scene.settled()
-
-    await editor.expectEditor.toContain('sideFaces = [')
-    await editor.expectEditor.toContain('method = NEW')
-  })
+  }
 
   test('selects a standalone helix from the viewport', async ({
     context,

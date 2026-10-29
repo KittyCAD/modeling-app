@@ -8,6 +8,7 @@ import {
   getPixelRGBs,
   openAndClearDebugPanel,
   sendCustomCmd,
+  sendSceneCommand,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
 
@@ -153,6 +154,32 @@ export class SceneFixture {
     index: number,
     options?: { timeout?: number; visible?: boolean }
   ) => this.findEntity('face', index, options)
+
+  /**
+   * Both modes share the same mouse actions; only the selection point differs.
+   * Keep the legacy stream coordinate beside its equivalent local entity index
+   * so the stream branch can be removed when streaming is retired.
+   */
+  makeSelectionHelpers = async ({
+    kind,
+    index,
+    stream,
+    timeout,
+    visible,
+  }: {
+    kind: 'edge' | 'face'
+    index: number
+    stream: { x: number; y: number; format: 'pixels' | 'ratio' }
+    timeout?: number
+    visible?: boolean
+  }) =>
+    (await this.usesLocalRenderer())
+      ? this.findEntity(kind, index, { timeout, visible })
+      : this.makeMouseHelpers(stream.x, stream.y, { format: stream.format })
+
+  private usesLocalRenderer = async () =>
+    this.expectedLocalRenderer ??
+    this.page.evaluate(() => window.engineCommandManager.geometryOnly)
 
   /** Index is zero-based within entities filtered by kind and visibility. */
   private findEntity = async (
@@ -511,6 +538,26 @@ export class SceneFixture {
     pos: { x: number; y: number; z: number },
     target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 }
   ) => {
+    // Streaming still owns its camera on the engine and needs the rendered
+    // frame to arrive. Local rendering updates the frontend camera directly.
+    if (!(await this.usesLocalRenderer())) {
+      await doAndWaitForImageDiff(
+        this.page,
+        () =>
+          sendSceneCommand(this.page, {
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'default_camera_look_at',
+              vantage: pos,
+              center: target,
+              up: { x: 0, y: 0, z: 1 },
+            },
+          }),
+        300
+      )
+      return
+    }
     // Initial model loading fits the local camera; let it finish before
     // applying an explicit pose so that fit cannot overwrite the test's view.
     await expect(

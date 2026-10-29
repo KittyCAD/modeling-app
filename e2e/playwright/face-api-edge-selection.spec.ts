@@ -259,80 +259,86 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     })
   })
 
-  test('Can select split edges for fillet @localRenderer', async ({
-    context,
-    scene,
-    cmdBar,
-    page,
-    toolbar,
-    editor,
-    homePage,
-  }) => {
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, testCode)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Can select split edges for fillet ${rendererTag}`, async ({
+      context,
+      scene,
+      cmdBar,
+      page,
+      toolbar,
+      editor,
+      homePage,
+    }) => {
+      await context.addInitScript((code) => {
+        localStorage.setItem('persistCode', code)
+      }, testCode)
 
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', testCode)
-    )
-    await editor.expectEditor.toContain('solid001 = subtract')
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', testCode)
+      )
+      await editor.expectEditor.toContain('solid001 = subtract')
 
-    // Set camera position for optimal edge viewing
-    await scene.moveCameraTo(
-      { x: 5.06, y: 25.19, z: 21.78 },
-      { x: 7.72, y: 11.81, z: 8.2 }
-    )
+      // Set camera position for optimal edge viewing
+      await scene.moveCameraTo(
+        { x: 5.06, y: 25.19, z: 21.78 },
+        { x: 7.72, y: 11.81, z: 8.2 }
+      )
 
-    const [clickEdge] = await scene.findEdge(3)
-    await clickEdge()
+      const [clickEdge] = await scene.makeSelectionHelpers({
+        kind: 'edge',
+        index: 3,
+        stream: { x: 0.1709, y: 0.4864, format: 'ratio' },
+      })
+      await clickEdge()
 
-    // Base state object that we'll mutate as we progress
-    const state: CmdBarSerialised = {
-      commandName: 'Fillet',
-      currentArgKey: 'selection',
-      currentArgValue: '',
-      headerArguments: {
-        Selection: '',
-        Radius: '',
-      },
-      highlightedHeaderArg: 'selection',
-      stage: 'arguments',
-    }
+      // Base state object that we'll mutate as we progress
+      const state: CmdBarSerialised = {
+        commandName: 'Fillet',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+          Radius: '',
+        },
+        highlightedHeaderArg: 'selection',
+        stage: 'arguments',
+      }
 
-    // Click fillet tool - the edge should already be selected
-    await toolbar.filletButton.click()
-    await cmdBar.expectState(state)
+      // Click fillet tool - the edge should already be selected
+      await toolbar.filletButton.click()
+      await cmdBar.expectState(state)
 
-    // Edge should already be selected, progress to radius
-    state.currentArgKey = 'radius'
-    state.currentArgValue = '5' // Default radius
-    state.headerArguments.Selection = '1 edge'
-    state.highlightedHeaderArg = 'radius'
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState(state)
+      // Edge should already be selected, progress to radius
+      state.currentArgKey = 'radius'
+      state.currentArgValue = '5' // Default radius
+      state.headerArguments.Selection = '1 edge'
+      state.highlightedHeaderArg = 'radius'
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState(state)
 
-    // Set radius to 0.75mm
-    await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.75')
-    state.currentArgValue = '0.75'
-    state.headerArguments.Radius = '0.75'
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      commandName: state.commandName,
-      headerArguments: state.headerArguments,
-      stage: 'review',
-      reviewValidationError: undefined,
+      // Set radius to 0.75mm
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.75')
+      state.currentArgValue = '0.75'
+      state.headerArguments.Radius = '0.75'
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: state.commandName,
+        headerArguments: state.headerArguments,
+        stage: 'review',
+        reviewValidationError: undefined,
+      })
+
+      await cmdBar.submit()
+
+      // Assert code contains fillet
+      await editor.expectEditor.toContain('fillet')
+
+      // Final sanity check: assert no errors in code pane
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
-
-    await cmdBar.submit()
-
-    // Assert code contains fillet
-    await editor.expectEditor.toContain('fillet')
-
-    // Final sanity check: assert no errors in code pane
-    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
-  })
+  }
 
   test('Can use an edge-extruded surface boundary as a Helix axis', async ({
     context,
