@@ -202,15 +202,19 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await scene.settled()
     await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-    const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
+    const pane = page.locator(VIEW_SWITCHER_PANE)
+    await expect(pane.getByTestId('named-view-create')).toBeVisible()
+    const rows = pane.getByTestId('named-view-row')
     const defaultView = rows.filter({ hasText: 'Default View' })
     const top = rows.filter({ hasText: 'Top' })
 
-    await top.click()
+    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
     await expect(top).toHaveAttribute('data-active', 'true')
     await expect(defaultView).toHaveAttribute('data-active', 'false')
 
-    await defaultView.click()
+    await defaultView
+      .getByRole('button', { name: 'Apply Default View', exact: true })
+      .click()
     await expect(defaultView).toHaveAttribute('data-active', 'true')
     await expect(top).toHaveAttribute('data-active', 'false')
   })
@@ -236,7 +240,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
     const top = rows.filter({ hasText: 'Top' })
 
-    await top.click()
+    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
     await expect(top).toHaveAttribute('data-active', 'true')
 
     await editor.openPane()
@@ -265,7 +269,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     const top = rows.filter({ hasText: 'Top' })
     const defaultView = rows.filter({ hasText: 'Default View' })
 
-    await top.click()
+    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
     await expect(top).toHaveAttribute('data-active', 'true')
 
     await editor.openPane()
@@ -295,8 +299,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await u.clearCommandLogs()
     await page
       .locator(VIEW_SWITCHER_PANE)
-      .getByTestId('named-view-row')
-      .filter({ hasText: 'TopAt' })
+      .getByRole('button', { name: 'Apply TopAt', exact: true })
       .click()
 
     // Top and bottom take the quaternion route rather than a look-at.
@@ -334,8 +337,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await u.clearCommandLogs()
     await page
       .locator(VIEW_SWITCHER_PANE)
-      .getByTestId('named-view-row')
-      .filter({ hasText: 'IsometricAt' })
+      .getByRole('button', { name: 'Apply IsometricAt', exact: true })
       .click()
 
     await u.waitForCmdReceive('default_camera_set_view')

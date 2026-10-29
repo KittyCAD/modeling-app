@@ -691,12 +691,12 @@ fn build_entity_clone_id_maps(
                     if pending_map.old_child_ids.is_none() && *entity_id == pending_map.old_entity_id {
                         pending_map.old_child_ids = Some(child_ids.clone());
                         if pending_map.source_topology_id == pending_map.old_entity_id {
-                            pending_map.source_topology_child_ids = Some(child_ids.clone());
+                            pending_map.source_topology_child_ids = Some(child_ids);
                         }
                         break;
                     }
                     if pending_map.source_topology_child_ids.is_none() && *entity_id == pending_map.source_topology_id {
-                        pending_map.source_topology_child_ids = Some(child_ids.clone());
+                        pending_map.source_topology_child_ids = Some(child_ids);
                         break;
                     }
                 }
@@ -1346,6 +1346,28 @@ fn mirror_3d_artifact_updates(
     }
 
     Ok(return_arr)
+}
+
+// Cutting an edge adds faces to an existing body. Record those faces directly so
+// body lookup does not need the consumed 3D edge or its adjacency records.
+fn edge_cut_body_update(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    body_id: Uuid,
+    face_ids: Vec<ArtifactId>,
+) -> Option<Artifact> {
+    let sweep = match artifacts.get(&ArtifactId::new(body_id))? {
+        Artifact::Sweep(sweep) => sweep,
+        Artifact::Path(path) => {
+            let Artifact::Sweep(sweep) = artifacts.get(&path.sweep_id?)? else {
+                return None;
+            };
+            sweep
+        }
+        _ => return None,
+    };
+    let mut sweep = sweep.clone();
+    sweep.surface_ids = face_ids;
+    Some(Artifact::Sweep(sweep))
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -2476,6 +2498,9 @@ fn artifacts_to_update(
                 surface_id: None,
                 code_ref,
             }));
+            if let Some(body) = edge_cut_body_update(artifacts, cmd.object_id, vec![id]) {
+                return_arr.push(body);
+            }
             let consumed_edge = artifacts.get(&edge_id);
             if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
                 let mut new_segment = consumed_edge.clone();
@@ -2502,6 +2527,9 @@ fn artifacts_to_update(
                 surface_id: None,
                 code_ref,
             }));
+            if let Some(body) = edge_cut_body_update(artifacts, cmd.object_id, vec![id]) {
+                return_arr.push(body);
+            }
             let consumed_edge = artifacts.get(&edge_id);
             if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
                 let mut new_segment = consumed_edge.clone();
@@ -2514,7 +2542,7 @@ fn artifacts_to_update(
         }
         ModelingCmd::Solid3dCutEdgeReferences(cmd) => {
             let face_ids = std::iter::once(id).chain(cmd.extra_face_ids.iter().copied().map(ArtifactId::new));
-            return Ok(face_ids
+            let mut updates: Vec<_> = face_ids
                 .take(cmd.edges_references.len())
                 .enumerate()
                 .map(|(source_selector_index, face_id)| {
@@ -2528,7 +2556,12 @@ fn artifacts_to_update(
                         code_ref: code_ref.clone(),
                     })
                 })
-                .collect());
+                .collect();
+            let cut_face_ids = updates.iter().map(Artifact::id).collect();
+            if let Some(body) = edge_cut_body_update(artifacts, cmd.object_id, cut_face_ids) {
+                updates.push(body);
+            }
+            return Ok(updates);
         }
         ModelingCmd::EntityMakeHelix(cmd) => {
             let cylinder_id = ArtifactId::new(cmd.cylinder_id);

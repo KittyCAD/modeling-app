@@ -364,6 +364,7 @@ extrude001 = extrude(profile001, length = 100)`
         .poll(() => page.getByText('Please select one').count())
         .toBe(1)
       await clickOnEdge()
+      await toolbar.expectSelection('1 edge')
       await cmdBar.progressCmdBar()
       await cmdBar.argumentInput.focus()
       await page.keyboard.insertText('20')
@@ -844,9 +845,15 @@ extrude001 = extrude(sketch001, length = -12)
 
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
-      await editor.selectText(
-        'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
-      )
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      // Aim at the original sketch-plane edge: for this negative extrusion,
+      // the solid edge at Z = 0 borders capEnd, not capStart.
+      await scene.moveCameraTo({ x: 36, y: -48, z: 36 }, { x: 0, y: -6, z: 0 })
+      const [clickOnFirstEdge] = scene.makeMouseHelpers(0.5, 0.5, {
+        format: 'ratio',
+      })
+      await clickOnFirstEdge()
+      await expect(toolbar.selectionStatus).toContainText('1 edge')
     })
 
     await test.step(`Apply fillet to the preselected edge`, async () => {
@@ -888,12 +895,13 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(firstFilletDeclaration, {
         shouldNormalise: true,
       })
     })
 
-    // Test 1.1: Edit fillet (segment type)
+    // Test 1.1: Edit the existing viewport-selected fillet
     async function editFillet(
       featureTreeIndex: number,
       oldValue: string,
@@ -2761,10 +2769,7 @@ extrude001 = extrude(sketch001, length = 30)
     await test.step('Edit GDT Flatness', async () => {
       await test.step('Open edit mode from feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const gdtOperation = await toolbar.getFeatureTreeOperation(
-          'Flatness',
-          0
-        )
+        const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
         await gdtOperation.dblclick()
         // Should open the command bar in edit mode
         await cmdBar.expectState({
@@ -2964,7 +2969,7 @@ extrude001 = extrude(sketch001, length = 30)
 
     await test.step('Delete GDT Flatness', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const gdtOperation = await toolbar.getFeatureTreeOperation('Flatness', 0)
+      const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
       // Delete the GDT operation
       await gdtOperation.click({ button: 'left' })
       await page.keyboard.press('Delete')

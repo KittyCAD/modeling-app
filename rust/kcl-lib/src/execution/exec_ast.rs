@@ -43,7 +43,6 @@ use crate::execution::KclValueControlFlow;
 use crate::execution::KclVersion;
 use crate::execution::LegacyAngleRefactorMeta;
 use crate::execution::Metadata;
-use crate::execution::ModelingCmdMeta;
 use crate::execution::ModuleArtifactState;
 use crate::execution::PendingLegacyAngleRefactorMeta;
 use crate::execution::PreserveMem;
@@ -65,8 +64,6 @@ use crate::execution::UnsolvedSegmentKind;
 use crate::execution::annotations;
 use crate::execution::annotations::FnAttrs;
 use crate::execution::cad_op::op_from_kcl_value;
-use crate::execution::control_continue;
-use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::fn_call::unexpected_kw_arg_message;
@@ -106,18 +103,13 @@ use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
 use crate::parsing::ast::types::Annotation;
-use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::ArrayRangeExpression;
-use crate::parsing::ast::types::AscribedExpression;
 use crate::parsing::ast::types::BinaryExpression;
 use crate::parsing::ast::types::BinaryOperator;
 use crate::parsing::ast::types::BinaryPart;
-use crate::parsing::ast::types::BodyItem;
-use crate::parsing::ast::types::CodeBlock;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::FunctionExpression;
 use crate::parsing::ast::types::Identifier;
-use crate::parsing::ast::types::IfExpression;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportSelector;
 use crate::parsing::ast::types::ImportStatement;
@@ -125,8 +117,6 @@ use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::MemberExpression;
 use crate::parsing::ast::types::Name;
 use crate::parsing::ast::types::Node;
-use crate::parsing::ast::types::ObjectExpression;
-use crate::parsing::ast::types::PipeExpression;
 use crate::parsing::ast::types::Program;
 use crate::parsing::ast::types::ReturnStatement;
 use crate::parsing::ast::types::SketchBlock;
@@ -1160,181 +1150,13 @@ impl ExecutorContext {
         body_type: BodyType,
     ) -> Result<Option<KclValueControlFlow>, KclError>
     where
-        B: CodeBlock + crate::execution::machine::ToMachineBlock + Sync,
+        B: crate::execution::machine::ToMachineBlock + Sync,
     {
-        if self.is_machine_executor() {
-            return crate::execution::machine::run_block(self, block.to_machine_block(), exec_state, body_type).await;
-        }
-
-        let mut last_expr = None;
-        // Iterate over the body of the program.
-        for statement in block.body() {
-            match statement {
-                BodyItem::ImportStatement(import_stmt) => {
-                    if exec_state.sketch_mode() {
-                        continue;
-                    }
-                    self.exec_import_statement(import_stmt, body_type, exec_state).await?;
-                    last_expr = None;
-                }
-                BodyItem::ExpressionStatement(expression_statement) => {
-                    if exec_state.sketch_mode() && sketch_mode_should_skip(&expression_statement.expression) {
-                        continue;
-                    }
-
-                    let metadata = Metadata::from(expression_statement);
-                    let value = self
-                        .execute_expr(
-                            &expression_statement.expression,
-                            exec_state,
-                            &metadata,
-                            &[],
-                            StatementKind::Expression,
-                        )
-                        .await?;
-
-                    let is_return = value.is_some_return();
-                    last_expr = Some(value);
-
-                    if is_return {
-                        break;
-                    }
-                }
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    if exec_state.sketch_mode() && sketch_mode_should_skip(&variable_declaration.declaration.init) {
-                        continue;
-                    }
-                    if skip_if_not_yet_added(
-                        &variable_declaration.outer_attrs,
-                        || variable_declaration.declaration.id.name.clone(),
-                        matches!(variable_declaration.visibility, ItemVisibility::Export),
-                        variable_declaration.as_source_range(),
-                        exec_state,
-                    )? {
-                        continue;
-                    }
-
-                    let var_name = variable_declaration.declaration.id.name.to_string();
-                    let source_range = SourceRange::from(&variable_declaration.declaration.init);
-                    let metadata = Metadata { source_range };
-
-                    let annotations = &variable_declaration.outer_attrs;
-
-                    // During the evaluation of the variable's RHS, set context that this is all happening inside a variable
-                    // declaration, for the given name. This helps improve user-facing error messages.
-                    let lhs = variable_declaration.inner.name().to_owned();
-                    let prev_being_declared = exec_state.mod_local.being_declared.take();
-                    exec_state.mod_local.being_declared = Some(lhs);
-                    let rhs_result = self
-                        .execute_expr(
-                            &variable_declaration.declaration.init,
-                            exec_state,
-                            &metadata,
-                            annotations,
-                            StatementKind::Declaration { name: &var_name },
-                        )
-                        .await;
-                    // Declaration over, so unset this context.
-                    exec_state.mod_local.being_declared = prev_being_declared;
-                    let rhs = rhs_result?;
-
-                    if rhs.is_some_return() {
-                        last_expr = Some(rhs);
-                        break;
-                    }
-                    let rhs =
-                        self.bind_variable_declaration(variable_declaration, rhs.into_value(), body_type, exec_state)?;
-                    // Variable declaration can be the return value of a module.
-                    last_expr = matches!(body_type, BodyType::Root).then_some(rhs.continue_());
-                }
-                BodyItem::TypeDeclaration(ty) => {
-                    if exec_state.sketch_mode() {
-                        continue;
-                    }
-                    if skip_if_not_yet_added(
-                        &ty.outer_attrs,
-                        || format!("{}{}", memory::TYPE_PREFIX, ty.name.name),
-                        matches!(ty.visibility, ItemVisibility::Export),
-                        ty.as_source_range(),
-                        exec_state,
-                    )? {
-                        continue;
-                    }
-                    self.exec_type_declaration(ty, body_type, exec_state).await?;
-                    last_expr = None;
-                }
-                BodyItem::ReturnStatement(return_statement) => {
-                    if exec_state.sketch_mode() && sketch_mode_should_skip(&return_statement.argument) {
-                        continue;
-                    }
-
-                    let metadata = Metadata::from(return_statement);
-
-                    if matches!(body_type, BodyType::Root) {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "Cannot return from outside a function.".to_owned(),
-                            vec![metadata.source_range],
-                        )));
-                    }
-
-                    let value_cf = self
-                        .execute_expr(
-                            &return_statement.argument,
-                            exec_state,
-                            &metadata,
-                            &[],
-                            StatementKind::Expression,
-                        )
-                        .await?;
-                    if value_cf.is_some_return() {
-                        last_expr = Some(value_cf);
-                        break;
-                    }
-                    let value = value_cf.into_value();
-                    if exec_state.entry_point_version_is_v3_or_higher() {
-                        // KCL 3.0: early return. The value unwinds as control
-                        // flow to the nearest function-call boundary, which
-                        // absorbs it; see call_finish.
-                        last_expr = Some(value.return_());
-                        break;
-                    }
-                    Self::bind_return_value(return_statement, value, exec_state)?;
-                    last_expr = None;
-                }
-            }
-        }
-
-        // A Return can reach a root block only by escaping an expression
-        // evaluated at the top level (e.g. an if-arm); a `return` statement
-        // here is rejected above before it evaluates.
-        if matches!(body_type, BodyType::Root)
-            && let Some(cf) = &last_expr
-            && cf.is_return()
-        {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Cannot return from outside a function.".to_owned(),
-                cf.source_ranges(),
-            )));
-        }
-
-        if matches!(body_type, BodyType::Root) {
-            // Flush the batch queue.
-            exec_state
-                .flush_batch(
-                    ModelingCmdMeta::new(exec_state, self, block.to_source_range()),
-                    // True here tells the engine to flush all the end commands as well like fillets
-                    // and chamfers where the engine would otherwise eat the ID of the segments.
-                    true,
-                )
-                .await?;
-        }
-
-        Ok(last_expr)
+        crate::execution::machine::run_block(self, block.to_machine_block(), exec_state, body_type).await
     }
 
     /// Execute an import statement. Flat: this does not evaluate KCL
-    /// sub-expressions (module execution happens in its own fresh root), so
-    /// both executors share it.
+    /// sub-expressions; module execution happens in its own fresh root.
     pub(super) async fn exec_import_statement(
         &self,
         import_stmt: &Node<ImportStatement>,
@@ -1570,7 +1392,7 @@ impl ExecutorContext {
         Ok(())
     }
 
-    /// Execute a type declaration. Flat; shared by both executors.
+    /// Execute a type declaration. Flat.
     pub(super) async fn exec_type_declaration(
         &self,
         ty: &Node<TypeDeclaration>,
@@ -1745,9 +1567,8 @@ impl ExecutorContext {
     /// Bind the evaluated right-hand side of a variable declaration: segment
     /// tag attachment, name binding, sketch-block segment tags, feature-tree
     /// operation, and export tracking. The evaluation-free second half of
-    /// variable-declaration execution, shared by both executors. Returns the
-    /// bound value (which becomes the module result when this is the last
-    /// Root statement).
+    /// variable-declaration execution. Returns the bound value (which becomes
+    /// the module result when this is the last Root statement).
     pub(super) fn bind_variable_declaration(
         &self,
         variable_declaration: &Node<VariableDeclaration>,
@@ -1847,9 +1668,9 @@ impl ExecutorContext {
     /// (`__return`). This is the pre-KCL-3.0 `return` semantics: it
     /// deliberately does NOT stop the enclosing block -- statements after a
     /// `return` still execute, exactly like the historical behavior (see the
-    /// ReturnStatement arm of exec_block); a second executed `return` is the
+    /// return handling in the machine); a second executed `return` is the
     /// "Multiple returns" error. Under KCL 3.0, this is never called; `return`
-    /// unwinds as `Return` control flow instead. Shared by both executors.
+    /// unwinds as `Return` control flow instead.
     pub(super) fn bind_return_value(
         return_statement: &Node<ReturnStatement>,
         value: KclValue,
@@ -2077,7 +1898,7 @@ impl ExecutorContext {
 
     /// Resolve a name to its value, running the module body first when the name
     /// refers to a module. Flat (module execution happens in its own fresh
-    /// root); shared by both executors.
+    /// root).
     pub(super) async fn resolve_name_for_eval(
         &self,
         name: &Node<Name>,
@@ -2110,94 +1931,20 @@ impl ExecutorContext {
         }
     }
 
-    #[async_recursion]
-    pub(crate) async fn execute_expr<'a: 'async_recursion>(
-        &self,
-        init: &Expr,
-        exec_state: &mut ExecState,
-        metadata: &Metadata,
-        annotations: &[Node<Annotation>],
-        statement_kind: StatementKind<'a>,
-    ) -> Result<KclValueControlFlow, KclError> {
-        let item = match init {
-            Expr::None(none) => KclValue::from(none).continue_(),
-            Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state).continue_(),
-            Expr::TagDeclarator(tag) => tag.execute(exec_state).await?.continue_(),
-            Expr::Name(name) => self
-                .resolve_name_for_eval(name, metadata, exec_state)
-                .await?
-                .continue_(),
-            Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
-            Expr::FunctionExpression(function_expression) => self
-                .create_function_closure(function_expression, annotations, metadata, statement_kind, exec_state)
-                .await?
-                .continue_(),
-            Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
-            Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
-            Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
-                StatementKind::Declaration { name } => {
-                    let message = format!(
-                        "you cannot declare variable {name} as %, because % can only be used in function calls"
-                    );
-
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        message,
-                        vec![pipe_substitution.into()],
-                    )));
-                }
-                StatementKind::Expression => match exec_state.mod_local.pipe_value.clone() {
-                    Some(x) => x.continue_(),
-                    None => {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "cannot use % outside a pipe expression".to_owned(),
-                            vec![pipe_substitution.into()],
-                        )));
-                    }
-                },
-            },
-            Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, self).await?,
-            Expr::ArrayRangeExpression(range_expression) => range_expression.execute(exec_state, self).await?,
-            Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
-            Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state, self).await?,
-            Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
-            Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
-            Expr::LabelledExpression(expr) => {
-                let value_cf = self
-                    .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
-                    .await?;
-                let value = control_continue!(value_cf);
-                exec_state
-                    .mut_stack()
-                    .add(expr.label.name.clone(), value.clone(), init.into())?;
-                // TODO this lets us use the label as a variable name, but not as a tag in most cases
-                value.continue_()
-            }
-            Expr::AscribedExpression(expr) => expr.get_result(exec_state, self).await?,
-            Expr::SketchBlock(expr) => expr.get_result(exec_state, self).await?,
-            Expr::SketchVar(expr) => expr.get_result(exec_state, self).await?.continue_(),
-        };
-        Ok(item)
-    }
-
-    /// Evaluate a single expression on whichever executor is active, as a
-    /// fresh root. For bounded internal evaluations (e.g. GD&T's constant
-    /// plane lookup).
+    /// Evaluate a single expression on the CEK machine as a fresh root. For
+    /// bounded internal evaluations (e.g. GD&T's constant plane lookup).
     pub(crate) async fn eval_expr_fresh_root(
         &self,
         expr: &Expr,
         exec_state: &mut ExecState,
         metadata: &Metadata,
     ) -> Result<KclValueControlFlow, KclError> {
-        if self.is_machine_executor() {
-            return crate::execution::machine::run_expr(self, expr, exec_state, metadata).await;
-        }
-        self.execute_expr(expr, exec_state, metadata, &[], StatementKind::Expression)
-            .await
+        crate::execution::machine::run_expr(self, expr, exec_state, metadata).await
     }
 
     /// Create the closure value for a function expression, including the
     /// recursive-closure placeholder fixup and binding a named `fn name() {}`
-    /// in the current scope. Flat; shared by both executors.
+    /// in the current scope. Flat.
     pub(super) async fn create_function_closure(
         &self,
         function_expression: &crate::parsing::ast::types::BoxNode<FunctionExpression>,
@@ -2305,8 +2052,8 @@ impl ExecutorContext {
 }
 
 /// Skip a declaration whose `added_in` the program predates, recording it under
-/// `key` so a failed lookup can explain why. Shared by both executors. `key` is
-/// only computed on a skip, so declarations without attributes cost nothing.
+/// `key` so a failed lookup can explain why. `key` is only computed on a skip,
+/// so declarations without attributes cost nothing.
 pub(super) fn skip_if_not_yet_added(
     annotations: &[Node<Annotation>],
     key: impl FnOnce() -> String,
@@ -2568,203 +2315,7 @@ fn var_in_own_ref_err(e: KclError, being_declared: &Option<String>) -> KclError 
     KclError::UndefinedValue { details, name }
 }
 
-impl Node<AscribedExpression> {
-    #[async_recursion]
-    pub(super) async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        let metadata = Metadata {
-            source_range: SourceRange::from(self),
-        };
-        let result = ctx
-            .execute_expr(&self.expr, exec_state, &metadata, &[], StatementKind::Expression)
-            .await?;
-        let result = control_continue!(result);
-        apply_ascription(&result, &self.ty, exec_state, ctx, self.into())
-            .await
-            .map(KclValue::continue_)
-    }
-}
-
 impl Node<SketchBlock> {
-    pub(super) async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        if exec_state.mod_local.sketch_block.is_some() {
-            // Disallow nested sketch blocks for now.
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Cannot execute a sketch block from within another sketch block".to_owned(),
-                vec![SourceRange::from(self)],
-            )));
-        }
-
-        let range = SourceRange::from(self);
-
-        // Evaluate arguments.
-        let (sketch_id, sketch_surface) = match self.exec_arguments(exec_state, ctx).await {
-            Ok(x) => x,
-            Err(cf_error) => match cf_error {
-                // Control flow needs to return early.
-                EarlyReturn::Value(cf_value) => return Ok(cf_value),
-                EarlyReturn::Error(err) => return Err(err),
-            },
-        };
-        let sketch_block_artifact_id = self.scene_setup(sketch_id, &sketch_surface, exec_state)?;
-
-        let (return_result, variables, sketch_block_state) = {
-            // Don't early return until the stack frame is popped!
-            self.prep_mem(exec_state.mut_stack().snapshot()?, exec_state)?;
-
-            // Track that we're executing a sketch block.
-            let initial_sketch_block_state = {
-                SketchBlockState {
-                    sketch_id: Some(sketch_id),
-                    ..Default::default()
-                }
-            };
-
-            let original_value = exec_state.mod_local.sketch_block.replace(initial_sketch_block_state);
-
-            // When executing the body of the sketch block, we no longer want to
-            // skip any code.
-            let original_sketch_mode = std::mem::replace(&mut exec_state.mod_local.sketch_mode, false);
-
-            // Load `sketch2::*` into the sketch block's parent scope, so calls
-            // like `line(...)` resolve to sketch2 functions. Then execute the
-            // user body in a child scope, so these aliases aren't included in
-            // the returned sketch object.
-            let (result, block_variables) = match self.load_sketch2_into_current_scope(exec_state, ctx, range).await {
-                Ok(()) => {
-                    let parent = exec_state.mut_stack().snapshot()?;
-                    exec_state.mut_stack().push_new_env_for_call(parent)?;
-                    let result = ctx.exec_block(&self.body, exec_state, BodyType::Block).await;
-                    let (result, block_variables) = match exec_state.stack().find_all_in_current_env() {
-                        Ok(block_variables) => (result, block_variables.into_iter().collect::<IndexMap<_, _>>()),
-                        Err(err) => (Err(err), IndexMap::new()),
-                    };
-                    let result = match exec_state.mut_stack().pop_env() {
-                        Ok(_) => result,
-                        Err(err) => Err(err),
-                    };
-                    (result, block_variables)
-                }
-                Err(err) => (Err(err), IndexMap::new()),
-            };
-
-            exec_state.mod_local.sketch_mode = original_sketch_mode;
-
-            let sketch_block_state = std::mem::replace(&mut exec_state.mod_local.sketch_block, original_value);
-
-            // Pop the scope used for sketch2 aliases.
-            let result = match exec_state.mut_stack().pop_env() {
-                Ok(_) => result,
-                Err(err) => Err(err),
-            };
-
-            (result, block_variables, sketch_block_state)
-        };
-
-        // Propagate errors.
-        let return_control_flow = return_result?;
-        // If the sketch block body exited early (e.g. via `exit()`), propagate
-        // the exit so that the rest of the program terminates instead of only
-        // ending this sketch block. Without this, execution would fall through,
-        // solve the partial sketch, and continue on to later statements.
-        if let Some(control_flow) = return_control_flow
-            && control_flow.is_some_return()
-        {
-            // Balance the GroupBegin operation pushed above so the feature tree
-            // stays well-formed.
-            exec_state.push_op(Operation::GroupEnd);
-            return Ok(control_flow);
-        }
-        let Some(sketch_block_state) = sketch_block_state else {
-            debug_assert!(false, "Sketch block state should still be set to Some from just above");
-            return Err(internal_err(
-                "Sketch block state should still be set to Some from just above",
-                self,
-            ));
-        };
-        let return_value = self
-            .finalize_sketch_block(
-                sketch_id,
-                &sketch_surface,
-                sketch_block_artifact_id,
-                variables,
-                sketch_block_state,
-                exec_state,
-                ctx,
-            )
-            .await?;
-        Ok(if self.is_being_edited {
-            // When the sketch block is being edited, we exit the program
-            // immediately.
-            return_value.exit()
-        } else {
-            return_value.continue_()
-        })
-    }
-
-    /// Executes the arguments of the sketch block and returns the sketch ID and
-    /// surface. The surface is the `on` argument, which is basically a Plane or
-    /// Face.
-    ///
-    /// In sketch mode, the execution cache is used to look up the sketch
-    /// surface.
-    ///
-    /// The sketch ID is generated in either case so that it's stable. But only
-    /// a placeholder scene object is created for it.
-    async fn exec_arguments(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
-        if !exec_state.sketch_mode() {
-            // Evaluate arguments.
-            //
-            // Sketch mode only executes the sketch block body. Arguments must
-            // be evaluated in engine execution so that things like Planes and
-            // Faces can be created in the engine.
-            let mut labeled = IndexMap::new();
-            for labeled_arg in &self.arguments {
-                let source_range = SourceRange::from(labeled_arg.arg.clone());
-                let metadata = Metadata { source_range };
-                let value_cf = ctx
-                    .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
-                    .await?;
-                let value = early_return!(value_cf);
-                let arg = Arg::new(value, source_range);
-                match &labeled_arg.label {
-                    Some(label) => {
-                        labeled.insert(label.name.clone(), arg);
-                    }
-                    None => {
-                        let name = labeled_arg.arg.ident_name();
-                        if let Some(name) = name {
-                            labeled.insert(name.to_owned(), arg);
-                        } else {
-                            return Err(KclError::new_semantic(KclErrorDetails::new(
-                                "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
-                                vec![SourceRange::from(&labeled_arg.arg)],
-                            ))
-                            .into());
-                        }
-                    }
-                }
-            }
-            self.finish_arguments_after_eval(labeled, exec_state, ctx).await
-        } else {
-            self.arguments_from_cache(exec_state)
-        }
-    }
-
-    /// The evaluation-free tail of sketch-block argument handling: validate
-    /// the arguments, resolve the `on` surface, ensure it exists in the
-    /// engine, and mint the stable sketch id. Shared by both executors.
     pub(super) async fn finish_arguments_after_eval(
         &self,
         labeled: IndexMap<String, Arg>,
@@ -2826,7 +2377,7 @@ impl Node<SketchBlock> {
     }
 
     /// Sketch-mode path: arguments cannot be re-evaluated, so look the `on`
-    /// surface up from the execution cache. Flat; shared by both executors.
+    /// surface up from the execution cache. Flat.
     pub(super) fn arguments_from_cache(
         &self,
         exec_state: &mut ExecState,
@@ -2872,7 +2423,7 @@ impl Node<SketchBlock> {
     }
 
     /// Create the sketch scene object and sketch-block artifact, and open
-    /// the feature-tree group. Flat; shared by both executors.
+    /// the feature-tree group. Flat.
     pub(super) fn scene_setup(
         &self,
         sketch_id: ObjectId,
@@ -3457,37 +3008,6 @@ pub(super) async fn apply_ascription(
     })
 }
 
-impl BinaryPart {
-    #[async_recursion]
-    pub(super) async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        match self {
-            BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state).continue_()),
-            BinaryPart::Name(name) => {
-                let metadata = Metadata {
-                    source_range: SourceRange::from(&**name),
-                };
-                ctx.resolve_name_for_eval(name, &metadata, exec_state)
-                    .await
-                    .map(KclValue::continue_)
-            }
-            BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
-            BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
-            BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state, ctx).await,
-            BinaryPart::ArrayExpression(e) => e.execute(exec_state, ctx).await,
-            BinaryPart::ArrayRangeExpression(e) => e.execute(exec_state, ctx).await,
-            BinaryPart::ObjectExpression(e) => e.execute(exec_state, ctx).await,
-            BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
-            BinaryPart::AscribedExpression(e) => e.get_result(exec_state, ctx).await,
-            BinaryPart::SketchVar(e) => e.get_result(exec_state, ctx).await.map(KclValue::continue_),
-        }
-    }
-}
-
 impl Node<Name> {
     pub(super) async fn get_result(
         &self,
@@ -3658,78 +3178,8 @@ fn mock_array_may_have_engine_dependent_cardinality(ty: &RuntimeType) -> bool {
 }
 
 impl Node<MemberExpression> {
-    async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        if exec_state.entry_point_version_is_v3_or_higher() {
-            // KCL 3.0: evaluate in source order, the object before the
-            // property.
-            let object = control_continue!(self.eval_object(exec_state, ctx).await?);
-            let property = match self.eval_property(exec_state, ctx).await {
-                Ok(property) => property,
-                // The property expression exited, e.g. by calling exit().
-                // Propagate the exit so that it terminates the enclosing module.
-                Err(EarlyReturn::Value(cf)) => return Ok(cf),
-                Err(EarlyReturn::Error(err)) => return Err(err),
-            };
-            return self.apply_member(object, property, exec_state, ctx).await;
-        }
-
-        // Pre-KCL-3.0: the property is evaluated before the object. This is
-        // backwards with respect to the source text, but it is preserved
-        // because ids and engine commands are order-dependent.
-        let property = match self.eval_property(exec_state, ctx).await {
-            Ok(property) => property,
-            // The property expression exited, e.g. by calling exit().
-            // Propagate the exit so that it terminates the enclosing module.
-            Err(EarlyReturn::Value(cf)) => return Ok(cf),
-            Err(EarlyReturn::Error(err)) => return Err(err),
-        };
-        let object = control_continue!(self.eval_object(exec_state, ctx).await?);
-        self.apply_member(object, property, exec_state, ctx).await
-    }
-
-    /// Evaluate the object half of the member expression. It gets its own
-    /// source range so that diagnostics raised while evaluating it (module
-    /// errors, missing-return warnings) point at the object instead of the
-    /// whole member expression.
-    async fn eval_object(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        let object_meta = Metadata {
-            source_range: SourceRange::from(&self.object),
-        };
-        ctx.execute_expr(&self.object, exec_state, &object_meta, &[], StatementKind::Expression)
-            .await
-    }
-
-    /// Evaluate the property half of the member expression: a computed index
-    /// is executed, while `obj.name` just reads the identifier. Likewise
-    /// gets its own source range.
-    async fn eval_property(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<Property, EarlyReturn> {
-        let property_meta = Metadata {
-            source_range: SourceRange::from(&self.property),
-        };
-        Property::try_from(
-            self.computed,
-            self.property.clone(),
-            exec_state,
-            self.into(),
-            ctx,
-            &property_meta,
-            &[],
-            StatementKind::Expression,
-        )
-        .await
-    }
-
     /// Apply property access or indexing to an already-evaluated object: the
-    /// evaluation-free second half of member-expression execution, shared by
-    /// both executors.
+    /// evaluation-free second half of member-expression execution.
     pub(super) async fn apply_member(
         &self,
         object: KclValue,
@@ -3758,7 +3208,7 @@ impl Node<MemberExpression> {
                                     ],
                                     ty: RuntimeType::any(),
                                 }
-                                .continue_())
+                                .normal())
                             }
                             _ => Err(KclError::new_undefined_value(
                                 KclErrorDetails::new(
@@ -3778,7 +3228,7 @@ impl Node<MemberExpression> {
                                     position[0].ty,
                                     segment.meta.clone(),
                                 )
-                                .continue_())
+                                .normal())
                             }
                             _ => Err(KclError::new_undefined_value(
                                 KclErrorDetails::new(
@@ -3824,7 +3274,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::Arc {
                             start,
                             ctor,
@@ -3850,7 +3300,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::Circle {
                             start,
                             ctor,
@@ -3876,7 +3326,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -3923,7 +3373,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::Arc {
                             start,
                             ctor,
@@ -3954,7 +3404,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::Circle {
                             start,
                             ctor,
@@ -3985,7 +3435,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -4029,7 +3479,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::Arc {
                             end,
                             ctor,
@@ -4055,7 +3505,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::Circle { .. } => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -4109,7 +3559,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::Arc {
                             end,
                             ctor,
@@ -4140,7 +3590,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::Circle { .. } => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -4184,7 +3634,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         UnsolvedSegmentKind::Circle {
                             center,
                             ctor,
@@ -4210,7 +3660,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -4250,7 +3700,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         SegmentKind::Circle {
                             center,
                             ctor,
@@ -4281,7 +3731,7 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -4326,7 +3776,7 @@ impl Node<MemberExpression> {
                                 .collect(),
                             ty: RuntimeType::segment(),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -4375,7 +3825,7 @@ impl Node<MemberExpression> {
                                 .collect(),
                             ty: RuntimeType::segment(),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -4427,7 +3877,7 @@ impl Node<MemberExpression> {
                                 .collect(),
                             ty: RuntimeType::segment(),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -4483,7 +3933,7 @@ impl Node<MemberExpression> {
                                 .collect(),
                             ty: RuntimeType::segment(),
                         }
-                        .continue_()),
+                        .normal()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -4504,19 +3954,19 @@ impl Node<MemberExpression> {
             (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
                 "zAxis" => {
                     let (p, u) = plane.info.z_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).normal())
                 }
                 "yAxis" => {
                     let (p, u) = plane.info.y_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).normal())
                 }
                 "xAxis" => {
                     let (p, u) = plane.info.x_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).normal())
                 }
                 "origin" => {
                     let (p, u) = plane.info.origin.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).normal())
                 }
                 other => Err(KclError::new_undefined_value(
                     KclErrorDetails::new(
@@ -4551,7 +4001,7 @@ impl Node<MemberExpression> {
                             annotations::WARN_DEPRECATED,
                         );
                     }
-                    Ok(value.to_owned().continue_())
+                    Ok(value.to_owned().normal())
                 } else {
                     Err(KclError::new_undefined_value(
                         KclErrorDetails::new(
@@ -4572,17 +4022,17 @@ impl Node<MemberExpression> {
                 if i == 0
                     && let Some(value) = map.get("x")
                 {
-                    return Ok(value.to_owned().continue_());
+                    return Ok(value.to_owned().normal());
                 }
                 if i == 1
                     && let Some(value) = map.get("y")
                 {
-                    return Ok(value.to_owned().continue_());
+                    return Ok(value.to_owned().normal());
                 }
                 if i == 2
                     && let Some(value) = map.get("z")
                 {
-                    return Ok(value.to_owned().continue_());
+                    return Ok(value.to_owned().normal());
                 }
                 let t = p.type_name();
                 let article = article_for(t);
@@ -4603,7 +4053,7 @@ impl Node<MemberExpression> {
                 );
                 if let Some(value) = value_of_arr {
                     // Indexing into the array was successful.
-                    Ok(value.to_owned().continue_())
+                    Ok(value.to_owned().normal())
                 } else if ctx.no_engine_commands().await
                     && !exec_state.is_sketch_mode_execution()
                     && mock_array_may_have_engine_dependent_cardinality(&ty)
@@ -4618,14 +4068,14 @@ impl Node<MemberExpression> {
                     // forbidden from contacting the engine, meaning array
                     // lengths are always accurate, and the OOB error is real.
                     let value = arr.first();
-                    value.map(|value| value.to_owned().continue_()).ok_or(oob_error)
+                    value.map(|value| value.to_owned().normal()).ok_or(oob_error)
                 } else {
                     Err(oob_error)
                 }
             }
             // Singletons and single-element arrays should be interchangeable, but only indexing by 0 should work.
             // This is kind of a silly property, but it's possible it occurs in generic code or something.
-            (obj, Property::UInt(0), _) => Ok(obj.continue_()),
+            (obj, Property::UInt(0), _) => Ok(obj.normal()),
             (KclValue::HomArray { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
@@ -4644,7 +4094,7 @@ impl Node<MemberExpression> {
                 Ok(KclValue::Sketch {
                     value: Box::new(sketch.clone()),
                 }
-                .continue_())
+                .normal())
             }
             (KclValue::Solid { value: solid }, Property::String(prop), false) if prop == "faces" => {
                 Ok(KclValue::Object {
@@ -4659,7 +4109,7 @@ impl Node<MemberExpression> {
                     constrainable: false,
                     object_kind: KclObjectKind::Default,
                 }
-                .continue_())
+                .normal())
             }
             (geometry @ KclValue::Solid { .. }, Property::String(prop), false) if prop == "tags" => {
                 // This is a common mistake.
@@ -4690,7 +4140,7 @@ impl Node<MemberExpression> {
                         .collect(),
                 },
             }
-            .continue_()),
+            .normal()),
             (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
                 Err(KclError::new_semantic(KclErrorDetails::new(
                     format!("Property `{property}` not found on {}", geometry.human_friendly_type()),
@@ -4716,81 +4166,6 @@ impl Node<MemberExpression> {
 }
 
 impl Node<BinaryExpression> {
-    pub(super) async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        enum State {
-            EvaluateLeft(Node<BinaryExpression>),
-            FromLeft {
-                node: Node<BinaryExpression>,
-            },
-            EvaluateRight {
-                node: Node<BinaryExpression>,
-                left: KclValue,
-            },
-            FromRight {
-                node: Node<BinaryExpression>,
-                left: KclValue,
-            },
-        }
-
-        let mut stack = vec![State::EvaluateLeft(self.clone())];
-        let mut last_result: Option<KclValue> = None;
-
-        while let Some(state) = stack.pop() {
-            match state {
-                State::EvaluateLeft(node) => {
-                    let left_part = node.left.clone();
-                    match left_part {
-                        BinaryPart::BinaryExpression(child) => {
-                            stack.push(State::FromLeft { node });
-                            stack.push(State::EvaluateLeft(child.into_node()));
-                        }
-                        part => {
-                            let left_value = part.get_result(exec_state, ctx).await?;
-                            let left_value = control_continue!(left_value);
-                            stack.push(State::EvaluateRight { node, left: left_value });
-                        }
-                    }
-                }
-                State::FromLeft { node } => {
-                    let Some(left_value) = last_result.take() else {
-                        return Err(Self::missing_result_error(&node));
-                    };
-                    stack.push(State::EvaluateRight { node, left: left_value });
-                }
-                State::EvaluateRight { node, left } => {
-                    let right_part = node.right.clone();
-                    match right_part {
-                        BinaryPart::BinaryExpression(child) => {
-                            stack.push(State::FromRight { node, left });
-                            stack.push(State::EvaluateLeft(child.into_node()));
-                        }
-                        part => {
-                            let right_value = part.get_result(exec_state, ctx).await?;
-                            let right_value = control_continue!(right_value);
-                            let result = node.apply_operator(exec_state, ctx, left, right_value).await?;
-                            last_result = Some(result);
-                        }
-                    }
-                }
-                State::FromRight { node, left } => {
-                    let Some(right_value) = last_result.take() else {
-                        return Err(Self::missing_result_error(&node));
-                    };
-                    let result = node.apply_operator(exec_state, ctx, left, right_value).await?;
-                    last_result = Some(result);
-                }
-            }
-        }
-
-        last_result
-            .map(KclValue::continue_)
-            .ok_or_else(|| Self::missing_result_error(self))
-    }
-
     pub(super) async fn apply_operator(
         &self,
         exec_state: &mut ExecState,
@@ -6622,10 +5997,6 @@ impl Node<BinaryExpression> {
         Ok(value)
     }
 
-    fn missing_result_error(node: &Node<BinaryExpression>) -> KclError {
-        internal_err("missing result while evaluating binary expression", node)
-    }
-
     fn warn_on_unknown(&self, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
         if ty == &NumericType::Unknown {
             let sr = self.as_source_range();
@@ -6643,18 +6014,6 @@ impl Node<BinaryExpression> {
 }
 
 impl Node<UnaryExpression> {
-    pub(super) async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        let value = self.argument.get_result(exec_state, ctx).await?;
-        let value = control_continue!(value);
-        self.apply_unary(value, exec_state).map(KclValue::continue_)
-    }
-
-    /// Apply the unary operator to an already-evaluated operand. Shared by
-    /// both executors.
     pub(super) fn apply_unary(&self, value: KclValue, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
         match self.operator {
             UnaryOperator::Not => {
@@ -6797,71 +6156,6 @@ impl Node<UnaryExpression> {
     }
 }
 
-pub(crate) async fn execute_pipe_body(
-    exec_state: &mut ExecState,
-    body: &[Expr],
-    source_range: SourceRange,
-    ctx: &ExecutorContext,
-) -> Result<KclValueControlFlow, KclError> {
-    let Some((first, body)) = body.split_first() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Pipe expressions cannot be empty".to_owned(),
-            vec![source_range],
-        )));
-    };
-    // Evaluate the first element in the pipeline.
-    // They use the pipe_value from some AST node above this, so that if pipe expression is nested in a larger pipe expression,
-    // they use the % from the parent. After all, this pipe expression hasn't been executed yet, so it doesn't have any % value
-    // of its own.
-    let meta = Metadata {
-        source_range: SourceRange::from(first),
-    };
-    let output = ctx
-        .execute_expr(first, exec_state, &meta, &[], StatementKind::Expression)
-        .await?;
-    let output = control_continue!(output);
-
-    // Now that we've evaluated the first child expression in the pipeline, following child expressions
-    // should use the previous child expression for %.
-    // This means there's no more need for the previous pipe_value from the parent AST node above this one.
-    let previous_pipe_value = exec_state.mod_local.pipe_value.replace(output);
-    // Evaluate remaining elements.
-    let result = inner_execute_pipe_body(exec_state, body, ctx).await;
-    // Restore the previous pipe value.
-    exec_state.mod_local.pipe_value = previous_pipe_value;
-
-    result
-}
-
-/// Execute the tail of a pipe expression.  exec_state.pipe_value must be set by
-/// the caller.
-#[async_recursion]
-async fn inner_execute_pipe_body(
-    exec_state: &mut ExecState,
-    body: &[Expr],
-    ctx: &ExecutorContext,
-) -> Result<KclValueControlFlow, KclError> {
-    for expression in body {
-        if let Expr::TagDeclarator(_) = expression {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("This cannot be in a PipeExpression: {expression:?}"),
-                vec![expression.into()],
-            )));
-        }
-        let metadata = Metadata {
-            source_range: SourceRange::from(expression),
-        };
-        let output = ctx
-            .execute_expr(expression, exec_state, &metadata, &[], StatementKind::Expression)
-            .await?;
-        let output = control_continue!(output);
-        exec_state.mod_local.pipe_value = Some(output);
-    }
-    // Safe to unwrap here, because pipe_value always has something pushed in when the `match first` executes.
-    let final_output = exec_state.mod_local.pipe_value.take().unwrap();
-    Ok(final_output.continue_())
-}
-
 impl Node<TagDeclarator> {
     pub async fn execute(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
         let memory_item = KclValue::TagIdentifier(Box::new(TagIdentifier {
@@ -6880,67 +6174,7 @@ impl Node<TagDeclarator> {
     }
 }
 
-impl Node<ArrayExpression> {
-    #[async_recursion]
-    pub(super) async fn execute(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        let mut results = Vec::with_capacity(self.elements.len());
-
-        for element in &self.elements {
-            let metadata = Metadata::from(element);
-            // TODO: Carry statement kind here so that we know if we're
-            // inside a variable declaration.
-            let value = ctx
-                .execute_expr(element, exec_state, &metadata, &[], StatementKind::Expression)
-                .await?;
-            let value = control_continue!(value);
-
-            results.push(value);
-        }
-
-        Ok(KclValue::HomArray {
-            value: results,
-            ty: RuntimeType::Primitive(PrimitiveType::Any),
-        }
-        .continue_())
-    }
-}
-
 impl Node<ArrayRangeExpression> {
-    #[async_recursion]
-    pub(super) async fn execute(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        let metadata = Metadata::from(&self.start_element);
-        let start_val = ctx
-            .execute_expr(
-                &self.start_element,
-                exec_state,
-                &metadata,
-                &[],
-                StatementKind::Expression,
-            )
-            .await?;
-        let start_val_for_build = control_continue!(start_val);
-        self.validate_range_start(&start_val_for_build)?;
-        let metadata = Metadata::from(&self.end_element);
-        let end_val = ctx
-            .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
-            .await?;
-        let end_val = control_continue!(end_val);
-        self.build_range(start_val_for_build, end_val, exec_state)
-            .map(KclValue::continue_)
-    }
-
-    /// Validate the evaluated start endpoint, preserving the original error
-    /// ordering: a bad start is reported before the end element is ever
-    /// evaluated. Shared by both executors; `build_range` re-checks it,
-    /// which is redundant but keeps `build_range` total on its own.
     pub(super) fn validate_range_start(&self, start_val: &KclValue) -> Result<(), KclError> {
         if start_val.as_ty_f64().is_none() {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -6955,7 +6189,7 @@ impl Node<ArrayRangeExpression> {
     }
 
     /// Build the range value from evaluated endpoints. The evaluation-free
-    /// second half of range execution, shared by both executors.
+    /// second half of range execution.
     pub(super) fn build_range(
         &self,
         start_val: KclValue,
@@ -7024,35 +6258,6 @@ impl Node<ArrayRangeExpression> {
     }
 }
 
-impl Node<ObjectExpression> {
-    #[async_recursion]
-    pub(super) async fn execute(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        let mut object = HashMap::with_capacity(self.properties.len());
-        for property in &self.properties {
-            let metadata = Metadata::from(&property.value);
-            let result = ctx
-                .execute_expr(&property.value, exec_state, &metadata, &[], StatementKind::Expression)
-                .await?;
-            let result = control_continue!(result);
-            object.insert(property.key.name.clone(), result);
-        }
-
-        Ok(KclValue::Object {
-            value: object,
-            meta: vec![Metadata {
-                source_range: self.into(),
-            }],
-            constrainable: false,
-            object_kind: KclObjectKind::Default,
-        }
-        .continue_())
-    }
-}
-
 fn article_for<S: AsRef<str>>(s: S) -> &'static str {
     // '[' is included since it's an array.
     if s.as_ref().starts_with(['a', 'e', 'i', 'o', 'u', '[']) {
@@ -7072,96 +6277,19 @@ fn number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<TyF64, KclEr
     })
 }
 
-impl Node<IfExpression> {
-    #[async_recursion]
-    pub(super) async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        // Check the `if` branch. Conditions are evaluated in the enclosing
-        // scope; only arm bodies get their own scope (under KCL 3.0).
-        let cond_value = ctx
-            .execute_expr(
-                &self.cond,
-                exec_state,
-                &Metadata::from(self),
-                &[],
-                StatementKind::Expression,
-            )
-            .await?;
-        let cond_value = control_continue!(cond_value);
-        if cond_value.get_bool()? {
-            return exec_if_arm(ctx, &self.then_val, exec_state).await;
-        }
-
-        // Check any `else if` branches.
-        for else_if in &self.else_ifs {
-            let cond_value = ctx
-                .execute_expr(
-                    &else_if.cond,
-                    exec_state,
-                    &Metadata::from(self),
-                    &[],
-                    StatementKind::Expression,
-                )
-                .await?;
-            let cond_value = control_continue!(cond_value);
-            if cond_value.get_bool()? {
-                return exec_if_arm(ctx, &else_if.then_val, exec_state).await;
-            }
-        }
-
-        // Run the final `else` branch.
-        exec_if_arm(ctx, &self.final_else, exec_state).await
-    }
-}
-
 /// Begin an if-arm scope. Under a KCL 3.0 entry point, each
 /// if/else-if/else arm body gets its own scope: bindings made inside the arm
 /// are visible from their declaration to the arm's closing brace, never
 /// outside it, and may shadow bindings from enclosing scopes. Under older
 /// entry points the arm shares the enclosing environment (bindings leak out
 /// and shadowing is a redefinition error). Returns whether a scope
-/// environment was pushed; the caller must pop it on every path. Shared by
-/// both executors.
+/// environment was pushed; the caller must pop it on every path.
 pub(super) fn if_arm_scope_begin(exec_state: &mut ExecState) -> Result<bool, KclError> {
     if !exec_state.entry_point_version_is_v3_or_higher() {
         return Ok(false);
     }
     exec_state.mut_stack().push_new_env_for_block()?;
     Ok(true)
-}
-
-/// Execute one if/else-if/else arm body in its own scope (under a
-/// KCL 3.0 entry point). Values escaping the arm -- including closures
-/// declared in it -- stay valid after the pop because environments that may
-/// still be referenced are preserved, exactly as for function returns.
-async fn exec_if_arm(
-    ctx: &ExecutorContext,
-    block: &Node<Program>,
-    exec_state: &mut ExecState,
-) -> Result<KclValueControlFlow, KclError> {
-    let scoped = if_arm_scope_begin(exec_state)?;
-    let result = ctx.exec_block(block, exec_state, BodyType::Block).await;
-    if scoped {
-        // Pop on success (including Return/Exit control flow escaping the
-        // arm) and error alike. A pop failure wins over the block's error,
-        // matching call_abort_on_arg_binding_failure.
-        exec_state.mut_stack().pop_env()?;
-    }
-    // Block must end in an expression, so this is always Some.
-    // Enforced by the parser.
-    // See https://github.com/KittyCAD/modeling-app/issues/4015
-    let Some(cf) = result? else {
-        let message = "if-expression arm produced no value";
-        debug_assert!(false, "{message}");
-        return Err(KclError::new_internal(KclErrorDetails::new(
-            message.to_owned(),
-            vec![block.to_source_range()],
-        )));
-    };
-    Ok(cf)
 }
 
 #[derive(Debug)]
@@ -7171,32 +6299,8 @@ pub(super) enum Property {
 }
 
 impl Property {
-    #[allow(clippy::too_many_arguments)]
-    async fn try_from<'a>(
-        computed: bool,
-        value: Expr,
-        exec_state: &mut ExecState,
-        sr: SourceRange,
-        ctx: &ExecutorContext,
-        metadata: &Metadata,
-        annotations: &[Node<Annotation>],
-        statement_kind: StatementKind<'a>,
-    ) -> Result<Self, EarlyReturn> {
-        if !computed {
-            return Ok(Self::from_static_name(&value, sr)?);
-        }
-
-        let prop_value = ctx
-            .execute_expr(&value, exec_state, metadata, annotations, statement_kind)
-            .await?;
-        // If the property expression exited, e.g. by calling exit(), propagate
-        // the exit so that it terminates the enclosing module.
-        let prop_value = early_return!(prop_value);
-        Ok(Self::from_value(prop_value, sr)?)
-    }
-
     /// Convert a non-computed property (the identifier in `obj.property`)
-    /// into a Property. Nothing is evaluated. Shared by both executors.
+    /// into a Property. Nothing is evaluated.
     pub(super) fn from_static_name(property: &Expr, sr: SourceRange) -> Result<Self, KclError> {
         let Expr::Name(identifier) = property else {
             // Should actually be impossible because the parser would reject it.
@@ -7210,7 +6314,7 @@ impl Property {
     }
 
     /// Convert an already-evaluated computed-property value (the expression
-    /// inside array brackets) into a Property. Shared by both executors.
+    /// inside array brackets) into a Property.
     pub(super) fn from_value(prop_value: KclValue, sr: SourceRange) -> Result<Self, KclError> {
         let property_sr = vec![sr];
         match prop_value {
@@ -7254,17 +6358,6 @@ impl Property {
     }
 }
 
-impl Node<PipeExpression> {
-    #[async_recursion]
-    pub(super) async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValueControlFlow, KclError> {
-        execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
-    }
-}
-
 #[cfg(test)]
 mod test {
     use std::sync::Arc;
@@ -7278,7 +6371,6 @@ mod test {
     use crate::errors::Severity;
     use crate::exec::UnitType;
     use crate::execution::ContextType;
-    use crate::execution::machine::ExecutorKind;
     use crate::execution::parse_execute;
 
     fn assert_angle_degrees(actual: ezpz::datatypes::Angle, expected: f64) {
@@ -7882,9 +6974,9 @@ d = b + c
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 
