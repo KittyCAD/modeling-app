@@ -1465,7 +1465,6 @@ const OperationItem = ({
       Tooltip={
         isModuleOwned ? undefined : (
           <Tooltip
-            delay={500}
             position="bottom-left"
             wrapperClassName="left-0 right-0"
             contentClassName="text-sm max-w-full"
