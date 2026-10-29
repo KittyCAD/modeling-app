@@ -195,14 +195,8 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   if (engineCommandManager.connection !== connection) {
     return
   }
-  if (engineCommandManager.geometryOnly) {
-    // The camera on screen is the client's, so a new engine session is given
-    // that view instead of having one restored.
-    await sceneInfra.camControls.syncCameraToEngine()
-    if (engineCommandManager.connection !== connection) {
-      return
-    }
-  } else if (cameraState) {
+  // Geometry-only connections keep the camera local, so there is no engine camera to restore.
+  if (cameraState && !engineCommandManager.geometryOnly) {
     // Restore both idle and requested reconnect cameras before rebuilding.
     await sceneInfra.camControls.setCameraView(cameraState)
     if (engineCommandManager.connection !== connection) {

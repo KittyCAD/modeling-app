@@ -282,12 +282,10 @@ export class CameraControls {
     this.update(true)
   }
 
-  private readonly throttledHighlightCommand = throttle(
-    (cmd: EngineCommand) => {
-      void this.engineCommandManager.sendSceneCommand(cmd)
-    },
-    1000 / 30
-  )
+  throttledEngCmd = throttle((cmd: EngineCommand) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.engineCommandManager.sendSceneCommand(cmd)
+  }, 1000 / 30)
 
   throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
     const cmd: EngineCommand = {
@@ -304,44 +302,6 @@ export class CameraControls {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 15)
-
-  /** Gives the engine the client's camera: its projection and its pose. */
-  syncCameraToEngine = async () => {
-    if (this.camera instanceof OrthographicCamera) {
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: { type: 'default_camera_set_orthographic' },
-      })
-    } else {
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_set_perspective',
-          parameters: { fov_y: this.camera.fov },
-        },
-      })
-    }
-
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        ...convertThreeCamValuesToEngineCam(
-          {
-            quaternion: this.camera.quaternion,
-            position: this.camera.position,
-            zoom: this.camera.zoom,
-            isPerspective: this.isPerspective,
-            target: this.target,
-          },
-          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
-        ),
-      },
-    })
-  }
 
   doMove = (
     interaction: CameraDragInteractionType,
@@ -424,15 +384,6 @@ export class CameraControls {
     >[0]
 
     const cb = ({ data, type }: CallBackParam) => {
-      if (
-        this.effectiveCameraMode === 'local' &&
-        (type === 'camera_drag_move' ||
-          type === 'camera_drag_end' ||
-          type === 'default_camera_zoom')
-      ) {
-        return
-      }
-
       const camSettings = data.settings
       this.camera.position.set(
         camSettings.pos.x,
@@ -467,31 +418,14 @@ export class CameraControls {
 
       this.camera.up.copy(newUp)
       this.camera.updateProjectionMatrix()
-      // In local mode the client owns the projection and field of view and pushes
-      // them to the engine, so only the pose is taken from the engine's replies.
-      // Code that changes the projection applies it on the client, e.g.
-      // setCameraProjection() and setCameraView().
-      const followsEngineProjection = this.effectiveCameraMode !== 'local'
-      if (
-        followsEngineProjection &&
-        this.camera instanceof PerspectiveCamera &&
-        camSettings.ortho
-      ) {
+      if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
         this.useOrthographicCamera()
       }
-      if (
-        followsEngineProjection &&
-        this.camera instanceof OrthographicCamera &&
-        !camSettings.ortho
-      ) {
+      if (this.camera instanceof OrthographicCamera && !camSettings.ortho) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.usePerspectiveCamera()
       }
-      if (
-        followsEngineProjection &&
-        this.camera instanceof PerspectiveCamera &&
-        camSettings.fov_y
-      ) {
+      if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
         this.camera.fov = camSettings.fov_y
       } else if (this.camera instanceof OrthographicCamera) {
         const fovY = camSettings.fov_y ?? this.perspectiveFovBeforeOrtho ?? 45
@@ -667,7 +601,7 @@ export class CameraControls {
           videoElement,
           this.engineCommandManager.streamDimensions
         )
-        this.throttledHighlightCommand({
+        this.throttledEngCmd({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'highlight_set_entity',
@@ -744,11 +678,11 @@ export class CameraControls {
   }
 
   onMouseUp = (event: PointerEvent) => {
-    if (event.pointerType === 'touch') {
-      // We support momentum flick gestures so we have to do these things after that completes
-      return
+    // A touch drag ends in Hammer's panend, after any momentum flick. A tap
+    // never pans, so it ends here.
+    if (event.pointerType !== 'touch' || !this.wasDragging) {
+      this.onMouseUpInner(event)
     }
-    this.onMouseUpInner(event)
   }
 
   onMouseUpInner = (event: PointerEvent) => {
@@ -808,9 +742,12 @@ export class CameraControls {
     if (interaction === 'zoom') {
       this.pendingZoom = 1 + (deltaY / window.devicePixelRatio) * 0.001
 
-      // Record the world point under the mouse so we can keep it anchored during zoom
-      this._zoomFocus = this.screenToWorld(event)
-      this._zoomFocusPoint = event
+      // Record the world point under the mouse so we can keep it anchored during zoom.
+      // Only orthographic zoom uses it; perspective zooms toward the target.
+      if (this.camera instanceof OrthographicCamera) {
+        this._zoomFocus = this.screenToWorld(event)
+        this._zoomFocusPoint = event
+      }
     } else {
       // This case will get handled when we add pan and rotate using Apple trackpad.
       console.error(
@@ -1843,7 +1780,11 @@ export class CameraControls {
       this.camera.updateProjectionMatrix()
     }
 
-    if (this.effectiveCameraMode !== 'engineToClient' || forceUpdate) {
+    // A local camera has no engine camera to update.
+    if (
+      this.effectiveCameraMode !== 'local' &&
+      (this.effectiveCameraMode !== 'engineToClient' || forceUpdate)
+    ) {
       this.throttledUpdateEngineCamera({
         quaternion: this.camera.quaternion,
         position: this.camera.position,

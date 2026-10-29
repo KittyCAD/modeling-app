@@ -199,7 +199,9 @@ export class EdgeRenderer {
 
   removeFromParent() {
     this.group.removeFromParent()
+    // The picker draws lines from this geometry, so leave no edges behind.
     this.clearSelectionTargets()
+    this.setSegments([])
   }
 
   private clearSelectionTargets() {
