@@ -33,6 +33,7 @@ const createTempDirectoryPath = () =>
 
 describe('createNewProjectDirectory', () => {
   afterEach(async () => {
+    vi.restoreAllMocks()
     await Promise.all(
       createdProjectDirectoryPaths.map((projectDirectoryPath) =>
         fsZds.rm(projectDirectoryPath, { recursive: true, force: true })
@@ -314,5 +315,62 @@ describe('createNewProjectDirectory', () => {
     expect(projectToml).toContain('project_id = "project-123"')
     expect(projectToml).toContain('id = "new-settings-id"')
     expect(projectToml).not.toContain('old-settings-id')
+  })
+
+  it('skips filesystem mutations when merged project settings are unchanged', async () => {
+    const projectDirectoryPath = createTempDirectoryPath()
+    const projectPath = fsZds.join(projectDirectoryPath, 'unchanged')
+    createdProjectDirectoryPaths.push(projectDirectoryPath)
+    await fsZds.mkdir(projectPath, { recursive: true })
+    const settingsContents = '[settings.modeling]\nbase_unit = "mm"\n'
+    // First save establishes the serialization order after preserving metadata.
+    await fsZds.writeFile(
+      fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME),
+      new TextEncoder().encode(
+        'title = "Unchanged"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
+      )
+    )
+    await overwriteProjectTomlWithNewSettings(
+      testFileOperations,
+      projectPath,
+      settingsContents
+    )
+    const writeFile = vi.spyOn(testFileOperations, 'writeFile')
+    const createDirectory = vi.spyOn(testFileOperations, 'createDirectory')
+
+    await overwriteProjectTomlWithNewSettings(
+      testFileOperations,
+      projectPath,
+      settingsContents
+    )
+
+    expect(writeFile).not.toHaveBeenCalled()
+    expect(createDirectory).not.toHaveBeenCalled()
+  })
+
+  it('creates missing project settings and still writes changed settings', async () => {
+    const projectDirectoryPath = createTempDirectoryPath()
+    const projectPath = fsZds.join(projectDirectoryPath, 'new-settings')
+    createdProjectDirectoryPaths.push(projectDirectoryPath)
+
+    await overwriteProjectTomlWithNewSettings(
+      testFileOperations,
+      projectPath,
+      '[settings.modeling]\nbase_unit = "mm"\n'
+    )
+    const writeFile = vi.spyOn(testFileOperations, 'writeFile')
+    await overwriteProjectTomlWithNewSettings(
+      testFileOperations,
+      projectPath,
+      '[settings.modeling]\nbase_unit = "cm"\n'
+    )
+
+    expect(writeFile).toHaveBeenCalledTimes(1)
+    expect(
+      await fsZds.readFile(
+        fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME),
+        { encoding: 'utf-8' }
+      )
+    ).toContain('base_unit = "cm"')
   })
 })

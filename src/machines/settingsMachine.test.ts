@@ -1,7 +1,7 @@
 import type { MachineManager } from '@src/lib/MachineManager'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import type { BaseUnit } from '@src/lib/settings/settingsTypes'
+import type { BaseUnit, SettingsLevel } from '@src/lib/settings/settingsTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import {
@@ -48,6 +48,7 @@ describe('settingsMachine', () => {
   it('serializes settings events received while persistence is pending', async () => {
     mockToast.success.mockClear()
     const persistedUnits: Array<BaseUnit | undefined> = []
+    const persistedLevels: Array<SettingsLevel | undefined> = []
     const finishPersisting: Array<() => void> = []
     let activeWrites = 0
     let maximumActiveWrites = 0
@@ -67,6 +68,7 @@ describe('settingsMachine', () => {
           loadUserSettings: fromPromise(async () => initialSettings),
           persistSettings: fromPromise(async ({ input }) => {
             persistedUnits.push(input.context.modeling.defaultUnit.project)
+            persistedLevels.push(input.level)
             activeWrites += 1
             maximumActiveWrites = Math.max(maximumActiveWrites, activeWrites)
             await new Promise<void>((resolve) => {
@@ -150,6 +152,7 @@ describe('settingsMachine', () => {
 
     expect(actor.getSnapshot().context.deferredEvents).toEqual([])
     expect(actor.getSnapshot().context.modeling.defaultUnit.project).toBe('cm')
+    expect(persistedLevels).toEqual(['project', 'project', 'project', 'user'])
     expect(maximumActiveWrites).toBe(1)
 
     actor.stop()
