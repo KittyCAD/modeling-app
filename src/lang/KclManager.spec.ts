@@ -548,6 +548,24 @@ describe('KclManager live operation updates', () => {
         expect(thumbnail).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({ writeThumbnail: expect.any(Function) })
         )
+        const { isCurrent } = thumbnail.mock.calls[0][0]
+        expect(isCurrent()).toBe(true)
+        thumbnail.mockClear()
+        await editor.executeAst({
+          ast: createEmptyAst(),
+          updateThumbnail: false,
+        })
+        expect(thumbnail).not.toHaveBeenCalled()
+        editor.path = '/project/other.kcl'
+        expect(isCurrent()).toBe(false)
+        await editor.executeAst({ ast: createEmptyAst() })
+        expect(thumbnail).not.toHaveBeenCalled()
+        project.projectIORefSignal.value = {
+          ...metadata,
+          default_file: editor.path,
+        }
+        await editor.executeAst({ ast: createEmptyAst() })
+        expect(thumbnail).toHaveBeenCalledOnce()
       } finally {
         projectFsManager.dir = originalDirectory
         thumbnail.mockRestore()

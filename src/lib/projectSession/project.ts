@@ -289,7 +289,7 @@ export class ZDSProject {
         providedEditor &&
         newEditor.engineCommandManager.connection?.connected
       ) {
-        await newEditor.executeCode(newEditor.code)
+        await newEditor.executeCode(newEditor.code, { updateThumbnail: false })
         assertModelingCurrent()
         await resetCameraPosition({
           sceneInfra: newEditor.sceneInfra,

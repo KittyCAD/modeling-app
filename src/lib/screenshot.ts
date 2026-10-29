@@ -171,25 +171,27 @@ export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
 export function createProjectThumbnail({
   fileOperations,
   projectDirectoryWithoutEndingSlash,
+  isCurrent,
   writeThumbnail = (path, bytes) =>
     writeProjectThumbnailFile(fileOperations, bytes, path),
 }: {
   fileOperations: FileOperationsRegistryService
   projectDirectoryWithoutEndingSlash: string
+  isCurrent: () => boolean
   writeThumbnail?: (path: string, bytes: Uint8Array) => Promise<void>
 }) {
+  if (!isCurrent()) return
   setTimeout(() => {
-    if (!projectDirectoryWithoutEndingSlash) {
+    if (!projectDirectoryWithoutEndingSlash || !isCurrent()) {
       return
     }
     // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
     takeScreenshotOfVideoStreamCanvas()
       .then(async (thumbnail) => {
-        if (!thumbnail) return
-        await writeThumbnail(
-          projectDirectoryWithoutEndingSlash,
-          new Uint8Array(await thumbnail.arrayBuffer())
-        )
+        if (!thumbnail || !isCurrent()) return
+        const bytes = new Uint8Array(await thumbnail.arrayBuffer())
+        if (!isCurrent()) return
+        await writeThumbnail(projectDirectoryWithoutEndingSlash, bytes)
       })
       .catch((e) => {
         console.error(

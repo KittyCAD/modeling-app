@@ -314,6 +314,11 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onPageMountedParams = useMemo(
     () => ({
       callback: () => {
+        const initialPath = kclManager.path
+        const isCurrentEntrypoint = () =>
+          projectSession.getProject() === project &&
+          kclManager.path === initialPath &&
+          initialPath === project?.projectIORefSignal.peek().default_file
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -330,11 +335,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         })
           .then(() => {
             // Capture after the initial zoom; cloud persistence joins the next save.
-            if (projectIORef?.path) {
+            if (projectIORef?.path && isCurrentEntrypoint()) {
               createProjectThumbnail({
                 fileOperations,
                 projectDirectoryWithoutEndingSlash: projectIORef.path,
                 writeThumbnail: projectSession.writeThumbnail,
+                isCurrent: isCurrentEntrypoint,
               })
             }
           })

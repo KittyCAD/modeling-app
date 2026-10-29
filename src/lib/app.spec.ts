@@ -1039,9 +1039,11 @@ describe('project system', () => {
           calls.push(`open:resolved:${currentFilePath}`)
         }
       )
-      vi.spyOn(kclManager, 'executeCode').mockImplementation(async () => {
-        calls.push(`execute:${kclManager.path}`)
-      })
+      const executeCode = vi
+        .spyOn(kclManager, 'executeCode')
+        .mockImplementation(async () => {
+          calls.push(`execute:${kclManager.path}`)
+        })
       const sendUpdateFile = vi
         .spyOn(kclManager.rustContext, 'sendUpdateFile')
         .mockImplementation(async () => {})
@@ -1078,6 +1080,13 @@ describe('project system', () => {
         `open:resolved:${alternatePath}`,
         `execute:${alternatePath}`,
       ])
+      expect(executeCode).toHaveBeenLastCalledWith('alternate = true\n', {
+        updateThumbnail: false,
+      })
+      await openedProject.openEditor(mainPath, kclManager)
+      expect(executeCode).toHaveBeenLastCalledWith('main = true\n', {
+        updateThumbnail: false,
+      })
       expect(sendUpdateFile).not.toHaveBeenCalled()
     } finally {
       vi.useRealTimers()

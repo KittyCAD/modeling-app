@@ -173,7 +173,6 @@ import {
 } from '@src/editor/plugins/theme'
 import { requestWriteToFile } from '@src/editor/plugins/write'
 import { zookeeperHistoryExtension } from '@src/lib/zookeeper/editorPlugin'
-import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
@@ -202,6 +201,7 @@ import { File } from '@src/lib/projectSession/file'
 interface ExecuteArgs {
   ast?: Node<Program>
   executionId?: number
+  updateThumbnail?: boolean
 }
 
 type UpdateCodeEditorOptions = {
@@ -2326,6 +2326,7 @@ export class KclManager extends File {
       this.beginLiveOperationUpdates(currentExecutionId)
 
       const codeThatExecuted = this.code
+      const pathThatExecuted = this.path
       const { logs, errors, execState, isInterrupted } = await executeAst({
         ast,
         path: this.path,
@@ -2444,11 +2445,25 @@ export class KclManager extends File {
       this.notifyExecutionCompletion('completed')
 
       // Cloud thumbnails join the next editor save or flush after inactivity.
-      if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      const project = this.systemDeps.project.peek()
+      const isCurrentEntrypoint = () =>
+        !this.closed &&
+        this.path === pathThatExecuted &&
+        this.code === codeThatExecuted &&
+        this.systemDeps.project.peek()?.path === project?.path &&
+        pathThatExecuted === this.systemDeps.project.peek()?.default_file
+      if (
+        args.updateThumbnail !== false &&
+        !isInterrupted &&
+        errors.length === 0 &&
+        project &&
+        isCurrentEntrypoint()
+      ) {
         createProjectThumbnail({
           fileOperations: this.systemDeps.fileOperations,
-          projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+          projectDirectoryWithoutEndingSlash: project.path,
           writeThumbnail: this.systemDeps.projectSession?.writeThumbnail,
+          isCurrent: isCurrentEntrypoint,
         })
       }
     } finally {
@@ -2516,7 +2531,10 @@ export class KclManager extends File {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(newCode = this.codeSignal.value): Promise<void> {
+  async executeCode(
+    newCode = this.codeSignal.value,
+    options: Pick<ExecuteArgs, 'updateThumbnail'> = {}
+  ): Promise<void> {
     const path = this.path
     await this.systemDeps.modelingReady?.()
     if (this.closed || path !== this.path) return
@@ -2552,7 +2570,7 @@ export class KclManager extends File {
       this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
     }, this.longExecutionTimeMs)
 
-    await this.executeAst({ ast })
+    await this.executeAst({ ast, ...options })
   }
 
   async format() {
