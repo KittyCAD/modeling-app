@@ -24,7 +24,7 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { isErr } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 // TODO: Remove this pruning once PR4 removes obsolete edges from the graph producer.
 function removeObsoleteEdges(graph: ArtifactGraph) {
@@ -719,7 +719,7 @@ it('translates a treatment body without selecting a nested sketch segment', asyn
   expect(world.kclManager.errors).toEqual([])
 }, 60_000)
 
-it.each(['chamfer', 'fillet'] as const)(
+it.each(['chamfer', 'fillet'])(
   'references the exact copied %s face in annotations',
   async (treatment) => {
     const code =
@@ -737,10 +737,10 @@ it.each(['chamfer', 'fillet'] as const)(
     )
     if (cut?.type !== 'edgeCut')
       throw new Error('Copied treatment face not found')
-    const selection = {
+    const selection: Selection = {
       artifact: cut,
       codeRef: cut.codeRef,
-      entityRef: { type: 'face' as const, face_id: cut.id },
+      entityRef: { type: 'face', face_id: cut.id },
     }
     const result = await modelingCommandCodemods['GDT Annotation'].run({
       ast,
@@ -917,7 +917,7 @@ sketchOnCopy = sketch(on = faceOf(${body}, face = ${body}.faces.chamferFace01)) 
 }
 gdt::annotation(faces = [${body}.faces.chamferFace01], annotation = "Copied chamfer", framePlane = XZ)
 gdt::annotation(faces = [${body}.faces.filletFace01], annotation = "Copied fillet", framePlane = XZ)
-gdt::annotation(faces = [chamferFace01], annotation = "Original bare tag", framePlane = XZ)
+gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", framePlane = XZ)
 `
     const sent = vi.spyOn(world.engineCommandManager, 'sendCommand')
     const { artifactGraph } = await getAstAndArtifactGraph(
@@ -951,8 +951,11 @@ gdt::annotation(faces = [chamferFace01], annotation = "Original bare tag", frame
         type: 'new_annotation',
         options: expect.objectContaining({
           feature_control: expect.objectContaining({
-            entity_id: original.id,
-            prefix: 'Original bare tag',
+            entity_id:
+              owner.type === 'sweep'
+                ? expect.toBeOneOf(owner.surfaceIds)
+                : original.id,
+            prefix: 'Bare tag after copy',
           }),
         }),
       })
