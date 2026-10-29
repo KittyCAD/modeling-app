@@ -13,6 +13,9 @@ bench = false
 
 [features]
 dhat-heap = ["kcl-lib/dhat-heap"]
+# E2E fault injection ONLY. NEVER enable this feature in shipped builds.
+# Compile-time opt-in, deliberately absent from default features; no runtime switch.
+e2e-fault-injection = []
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = { workspace = true }

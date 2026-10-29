@@ -83,7 +83,10 @@ import {
   type UserFeaturesRegistryService,
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import {
+  provideWasmPromise,
+  wasmPromiseValueSpec,
+} from '@src/registry/contracts/wasm'
 import {
   type ZdsPluginActivationSetting,
   zdsPluginActivationSettingsValueSpec,
@@ -95,6 +98,7 @@ import {
 import type { SnapshotFrom, Subscription } from 'xstate'
 
 const appCommandsSlot = new Slot()
+const activeWasmSlot = new Slot()
 
 type AppRegistryOptions = {
   registryOverrides?: readonly RegistryItem[]
@@ -249,8 +253,12 @@ export class App implements AppSubsystems {
     this.unsubscribeFromActiveWasmInstance = onActiveWasmInstance(
       this.setActiveWasmInstance
     )
-    void this.wasmPromise
-      .then(this.setActiveWasmInstance)
+    const startupWasmPromise = this.wasmPromise
+    void startupWasmPromise
+      .then((instance) => {
+        if (this.wasmPromise === startupWasmPromise)
+          this.setActiveWasmInstance(instance)
+      })
       .catch(reportRejection)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
@@ -268,6 +276,7 @@ export class App implements AppSubsystems {
   }: AppRegistryOptions = {}) {
     const appRegistry = new Registry()
     appRegistry.configure([
+      activeWasmSlot.of(),
       appRegistryOverridesSlot.of(...registryOverrides),
       appCommandsSlot.of(),
       engineSceneRuntimeExtensionsSlot.of(),
@@ -511,6 +520,13 @@ export class App implements AppSubsystems {
   setActiveWasmInstance = (wasmInstance: ModuleType) => {
     this.activeWasmInstance = wasmInstance
     this.syncKclRuntimeFlags()
+    this.wasmPromise = Promise.resolve(wasmInstance)
+    this.registry.reconfigure(activeWasmSlot, [
+      defineRegistryItem({
+        id: 'app.active-wasm',
+        provides: [provideWasmPromise(this.wasmPromise)],
+      }),
+    ])
   }
 
   syncKclRuntimeFlags = () => {

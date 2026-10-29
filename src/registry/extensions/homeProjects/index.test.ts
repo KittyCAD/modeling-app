@@ -138,8 +138,6 @@ const fsZdsMocks = vi.hoisted(() => {
 
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({
   getModule: vi.fn(),
-  init: vi.fn(),
-  reloadModule: vi.fn(),
 }))
 
 vi.mock('@src/lib/desktop', () => {

@@ -1,5 +1,5 @@
 import { effect, signal } from '@preact/signals-core'
-import { createProjectForTest } from '@src/unitTestUtils'
+import { createProjectForTest, loadWasm } from '@src/unitTestUtils'
 import type { Diagnostic } from '@codemirror/lint'
 import { EditorView } from '@codemirror/view'
 import type {
@@ -329,6 +329,16 @@ describe('KclManager line wrapping settings', () => {
       kclManager.close()
       app.dispose()
     }
+  })
+})
+
+describe('KclManager runtime API', () => {
+  it('does not expose the test-only panic hook in normal builds', async () => {
+    const module = await loadWasm()
+    expect(module.parse_wasm).toBeTypeOf('function')
+    for (const capability of ['Context', 'default', 'initSync'])
+      expect(Reflect.has(module, capability)).toBe(false)
+    expect(Reflect.has(module, 'e2e_panic')).toBe(false)
   })
 })
 

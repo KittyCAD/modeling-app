@@ -43,13 +43,19 @@ import { Signal as LegacySignal } from '@src/lib/signal'
 import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { createNativeContext } from '@src/lib/wasmRuntime'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import toast from 'react-hot-toast'
+
+interface ProjectSnapshot {
+  currentFilePath: string | null
+  files: ApiFile[]
+}
 
 interface PlanePublicationOwner {
   context: Context
   sessionId: string | undefined
-  projectRevision: number
+  project: ProjectSnapshot | null
 }
 
 interface PlanePublicationReceipt {
@@ -58,82 +64,215 @@ interface PlanePublicationReceipt {
   planes: DefaultPlanes
 }
 
-export default class RustContext {
-  private projectRevision = 0
-  private planePublicationReceipt: PlanePublicationReceipt | undefined
-  private initialization: Promise<Context> | undefined
+const constructionKey = Symbol('owned RustContext')
+const recoveries = new WeakMap<
+  object,
+  (module: Promise<ModuleType>) => Promise<void>
+>()
+
+class RustContext {
+  #ctxInstance: Context | null = null
+  #initialization: Promise<Context> | undefined
   private contextChanged = new AbortController()
+  private moduleGeneration = 0
   private destroyed = false
-  private ctxInstance: Context | null = null
+  private projectSnapshot: ProjectSnapshot | null = null
+  private projectRevision = 0
+  private restoredProjectRevision = -1
   private _defaultPlanes: DefaultPlanes | null = null
+  #planePublicationReceipt: PlanePublicationReceipt | undefined
   public readonly planesCreated = new LegacySignal()
 
   constructor(
-    public readonly wasmInstancePromise: Promise<ModuleType>,
+    key: typeof constructionKey,
+    private modulePromise: Promise<ModuleType>,
     private readonly engineCommandManager: ConnectionManager,
     public readonly settingsActor: SettingsActorType,
     private projectId = 0,
     private readonly geometryOnly = false
   ) {
-    this.initialization = this.createContextFromWasm()
-    void this.initialization.catch((error: unknown) => {
-      if (!this.destroyed) reportRejection(error)
+    if (key !== constructionKey) {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw new Error('RustContext must be created by its registry owner.')
+    }
+    recoveries.set(this, (module) => this.#replaceWasmInstance(module))
+    this.#initialization = this.#createContextFromWasm(modulePromise, 0)
+    void this.#initialization.catch((error: unknown) => {
+      if (!this.destroyed && this.moduleGeneration === 0) reportRejection(error)
     })
   }
 
-  private async createContextFromWasm(): Promise<Context> {
-    const instance = await this.wasmInstancePromise
-    if (this.destroyed) return this._checkContextInstance()
-    const context = new instance.Context(
+  get wasmInstancePromise() {
+    return this.modulePromise
+  }
+
+  /** Replace a crashed runtime, never the execution cache of a live runtime. */
+  async #replaceWasmInstance(
+    modulePromise: Promise<ModuleType>
+  ): Promise<void> {
+    if (this.destroyed)
+      return Promise.reject(new Error('Rust context has been destroyed.'))
+    const changed = this.contextChanged
+    this.contextChanged = new AbortController()
+    this.modulePromise = modulePromise
+    this.moduleGeneration += 1
+    // Published wrappers may still be held by in-flight AST calls. Their
+    // wasm-bindgen finalizer frees them after those references are released.
+    this.#ctxInstance = null
+    this._defaultPlanes = null
+    this.#planePublicationReceipt = undefined
+    this.hasOpenedProject = false
+    this.restoredProjectRevision = -1
+    this.#initialization = this.#createContextFromWasm(
+      modulePromise,
+      this.moduleGeneration
+    )
+    changed.abort()
+    await this.#_checkContextInstance()
+  }
+
+  async #createContextFromWasm(
+    modulePromise: Promise<ModuleType>,
+    generation: number
+  ): Promise<Context> {
+    const instance = await modulePromise
+    if (this.destroyed || generation !== this.moduleGeneration)
+      return this.#_checkContextInstance()
+    const context = createNativeContext(
+      instance,
       this.engineCommandManager,
       projectFsManager,
       undefined,
       this.geometryOnly
     )
-    this.ctxInstance = context
-    return context
+    try {
+      let revision: number
+      do {
+        revision = this.projectRevision
+        const snapshot = this.projectSnapshot
+        if (snapshot) {
+          await context.open_project(
+            this.projectId,
+            JSON.stringify(snapshot.files),
+            snapshot.files.find(
+              (file) => file.path === snapshot.currentFilePath
+            )?.id ?? -1
+          )
+        }
+        if (this.destroyed || generation !== this.moduleGeneration) {
+          this.#releaseUnpublishedContext(context)
+          return this.#_checkContextInstance()
+        }
+        // Edits received while replay was pending belong in the replacement
+        // too. Reopen only this unpublished context, never an existing model.
+      } while (revision !== this.projectRevision)
+      this.#ctxInstance = context
+      this.restoredProjectRevision = revision
+      this.hasOpenedProject = this.projectSnapshot !== null
+      return context
+    } catch (error) {
+      this.#releaseUnpublishedContext(context)
+      if (this.destroyed || generation !== this.moduleGeneration)
+        return this.#_checkContextInstance()
+      return Promise.reject(error)
+    }
+  }
+
+  #releaseUnpublishedContext(context: Context) {
+    try {
+      context.free()
+    } catch (error) {
+      reportRejection(error)
+    }
+  }
+
+  async #applyProjectChange(
+    snapshot: ProjectSnapshot | null,
+    revision: number,
+    apply: (context: Context) => Promise<void>
+  ): Promise<boolean> {
+    const context = await this.#_checkContextInstance()
+    if (snapshot !== this.projectSnapshot) return false
+    if (snapshot && revision <= this.restoredProjectRevision)
+      return this.hasOpenedProject
+    await apply(context)
+    return context === this.#ctxInstance && snapshot === this.projectSnapshot
   }
 
   public hasOpenedProject = false
 
   /** Project lifecycle method for WASM, setting up initial snapshot of project */
   async sendOpenProject(currentFilePath: string | null, kclFiles: ApiFile[]) {
-    this.projectRevision += 1
-    const context = await this._checkContextInstance()
-    await context.open_project(
-      this.projectId,
-      JSON.stringify(kclFiles),
-      kclFiles.find((file) => file.path === currentFilePath)?.id ?? -1
+    const snapshot = {
+      currentFilePath,
+      files: kclFiles.map((file) => ({ ...file })),
+    }
+    this.projectSnapshot = snapshot
+    this.hasOpenedProject = false
+    const applied = await this.#applyProjectChange(
+      snapshot,
+      ++this.projectRevision,
+      (context) =>
+        context.open_project(
+          this.projectId,
+          JSON.stringify(snapshot.files),
+          snapshot.files.find((file) => file.path === currentFilePath)?.id ?? -1
+        )
     )
-    this.hasOpenedProject = true
+    if (applied) this.hasOpenedProject = true
   }
 
   /** Helper to verify the state on the WASM side, useful for testing */
   async getProjectState() {
-    const context = await this._checkContextInstance()
+    const context = await this.#_checkContextInstance()
     return context.get_project(this.projectId)
   }
 
   /** Helper to verify the state on the WASM side, useful for testing */
   async getFileState(fileId: number) {
-    const context = await this._checkContextInstance()
+    const context = await this.#_checkContextInstance()
     return context.get_file(this.projectId, fileId)
   }
 
   async sendAddFile(file: ApiFile) {
-    const context = await this._checkContextInstance()
-    return context.add_file(this.projectId, JSON.stringify(file))
+    const snapshot = this.projectSnapshot
+    const ownedFile = { ...file }
+    if (snapshot)
+      snapshot.files = [
+        ...snapshot.files.filter((current) => current.id !== file.id),
+        ownedFile,
+      ]
+    await this.#applyProjectChange(
+      snapshot,
+      ++this.projectRevision,
+      (context) => context.add_file(this.projectId, JSON.stringify(ownedFile))
+    )
   }
 
   async sendUpdateFile(fileId: number, code: string) {
-    if (!this.hasOpenedProject) return
-    const context = await this._checkContextInstance()
-    return context.update_file(this.projectId, fileId, code)
+    const snapshot = this.projectSnapshot
+    if (!snapshot) {
+      return
+    }
+    snapshot.files = snapshot.files.map((file) =>
+      file.id === fileId ? { ...file, text: code } : file
+    )
+    await this.#applyProjectChange(
+      snapshot,
+      ++this.projectRevision,
+      (context) => context.update_file(this.projectId, fileId, code)
+    )
   }
 
   async sendRemoveFile(fileId: number) {
-    const context = await this._checkContextInstance()
-    return context.remove_file(this.projectId, fileId)
+    const snapshot = this.projectSnapshot
+    if (snapshot)
+      snapshot.files = snapshot.files.filter((file) => file.id !== fileId)
+    await this.#applyProjectChange(
+      snapshot,
+      ++this.projectRevision,
+      (context) => context.remove_file(this.projectId, fileId)
+    )
   }
 
   /** Execute a program. */
@@ -143,8 +282,8 @@ export default class RustContext {
     path?: string,
     callbacks?: ExecCallbacks
   ): Promise<ExecState> {
-    const instance = await this._checkContextInstance()
-    const planeOwner = this.capturePlaneOwner(instance)
+    const instance = await this.#_checkContextInstance()
+    const planeOwner = this.#capturePlaneOwner(instance)
     const executionContext = callbacks
       ? instance.cloneWithExecuteCallbacks(callbacks)
       : instance
@@ -185,8 +324,8 @@ export default class RustContext {
     usePrevMemory?: boolean,
     callbacks?: ExecCallbacks
   ): Promise<ExecState> {
-    const instance = await this._checkContextInstance()
-    const planeOwner = this.capturePlaneOwner(instance)
+    const instance = await this.#_checkContextInstance()
+    const planeOwner = this.#capturePlaneOwner(instance)
     const executionContext = callbacks
       ? instance.cloneWithExecuteCallbacks(callbacks)
       : instance
@@ -226,8 +365,8 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ParseResult | Error> {
-    const instance = await this._checkContextInstance()
-    const planeOwner = this.capturePlaneOwner(instance)
+    const instance = await this.#_checkContextInstance()
+    const planeOwner = this.#capturePlaneOwner(instance)
     try {
       const parsed: ParsedExecutionSource = await instance.parseForExecution(
         code,
@@ -258,7 +397,7 @@ export default class RustContext {
 
   /** Evaluate an input expression with the current Rust model's settings. */
   async evaluateExpression(node: Node<Program>): Promise<ExecState> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
     try {
       const result = await instance.evaluateExpression(
         JSON.stringify(node),
@@ -276,7 +415,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     toastId: string
   ): Promise<ModelingAppFile[] | undefined> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       return await instance.export(
@@ -301,11 +440,12 @@ export default class RustContext {
     return this._defaultPlanes
   }
 
-  private capturePlaneOwner(context: Context): PlanePublicationOwner {
+  #capturePlaneOwner(context: Context): PlanePublicationOwner {
     return {
       context,
       sessionId: this.engineCommandManager.engineSessionId,
-      projectRevision: this.projectRevision,
+      // File edits retain this snapshot; opening a project replaces its owner.
+      project: this.projectSnapshot,
     }
   }
 
@@ -317,25 +457,25 @@ export default class RustContext {
   ) {
     if (
       this.destroyed ||
-      owner.context !== this.ctxInstance ||
+      owner.context !== this.#ctxInstance ||
       owner.sessionId !== this.engineCommandManager.engineSessionId ||
-      owner.projectRevision !== this.projectRevision
+      owner.project !== this.projectSnapshot
     )
       return
 
-    const previous = this.planePublicationReceipt
+    const previous = this.#planePublicationReceipt
     const sameOwner =
       previous &&
       previous.owner.context === owner.context &&
       previous.owner.sessionId === owner.sessionId &&
-      previous.owner.projectRevision === owner.projectRevision
+      previous.owner.project === owner.project
     if (sameOwner && generation != null && generation < previous.generation)
       return
 
     this._defaultPlanes = planes
     if (!planes || generation == null) {
       // Unknown provenance cannot justify suppressing a required replay.
-      this.planePublicationReceipt = undefined
+      this.#planePublicationReceipt = undefined
       if (planes) this.planesCreated.dispatch()
       return
     }
@@ -351,59 +491,8 @@ export default class RustContext {
     )
       return
 
-    this.planePublicationReceipt = { owner, generation, planes: { ...planes } }
+    this.#planePublicationReceipt = { owner, generation, planes: { ...planes } }
     this.planesCreated.dispatch()
-  }
-
-  /**
-   * Clear/reset the scene and bust the cache.
-   * Do not use this function unless you absolutely need to. In most cases,
-   * we should just fix the  cache for whatever bug you are seeing.
-   * The only time it makes sense to run this is if the engine disconnects and
-   * reconnects. The rust side has no idea that happened and will think the
-   * cache is still valid.
-   * Caching on the rust side accounts for changes to files outside of the
-   * scope of the current file the user is on. It collects all the dependencies
-   * and checks if any of them have changed. If they have, it will bust the
-   * cache and recompile the scene.
-   * The typescript side should never raw dog clear the scene since that would
-   * fuck with the cache as well. So if you _really_ want to just clear the scene
-   * AND NOT re-execute, you can use this for that. But in 99.999999% of cases just
-   * re-execute.
-   */
-  async clearSceneAndBustCache(
-    settings: DeepPartial<Configuration>,
-    path?: string
-  ): Promise<ExecState> {
-    const instance = await this._checkContextInstance()
-    const planeOwner = this.capturePlaneOwner(instance)
-
-    try {
-      const result = await instance.bustCacheAndResetScene(
-        JSON.stringify(settings),
-        path
-      )
-
-      /* Set the default planes, safe to call after execute. */
-      const outcome = execStateFromRust(result)
-
-      this.setDefaultPlanes(
-        outcome.defaultPlanes,
-        outcome.engineSceneGeneration,
-        planeOwner
-      )
-
-      // Return the result.
-      return outcome
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      this.setDefaultPlanes(
-        err.defaultPlanes,
-        err.engineSceneGeneration,
-        planeOwner
-      )
-      return Promise.reject(err)
-    }
   }
 
   getDefaultPlaneId(name: DefaultPlaneStr): string | Error {
@@ -418,7 +507,7 @@ export default class RustContext {
 
   /** Send a response back to the rust side, that we got back from the engine. */
   async sendResponse(response: WebSocketResponse): Promise<void> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const serialized = msgpackEncode(response)
@@ -438,7 +527,7 @@ export default class RustContext {
     program_ast: Node<Program>,
     settings: DeepPartial<Configuration>
   ): Promise<SetProgramOutcome> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: RustSetProgramOutcome & {
@@ -474,7 +563,7 @@ export default class RustContext {
     version: ApiVersion,
     sketch: ApiObjectId
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: {
@@ -508,7 +597,7 @@ export default class RustContext {
     version: ApiVersion,
     sketchArgs: SketchCtor
   ): Promise<NewSketchResult> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: {
@@ -546,7 +635,7 @@ export default class RustContext {
     version: ApiVersion,
     sketch: ApiObjectId
   ): Promise<EditSketchResult> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: {
@@ -578,7 +667,7 @@ export default class RustContext {
     version: ApiVersion,
     sketch: ApiObjectId
   ): Promise<SceneGraphDelta> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: SceneGraphDelta = await instance.exit_sketch(
@@ -602,7 +691,7 @@ export default class RustContext {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: [SourceDelta, SceneGraphDelta] =
@@ -630,7 +719,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: {
@@ -672,7 +761,7 @@ export default class RustContext {
     dragAnchors: SegmentDragAnchor[] = [],
     constraintLabelEdits: ConstraintLabelPositionEdit[] = []
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       if (!commitSolverResults && createCheckpoint) {
@@ -720,7 +809,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: {
@@ -758,7 +847,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: {
@@ -796,7 +885,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: {
@@ -836,7 +925,7 @@ export default class RustContext {
     commitSolverResults = true
   ): Promise<SketchMutationResult> {
     const instance =
-      (await this._checkContextInstance()) as ContextWithAngleConstraintEdit
+      (await this.#_checkContextInstance()) as ContextWithAngleConstraintEdit
 
     try {
       if (!commitSolverResults && createCheckpoint) {
@@ -882,7 +971,7 @@ export default class RustContext {
     commitSolverResults = true
   ): Promise<SketchMutationResult> {
     const instance =
-      (await this._checkContextInstance()) as ContextWithDistanceConstraintEdit
+      (await this.#_checkContextInstance()) as ContextWithDistanceConstraintEdit
 
     try {
       if (!commitSolverResults && createCheckpoint) {
@@ -925,7 +1014,7 @@ export default class RustContext {
     anchorSegmentIds: ApiObjectId[] = [],
     commitSolverResults = true
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       if (!commitSolverResults && createCheckpoint) {
@@ -973,7 +1062,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: {
@@ -1007,7 +1096,7 @@ export default class RustContext {
   async restoreSketchCheckpoint(
     checkpointId: number
   ): Promise<RestoreSketchCheckpointResult> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       const result: {
@@ -1025,7 +1114,7 @@ export default class RustContext {
   }
 
   async clearSketchCheckpoints(): Promise<void> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       await instance.clear_sketch_checkpoints()
@@ -1047,7 +1136,7 @@ export default class RustContext {
     operationsPerformed: boolean
     checkpointId?: number | null
   }> {
-    const instance = await this._checkContextInstance()
+    const instance = await this.#_checkContextInstance()
 
     try {
       // Flatten array of [x, y] tuples into a Float64Array [x1, y1, x2, y2, ...]
@@ -1082,10 +1171,10 @@ export default class RustContext {
   }
 
   /** Helper to check if context instance exists */
-  private async _checkContextInstance(): Promise<Context> {
+  async #_checkContextInstance(): Promise<Context> {
     while (!this.destroyed) {
-      if (this.ctxInstance) return this.ctxInstance
-      const initialization = this.initialization
+      if (this.#ctxInstance) return this.#ctxInstance
+      const initialization = this.#initialization
       if (!initialization) break
       const signal = this.contextChanged.signal
       const changed = Promise.withResolvers<null>()
@@ -1093,9 +1182,9 @@ export default class RustContext {
       signal.addEventListener('abort', onChanged, { once: true })
       try {
         const context = await Promise.race([initialization, changed.promise])
-        if (context && initialization === this.initialization) return context
+        if (context && initialization === this.#initialization) return context
       } catch (error) {
-        if (initialization === this.initialization && !this.destroyed)
+        if (initialization === this.#initialization && !this.destroyed)
           return Promise.reject(error)
       } finally {
         signal.removeEventListener('abort', onChanged)
@@ -1107,13 +1196,45 @@ export default class RustContext {
   /** Clean up resources */
   destroy() {
     this.destroyed = true
-    this.planePublicationReceipt = undefined
-    this.ctxInstance = null
-    this.initialization = undefined
+    this.moduleGeneration += 1
+    this.#ctxInstance = null
+    this.#initialization = undefined
+    this.projectSnapshot = null
     this._defaultPlanes = null
+    this.#planePublicationReceipt = undefined
     this.hasOpenedProject = false
     this.contextChanged.abort()
   }
+}
+
+export type { RustContext as default }
+
+export function createRustContext(
+  module: Promise<ModuleType>,
+  manager: ConnectionManager,
+  settings: SettingsActorType,
+  projectId = 0,
+  geometryOnly = false
+): RustContext {
+  return new RustContext(
+    constructionKey,
+    module,
+    manager,
+    settings,
+    projectId,
+    geometryOnly
+  )
+}
+
+/** Privileged crash recovery; ordinary context users never receive this capability. */
+export function recoverRustContext(
+  owner: object,
+  module: Promise<ModuleType>
+): Promise<void> {
+  const recover = recoveries.get(owner)
+  return recover
+    ? recover(module)
+    : Promise.reject(new Error('Cannot recover an unowned RustContext.'))
 }
 
 function normalizeSketchCheckpointId(

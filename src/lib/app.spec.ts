@@ -397,7 +397,6 @@ describe('project system', () => {
       const execute = vi
         .spyOn(first, 'executeCode')
         .mockResolvedValue(undefined)
-      const clear = vi.spyOn(first.rustContext, 'clearSceneAndBustCache')
       engine.connection = { connected: true } as typeof engine.connection
 
       project.executingPath = first.path
@@ -405,7 +404,6 @@ describe('project system', () => {
       expect(edges).not.toHaveBeenCalled()
       expect(backface).not.toHaveBeenCalled()
       expect(execute).not.toHaveBeenCalled()
-      expect(clear).not.toHaveBeenCalled()
 
       const setting = app.settings.get().modeling.highlightEdges
       setting.user = !setting.current
@@ -685,6 +683,37 @@ describe('project system', () => {
       expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
         expectedRuntimeFlags()
       )
+      await expect(app.wasmPromise).resolves.toBe(nextWasmInstance)
+      expect(app.registry.get(wasmPromiseValueSpec)).toBe(app.wasmPromise)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('does not restore an obsolete startup module after a newer lifecycle announcement', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const initial = Promise.withResolvers<ModuleType>()
+    const initialWasmInstance = createRuntimeFlagsWasmInstance()
+    const nextWasmInstance = createRuntimeFlagsWasmInstance()
+    const app = createAppForTest({
+      userFeatures,
+      wasmPromise: initial.promise,
+      registryOverrides: [createTestWasmRegistryItem(initial.promise)],
+    })
+
+    try {
+      await notifyActiveWasmInstance(nextWasmInstance)
+      initial.resolve(initialWasmInstance)
+      await initial.promise
+      await expect(app.wasmPromise).resolves.toBe(nextWasmInstance)
+      await expect(app.registry.get(wasmPromiseValueSpec)).resolves.toBe(
+        nextWasmInstance
+      )
+      userFeatures.setFeatureIds(new Set())
+      expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
+        expectedRuntimeFlags()
+      )
+      expect(initialWasmInstance.set_kcl_runtime_flags).not.toHaveBeenCalled()
     } finally {
       app.dispose()
     }

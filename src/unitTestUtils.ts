@@ -14,12 +14,15 @@ import { createArrayExpression } from '@src/lang/create'
 import { KclManager } from '@src/lang/KclManager'
 import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type { CallExpressionKw, Expr } from '@src/lang/wasm'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import {
+  initialiseWasmNode,
+  loadAndInitialiseWasmInstance,
+} from '@src/lang/wasmUtilsNode'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
 import { MachineManager } from '@src/lib/MachineManager'
-import RustContext from '@src/lib/rustContext'
+import { createRustContext } from '@src/lib/rustContext'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -104,8 +107,7 @@ export async function buildTheWorldAndConnectToEngine({
   webrtc?: boolean
   geometryOnly?: boolean
 } = {}) {
-  const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
-  const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
+  const instancePromise = initialiseWasmNode()
   const machineManager = new MachineManager()
   const commandBarActor = createActor(commandBarMachine, {
     input: {
@@ -128,7 +130,7 @@ export async function buildTheWorldAndConnectToEngine({
   const engineCommandManager = new ConnectionManager({
     settingsActor,
   })
-  const rustContext = new RustContext(
+  const rustContext = createRustContext(
     instancePromise,
     engineCommandManager,
     settingsActor,
@@ -250,7 +252,7 @@ export async function buildTheWorldAndNoEngineConnection(
   const engineCommandManager = new ConnectionManager({
     settingsActor,
   })
-  const rustContext = new RustContext(
+  const rustContext = createRustContext(
     instancePromise,
     engineCommandManager,
     settingsActor

@@ -5,7 +5,6 @@ import {
 } from '@kittycad/registry'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
-import RustContext from '@src/lib/rustContext'
 import rustContextRegistryItem from '@src/lib/rustContext/registry'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -46,7 +45,7 @@ describe('rust context extension', () => {
 
     const context = registry.get(rustContextService).context
 
-    expect(context).toBeInstanceOf(RustContext)
+    expect(registry.get(rustContextService).context).toBe(context)
     expect(context.wasmInstancePromise).toBe(wasmPromise)
     expect(context.settingsActor).toBe(settings.actor)
   })
