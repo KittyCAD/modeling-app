@@ -114,10 +114,10 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
       {isLoadingModel && (
         <output
           data-testid="local-renderer-loading"
-          className="pointer-events-none absolute bottom-4 left-1/2 z-40 -translate-x-1/2 rounded-full border border-chalkboard-30/80 bg-chalkboard-10/90 px-3 py-2 shadow-md backdrop-blur dark:border-chalkboard-70 dark:bg-chalkboard-90/90"
+          className="pointer-events-none absolute bottom-4 left-1/2 z-40 -translate-x-1/2 rounded-full border border-chalkboard-30/80 bg-chalkboard-10/90 px-4 py-2.5 shadow-md backdrop-blur dark:border-chalkboard-70 dark:bg-chalkboard-90/90"
         >
-          <div className="flex items-center gap-2 text-xs text-chalkboard-70 dark:text-chalkboard-30">
-            <Spinner className="h-4 w-4" />
+          <div className="flex items-center gap-2.5 text-[15px] leading-[21px] text-chalkboard-70 dark:text-chalkboard-30">
+            <Spinner className="h-[21px] w-[21px]" />
             <span>Updating model…</span>
           </div>
         </output>
