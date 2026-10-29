@@ -451,7 +451,10 @@ export const ZookeeperConversationInput = (
     try {
       const dataUrl = takeViewportScreenshot()
       if (!dataUrl) return
-      appendDataUrlAttachment(dataUrl, 'viewport-screenshot.png')
+      appendDataUrlAttachment(
+        dataUrl,
+        `viewport-screenshot-${crypto.randomUUID()}.png`
+      )
     } catch (e) {
       console.error('Failed to capture viewport screenshot', e)
     }
@@ -474,7 +477,7 @@ export const ZookeeperConversationInput = (
         onSend: (annotatedDataUrl) => {
           appendDataUrlAttachment(
             annotatedDataUrl,
-            'annotated-viewport-screenshot.png'
+            `annotated-viewport-screenshot-${crypto.randomUUID()}.png`
           )
           stopZoodleRuntimeExtension()
         },
