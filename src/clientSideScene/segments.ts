@@ -21,7 +21,7 @@ import {
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 
-import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { calculate_circle_from_3_points } from '@src/lib/wasm_lib_wrapper'
 
 import type { SketchView as Sketch } from '@rust/kcl-lib/bindings/SketchView'
 import {

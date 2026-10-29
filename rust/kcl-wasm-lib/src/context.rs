@@ -236,24 +236,6 @@ impl Context {
         guard.engine_execute(&ctx, program).await
     }
 
-    /// Reset the scene and bust the cache.
-    /// ONLY use this if you absolutely need to reset the scene and bust the cache.
-    #[wasm_bindgen(js_name = bustCacheAndResetScene)]
-    pub async fn bust_cache_and_reset_scene(&self, settings: &str, path: Option<String>) -> Result<JsValue, String> {
-        console_error_panic_hook::set_once();
-
-        let (_owner, ctx) = self
-            .executor_for_operation(settings, path.as_deref(), ExecutionMode::Engine)
-            .await
-            .map_err(|error| error.error.to_string())?;
-        match ctx.bust_cache_and_reset_scene().await {
-            // The serde-wasm-bindgen does not work here because of weird HashMap issues.
-            // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
-            Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
-            Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
-        }
-    }
-
     /// Send a response to kcl lib's engine.
     #[wasm_bindgen(js_name = sendResponse)]
     pub async fn send_response(&self, data: js_sys::Uint8Array) {

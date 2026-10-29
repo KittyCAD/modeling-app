@@ -34,6 +34,16 @@ export default defineConfig({
     projects: [
       {
         extends: true,
+        // Unit tests mock this native boundary without a generated Wasm build.
+        plugins: [
+          {
+            name: 'unit-wasm-boundary',
+            enforce: 'pre',
+            resolveId(id) {
+              if (id === '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib') return id
+            },
+          },
+        ],
         test: {
           name: 'unit',
           include: [

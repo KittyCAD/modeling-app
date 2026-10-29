@@ -71,6 +71,7 @@ export default defineConfig((env) => {
       }),
     ],
     worker: {
+      format: 'es',
       plugins: () => [viteTsconfigPaths()],
     },
     resolve: {
