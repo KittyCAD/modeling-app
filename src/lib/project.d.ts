@@ -1,4 +1,3 @@
-import type { CloudSyncProjectMetadata } from '@src/lib/cloudSync'
 import type { ProjectLibraryType } from '@src/lib/projectLibraries'
 
 /**
@@ -71,7 +70,7 @@ export type Project = {
    * Cloud sync conflict metadata when this local project needs manual
    * resolution against a remote version.
    */
-  cloudConflict?: CloudSyncProjectMetadata['conflict']
+  cloudConflict?: unknown
   /**
    * Absolute path most likely to main.kcl within the project
    */

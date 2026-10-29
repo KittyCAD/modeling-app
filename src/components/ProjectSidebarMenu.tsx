@@ -285,12 +285,14 @@ function ProjectMenuPopover({
                 </span>
               ),
               onClick: () => {
-                app.fileWorkflows.duplicateProject({
+                app.fileWorkflows
+                  .duplicateProject({
                     projectName: project.name,
                     projectPath: project.path,
                     requestedProjectName: getProjectDisplayName(project),
                     ...getCurrentFileForDuplicate(),
-                  }).catch(reportRejection)
+                  })
+                  .catch(reportRejection)
               },
             }
           : null,

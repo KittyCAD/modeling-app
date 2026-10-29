@@ -1,7 +1,5 @@
 import type { ProjectResponse } from '@kittycad/lib'
-import type { ProjectLibraryType } from '@src/lib/projectLibraries'
 
-/** Cloud API project revision token used for guarded updates. */
 export type Revision = string
 
 /** Content fingerprint for one file in a whole-project manifest. */
@@ -15,85 +13,12 @@ export type ProjectManifest = {
   files: Record<string, ProjectManifestEntry>
 }
 
-/**
- * The cloud revision and local manifest acknowledged by that revision.
- *
- * IndexedDB records created by older releases store these as separate optional
- * fields on ProjectMetadata. Cloud operations must parse that persistence shape
- * into this type before using either value as a synchronization base.
- */
-export type AcknowledgedSyncBase = {
-  revision: Revision
-  manifest: ProjectManifest
-}
-
 /** One normalized file payload included in a cloud project archive upload. */
 export type ProjectArchiveFile = {
   relativePath: string
   data: Uint8Array
 }
 
-/** Result of synchronizing one explicitly enrolled project to convergence. */
-export type CloudSyncProjectNowResult = {
-  remoteProjectId: string
-}
-
-/** Durable per-project sync metadata stored locally in the cloud sync DB. */
-export type ProjectMetadata = {
-  schemaVersion: 1
-  localProjectPath: string
-  projectName: string
-  remoteProjectId?: string
-  /** Legacy IndexedDB field; consume through parseAcknowledgedSyncBase. */
-  remoteRevision?: Revision
-  remoteUpdatedAt?: string
-  /** Legacy IndexedDB field; consume through parseAcknowledgedSyncBase. */
-  baseManifest?: ProjectManifest
-  tombstone?: boolean
-  conflict?: {
-    remoteRevision?: Revision
-    remoteUpdatedAt?: string
-    createdAt: string
-    reason?: 'divergent-changes' | 'remote-replacement-rejected'
-    /**
-     * Legacy conflict copies were persisted as sibling project folders. New
-     * conflicts fetch the cloud version on demand instead; this path is retained
-     * only so resolving old conflicts can clean up the stale folder.
-     */
-    conflictProjectPath?: string
-  }
-  syncExcluded?: {
-    reason: 'conflict-copy' | 'user-disconnected'
-    sourceProjectPath?: string
-    remoteProjectId?: string
-    createdAt: string
-  }
-  lastFailure?: ProjectSyncFailure
-  lastSyncedAt?: string
-}
-
-export type ProjectSyncFailureKind =
-  | 'remote-upload-forbidden'
-  | 'remote-replacement-rejected'
-
-export type ProjectSyncFailure = {
-  message: string
-  at: string
-  kind?: ProjectSyncFailureKind
-}
-
-/** Durable queued local mutation that should be replicated to the cloud later. */
-export type OutboxEntry = {
-  id?: number
-  projectPath: string
-  kind: 'upsert' | 'delete'
-  targetPath: string
-  sourcePath?: string
-  deletedPaths?: string[]
-  createdAt: string
-}
-
-/** Cloud project metadata retained after endpoint-specific parsing. */
 export type RemoteProjectSummary = {
   id: string
   title?: string
@@ -134,62 +59,9 @@ export type ProjectUploadPublicationMetadata = {
   category_ids: string[]
 }
 
-/** Runtime configuration for enabling and targeting cloud sync replication. */
-export type CloudSyncConfig = {
+export type CloudApiConfig = {
   enabled: boolean
   token?: string
   baseUrl?: string
-  environmentName?: string
-  /** Local materialization paths for configured cloud-type project libraries. */
-  cloudProjectDirectoryPaths?: string[]
-  autoEnrollCloudLibraryProjects?: boolean
-}
-
-/** Currently opened project context used to scope status and retry behavior. */
-export type CloudSyncOpenedProject = {
-  projectPath: string
-  libraryPath?: string
-  libraryType?: ProjectLibraryType
-}
-
-/** Coarse user-visible sync state exposed to status bar consumers. */
-export type CloudSyncState =
-  | 'disabled'
-  | 'idle'
-  | 'syncing'
-  | 'failed'
-  | 'conflict'
-
-/** Current aggregate sync status for UI and diagnostics. */
-export type CloudSyncStatus = {
-  enabled: boolean
-  state: CloudSyncState
-  pendingCount: number
-  scopedProjectPath?: string
-  scopedProjectCloudProjectId?: string
-  activeProjectPath?: string
-  lastFailure?: string
-  lastFailureKind?: ProjectSyncFailureKind
-  lastFailureAt?: string
-  lastSyncedAt?: string
-}
-
-/** Local project that has been associated with a remote cloud project. */
-export type CloudSyncLocalProject = {
-  projectPath: string
-  projectName: string
-  remoteProjectId: string
-  remoteRevision?: Revision
-}
-
-/** Project metadata index entry enriched with pending local-change state. */
-export type CloudSyncProjectMetadataIndexEntry = ProjectMetadata & {
-  hasPendingChanges: boolean
-  pendingSince?: string
-}
-
-/** Remote revision/update metadata extracted from cloud API responses. */
-export type RemoteSyncMetadata = {
-  revision?: Revision
-  updatedAt?: string
+  accountId?: string
 }

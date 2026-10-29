@@ -1,33 +1,46 @@
 import { Popover } from '@headlessui/react'
+
 import { useSignals } from '@preact/signals-react/runtime'
+
 import { getAquariumStatusBadge } from '@src/components/AquariumStatusBadge'
+
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
+
 import { PublishDialog } from '@src/components/PublishDialog'
+
 import {
   type ProjectStatus,
   useProjectStatus,
 } from '@src/hooks/useProjectStatus'
+
 import type { App } from '@src/lib/app'
-import { cloudSyncService } from '@src/lib/cloudSync/registry/contract'
+
+import { cloudStorageService } from '@src/registry/contracts/fileOperations'
+
 import fsZds from '@src/lib/fs-zds'
+
 import type { Project } from '@src/lib/project'
+
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
+
 import {
   moveOpenedProjectToCloudLibrary,
   updateProjectTitleForPublication,
 } from '@src/lib/projectLibraries/moveOpenedProjectToCloudLibrary'
-import {
-  type CurrentProjectPublicationDetails,
-  getCurrentProjectPublicationDetails,
-  publishCurrentProject,
-} from '@src/lib/share'
+
+import { type CurrentProjectPublicationDetails } from '@src/lib/fileSystem/cloud/publication'
+
 import { err } from '@src/lib/trap'
+
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+
 import { keymapService } from '@src/registry/contracts/keymap'
+
 import {
   MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
   markdownEditorService,
 } from '@src/registry/contracts/markdownEditor'
+
 import {
   type ComponentProps,
   memo,
@@ -36,7 +49,9 @@ import {
   useMemo,
   useState,
 } from 'react'
+
 import toast from 'react-hot-toast'
+
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: publish workflow navigation (useNavigate).
 import { useNavigate } from 'react-router-dom'
 
@@ -96,9 +111,9 @@ function PublishPopoverContent({
   const publishRequiresUsername = !isCheckingUser && !!token && !username
   const accountUrl = withSiteBaseURL('/account')
   const buttonDisabled = kclEmpty || hasKclErrors
-  const cloudSync = app.registry.optional(cloudSyncService)
+  const cloudStorage = app.registry.optional(cloudStorageService)
   const willMoveProjectToCloud = Boolean(
-    cloudSync?.status.value.enabled &&
+    cloudStorage &&
       project &&
       project.libraryType !== CLOUD_PROJECT_LIBRARY_TYPE
   )
@@ -128,13 +143,15 @@ function PublishPopoverContent({
       }
 
       const wasmInstance = await kclManager.wasmInstancePromise
-      const details = await getCurrentProjectPublicationDetails({
-        fileOperations: app.fileOperations,
-        token,
-        project,
-        wasmInstance,
-        remoteProjectId,
-      })
+      const details = await app.registry
+        .get(cloudStorageService)
+        .getCurrentProjectPublicationDetails({
+          fileOperations: app.fileOperations,
+          token,
+          project,
+          wasmInstance,
+          remoteProjectId,
+        })
 
       if (err(details)) {
         console.error('Failed to load project publication details', details)
@@ -238,35 +255,22 @@ function PublishPopoverContent({
       }
 
       let remoteProjectId: string | undefined
-      if (willMoveProjectToCloud) {
-        if (!cloudSync) {
-          toast.error('Cloud sync is unavailable for this project.', {
-            duration: 5000,
-          })
-          return false
-        }
-        try {
-          remoteProjectId = (await cloudSync.syncNow(publicationProject.path))
-            .remoteProjectId
-        } catch (error) {
-          console.error('Failed to sync the project before publication', error)
-          toast.error('The project could not be synced before publication.', {
-            duration: 5000,
-          })
-          return false
-        }
+      if (willMoveProjectToCloud && cloudStorage) {
+        remoteProjectId = cloudStorage.idFor(publicationProject.path)
       }
 
-      const published = await publishCurrentProject({
-        fileOperations: app.fileOperations,
-        token,
-        project: publicationProject,
-        currentFilePath: publicationFilePath,
-        currentFileContents: kclManager.code,
-        wasmInstance,
-        submission,
-        remoteProjectId,
-      })
+      const published = await app.registry
+        .get(cloudStorageService)
+        .publishCurrentProject({
+          fileOperations: app.fileOperations,
+          token,
+          project: publicationProject,
+          currentFilePath: publicationFilePath,
+          currentFileContents: kclManager.code,
+          wasmInstance,
+          submission,
+          remoteProjectId,
+        })
 
       if (!published) {
         return false
@@ -292,7 +296,7 @@ function PublishPopoverContent({
     },
     [
       app,
-      cloudSync,
+      cloudStorage,
       fetchPublicationDetails,
       fetchedProjectStatus,
       kclManager,

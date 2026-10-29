@@ -1,7 +1,5 @@
-import {
-  getCloudProjectLibraryMaterializationDirectoryPath,
-  normalizePathForSync,
-} from '@src/lib/cloudSync/paths'
+import fsZds from '@src/lib/fs-zds'
+import { normalizePathForSync } from '@src/lib/fileSystem/cloud/paths'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   isPathInDirectoryProjectLibrary,
@@ -17,9 +15,7 @@ export type ProjectLibraryOwnership = {
 /** Return the local filesystem root that represents a project library. */
 async function getProjectLibraryLocalPath(library: ProjectLibrarySetting) {
   if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
-    return getCloudProjectLibraryMaterializationDirectoryPath(library).catch(
-      () => undefined
-    )
+    return fsZds.resolve('/__zoo_cloud__')
   }
 
   return library.path.trim()

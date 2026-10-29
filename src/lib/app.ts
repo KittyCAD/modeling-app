@@ -32,9 +32,7 @@ import {
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
-import {
-  type FileWorkflowService,
-} from '@src/lib/fileSystem/workflows/utils'
+import { type FileWorkflowService } from '@src/lib/fileSystem/workflows/utils'
 import {
   UserFeaturesTransition,
   userFeaturesContextHas,
@@ -43,7 +41,6 @@ import {
   type AuthRegistryService,
   authService,
 } from '@src/registry/contracts/auth'
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type CommandSystemService,
   commandSystemService,
@@ -323,22 +320,6 @@ export class App implements AppSubsystems {
     return new App(combined)
   }
 
-  private setCloudSyncOpenedProject(project?: Project) {
-    this.registry.get(cloudSyncService).setOpenedProject(
-      project
-        ? {
-            projectPath: project.path,
-            ...(project.libraryPath
-              ? { libraryPath: project.libraryPath }
-              : {}),
-            ...(project.libraryType
-              ? { libraryType: project.libraryType }
-              : {}),
-          }
-        : undefined
-    )
-  }
-
   private fileRouteLoadGeneration = 0
 
   beginFileRouteLoad(signal: AbortSignal) {
@@ -374,7 +355,6 @@ export class App implements AppSubsystems {
     // so we gotta clean up after ourselves and close any open project.
     this.project?.close()
     this.project = nextProject
-    this.setCloudSyncOpenedProject(ownedProject)
 
     // These extensions make global project operations un/redoable.
     this.disposeProjectHistoryExtensions = effect(() => {
@@ -488,7 +468,6 @@ export class App implements AppSubsystems {
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeSystemIO?.()
     this.unsubscribeSystemIO = undefined
-    this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
   }

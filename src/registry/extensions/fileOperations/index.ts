@@ -31,6 +31,7 @@ export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
     const cloud = createCloudStorage(backing, () => ({
       enabled: true,
       token: ctx.services.optional(authService)?.token.peek(),
+      accountId: ctx.services.optional(authService)?.user.peek()?.id,
     }))
     mounted.mount({ root: cloud.root, operations: cloud.operations })
     const projects = createProjectOperations({

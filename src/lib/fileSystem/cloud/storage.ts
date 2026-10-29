@@ -1,19 +1,39 @@
+import type * as Publication from '@src/lib/fileSystem/cloud/publication'
+import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
+
+import { v4 } from 'uuid'
+
+import type { PublishCurrentProjectArgs } from '@src/lib/fileSystem/cloud/publication'
+
 import { signal } from '@preact/signals-core'
+
 import * as api from '@src/lib/fileSystem/cloud/cloudApi'
+
 import {
   parseProjectArchive,
   withProjectTitleInArchiveFiles,
+  withUpdatedProjectTomlInArchiveFiles,
 } from '@src/lib/fileSystem/cloud/projectArchive'
+
 import type {
-  CloudSyncConfig,
+  CloudApiConfig,
   ProjectArchiveFile,
   RemoteProject,
   RemoteProjectSummary,
 } from '@src/lib/fileSystem/cloud/types'
+
 import { createMemoryFileSystem } from '@src/lib/fileSystem/memoryFileSystem'
+
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+
+export interface CloudFileChange {
+  readonly path: string
+  readonly eventType: 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir'
+}
 
 export interface CloudSaveState {
   readonly state: 'saved' | 'saving' | 'failed'
@@ -21,6 +41,7 @@ export interface CloudSaveState {
 }
 interface OpenCloudProject {
   remote: RemoteProject
+  owner: string | undefined
   acknowledgedPaths: Set<string>
   queue: Promise<unknown>
 }
@@ -28,17 +49,18 @@ interface OpenCloudProject {
 /** Cloud persistence owns memory and HTTP; it never materializes a project on disk. */
 export function createCloudStorage(
   paths: IZooDesignStudioFS,
-  config: () => CloudSyncConfig
+  config: () => CloudApiConfig
 ) {
   const root = paths.resolve('/__zoo_cloud__')
   const memory = createMemoryFileSystem(paths)
   const runtime = createFileOperationsRuntime(memory)
   const files = runtime.operations
+  let listGeneration = 0
   const projects = signal<readonly RemoteProjectSummary[]>([])
   const saves = signal<ReadonlyMap<string, CloudSaveState>>(new Map())
   const opened = new Map<string, OpenCloudProject>()
   const opening = new Map<string, Promise<string>>()
-  const listeners = new Set<(paths: readonly string[]) => void>()
+  const listeners = new Set<(changes: readonly CloudFileChange[]) => void>()
   const ready = memory.mkdir(root, { recursive: true })
   const pathFor = (id: string) => paths.join(root, id)
   const idFor = (path: string) => {
@@ -53,7 +75,7 @@ export function createCloudStorage(
   const state = (id: string, value: CloudSaveState) => {
     saves.value = new Map(saves.peek()).set(id, value)
   }
-  const notify = (changed: readonly string[]) => {
+  const notify = (changed: readonly CloudFileChange[]) => {
     for (const listener of listeners) listener(changed)
   }
   const collect = async (
@@ -103,16 +125,22 @@ export function createCloudStorage(
     remote: RemoteProject,
     archive: readonly ProjectArchiveFile[]
   ) => {
+    listGeneration += 1
     const project = opened.get(id)
     opened.set(id, {
       remote,
+      owner: config().accountId,
       acknowledgedPaths: new Set(archive.map((f) => f.relativePath)),
       queue: project?.queue ?? Promise.resolve(),
     })
     projects.value = [...projects.peek().filter((p) => p.id !== id), remote]
     state(id, { state: 'saved' })
   }
-  const commit = async (id: string) => {
+  const commit = async (
+    id: string,
+    snapshot?: ProjectArchiveFile[],
+    requestConfig = config()
+  ) => {
     const project = opened.get(id)
     if (!project) return Promise.reject(new Error('Cloud project is not open.'))
     const revision = project.remote.revision
@@ -125,10 +153,10 @@ export function createCloudStorage(
         new Error('Cloud project is missing its revision; save canceled.')
       )
     }
-    const archive = await collect(pathFor(id))
+    const archive = snapshot ?? (await collect(pathFor(id)))
     const currentPaths = new Set(archive.map((f) => f.relativePath))
     const remote = await api.updateRemoteProject({
-      config: config(),
+      config: requestConfig,
       projectPath: pathFor(id),
       project: project.remote,
       files: archive,
@@ -137,19 +165,60 @@ export function createCloudStorage(
         (path) => !currentPaths.has(path)
       ),
     })
+    if (config().accountId !== requestConfig.accountId)
+      return Promise.reject(new Error('Cloud account changed during save.'))
     acknowledge(id, remote, archive)
   }
-  const enqueue = <T>(id: string, work: () => Promise<T>): Promise<T> => {
+  const enqueue = <T>(
+    id: string,
+    work: () => Promise<T>,
+    persist = true
+  ): Promise<T> => {
     const project = opened.get(id)
     if (!project) return Promise.reject(new Error('Cloud project is not open.'))
+    const requestConfig = config()
+    if (project.owner !== requestConfig.accountId)
+      return Promise.reject(
+        new Error('Reload to open cloud projects after changing accounts.')
+      )
     const result = project.queue
       .catch(() => undefined)
       .then(async () => {
         state(id, { state: 'saving' })
         try {
+          if (config().accountId !== requestConfig.accountId)
+            return Promise.reject(
+              new Error('Cloud account changed before save.')
+            )
+          const before = new Map(
+            (await collect(pathFor(id))).map((file) => [
+              file.relativePath,
+              file.data,
+            ])
+          )
           const value = await work()
-          await commit(id)
-          notify([pathFor(id)])
+          const after = await collect(pathFor(id))
+          if (persist) await commit(id, after, requestConfig)
+          const changes: CloudFileChange[] = []
+          for (const file of after) {
+            const old = before.get(file.relativePath)
+            if (
+              !old ||
+              old.length !== file.data.length ||
+              !old.every((byte, index) => byte === file.data[index])
+            )
+              changes.push({
+                path: paths.join(pathFor(id), file.relativePath),
+                eventType: old ? 'change' : 'add',
+              })
+            before.delete(file.relativePath)
+          }
+          for (const relativePath of before.keys())
+            changes.push({
+              path: paths.join(pathFor(id), relativePath),
+              eventType: 'unlink',
+            })
+          notify(changes)
           return value
         } catch (error) {
           state(id, { state: 'failed', error })
@@ -161,8 +230,29 @@ export function createCloudStorage(
   }
   const mutate = <T>(path: string, work: () => Promise<T>) =>
     enqueue(idFor(path), work)
+  const read = async <T>(path: string, run: () => Promise<T>): Promise<T> => {
+    if (path !== root) {
+      const project = opened.get(idFor(path))
+      if (project && project.owner !== config().accountId)
+        return Promise.reject(
+          new Error('Cloud project belongs to a different account.')
+        )
+    }
+    return run()
+  }
   const operations: FileOperationsRegistryService = {
     ...files,
+    stat: (path) => read(path, () => files.stat(path)),
+    exists: (path) => read(path, () => files.exists(path)),
+    readDirectory: (path) =>
+      read(path, async () =>
+        path === root
+          ? [...opened]
+              .filter(([, project]) => project.owner === config().accountId)
+              .map(([id]) => id)
+          : files.readDirectory(path)
+      ),
+    readFile: (path) => read(path, () => files.readFile(path)),
     writeFile: (path, contents) => {
       const owned =
         typeof contents === 'string' ? contents : new Uint8Array(contents)
@@ -199,15 +289,26 @@ export function createCloudStorage(
     },
   }
   const openProject = (id: string): Promise<string> => {
-    if (opened.has(id)) return Promise.resolve(pathFor(id))
+    const existing = opened.get(id)
+    if (existing)
+      return existing.owner === config().accountId
+        ? Promise.resolve(pathFor(id))
+        : Promise.reject(
+            new Error('Reload to open cloud projects after changing accounts.')
+          )
     const pending = opening.get(id)
     if (pending) return pending
+    const requestConfig = config()
     const result = (async () => {
       await ready
-      const remote = await api.getRemoteProject(config(), id)
+      const remote = await api.getRemoteProject(requestConfig, id)
       const archive = await parseProjectArchive(
-        await api.downloadRemoteProjectArchive(config(), id)
+        await api.downloadRemoteProjectArchive(requestConfig, id)
       )
+      if (config().accountId !== requestConfig.accountId)
+        return Promise.reject(
+          new Error('Cloud account changed while opening project.')
+        )
       await hydrate(id, archive)
       acknowledge(id, remote, archive)
       return pathFor(id)
@@ -221,8 +322,9 @@ export function createCloudStorage(
     // Releasing an in-memory mount cannot remove any historical disk mirror.
     if (await files.exists(pathFor(id))) await files.remove(pathFor(id))
     opened.delete(id)
+    listGeneration += 1
     projects.value = projects.peek().filter((p) => p.id !== id)
-    notify([pathFor(id)])
+    notify([{ path: pathFor(id), eventType: 'unlinkDir' }])
   }
   return {
     root,
@@ -231,13 +333,19 @@ export function createCloudStorage(
     operations,
     projects,
     saves,
-    subscribe: (listener: (paths: readonly string[]) => void) => {
+    subscribe: (listener: (changes: readonly CloudFileChange[]) => void) => {
       listeners.add(listener)
       return () => listeners.delete(listener)
     },
     listProjects: async () => {
-      const result = await api.listRemoteProjects(config())
-      projects.value = result
+      const generation = ++listGeneration
+      const requestConfig = config()
+      const result = await api.listRemoteProjects(requestConfig)
+      if (
+        generation === listGeneration &&
+        requestConfig.accountId === config().accountId
+      )
+        projects.value = result
       return result
     },
     exists: async (id: string) => {
@@ -257,7 +365,11 @@ export function createCloudStorage(
       archive: readonly ProjectArchiveFile[]
     ) => {
       await ready
-      const filesWithTitle = withProjectTitleInArchiveFiles([...archive], title)
+      const filesWithTitle = withUpdatedProjectTomlInArchiveFiles(
+        [...archive],
+        (contents) => prepareProjectTomlForDuplication(contents, title, v4())
+      )
+      if (filesWithTitle instanceof Error) return Promise.reject(filesWithTitle)
       const remote = await api.createRemoteProject(
         config(),
         title,
@@ -265,7 +377,7 @@ export function createCloudStorage(
       )
       await hydrate(remote.id, filesWithTitle)
       acknowledge(remote.id, remote, filesWithTitle)
-      notify([pathFor(remote.id)])
+      notify([{ path: pathFor(remote.id), eventType: 'addDir' }])
       return { id: remote.id, path: pathFor(remote.id) }
     },
     renameProject: async (id: string, title: string) => {
@@ -281,10 +393,11 @@ export function createCloudStorage(
     duplicateProject: async (id: string, title: string) => {
       await openProject(id)
       await opened.get(id)?.queue.catch(() => undefined)
-      const archive = withProjectTitleInArchiveFiles(
+      const archive = withUpdatedProjectTomlInArchiveFiles(
         await collect(pathFor(id)),
-        title
+        (contents) => prepareProjectTomlForDuplication(contents, title, v4())
       )
+      if (archive instanceof Error) return Promise.reject(archive)
       const remote = await api.createRemoteProject(config(), title, archive)
       await hydrate(remote.id, archive)
       acknowledge(remote.id, remote, archive)
@@ -298,6 +411,58 @@ export function createCloudStorage(
     snapshot: async (id: string) => {
       await openProject(id)
       return collect(pathFor(id))
+    },
+    getProjectStatus: async (id: string) =>
+      (
+        await import('@src/lib/fileSystem/cloud/publication')
+      ).getCloudPublicationStatus(id, config().token),
+    getProjectStatuses: async () =>
+      (
+        await import('@src/lib/fileSystem/cloud/publication')
+      ).getCloudPublicationStatuses(config().token),
+    downloadProjectById: async (id: string) =>
+      (
+        await import('@src/lib/fileSystem/cloud/publicProject')
+      ).downloadProjectById(id),
+    getPublicProjectNameById: async (id: string) =>
+      (
+        await import('@src/lib/fileSystem/cloud/publicProject')
+      ).getPublicProjectNameById(id),
+    publishCurrentProject: async (args: PublishCurrentProjectArgs) => {
+      const id =
+        args.remoteProjectId ??
+        (args.project?.path ? idFor(args.project.path) : undefined)
+      if (!id)
+        return Promise.reject(
+          new Error('A cloud project must be open before publishing.')
+        )
+      await openProject(id)
+      return enqueue(
+        id,
+        async () => {
+          const publication = await import(
+            '@src/lib/fileSystem/cloud/publication'
+          )
+          const result = await publication.publishCurrentProject({
+            ...args,
+            remoteProjectId: id,
+          })
+          if (result) {
+            const remote = await api.getRemoteProject(config(), id)
+            acknowledge(id, remote, await collect(pathFor(id)))
+          }
+          return result
+        },
+        false
+      )
+    },
+    getCurrentProjectPublicationDetails: async (
+      args: Parameters<
+        typeof Publication.getCurrentProjectPublicationDetails
+      >[0]
+    ) => {
+      const publication = await import('@src/lib/fileSystem/cloud/publication')
+      return publication.getCurrentProjectPublicationDetails(args)
     },
     thumbnail: (project: RemoteProjectSummary) =>
       api.getRemoteProjectThumbnailUrl(config(), project),

@@ -17,7 +17,8 @@ import {
 } from '@src/lib/projectLibraries'
 import type { HideOnPlatformValue } from '@src/lib/settings/settingsTypes'
 import { isArray } from '@src/lib/utils'
-import type { CloudProjectRelationship } from '@src/registry/contracts/cloudSync'
+import type { RemoteProjectSummary } from '@src/lib/fileSystem/cloud/types'
+type CloudProjectRelationship = { remoteProject?: RemoteProjectSummary }
 import type {
   HomeProjectEntry,
   HomeProjectOpenResult,

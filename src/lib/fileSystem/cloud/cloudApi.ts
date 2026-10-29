@@ -10,7 +10,7 @@ import {
   toArrayBuffer,
 } from '@src/lib/fileSystem/cloud/projectArchive'
 import type {
-  CloudSyncConfig,
+  CloudApiConfig,
   CreatedRemoteProject,
   ProjectArchiveFile,
   ProjectUploadPublicationMetadata,
@@ -56,7 +56,7 @@ function retryAfterDelayMs(value: string | null) {
   return Math.max(0, retryAtMs - Date.now())
 }
 
-function getBaseUrl(config: CloudSyncConfig) {
+function getBaseUrl(config: CloudApiConfig) {
   return (config.baseUrl || env().VITE_ZOO_API_BASE_URL || '').replace(
     /\/+$/g,
     ''
@@ -64,7 +64,7 @@ function getBaseUrl(config: CloudSyncConfig) {
 }
 
 async function cloudFetchUncategorized(
-  config: CloudSyncConfig,
+  config: CloudApiConfig,
   targetPath: string,
   init: RequestInit = {}
 ): Promise<Response> {
@@ -109,7 +109,7 @@ async function cloudFetchUncategorized(
 }
 
 function cloudFetch(
-  config: CloudSyncConfig,
+  config: CloudApiConfig,
   targetPath: string,
   init: RequestInit = {}
 ) {
@@ -120,7 +120,7 @@ function cloudFetch(
 }
 
 async function cloudJson<T>(
-  config: CloudSyncConfig,
+  config: CloudApiConfig,
   targetPath: string,
   init: RequestInit = {}
 ): Promise<T> {
@@ -153,7 +153,7 @@ function isRemoteProjectSummary(value: unknown): value is RemoteProjectSummary {
 }
 
 export async function listRemoteProjects(
-  config: CloudSyncConfig,
+  config: CloudApiConfig,
   beforeRequest: () => Promise<void> = async () => undefined
 ): Promise<RemoteProjectSummary[]> {
   const projects = new Map<string, RemoteProjectSummary>()
@@ -215,7 +215,7 @@ export async function listRemoteProjects(
 }
 
 export async function getRemoteProject(
-  config: CloudSyncConfig,
+  config: CloudApiConfig,
   projectId: string
 ) {
   return cloudJson<RemoteProject>(config, `/user/projects/${projectId}`)
@@ -365,7 +365,7 @@ export function thumbnailUrlFromRemoteProjectPayload(
 }
 
 export async function getRemoteProjectThumbnailUrl(
-  config: CloudSyncConfig,
+  config: CloudApiConfig,
   project: RemoteProjectSummary
 ) {
   const urlFromProjectList = thumbnailUrlFromRemoteProjectPayload(project)
@@ -439,7 +439,7 @@ export async function getRemoteProjectThumbnailUrl(
 }
 
 export async function deleteRemoteProject(
-  config: CloudSyncConfig,
+  config: CloudApiConfig,
   projectId: string
 ) {
   await cloudFetch(config, `/user/projects/${projectId}`, {
@@ -448,7 +448,7 @@ export async function deleteRemoteProject(
 }
 
 export async function downloadRemoteProjectArchive(
-  config: CloudSyncConfig,
+  config: CloudApiConfig,
   projectId: string
 ) {
   const response = await cloudFetch(
@@ -459,7 +459,7 @@ export async function downloadRemoteProjectArchive(
 }
 
 export async function createRemoteProject(
-  config: CloudSyncConfig,
+  config: CloudApiConfig,
   projectPath: string,
   files: ProjectArchiveFile[]
 ) {
@@ -482,16 +482,19 @@ export async function updateRemoteProject({
   expectedRevision,
   entrypointPath,
   deletedPaths,
+  publicationMetadata: requestedPublicationMetadata,
 }: {
-  config: CloudSyncConfig
+  config: CloudApiConfig
   projectPath: string
   project: RemoteProject
   files: ProjectArchiveFile[]
   expectedRevision?: Revision
   entrypointPath?: string
   deletedPaths?: string[]
+  publicationMetadata?: ProjectUploadPublicationMetadata
 }) {
-  const publicationMetadata = getProjectUploadPublicationMetadata(project)
+  const publicationMetadata =
+    requestedPublicationMetadata ?? getProjectUploadPublicationMetadata(project)
 
   return cloudJson<RemoteProject>(
     config,

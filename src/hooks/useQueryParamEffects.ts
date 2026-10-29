@@ -1,3 +1,4 @@
+import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import { base64ToString } from '@src/lib/base64'
 import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
@@ -18,7 +19,7 @@ import {
 import {
   downloadProjectById,
   getPublicProjectNameById,
-} from '@src/lib/downloadProject'
+} from '@src/lib/fileSystem/cloud/publicProject'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { downloadKclSample } from '@src/lib/kclSamples'
@@ -32,7 +33,6 @@ import {
   FileWorkflowStates,
   waitForIdleState,
 } from '@src/lib/fileSystem/workflows/utils'
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: query-driven imports, project creation, and command dispatch (useNavigate, useSearchParams).
@@ -170,7 +170,9 @@ export function useQueryParamEffects() {
         )
       }
 
-      const projectName = await getPublicProjectNameById(projectId)
+      const projectName = await app.registry
+        .get(cloudStorageService)
+        .getPublicProjectNameById(projectId)
       if (err(projectName)) {
         return Promise.reject(projectName)
       }
@@ -178,7 +180,9 @@ export function useQueryParamEffects() {
         return
       }
 
-      const downloadedProject = await downloadProjectById(projectId)
+      const downloadedProject = await app.registry
+        .get(cloudStorageService)
+        .downloadProjectById(projectId)
       if (err(downloadedProject)) {
         return Promise.reject(downloadedProject)
       }
@@ -204,12 +208,6 @@ export function useQueryParamEffects() {
       }
       if (cancelled) {
         return
-      }
-      if (
-        projectLibraryTarget.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID &&
-        app.registry.get(cloudSyncService).status.value.enabled
-      ) {
-        await app.registry.get(cloudSyncService).syncNow(importedProject.path)
       }
       if (cancelled) {
         return

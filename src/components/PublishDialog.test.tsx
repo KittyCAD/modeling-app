@@ -1,7 +1,7 @@
 import { Popover } from '@headlessui/react'
 import type { MarkdownEditorActions } from '@kittycad/ui-components'
 import { PublishDialog } from '@src/components/PublishDialog'
-import type { CurrentProjectPublicationDetails } from '@src/lib/share'
+import type { CurrentProjectPublicationDetails } from '@src/lib/fileSystem/cloud/publication'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 

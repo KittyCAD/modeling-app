@@ -9,9 +9,7 @@ import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { authMachine } from '@src/machines/authMachine'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import {
-  type FileWorkflowService,
-} from '@src/lib/fileSystem/workflows/utils'
+import { type FileWorkflowService } from '@src/lib/fileSystem/workflows/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 import type { ActorRefFrom } from 'xstate'
@@ -54,13 +52,15 @@ export function modelingMenuCallbackMostActions({
       if (!currentProject) {
         return
       }
-      fileWorkflows.duplicateProject({
+      fileWorkflows
+        .duplicateProject({
           projectName: currentProject.name,
           projectPath: currentProject.path,
           requestedProjectName: getProjectDisplayName(currentProject),
           currentFilePath: filePath,
           currentFileContents: kclManager.code,
-        }).catch(reportRejection)
+        })
+        .catch(reportRejection)
     } else if (data.menuLabel === 'File.Open project') {
       commandBarActor.send({
         type: 'Find and select command',

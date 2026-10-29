@@ -173,7 +173,8 @@ test.describe(
       await page.evaluate(() => {
         const appWindow = window as any
         const fileWorkflows = window.app.fileWorkflows as any
-        const originalSetDirectory = fileWorkflows.setProjectDirectoryPath.bind(fileWorkflows)
+        const originalSetDirectory =
+          fileWorkflows.setProjectDirectoryPath.bind(fileWorkflows)
         appWindow.__setProjectDirectoryPathEvents = []
         fileWorkflows.setProjectDirectoryPath = (data: any) => {
           const event = { type: 'set project directory path', data }
@@ -184,7 +185,9 @@ test.describe(
         }
       })
       await page.evaluate(() => {
-        window.app.fileWorkflows.readFoldersFromProjectDirectory().catch(reportRejection)
+        window.app.fileWorkflows
+          .readFoldersFromProjectDirectory()
+          .catch(reportRejection)
       })
 
       await page.getByTestId('create-file-button').click()

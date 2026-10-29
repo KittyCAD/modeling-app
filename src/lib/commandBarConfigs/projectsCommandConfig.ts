@@ -330,7 +330,9 @@ export function createProjectCommands({
           })
         }
 
-        fileWorkflows.navigateToProject({ requestedProjectName: record.name }).catch(reportRejection)
+        fileWorkflows
+          .navigateToProject({ requestedProjectName: record.name })
+          .catch(reportRejection)
       }
     },
     args: {
@@ -387,10 +389,12 @@ export function createProjectCommands({
           })
         }
 
-        fileWorkflows.createProject({
+        fileWorkflows
+          .createProject({
             requestedProjectName,
             requestedProjectTitle,
-          }).catch(reportRejection)
+          })
+          .catch(reportRejection)
       }
     },
     args: {
@@ -511,7 +515,9 @@ export function createProjectCommands({
           return target.actions.delete(target.project)
         }
 
-        fileWorkflows.deleteProject({ requestedProjectName: record.name }).catch(reportRejection)
+        fileWorkflows
+          .deleteProject({ requestedProjectName: record.name })
+          .catch(reportRejection)
       }
     },
     reviewMessage: ({ argumentsToSubmit }) => {
@@ -561,11 +567,13 @@ export function createProjectCommands({
           ? hash.replace(/^#/, '')
           : window.location.pathname
         const isOnHomePage = pathname.startsWith(PATHS.HOME)
-        fileWorkflows.renameProject({
+        fileWorkflows
+          .renameProject({
             requestedProjectName: record.newName,
             projectName: record.oldName,
             redirect: !isOnHomePage, // only redirect when renaming from within a project
-          }).catch(reportRejection)
+          })
+          .catch(reportRejection)
       }
     },
     args: {
@@ -633,11 +641,13 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
-        fileWorkflows.importFileFromURL({
+        fileWorkflows
+          .importFileFromURL({
             requestedProjectName: record.projectName,
             requestedCode: record.code,
             requestedFileNameWithExtension: record.name,
-          }).catch(reportRejection)
+          })
+          .catch(reportRejection)
       }
     },
     args: {

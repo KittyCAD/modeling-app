@@ -1,4 +1,4 @@
-import type { ProjectPublishSubmission, PublishedProject } from '@src/lib/share'
+import type { ProjectPublishSubmission, PublishedProject } from '@src/lib/fileSystem/cloud/publication'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
@@ -21,7 +21,7 @@ vi.mock('@src/hooks/useProjectStatus', () => ({
   useProjectStatus: mockState.useProjectStatus,
 }))
 
-vi.mock('@src/lib/share', () => ({
+vi.mock('@src/lib/fileSystem/cloud/publication', () => ({
   publishCurrentProject: mockState.publishCurrentProject,
   getCurrentProjectPublicationDetails:
     mockState.getCurrentProjectPublicationDetails,
@@ -40,7 +40,7 @@ vi.mock('@src/components/PublishDialog', () => ({
 
 import { PublishButton } from '@src/components/PublishButton'
 import type { App } from '@src/lib/app'
-import { cloudSyncService } from '@src/lib/cloudSync/registry/contract'
+import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -147,8 +147,11 @@ function createApp({
         if (service === homeProjectActionsService) {
           return homeProjectActions
         }
-        if (service === cloudSyncService) {
+        if (service === cloudStorageService) {
           return {
+            publishCurrentProject: mockState.publishCurrentProject,
+            getCurrentProjectPublicationDetails: mockState.getCurrentProjectPublicationDetails,
+            idFor: () => 'remote-123',
             startProjectSync,
             syncNow,
             status: { value: { enabled: cloudSyncEnabled } },

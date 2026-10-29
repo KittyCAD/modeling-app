@@ -75,14 +75,16 @@ function Welcome() {
       return
     }
     // Navigate to the `main.kcl` file
-    fileWorkflows.navigateToFile({
+    fileWorkflows
+      .navigateToFile({
         requestedProjectName: projectName,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
-      }).catch(reportRejection)
+      })
+      .catch(reportRejection)
   }, [fileWorkflows, projectName])
 
   return (
@@ -129,7 +131,8 @@ function Scene() {
     let cancelled = false
     setIsBlankSceneReady(false)
     // Create if necessary and navigate to the `blank.kcl` file
-    fileWorkflows.bulkCreateKCLFilesAndNavigateToFile({
+    fileWorkflows
+      .bulkCreateKCLFilesAndNavigateToFile({
         requestedProjectName: projectName,
         requestedFileNameWithExtension: 'blank.kcl',
         files: [
@@ -149,7 +152,8 @@ function Scene() {
             setIsBlankSceneReady(true)
           }
         },
-      }).catch(reportRejection)
+      })
+      .catch(reportRejection)
     return () => {
       cancelled = true
     }
@@ -290,14 +294,16 @@ function FeatureTreePane() {
     if (!projectName) {
       return
     }
-    fileWorkflows.navigateToFile({
+    fileWorkflows
+      .navigateToFile({
         requestedProjectName: projectName,
         requestedFileName: generatedFileName,
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
-      }).catch(reportRejection)
+      })
+      .catch(reportRejection)
   }, [fileWorkflows, projectName])
 
   return (
@@ -420,14 +426,16 @@ function PromptToEdit() {
     if (!projectName) {
       return
     }
-    fileWorkflows.navigateToFile({
+    fileWorkflows
+      .navigateToFile({
         requestedProjectName: projectName,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
-      }).catch(reportRejection)
+      })
+      .catch(reportRejection)
   }, [fileWorkflows, projectName])
 
   return (
@@ -537,7 +545,8 @@ function PromptToEditResult() {
       return
     }
     // Navigate to the `main.kcl` file
-    fileWorkflows.bulkCreateKCLFilesAndNavigateToProject({
+    fileWorkflows
+      .bulkCreateKCLFilesAndNavigateToProject({
         requestedProjectName: projectName,
         files: [
           {
@@ -551,7 +560,8 @@ function PromptToEditResult() {
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
-      }).catch(reportRejection)
+      })
+      .catch(reportRejection)
   }, [fileWorkflows, projectName])
 
   return (

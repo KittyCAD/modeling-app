@@ -75,7 +75,8 @@ const history = {
 } as unknown as ZookeeperEditPatchHistory
 
 const fileWorkflows = {
-  bulkCreateAndDeleteKCLFilesAndNavigateToFile: async (data: unknown) => mocks.systemIOSend({ data }),
+  bulkCreateAndDeleteKCLFilesAndNavigateToFile: async (data: unknown) =>
+    mocks.systemIOSend({ data }),
 } as unknown as FileWorkflowService
 
 function patchBackedZookeeperEdit(

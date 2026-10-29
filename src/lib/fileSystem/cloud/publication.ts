@@ -1,6 +1,12 @@
+import type { ProjectSummaryResponse } from '@kittycad/lib'
+import { listClientItems } from '@src/lib/apiPagination'
+import {
+  getRemoteProject as getCloudProject,
+  updateRemoteProject,
+} from '@src/lib/fileSystem/cloud/cloudApi'
 import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
-import { collectLocalProjectFilesForCloudSync } from '@src/lib/cloudSync/localManifest'
+import { collectLocalProjectFilesForCloudSync } from '@src/lib/fileSystem/projectFiles'
 import {
   getMimeType,
   prepareProjectFilesForCloudUpload,
@@ -225,17 +231,28 @@ async function ensureCurrentProjectUploaded(
   }
 
   if (existingProjectId) {
-    const projectResp = await kcCall(() =>
-      projects.update_project({
-        client,
-        id: existingProjectId,
-        files: toKittyCadFiles(
-          project.path,
-          uploadFiles,
-          getProjectUploadPublicationMetadata(args.submission)
-        ),
-      })
-    )
+    const projectResp = await (async () => {
+      try {
+        const config = { enabled: true, token: args.token }
+        const remote = await getCloudProject(config, existingProjectId)
+        if (remote.revision === undefined || remote.revision === null)
+          return new Error('Cloud project is missing its revision.')
+        return await updateRemoteProject({
+          config,
+          projectPath: project.path,
+          project: remote,
+          files: uploadFiles,
+          expectedRevision: String(remote.revision),
+          publicationMetadata: getProjectUploadPublicationMetadata(
+            args.submission
+          ),
+        })
+      } catch (error) {
+        return error instanceof Error
+          ? error
+          : new Error('Publication save failed.')
+      }
+    })()
     if (err(projectResp)) {
       return projectResp
     }
@@ -411,4 +428,21 @@ function getCurrentEnvironmentName(): string | Error {
 
 function getPathLeaf(path: string) {
   return path.split(fsZds.sep).filter(Boolean).at(-1)
+}
+
+export async function getCloudPublicationStatus(id: string, token?: string) {
+  const remote = await projects.get_project({
+    client: createKCClient(token),
+    id,
+  })
+  return {
+    publicationStatus: remote.publication_status,
+    feedback: remote.publication?.feedback ?? undefined,
+  }
+}
+export async function getCloudPublicationStatuses(token?: string) {
+  return listClientItems<ProjectSummaryResponse>(
+    createKCClient(token),
+    '/user/projects'
+  )
 }

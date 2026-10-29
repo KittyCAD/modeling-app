@@ -29,7 +29,7 @@ export function getProjectLibrarySummaryDescription(
   library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
 ) {
   if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
-    return 'Projects in this library sync to your Zoo account'
+    return 'Projects in this library are saved to your Zoo account'
   }
 
   if (library.type === DIRECTORY_PROJECT_LIBRARY_TYPE) {
@@ -44,7 +44,7 @@ export function getProjectLibraryDetailsDescription(
 ) {
   if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
     return [
-      'Projects in this library sync to your Zoo account.',
+      'Projects in this library are saved to your Zoo account.',
       'Storage type and model-training controls depend on your plan.',
     ].join(' ')
   }

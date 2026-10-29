@@ -80,7 +80,7 @@ export class ZDSProject {
     public readonly textFileIO: TextFileIO
   ) {
     this.files = this.collectProjectFiles(projectIORefSignal.value)
-    window.electron?.watchFileOn(
+    this.textFileIO.watch(
       projectIORefSignal.value.path,
       this.fileWatcherId,
       this.onUpdateFromDisk
@@ -90,7 +90,7 @@ export class ZDSProject {
   /** Clean up resources and watchers for Project */
   public close() {
     this.closeAllEditors()
-    window.electron?.watchFileOff(
+    this.textFileIO.unwatch(
       this.projectIORefSignal.value.path,
       this.fileWatcherId
     )

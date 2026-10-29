@@ -9,7 +9,10 @@ import {
   createTextFileIO,
   type TextFileIO,
 } from '@src/lib/projectSession/textFileIO'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import {
+  cloudStorageService,
+  fileOperationsService,
+} from '@src/registry/contracts/fileOperations'
 import {
   projectSession,
   type ProjectSessionService,
@@ -37,15 +40,43 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const currentProjectLibraryId = signal<string | undefined>(undefined)
   let textFileIO: TextFileIO | undefined
   const electron = window.electron
+  const cloudWatchers = new Map<string, () => void>()
 
   const serviceImpl: ProjectSessionService = {
     get textFileIO() {
       return (textFileIO ??= createTextFileIO(
         ctx.services.get(fileOperationsService),
         {
-          watch: (path, key, onEvent) =>
-            electron?.watchFileOn(path, key, onEvent),
-          unwatch: (path, key) => electron?.watchFileOff(path, key),
+          watch: (path, key, onEvent) => {
+            const cloud = ctx.services.optional(cloudStorageService)
+            if (
+              cloud &&
+              path.startsWith(
+                `${cloud.root}${window.electron?.os.isWindows ? '\\' : '/'}`
+              )
+            ) {
+              const watchKey = `${key}:${path}`
+              cloudWatchers.get(watchKey)?.()
+              cloudWatchers.set(
+                watchKey,
+                cloud.subscribe((changes) => {
+                  for (const change of changes)
+                    if (
+                      change.path === path ||
+                      change.path.startsWith(`${path}/`) ||
+                      change.path.startsWith(`${path}\\`)
+                    )
+                      onEvent(change.eventType, change.path)
+                })
+              )
+            } else electron?.watchFileOn(path, key, onEvent)
+          },
+          unwatch: (path, key) => {
+            const watchKey = `${key}:${path}`
+            cloudWatchers.get(watchKey)?.()
+            cloudWatchers.delete(watchKey)
+            electron?.watchFileOff(path, key)
+          },
         }
       ))
     },
@@ -68,6 +99,10 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   return {
     id: 'project-session-extension',
     providesServices: [provideService(projectSession, serviceImpl)],
+    dispose: () => {
+      for (const stop of cloudWatchers.values()) stop()
+      cloudWatchers.clear()
+    },
   }
 }, 'project-session-extension')
 

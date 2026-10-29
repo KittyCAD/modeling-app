@@ -373,7 +373,8 @@ export class ZookeeperFileRequestProcessor {
 
             kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
             dispatched = true
-            fileWorkflows.bulkCreateAndDeleteKCLFilesAndNavigateToFile({
+            fileWorkflows
+              .bulkCreateAndDeleteKCLFilesAndNavigateToFile({
                 orderedId: request.orderedId,
                 files: payload.files,
                 filesToDelete: payload.filesToDelete,
@@ -528,7 +529,8 @@ export class ZookeeperFileRequestProcessor {
                       },
                     }
                   : {}),
-              }).catch(reportRejection)
+              })
+              .catch(reportRejection)
           })().catch((error: unknown) => {
             if (stopIfStale()) {
               return

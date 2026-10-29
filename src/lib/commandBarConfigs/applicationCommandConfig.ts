@@ -85,19 +85,23 @@ function onSubmitKCLSampleCreation({
       }
 
       if (requestedFiles.length === 1) {
-        fileWorkflows.importFileFromURL({
+        fileWorkflows
+          .importFileFromURL({
             requestedProjectName: requestedFiles[0].requestedProjectName,
             requestedFileNameWithExtension: requestedFiles[0].requestedFileName,
             requestedCode: requestedFiles[0].requestedCode,
-          }).catch(reportRejection)
+          })
+          .catch(reportRejection)
       } else {
         /**
          * Bulk create the assembly and navigate to the project
          */
-        fileWorkflows.bulkCreateKCLFilesAndNavigateToProject({
+        fileWorkflows
+          .bulkCreateKCLFilesAndNavigateToProject({
             files: requestedFiles,
             requestedProjectName: uniqueNameIfNeeded,
-          }).catch(reportRejection)
+          })
+          .catch(reportRejection)
       }
     })
     .catch(reportError)
@@ -184,11 +188,13 @@ export function createApplicationCommands({
                 ? new Uint8Array(await selectedFile.arrayBuffer())
                 : await fileOperations.readFile(selectedFile)
             if (isKCL) {
-              app.fileWorkflows.importFileFromURL({
+              app.fileWorkflows
+                .importFileFromURL({
                   requestedProjectName: uniqueNameIfNeeded,
                   requestedFileNameWithExtension: fileNameWithExtension,
                   requestedCode: new TextDecoder().decode(content),
-                }).catch(reportRejection)
+                })
+                .catch(reportRejection)
             } else {
               const { path } = await getNextFileName({
                 fileOperations,
@@ -198,7 +204,9 @@ export function createApplicationCommands({
                 preserveUnknownExtension: true,
               })
               await fileOperations.writeFile(path, content)
-              app.fileWorkflows.readFoldersFromProjectDirectory().catch(reportRejection)
+              app.fileWorkflows
+                .readFoldersFromProjectDirectory()
+                .catch(reportRejection)
             }
           } catch (cause) {
             trap(new Error(error, { cause }))

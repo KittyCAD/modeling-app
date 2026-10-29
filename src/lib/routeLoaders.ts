@@ -1,3 +1,6 @@
+import fsZds from '@src/lib/fs-zds'
+import { cloudStorageService } from '@src/registry/contracts/fileOperations'
+import { resolveProjectLocation } from '@src/lib/fileSystem/mounts'
 import { reportRejection } from '@src/lib/trap'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
@@ -18,9 +21,7 @@ import {
 } from '@src/lib/routeLoaderNavigation'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import type { HomeLoaderData } from '@src/lib/types'
-import {
-  FileWorkflowStates,
-} from '@src/lib/fileSystem/workflows/utils'
+import { FileWorkflowStates } from '@src/lib/fileSystem/workflows/utils'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
@@ -82,7 +83,31 @@ export const fileLoader =
       settings: { actor: settingsActor },
     } = app
     const { kclManager } = app.singletons
-    const { params } = routerData
+    const params = { ...routerData.params }
+    if (
+      params.id?.startsWith('cloud:') ||
+      params.id?.startsWith('local:') ||
+      (params.id && !params.id.includes('/') && !params.id.includes('\\'))
+    ) {
+      const cloud = app.registry.get(cloudStorageService)
+      const location = await resolveProjectLocation(params.id, cloud.exists)
+      assertCurrent()
+      if (location.type === 'cloud') {
+        const path = await cloud.openProject(location.id)
+        assertCurrent()
+        return redirect(
+          `${PATHS.FILE}/${encodeURIComponent(path)}${new URL(routerData.request.url).search}`
+        )
+      }
+      params.id = location.id
+      assertCurrent()
+    }
+
+    const cloudStorage = app.registry.get(cloudStorageService)
+    if (params.id?.startsWith(`${cloudStorage.root}${fsZds.sep}`)) {
+      await cloudStorage.openProject(cloudStorage.idFor(params.id))
+      assertCurrent()
+    }
 
     // Old web bookmarks encode /browser/... as the file route's id. These
     // paths no longer identify projects, so return home before filesystem I/O.
@@ -200,6 +225,9 @@ export const fileLoader =
     assertCurrent()
 
     const project = maybeProjectInfo ?? defaultProjectData
+    const cloud = app.registry.get(cloudStorageService)
+    if (projectPath.startsWith(`${cloud.root}${fsZds.sep}`))
+      project.cloudProjectId = cloud.idFor(projectPath)
 
     // Fire off the event to load the project settings
     // once we know it's idle.
@@ -251,9 +279,11 @@ export const fileLoader =
       (systemIOSnapshot.matches(FileWorkflowStates.idle) &&
         systemIOSnapshot.context.folders === undefined)
     if (shouldSyncProjectDirectory) {
-      app.fileWorkflows.setProjectDirectoryPath({
+      app.fileWorkflows
+        .setProjectDirectoryPath({
           requestedProjectDirectoryPath,
-        }).catch(reportRejection)
+        })
+        .catch(reportRejection)
     }
   }
 

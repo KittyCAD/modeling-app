@@ -1,17 +1,14 @@
 import {
   isCloudSyncExcludedPath,
   normalizeRelativePath,
-} from '@src/lib/cloudSync/paths'
-import {
-  normalizeProjectArchiveFilesForCloudSync,
-  projectManifestFromFiles,
-  projectManifestsEqual,
-} from '@src/lib/fileSystem/cloud/projectArchive'
-import type {
-  ProjectArchiveFile,
-  ProjectManifest,
-} from '@src/lib/fileSystem/cloud/types'
+} from '@src/lib/fileSystem/cloud/paths'
+
+import { normalizeProjectArchiveFilesForCloudSync } from '@src/lib/fileSystem/cloud/projectArchive'
+
+import type { ProjectArchiveFile } from '@src/lib/fileSystem/cloud/types'
+
 import fsZds from '@src/lib/fs-zds'
+
 import {
   appendGitignoreForDirectoryWithFs,
   createInitialGitignoreStackWithFs,
@@ -19,6 +16,7 @@ import {
   type GitignoreStackEntry,
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
+
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 /**
@@ -84,26 +82,4 @@ export async function collectLocalProjectFilesForCloudSync({
   return normalizeProjectArchiveFilesForCloudSync(files).sort((a, b) =>
     a.relativePath.localeCompare(b.relativePath)
   )
-}
-
-/**
- * Builds the current syncable manifest for a local project folder and compares
- * it with a stored clean base manifest. Duplicate classification uses this to
- * distinguish exact duplicate realizations from divergent local copies.
- */
-export async function localProjectManifestMatchesBase({
-  baseManifest,
-  fileOperations,
-  projectRoot,
-}: {
-  baseManifest: ProjectManifest
-  fileOperations: FileOperationsRegistryService
-  projectRoot: string
-}) {
-  const localManifest = await collectLocalProjectFilesForCloudSync({
-    fileOperations,
-    projectRoot,
-  }).then(projectManifestFromFiles)
-
-  return projectManifestsEqual(localManifest, baseManifest)
 }

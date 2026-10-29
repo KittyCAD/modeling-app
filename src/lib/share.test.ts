@@ -85,7 +85,7 @@ const mockState = vi.hoisted(() => ({
   ]),
 }))
 
-vi.mock('@src/lib/cloudSync/localManifest', () => ({
+vi.mock('@src/lib/fileSystem/projectFiles', () => ({
   collectLocalProjectFilesForCloudSync:
     mockState.collectLocalProjectFilesForCloudSync,
 }))
@@ -151,7 +151,7 @@ import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import {
   getCurrentProjectPublicationDetails as getCurrentProjectPublicationDetailsWithFileOperations,
   publishCurrentProject as publishCurrentProjectWithFileOperations,
-} from '@src/lib/share'
+} from '@src/lib/fileSystem/cloud/publication'
 
 const publishCurrentProject = (
   args: Omit<

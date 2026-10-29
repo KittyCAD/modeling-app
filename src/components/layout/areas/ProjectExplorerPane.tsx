@@ -112,10 +112,12 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         const name = projectRef.current.value.name.slice()
 
         const navigateHelper = () => {
-          fileWorkflows.navigateToFile({
+          fileWorkflows
+            .navigateToFile({
               requestedProjectName: name,
               requestedFileName: requestedFileName,
-            }).catch(reportRejection)
+            })
+            .catch(reportRejection)
         }
         const navigateAfterFlush = () => {
           void kclManager
