@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { PerspectiveCamera } from 'three'
+import { PerspectiveCamera, Vector3 } from 'three'
 
 const mocks = vi.hoisted(() => ({
   manager: {
@@ -16,7 +16,11 @@ const mocks = vi.hoisted(() => ({
       baseUnitChange: { add: vi.fn(), remove: vi.fn() },
       scene: { add: vi.fn(), remove: vi.fn() },
       renderer: { domElement: null as HTMLCanvasElement | null },
-      camControls: { camera: null as PerspectiveCamera | null },
+      camControls: {
+        camera: null as PerspectiveCamera | null,
+        target: null as Vector3 | null,
+        update: vi.fn(),
+      },
     },
   },
 }))
@@ -34,6 +38,7 @@ describe('3D sketch mode source edits', () => {
     mocks.manager.ast.body = []
     mocks.manager.execState.spatialSketches = []
     mocks.manager.sceneInfra.baseUnitMultiplier = 1
+    mocks.manager.sceneInfra.camControls.target = new Vector3()
     mocks.manager.sceneInfra.renderer.domElement =
       document.createElement('canvas')
     sketch3dEditRequest.value = null
@@ -193,5 +198,35 @@ describe('3D sketch mode source edits', () => {
       true,
       false,
     ])
+  })
+
+  it('waits for the engine camera and stream to be ready before framing loaded geometry', () => {
+    const camera = new PerspectiveCamera(45, 1, 0.1, 20000)
+    camera.position.set(0, -1250, 580)
+    mocks.manager.sceneInfra.camControls.camera = camera
+    mocks.manager.execState.spatialSketches = [
+      {
+        kind: {
+          type: 'Sketch3d',
+          segments: [
+            {
+              kind: 'line',
+              points: [
+                [0, 0, 0],
+                [10, 0, 10],
+              ],
+            },
+          ],
+        },
+      },
+    ]
+    const changed = vi.fn()
+    const view = render(<Sketch3dMode disabled onActiveChange={changed} />)
+    expect(mocks.manager.sceneInfra.camControls.update).not.toHaveBeenCalled()
+    view.rerender(<Sketch3dMode disabled={false} onActiveChange={changed} />)
+    expect(mocks.manager.sceneInfra.camControls.update).toHaveBeenCalledWith(
+      true
+    )
+    expect(camera.position.length()).toBeLessThan(100)
   })
 })

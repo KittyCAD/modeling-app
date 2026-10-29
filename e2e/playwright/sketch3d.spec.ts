@@ -2,6 +2,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
+import type { Line } from 'three'
 
 const sculpture = readFileSync(
   path.resolve('e2e/playwright/fixtures/sketch3d/orbital-sculpture.kcl'),
@@ -36,6 +37,32 @@ async function expectSpatialFrames(page: Page) {
     .toBeGreaterThan(1)
 }
 
+async function expectSpatialInView(page: Page) {
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const { scene, camControls } =
+          window.app.singletons.kclManager.sceneInfra
+        const group = scene.getObjectByName('sketch3d')
+        if (!group?.children.length) return false
+        return group.children.every((shape) => {
+          const positions = (shape as Line).geometry.getAttribute('position')
+          for (let i = 0; i < positions.count; i++) {
+            const p = camControls.target
+              .clone()
+              .fromBufferAttribute(positions, i)
+              .applyMatrix4(shape.matrixWorld)
+              .project(camControls.camera)
+            if (Math.abs(p.x) > 1 || Math.abs(p.y) > 1 || Math.abs(p.z) > 1)
+              return false
+          }
+          return true
+        })
+      })
+    )
+    .toBe(true)
+}
+
 test.describe('World-space sketch workflow', { tag: '@web' }, () => {
   test('renders the sculpture in modeling mode and edits through the Sketch dropdown without stranding the app', async ({
     page,
@@ -64,13 +91,14 @@ test.describe('World-space sketch workflow', { tag: '@web' }, () => {
         segments: { length: 22 },
       })
     await expectSpatialFrames(page)
+    await expectSpatialInView(page)
 
     const toolbar = page.getByTestId('toolbar')
     await expect(
       toolbar.getByRole('button', { name: '3D sketch', exact: true })
     ).toHaveCount(0)
     await toolbar
-      .getByRole('button', { name: 'sketch-modes: open menu', exact: true })
+      .getByRole('button', { name: /sketch-modes: open menu/ })
       .click()
     await page.getByTestId('dropdown-sketch3d').click()
     const panel = page.getByRole('dialog', { name: '3D sketch mode' })
@@ -131,5 +159,6 @@ test.describe('World-space sketch workflow', { tag: '@web' }, () => {
     await page.reload()
     await scene.settled()
     await expectSpatialFrames(page)
+    await expectSpatialInView(page)
   })
 })

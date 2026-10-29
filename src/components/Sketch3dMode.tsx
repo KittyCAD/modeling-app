@@ -175,7 +175,6 @@ export function Sketch3dMode({
     sketch3dEditRequest.value = null
   }, [editRequest, kclManager, busy, firstLabel])
 
-  const isExecuting = kclManager.isExecuting
   useEffect(() => {
     const segments = objects.flatMap((o) =>
       o.kind.type === 'Sketch3d' ? o.kind.segments : []
@@ -184,12 +183,13 @@ export function Sketch3dMode({
       hasFramed.current = false
       return
     }
-    if (isExecuting || hasFramed.current) return
+    // The engine's initial camera synchronization can overwrite an earlier fit.
+    if (busy || hasFramed.current) return
     hasFramed.current = fitSketch3dView(
       segments,
       kclManager.sceneInfra.camControls
     )
-  }, [objects, kclManager, isExecuting])
+  }, [objects, kclManager, busy])
 
   useEffect(() => {
     if (
