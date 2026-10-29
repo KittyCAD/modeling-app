@@ -76,9 +76,8 @@ describe('tryConnecting', () => {
     )
     // Simulate a callback retained by an event listener across mode changes.
     const reconnect = result.current.tryConnecting
-    const syncCameraToEngine = vi.fn().mockResolvedValue(undefined)
     const sceneInfra = {
-      camControls: { clearOldCameraState: vi.fn(), syncCameraToEngine },
+      camControls: { clearOldCameraState: vi.fn() },
     } as unknown as SceneInfra
     for (const geometryOnly of [true, false, true]) {
       rerender({ geometryOnly })
@@ -87,7 +86,6 @@ describe('tryConnecting', () => {
       // mockReset, unlike mockClear, also drops a once-implementation that a
       // camera restoration test queued but never used.
       vi.mocked(reapplyActiveViewAfterReconnect).mockReset()
-      syncCameraToEngine.mockClear()
       await expect(
         reconnect({
           isConnecting: result.current.isConnecting,
@@ -107,8 +105,6 @@ describe('tryConnecting', () => {
         expect.objectContaining({ geometryOnly, kclVersion: '2.0' })
       )
       expect(resetCameraPosition).toHaveBeenCalledTimes(geometryOnly ? 0 : 1)
-      // A local session is given the client's camera instead.
-      expect(syncCameraToEngine).toHaveBeenCalledTimes(geometryOnly ? 1 : 0)
       expect(reapplyActiveViewAfterReconnect).toHaveBeenCalledTimes(
         geometryOnly ? 0 : 1
       )

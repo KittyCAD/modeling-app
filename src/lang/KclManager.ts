@@ -589,7 +589,8 @@ export class KclManager extends File {
   private _execState = signal<ExecState>(emptyExecState())
   /**
    * The engine scene generation from the last execution: the number of runs
-   * that changed the engine scene. Cached runs don't increment it.
+   * that changed the engine scene. Runs answered from the cache leave it
+   * unchanged.
    *
    * Sketch-solve syncs and mock executions replace `execState` without sending
    * an engine command.  A consumer that must act only on a rebuilt scene
