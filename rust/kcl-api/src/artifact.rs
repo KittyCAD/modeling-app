@@ -521,6 +521,9 @@ pub enum SweepEdgeSubType {
 #[serde(rename_all = "camelCase")]
 pub struct EdgeCut {
     pub id: ArtifactId,
+    /// Body instance on which this treatment face was created.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub body_id: Option<ArtifactId>,
     pub sub_type: EdgeCutSubType,
     /// Index of the source selector in an `edges` argument, when this edge cut
     /// was created from an edge-reference command.
