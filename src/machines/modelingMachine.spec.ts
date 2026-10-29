@@ -1,3 +1,5 @@
+import type { BatchResponse, WebSocketResponse } from '@kittycad/lib'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
@@ -33,6 +35,11 @@ import {
   generateModelingMachineDefaultContext,
   modelingMachineInitialInternalContext,
 } from '@src/machines/modelingSharedContext'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   buildTheWorldAndConnectToEngine,
@@ -41,7 +48,7 @@ import {
 import toast from 'react-hot-toast'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { vi } from 'vitest'
-import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
+import { type ActorRefFrom, createActor, fromPromise, waitFor } from 'xstate'
 
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
@@ -1512,7 +1519,7 @@ p3 = [342.51, 216.38],
             ast: { body: [] },
             code,
             editorView: { dispatch },
-            hidePlanes: vi.fn(),
+            hidePlanes: vi.fn().mockResolvedValue(undefined),
             isShiftDown: false,
             sceneEntitiesManager: { activeSegments: {} },
             sceneInfra: {
@@ -1720,8 +1727,8 @@ sketch001 = sketch(on = YZ) {
           },
           kclManager: {
             artifactGraph,
-            hidePlanes: vi.fn(),
-            showPlanes: vi.fn(),
+            hidePlanes: vi.fn().mockResolvedValue(undefined),
+            showPlanes: vi.fn().mockResolvedValue(undefined),
             sceneInfra: {
               animate: vi.fn(),
               resetMouseListeners: vi.fn(),
@@ -1781,11 +1788,11 @@ sketch001 = sketch(on = YZ) {
         kclManager: {
           artifactGraph,
           hasErrors: vi.fn(() => false),
-          hidePlanes: vi.fn(),
+          hidePlanes: vi.fn().mockResolvedValue(undefined),
           setCopilotEnabled: vi.fn(),
           setSelectionFilter: vi.fn(),
           setSelectionFilterToDefault: vi.fn(),
-          showPlanes: vi.fn(),
+          showPlanes: vi.fn().mockResolvedValue(undefined),
           sceneInfra: {
             animate: vi.fn(),
             stop: vi.fn(),
@@ -1872,83 +1879,136 @@ sketch001 = sketch(on = YZ) {
       })
     })
 
-    it('restores camera orbit controls when sketch exit errors', async () => {
-      const {
-        instance,
-        kclManager,
-        rustContext,
-        engineCommandManager,
-        commandBarActor,
-        machineManager,
-      } = await buildTheWorldAndNoEngineConnection()
-
-      const sendSceneCommandSpy = vi
-        .spyOn(engineCommandManager, 'sendSceneCommand')
-        .mockRejectedValue(new Error('sketch exit failed'))
-
-      const context = generateModelingMachineDefaultContext({
-        kclManager,
-        rustContext,
-        wasmInstance: instance,
-        engineCommandManager,
-        commandBarActor,
-        machineManager,
-      })
-      context.store.defaultUnit = { current: 'mm' } as any
-      context.projectRef = { current: {} as any }
-
-      const machine = modelingMachine.provide({
-        actors: {
-          'animate-to-sketch-solve': fromPromise(async () => ({
-            plane: {
-              type: 'defaultPlane',
-              plane: 'XY',
-              planeId: 'test-plane-id',
-              zAxis: [0, 0, 1],
-              yAxis: [0, 1, 0],
-              origin: [0, 0, 0],
-            } as any,
-            sketchSolveId: 1,
-            initialSceneGraphDelta: dummyInitSketchGraphDelta,
-          })),
-        },
-      })
-
-      const actor = createActor(machine, { input: context }).start()
-
-      actor.send({ type: 'Enter sketch' })
-      actor.send({
-        type: 'Select sketch solve plane',
-        data: 'test-plane-id',
-      })
-
-      await waitForCondition(() => {
-        return (
-          JSON.stringify(actor.getSnapshot().value) ===
-          JSON.stringify({
-            sketchSolveMode: 'active',
-          })
+    it.each(['Exit sketch', 'Cancel'])(
+      'keeps a failed exit out of modeling mode and retries with %s',
+      async (retry) => {
+        const {
+          instance,
+          kclManager,
+          rustContext,
+          engineCommandManager,
+          commandBarActor,
+          machineManager,
+        } = await buildTheWorldAndNoEngineConnection()
+        // The shared WebGL fixture omits the native clear operation used by stop.
+        kclManager.sceneInfra.renderer.clear = vi.fn()
+        toastErrorSpy.mockClear()
+        let attempts = 0
+        vi.spyOn(engineCommandManager, 'sendSceneCommand').mockImplementation(
+          async (command): Promise<WebSocketResponse | null> => {
+            if (
+              command.type !== 'modeling_cmd_batch_req' ||
+              command.requests[0]?.cmd.type !== 'sketch_mode_disable'
+            )
+              return null
+            if (++attempts === 1) throw new Error('sketch exit failed')
+            const responses: Record<string, BatchResponse> = {}
+            for (const request of command.requests) {
+              if (request.cmd.type === 'default_camera_get_settings') {
+                responses[request.cmd_id] = {
+                  response: {
+                    type: 'default_camera_get_settings',
+                    data: {
+                      settings: {
+                        pos: { x: 0, y: -10, z: 10 },
+                        center: { x: 0, y: 0, z: 0 },
+                        orientation: { x: 0, y: 0, z: 0, w: 1 },
+                        up: { x: 0, y: 0, z: 1 },
+                        ortho: false,
+                      },
+                    },
+                  },
+                }
+              } else if (
+                request.cmd.type === 'sketch_mode_disable' ||
+                request.cmd.type === 'default_camera_perspective_settings'
+              ) {
+                responses[request.cmd_id] = {
+                  response: { type: request.cmd.type, data: {} },
+                }
+              } else throw new Error('Unexpected exit command')
+            }
+            return {
+              success: true,
+              request_id: command.batch_id,
+              resp: { type: 'modeling_batch', data: { responses } },
+            }
+          }
         )
-      })
-
-      actor.send({ type: 'Exit sketch' })
-
-      await waitForCondition(() => {
-        return (
-          JSON.stringify(actor.getSnapshot().value) ===
-          JSON.stringify({
-            idle: 'hidePlanes',
+        const context = generateModelingMachineDefaultContext({
+          kclManager,
+          rustContext,
+          wasmInstance: instance,
+          engineCommandManager,
+          commandBarActor,
+          machineManager,
+        })
+        const settings = kclManager.systemDeps.settings.getSnapshot().context
+        settings.modeling.cameraProjection.user = 'perspective'
+        context.store.defaultUnit = settings.modeling.defaultUnit
+        context.store.cameraProjection = settings.modeling.cameraProjection
+        kclManager.sceneInfra.camControls.camera.position.set(0, -10, 10)
+        const plane: DefaultPlane = {
+          type: 'defaultPlane',
+          plane: 'XY',
+          planeId: 'test-plane-id',
+          zAxis: [0, 0, 1],
+          yAxis: [0, 1, 0],
+        }
+        const machine = modelingMachine.provide({
+          actors: {
+            'animate-to-sketch-solve': fromPromise(
+              async (): Promise<{
+                plane: DefaultPlane | ExtrudeFacePlane | OffsetPlane
+                sketchSolveId: number
+                initialSceneGraphDelta: SceneGraphDelta
+              }> => ({
+                plane,
+                sketchSolveId: 1,
+                initialSceneGraphDelta: dummyInitSketchGraphDelta,
+              })
+            ),
+          },
+        })
+        const actor = createActor(machine, { input: context }).start()
+        try {
+          actor.send({ type: 'Enter sketch' })
+          actor.send({
+            type: 'Select sketch solve plane',
+            data: 'test-plane-id',
           })
-        )
-      })
-
-      expect(sendSceneCommandSpy).toHaveBeenCalled()
-      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
-      expect(kclManager.sceneInfra.camControls.enablePan).toBe(true)
-      expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
-        'engineToClient'
-      )
-    })
+          await waitFor(actor, (snapshot) =>
+            snapshot.matches({ sketchSolveMode: 'active' })
+          )
+          actor.send({ type: 'Exit sketch' })
+          await waitFor(
+            actor,
+            (snapshot) =>
+              snapshot.matches({ sketchSolveMode: 'exitFailed' }) ||
+              snapshot.matches('idle')
+          )
+          expect(
+            actor.getSnapshot().matches({ sketchSolveMode: 'exitFailed' })
+          ).toBe(true)
+          expect(actor.getSnapshot().matches('idle')).toBe(false)
+          expect(kclManager.sceneInfra.camControls.enableRotate).toBe(false)
+          expect(kclManager.sceneInfra.camControls.enablePan).toBe(false)
+          expect(attempts).toBe(1)
+          expect(toastErrorSpy).toHaveBeenCalledWith('sketch exit failed')
+          if (retry === 'Exit sketch') actor.send({ type: 'Exit sketch' })
+          else actor.send({ type: 'Cancel' })
+          await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+          expect(attempts).toBe(2)
+          expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
+          expect(kclManager.sceneInfra.camControls.enablePan).toBe(true)
+          expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
+            'engineToClient'
+          )
+        } finally {
+          actor.stop()
+        }
+      }
+    )
 
     it('disables camera orbit controls in sketch solve mode', async () => {
       const {
