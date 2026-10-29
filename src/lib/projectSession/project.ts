@@ -9,7 +9,7 @@ import { KclManager } from '@src/lang/KclManager'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { FileEntry, Project } from '@src/lib/project'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -255,7 +255,7 @@ export class ZDSProject {
     ) {
       await newEditor.executeCode(newEditor.code)
       assertCurrent()
-      await resetCameraPosition({
+      await resetCameraAfterExecution({
         sceneInfra: newEditor.sceneInfra,
         settingsActor: this.app.settings.actor,
       })

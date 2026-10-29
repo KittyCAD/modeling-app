@@ -131,7 +131,8 @@ export class LocalRenderer {
   private executionVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
-  private hasResetCamera = false
+  /** A camera reset waiting for the next model. The first model always gets one. */
+  private cameraResetPending = true
   private previewCamera: PerspectiveCamera | OrthographicCamera | null = null
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
@@ -1071,7 +1072,7 @@ export class LocalRenderer {
       this.clearModel()
       this.loadedSceneGeneration = sceneGeneration
       this.rebuildSelectionTargets()
-      this.resetCameraOnFirstLoad()
+      this.resetCameraIfPending()
       this.onModelLoadSettled?.(true)
       return
     }
@@ -1127,7 +1128,7 @@ export class LocalRenderer {
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
       this.updateAmbientOcclusionScale(bounds)
-      this.resetCameraOnFirstLoad()
+      this.resetCameraIfPending()
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
       this.onModelLoadSettled?.(true)
@@ -1145,17 +1146,36 @@ export class LocalRenderer {
   }
 
   /**
-   * The reset that follows opening a file runs before the local model has
-   * loaded, so the first load, empty or not, resets the camera again.
+   * The reset after an execution, once its model is on screen. A failed
+   * execution loads no model, so its reset waits for the next one.
    */
-  private resetCameraOnFirstLoad() {
-    if (!this.hasResetCamera) {
-      this.hasResetCamera = true
-      resetCameraPosition({
-        sceneInfra: this.kclManager.sceneInfra,
-        settingsActor: this.kclManager.systemDeps.settings,
-      }).catch(reportRejection)
+  resetCameraAfterModelLoad() {
+    if (
+      this.loadedSceneGeneration ===
+      this.kclManager.engineSceneGenerationSignal.peek()
+    ) {
+      this.resetCamera()
+    } else {
+      this.cameraResetPending = true
     }
+  }
+
+  /**
+   * Also stands in for the reset after opening a project, which local mode
+   * skips because the model is not loaded yet.
+   */
+  private resetCameraIfPending() {
+    if (this.cameraResetPending) {
+      this.cameraResetPending = false
+      this.resetCamera()
+    }
+  }
+
+  private resetCamera() {
+    resetCameraPosition({
+      sceneInfra: this.kclManager.sceneInfra,
+      settingsActor: this.kclManager.systemDeps.settings,
+    }).catch(reportRejection)
   }
 }
 

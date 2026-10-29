@@ -35,3 +35,21 @@ export async function resetCameraPosition({
     await sceneInfra.camControls.viewIsometric({ padding })
   }
 }
+
+/**
+ * Reset the camera after an execution. The local renderer loads the new model
+ * only after the execution, so it resets once that model is on screen.
+ */
+export async function resetCameraAfterExecution({
+  sceneInfra,
+  settingsActor,
+}: {
+  sceneInfra: SceneInfra
+  settingsActor: SettingsActorType
+}) {
+  if (sceneInfra.localRenderer) {
+    sceneInfra.localRenderer.resetCameraAfterModelLoad()
+  } else {
+    await resetCameraPosition({ sceneInfra, settingsActor })
+  }
+}

@@ -178,7 +178,7 @@ import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
@@ -1510,7 +1510,7 @@ export class KclManager extends File {
         } else {
           await this.executeCode(newCode)
           if (shouldResetCamera) {
-            await resetCameraPosition({
+            await resetCameraAfterExecution({
               sceneInfra: this.sceneInfra,
               settingsActor: this.systemDeps.settings,
             })
