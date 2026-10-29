@@ -1,3 +1,4 @@
+import type { ProjectRouteSource } from '@src/lib/projectNavigation'
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
@@ -69,6 +70,7 @@ export function createProjectCommands({
   getCurrentProjectLibraryId,
   getProjectLibraries,
   getCreateProjectLibraryTargets,
+  getProjectUrl,
   getHomeProjectActions,
   getHomeProjectEntries,
 }: {
@@ -77,6 +79,10 @@ export function createProjectCommands({
   getCurrentProjectPath?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
   getProjectLibraries?: () => readonly ProjectLibrary[]
+  getProjectUrl?: (
+    project: ProjectRouteSource,
+    filePath: string
+  ) => Promise<string>
   getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
   getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
@@ -205,12 +211,11 @@ export function createProjectCommands({
     })
   }
 
-  const navigateToProjectFile = (filePath: string) => {
+  const navigateToProjectUrl = (targetPath: string) => {
     if (typeof window === 'undefined') {
       return
     }
 
-    const targetPath = `${PATHS.FILE}/${encodeURIComponent(filePath)}`
     if (window.location.hash) {
       window.location.hash = targetPath
       return
@@ -218,6 +223,17 @@ export function createProjectCommands({
 
     window.history.pushState(null, '', targetPath)
     window.dispatchEvent(new PopStateEvent('popstate'))
+  }
+
+  const navigateToProjectFile = async (
+    filePath: string,
+    project?: ProjectRouteSource
+  ) => {
+    const url =
+      project && getProjectUrl
+        ? await getProjectUrl(project, filePath)
+        : `${PATHS.FILE}/${encodeURIComponent(filePath)}`
+    navigateToProjectUrl(url)
   }
 
   const selectedCreateProjectTarget = (libraryId: unknown) => {
@@ -324,9 +340,9 @@ export function createProjectCommands({
         const target = selectedHomeProjectTarget(record.name, 'open')
         if (target) {
           return target.actions.open(target.project).then((result) => {
-            if (result?.defaultFile) {
-              navigateToProjectFile(result.defaultFile)
-            }
+            if (result?.url) navigateToProjectUrl(result.url)
+            else if (result?.defaultFile)
+              return navigateToProjectFile(result.defaultFile)
           })
         }
 
@@ -385,7 +401,7 @@ export function createProjectCommands({
             })
           ).then((project) => {
             if (project?.default_file) {
-              navigateToProjectFile(project.default_file)
+              return navigateToProjectFile(project.default_file, project)
             }
           })
         }
@@ -451,7 +467,8 @@ export function createProjectCommands({
         .moveToLibrary(target.project, target.moveTarget.library.id)
         .then((result) => {
           if (isCurrentHomeProject(target.project) && result?.defaultFile) {
-            navigateToProjectFile(result.defaultFile)
+            if (result.url) navigateToProjectUrl(result.url)
+            else return navigateToProjectFile(result.defaultFile)
           }
         })
     },

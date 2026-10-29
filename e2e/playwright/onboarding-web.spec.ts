@@ -1,6 +1,7 @@
 import { expect, test } from '@e2e/playwright/base-test'
 import {
   type CloudProject,
+  mockCloudUser,
   opfsPathExists,
   PROJECT_DIR,
   projectToml,
@@ -32,7 +33,8 @@ test(
     ]
     await mockClientErrorReports(context)
     await routeCloudProjects(context, { remoteProjects })
-    await setup(context, page, testInfo)
+    await mockCloudUser(context)
+    await setup(context, page, testInfo, [], { cloudSyncEnabled: true })
     await page.goto('/')
 
     await seedCloudSyncState(page, {
@@ -56,13 +58,13 @@ test(
     await waitForWebKitBillingToSettle(page)
 
     await page.goto(
-      `/file/${encodeURIComponent(
-        `${PROJECT_DIR}/tutorial-project/main.kcl`
-      )}/onboarding/desktop/scene`
+      `/project/${TUTORIAL_PROJECT_ID}/onboarding/desktop/scene?file=main.kcl`
     )
 
     await expect(page).toHaveURL(
-      /tutorial-project%2Fblank\.kcl\/onboarding\/desktop\/scene/,
+      new RegExp(
+        `/project/${TUTORIAL_PROJECT_ID}/onboarding/desktop/scene\\?file=blank.kcl`
+      ),
       { timeout: 15_000 }
     )
     await expect(page.getByRole('heading', { name: 'Scene' })).toBeVisible()

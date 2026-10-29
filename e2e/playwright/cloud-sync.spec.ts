@@ -5,6 +5,7 @@ import {
   type CloudProject,
   cloudProjectResponse,
   createRemoteListGate,
+  mockCloudUser,
   opfsPathExists,
   PROJECT_DIR,
   projectTitles,
@@ -25,6 +26,10 @@ import type { Page } from '@playwright/test'
 import type { CreatedRemoteProject } from '@src/lib/cloudSync/types'
 import JSZip from 'jszip'
 
+test.beforeEach(async ({ context }) => {
+  await mockCloudUser(context)
+})
+
 const CLOUD_SYNC_E2E_TIMEOUT = 20_000
 
 async function openHomeProject(page: Page, projectTitle: string) {
@@ -36,8 +41,8 @@ async function openHomeProject(page: Page, projectTitle: string) {
   await projectLink.click()
 }
 
-async function expectProjectFileRoute(page: Page) {
-  await expect(page).toHaveURL(/\/file\/.*main\.kcl/, {
+async function expectProjectRoute(page: Page) {
+  await expect(page).toHaveURL(/\/project\/[^/?]+(?:\?|$)/, {
     timeout: CLOUD_SYNC_E2E_TIMEOUT,
   })
 }
@@ -72,7 +77,6 @@ test(
       })
     ).toHaveCount(0)
     await createProject({ name: projectName, page })
-    await expectProjectFileRoute(page)
 
     const response = await firstUploadProject.firstUpload
     expect(response.ok()).toBe(true)
@@ -88,12 +92,16 @@ test(
       expect(file.byte_size).toBeGreaterThanOrEqual(0)
     }
 
-    const editor = new EditorFixture(page)
-    await editor.openPane()
-    const initialCode = '@settings(kclVersion = 3.0)\n'
-    const queuedCode = `${initialCode}queuedCloudEdit = 42\n`
-    await editor.expectEditor.toContain(initialCode.trimEnd())
-    await editor.replaceCodeByTyping(initialCode, queuedCode)
+    const queuedCode = '@settings(kclVersion = 3.0)\nqueuedCloudEdit = 42\n'
+    // The editor opens after creation returns its UUID. Queue a filesystem edit
+    // while that response is held to keep exercising the first-upload race.
+    await page.evaluate(
+      ({ path, code }) => window.app.fileOperations.writeFile(path, code),
+      {
+        path: `${projectPath}/main.kcl`,
+        code: queuedCode,
+      }
+    )
     await expect
       .poll(
         () => readOpfsTextFiles(page, { main: `${projectPath}/main.kcl` }),
@@ -110,6 +118,10 @@ test(
     firstUploadProject.releaseUpload()
     const uploaded = await updatedResponse
     expect(uploaded.ok()).toBe(true)
+    await expectProjectRoute(page)
+    const editor = new EditorFixture(page)
+    await editor.openPane()
+    await editor.expectEditor.toContain('queuedCloudEdit = 42')
     expect(new URL(uploaded.url()).searchParams.get('expected_revision')).toBe(
       created.revision
     )
@@ -190,9 +202,12 @@ test(
       .getByRole('option', { name: 'Artificial Heart', exact: true })
       .click()
 
-    await expect(page).toHaveURL(/artificial-heart%2Fmain\.kcl$/, {
-      timeout: CLOUD_SYNC_E2E_TIMEOUT,
-    })
+    await expect(page).toHaveURL(
+      new RegExp(`/project/${createdProject.id}\\?file=main.kcl$`),
+      {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      }
+    )
     await expect
       .poll(() => apiCalls.creates.length, {
         timeout: CLOUD_SYNC_E2E_TIMEOUT,
@@ -313,7 +328,7 @@ test(
     await expect
       .poll(() => apiCalls.downloads, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(['remote-empty-one'])
-    await expectProjectFileRoute(page)
+    await expectProjectRoute(page)
 
     const localFiles = await readOpfsTextFiles(page, {
       remoteOne: `${PROJECT_DIR}/remote-empty-one/main.kcl`,
@@ -439,7 +454,7 @@ test(
       })
       .toBe(1)
     expect(publicProjectDownloads).toBe(1)
-    await expectProjectFileRoute(page)
+    await expectProjectRoute(page)
     await expect
       .poll(() =>
         opfsPathExists(
@@ -484,7 +499,7 @@ test(
     await expect(
       page.getByText('Unable to determine the project directory.')
     ).toHaveCount(0)
-    await expectProjectFileRoute(page)
+    await expectProjectRoute(page)
   }
 )
 
@@ -784,7 +799,7 @@ test(
     await expect
       .poll(() => apiCalls.downloads, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(expect.arrayContaining(['remote-only-project']))
-    await expectProjectFileRoute(page)
+    await expectProjectRoute(page)
 
     const remoteOnlyFiles = await readOpfsTextFiles(page, {
       remoteOnly: `${PROJECT_DIR}/remote-only-project/main.kcl`,
@@ -868,7 +883,7 @@ test(
         { timeout: CLOUD_SYNC_E2E_TIMEOUT }
       )
       .toBeGreaterThan(remoteOnlyDownloadsAfterFirstOpen)
-    await expectProjectFileRoute(page)
+    await expectProjectRoute(page)
     await expect
       .poll(() =>
         page.evaluate(

@@ -1,3 +1,10 @@
+import fsZds from '@src/lib/fs-zds'
+import {
+  getHomeProjectUrl,
+  resolveProjectFileUrl,
+  type ProjectRouteSource,
+} from '@src/lib/projectNavigation'
+import { PATHS } from '@src/lib/paths'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
@@ -14,6 +21,7 @@ import {
 import { separateProjectsSharingProjectId } from '@src/lib/projectIdentity'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
+  isPersonalCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   type ProjectLibrary,
   projectLibrariesFromSettings,
@@ -222,6 +230,11 @@ function homeProjectEntryFromCloudRelationship(
   return {
     id: relationship.id,
     cloudRelationshipId: relationship.id,
+    canonicalCloudProjectPath: canonical?.libraryRefs.some(
+      isPersonalCloudProjectLibrarySetting
+    )
+      ? canonical.localProjectPath
+      : undefined,
     source,
     status: relationship.conflict
       ? 'conflicted'
@@ -523,6 +536,17 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       (target) => target.library.id === targetLibraryId
     )
 
+  const resolveUrl = (project: ProjectRouteSource, filePath: string) =>
+    resolveProjectFileUrl({
+      project,
+      filePath,
+      libraries: getConfiguredProjectLibraries(),
+      cloudSync: ctx.services.get(cloudSyncService),
+      getRelationships: () =>
+        ctx.services.optional(cloudProjectRelationshipsService)?.relationships
+          .value ?? [],
+    })
+
   const serviceImpl: HomeProjectActionsService = {
     watchRemoteThumbnail: (remoteProjectId) =>
       ctx.services
@@ -563,12 +587,29 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
           project.duplicateProjectIdPaths?.length
       ),
     open: async (project) => {
+      const url = getHomeProjectUrl(project)
+      if (url?.startsWith(`${PATHS.PROJECT}/`))
+        return { url, defaultFile: project.defaultFile ?? '' }
       const openProject = getProjectOperation(project, 'openProject')
       if (openProject && project.readWriteAccess && project.defaultFile) {
-        return openProject.operation.run({
+        const result = await openProject.operation.run({
           library: openProject.library,
           project,
         })
+        return result
+          ? {
+              ...result,
+              url: await resolveUrl(
+                {
+                  path:
+                    project.localProjectPath ??
+                    fsZds.dirname(result.defaultFile),
+                  cloudProjectId: project.remoteProjectId,
+                },
+                result.defaultFile
+              ),
+            }
+          : undefined
       }
 
       if (!project.remoteProjectId) {
@@ -601,7 +642,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         syncedProject.projectPath,
         await wasmInstancePromise
       )
-      return { defaultFile: projectInfo.default_file }
+      return {
+        defaultFile: projectInfo.default_file,
+        url: await resolveUrl(projectInfo, projectInfo.default_file),
+      }
     },
     duplicate: async (project) => {
       const duplicateProject = getProjectOperation(project, 'duplicateProject')
@@ -707,6 +751,13 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         ? {
             defaultFile: result.defaultFile,
             localProjectPath: result.localProjectPath,
+            url: await resolveUrl(
+              {
+                path:
+                  result.localProjectPath ?? fsZds.dirname(result.defaultFile),
+              },
+              result.defaultFile
+            ),
           }
         : undefined
     },

@@ -15,6 +15,14 @@ import type {
 } from '@src/lib/cloudSync/types'
 import type { Project } from '@src/lib/project'
 import { webSafePathSplit } from '@src/lib/pathUtils'
+import { PATHS } from '@src/lib/paths'
+
+export function formatCloudProjectUrl(id: string, file?: string, search = '') {
+  const params = new URLSearchParams(search)
+  params.delete('file')
+  if (file) params.set('file', file)
+  return `${PATHS.PROJECT}/${encodeURIComponent(id)}${params.size ? `?${params}` : ''}`
+}
 
 export interface CloudProjectSource {
   source: NonNullable<Project['cloudSource']>

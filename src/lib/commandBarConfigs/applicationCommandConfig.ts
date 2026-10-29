@@ -20,8 +20,6 @@ import {
   getEXTNoPeriod,
   getStringAfterLastSeparator,
   joinOSPaths,
-  PATHS,
-  safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { getProjectDirectoryOptions } from '@src/lib/projectDisplayName'
 import { reportRejection, trap } from '@src/lib/trap'
@@ -370,9 +368,7 @@ export function createApplicationCommands({
 
             void app.registry
               .get(routerService)
-              .navigate(
-                `${PATHS.FILE}/${safeEncodeForRouterPaths(project.default_file)}`
-              )
+              .navigate(await app.getProjectUrl(project, project.default_file))
           })
           .catch((error: unknown) => {
             trap(

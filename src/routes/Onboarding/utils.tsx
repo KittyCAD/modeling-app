@@ -1,3 +1,4 @@
+import { withProjectSubRoute } from '@src/lib/projectNavigation'
 import { signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useCallback, useEffect, useState } from 'react'
@@ -35,11 +36,7 @@ import {
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import {
-  PATHS,
-  joinRouterPaths,
-  safeEncodeForRouterPaths,
-} from '@src/lib/paths'
+import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
@@ -131,7 +128,10 @@ export function useNextClick(newStatus: OnboardingStatus) {
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: newStatus },
     })
-    const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
+    const targetRoute = withProjectSubRoute(
+      filePath,
+      joinRouterPaths(PATHS.ONBOARDING, newStatus)
+    )
     void navigate(targetRoute, { replace: true })
   }, [filePath, newStatus, navigate, settings])
 }
@@ -319,7 +319,7 @@ export function OnboardingButtons({
 }
 
 export interface OnboardingUtilDeps {
-  app: Pick<App, 'getCreateProjectLibraryTargets'>
+  app: Pick<App, 'getCreateProjectLibraryTargets' | 'getProjectUrl'>
   onboardingStatus: OnboardingStatus
   navigate: NavigateFunction
 }
@@ -372,11 +372,9 @@ async function createOnboardingProject(
   }
 
   await deps.navigate(
-    joinRouterPaths(
-      PATHS.FILE,
-      safeEncodeForRouterPaths(project.default_file),
-      PATHS.ONBOARDING,
-      onboardingStatus
+    withProjectSubRoute(
+      await deps.app.getProjectUrl(project, project.default_file),
+      joinRouterPaths(PATHS.ONBOARDING, onboardingStatus)
     )
   )
 }

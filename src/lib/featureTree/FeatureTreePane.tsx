@@ -1,3 +1,4 @@
+import { getProjectFileUrl } from '@src/lib/projectNavigation'
 import type { Diagnostic } from '@codemirror/lint'
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
@@ -79,7 +80,6 @@ import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
 } from '@src/lib/layout'
-import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import {
@@ -1062,7 +1062,9 @@ const OperationItem = ({
             path: targetPath,
             range: providedSourceRange ?? item.sourceRange,
           }
-          await navigate(`${PATHS.FILE}/${encodeURIComponent(targetPath)}`)
+          await navigate(
+            getProjectFileUrl(app.project.projectIORefSignal.value, targetPath)
+          )
           return
         }
       }

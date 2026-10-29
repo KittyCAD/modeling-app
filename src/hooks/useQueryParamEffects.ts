@@ -1,3 +1,4 @@
+import type { Project } from '@src/lib/project'
 import { base64ToString } from '@src/lib/base64'
 import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
@@ -22,7 +23,6 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { downloadKclSample } from '@src/lib/kclSamples'
-import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
@@ -32,7 +32,6 @@ import {
   SystemIOMachineStates,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: query-driven imports, project creation, and command dispatch (useNavigate, useSearchParams).
@@ -48,7 +47,7 @@ export type CreateFileSchemaMethodOptional = Omit<
   method?: 'newProject' | 'existingProject'
 }
 
-let pendingWebLayoutProjectCreation: Promise<string> | undefined
+let pendingWebLayoutProjectCreation: Promise<Project> | undefined
 
 async function createFreshWebLayoutProject(app: App) {
   await waitForIdleState({ systemIOActor: app.systemIOActor })
@@ -74,7 +73,7 @@ async function createFreshWebLayoutProject(app: App) {
     return Promise.reject(new Error('Unable to create a blank project.'))
   }
 
-  return project.default_file
+  return project
 }
 
 /**
@@ -205,21 +204,12 @@ export function useQueryParamEffects() {
       if (cancelled) {
         return
       }
-      if (
-        projectLibraryTarget.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID &&
-        app.registry.get(cloudSyncService).status.value.enabled
-      ) {
-        await app.registry.get(cloudSyncService).syncNow(importedProject.path)
-      }
-      if (cancelled) {
-        return
-      }
-
-      void navigate(
-        `${PATHS.FILE}/${safeEncodeForRouterPaths(
-          importedProject.default_file
-        )}`
+      const url = await app.getProjectUrl(
+        importedProject,
+        importedProject.default_file
       )
+      if (cancelled) return
+      void navigate(url)
     })().catch((error) => {
       if (cancelled) {
         return
@@ -258,18 +248,18 @@ export function useQueryParamEffects() {
       pendingWebLayoutProjectCreation ??= createFreshWebLayoutProject(app)
 
       void pendingWebLayoutProjectCreation
-        .then((defaultFile) => {
+        .then(async (project) => {
           if (cancelled) {
             return
           }
 
-          void navigate(
-            {
-              pathname: `${PATHS.FILE}/${safeEncodeForRouterPaths(defaultFile)}`,
-              search: searchParams.toString(),
-            },
-            { replace: true }
+          const url = await app.getProjectUrl(
+            project,
+            project.default_file,
+            searchParams.toString()
           )
+          if (cancelled) return
+          await navigate(url, { replace: true })
         })
         .catch((error) => {
           pendingWebLayoutProjectCreation = undefined
@@ -346,11 +336,12 @@ export function useQueryParamEffects() {
           return
         }
 
-        void navigate(
-          `${PATHS.FILE}/${safeEncodeForRouterPaths(
-            importedProject.default_file
-          )}`
+        const url = await app.getProjectUrl(
+          importedProject,
+          importedProject.default_file
         )
+        if (cancelled) return
+        void navigate(url)
       })().catch((error) => {
         if (cancelled) {
           return

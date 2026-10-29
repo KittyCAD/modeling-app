@@ -257,6 +257,7 @@ describe('PublishButton', () => {
     async (_label, cloudSyncEnabled, shouldMove) => {
       const moveToLibrary = vi.fn().mockResolvedValue({
         defaultFile: '/cloud/example/main.kcl',
+        url: '/project/remote-synced?file=main.kcl',
         localProjectPath: '/cloud/example',
       })
       const rename = vi.fn().mockResolvedValue(undefined)
@@ -339,6 +340,7 @@ describe('PublishButton', () => {
       getMoveToLibraryTargets: vi.fn().mockReturnValue([cloudLibraryTarget]),
       moveToLibrary: vi.fn().mockResolvedValue({
         defaultFile: '/cloud/example/main.kcl',
+        url: '/project/remote-synced?file=main.kcl',
         localProjectPath: '/cloud/example',
       }),
     } as unknown as HomeProjectActionsService
