@@ -40,6 +40,14 @@ export function modelingMenuCallbackMostActions({
 }) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
+    if (
+      document.activeElement?.closest('[data-code-changes-preview]') &&
+      (data.menuLabel === 'Edit.Undo' ||
+        data.menuLabel === 'Edit.Redo' ||
+        data.menuLabel === 'Edit.Format code')
+    ) {
+      return
+    }
     if (data.menuLabel === 'File.Create project') {
       commandBarActor.send({
         type: 'Find and select command',
