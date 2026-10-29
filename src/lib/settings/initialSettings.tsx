@@ -227,7 +227,8 @@ function createCoreSettings() {
         description:
           'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.',
         validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'both', //for now
+        // Only the local renderer lets users choose.
+        isEnabled: (context) => context.modeling.useLocalRenderer.current,
       }),
       /**
        * Whether the 3D scene is rendered on this device or streamed as video
@@ -237,8 +238,6 @@ function createCoreSettings() {
       useLocalRenderer: new Setting<boolean>({
         defaultValue: false,
         hideOnLevel: 'project',
-        // Hidden until the local renderer can draw the scene.
-        hideOnPlatform: 'both',
         description:
           'Render the 3D scene on this device instead of streaming it as video from the engine. Takes effect after restarting the app.',
         validate: (v) => typeof v === 'boolean',

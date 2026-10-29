@@ -133,6 +133,49 @@ export class SceneFixture {
       .or(page.getByRole('button', { name: 'Edit Sketch' }))
     this.appHeader = this.page.getByTestId('app-header')
   }
+  /** Read current CSS viewport coordinates; refresh after camera or model changes. */
+  getProjectedEntities = async () =>
+    this.page.evaluate(async () => {
+      const view = window.app.singletons.kclManager.sceneInfra.localRenderer
+      if (!view)
+        throw new Error('Projected entities require the local renderer')
+      return view.getProjectedEntities()
+    })
+
+  /** Index is zero-based within edges filtered by the requested visibility. */
+  findEdge = async (
+    index: number,
+    {
+      timeout = 30_000,
+      visible = true,
+    }: { timeout?: number; visible?: boolean } = {}
+  ) => {
+    if (!Number.isInteger(index) || index < 0) {
+      throw new Error('Edge index must be a non-negative integer')
+    }
+    const lookup = async () =>
+      (await this.getProjectedEntities()).filter(
+        (entity) => entity.kind === 'edge' && entity.visible === visible
+      )[index]
+    await expect.poll(lookup, { timeout }).toBeDefined()
+    const edge = await lookup()
+    if (!edge) {
+      throw new Error(
+        `Missing projected edge at index ${index} (visible: ${visible})`
+      )
+    }
+    const bounds = await this.streamWrapper.boundingBox()
+    if (!bounds || bounds.width <= 0 || bounds.height <= 0) {
+      throw new Error('No stream to click')
+    }
+    // Projected coordinates are viewport pixels; mouse helpers use stream ratios.
+    return this.makeMouseHelpers(
+      (edge.x - bounds.x) / bounds.width,
+      (edge.y - bounds.y) / bounds.height,
+      { format: 'ratio' }
+    )
+  }
+
   private _serialiseScene = async (): Promise<SceneSerialised> => {
     const camera = await this.getCameraInfo()
 
