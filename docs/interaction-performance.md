@@ -224,6 +224,11 @@ performance suite, so they are not enforcement measurements. Discovery is off by
 default and explicitly disabled in `playwright.performance.config.ts` to avoid
 competing recording sessions.
 
+## Delay and animation guardrails
+
+See the [interaction timing policy](interaction-timing-policy.md) for lint
+enforcement and the single-site functional timer exceptions.
+
 ## Cache lifecycle regressions
 
 JavaScript and Wasm expose no manual execution-cache reset. Rust owns file,

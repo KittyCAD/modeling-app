@@ -28,6 +28,7 @@ export function attachAutosave(
   const schedule = () => {
     cancel()
     if (!eligible() || !saving.state(editor).peek().dirty) return
+    // zds-performance-exception: storage-batching -- Coalesce backing-document autosaves across views while editor updates and model execution remain immediate.
     timer = setTimeout(() => {
       timer = undefined
       if (!eligible() || !saving.state(editor).peek().dirty) return

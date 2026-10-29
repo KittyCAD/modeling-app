@@ -167,6 +167,7 @@ function NetworkHealthPopoverContent() {
                     JSON.stringify(error, null, 2) || ''
                   )
                   setHasCopied(true)
+                  // zds-performance-exception: feedback-lifetime -- Restore the Copy label after displaying immediate clipboard success; the clipboard write has already completed.
                   setTimeout(() => setHasCopied(false), 5000)
                 }, reportRejection)}
                 className="flex w-fit gap-2 items-center bg-transparent text-sm p-1 py-0 my-0 -mx-1 text-destroy-80 dark:text-destroy-10 hover:bg-transparent border-transparent dark:border-transparent hover:border-destroy-80 dark:hover:border-destroy-80 dark:hover:bg-destroy-80"

@@ -1534,6 +1534,7 @@ export const zookeeperManagerMachine = setup({
           // Any WS protocol messages will trigger the `api` heartbeat update.
           let timeoutStartedAt: number | undefined
           let previousBufferedAmount = 0
+          // zds-performance-exception: external-protocol -- Maintain the WebSocket heartbeat and detect dead transport independently of immediate conversation updates.
           const pingIntervalId = setInterval(() => {
             if (ws.readyState !== WebSocket.OPEN) {
               return
@@ -2394,6 +2395,7 @@ export const zookeeperManagerMachine = setup({
       initial: 'waiting-for-progress',
       states: {
         'waiting-for-progress': {
+          // zds-performance-exception: network-deadline -- Retry setup only when its progress watchdog expires; incoming progress is accepted immediately.
           after: {
             [ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS]: [
               {
@@ -2462,6 +2464,7 @@ export const zookeeperManagerMachine = setup({
           },
         ],
       },
+      // zds-performance-exception: network-deadline -- Bound a stalled setup attempt and enter its retry policy without delaying an attempt that completes normally.
       after: {
         [ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS]: [
           {

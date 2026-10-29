@@ -101,6 +101,7 @@ export function createKclSession(
       return
     const container = element.parentElement
     if (!container || document.visibilityState === 'hidden') return
+    // zds-performance-exception: connection-retry -- Back off automatic scene reconnection after transport failures; explicit reconnect remains immediate.
     retryTimer = setTimeout(
       () => {
         recover(container)
@@ -207,6 +208,7 @@ export function createKclSession(
   const beginOpeningAttempt = (size: { width: number; height: number }) => {
     const owner = attempt
     started = true
+    // zds-performance-exception: network-deadline -- Fail a scene opening that never settles, including disposal of the previous scene; successful startup proceeds immediately.
     owner.timer = setTimeout(
       () => fail(new Error('Opening the KCL scene timed out'), owner),
       60_000
@@ -281,6 +283,7 @@ export function createKclSession(
       savedCamera = undefined
     return true
   }
+  // zds-performance-exception: idle-lifecycle -- Release an inactive streamed connection after its configured idle limit without postponing input or execution.
   const idle = setInterval(() => {
     const active = resource.peek()
     const timeout = active?.preferences.idleTimeout.peek()
@@ -408,6 +411,7 @@ export function createKclSession(
         if (isErr(scene)) return scene
         if (!current(owner) || signal.aborted)
           return new Error('KCL execution was cancelled')
+        // zds-performance-exception: network-deadline -- Fail an execution that never completes so its scene can recover; successful results do not wait for this clock.
         const timer = setTimeout(
           () =>
             fail(

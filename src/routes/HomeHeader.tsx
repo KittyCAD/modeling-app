@@ -53,6 +53,7 @@ export function HomeHeader({
   const [refreshCoolingDown, setRefreshCoolingDown] = useState(false)
   useEffect(() => {
     if (!refreshCoolingDown) return
+    // zds-performance-exception: external-protocol -- Rate-limit repeated project-list refresh requests to five seconds; the first request starts immediately.
     const timeout = setTimeout(() => setRefreshCoolingDown(false), 5_000)
     return () => clearTimeout(timeout)
   }, [refreshCoolingDown])
@@ -112,6 +113,7 @@ export function HomeHeader({
               iconStart={{
                 icon: 'arrowRotateRight',
                 bgClassName: 'bg-transparent',
+                // zds-performance-exception: activity-indicator -- Rotate only while the project-list request is pending; the indicator does not gate results or navigation.
                 iconClassName: isRefreshing ? 'animate-spin' : '',
               }}
             >

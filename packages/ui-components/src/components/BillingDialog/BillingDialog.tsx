@@ -68,6 +68,7 @@ export function BillingDialog(props: BillingDialogProps) {
   useEffect(() => {
     if (!Number.isFinite(refreshTime)) return
     setNow(Date.now())
+    // zds-performance-exception: background-polling -- Refresh the displayed billing clock while the dialog remains usable; this timer does not gate billing requests or navigation.
     const id = setInterval(() => setNow(Date.now()), 60_000)
     return () => clearInterval(id)
   }, [refreshTime])
