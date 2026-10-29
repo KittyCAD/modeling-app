@@ -1,4 +1,7 @@
-import { waitForWebKitBillingToSettle } from '@e2e/playwright/test-utils'
+import {
+  waitForAppLoad,
+  waitForWebKitBillingToSettle,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 
@@ -69,6 +72,7 @@ test.describe('Share link tests', () => {
       next.searchParams.set('name', 'test')
       next.searchParams.set('code', code)
       await page.goto(next.toString())
+      await waitForAppLoad(page)
 
       const projectTab = page
         .getByTestId('cmd-bar-input-tab')

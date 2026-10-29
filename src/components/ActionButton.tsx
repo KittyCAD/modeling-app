@@ -5,8 +5,9 @@ import { Link } from 'react-router-dom'
 
 import type { ActionIconProps } from '@src/components/ActionIcon'
 import { ActionIcon } from '@src/components/ActionIcon'
+import { getActionButtonClasses } from '@src/components/actionButtonStyles'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS } from '@src/lib/paths'
+import { PATHS } from '@src/lib/routePaths'
 
 interface BaseActionButtonProps {
   iconStart?: ActionIconProps
@@ -49,15 +50,11 @@ export type ActionButtonProps =
   | ActionButtonAsElement
 
 export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
-  const classNames = `action-button leading-[0.7] p-0 m-0 group text-xs leading-none flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 ${
-    props.iconStart
-      ? props.iconEnd
-        ? 'px-0' // No padding if both icons are present
-        : 'pr-2' // Padding on the right if only the start icon is present
-      : props.iconEnd
-        ? 'pl-2' // Padding on the left if only the end icon is present
-        : 'px-2' // Padding on both sides if no icons are present
-  } ${props.className ? props.className : ''}`
+  const classNames = getActionButtonClasses({
+    hasIconStart: Boolean(props.iconStart),
+    hasIconEnd: Boolean(props.iconEnd),
+    className: props.className,
+  })
 
   switch (props.Element) {
     case 'button': {
