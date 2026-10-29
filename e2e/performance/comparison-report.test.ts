@@ -5,7 +5,9 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import {
   COMPARISON_ACTIONS,
+  COMPARISON_CONTEXTS,
   COMPARISON_PLAN,
+  COMPARISON_WARM_CYCLES,
 } from '@e2e/performance/comparison'
 import type { ComparisonSessionIdentity } from '@e2e/performance/comparison'
 import {
@@ -22,30 +24,43 @@ import type {
 import { describe, expect, it } from 'vitest'
 
 const require = createRequire(import.meta.url)
+const firstProbeIndex = COMPARISON_PLAN.length
+const expectedCaptures = COMPARISON_PLAN.length + COMPARISON_PROBES.length * 2
+const expectedStrata = Object.values(COMPARISON_ACTIONS).reduce(
+  (total, actions) => total + actions.length * 3 * 2,
+  0
+)
+const errorContexts = COMPARISON_CONTEXTS.filter(
+  (context) =>
+    context === 'modeling-large-syntax-error' ||
+    context === 'modeling-large-engine-error'
+)
 
 function capture(
   session?: Readonly<ComparisonSessionIdentity>,
   delay = 0
 ): InteractionSnapshot {
   const actions = COMPARISON_ACTIONS[session?.context ?? 'home']
-  const samples = Array.from({ length: session ? 11 : 1 }, (_, cycle) =>
-    actions.map(
-      (id, action): InteractionSample => ({
-        id,
-        sequence: cycle * actions.length + action + 1,
-        startTime: (cycle * actions.length + action + 1) * 1000,
-        targetTag: 'button',
-        renderOpportunityMs: 16,
-        outcomeMs: 64 + delay,
-        status: 'complete',
-        eventTiming: {
-          durationMs: 64 + delay,
-          inputDelayMs: 8,
-          processingMs: 8,
-          presentationDelayMs: 48 + delay,
-        },
-      })
-    )
+  const samples = Array.from(
+    { length: session ? COMPARISON_WARM_CYCLES + 1 : 1 },
+    (_, cycle) =>
+      actions.map(
+        (id, action): InteractionSample => ({
+          id,
+          sequence: cycle * actions.length + action + 1,
+          startTime: (cycle * actions.length + action + 1) * 1000,
+          targetTag: 'button',
+          renderOpportunityMs: 16,
+          outcomeMs: 64 + delay,
+          status: 'complete',
+          eventTiming: {
+            durationMs: 64 + delay,
+            inputDelayMs: 8,
+            processingMs: 8,
+            presentationDelayMs: 48 + delay,
+          },
+        })
+      )
   ).flat()
   return {
     samples,
@@ -65,7 +80,7 @@ function measurement(
   const expected = Object.fromEntries(
     COMPARISON_ACTIONS[comparison?.context ?? 'home'].map((id) => [
       id,
-      comparison ? 11 : 1,
+      comparison ? COMPARISON_WARM_CYCLES + 1 : 1,
     ])
   )
   return JSON.stringify({
@@ -125,7 +140,10 @@ describe('serialized comparison report consumer', () => {
     const result = reportComparisonRun(attempts())
     expect(result.status).toBe('no-regression')
     expect(result.collectionErrors).toEqual([])
-    expect(result.captures).toHaveLength(50)
+    expect(result.captures).toHaveLength(expectedCaptures)
+    expect(new Set(result.strata.map(({ context }) => context))).toEqual(
+      new Set(COMPARISON_CONTEXTS)
+    )
     expect(result.captures[0].metadata).toEqual({
       scenario: 'comparison.home',
       comparison: COMPARISON_PLAN[0],
@@ -149,10 +167,40 @@ describe('serialized comparison report consumer', () => {
   it('evaluates attached raw captures rather than using passing test status as the performance decision', () => {
     const result = reportComparisonRun(attempts(32))
     expect(result.status).toBe('regressed')
-    expect(result.failures).toHaveLength(96)
+    expect(result.failures).toHaveLength(expectedStrata)
     expect(result.attempts.every((row) => row.status === 'passed')).toBe(true)
     expect(result.targetBreaches).toEqual([])
   })
+
+  it.each(errorContexts)(
+    'keeps %s regressions separate from every other context',
+    (context) => {
+      const input = attempts()
+      for (const [index, session] of COMPARISON_PLAN.entries()) {
+        if (session.context !== context || session.variant !== 'candidate')
+          continue
+        input[index].measurements = [
+          measurement(
+            capture(session, 32),
+            `comparison.${session.context}`,
+            session
+          ),
+        ]
+      }
+      const result = reportComparisonRun(input)
+      expect(result.status).toBe('regressed')
+      expect(result.collectionErrors).toEqual([])
+      expect(result.failures).toHaveLength(
+        COMPARISON_ACTIONS[context].length * 3 * 2
+      )
+      expect(result.failures.every((row) => row.context === context)).toBe(true)
+      expect(
+        result.strata
+          .filter((row) => row.context !== context)
+          .every((row) => row.status === 'no-regression')
+      ).toBe(true)
+    }
+  )
 
   it('does not hide incomplete Event Timing behind a passing test', () => {
     const input = attempts()
@@ -169,15 +217,39 @@ describe('serialized comparison report consumer', () => {
     ).toHaveLength(1)
   })
 
+  it.each(['modeling', 'modeling-large-error', 'modeling-unknown'])(
+    'rejects an ambiguous or unknown serialized model context: %s',
+    (context) => {
+      const input = attempts()
+      const session = COMPARISON_PLAN[1]
+      input[1].measurements = [
+        JSON.stringify({
+          metadata: {
+            scenario: `comparison.${context}`,
+            comparison: { ...session, context },
+          },
+          snapshot: capture(session),
+        }),
+      ]
+      const result = reportComparisonRun(input)
+      expect(result.status).toBe('invalid')
+      expect(result.collectionErrors).toContain(
+        `Missing, duplicate, or malformed measurement attachment: comparison/${session.block}/${session.variant}/${session.context}.`
+      )
+    }
+  )
+
   it('rejects empty or filtered execution and a missing required probe', () => {
     expect(reportComparisonRun([]).status).toBe('invalid')
-    expect(reportComparisonRun(attempts().slice(0, 40)).status).toBe('invalid')
+    expect(
+      reportComparisonRun(attempts().slice(0, firstProbeIndex)).status
+    ).toBe('invalid')
     const input = attempts()
     input.pop()
     const result = reportComparisonRun(input)
     expect(result.status).toBe('invalid')
     expect(result.collectionErrors).toContain(
-      'Expected exactly one passed harness-candidate/harness.delayed-pane-content probe.'
+      'Expected exactly one passed harness-candidate/harness.delayed-pane-content.large-engine-error probe.'
     )
   })
 
@@ -185,7 +257,7 @@ describe('serialized comparison report consumer', () => {
     'rejects %s execution even with valid attachments',
     (condition) => {
       const input = attempts()
-      const probe = input[40]
+      const probe = input[firstProbeIndex]
       if (condition === 'failed') probe.status = 'failed'
       if (condition === 'skipped') probe.status = 'skipped'
       if (condition === 'retried') probe.retry = 1
@@ -197,12 +269,13 @@ describe('serialized comparison report consumer', () => {
 
   it('rejects duplicate test attempts and duplicate probe identities', () => {
     const duplicate = attempts()
-    duplicate.push(duplicate[40])
+    duplicate.push(duplicate[firstProbeIndex])
     expect(reportComparisonRun(duplicate).collectionErrors).toContain(
       'Duplicate test attempt: harness-base/harness.delayed-click.'
     )
     const mislabeled = attempts()
-    mislabeled[41].measurements = mislabeled[40].measurements
+    mislabeled[firstProbeIndex + 1].measurements =
+      mislabeled[firstProbeIndex].measurements
     const result = reportComparisonRun(mislabeled)
     expect(result.status).toBe('invalid')
     expect(result.collectionErrors).toContain(
@@ -253,7 +326,10 @@ describe('serialized comparison report consumer', () => {
     ;[reordered[0], reordered[2]] = [reordered[2], reordered[0]]
     expect(reportComparisonRun(reordered).status).toBe('invalid')
     const earlyProbe = attempts()
-    ;[earlyProbe[0], earlyProbe[40]] = [earlyProbe[40], earlyProbe[0]]
+    ;[earlyProbe[0], earlyProbe[firstProbeIndex]] = [
+      earlyProbe[firstProbeIndex],
+      earlyProbe[0],
+    ]
     const result = reportComparisonRun(earlyProbe)
     expect(result.status).toBe('invalid')
     expect(result.collectionErrors).toContain(
@@ -269,7 +345,7 @@ describe('serialized comparison report consumer', () => {
     expect(result.collectionErrors).toContain(
       'Playwright execution ended timedout.'
     )
-    expect(result.captures).toHaveLength(50)
+    expect(result.captures).toHaveLength(expectedCaptures)
   })
 })
 
@@ -369,7 +445,9 @@ describe('Playwright comparison reporter', () => {
       expect(result.report).toMatchObject({
         status: expected,
         collectionErrors: [],
-        attempts: Array.from({ length: 50 }, () => ({ status: 'passed' })),
+        attempts: Array.from({ length: expectedCaptures }, () => ({
+          status: 'passed',
+        })),
       })
     },
     35_000
@@ -388,7 +466,9 @@ describe('Playwright comparison reporter', () => {
       status: 'inconclusive',
       unavailablePresentationStrata: 1,
       collectionErrors: [],
-      attempts: Array.from({ length: 50 }, () => ({ status: 'passed' })),
+      attempts: Array.from({ length: expectedCaptures }, () => ({
+        status: 'passed',
+      })),
     })
   }, 35_000)
 

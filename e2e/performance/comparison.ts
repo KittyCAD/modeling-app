@@ -16,7 +16,12 @@ export const COMPARISON_TARGET_MS = 150
 const NUMERICAL_TIE_TOLERANCE_MS = 1e-6
 
 export type ComparisonVariant = 'base' | 'candidate'
-export type ComparisonContext = 'home' | 'modeling'
+export type ComparisonContext =
+  | 'home'
+  | 'modeling-small'
+  | 'modeling-large'
+  | 'modeling-large-syntax-error'
+  | 'modeling-large-engine-error'
 export type ComparisonPhase = 'first' | 'warm-median' | 'warm-maximum'
 export type ComparisonMetric = 'outcome' | 'event-timing'
 
@@ -30,7 +35,13 @@ export interface ComparisonSession extends ComparisonSessionIdentity {
   snapshot: InteractionSnapshot
 }
 
-const contexts: readonly ComparisonContext[] = ['home', 'modeling']
+export const COMPARISON_CONTEXTS: readonly ComparisonContext[] = Object.freeze([
+  'home',
+  'modeling-small',
+  'modeling-large',
+  'modeling-large-syntax-error',
+  'modeling-large-engine-error',
+])
 const firstVariants: readonly ComparisonVariant[] = [
   'base',
   'candidate',
@@ -50,10 +61,29 @@ export const COMPARISON_PLAN: readonly Readonly<ComparisonSessionIdentity>[] =
     firstVariants.flatMap((first, block) => {
       const second: ComparisonVariant = first === 'base' ? 'candidate' : 'base'
       return [first, second].flatMap((variant) =>
-        contexts.map((context) => Object.freeze({ block, variant, context }))
+        COMPARISON_CONTEXTS.map((context) =>
+          Object.freeze({ block, variant, context })
+        )
       )
     })
   )
+
+const modelingActions = Object.freeze([
+  interactions.commandPaletteOpen.id,
+  interactions.commandPaletteClose.id,
+  interactions.codePaneClose.id,
+  interactions.codePaneOpen.id,
+  interactions.filesPaneOpen.id,
+  interactions.filesPaneClose.id,
+  interactions.featureTreeOpen.id,
+  interactions.sketchGroupExpand.id,
+  interactions.sketchGroupCollapse.id,
+  interactions.featureTreeClose.id,
+  interactions.transformMenuOpen.id,
+  interactions.transformMenuClose.id,
+  interactions.extrudeOpen.id,
+  interactions.extrudeCancel.id,
+])
 
 export const COMPARISON_ACTIONS: Readonly<
   Record<ComparisonContext, readonly string[]>
@@ -62,22 +92,10 @@ export const COMPARISON_ACTIONS: Readonly<
     interactions.commandPaletteOpen.id,
     interactions.commandPaletteClose.id,
   ]),
-  modeling: Object.freeze([
-    interactions.commandPaletteOpen.id,
-    interactions.commandPaletteClose.id,
-    interactions.codePaneClose.id,
-    interactions.codePaneOpen.id,
-    interactions.filesPaneOpen.id,
-    interactions.filesPaneClose.id,
-    interactions.featureTreeOpen.id,
-    interactions.sketchGroupExpand.id,
-    interactions.sketchGroupCollapse.id,
-    interactions.featureTreeClose.id,
-    interactions.transformMenuOpen.id,
-    interactions.transformMenuClose.id,
-    interactions.extrudeOpen.id,
-    interactions.extrudeCancel.id,
-  ]),
+  'modeling-small': modelingActions,
+  'modeling-large': modelingActions,
+  'modeling-large-syntax-error': modelingActions,
+  'modeling-large-engine-error': modelingActions,
 })
 
 interface PairedValues {
@@ -269,7 +287,7 @@ export function compareInteractions(
     'warm-maximum',
   ]
   const metrics: readonly ComparisonMetric[] = ['outcome', 'event-timing']
-  for (const context of contexts) {
+  for (const context of COMPARISON_CONTEXTS) {
     for (const id of COMPARISON_ACTIONS[context]) {
       for (const phase of phases) {
         for (const metric of metrics) {

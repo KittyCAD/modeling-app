@@ -1,12 +1,27 @@
 import { defineRegistryItemFactory, provideService } from '@kittycad/registry'
-import { interactionOutcomes } from '@src/lib/interactionPerformance/outcomes'
+import { createInteractionOutcomes } from '@src/lib/interactionPerformance/outcomes'
+import { createDelayOutcomes } from '@src/lib/interactionPerformance/delayOutcomes'
+import { createModelingOutcomes } from '@src/lib/interactionPerformance/modelingOutcomes'
+import { createUiOutcomes } from '@src/lib/interactionPerformance/uiOutcomes'
 import type * as RecorderModule from '@src/lib/interactionPerformance/recorder'
 import type { InteractionSnapshot } from '@src/lib/interactionPerformance/types'
 import { interactionPerformanceService } from '@src/registry/contracts/interactionPerformance'
+import { projectSession } from '@src/registry/contracts/projectSession'
 
 export default import.meta.env.VITE_INTERACTION_PERFORMANCE === '1'
-  ? defineRegistryItemFactory(() => {
-      const interactionDefinitions = Object.values(interactionOutcomes)
+  ? defineRegistryItemFactory((ctx) => {
+      const getEditor = () =>
+        ctx.services.optional(projectSession)?.getProject()?.executingEditor
+          .value ?? undefined
+      const originalDefinitions = Object.values(
+        createInteractionOutcomes(() => getEditor()?.hasParseErrors() ?? false)
+      )
+      const interactionDefinitions = [
+        ...originalDefinitions,
+        ...createDelayOutcomes(getEditor),
+        ...createModelingOutcomes(getEditor),
+        ...createUiOutcomes(getEditor),
+      ]
       let recorder: RecorderModule.InteractionRecorder | undefined
       let loading: Promise<typeof RecorderModule> | undefined
       let generation = 0
@@ -15,7 +30,7 @@ export default import.meta.env.VITE_INTERACTION_PERFORMANCE === '1'
       const snapshot = (): InteractionSnapshot =>
         recorder?.snapshot() ?? {
           samples: [],
-          registered: interactionDefinitions.map(
+          registered: originalDefinitions.map(
             ({ id, testId, budgetMs, outcome }) => ({
               id,
               testId,
@@ -32,10 +47,21 @@ export default import.meta.env.VITE_INTERACTION_PERFORMANCE === '1'
         id: 'interaction-performance',
         providesServices: [
           provideService(interactionPerformanceService, {
-            async start() {
+            async start(interactionIds) {
               if (disposed) {
                 return Promise.reject(
                   new Error('The interaction recording service is disposed.')
+                )
+              }
+              const unknown = interactionIds?.find(
+                (id) =>
+                  !interactionDefinitions.some(
+                    (definition) => definition.id === id
+                  )
+              )
+              if (unknown) {
+                return Promise.reject(
+                  new Error(`Unknown interaction: ${unknown}`)
                 )
               }
               const requestedGeneration = ++generation
@@ -51,7 +77,12 @@ export default import.meta.env.VITE_INTERACTION_PERFORMANCE === '1'
                 document,
                 interactionDefinitions
               )
-              recorder.start()
+              // Paired comparisons keep their immutable workload. Expanded
+              // absolute-budget scenarios explicitly select their identities.
+              const error = recorder.start(
+                interactionIds ?? originalDefinitions.map(({ id }) => id)
+              )
+              if (error) return Promise.reject(error)
             },
             snapshot,
             stop: () => {

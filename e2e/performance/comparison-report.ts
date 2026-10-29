@@ -21,7 +21,10 @@ export const COMPARISON_PROBES: readonly string[] = Object.freeze([
   'harness.delayed-pointerdown',
   'harness.missing-click',
   'harness.secondary-click-restart',
-  'harness.delayed-pane-content',
+  'harness.delayed-pane-content.small',
+  'harness.delayed-pane-content.large',
+  'harness.delayed-pane-content.large-syntax-error',
+  'harness.delayed-pane-content.large-engine-error',
 ])
 
 export interface ComparisonAttempt {
@@ -141,7 +144,11 @@ function identity(value: unknown): ComparisonSessionIdentity | null {
     !record(value) ||
     typeof value.block !== 'number' ||
     (value.variant !== 'base' && value.variant !== 'candidate') ||
-    (value.context !== 'home' && value.context !== 'modeling')
+    (value.context !== 'home' &&
+      value.context !== 'modeling-small' &&
+      value.context !== 'modeling-large' &&
+      value.context !== 'modeling-large-syntax-error' &&
+      value.context !== 'modeling-large-engine-error')
   )
     return null
   return { block: value.block, variant: value.variant, context: value.context }
@@ -261,11 +268,14 @@ export function reportComparisonRun(
         errors.push(`Expected exactly one passed ${project}/${scenario} probe.`)
     }
   }
-  const comparison = compareInteractions(sessions)
+  const raw = compareInteractions(sessions)
+  const comparison: InteractionComparison = {
+    ...raw,
+    status: errors.length ? 'invalid' : raw.status,
+    collectionErrors: [...errors, ...raw.collectionErrors],
+  }
   return {
     ...comparison,
-    status: errors.length ? 'invalid' : comparison.status,
-    collectionErrors: [...errors, ...comparison.collectionErrors],
     captures,
     attempts: attempts.map(
       ({ measurements: _measurements, ...attempt }) => attempt

@@ -9,7 +9,9 @@ export interface InteractionSample {
   sequence: number
   id: string | null
   targetTag: string
-  /** Pointerdown timestamp, or the activation click when no pointerdown was captured. */
+  /** Native user activation event that starts this span. */
+  inputType?: InteractionInputEvent
+  /** Native activation timestamp, with pointerdown when available. */
   startTime: number
   renderOpportunityMs: number | null
   outcomeMs: number | null
@@ -22,6 +24,8 @@ export interface InteractionDescription {
   testId: string
   budgetMs: number
   outcome: string
+  /** Collection deadline for slow real outcomes, never a latency allowance. */
+  timeoutMs?: number
 }
 
 export interface InteractionSnapshot {
@@ -33,6 +37,35 @@ export interface InteractionSnapshot {
 }
 
 export interface InteractionDefinition extends InteractionDescription {
+  events?: readonly InteractionInputEvent[]
+  /** Native drag/resize bursts represent one gesture, not separate activations. */
+  coalesce?: 'first' | 'last'
   matchesTarget: (target: Element) => boolean
+  matchesEvent?: (event: Event, target: Element) => boolean
+  /** Capture the pre-action owner state, without changing application behavior. */
+  prepareOutcome?: (
+    document: Document,
+    target: Element,
+    event: Event
+  ) => (() => boolean) | InteractionOutcome
   isReady: (document: Document) => boolean
 }
+
+/** A recording session owns and releases any view-observation callbacks. */
+export interface InteractionOutcome {
+  isReady: () => boolean
+  dispose: () => void
+}
+
+export type InteractionInputEvent =
+  | 'click'
+  | 'auxclick'
+  | 'contextmenu'
+  | 'dblclick'
+  | 'input'
+  | 'keydown'
+  | 'keyup'
+  | 'pointerover'
+  | 'pointerout'
+  | 'dragover'
+  | 'resize'
