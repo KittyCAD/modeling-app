@@ -1,4 +1,5 @@
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { addNoteGdt } from '@src/lang/modifyAst/gdt'
 import {
   addNamedView,
   type NamedViewCameraSnapshot,
@@ -80,12 +81,22 @@ sketch001 = sketch(on = XY) {
 }
 region001 = region(segments = [sketch001.line1])
 extrude001 = extrude(region001, length = 5mm)`
-    const ast = assertParse(code, instance)
+    const note = addNoteGdt({
+      ast: assertParse(code, instance),
+      note: 'INSPECT',
+      wasmInstance: instance,
+    })
+    if (err(note)) throw note
+    const ast = note.modifiedAst
     const execState = await enginelessExecutor(ast, rustContext)
     const sweep = [...execState.artifactGraph.values()].find(
       (artifact) => artifact.type === 'sweep'
     )
     if (!sweep) throw new Error('Expected a sweep artifact')
+    const annotation = [...execState.artifactGraph.values()].find(
+      (artifact) => artifact.type === 'gdtAnnotation'
+    )
+    if (!annotation) throw new Error('Expected an annotation artifact')
 
     const result = addNamedView({
       ast,
@@ -95,7 +106,10 @@ extrude001 = extrude(region001, length = 5mm)`
       projection: 'Orthographic',
       baseline: 'Hide',
       except: {
-        graphSelections: [{ artifact: sweep, codeRef: sweep.codeRef }],
+        graphSelections: [
+          { artifact: sweep, codeRef: sweep.codeRef },
+          { artifact: annotation, codeRef: annotation.codeRef },
+        ],
         otherSelections: [],
       },
       wasmInstance: instance,
@@ -112,8 +126,11 @@ extrude001 = extrude(region001, length = 5mm)`
   "Isolate body",
   camera = view::oriented(view::Orientation::Isometric, projection = view::Projection::Orthographic),
   baseline = view::Visibility::Hide,
-  except = [extrude001],
+  except = [extrude001, note001],
 )`)
+    expect(recast(result.modifiedAst, instance)).toContain(
+      'note001 = gdt::note(note = "INSPECT")'
+    )
     expect(
       [...nextExecState.artifactGraph.values()].some(
         (artifact) => artifact.type === 'namedView'

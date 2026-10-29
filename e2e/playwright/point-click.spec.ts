@@ -4368,10 +4368,7 @@ extrude001 = extrude(region001, length = 30)`
     await test.step('Edit GDT Flatness', async () => {
       await test.step('Open edit mode from feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const gdtOperation = await toolbar.getFeatureTreeOperation(
-          'Flatness',
-          0
-        )
+        const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
         await gdtOperation.dblclick()
         // Should open the command bar in edit mode
         await cmdBar.expectState({
@@ -4571,7 +4568,7 @@ extrude001 = extrude(region001, length = 30)`
 
     await test.step('Delete GDT Flatness', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const gdtOperation = await toolbar.getFeatureTreeOperation('Flatness', 0)
+      const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
       // Delete the GDT operation
       await gdtOperation.click({ button: 'left' })
       await page.keyboard.press('Delete')
@@ -5882,7 +5879,50 @@ hole001 = hole::hole(
 
 test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
   test.use({
-    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG, 'modeling_dialogs'],
+    userFeatures: ['modeling_dialogs'],
+  })
+
+  test('Selects objects and annotations from the feature tree for Named View exceptions', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(
+        '',
+        `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
+}
+body001 = extrude(region(segments = [sketch001.circle1]), length = 10mm)
+note001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontSize = 8mm)`
+      )
+    )
+    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+    await page.getByTestId('named-view-create').click()
+    const dialog = page.getByTestId('modeling-dialog')
+    await dialog.getByRole('textbox', { name: /^name/i }).fill('Inspection')
+    await dialog.getByText('Advanced', { exact: true }).click()
+
+    await (await toolbar.getFeatureTreeOperation('body001', 0)).click()
+    const exceptions = dialog.getByRole('button', {
+      name: 'Select Exceptions',
+      exact: true,
+    })
+    await expect(exceptions).toHaveText('1 sweep')
+    await (await toolbar.getFeatureTreeOperation('Note', 0)).click({
+      modifiers: ['Shift'],
+    })
+    await expect(exceptions).toHaveText('1 sweep, 1 annotation')
+    await scene.waitForExecutionDoneAfter(() =>
+      dialog.getByRole('button', { name: 'Submit', exact: true }).click()
+    )
+    await editor.expectEditor.toContain('except = [body001, note001]')
   })
 
   test('Creates, edits visibility, and removes a Named View from the pane', async ({
@@ -5897,12 +5937,19 @@ sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 2mm, var 10mm], center = [var 0mm, var 10mm])
 }
 region001 = region(segments = [sketch001.circle1])`
+    const oldVersionCode = code.replace('kclVersion = 3.0', 'kclVersion = 2.0')
     await homePage.goToModelingScene()
     await scene.settled()
     await toolbar.openPane(DefaultLayoutPaneID.Code)
-    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', oldVersionCode)
+    )
     await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
     const pane = page.locator(`#${DefaultLayoutPaneID.NamedViews}-pane`)
+    await expect(pane.getByTestId('named-view-create')).toHaveCount(0)
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(oldVersionCode, code)
+    )
     await pane.getByTestId('named-view-create').click()
 
     const dialog = page.getByTestId('modeling-dialog')
