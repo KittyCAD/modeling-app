@@ -1039,11 +1039,14 @@ export class LocalRenderer {
     this.scheduleRender()
 
     this.container.style.opacity = '1'
-    // Execution may finish while the GPU/environment is initializing, or before
-    // this renderer is mounted. Load that completed scene once, too.
+    // Models load on ExecutionDone, which this renderer misses if the execution
+    // finished before it was created or while initialize() waited for the GPU.
+    // So load the current file's finished execution here, in case ExecutionDone
+    // was missed. A file switch empties execState, so an execution from the
+    // previous file doesn't count.
     if (
       !kclManager.isExecuting &&
-      kclManager.engineSceneGenerationSignal.peek() > 0 &&
+      kclManager.execState.engineSceneGeneration !== null &&
       !kclManager.hasErrors()
     ) {
       void this.refreshModel().catch(reportRejection)
