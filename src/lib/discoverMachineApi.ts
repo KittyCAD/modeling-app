@@ -56,6 +56,7 @@ export const discoverMachineApi = async ({
       cleanupAndResolve(null)
     })
 
+    // zds-performance-exception: network-deadline -- Bound Bonjour service discovery and release its socket when no machine responds; discovered results resolve immediately.
     timeout = setTimeout(() => {
       cleanupAndResolve(null)
     }, timeoutAfterMs)

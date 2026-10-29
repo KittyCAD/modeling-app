@@ -35,6 +35,7 @@ export const toastToolbar: ToastToolbar = Object.assign(
     if (Number.isFinite(duration)) {
       dismissTimers.set(
         id,
+        // zds-performance-exception: feedback-lifetime -- Dismiss a toast only after its readable display lifetime; initial toast feedback is already visible.
         setTimeout(() => dismissToolbarToast(id), duration)
       )
     }
