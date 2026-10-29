@@ -35,11 +35,15 @@ const INSTRUMENTATION = [
   'src/lib/interactionPerformance/outcomes.ts',
   'src/lib/interactionPerformance/recorder.ts',
   'src/lib/interactionPerformance/types.ts',
+  'src/lib/interactionPerformance/delayOutcomes.ts',
+  'src/lib/interactionPerformance/modelingOutcomes.ts',
+  'src/lib/interactionPerformance/uiOutcomes.ts',
   'src/registry/extensions/interactionPerformance/index.ts',
   'src/registry/contracts/interactionPerformance.ts',
 ]
 const LOCKFILES = ['package-lock.json', 'rust/Cargo.lock']
 const WORKLOAD = 'rust/kcl-lib/tests/named_views_hide_extrude/input.kcl'
+const LARGE_WORKLOAD = 'public/kcl-samples/cpu-cooler'
 const WASM_MANIFEST = 'rust/kcl-wasm-lib/pkg/interaction-wasm-manifest.json'
 const APP_MANIFEST = 'interaction-build-manifest.json'
 const COMPARISON_ENTRY = 'e2e/performance/comparison.ts'
@@ -316,21 +320,30 @@ function harnessIdentity(root, plan) {
     'src/lib/interactionPerformance',
     ...INSTRUMENTATION,
     'playwright.performance.config.ts',
+    'playwright.interaction-budget.config.ts',
+    'playwright.interaction-browser-budget.config.ts',
     'tsconfig.json',
     '.nvmrc',
     'package-lock.json',
-    WORKLOAD
+    WORKLOAD,
+    LARGE_WORKLOAD
   )
     .split('\n')
     .filter(Boolean)
     .sort()
   const files = committedHashes(root, [...new Set(paths)])
+  const workload = paths.filter(
+    (name) => name === WORKLOAD || name.startsWith(`${LARGE_WORKLOAD}/`)
+  )
+  // Both entrypoints and every tracked imported sample file belong to the
+  // immutable workload, not just the small model's top-level source.
+  committedHashes(root, [WORKLOAD, `${LARGE_WORKLOAD}/main.kcl`])
   return {
     commit: plan.harnessCommit,
     source: plan.harnessSource,
     sha256: sha256(JSON.stringify(files)),
     instrumentation: committedHashes(root, INSTRUMENTATION),
-    workload: committedHashes(root, [WORKLOAD]),
+    workload: committedHashes(root, workload),
   }
 }
 
@@ -490,4 +503,5 @@ module.exports = {
   verifyApp,
   verifyPair,
   createWasmManifest,
+  verifyWasm,
 }

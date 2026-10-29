@@ -5,6 +5,7 @@ import type {
   TestCase,
   TestResult,
 } from '@playwright/test/reporter'
+import { isArray } from '@src/lib/utils'
 
 interface Attempt {
   test: string
@@ -13,7 +14,54 @@ interface Attempt {
   status: TestResult['status']
   durationMs: number
   errors: string[]
-  attachments: TestResult['attachments']
+}
+
+function record(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !isArray(value)
+}
+
+function fields(value: unknown, names: readonly string[]) {
+  if (!record(value)) return {}
+  return Object.fromEntries(names.map((name) => [name, value[name]]))
+}
+
+function rows(value: unknown, names: readonly string[]) {
+  return isArray(value) ? value.map((row) => fields(row, names)) : []
+}
+
+function count(value: unknown) {
+  return isArray(value) ? value.length : 0
+}
+
+function passed(comparison: Record<string, unknown>) {
+  return (
+    comparison.status === 'no-regression' &&
+    isArray(comparison.collectionErrors) &&
+    comparison.collectionErrors.length === 0 &&
+    comparison.unavailablePresentationStrata === 0
+  )
+}
+
+function summarize(comparison: Record<string, unknown>) {
+  const key = ['context', 'id', 'phase', 'metric']
+  return {
+    status: comparison.status,
+    unavailablePresentationStrata: comparison.unavailablePresentationStrata,
+    collectionErrors: comparison.collectionErrors,
+    strata: rows(comparison.strata, [
+      ...key,
+      'status',
+      'completePairs',
+      'positivePairs',
+      'medianDeltaMs',
+      'baseFirstMedianDeltaMs',
+      'candidateFirstMedianDeltaMs',
+    ]),
+    failures: rows(comparison.failures, key),
+    targetBreachCount: count(comparison.targetBreaches),
+    captureCount: count(comparison.captures),
+    attemptCount: count(comparison.attempts),
+  }
 }
 
 /** Send history after scoring; TAB has no authority over this suite's status. */
@@ -37,7 +85,6 @@ export default class InteractionTabReporter implements Reporter {
       status: result.status,
       durationMs: result.duration,
       errors: result.errors.map((error) => error.stack ?? error.message ?? ''),
-      attachments: result.attachments,
     })
   }
 
@@ -64,42 +111,16 @@ export default class InteractionTabReporter implements Reporter {
           'utf8'
         )
       )
-      if (
-        typeof comparison !== 'object' ||
-        comparison === null ||
-        !('status' in comparison)
-      ) {
+      if (!record(comparison) || !('status' in comparison)) {
         throw new Error('Missing comparison status')
       }
       const test = 'interaction-performance › paired regression comparison'
 
-      const attempts = this.attempts.map((attempt) => {
-        const measurements = attempt.attachments
-          .find((attachment) => attachment.name === 'interaction-measurements')
-          ?.body?.toString('utf8')
-        const summary = attempt.attachments
-          .find((attachment) => attachment.name === 'interaction-summary')
-          ?.body?.toString('utf8')
-        const measurement: unknown = measurements
-          ? JSON.parse(measurements)
-          : null
-        return {
-          test: attempt.test,
-          repeatIndex: attempt.repeatIndex,
-          retry: attempt.retry,
-          status: attempt.status,
-          durationMs: attempt.durationMs,
-          errors: attempt.errors,
-          summary: summary ?? 'No measurements produced. See the test failure.',
-          measurement,
-        }
-      })
       // Collection passes are not performance passes. Publish the final paired
-      // decision as one result, retaining every attempt and comparison stratum.
+      // decision as one result. Raw captures, pairs, and attachments remain in
+      // the linked artifact; duplicating them here exceeds TAB's upload limit.
       const status =
-        _result.status === 'passed' && comparison.status === 'no-regression'
-          ? 'passed'
-          : 'failed'
+        _result.status === 'passed' && passed(comparison) ? 'passed' : 'failed'
       const response = await fetch(new URL('/api/results', apiUrl), {
         method: 'POST',
         headers: {
@@ -116,9 +137,13 @@ export default class InteractionTabReporter implements Reporter {
           commit: process.env.CI_COMMIT_SHA ?? process.env.GITHUB_SHA ?? '',
           status,
           duration:
-            attempts.reduce((total, attempt) => total + attempt.durationMs, 0) /
-            1000,
-          message: attempts.flatMap((attempt) => attempt.errors).join('\n'),
+            this.attempts.reduce(
+              (total, attempt) => total + attempt.durationMs,
+              0
+            ) / 1000,
+          message: this.attempts
+            .flatMap((attempt) => attempt.errors)
+            .join('\n'),
           target: process.env.TARGET ?? 'desktop',
           platform: process.env.RUNNER_OS ?? process.platform,
           browser: 'chromium',
@@ -129,15 +154,15 @@ export default class InteractionTabReporter implements Reporter {
           artifactUrl: runId
             ? `${server}/${repository}/actions/runs/${runId}/attempts/${runAttempt}`
             : null,
-          logs: attempts.map((attempt) => ({
+          logs: this.attempts.map((attempt) => ({
             test: attempt.test,
             repetition: attempt.repeatIndex + 1,
             retry: attempt.retry,
             status: attempt.status,
-            measurements: attempt.summary,
+            durationMs: attempt.durationMs,
+            errors: attempt.errors,
           })),
-          interactionMeasurements: attempts,
-          interactionComparison: comparison,
+          interactionComparison: summarize(comparison),
         }),
       })
       if (!response.ok) throw new Error(`HTTP ${response.status}`)

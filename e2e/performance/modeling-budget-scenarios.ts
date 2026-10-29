@@ -1,0 +1,280 @@
+import { OrthographicCamera, Quaternion, Vector3 } from 'three'
+
+import type {
+  BudgetFixtures,
+  BudgetScenario,
+} from '@e2e/performance/budget-scenarios'
+import { prepareModeling } from '@e2e/performance/scenarios'
+import { expect } from '@e2e/performance/test'
+import { modelingInteractions } from '@src/lib/interactionPerformance/modelingOutcomes'
+
+// Use the project version, matching the shared fixture, so the existing CPU
+// workload can retain its own version settings without a mixed-version error.
+type ModelingPlane = 'XY' | 'offsetPlane(XY, offset = -200)'
+function modelingCode(plane: ModelingPlane = 'XY') {
+  return `@settings(defaultLengthUnit = mm)
+baseSketch = sketch(on = ${plane}) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+boxVisible = extrude(region(point = [0, 0], sketch = baseSketch), length = 10)
+hide(baseSketch)
+`
+}
+
+async function prepareSolid(fixtures: BudgetFixtures, plane?: ModelingPlane) {
+  await prepareModeling(fixtures, { code: modelingCode(plane) })
+  await fixtures.page.waitForFunction(() => {
+    const editor = window.app.project?.executingEditor.value
+    return Boolean(
+      editor &&
+        !editor.isExecutingSignal.value &&
+        editor.modelingState?.matches('idle')
+    )
+  })
+}
+
+export async function prepareIsolatedSolid(fixtures: BudgetFixtures) {
+  await prepareSolid(fixtures, 'offsetPlane(XY, offset = -200)')
+  await fixtures.scene.moveCameraTo(
+    fixtures.modelProfile === 'small'
+      ? { x: 0, y: 0, z: -150 }
+      : { x: 80, y: -80, z: -120 },
+    { x: 0, y: 0, z: -195 }
+  )
+  await fixtures.scene.getCameraInfo()
+}
+
+async function preparePlaneSelection(fixtures: BudgetFixtures) {
+  await prepareSolid(fixtures)
+  await fixtures.toolbar.openFeatureTreePane()
+  await fixtures.toolbar.startSketchBtn.click()
+  await expect(
+    fixtures.page.getByRole('button', { name: 'Top plane XY', exact: true })
+  ).toBeEnabled()
+}
+
+async function selectTopPlane({ page }: BudgetFixtures) {
+  await page.getByRole('button', { name: 'Top plane XY', exact: true }).click()
+}
+
+async function verifySketch({ page, toolbar }: BudgetFixtures) {
+  await expect(toolbar.exitSketchBtn).toBeEnabled()
+  await expect(toolbar.lineBtn).toBeEnabled()
+  await page.waitForFunction(() => {
+    const editor = window.app.project?.executingEditor.value
+    const controls = editor?.sceneInfra.camControls
+    return Boolean(
+      editor?.modelingState?.matches({ sketchSolveMode: 'active' }) &&
+        !editor.isExecutingSignal.value &&
+        controls?.syncDirection === 'clientToEngine' &&
+        !controls.isPerspective &&
+        !controls.isFovAnimationInProgress &&
+        Array.from(
+          document.querySelectorAll(
+            '[data-testid="client-side-scene"], [data-testid="toolbar"]'
+          )
+        ).every((element) =>
+          element.getAnimations({ subtree: true }).every((animation) => {
+            const endTime = animation.effect?.getComputedTiming().endTime
+            return (
+              animation.playState === 'finished' ||
+              animation.playState === 'idle' ||
+              typeof endTime !== 'number' ||
+              !Number.isFinite(endTime)
+            )
+          })
+        )
+    )
+  })
+}
+
+async function prepareCube(fixtures: BudgetFixtures) {
+  await prepareSolid(fixtures)
+  await fixtures.scene.clickGizmoMenuItem('Use cube gizmo')
+  await expect(
+    fixtures.page.getByTestId('gizmo').locator('canvas')
+  ).toBeVisible()
+  // Keep all front/right/top targets visible, but start away from the corner
+  // diagonal so every click must visibly reorient the model before completing.
+  await fixtures.scene.moveCameraTo(
+    { x: 120, y: -60, z: 35 },
+    { x: 0, y: 0, z: 5 }
+  )
+  // look_at updates the engine stream; requesting its settings also synchronizes
+  // the client camera used to render and raycast the orientation cube.
+  await fixtures.scene.getCameraInfo()
+}
+
+async function clickCubeTarget({ page }: BudgetFixtures, point: Vector3) {
+  const canvas = page.getByTestId('gizmo').locator('canvas')
+  const box = await canvas.boundingBox()
+  if (!box) throw new Error('The cube gizmo canvas has no bounding box')
+  const orientation = await page.evaluate(() => {
+    const quaternion =
+      window.app.singletons.kclManager.sceneInfra.camControls.camera.quaternion
+    return {
+      x: quaternion.x,
+      y: quaternion.y,
+      z: quaternion.z,
+      w: quaternion.w,
+    }
+  })
+  // Project a point on the actual cube mesh into its canvas. Mesh scale and
+  // orthographic zoom match GizmoRenderer; no DOM target or event is synthesized.
+  const camera = new OrthographicCamera()
+  camera.zoom = 1.4
+  camera.quaternion.copy(
+    new Quaternion(orientation.x, orientation.y, orientation.z, orientation.w)
+  )
+  camera.position.set(0, 0, 2.2).applyQuaternion(camera.quaternion)
+  camera.updateProjectionMatrix()
+  camera.updateMatrixWorld()
+  const projected = point.clone().multiplyScalar(1.05).project(camera)
+  await page.mouse.move(
+    box.x + ((projected.x + 1) * box.width) / 2,
+    box.y + ((1 - projected.y) * box.height) / 2
+  )
+  await page.mouse.down()
+  await page.mouse.up()
+}
+
+function verifyCube(direction: Vector3) {
+  const expected = { x: direction.x, y: direction.y, z: direction.z }
+  return async ({ page }: BudgetFixtures) => {
+    await page.waitForFunction((expected) => {
+      const controls = window.app.singletons.kclManager.sceneInfra.camControls
+      const direction = controls.camera.position
+        .clone()
+        .sub(controls.target)
+        .normalize()
+      return (
+        Math.abs(direction.x - expected.x) < 0.001 &&
+        Math.abs(direction.y - expected.y) < 0.001 &&
+        Math.abs(direction.z - expected.z) < 0.001 &&
+        controls.syncDirection === 'engineToClient' &&
+        controls.enableRotate
+      )
+    }, expected)
+  }
+}
+
+const cubeTargets: readonly [BudgetScenario['definition'], Vector3][] = [
+  [modelingInteractions.cubeFace, new Vector3(0, -0.5, 0)],
+  [modelingInteractions.cubeEdge, new Vector3(0, -0.44, 0.44)],
+  [modelingInteractions.cubeCorner, new Vector3(0.4, -0.4, 0.4)],
+]
+
+export const modelingBudgetScenarios: BudgetScenario[] = [
+  {
+    definition: modelingInteractions.sketchPlaneChooserOpen,
+    prepare: async (fixtures) => {
+      await prepareSolid(fixtures)
+      await fixtures.toolbar.openFeatureTreePane()
+      await expect(fixtures.toolbar.startSketchBtn).toBeEnabled()
+    },
+    act: async ({ toolbar }) => {
+      await toolbar.startSketchBtn.click()
+    },
+    verify: async ({ page, toolbar }) => {
+      const plane = page.getByRole('button', {
+        name: 'Top plane XY',
+        exact: true,
+      })
+      await expect(plane).toBeVisible()
+      await expect(plane).toBeEnabled()
+      await expect(toolbar.exitSketchBtn).toBeVisible()
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+    },
+  },
+  {
+    definition: modelingInteractions.sketchPlaneEnter,
+    unavailableWithErrors:
+      'Creating a new sketch requires a valid editable AST.',
+    prepare: preparePlaneSelection,
+    act: selectTopPlane,
+    verify: verifySketch,
+  },
+  {
+    definition: modelingInteractions.sketchFaceEnter,
+    unavailableWithErrors:
+      'Creating a face sketch requires a valid editable AST.',
+    prepare: async (fixtures) => {
+      const large = fixtures.modelProfile !== 'small'
+      // Keep the target box clear of the loaded cooler's mounting base.
+      await prepareSolid(
+        fixtures,
+        large ? 'offsetPlane(XY, offset = -200)' : 'XY'
+      )
+      await fixtures.scene.moveCameraTo(
+        {
+          x: 80,
+          y: -80,
+          z: large ? -120 : 80,
+        },
+        { x: 0, y: 0, z: large ? -195 : 5 }
+      )
+      if (large) {
+        await fixtures.scene.getCameraInfo()
+      }
+      await fixtures.toolbar.startSketchBtn.click()
+    },
+    act: async ({ scene, page }) => {
+      const point = await scene.convertPagePositionToStream(0.5, 0.5, 'ratio')
+      await page.mouse.click(point.x, point.y)
+    },
+    verify: async (fixtures) => {
+      await verifySketch(fixtures)
+      await fixtures.editor.expectEditor.toContain('faceOf(boxVisible,')
+    },
+  },
+  {
+    definition: modelingInteractions.sketchExistingEdit,
+    unavailableWithErrors:
+      'Editing a cached sketch requires a valid editable program.',
+    prepare: async (fixtures) => {
+      await prepareSolid(fixtures)
+      const operation = await fixtures.toolbar.getFeatureTreeOperation(
+        'baseSketch',
+        0
+      )
+      await expect(operation).toBeEnabled()
+    },
+    act: async ({ toolbar }) => {
+      const operation = await toolbar.getFeatureTreeOperation('baseSketch', 0)
+      await operation.dblclick()
+    },
+    verify: verifySketch,
+  },
+  ...cubeTargets.map(
+    ([definition, point]): BudgetScenario => ({
+      definition,
+      prepare: prepareCube,
+      act: (fixtures) => clickCubeTarget(fixtures, point),
+      verify: verifyCube(point.clone().normalize()),
+    })
+  ),
+  {
+    definition: modelingInteractions.sketchExit,
+    unavailableWithErrors:
+      'Preparing sketch-mode exit requires a valid editable AST.',
+    prepare: async (fixtures) => {
+      await preparePlaneSelection(fixtures)
+      await selectTopPlane(fixtures)
+      await verifySketch(fixtures)
+    },
+    act: async ({ toolbar }) => {
+      await toolbar.exitSketchBtn.click()
+    },
+    verify: async ({ toolbar }) => {
+      await expect(toolbar.startSketchBtn).toBeEnabled()
+      await expect(toolbar.exitSketchBtn).toBeHidden()
+    },
+  },
+]

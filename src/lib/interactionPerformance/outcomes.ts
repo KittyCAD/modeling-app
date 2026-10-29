@@ -10,19 +10,32 @@ function matchesControl(target: Element, testId: string, pressed?: boolean) {
   )
 }
 
-function isVisible(element: Element | null | undefined) {
+export function isVisible(element: Element | null | undefined) {
   return Boolean(
     element?.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
   )
 }
 
-function transitionsEnded(element: Element | null) {
+export function transitionsEnded(element: Element | null | undefined) {
   return !element
     ?.getAnimations({ subtree: true })
     .some(
       (animation) =>
         animation instanceof CSSTransition && animation.playState === 'running'
     )
+}
+
+/** Ignore perpetual loading/caret effects, but include delayed finite effects. */
+export function animationsEnded(element: Element | null | undefined) {
+  return !element?.getAnimations({ subtree: true }).some((animation) => {
+    const endTime = animation.effect?.getComputedTiming().endTime
+    return (
+      animation.playState !== 'finished' &&
+      animation.playState !== 'idle' &&
+      typeof endTime === 'number' &&
+      Number.isFinite(endTime)
+    )
+  })
 }
 
 function firstSketchGroup(document: Document) {
@@ -50,11 +63,43 @@ function matchesTransformMenu(target: Element, expanded: boolean) {
   )
 }
 
+const extrudeDialogSelector =
+  '[data-testid="modeling-dialog"][aria-label="Extrude"]'
+
+function extrudeDialog(document: Document) {
+  return document.querySelector(extrudeDialogSelector)
+}
+
 function extrudeIsOpen(document: Document) {
   return (
+    isVisible(extrudeDialog(document)) ||
     document
       .querySelector('[data-testid="command-name"]')
       ?.textContent?.trim() === 'Extrude'
+  )
+}
+
+function visibleOperation(panel: Element | null, readOnly: boolean) {
+  return isVisible(
+    panel?.querySelector(
+      `[data-testid="feature-tree-operation-item"] > button${readOnly ? '' : ':not(:disabled)'}`
+    )
+  )
+}
+
+function featureTreeReady(document: Document, readOnly = false) {
+  const panel = document.querySelector('#operations-list-pane')
+  return visibleOperation(panel, readOnly) && transitionsEnded(panel)
+}
+
+function sketchGroupReady(document: Document, readOnly = false) {
+  const control = firstSketchGroup(document)
+  const panelId = control?.getAttribute('aria-controls')
+  const panel = panelId ? document.getElementById(panelId) : null
+  return (
+    control?.getAttribute('aria-expanded') === 'true' &&
+    visibleOperation(panel, readOnly) &&
+    transitionsEnded(panel)
   )
 }
 
@@ -173,13 +218,7 @@ export const interactionOutcomes = {
     ...interactions.featureTreeOpen,
     matchesTarget: (target) =>
       matchesControl(target, interactions.featureTreeOpen.testId, false),
-    isReady(document) {
-      const panel = document.querySelector('#operations-list-pane')
-      const operation = panel?.querySelector(
-        '[data-testid="feature-tree-operation-item"] > button:not(:disabled)'
-      )
-      return isVisible(operation) && transitionsEnded(panel)
-    },
+    isReady: featureTreeReady,
   },
   featureTreeClose: {
     ...interactions.featureTreeClose,
@@ -192,19 +231,7 @@ export const interactionOutcomes = {
   sketchGroupExpand: {
     ...interactions.sketchGroupExpand,
     matchesTarget: (target) => matchesSketchGroup(target, false),
-    isReady(document) {
-      const control = firstSketchGroup(document)
-      const panelId = control?.getAttribute('aria-controls')
-      const panel = panelId ? document.getElementById(panelId) : null
-      const operation = panel?.querySelector(
-        '[data-testid="feature-tree-operation-item"] > button:not(:disabled)'
-      )
-      return (
-        control?.getAttribute('aria-expanded') === 'true' &&
-        isVisible(operation) &&
-        transitionsEnded(panel)
-      )
-    },
+    isReady: sketchGroupReady,
   },
   sketchGroupCollapse: {
     ...interactions.sketchGroupCollapse,
@@ -251,29 +278,70 @@ export const interactionOutcomes = {
     matchesTarget: (target) =>
       matchesControl(target, interactions.extrudeOpen.testId),
     isReady(document) {
-      const panel = document.querySelector(
+      const panel = extrudeDialog(document)
+      if (isVisible(panel)) {
+        return (
+          isVisible(
+            panel?.querySelector('button[aria-label="Select Profiles"]:enabled')
+          ) &&
+          isVisible(
+            panel?.querySelector('button[aria-label="Cancel"]:enabled')
+          ) &&
+          transitionsEnded(panel) &&
+          animationsEnded(panel)
+        )
+      }
+      const palette = document.querySelector(
         '[data-testid="command-bar-wrapper"]'
       )
-      const input = panel?.querySelector('#arg-form input[name="selection"]')
-      // Selection inputs are intentionally transparent overlays on a visible prompt.
+      const input = palette?.querySelector('#arg-form input[name="selection"]')
+      // The shipped modeling_dialogs feature selects one of these real UIs.
+      // The palette's transparent input overlays its visible selection prompt.
       return (
         extrudeIsOpen(document) &&
+        isVisible(palette) &&
         input instanceof HTMLInputElement &&
         !input.disabled &&
         isVisible(input.closest('label')) &&
-        transitionsEnded(panel)
+        isVisible(
+          palette?.querySelector(
+            '[data-testid="command-bar-close-button"]:enabled'
+          )
+        ) &&
+        transitionsEnded(palette) &&
+        animationsEnded(palette)
       )
     },
   },
   extrudeCancel: {
     ...interactions.extrudeCancel,
     matchesTarget: (target) =>
-      matchesControl(target, interactions.extrudeCancel.testId) &&
-      extrudeIsOpen(target.ownerDocument),
+      Boolean(
+        target.closest(`${extrudeDialogSelector} button[aria-label="Cancel"]`)
+      ) ||
+      (matchesControl(target, interactions.commandPaletteClose.testId) &&
+        extrudeIsOpen(target.ownerDocument)),
     isReady(document) {
       return (
+        extrudeDialog(document) === null &&
         document.querySelector('[data-testid="command-bar-wrapper"]') === null
       )
     },
   },
 } satisfies Record<keyof typeof interactions, InteractionDefinition>
+
+export function createInteractionOutcomes(hasParseErrors: () => boolean) {
+  return {
+    ...interactionOutcomes,
+    featureTreeOpen: {
+      ...interactionOutcomes.featureTreeOpen,
+      isReady: (document: Document) =>
+        featureTreeReady(document, hasParseErrors()),
+    },
+    sketchGroupExpand: {
+      ...interactionOutcomes.sketchGroupExpand,
+      isReady: (document: Document) =>
+        sketchGroupReady(document, hasParseErrors()),
+    },
+  }
+}

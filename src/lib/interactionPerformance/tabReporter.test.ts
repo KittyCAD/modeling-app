@@ -15,6 +15,11 @@ import type {
   ComparisonSession,
   InteractionComparison,
 } from '@e2e/performance/comparison'
+import {
+  COMPARISON_PROBES,
+  reportComparisonRun,
+} from '@e2e/performance/comparison-report'
+import type { ComparisonAttempt } from '@e2e/performance/comparison-report'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import { reportInteractions } from '@src/lib/interactionPerformance/report'
 import type {
@@ -55,8 +60,8 @@ const measurement = {
 }
 const summary = 'Outcome maximum: 225 ms; retained diagnostic sample.'
 
-function comparisonWithCandidateDelay(delayMs = 0): InteractionComparison {
-  const sessions = COMPARISON_PLAN.map(
+function comparisonSessions(delayMs = 0): ComparisonSession[] {
+  return COMPARISON_PLAN.map(
     (session): ComparisonSession => ({
       ...session,
       snapshot: {
@@ -96,13 +101,97 @@ function comparisonWithCandidateDelay(delayMs = 0): InteractionComparison {
       },
     })
   )
-  return compareInteractions(sessions)
+}
+
+function comparisonWithCandidateDelay(delayMs = 0): InteractionComparison {
+  return compareInteractions(comparisonSessions(delayMs))
+}
+
+function completeRun(delayFirstClose = false): ComparisonAttempt[] {
+  const attempts = comparisonSessions().map(
+    ({ snapshot: initialSnapshot, ...comparison }): ComparisonAttempt => {
+      // Browser timestamps and durations retain fractional precision in the
+      // actual artifact. Integer-only fixtures substantially understate its size.
+      const snapshot = {
+        ...initialSnapshot,
+        samples: initialSnapshot.samples.map((sample) => {
+          const delay =
+            delayFirstClose &&
+            comparison.variant === 'candidate' &&
+            sample.id === interactions.commandPaletteClose.id &&
+            sample.sequence === 2
+              ? 64
+              : 0
+          return {
+            ...sample,
+            startTime: sample.startTime + 0.12345678901234,
+            renderOpportunityMs: 16.12345678901234,
+            outcomeMs: 80.12345678901234,
+            eventTiming: {
+              durationMs: 80.12345678901234 + delay,
+              inputDelayMs: 4.12345678901234,
+              processingMs: 8.12345678901234,
+              presentationDelayMs: 67.87654321098765 + delay,
+            },
+          }
+        }),
+      }
+      return {
+        testId: `${comparison.block}/${comparison.variant}/${comparison.context}`,
+        project: 'comparison',
+        status: 'passed',
+        expectedStatus: 'passed',
+        retry: 0,
+        repeatIndex: 0,
+        measurements: [
+          JSON.stringify({
+            metadata: {
+              scenario: `comparison.${comparison.context}`,
+              comparison,
+              calibrationFault: 'none',
+            },
+            snapshot,
+            report: reportInteractions(
+              snapshot,
+              Object.fromEntries(
+                COMPARISON_ACTIONS[comparison.context].map((id) => [
+                  id,
+                  COMPARISON_WARM_CYCLES + 1,
+                ])
+              )
+            ),
+          }),
+        ],
+      }
+    }
+  )
+  for (const project of ['harness-base', 'harness-candidate']) {
+    for (const scenario of COMPARISON_PROBES) {
+      attempts.push({
+        testId: scenario,
+        project,
+        status: 'passed',
+        expectedStatus: 'passed',
+        retry: 0,
+        repeatIndex: 0,
+        measurements: [
+          JSON.stringify({
+            ...measurement,
+            metadata: { scenario, calibrationFault: 'none' },
+          }),
+        ],
+      })
+    }
+  }
+  return attempts
 }
 
 interface CapturedRequest {
   url: string | undefined
   apiKey: string | string[] | undefined
   body: unknown
+  bytes: number
+  responseStatus: number
 }
 
 async function runReporter({
@@ -113,14 +202,18 @@ async function runReporter({
   headRef = 'test-branch',
   list = false,
   eventName = 'pull_request',
+  measurementBodies,
+  maximumRequestBytes = Number.POSITIVE_INFINITY,
 }: {
-  comparison: InteractionComparison
+  comparison: unknown
   failFirstRepeat?: boolean
   responseStatus?: number
   responseBlock?: boolean
   headRef?: string
   list?: boolean
   eventName?: 'pull_request' | 'workflow_dispatch'
+  measurementBodies?: readonly string[]
+  maximumRequestBytes?: number
 }) {
   const directory = await mkdtemp(join(tmpdir(), 'interaction-tab-'))
   const requests: CapturedRequest[] = []
@@ -136,12 +229,16 @@ async function runReporter({
       body += chunk
     })
     request.on('end', () => {
+      const bytes = Buffer.byteLength(body)
+      const status = bytes > maximumRequestBytes ? 413 : responseStatus
       requests.push({
         url: request.url,
         apiKey: request.headers['x-api-key'],
         body: JSON.parse(body),
+        bytes,
+        responseStatus: status,
       })
-      response.statusCode = responseStatus
+      response.statusCode = status
       response.end(
         JSON.stringify({
           status: responseBlock ? 'failed' : 'passed',
@@ -168,10 +265,11 @@ async function runReporter({
       'interaction-performance'
     )
     await mkdir(comparisonDirectory, { recursive: true })
-    await writeFile(
-      join(comparisonDirectory, 'comparison.json'),
-      JSON.stringify(comparison)
-    )
+    const comparisonPath = join(comparisonDirectory, 'comparison.json')
+    const comparisonBody = JSON.stringify(comparison)
+    await writeFile(comparisonPath, comparisonBody)
+    const measurementPath = join(directory, 'measurements.json')
+    await writeFile(measurementPath, JSON.stringify(measurementBodies ?? null))
     await writeFile(
       configPath,
       `module.exports = ${JSON.stringify({
@@ -180,7 +278,7 @@ async function runReporter({
         tsconfig: resolve('tsconfig.json'),
         workers: 1,
         retries: 0,
-        repeatEach: 2,
+        repeatEach: measurementBodies ? 1 : 2,
         outputDir: join(directory, 'playwright-output'),
         reporter: [
           [resolve('e2e/performance/tab-reporter.ts')],
@@ -193,13 +291,14 @@ async function runReporter({
     await writeFile(
       join(directory, 'scenarios.spec.cjs'),
       `const { test, expect } = require(${JSON.stringify(require.resolve('@playwright/test'))})
-const scenarios = ['first scenario', 'last scored scenario']
-for (const scenario of scenarios) {
+const supplied = JSON.parse(require('node:fs').readFileSync(${JSON.stringify(measurementPath)}, 'utf8'))
+const scenarios = supplied ? supplied.map((_, index) => 'scenario ' + index) : ['first scenario', 'last scored scenario']
+for (const [index, scenario] of scenarios.entries()) {
   test(scenario, async ({}, info) => {
     const received = await fetch(${JSON.stringify(`${apiUrl}/received`)})
     expect(await received.json(), 'TAB must wait until all scoring finishes').toBe(0)
     await info.attach('interaction-measurements', {
-      body: JSON.stringify({
+      body: supplied?.[index] ?? JSON.stringify({
         ...${JSON.stringify(measurement)},
         metadata: { scenario, repeatIndex: info.repeatEachIndex },
       }),
@@ -265,7 +364,14 @@ for (const scenario of scenarios) {
         })
       })
     )
-    return { requests, exitCode, output, report }
+    return {
+      requests,
+      exitCode,
+      output,
+      report,
+      retainedComparisonBody: await readFile(comparisonPath, 'utf8'),
+      originalComparisonBody: comparisonBody,
+    }
   } finally {
     server.closeAllConnections()
     await new Promise<void>((resolve) => server.close(() => resolve()))
@@ -274,6 +380,84 @@ for (const scenario of scenarios) {
 }
 
 describe('interaction performance TAB publication', () => {
+  it('publishes the complete run below the TAB upload limit and retains its raw artifact', async () => {
+    const attempts = completeRun()
+    const comparison = reportComparisonRun(attempts)
+    expect(comparison.status).toBe('no-regression')
+    expect(comparison.collectionErrors).toEqual([])
+    const result = await runReporter({
+      comparison,
+      measurementBodies: attempts.map((attempt) => {
+        const body = attempt.measurements[0]
+        if (!body) throw new Error('Missing fixture measurement')
+        return body
+      }),
+      maximumRequestBytes: 10 * 1024 * 1024,
+    })
+    expect(result.exitCode, result.output).toBe(0)
+    expect(result.report.stats.expected).toBe(116)
+    expect(result.requests).toHaveLength(1)
+    expect(
+      result.requests[0]?.responseStatus,
+      `${result.requests[0]?.bytes} bytes; ${result.output}`
+    ).toBe(201)
+    expect(result.requests[0]?.bytes).toBeLessThan(256 * 1024)
+    expect(result.output).not.toContain('TAB comparison publication failed')
+    expect(result.retainedComparisonBody).toBe(result.originalComparisonBody)
+    expect(result.requests[0]?.body).toMatchObject({
+      status: 'passed',
+      artifactName: 'interaction-performance-test-sha-2',
+      artifactUrl:
+        'https://github.com/KittyCAD/modeling-app/actions/runs/123/attempts/2',
+      interactionComparison: {
+        status: 'no-regression',
+        strata: comparison.strata.map(
+          ({ pairs: _pairs, ...stratum }) => stratum
+        ),
+        captureCount: 116,
+        attemptCount: 116,
+      },
+    })
+    const attachments = result.report.suites.flatMap((suite) =>
+      suite.specs.flatMap((spec) =>
+        spec.tests.flatMap((test) =>
+          test.results.flatMap((attempt) =>
+            attempt.attachments.filter(
+              (attachment) => attachment.name === 'interaction-measurements'
+            )
+          )
+        )
+      )
+    )
+    expect(
+      attachments.map((attachment) =>
+        Buffer.from(attachment.body ?? '', 'base64').toString('utf8')
+      )
+    ).toEqual(attempts.map((attempt) => attempt.measurements[0]))
+  }, 60_000)
+
+  it('does not let legacy deferred metadata override a regressed comparison', async () => {
+    const comparison = reportComparisonRun(completeRun(true))
+    expect(comparison.status).toBe('regressed')
+    const result = await runReporter({
+      comparison: {
+        ...comparison,
+        enforcement: {
+          status: 'deferred',
+          deferred: comparison.failures,
+          remaining: [],
+        },
+      },
+    })
+    expect(result.exitCode, result.output).toBe(0)
+    expect(result.requests).toHaveLength(1)
+    expect(result.requests[0]?.body).toMatchObject({
+      status: 'failed',
+      interactionComparison: { status: 'regressed' },
+    })
+    expect(result.retainedComparisonBody).toBe(result.originalComparisonBody)
+  }, 60_000)
+
   it.each([0, 64])(
     'keeps manual calibration with %i ms delay out of PR health',
     async (delayMs) => {
@@ -338,11 +522,6 @@ describe('interaction performance TAB publication', () => {
           repeatIndex === 0 && scenario === 'first scenario'
             ? 'failed'
             : 'passed',
-        summary,
-        measurement: {
-          ...measurement,
-          metadata: { scenario, repeatIndex },
-        },
       }))
     )
     expect(result.requests[0]?.apiKey).toBe('local-test-key')
@@ -366,10 +545,20 @@ describe('interaction performance TAB publication', () => {
         repetition: attempt.repeatIndex + 1,
         retry: attempt.retry,
         status: attempt.status,
-        measurements: summary,
+        durationMs: expect.any(Number),
+        errors:
+          attempt.status === 'failed'
+            ? [expect.stringContaining('Intentional collection failure')]
+            : [],
       })),
-      interactionMeasurements: expectedMeasurements,
-      interactionComparison: comparison,
+      interactionComparison: {
+        status: comparison.status,
+        strata: comparison.strata.map(
+          ({ pairs: _pairs, ...stratum }) => stratum
+        ),
+        failures: comparison.failures,
+        targetBreachCount: comparison.targetBreaches.length,
+      },
     })
   }, 60_000)
 
@@ -383,13 +572,30 @@ describe('interaction performance TAB publication', () => {
     expect(result.exitCode, result.output).toBe(0)
     expect(result.report.stats.expected).toBe(4)
     expect(result.report.stats.unexpected).toBe(0)
-    expect(result.requests[0]?.body).toMatchObject({ status: 'failed' })
     expect(result.requests).toHaveLength(1)
     expect(result.requests[0]?.body).toMatchObject({
       test: 'interaction-performance › paired regression comparison',
       status: 'failed',
-      interactionComparison: comparison,
+      interactionComparison: {
+        status: comparison.status,
+        strata: comparison.strata.map(
+          ({ pairs: _pairs, ...stratum }) => stratum
+        ),
+        failures: comparison.failures,
+      },
     })
+  }, 60_000)
+
+  it('keeps malformed legacy collection results failed', async () => {
+    const result = await runReporter({
+      comparison: {
+        ...comparisonWithCandidateDelay(),
+        collectionErrors: ['Missing capture'],
+      },
+    })
+    expect(result.exitCode, result.output).toBe(0)
+    expect(result.requests).toHaveLength(1)
+    expect(result.requests[0]?.body).toMatchObject({ status: 'failed' })
   }, 60_000)
 
   it.each([201, 503])(

@@ -44,7 +44,8 @@ export const interactions = {
     id: 'zds.featureTree.open',
     testId: 'feature-tree-pane-button',
     budgetMs: 150,
-    outcome: 'Feature tree has visible, enabled operations',
+    outcome:
+      'Feature tree has visible operations, read-only when KCL has a parse error',
   },
   featureTreeClose: {
     id: 'zds.featureTree.close',
@@ -56,7 +57,8 @@ export const interactions = {
     id: 'zds.featureTree.sketchGroup.expand',
     testId: 'operation-group-caret',
     budgetMs: 150,
-    outcome: 'The first sketch group has visible, enabled child operations',
+    outcome:
+      'The first sketch group has visible child operations, read-only when KCL has a parse error',
   },
   sketchGroupCollapse: {
     id: 'zds.featureTree.sketchGroup.collapse',
@@ -82,12 +84,13 @@ export const interactions = {
     testId: 'extrude',
     budgetMs: 150,
     outcome:
-      'Extrude has a visible selection prompt and enabled selection input',
+      'The active Extrude UI has a visible, enabled Profiles control or selection prompt, and a usable Cancel control',
   },
   extrudeCancel: {
     id: 'zds.toolbar.extrude.cancel',
-    testId: 'command-bar-close-button',
+    testId: 'modeling-dialog',
     budgetMs: 150,
-    outcome: 'Extrude command palette is no longer rendered',
+    outcome:
+      'The active Extrude modeling dialog or command palette is no longer rendered',
   },
 } satisfies Record<string, InteractionDescription>

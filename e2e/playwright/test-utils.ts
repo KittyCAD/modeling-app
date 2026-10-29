@@ -18,7 +18,6 @@ import {
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
 } from '@src/lib/constants'
-import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import dotenv from 'dotenv'
@@ -26,6 +25,7 @@ import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
+import { parse as parseToml } from 'smol-toml'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
@@ -125,10 +125,22 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
-async function waitForAppLoad(page: Page) {
+export async function waitForAppLoad(page: Page) {
   const home = page.getByTestId('home-section')
   const modelingScene = page.getByRole('button', { name: 'Start Sketch' })
+  const continueInBrowser = page.getByTestId('continue-to-web-app-button')
+  await expect(home.or(modelingScene).or(continueInBrowser)).toBeVisible({
+    timeout: 20_000,
+  })
+  if (await continueInBrowser.isVisible()) await continueInBrowser.click()
   await expect(home.or(modelingScene)).toBeVisible({ timeout: 20_000 })
+  // A completed document navigation does not await the deferred app bootstrap
+  // or its settings I/O. Fixture callers need the current, loaded actor.
+  await page.waitForFunction(
+    () => window.app?.settings.actor.getSnapshot().matches('idle'),
+    undefined,
+    { timeout: 20_000 }
+  )
 }
 
 export async function waitForWebKitBillingToSettle(page: Page) {
@@ -140,9 +152,9 @@ export async function waitForWebKitBillingToSettle(page: Page) {
     .poll(
       () =>
         page.evaluate(() => {
-          const snapshot = window.app.billing.actor.getSnapshot()
+          const snapshot = window.app?.billing?.actor.getSnapshot()
           return (
-            snapshot.value === 'waiting' &&
+            snapshot?.value === 'waiting' &&
             (snapshot.context.lastFetch !== undefined ||
               snapshot.context.error !== undefined)
           )
@@ -409,20 +421,7 @@ export const getMovementUtils = (opts: any) => {
   return { toSU, toU, click00r }
 }
 
-async function waitForAuthAndLsp(page: Page) {
-  const waitForLspPromise = page.waitForEvent('console', {
-    predicate: async (message: any) => {
-      // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
-      // but that doesn't seem to make it to the console for macos/safari :(
-      if (message.text().includes('start kcl lsp')) {
-        await new Promise((resolve) => setTimeout(resolve, 200))
-        return true
-      }
-      return false
-    },
-    timeout: 45_000,
-  })
-
+async function waitForAuth(page: Page) {
   if (process.env.VERCEL_BASE_URL) {
     // set bypass secret for the page's requests based on the hostname
     let secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
@@ -453,7 +452,6 @@ async function waitForAuthAndLsp(page: Page) {
 
   await page.goto('/')
   await waitForAppLoad(page)
-  return waitForLspPromise
 }
 
 /**
@@ -504,7 +502,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
   }
 
   const util = {
-    waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
+    waitForAuth: () => waitForAuth(page),
     waitForPageLoad: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
@@ -1037,8 +1035,14 @@ export async function setup(
   page: Page,
   testInfo?: TestInfo,
   userFeatures: readonly Feature[] = [],
-  { cloudSyncEnabled = false }: { cloudSyncEnabled?: boolean } = {}
+  {
+    cloudSyncEnabled = false,
+    mockApiRoutes = true,
+  }: { cloudSyncEnabled?: boolean; mockApiRoutes?: boolean } = {}
 ) {
+  if (!mockApiRoutes && userFeatures.length > 0)
+    throw new Error('userFeatures requires mockApiRoutes to be enabled')
+
   const testProjectSettings =
     TEST_SETTINGS.project &&
     typeof TEST_SETTINGS.project === 'object' &&
@@ -1047,17 +1051,24 @@ export async function setup(
       : undefined
 
   await context.unroute('**/user/features')
-  await context.route('**/user/features', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        features: userFeatures.map((id) => ({ id })),
-      }),
+  if (mockApiRoutes) {
+    await context.route('**/user/features', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          features: userFeatures.map((id) => ({ id })),
+        }),
+      })
     })
-  })
-
-  await installSlowFsForPlaywright(page)
+    await installSlowFsForPlaywright(page)
+  } else {
+    // Electron reuses its context. Remove previous tests' API interceptions
+    // before any init script reloads the app for this live test.
+    await context.unroute('**/user/client-errors')
+    await page.unroute('**/user/features')
+    await page.unroute('**/user/client-errors')
+  }
 
   await page.addInitScript(
     async ({
@@ -1379,45 +1390,29 @@ export async function doAndWaitForImageDiff(
   fn: () => Promise<unknown>,
   diffCount = 200
 ) {
-  return new Promise<boolean>((resolve) => {
-    ;(async () => {
-      await pageOrLocator.screenshot({
-        path: './e2e/playwright/temp1.png',
-        fullPage: true,
-      })
-      await fn()
-      const isImageDiff = async () => {
-        await pageOrLocator.screenshot({
-          path: './e2e/playwright/temp2.png',
-          fullPage: true,
-        })
-        const screenshot1 = PNG.sync.read(
-          await fsp.readFile('./e2e/playwright/temp1.png')
-        )
-        const screenshot2 = PNG.sync.read(
-          await fsp.readFile('./e2e/playwright/temp2.png')
-        )
-        const actualDiffCount = pixelMatch(
-          screenshot1.data,
-          screenshot2.data,
-          null,
-          screenshot1.width,
-          screenshot2.height
-        )
-        return actualDiffCount > diffCount
-      }
+  // Keep frames local: concurrent test workers must not overwrite each other's
+  // images. Let screenshot, action, and comparison errors reject the caller.
+  const screenshot1 = PNG.sync.read(
+    await pageOrLocator.screenshot({ fullPage: true })
+  )
+  await fn()
 
-      // Run sequentially so slow screenshots do not overlap and starve Electron.
-      for (let count = 0; count <= 100; count++) {
-        if (await isImageDiff()) {
-          resolve(true)
-          return
-        }
-        await new Promise((resolve) => setTimeout(resolve, 50))
-      }
-      resolve(false)
-    })().catch(reportRejection)
-  })
+  // Run sequentially so slow screenshots do not overlap and starve Electron.
+  for (let count = 0; count <= 100; count++) {
+    const screenshot2 = PNG.sync.read(
+      await pageOrLocator.screenshot({ fullPage: true })
+    )
+    const actualDiffCount = pixelMatch(
+      screenshot1.data,
+      screenshot2.data,
+      null,
+      screenshot1.width,
+      screenshot1.height
+    )
+    if (actualDiffCount > diffCount) return true
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+  return false
 }
 
 export async function openAndClearDebugPanel(page: Page) {
@@ -1484,8 +1479,7 @@ export function tomlToSettings(toml: string): DeepPartial<Configuration> {
 export function tomlToPerProjectSettings(
   toml: string
 ): DeepPartial<ProjectConfiguration> {
-  // eslint-disable-next-line no-restricted-syntax
-  return TOML.parse(toml)
+  return parseToml(toml)
 }
 
 export function perProjectSettingsToToml(

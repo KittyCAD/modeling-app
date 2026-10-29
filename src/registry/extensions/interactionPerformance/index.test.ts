@@ -64,6 +64,14 @@ describe('interaction performance extension', () => {
     expect(service.stop()).toEqual(initial)
   })
 
+  it('rejects unknown audit identities before attaching browser resources', async () => {
+    const initial = service.snapshot()
+    await expect(service.start(['zds.missing'])).rejects.toThrow(
+      'Unknown interaction: zds.missing'
+    )
+    expect(service.snapshot()).toEqual(initial)
+  })
+
   it('cancels pending starts without attaching browser resources later', async () => {
     const first = service.start()
     const second = service.start()
