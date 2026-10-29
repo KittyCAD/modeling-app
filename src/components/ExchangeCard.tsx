@@ -360,7 +360,7 @@ export const RequestCard = (props: RequestCardProps) => {
                   )}
                 </>
               )
-              const className = `flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 text-xs ${isImage ? '' : 'px-2 py-1'}`
+              const className = `m-0 flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 text-xs ${isImage ? 'p-0' : 'px-2 py-1'}`
 
               return canFetch ? (
                 <button
