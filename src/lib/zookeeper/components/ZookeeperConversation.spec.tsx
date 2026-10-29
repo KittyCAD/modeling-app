@@ -1486,7 +1486,7 @@ describe('ZookeeperConversation', () => {
       expect(await screen.findByText('document.pdf')).toBeInTheDocument()
     })
 
-    test('gives images unique names across prompts without changing their contents', async () => {
+    test('gives pasted images unique names across prompts without changing their contents', async () => {
       const handleProcess = vi.fn()
       renderConversation(handleProcess)
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
@@ -1622,9 +1622,9 @@ describe('ZookeeperConversation', () => {
       ).not.toBeInTheDocument()
     })
 
-    test('sends attachments with prompt on submit', async () => {
+    test('sends dropped and picked attachments with their original filenames', async () => {
       const handleProcess = vi.fn()
-      renderConversation(handleProcess)
+      const { container } = renderConversation(handleProcess)
 
       const dropContainer = screen
         .getByTestId('ml-ephant-conversation-input')
@@ -1632,6 +1632,7 @@ describe('ZookeeperConversation', () => {
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
 
       const imageFile = createMockFile('attachment.png', 'image/png')
+      const pickedFile = createMockFile('picked.png', 'image/png')
 
       fireEvent.drop(dropContainer, {
         dataTransfer: {
@@ -1639,23 +1640,21 @@ describe('ZookeeperConversation', () => {
           types: ['Files'],
         },
       })
+      fireEvent.change(container.querySelector('input[type="file"]')!, {
+        target: { files: [pickedFile] },
+      })
 
       expect(
-        await screen.findByRole('img', { name: 'Attachment preview' })
-      ).toBeInTheDocument()
+        await screen.findAllByRole('img', { name: 'Attachment preview' })
+      ).toHaveLength(2)
 
       fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(handleProcess).toHaveBeenCalledWith(
-        'Test prompt',
-        undefined,
-        expect.arrayContaining([
-          expect.objectContaining({
-            name: expect.stringMatching(/^image-[0-9a-f-]{36}\.png$/),
-          }),
-        ])
-      )
+      expect(handleProcess).toHaveBeenCalledWith('Test prompt', undefined, [
+        expect.objectContaining({ name: imageFile.name }),
+        expect.objectContaining({ name: pickedFile.name }),
+      ])
     })
 
     test('clears attachments after submit', async () => {
