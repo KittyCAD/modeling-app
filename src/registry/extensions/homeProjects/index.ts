@@ -241,7 +241,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     )
 
   const serviceImpl: HomeProjectActionsService = {
-    watchRemoteThumbnail: () => undefined,
+    watchRemoteThumbnail: (id) =>
+      ctx.services.optional(cloudStorageService)?.watchThumbnail(id),
     canOpen: (project) =>
       Boolean(
         (project.readWriteAccess &&

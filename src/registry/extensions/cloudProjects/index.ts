@@ -78,6 +78,7 @@ export default defineRegistryItemFactory((ctx) => {
 
   const entries = computed<readonly HomeProjectEntryContribution[]>(() => {
     if (!auth.value?.isLoggedIn.value) return []
+    const thumbnails = cloud().thumbnails.value
     return cloud()
       .projects.value.filter((project) => !project.org_id)
       .map((project) => ({
@@ -87,6 +88,9 @@ export default defineRegistryItemFactory((ctx) => {
         name: project.id,
         title: project.title ?? 'Untitled',
         remoteProjectId: project.id,
+        thumbnail: thumbnails.has(project.id)
+          ? { type: 'remote', url: thumbnails.get(project.id)! }
+          : undefined,
         libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
         readWriteAccess: true,
         deleteRemoteOnDelete: true,

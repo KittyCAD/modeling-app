@@ -32,6 +32,10 @@ vi.mock('@src/lib/fileSystem/cloud/projectArchive', async (original) => ({
 const remote = { id: 'one', revision: '1', description: '', category_ids: [] }
 const runtimes: ReturnType<typeof createCloudStorage>[] = []
 beforeEach(() => {
+  vi.mocked(api.listRemoteProjects).mockResolvedValue([remote])
+  vi.mocked(api.getRemoteProjectThumbnailUrl).mockResolvedValue(
+    'data:image/png;base64,dGh1bWI='
+  )
   vi.mocked(api.getRemoteProject).mockResolvedValue(remote)
   vi.mocked(api.updateRemoteProject).mockResolvedValue({
     ...remote,
@@ -161,5 +165,75 @@ describe('memory cloud storage', () => {
       'outside its project'
     )
     expect(await storage.operations.exists(storage.pathFor('one'))).toBe(false)
+  })
+  it('loads thumbnails only for visible cards and shares requests between watchers', async () => {
+    const { storage, diskWrite } = setup()
+    await storage.listProjects()
+    expect(api.getRemoteProjectThumbnailUrl).not.toHaveBeenCalled()
+    const gate = Promise.withResolvers<string>()
+    vi.mocked(api.getRemoteProjectThumbnailUrl).mockReturnValueOnce(
+      gate.promise
+    )
+    const stopFirst = storage.watchThumbnail('one')
+    const stopSecond = storage.watchThumbnail('one')
+    expect(api.getRemoteProjectThumbnailUrl).toHaveBeenCalledOnce()
+    stopFirst()
+    gate.resolve('data:image/png;base64,Zmlyc3Q=')
+    await vi.waitFor(() =>
+      expect(storage.thumbnails.value.get('one')).toBe(
+        'data:image/png;base64,Zmlyc3Q='
+      )
+    )
+    stopSecond()
+    const stopThird = storage.watchThumbnail('one')
+    expect(api.getRemoteProjectThumbnailUrl).toHaveBeenCalledOnce()
+    stopThird()
+    expect(diskWrite).not.toHaveBeenCalled()
+  })
+
+  it('refreshes a visible thumbnail when project metadata changes and ignores an older result', async () => {
+    const { storage } = setup()
+    await storage.listProjects()
+    const old = Promise.withResolvers<string>()
+    vi.mocked(api.getRemoteProjectThumbnailUrl).mockReturnValueOnce(old.promise)
+    const stop = storage.watchThumbnail('one')
+    vi.mocked(api.listRemoteProjects).mockResolvedValueOnce([
+      { ...remote, revision: '2' },
+    ])
+    await storage.listProjects()
+    await vi.waitFor(() =>
+      expect(storage.thumbnails.value.get('one')).toBe(
+        'data:image/png;base64,dGh1bWI='
+      )
+    )
+    old.resolve('old-thumbnail')
+    await old.promise
+    await Promise.resolve()
+    expect(storage.thumbnails.value.get('one')).toBe(
+      'data:image/png;base64,dGh1bWI='
+    )
+    expect(api.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(2)
+    stop()
+  })
+
+  it('does not publish thumbnail results for an account that has signed out', async () => {
+    let accountId = 'first'
+    const storage = createCloudStorage({ ...nodefs.impl, ...posix }, () => ({
+      enabled: true,
+      accountId,
+    }))
+    runtimes.push(storage)
+    await storage.listProjects()
+    const gate = Promise.withResolvers<string>()
+    vi.mocked(api.getRemoteProjectThumbnailUrl).mockReturnValueOnce(
+      gate.promise
+    )
+    const stop = storage.watchThumbnail('one')
+    accountId = 'second'
+    gate.resolve('private-thumbnail')
+    await gate.promise
+    await Promise.resolve()
+    expect(storage.thumbnails.value.size).toBe(0)
+    stop()
   })
 })

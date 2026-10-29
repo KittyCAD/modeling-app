@@ -42,6 +42,14 @@ async function mockCloud(context: BrowserContext) {
       return route.fulfill({
         json: { items: [cloudProjectResponse(project)], next_page: null },
       })
+    if (url.pathname.endsWith('/thumbnail'))
+      return route.fulfill({
+        contentType: 'image/png',
+        body: Buffer.from(
+          'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j/1sAAAAASUVORK5CYII=',
+          'base64'
+        ),
+      })
     if (url.pathname.endsWith('/download'))
       return route.fulfill({
         contentType: 'application/zip',
@@ -82,6 +90,11 @@ test(
     await mockClientErrorReports(context)
     const remote = await mockCloud(context)
     await setup(context, page, testInfo)
+    const thumbnailResponse = page.waitForResponse(
+      (response) =>
+        response.url().endsWith(`/user/projects/${projectId}/thumbnail`) &&
+        response.status() === 200
+    )
     await page.goto('/home')
     await page.evaluate(async (id) => {
       const root = '/documents/legacy-cloud-mirror'
@@ -97,6 +110,15 @@ test(
         )
       )
     }, projectId)
+    expect(
+      (await thumbnailResponse).request().headers().authorization
+    ).toBeTruthy()
+    const image = page
+      .getByTestId('project-link')
+      .filter({ has: page.getByText('Cloud memory model', { exact: true }) })
+      .locator('img')
+    await expect(image).toBeVisible()
+    await expect(image).toHaveJSProperty('naturalWidth', 1)
     await page
       .getByTestId('project-link')
       .filter({ has: page.getByText('Cloud memory model', { exact: true }) })

@@ -5,7 +5,8 @@ import { v4 } from 'uuid'
 
 import type { PublishCurrentProjectArgs } from '@src/lib/fileSystem/cloud/publication'
 
-import { signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
+import { reportRejection } from '@src/lib/trap'
 
 import * as api from '@src/lib/fileSystem/cloud/cloudApi'
 
@@ -58,6 +59,59 @@ export function createCloudStorage(
   let listGeneration = 0
   let pendingRequests = 0
   const projects = signal<readonly RemoteProjectSummary[]>([])
+  const thumbnails = signal<ReadonlyMap<string, string>>(new Map())
+  const thumbnailWatches = signal<ReadonlyMap<string, number>>(new Map())
+  const thumbnailVersions = new Map<string, string>()
+  const thumbnailRequests = new Map<string, string>()
+  let disposed = false
+  const thumbnailVersion = (project: RemoteProjectSummary) =>
+    JSON.stringify([
+      config().accountId,
+      project.revision,
+      project.updated_at,
+      project.preview_status,
+    ])
+  const loadThumbnail = (project: RemoteProjectSummary) => {
+    const version = thumbnailVersion(project)
+    if (
+      thumbnailVersions.get(project.id) === version ||
+      thumbnailRequests.get(project.id) === version
+    )
+      return
+    thumbnailRequests.set(project.id, version)
+    if (thumbnails.peek().has(project.id)) {
+      const next = new Map(thumbnails.peek())
+      next.delete(project.id)
+      thumbnails.value = next
+    }
+    void api
+      .getRemoteProjectThumbnailUrl(config(), project)
+      .then((url) => {
+        const current = projects.peek().find((item) => item.id === project.id)
+        if (
+          disposed ||
+          !thumbnailWatches.peek().has(project.id) ||
+          !current ||
+          thumbnailVersion(current) !== version ||
+          thumbnailRequests.get(project.id) !== version
+        )
+          return
+        if (url) {
+          thumbnailVersions.set(project.id, version)
+          thumbnails.value = new Map(thumbnails.peek()).set(project.id, url)
+        }
+      })
+      .catch(reportRejection)
+      .finally(() => {
+        if (thumbnailRequests.get(project.id) === version)
+          thumbnailRequests.delete(project.id)
+      })
+  }
+  const stopThumbnailWatcher = effect(() => {
+    const watched = thumbnailWatches.value
+    for (const project of projects.value)
+      if (watched.has(project.id)) loadThumbnail(project)
+  })
   const saves = signal<ReadonlyMap<string, CloudSaveState>>(new Map())
   const opened = new Map<string, OpenCloudProject>()
   const opening = new Map<string, Promise<string>>()
@@ -347,6 +401,23 @@ export function createCloudStorage(
     idFor,
     operations,
     projects,
+    thumbnails,
+    watchThumbnail: (id: string) => {
+      thumbnailWatches.value = new Map(thumbnailWatches.peek()).set(
+        id,
+        (thumbnailWatches.peek().get(id) ?? 0) + 1
+      )
+      let watching = true
+      return () => {
+        if (!watching) return
+        watching = false
+        const next = new Map(thumbnailWatches.peek())
+        const count = (next.get(id) ?? 1) - 1
+        if (count) next.set(id, count)
+        else next.delete(id)
+        thumbnailWatches.value = next
+      }
+    },
     saves,
     subscribe: (listener: (changes: readonly CloudFileChange[]) => void) => {
       listeners.add(listener)
@@ -504,6 +575,8 @@ export function createCloudStorage(
     thumbnail: (project: RemoteProjectSummary) =>
       api.getRemoteProjectThumbnailUrl(config(), project),
     dispose: async () => {
+      disposed = true
+      stopThumbnailWatcher()
       await Promise.all(
         [...opening.values()].map((request) => request.catch(() => undefined))
       )

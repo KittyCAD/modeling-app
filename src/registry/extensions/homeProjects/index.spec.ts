@@ -21,6 +21,8 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
+import { cloudStorageService } from '@src/registry/contracts/fileOperations'
+import type { CloudStorageService } from '@src/lib/fileSystem/cloud/storage'
 import homeProjectsExtension from '@src/registry/extensions/homeProjects'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -45,6 +47,33 @@ const project = {
 } satisfies HomeProjectEntry
 
 describe('home project actions', () => {
+  it('connects visible Home cards to the fileOperations thumbnail watcher', () => {
+    const stop = vi.fn()
+    const watchThumbnail = vi.fn(() => stop)
+    const registry = new Registry()
+    registry.configure([
+      homeProjectsExtension,
+      defineRegistryItem({
+        id: 'thumbnail-storage',
+        providesServices: [
+          provideService(cloudStorageService, {
+            watchThumbnail,
+          } as unknown as CloudStorageService),
+        ],
+      }),
+    ])
+    try {
+      expect(
+        registry
+          .get(homeProjectActionsService)
+          .watchRemoteThumbnail('remote-one')
+      ).toBe(stop)
+      expect(watchThumbnail).toHaveBeenCalledWith('remote-one')
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
   it('allows a project library to duplicate a remote-only project', () => {
     const registry = new Registry()
     const settings = signal({
