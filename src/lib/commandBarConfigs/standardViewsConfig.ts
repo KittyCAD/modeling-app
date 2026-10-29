@@ -2,11 +2,10 @@ import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
-import { engineStreamZoomToFit } from '@src/lib/utils'
 import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export function createStandardViewsCommands(kclManager: KclManager) {
-  const { engineCommandManager, sceneInfra } = kclManager
+  const { sceneInfra } = kclManager
   const topViewCommand: Command = {
     scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Top view',
@@ -104,9 +103,7 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      engineStreamZoomToFit({ engineCommandManager, padding: 0.1 }).catch(
-        reportRejection
-      )
+      sceneInfra.camControls.zoomToFit({ padding: 0.1 }).catch(reportRejection)
     },
   }
 

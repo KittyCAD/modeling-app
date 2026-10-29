@@ -4,7 +4,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
+import { engineStreamZoomToFit } from '@src/lib/utils'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 
 declare global {
@@ -136,19 +136,11 @@ export default defineRegistryItemFactory((ctx) => {
       configurable: true,
       value: () => {
         if (disposed) return
-        void ctx.services
-          .get(engineConnectionService)
-          .manager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'zoom_to_fit',
-              object_ids: [],
-              padding: 0.2,
-              animated: false,
-            },
-          })
-          .catch(reportRejection)
+        engineStreamZoomToFit({
+          engineCommandManager: ctx.services.get(engineConnectionService)
+            .manager,
+          padding: 0.2,
+        }).catch(reportRejection)
       },
     },
   })

@@ -318,6 +318,7 @@ export default class GizmoRenderer {
   }
 
   public dispose() {
+    this.sceneInfra.camControls.hoverPickingDisabled = false
     this.canvas.removeEventListener('mousemove', this.onMouseMove)
     this.canvas.removeEventListener('mouseleave', this.onMouseLeaveCanvas)
     this.canvas.removeEventListener('mousedown', this.onMouseDown)
@@ -340,6 +341,9 @@ export default class GizmoRenderer {
     const currentQuaternion = this.sceneInfra.camControls.camera.quaternion
     this.camera.position.set(0, 0, 2.2).applyQuaternion(currentQuaternion)
     this.camera.quaternion.copy(currentQuaternion)
+    // A click can follow the final drag event before the next render frame.
+    // Keep the matrices current so that raycasting uses the new orientation.
+    this.camera.updateMatrixWorld()
 
     if (this.lastMouse && !this.isDragging) {
       this.doRayCast(this.lastMouse)
@@ -380,10 +384,21 @@ export default class GizmoRenderer {
           this.updateHoveringMesh(null)
         }
 
-        this.sceneInfra.camControls.rotateCamera(dx, dy)
-        this.sceneInfra.camControls.safeLookAtTarget()
-
-        this.sceneInfra.camControls.onCameraChange(true)
+        const camControls = this.sceneInfra.camControls
+        if (camControls.localCameraMode) {
+          // Use the same update path as dragging the main canvas so the camera
+          // starts a subsequent gizmo animation from exactly the visible pose.
+          camControls.pendingRotation = camControls.pendingRotation
+            ? camControls.pendingRotation
+            : new Vector2()
+          camControls.pendingRotation.x += dx
+          camControls.pendingRotation.y += dy
+          camControls.update()
+        } else {
+          camControls.rotateCamera(dx, dy)
+          camControls.safeLookAtTarget()
+          camControls.onCameraChange(true)
+        }
       }
     }
   }
@@ -392,6 +407,7 @@ export default class GizmoRenderer {
     const btnNames = btnName(event)
     if (btnNames.right || btnNames.left) {
       this.isDragging = true
+      this.sceneInfra.camControls.hoverPickingDisabled = true
       this.didDrag = false
       this.dragLast = new Vector2(event.clientX, event.clientY)
       window.addEventListener('mousemove', this.onWindowMouseMove)
@@ -402,6 +418,7 @@ export default class GizmoRenderer {
   private onMouseUp = (_e: MouseEvent) => {
     this.isDragging = false
     this.dragLast = null
+    this.sceneInfra.camControls.hoverPickingDisabled = false
     this.sceneInfra.camControls.wasDragging = false
 
     window.removeEventListener('mousemove', this.onWindowMouseMove)
@@ -436,9 +453,12 @@ export default class GizmoRenderer {
     const pickedName = obj?.name || this.hoveringMesh.name
     const targetQuat = orientationQuaternionForName(pickedName)
     if (targetQuat) {
-      animateCameraToQuaternion(targetQuat, this.sceneInfra).catch(
-        reportRejection
-      )
+      this.sceneInfra.camControls.hoverPickingDisabled = true
+      animateCameraToQuaternion(targetQuat, this.sceneInfra)
+        .catch(reportRejection)
+        .finally(() => {
+          this.sceneInfra.camControls.hoverPickingDisabled = false
+        })
     }
   }
 
@@ -611,7 +631,13 @@ async function animateCameraToQuaternion(
   sceneInfra: SceneInfra
 ) {
   const camControls = sceneInfra.camControls
-  camControls.syncDirection = 'clientToEngine'
+  const previousSyncDirection = camControls.syncDirection
+  if (
+    !camControls.localCameraMode &&
+    previousSyncDirection === 'engineToClient'
+  ) {
+    camControls.syncDirection = 'clientToEngine'
+  }
   camControls.enableRotate = false
   try {
     sceneInfra.animate()
@@ -625,6 +651,6 @@ async function animateCameraToQuaternion(
   } finally {
     sceneInfra.stop()
     camControls.enableRotate = true
-    camControls.syncDirection = 'engineToClient'
+    camControls.syncDirection = previousSyncDirection
   }
 }

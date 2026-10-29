@@ -1,5 +1,6 @@
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import { LocalWebGPUScene } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import Loading from '@src/components/Loading'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
@@ -39,7 +40,7 @@ import {
   normalizeEntityReference,
   sendQueryEntityTypeWithPoint,
 } from '@src/lib/selections'
-import { Themes, getResolvedTheme } from '@src/lib/theme'
+import { getResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import type {
@@ -47,11 +48,10 @@ import type {
   EngineSceneStreamLayer,
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
-
 const stringHash = (value: string) => {
   let hash = 0
   for (let i = 0; i < value.length; i++) {
@@ -78,6 +78,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settingsValues = settings.useSettings()
+  // Each renderer needs its own kind of engine session, so the choice is fixed
+  // when the scene mounts instead of following the setting live.
+  const [isLocalRendering] = useState(
+    () => settingsValues.modeling.useLocalRenderer.current
+  )
+  const theme = getResolvedTheme(settingsValues.app.theme.current)
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
@@ -97,7 +103,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     isConnecting,
     numberOfConnectionAttempts,
     abnormalCloseRetries,
-  } = useTryConnect()
+  } = useTryConnect({ geometryOnly: isLocalRendering })
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -323,7 +329,11 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         })
           .then(() => {
             // Take a screen shot after the page mounts and zoom to fit runs
-            if (projectIORef && projectIORef.path) {
+            if (
+              !engineCommandManager.geometryOnly &&
+              projectIORef &&
+              projectIORef.path
+            ) {
               createThumbnailPNGOnDesktop({
                 fileOperations,
                 projectDirectoryWithoutEndingSlash: projectIORef.path,
@@ -410,8 +420,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       idleCallback: () => {
         isIdle.current = true
       },
+      enabled: !isLocalRendering,
     }),
-    [onPageIdleStartCb]
+    [onPageIdleStartCb, isLocalRendering]
   )
   useOnPageIdle(onPageIdleParams)
 
@@ -587,23 +598,31 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   )
   useOnOfflineToExitSketchMode(onOfflineToExitSketchModeParams)
 
-  // Hardcoded engine background color based on theme
-  const style = useMemo(
-    () => ({
-      backgroundColor:
-        getResolvedTheme(settingsValues.app.theme.current) === Themes.Light
-          ? 'rgb(250, 250, 250)'
-          : 'rgb(30, 30, 30)',
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [settingsValues.app.theme.current]
-  )
+  const style = {
+    backgroundColor: getThemeBackgroundColor(theme),
+  }
 
   const viewControlContextMenuGuard: (e: MouseEvent) => boolean = useCallback(
     (e: MouseEvent) =>
       sceneInfra.camControls.wasDragging === false && btnName(e).right === true,
     [sceneInfra.camControls.wasDragging]
   )
+
+  useEffect(() => {
+    // This effect runs when a project gets opened.
+    const cameraControls = sceneInfra.camControls
+    const wasLocalCameraMode = cameraControls.localCameraMode
+    cameraControls.localCameraMode = isLocalRendering
+    // The engine gives a streamed scene its starting view. A local scene has
+    // to set its own, or it opens with the previous project's camera.
+    if (isLocalRendering) {
+      cameraControls.resetLocalCameraToDefaultView()
+    }
+
+    return () => {
+      cameraControls.localCameraMode = wasLocalCameraMode
+    }
+  }, [sceneInfra.camControls, isLocalRendering])
 
   return (
     <div
@@ -624,18 +643,28 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         key={id + 'video'}
         ref={videoRef}
         controls={false}
-        className={`w-full cursor-pointer h-full${safariObjectFitClass}`}
+        className={`w-full cursor-pointer h-full${
+          isLocalRendering ? ' opacity-0' : ''
+        }${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
       />
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}
-        className="cursor-pointer"
+        className={isLocalRendering ? 'opacity-0' : 'cursor-pointer'}
         id="freeze-frame"
       >
         No canvas support
       </canvas>
+      {isLocalRendering && (
+        <LocalWebGPUScene
+          theme={theme}
+          enableSSAO={settingsValues.modeling.enableSSAO.current}
+          highlightEdges={settingsValues.modeling.highlightEdges.current}
+          fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}
+        />
+      )}
       <ClientSideScene
         cameraControls={settingsValues.modeling.mouseControls.current}
         enableTouchControls={

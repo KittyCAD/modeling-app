@@ -1683,9 +1683,6 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5)`
-    // Locators
-    // TODO: find a way to select sweepEdges in a different way
-    const edgeLocation = { x: 649, y: 283 }
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1701,11 +1698,10 @@ extrude001 = extrude(region001, length = 5)`
     await test.step('Select edges and apply oversized fillet', async () => {
       await test.step(`Select the edge`, async () => {
         await toolbar.closePane(DefaultLayoutPaneID.Code)
-        const [clickOnTheEdge] = scene.makeMouseHelpers(
-          edgeLocation.x,
-          edgeLocation.y
-        )
+        // Third visible edge: the short segment's sweep edge (region tags line1 and line3).
+        const [clickOnTheEdge] = await scene.findEdge(2)
         await clickOnTheEdge()
+        await toolbar.expectSelection('1 edge')
       })
 
       await test.step(`Apply fillet`, async () => {

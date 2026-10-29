@@ -337,6 +337,7 @@ describe('project settings serialization regression', () => {
             mouseControls: 'OnShape',
             gizmoType: 'axis',
             enableTouchControls: false,
+            useLocalRenderer: false,
             showSketchGrid: true,
             snapToGrid: true,
             majorGridSpacing: 2.5,
@@ -376,6 +377,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('mouse_controls = "onshape"')
     expect(serializedToml).toContain('gizmo_type = "axis"')
     expect(serializedToml).toContain('enable_touch_controls = false')
+    expect(serializedToml).toContain('use_local_renderer = false')
     expect(serializedToml).toContain('show_sketch_grid = true')
     expect(serializedToml).toContain('snap_to_grid = true')
     expect(serializedToml).toContain('major_grid_spacing = 2.5')
@@ -833,6 +835,22 @@ describe('project settings serialization regression', () => {
     const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
     expect(parsedPayload.debug?.showPanel).toBe(true)
     expect(parsedPayload.debug?.showModelingMachineState).toBe(false)
+  })
+
+  it('loads the saved renderer choice from the modeling section', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const parsedConfiguration = parseAppSettings(
+      '[settings.modeling]\nuse_local_renderer = false\n',
+      wasmInstance
+    )
+    if (parsedConfiguration instanceof Error) {
+      throw parsedConfiguration
+    }
+
+    const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
+    expect(parsedPayload.modeling?.useLocalRenderer).toBe(false)
   })
 
   it('preserves debug settings through the project debug section', async () => {
