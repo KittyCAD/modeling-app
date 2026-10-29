@@ -1,3 +1,4 @@
+import { createFileReadClient } from '@src/lib/fileSystem/workerBridge'
 import {
   Codec,
   FromServer,
@@ -51,6 +52,10 @@ onmessage = (event: MessageEvent) => {
   switch (lspEvent.eventType) {
     case LspWorkerEventType.Init: {
       const { wasmUrl, token, apiBaseUrl, kclRuntimeFlags } = lspEvent.eventData
+      if (lspEvent.eventData.fileReads)
+        projectFsManager.setOperations(
+          createFileReadClient(lspEvent.eventData.fileReads)
+        )
       initialise(wasmUrl)
         .then(async (instantiatedModule) => {
           console.log('Worker: WASM module loaded', worker, instantiatedModule)

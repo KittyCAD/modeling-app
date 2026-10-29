@@ -178,6 +178,7 @@ export const fileLoader =
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
+    projectFsManager.setOperations(app.fileOperations)
     projectFsManager.dir = projectPath
 
     const defaultProjectData = {
