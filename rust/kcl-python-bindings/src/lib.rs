@@ -104,9 +104,11 @@ fn into_rich_error(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &s
 }
 
 fn render_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> String {
-    let report = error.into_miette_report_with_outputs(code).unwrap();
-    let report = miette::Report::new(report);
-    format!("{report:?}")
+    let fallback = error.error.to_string();
+    match error.into_miette_report_with_outputs(code) {
+        Ok(report) => format!("{:?}", miette::Report::new(report)),
+        Err(_) => fallback,
+    }
 }
 
 fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) -> PyErr {
@@ -428,10 +430,29 @@ impl ExecOutcome {
 struct ExecutedKcl {
     ctx: ExecutorContext,
     state: kcl_lib::ExecState,
-    env_ref: kcl_lib::EnvironmentRef,
+    outcome: kcl_lib::ExecOutcome,
     program: kcl_lib::Program,
     code: String,
     filename: String,
+}
+
+/// If mock execution, execute locally.
+/// Otherwise, execute remote on engine, to minimize latency.
+async fn execute_in_context(
+    ctx: &ExecutorContext,
+    state: &mut ExecState,
+    program: &Program,
+) -> Result<kcl_lib::ExecOutcome, kcl_lib::KclErrorWithOutputs> {
+    if ctx.is_mock() {
+        let (env_ref, _) = ctx.run(program, state).await?;
+        state
+            .clone()
+            .into_exec_outcome(env_ref, ctx)
+            .await
+            .map_err(kcl_lib::KclErrorWithOutputs::no_outputs)
+    } else {
+        ctx.execute_remote_project(program, state).await
+    }
 }
 
 async fn run_kcl(
@@ -461,7 +482,7 @@ async fn run_kcl(
     )
     .await
     .map_err(to_py_exception)?;
-    let (env_ref, _) = match ctx.run(&program, &mut state).await {
+    let outcome = match execute_in_context(&ctx, &mut state, &program).await {
         Ok(result) => result,
         Err(err) => {
             ctx.close().await;
@@ -471,7 +492,7 @@ async fn run_kcl(
     Ok(ExecutedKcl {
         ctx,
         state,
-        env_ref,
+        outcome,
         program,
         code,
         filename,
@@ -481,19 +502,11 @@ async fn run_kcl(
 async fn execute_impl(input: KclInput, mock: bool, geometry_only: bool) -> PyResult<ExecOutcome> {
     let ExecutedKcl {
         ctx,
-        state,
-        env_ref,
+        outcome,
         code,
         filename,
         ..
     } = run_kcl(input, mock, None, geometry_only).await?;
-    let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
-        Ok(outcome) => outcome,
-        Err(err) => {
-            ctx.close().await;
-            return Err(to_py_exception(err));
-        }
-    };
     ctx.close().await;
     Ok(ExecOutcome {
         inner: Arc::new(outcome),
@@ -539,9 +552,8 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
     )
     .await
     .map_err(to_py_exception)?;
-    let result = match ctx.run(&program, &mut state).await {
-        Ok((env_ref, _)) => {
-            let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
+    let result = match execute_in_context(&ctx, &mut state, &program).await {
+        Ok(outcome) => {
             let mut report: SketchConstraintReport = outcome.sketch_constraint_report().into();
             add_execution_issues(&mut report, outcome.issues, |issue| {
                 kcl_lib::render_compilation_issue_miette(&filename, &code, &outcome.source_files, issue)
@@ -550,6 +562,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
         Err(err) => {
             if err.is_retryable() {
+                ctx.close().await;
                 return Err(into_rich_error(err, &filename, &code));
             }
             let error_text = render_miette(err.clone(), &code);
