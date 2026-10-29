@@ -283,6 +283,25 @@ pub(super) async fn fix_tags_and_references(
     Ok(())
 }
 
+/// Remap body-qualified face tags without rebinding the surrounding sketch tags.
+pub(super) async fn fix_pattern_face_tags(
+    solid: &mut Solid,
+    source_topology_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<()> {
+    if solid.faces.is_empty() || args.ctx.no_engine_commands().await {
+        return Ok(());
+    }
+    let names = solid.faces.keys().cloned().collect::<Vec<_>>();
+    let map = get_old_new_child_map(solid.id, source_topology_id, source_topology_id, exec_state, args).await?;
+    remap_sketchless_solid(solid, &map);
+    remap_edge_cuts(solid, &map);
+    solid.faces.clear();
+    restore_face_tags(solid, &names, exec_state);
+    Ok(())
+}
+
 fn remap_id(id: uuid::Uuid, entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>) -> uuid::Uuid {
     entity_id_map.get(&id).copied().unwrap_or(id)
 }
