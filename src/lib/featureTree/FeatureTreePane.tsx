@@ -56,6 +56,11 @@ import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { FeatureTreeMenu } from '@src/lib/featureTree/FeatureTreeMenu'
+import { FeatureHistoryControls } from '@src/lib/featureTree/FeatureHistoryControls'
+import {
+  getFeatureHistory,
+  type FeatureBlock,
+} from '@src/lib/featureTree/featureHistory'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
@@ -273,6 +278,65 @@ export const FeatureTreePaneContents = memo(() => {
   )
   const visibilityOperations = getAllOperations(kclManager.operationsByModule)
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
+  const history = useMemo(
+    () => getFeatureHistory(kclManager.ast, operationsCode),
+    [kclManager.ast, operationsCode]
+  )
+  const historyDisabled =
+    isReadOnlyFeatureTree ||
+    kclManager.isExecuting ||
+    !modelingState.matches('idle')
+
+  const nodesByBlock = new Map<FeatureBlock, OperationTreeNode[]>()
+  const unassignedNodes: OperationTreeNode[] = []
+  // Sketch groups remain intact, while variable streaks can span statements.
+  const historyNodes = operationList.flatMap((node): OperationTreeNode[] =>
+    isArray(node) && node[0]?.type !== 'GroupBegin' ? node : [node]
+  )
+  for (const node of historyNodes) {
+    const operation = isArray(node)
+      ? node[0]
+      : isOperationTreeBranch(node)
+        ? node.parent
+        : node
+    const range =
+      operation && 'sourceRange' in operation
+        ? operation.sourceRange
+        : undefined
+    if (
+      range?.[2] === ROOT_MODULE_ID &&
+      range[0] === history.rollbackRange?.[0] &&
+      range[1] === history.rollbackRange?.[1]
+    )
+      continue
+    let low = 0
+    let high = history.blocks.length - 1
+    let match: FeatureBlock | undefined
+    while (range?.[2] === ROOT_MODULE_ID && low <= high) {
+      const middle = Math.floor((low + high) / 2)
+      const block = history.blocks[middle]
+      if (range[0] < block.sourceStart) high = middle - 1
+      else if (range[0] > block.sourceEnd) low = middle + 1
+      else {
+        const isPipelineBinding =
+          operation?.type === 'VariableDeclaration' &&
+          block.stage?.index === 0 &&
+          range[1] <= block.statement.end
+        match =
+          range[1] <= block.sourceEnd || isPipelineBinding ? block : undefined
+        break
+      }
+    }
+    if (match)
+      nodesByBlock.set(match, [...(nodesByBlock.get(match) ?? []), node])
+    else unassignedNodes.push(node)
+  }
+
+  function changeHistory(code: string) {
+    // A file switch, editor update or execution during a drag invalidates it.
+    if (historyDisabled || kclManager.code !== history.code) return
+    kclManager.updateCodeEditor(code, { shouldExecute: true })
+  }
 
   // Live execution tracking: expand only the active module branch.
   const liveActiveModuleId = kclManager.liveActiveModuleId
@@ -368,22 +432,77 @@ export const FeatureTreePaneContents = memo(() => {
               </div>
             </div>
           )}
-          {operationList.map((node) => (
-            <OperationTreeNodeItem
-              key={getOperationTreeNodeKey(node)}
-              node={node}
-              code={operationsCode}
-              isStaleReference={isReadOnlyFeatureTree}
-              sketchNoFace={sketchNoFace}
-              systemDeps={systemDeps}
-              modelingActor={modelingActor}
-              engineCommandManager={engineCommandManager}
-              onSelect={selectOperation}
-              visibilityOperations={visibilityOperations}
-              liveActiveModuleId={liveActiveModuleId}
-              liveLatestOperationKey={liveLatestOperationKey}
+          {isReadOnlyFeatureTree || kclManager.isExecuting ? (
+            operationList.map((node) => (
+              <OperationTreeNodeItem
+                key={getOperationTreeNodeKey(node)}
+                node={node}
+                code={operationsCode}
+                isStaleReference={isReadOnlyFeatureTree}
+                sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={selectOperation}
+                visibilityOperations={visibilityOperations}
+                liveActiveModuleId={liveActiveModuleId}
+                liveLatestOperationKey={liveLatestOperationKey}
+              />
+            ))
+          ) : (
+            <FeatureHistoryControls
+              key={kclManager.id}
+              history={history}
+              disabled={historyDisabled}
+              onChange={changeHistory}
+              renderBlock={(block, suppressed) => {
+                const nodes = suppressed ? [] : (nodesByBlock.get(block) ?? [])
+                return nodes.length > 0 ? (
+                  nodes.map((node) => (
+                    <OperationTreeNodeItem
+                      key={getOperationTreeNodeKey(node)}
+                      node={node}
+                      code={operationsCode}
+                      isStaleReference={false}
+                      sketchNoFace={sketchNoFace}
+                      systemDeps={systemDeps}
+                      modelingActor={modelingActor}
+                      engineCommandManager={engineCommandManager}
+                      onSelect={selectOperation}
+                      visibilityOperations={visibilityOperations}
+                      liveActiveModuleId={liveActiveModuleId}
+                      liveLatestOperationKey={liveLatestOperationKey}
+                    />
+                  ))
+                ) : (
+                  <div
+                    className="px-2 py-1 text-sm truncate"
+                    title={block.label}
+                  >
+                    {block.label}
+                  </div>
+                )
+              }}
             />
-          ))}
+          )}
+          {!isReadOnlyFeatureTree &&
+            !kclManager.isExecuting &&
+            unassignedNodes.map((node) => (
+              <OperationTreeNodeItem
+                key={getOperationTreeNodeKey(node)}
+                node={node}
+                code={operationsCode}
+                isStaleReference={false}
+                isModuleOwned
+                liveLatestOperationKey={liveLatestOperationKey}
+                sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={selectOperation}
+                visibilityOperations={visibilityOperations}
+              />
+            ))}
         </>
       </section>
     </div>

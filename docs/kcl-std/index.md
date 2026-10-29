@@ -91,7 +91,7 @@ layout: manual
 * [**std::operation**](/docs/kcl-std/modules/std-operation)
   * [`operation::facing`](/docs/kcl-std/functions/std-operation-facing) Experimental
 * [**std::runtime**](/docs/kcl-std/modules/std-runtime) Experimental
-  * [`exit`](/docs/kcl-std/functions/std-runtime-exit) Experimental
+  * [`exit`](/docs/kcl-std/functions/std-runtime-exit)
 * [**std::sketch**](/docs/kcl-std/modules/std-sketch)
   * [`angledLine`](/docs/kcl-std/functions/std-sketch-angledLine)
   * [`angledLineThatIntersects`](/docs/kcl-std/functions/std-sketch-angledLineThatIntersects)

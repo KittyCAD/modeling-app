@@ -7298,6 +7298,25 @@ assert(1, isEqualTo = 2, error = "code after exit ran")
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn feature_tree_rollback_exit_is_available_without_experimental_features() {
+        let code = r#"@settings(kclVersion = 3.0, experimentalFeatures = deny)
+a = 1
+exit() // zds:rollback
+assert(1, isEqualTo = 2, error = "code after rollback ran")
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert!(result.exec_state.issues().is_empty());
+        let pipeline = r#"@settings(kclVersion = 3.0, experimentalFeatures = deny)
+a = 1
+  |> exit() // zds:rollback
+  |> assert(isEqualTo = 2, error = "stage after rollback ran")
+assert(1, isEqualTo = 2, error = "code after rollback ran")
+"#;
+        let result = parse_execute(pipeline).await.unwrap();
+        assert!(result.exec_state.issues().is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn if_arm_bindings_do_not_leak_in_v3() {
         let code = r#"@settings(kclVersion = "3.0-preview")
 x = if true {
