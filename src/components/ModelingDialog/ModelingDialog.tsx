@@ -131,7 +131,12 @@ export default function ModelingDialog({
 
   const checking = state.matches('Checking Arguments for Dialog')
   const invalid = visible.some(({ name, arg, required }) => {
-    if (arg.inputType === 'kcl') return validity[name] === false
+    if (
+      arg.inputType === 'kcl' ||
+      arg.inputType === 'vector2d' ||
+      arg.inputType === 'vector3d'
+    )
+      return validity[name] === false
     return (
       (arg.inputType === 'camera' && validity[name] === false) ||
       (required && !hasValue(context.argumentsToSubmit[name]))
@@ -175,6 +180,14 @@ export default function ModelingDialog({
   }
 
   function renderField({ name, arg, required }: DialogField) {
+    if (arg.inputType === 'vector2d' || arg.inputType === 'vector3d') {
+      arg = {
+        ...arg,
+        inputType: 'kcl',
+        allowArrays: true,
+        createVariable: 'disallow',
+      }
+    }
     const fieldId = `${fieldIdPrefix}-${name}`
     const label =
       arg.displayName || capitaliseFC(decamelize(name, { separator: ' ' }))
@@ -351,30 +364,42 @@ export default function ModelingDialog({
       case 'string':
       case 'number':
       case 'text':
-      case 'vector3d':
       case 'path':
-      case 'vector2d':
       case 'color':
       case 'tagDeclarator': {
         const Input = arg.inputType === 'text' ? 'textarea' : 'input'
         return (
           <div key={name} className="flex flex-col gap-1">
             {fieldLabel}
-            <Input
-              {...noAutofillInputProps}
-              id={fieldId}
-              type={arg.inputType === 'color' ? 'color' : undefined}
-              rows={arg.inputType === 'text' ? 3 : undefined}
-              autoFocus={name === firstFieldName}
-              className={`rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70 ${arg.inputType === 'color' ? 'h-8 w-full cursor-pointer' : ''}`}
-              placeholder={
-                !required && arg.inputType === 'tagDeclarator'
-                  ? 'None'
-                  : undefined
-              }
-              value={fieldText(value)}
-              onChange={(event) => save(name, event.target.value)}
-            />
+            <div className="relative">
+              {arg.inputType === 'tagDeclarator' && (
+                <span aria-hidden="true" className="absolute left-2 top-1">
+                  $
+                </span>
+              )}
+              <Input
+                {...noAutofillInputProps}
+                id={fieldId}
+                type={arg.inputType === 'color' ? 'color' : undefined}
+                rows={arg.inputType === 'text' ? 3 : undefined}
+                autoFocus={name === firstFieldName}
+                className={`w-full rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70 ${arg.inputType === 'color' ? 'h-8 cursor-pointer' : ''} ${arg.inputType === 'tagDeclarator' ? 'pl-5' : ''}`}
+                placeholder={
+                  !required && arg.inputType === 'tagDeclarator'
+                    ? 'None'
+                    : undefined
+                }
+                value={fieldText(value)}
+                onChange={(event) =>
+                  save(
+                    name,
+                    arg.inputType === 'tagDeclarator'
+                      ? event.target.value.replace(/^\$/, '')
+                      : event.target.value
+                  )
+                }
+              />
+            </div>
             {description}
           </div>
         )
