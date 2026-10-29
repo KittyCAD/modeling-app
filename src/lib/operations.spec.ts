@@ -1686,13 +1686,13 @@ clone001 = clone(extrude001)`
   describe('variable name of operations', () => {
     it('finds the variable name with simple assignment', async () => {
       const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-      const op = stdlib('stdLibFn')
+      const op = stdlib('gdt::note')
       if (op.type !== 'StdLibCall') {
         throw new Error('Expected operation to be a StdLibCall')
       }
-      const code = `myVar = stdLibFn()`
+      const code = `myVar = gdt::note()`
       // Make the path match the code.
-      op.nodePath = await buildNodePath(code, 'stdLibFn()', instance)
+      op.nodePath = await buildNodePath(code, 'gdt::note()', instance)
 
       const program = assertParse(code, instance)
       const variableName = getOperationVariableName(op, program, instance)

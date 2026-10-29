@@ -176,6 +176,8 @@ export type CommandConfig<
   | 'scopes'
   | 'useModelingDialog'
 > & {
+  /** Whether to offer this command in the current machine context. */
+  available?: (context: ContextFrom<T>) => boolean
   needsReview?: boolean
   status?: CommandStatus
   scopes?: CommandScopes
