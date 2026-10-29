@@ -71,6 +71,7 @@ import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
   getOriginalSegmentArtifact,
+  getSegmentArtifactForEdgeCut,
   getPatternArtifactForCopyId,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
@@ -603,14 +604,7 @@ function getTaggableEdgeArtifact(
     return null
   }
 
-  const consumedEdge = getArtifactOfTypes(
-    {
-      key: selection.artifact.consumedEdgeId ?? '',
-      types: ['segment', 'sweepEdge'],
-    },
-    artifactGraph
-  )
-  return err(consumedEdge) ? null : consumedEdge
+  return getSegmentArtifactForEdgeCut(selection.artifact, artifactGraph)
 }
 
 function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {
@@ -3852,6 +3846,10 @@ export function getCodeRefsFromEntityReference(
     const faceArtifact = artifactGraph.get(entityRef.face_id)
     if (!faceArtifact) {
       return null
+    }
+
+    if (faceArtifact.type === 'edgeCut') {
+      return getCodeRefsByArtifactId(faceArtifact.id, artifactGraph)
     }
 
     // Wall artifacts have segId pointing to the segment

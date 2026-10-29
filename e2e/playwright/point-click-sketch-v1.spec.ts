@@ -845,9 +845,15 @@ extrude001 = extrude(sketch001, length = -12)
 
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
-      await editor.selectText(
-        'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
-      )
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      // Aim at the original sketch-plane edge: for this negative extrusion,
+      // the solid edge at Z = 0 borders capEnd, not capStart.
+      await scene.moveCameraTo({ x: 36, y: -48, z: 36 }, { x: 0, y: -6, z: 0 })
+      const [clickOnFirstEdge] = scene.makeMouseHelpers(0.5, 0.5, {
+        format: 'ratio',
+      })
+      await clickOnFirstEdge()
+      await expect(toolbar.selectionStatus).toContainText('1 edge')
     })
 
     await test.step(`Apply fillet to the preselected edge`, async () => {
@@ -889,12 +895,13 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(firstFilletDeclaration, {
         shouldNormalise: true,
       })
     })
 
-    // Test 1.1: Edit fillet (segment type)
+    // Test 1.1: Edit the existing viewport-selected fillet
     async function editFillet(
       featureTreeIndex: number,
       oldValue: string,
