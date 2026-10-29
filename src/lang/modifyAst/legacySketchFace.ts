@@ -32,7 +32,10 @@ export function sketchBlockOnExtrudedFace(
   wasmInstance: ModuleType
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   const resolved = resolveToCodeRef(faceSelection, artifactGraph)
-  if (resolved?.artifact?.type === 'edgeCut') {
+  if (
+    resolved?.artifact?.type === 'edgeCut' &&
+    !resolved.artifact.sourceEdgeCutId
+  ) {
     const sourceCall = getNodeFromPath<CallExpressionKw>(
       node,
       resolved.artifact.codeRef.pathToNode,

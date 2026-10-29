@@ -389,6 +389,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
         let mut new_geometry = geometry.clone();
         new_geometry.set_id(id);
         new_geometry.set_artifact_id(id);
+        new_geometry.remap_face_tags(entity_id, exec_state, args).await?;
         geometries.push(new_geometry);
     }
     Ok(geometries)
@@ -562,6 +563,10 @@ pub trait GeometryTrait: Clone {
     fn topology_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn set_artifact_id(&mut self, id: Uuid);
+    #[allow(async_fn_in_trait)]
+    async fn remap_face_tags(&mut self, _: Uuid, _: &mut ExecState, _: &Args) -> Result<(), KclError> {
+        Ok(())
+    }
     fn array_to_point3d(
         val: &KclValue,
         source_ranges: Vec<SourceRange>,
@@ -602,6 +607,14 @@ impl GeometryTrait for Sketch {
 
 impl GeometryTrait for Solid {
     type Set = Vec<Solid>;
+    async fn remap_face_tags(
+        &mut self,
+        source_id: Uuid,
+        exec_state: &mut ExecState,
+        args: &Args,
+    ) -> Result<(), KclError> {
+        super::clone::fix_pattern_face_tags(self, source_id, exec_state, args).await
+    }
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
         self.value_id = id;
@@ -1465,6 +1478,9 @@ async fn pattern_circular<T: GeometryTrait>(
         let mut new_geometry = geometry.clone();
         new_geometry.set_id(id);
         new_geometry.set_artifact_id(id);
+        new_geometry
+            .remap_face_tags(geometry.topology_id(), exec_state, args)
+            .await?;
         geometries.push(new_geometry);
     }
     Ok(geometries)
