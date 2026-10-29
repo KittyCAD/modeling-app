@@ -1,5 +1,6 @@
 import { ActionButton } from '@src/components/ActionButton'
 import type { Feature } from '@kittycad/lib'
+import { SettingRestartButton } from '@src/components/Settings/SettingRestartButton'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useApp } from '@src/lib/boot'
@@ -144,6 +145,7 @@ export const AllSettingsFields = forwardRef(
                           settingsLevel={searchParamTab}
                           setting={setting}
                         />
+                        <SettingRestartButton setting={setting} />
                       </SettingsSection>
                     )
                   })}

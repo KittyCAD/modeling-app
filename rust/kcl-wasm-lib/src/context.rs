@@ -45,6 +45,7 @@ impl ExecutionCallbacks for JsExecutionCallbacks {
 
 #[wasm_bindgen]
 pub struct Context {
+    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
     pub(crate) cache: kcl_lib::Cache,
     executor: kcl_lib::ExecutorContext,
     mock_executor: kcl_lib::ExecutorContext,
@@ -65,7 +66,6 @@ impl Context {
         engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
         fs_manager: kcl_lib::wasm_engine::FileSystemManager,
         execution_callbacks: Option<JsExecutionCallbacks>,
-        geometry_only: Option<bool>,
     ) -> Result<Self, JsValue> {
         console_error_panic_hook::set_once();
         // Initialize the thread pool for rayon. For some reason, this wasn't
@@ -79,13 +79,12 @@ impl Context {
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         let cache = kcl_lib::Cache::default();
         let engine = Arc::new(kcl_lib::wasm_engine::EngineConnection::new_wasm_transport(
-            engine_manager,
+            engine_manager.clone(),
             response_context.clone(),
         ));
         let fs = kcl_lib::new_file_system_handle(FileManager::new(fs_manager));
         let mut executor = kcl_lib::ExecutorContext::new_with_engine_and_fs(engine, fs.clone(), Default::default())
             .with_cache(cache.clone());
-        executor.settings.geometry_only = geometry_only.unwrap_or_default();
         executor.execution_callbacks =
             execution_callbacks.map(|callbacks| Arc::new(callbacks) as Arc<dyn ExecutionCallbacks>);
         let mut mock_executor = kcl_lib::ExecutorContext::new_mock(
@@ -96,6 +95,7 @@ impl Context {
         .with_cache(cache.clone());
         mock_executor.execution_callbacks = executor.execution_callbacks.clone();
         Ok(Self {
+            engine_manager,
             cache,
             executor,
             mock_executor,
@@ -113,6 +113,7 @@ impl Context {
         let mut mock_executor = self.mock_executor.clone();
         mock_executor.execution_callbacks = callbacks;
         Self {
+            engine_manager: self.engine_manager.clone(),
             cache: self.cache.clone(),
             executor,
             mock_executor,
@@ -160,11 +161,13 @@ impl Context {
         let mut settings: kcl_lib::ExecutorSettings = config.into();
         let mut ctx = match mode {
             ExecutionMode::Engine => {
-                settings.geometry_only = self.executor.settings.geometry_only;
+                // The mode can change on reconnect, so read it from the live connection.
+                settings.geometry_only = self.engine_manager.geometry_only();
                 self.executor.clone()
             }
             ExecutionMode::Mock => self.mock_executor.clone(),
         };
+        settings.enable_ssao &= !settings.geometry_only;
         if let Some(file) = file {
             settings.with_current_file(file);
         }
