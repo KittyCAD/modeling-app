@@ -40,22 +40,15 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 
-vi.mock('@src/lib/screenshot', async (importOriginal) => {
-  const original = await importOriginal<typeof ScreenshotModule>()
-
-  return {
-    ...original,
-    takeViewportScreenshot: vi.fn(),
-  }
-})
-
-import { Registry } from '@kittycad/registry'
+import {
+  defineRegistryItem,
+  provideService,
+  Registry,
+} from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
-import { takeViewportScreenshot } from '@src/lib/screenshot'
-import type * as ScreenshotModule from '@src/lib/screenshot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type {
   Conversation,
@@ -67,11 +60,24 @@ import {
   engineSceneRuntimeExtensionsSlot,
   engineSceneStreamLayersValueSpec,
 } from '@src/registry/contracts/engineScene'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { ZOODLE_BRUSH_SIZE_DEFAULT_PX } from '@src/registry/contracts/zoodle'
+
+const captureViewportScreenshot = vi.fn<() => string>()
 
 const configureTestRegistry = () => {
   const registry = new Registry()
-  registry.configure([engineSceneRuntimeExtensionsSlot.of()])
+  registry.configure([
+    engineSceneRuntimeExtensionsSlot.of(),
+    defineRegistryItem({
+      id: 'test-viewport-screenshot',
+      providesServices: [
+        provideService(viewportScreenshotService, {
+          capture: captureViewportScreenshot,
+        }),
+      ],
+    }),
+  ])
   bootMockState.registry = registry
   return registry
 }
@@ -1315,7 +1321,7 @@ describe('ZookeeperConversation', () => {
 
     beforeEach(() => {
       vi.clearAllMocks()
-      vi.mocked(takeViewportScreenshot).mockReturnValue(
+      captureViewportScreenshot.mockReturnValue(
         'data:image/png;base64,aGVsbG8='
       )
     })
