@@ -83,8 +83,30 @@ export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
 }
 
+export enum ConnectionAvailability {
+  Unavailable = 'unavailable',
+  StreamReady = 'stream-ready',
+  AcceptingInput = 'accepting-input',
+}
+
 export class ConnectionManager extends EventTarget {
   started: boolean
+  private _availability = ConnectionAvailability.Unavailable
+
+  /** Publish availability changes without depending on a UI state library. */
+  get availability(): ConnectionAvailability {
+    return this._availability
+  }
+
+  set availability(value: ConnectionAvailability) {
+    if (value === this._availability) return
+
+    this._availability = value
+    // This allows us to subscribe from the outside for stuff like signals
+    this.dispatchEvent(
+      new Event(EngineConnectionManagerEvents.AvailabilityChanged)
+    )
+  }
   inSequence = 1
   _camControlsCameraChange = () => {}
   id: string
@@ -145,7 +167,6 @@ export class ConnectionManager extends EventTarget {
   private readonly systemDeps: ConnectionSystemDeps
 
   streamDimensions = {
-    // startFromWasm uses 256, 256
     width: 256,
     height: 256,
   }
@@ -342,7 +363,6 @@ export class ConnectionManager extends EventTarget {
     width,
     height,
     token,
-    setStreamIsReady,
     callbackOnUnitTestingConnection,
     unitTestWebrtc,
     unitTestGeometryOnly,
@@ -353,7 +373,6 @@ export class ConnectionManager extends EventTarget {
     width: number
     height: number
     token: string
-    setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestWebrtc?: boolean
     unitTestGeometryOnly?: boolean
@@ -531,12 +550,12 @@ export class ConnectionManager extends EventTarget {
       // Don't think this needs the bind because it is an external set function for the callback
       camControlsCameraChange: this._camControlsCameraChange,
       connection: this.connection,
-      setStreamIsReady,
     })
 
     // Engine is ready to start sending events!
-    // Gotcha: The other listenerse above need to be initialized otherwise this will halt forever.
+    // Gotcha: The other listeners above need to be initialized otherwise this will halt forever.
     await onEngineConnectionOpened()
+    this.availability = ConnectionAvailability.StreamReady
   }
 
   /**
@@ -1184,9 +1203,6 @@ export class ConnectionManager extends EventTarget {
       token,
       width: 256,
       height: 256,
-      setStreamIsReady: () => {
-        console.warn('This is a NO OP. Should not be called in web.')
-      },
     })
   }
 
@@ -1279,6 +1295,7 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown(options: ManagerTearDown) {
+    this.availability = ConnectionAvailability.Unavailable
     const connection = this.connection
     const isFirstShutdownTrigger = this.recordShutdownTrigger(options)
 

@@ -79,9 +79,7 @@ describe('tryConnecting', () => {
         videoWrapperRef: {
           current: { clientWidth: 256, clientHeight: 256 } as HTMLDivElement,
         },
-        setAppState: vi.fn(),
         videoRef: { current: null },
-        setIsSceneReady: vi.fn(),
         timeToConnect: 1_000,
         settingsActor: {} as SettingsActorType,
         setShowManualConnect,
@@ -160,9 +158,7 @@ describe('reconnect camera restoration', () => {
         videoWrapperRef: {
           current: { clientWidth: 256, clientHeight: 256 } as HTMLDivElement,
         },
-        setAppState: vi.fn(),
         videoRef: { current: {} as HTMLVideoElement },
-        setIsSceneReady: vi.fn(),
         timeToConnect: 1000,
         settingsActor: {} as SettingsActorType,
         setShowManualConnect: vi.fn(),

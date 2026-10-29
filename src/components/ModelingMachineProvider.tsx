@@ -1,4 +1,3 @@
-import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
@@ -16,7 +15,7 @@ import { modelingStdLibCommandSummary } from '@src/lib/commandBarConfigs/modelin
 import type { Project } from '@src/lib/project'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 
-import { useSignals } from '@preact/signals-react/runtime'
+import { useComputed, useSignals } from '@preact/signals-react/runtime'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
@@ -30,6 +29,8 @@ import {
 } from '@src/lib/engineConnection/utils'
 import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import { keymapService } from '@src/registry/contracts/keymap'
+import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
+import { ConnectionAvailability } from '@src/lib/engineConnection/connectionManager'
 
 const MODELING_COMMAND_SCOPES = [MODE_MODELING_COMMAND_SCOPE] as const
 
@@ -101,7 +102,13 @@ export const ModelingMachineProvider = ({
   useMenuListener(cb)
 
   const { overallState } = useNetworkContext()
-  const { isStreamReady } = useAppState()
+  const engineConnectionAvailability = registry.get(
+    engineConnectionService
+  ).connectionAvailability
+  const isStreamReady = useComputed(
+    () =>
+      engineConnectionAvailability.value === ConnectionAvailability.StreamReady
+  )
 
   const toolbarConfigurationName =
     modelingMachineStateToToolbarModeName(modelingState)
@@ -121,7 +128,7 @@ export const ModelingMachineProvider = ({
     toolbarConfigurationName,
     overallState,
     kclManager.isExecutingSignal.value,
-    isStreamReady,
+    isStreamReady.value,
     [
       { menuLabel: 'View.Standard views' },
       { menuLabel: 'View.Named views' },
