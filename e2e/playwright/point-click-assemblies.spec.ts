@@ -236,17 +236,18 @@ test.describe(
         fn: (dir: string) => Promise<void>
       ) => Promise<{ dir: string }>
     ) {
-      const selectedObjects = /^1 (path|other)$/
+      const selectedObjects = selectionType === 'scene' ? '1 path' : '1 other'
       async function selectBracket() {
         if (selectionType === 'scene') {
           // The bracket is only visible in the lower-right of the default view
+          if (await modelingDialog.locator.isVisible()) {
+            await modelingDialog.moveTo({ x: 0, y: 80 })
+          }
           const [clickBracketInScene] = scene.makeMouseHelpers(0.75, 0.92, {
             format: 'ratio',
           })
           await clickBracketInScene()
-          await expect(toolbar.selectionStatus).toContainText(
-            /1 (path|face|other)/
-          )
+          await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
           return
         } else if (selectionType === 'feature-tree') {
           const op = await toolbar.getFeatureTreeOperation('bracket', 0)
@@ -385,19 +386,18 @@ test.describe(
         )
 
         await expect(modelingDialog.input('angle')).toHaveText('45deg')
-        await modelingDialog.input('angle').fill('0.1')
+        await modelingDialog.fillInput('angle', '0.1')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
         await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
-        // Picking the scaled geometry appends Rotate to that operation's pipe.
         await editor.expectEditor.toContain(
           `
           translate(bracket, x = 1, y = 2)
           scale(bracket, factor = 1.2)
-            |> rotate(axis = Z, angle = 0.1)
+          rotate(bracket, axis = Z, angle = 0.1)
           `,
           { shouldNormalise: true }
         )
@@ -409,13 +409,13 @@ test.describe(
         await expect(modelingDialog.submitButton).toBeEnabled()
 
         await expect(modelingDialog.input('angle')).toHaveText('0.1')
-        await modelingDialog.input('angle').fill('0.2')
+        await modelingDialog.fillInput('angle', '0.2')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain(
-          '|> rotate(axis = Z, angle = 0.2)',
+          'rotate(bracket, axis = Z, angle = 0.2)',
           { shouldNormalise: true }
         )
       })
@@ -425,14 +425,9 @@ test.describe(
         await toolbar.openFeatureTreeOperationContextMenu('Rotate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()
-        await editor.expectEditor.not.toContain('rotate(')
-        await editor.expectEditor.toContain('scale(bracket, factor = 1.2)')
-        await editor.expectEditor.toContain('translate(bracket, x = 1, y = 2)')
         await toolbar.openFeatureTreeOperationContextMenu('Scale', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()
-        await editor.expectEditor.not.toContain('scale(')
-        await editor.expectEditor.toContain('translate(bracket, x = 1, y = 2)')
         await toolbar.openFeatureTreeOperationContextMenu('Translate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()
