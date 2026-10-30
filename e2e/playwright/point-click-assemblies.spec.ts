@@ -1,3 +1,6 @@
+import path from 'path'
+import * as fsp from 'fs/promises'
+
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
@@ -14,8 +17,6 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import type { BrowserContext, Page } from '@playwright/test'
 import { isStepFile } from '@src/lib/fileExtensions'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import * as fsp from 'fs/promises'
-import path from 'path'
 
 async function insertPartIntoAssembly(
   path: string,
@@ -237,11 +238,6 @@ test.describe(
     ) {
       const selectedObjects =
         selectionType === 'scene' ? /^1 (path|other)$/ : '1 other'
-      // Picking the scaled geometry appends Rotate to that operation's pipe.
-      const rotateCall = (angle: string) =>
-        selectionType === 'scene'
-          ? `|> rotate(axis = Z, angle = ${angle})`
-          : `rotate(bracket, axis = Z, angle = ${angle})`
       async function selectBracket() {
         if (selectionType === 'scene') {
           // The bracket is only visible in the lower-right of the default view
@@ -397,11 +393,12 @@ test.describe(
         await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
+        // Picking the scaled geometry appends Rotate to that operation's pipe.
         await editor.expectEditor.toContain(
           `
           translate(bracket, x = 1, y = 2)
           scale(bracket, factor = 1.2)
-          ${rotateCall('0.1')}
+            |> rotate(axis = Z, angle = 0.1)
           `,
           { shouldNormalise: true }
         )
@@ -418,9 +415,10 @@ test.describe(
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
         await scene.settled()
-        await editor.expectEditor.toContain(rotateCall('0.2'), {
-          shouldNormalise: true,
-        })
+        await editor.expectEditor.toContain(
+          '|> rotate(axis = Z, angle = 0.2)',
+          { shouldNormalise: true }
+        )
       })
 
       await test.step('Delete the part using the feature tree', async () => {

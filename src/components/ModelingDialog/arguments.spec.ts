@@ -1,3 +1,4 @@
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import {
   resolveArguments,
   updateKclArgument,
@@ -13,7 +14,6 @@ import {
   assertNotErr,
   buildTheWorldAndNoEngineConnection,
 } from '@src/unitTestUtils'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 function faceSelection(entityId: string): Selections {
   return {

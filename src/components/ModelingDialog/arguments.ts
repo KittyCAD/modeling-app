@@ -5,8 +5,8 @@ import {
   type CommandKclChange,
 } from '@src/components/CommandBar/CommandKclInput'
 import { evaluateCommandArgumentFlags } from '@src/components/CommandBar/utils'
-import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import type { ArtifactGraph, Program } from '@src/lang/wasm'
+import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
