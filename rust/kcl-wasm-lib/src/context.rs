@@ -47,13 +47,16 @@ impl ExecutionCallbacks for JsExecutionCallbacks {
 pub struct Context {
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
     pub(crate) cache: kcl_lib::Cache,
-    engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
+    executor: kcl_lib::ExecutorContext,
+    mock_executor: kcl_lib::ExecutorContext,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
-    fs: kcl_lib::FileSystemHandle,
-    mock_engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
-    execution_callbacks: Option<JsExecutionCallbacks>,
     pub(crate) project_manager: ProjectManager,
     pub(crate) frontend: Arc<tokio::sync::RwLock<FrontendState>>,
+}
+
+pub(crate) enum ExecutionMode {
+    Engine,
+    Mock,
 }
 
 #[wasm_bindgen]
@@ -74,65 +77,102 @@ impl Context {
             .build_global();
 
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
+        let cache = kcl_lib::Cache::default();
+        let engine = Arc::new(kcl_lib::wasm_engine::EngineConnection::new_wasm_transport(
+            engine_manager.clone(),
+            response_context.clone(),
+        ));
+        let fs = kcl_lib::new_file_system_handle(FileManager::new(fs_manager));
+        let mut executor = kcl_lib::ExecutorContext::new_with_engine_and_fs(engine, fs.clone(), Default::default())
+            .with_cache(cache.clone());
+        executor.execution_callbacks =
+            execution_callbacks.map(|callbacks| Arc::new(callbacks) as Arc<dyn ExecutionCallbacks>);
+        let mut mock_executor = kcl_lib::ExecutorContext::new_mock(
+            Arc::new(kcl_lib::wasm_engine::EngineConnection::new_mock()),
+            fs,
+            Default::default(),
+        )
+        .with_cache(cache.clone());
+        mock_executor.execution_callbacks = executor.execution_callbacks.clone();
         Ok(Self {
-            engine_manager: engine_manager.clone(),
-            cache: kcl_lib::Cache::default(),
-            engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_wasm_transport(
-                engine_manager,
-                response_context.clone(),
-            )),
-            fs: kcl_lib::new_file_system_handle(FileManager::new(fs_manager)),
-            mock_engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_mock()),
-            execution_callbacks,
+            engine_manager,
+            cache,
+            executor,
+            mock_executor,
             response_context,
-            project_manager: ProjectManager,
+            project_manager: ProjectManager::default(),
             frontend: Arc::new(tokio::sync::RwLock::new(FrontendState::new())),
         })
     }
 
     #[wasm_bindgen(js_name = cloneWithExecuteCallbacks)]
     pub fn clone_with_execute_callbacks(&self, execution_callbacks: JsExecutionCallbacks) -> Self {
+        let callbacks = Some(Arc::new(execution_callbacks) as Arc<dyn ExecutionCallbacks>);
+        let mut executor = self.executor.clone();
+        executor.execution_callbacks = callbacks.clone();
+        let mut mock_executor = self.mock_executor.clone();
+        mock_executor.execution_callbacks = callbacks;
         Self {
             engine_manager: self.engine_manager.clone(),
             cache: self.cache.clone(),
-            engine: self.engine.clone(),
+            executor,
+            mock_executor,
             response_context: self.response_context.clone(),
-            fs: self.fs.clone(),
-            mock_engine: self.mock_engine.clone(),
-            execution_callbacks: Some(execution_callbacks),
             project_manager: self.project_manager.clone(),
             frontend: self.frontend.clone(),
         }
     }
 
-    pub(crate) fn create_executor_ctx(
+    /// Borrow this runtime's execution resources while holding its frontend owner.
+    /// An optional JS path is only an assertion against the registered active file,
+    /// never permission to select another cache owner or create an anonymous one.
+    pub(crate) async fn executor_for_operation(
         &self,
         settings: &str,
-        path: Option<String>,
-        is_mock: bool,
-    ) -> Result<kcl_lib::ExecutorContext, String> {
-        let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
+        requested_path: Option<&str>,
+        mode: ExecutionMode,
+    ) -> Result<
+        (
+            tokio::sync::RwLockWriteGuard<'_, FrontendState>,
+            kcl_lib::ExecutorContext,
+        ),
+        KclErrorWithOutputs,
+    > {
+        let owner = self.frontend.write().await;
+        let resolved: Result<_, String> = async {
+            let file = self
+                .project_manager
+                .execution_file(requested_path)
+                .await
+                .map_err(|error| error.msg)?;
+            let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|error| error.to_string())?;
+            Ok((file, config))
+        }
+        .await;
+        let (file, config) = match resolved {
+            Ok(resolved) => resolved,
+            Err(message) => {
+                return Err(KclErrorWithOutputs {
+                    default_planes: self.executor.engine.get_default_planes().read().await.clone(),
+                    ..KclErrorWithOutputs::no_outputs(KclError::internal(message))
+                });
+            }
+        };
         let mut settings: kcl_lib::ExecutorSettings = config.into();
-        if !is_mock {
-            settings.geometry_only = self.engine_manager.geometry_only();
-        }
+        let mut ctx = match mode {
+            ExecutionMode::Engine => {
+                // The mode can change on reconnect, so read it from the live connection.
+                settings.geometry_only = self.engine_manager.geometry_only();
+                self.executor.clone()
+            }
+            ExecutionMode::Mock => self.mock_executor.clone(),
+        };
         settings.enable_ssao &= !settings.geometry_only;
-        if let Some(path_src) = path {
-            settings.with_current_file(kcl_lib::TypedPath::from(&path_src));
+        if let Some(file) = file {
+            settings.with_current_file(file);
         }
-
-        let mut ctx = if is_mock {
-            kcl_lib::ExecutorContext::new_mock(self.mock_engine.clone(), self.fs.clone(), settings)
-        } else {
-            kcl_lib::ExecutorContext::new_with_engine_and_fs(self.engine.clone(), self.fs.clone(), settings)
-        }
-        .with_cache(self.cache.clone());
-
-        ctx.execution_callbacks = self
-            .execution_callbacks
-            .clone()
-            .map(|callbacks| Arc::new(callbacks) as Arc<dyn ExecutionCallbacks>);
-        Ok(ctx)
+        ctx.settings = settings;
+        Ok((owner, ctx))
     }
 
     /// Execute a program.
@@ -170,14 +210,10 @@ impl Context {
             KclErrorWithOutputs::no_outputs(err)
         })?;
         let program = program.fill_node_paths();
-        let ctx = self.create_executor_ctx(settings, path, false).map_err(|e| {
-            KclErrorWithOutputs::no_outputs(KclError::internal(format!(
-                "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
-            )))
-        })?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, path.as_deref(), ExecutionMode::Engine)
+            .await?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         guard.engine_execute(&ctx, program).await
     }
 
@@ -187,7 +223,10 @@ impl Context {
     pub async fn bust_cache_and_reset_scene(&self, settings: &str, path: Option<String>) -> Result<JsValue, String> {
         console_error_panic_hook::set_once();
 
-        let ctx = self.create_executor_ctx(settings, path, false)?;
+        let (_owner, ctx) = self
+            .executor_for_operation(settings, path.as_deref(), ExecutionMode::Engine)
+            .await
+            .map_err(|error| error.error.to_string())?;
         match ctx.bust_cache_and_reset_scene().await {
             // The serde-wasm-bindgen does not work here because of weird HashMap issues.
             // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
@@ -239,11 +278,9 @@ impl Context {
             KclErrorWithOutputs::no_outputs(err)
         })?;
         let program = program.fill_node_paths();
-        let ctx = self.create_executor_ctx(settings, path, true).map_err(|e| {
-            KclErrorWithOutputs::no_outputs(KclError::internal(format!(
-                "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
-            )))
-        })?;
+        let (_owner, ctx) = self
+            .executor_for_operation(settings, path.as_deref(), ExecutionMode::Mock)
+            .await?;
         let mock_config = MockConfig {
             use_prev_memory,
             ..Default::default()
@@ -259,7 +296,10 @@ impl Context {
         let format: kittycad_modeling_cmds::format::OutputFormat3d =
             serde_json::from_str(format_json).map_err(|e| e.to_string())?;
 
-        let ctx = self.create_executor_ctx(settings, None, false)?;
+        let (_owner, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Engine)
+            .await
+            .map_err(|error| error.error.to_string())?;
 
         match ctx.export(format).await {
             // The serde-wasm-bindgen does not work here because of weird HashMap issues.

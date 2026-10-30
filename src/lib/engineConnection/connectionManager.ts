@@ -152,6 +152,10 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  /** Read-only identity of the actual engine connection, including reconnects. */
+  get engineSessionId(): string | undefined {
+    return this.connection?.id
+  }
   private reconnectingConnection: Connection | undefined
   private prepareForReconnect:
     | ((signal: AbortSignal) => Promise<undefined | Error>)
