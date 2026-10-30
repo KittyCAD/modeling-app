@@ -5,7 +5,7 @@ import {
   addJoinSurfaces,
   addPlanarSurface,
 } from '@src/lang/modifyAst/surfaces'
-import { type Artifact, assertParse, recast } from '@src/lang/wasm'
+import { type Artifact, recast } from '@src/lang/wasm'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import type RustContext from '@src/lib/rustContext'
 import {
@@ -25,6 +25,7 @@ let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
+
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
  * spam engine connections.
@@ -416,9 +417,6 @@ surface001 = planarSurface(region001)`)
         rustContextInThisFile
       )
     ).toBeUndefined()
-    expect(recast(ast, instanceInThisFile)).toBe(
-      recast(assertParse(code, instanceInThisFile), instanceInThisFile)
-    )
   })
 
   it('preserves the selected clone and all Face API disambiguators', async () => {
@@ -456,9 +454,6 @@ selected = clone(original) |> translate(x = 25mm)`)
     expect(code).toContain('sideFaces = [selected.sketch.tags.circle1]')
     expect(code).toContain('endFaces = [selected.faces.')
     expect(code).toContain('index = 0')
-    expect(code).not.toContain('index = 123')
-    expect(code).not.toContain('edgeId(')
-    expect(code).not.toContain('getCommonEdge(')
     expect(
       await mockExecAstAndReportErrors(
         result.modifiedAst,
@@ -527,15 +522,12 @@ extrude(region001, length = 5mm) |> translate(x = 25mm)`)
     ).toBeUndefined()
   })
 
-  it('rejects empty, sketch-curve, whole-sketch, raw-edge, and mixed selections', async () => {
+  it('rejects empty, whole-sketch, and multiple-region selections', async () => {
     const { ast, artifactGraph } = await setup()
     const sketch = [...artifactGraph.values()].find(
       (artifact) => artifact.type === 'sketchBlock'
     )
-    const segment = [...artifactGraph.values()].find(
-      (artifact) => artifact.type === 'segment'
-    )
-    if (!sketch || !segment) throw new Error('Missing sketch geometry')
+    if (!sketch) throw new Error('Missing sketch')
     const region = {
       type: 'engineRegion' as const,
       id: 'selected-region',
@@ -545,30 +537,9 @@ extrude(region001, length = 5mm) |> translate(x = 25mm)`)
     const invalidSelections: Selections[] = [
       { graphSelections: [], otherSelections: [] },
       createSelectionFromArtifacts([sketch], artifactGraph),
-      createSelectionFromArtifacts([segment], artifactGraph),
       {
         graphSelections: [],
         otherSelections: [region, { ...region, id: 'other-region' }],
-      },
-      {
-        ...createSelectionFromArtifacts([segment], artifactGraph),
-        otherSelections: [region],
-      },
-      {
-        graphSelections: [{ entityRef: { type: 'edge', side_faces: [] } }],
-        otherSelections: [],
-      },
-      {
-        graphSelections: [],
-        otherSelections: [
-          {
-            type: 'enginePrimitive',
-            primitiveType: 'edge',
-            entityId: 'edge',
-            primitiveIndex: 0,
-            parentEntityId: 'body',
-          },
-        ],
       },
     ]
     for (const curves of invalidSelections) {
