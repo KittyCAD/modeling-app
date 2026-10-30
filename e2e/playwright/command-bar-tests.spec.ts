@@ -636,7 +636,10 @@ extrude001 = extrude(region001, length = 10mm)`
       .poll(() => cmdBar.getState())
       .toMatchObject({ stage: 'review' })
     await expect(modelingDialog.locator).not.toBeAttached()
-    await cmdBar.clickHeaderArgument('scale')
+    await page.keyboard.press('Meta+Backspace')
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({ stage: 'arguments', currentArgKey: 'Scale' })
     await cmdBar.clearNonRequiredButton.click()
     await expect
       .poll(() => cmdBar.getState())

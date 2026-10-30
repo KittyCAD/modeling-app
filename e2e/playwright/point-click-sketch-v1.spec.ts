@@ -1227,7 +1227,9 @@ solid001 = extrude(sketch001, length = 5)`
         })
 
         await test.step('Edit axis', async () => {
-          await expect(modelingDialog.options('axis')).toBeVisible()
+          await expect(
+            modelingDialog.options('axis').locator('option:checked')
+          ).toHaveText('Y-axis')
           // Update axis from Y-axis to Z-axis
           await modelingDialog.options('axis').selectOption({ label: 'Z-axis' })
           // Review changes to axis
@@ -1245,8 +1247,10 @@ solid001 = extrude(sketch001, length = 5)`
 
         await test.step('Edit rotate duplicates', async () => {
           await expect(
-            modelingDialog.options('rotate duplicates')
-          ).toBeVisible()
+            modelingDialog
+              .options('rotate duplicates')
+              .locator('option:checked')
+          ).toHaveText('On')
           // Update rotate duplicates from On to Off
           await modelingDialog
             .options('rotate duplicates')
@@ -1256,7 +1260,9 @@ solid001 = extrude(sketch001, length = 5)`
         })
 
         await test.step('Edit use original', async () => {
-          await expect(modelingDialog.options('use original')).toBeVisible()
+          await expect(
+            modelingDialog.options('use original').locator('option:checked')
+          ).toHaveText('Off')
           // Update use original from Off to On
           await modelingDialog
             .options('use original')
@@ -1392,7 +1398,9 @@ solid001 = extrude(sketch001, length = 5)`
         )
         await patternOperation.dblclick()
         // Should open the modeling dialog in edit mode
-        await expect(modelingDialog.options('axis')).toBeVisible()
+        await expect(
+          modelingDialog.options('axis').locator('option:checked')
+        ).toHaveText('Y-axis')
       })
 
       await test.step('Edit parameters', async () => {
@@ -1422,7 +1430,9 @@ solid001 = extrude(sketch001, length = 5)`
         })
 
         await test.step('Edit use original parameter', async () => {
-          await expect(modelingDialog.options('use original')).toBeVisible()
+          await expect(
+            modelingDialog.options('use original').locator('option:checked')
+          ).toHaveText('On')
           // Update use original from On to Off
           await modelingDialog
             .options('use original')
@@ -1617,7 +1627,9 @@ extrude001 = extrude(sketch001, length = 30)
         })
 
         await test.step('Edit frame plane', async () => {
-          await expect(modelingDialog.options('frame plane')).toBeVisible()
+          await expect(
+            modelingDialog.options('frame plane').locator('option:checked')
+          ).toHaveText('XY Plane')
           // Update frame plane from XY to XZ
           await modelingDialog
             .options('frame plane')
@@ -1797,7 +1809,9 @@ extrude001 = extrude(sketch001, length = 30)
         })
 
         await test.step('Edit frame plane', async () => {
-          await expect(modelingDialog.options('frame plane')).toBeVisible()
+          await expect(
+            modelingDialog.options('frame plane').locator('option:checked')
+          ).toHaveText('XZ Plane')
           // Update frame plane from XZ to YZ
           await modelingDialog
             .options('frame plane')
