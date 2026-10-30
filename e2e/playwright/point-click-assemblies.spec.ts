@@ -237,9 +237,10 @@ test.describe(
       const selectedObjects = selectionType === 'scene' ? '1 path' : '1 other'
       async function selectBracket() {
         if (selectionType === 'scene') {
-          // The bracket is only visible in the lower-right of the default view
-          const [clickBracketInScene] = scene.makeMouseHelpers(0.75, 0.92, {
-            format: 'ratio',
+          const [clickBracketInScene] = await scene.makeSelectionHelpers({
+            kind: 'face',
+            index: 4,
+            stream: { x: 0.75, y: 0.92, format: 'ratio' },
           })
           await clickBracketInScene()
           await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
@@ -649,20 +650,8 @@ test.describe(
       await expect(page.getByTestId('context-menu-set-scale')).not.toBeVisible()
     })
 
-    test(`Import the bracket part into an assembly and transform it (scene selection)`, async ({
-      context,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      tronApp,
-      folderSetupFn,
-    }) => {
-      if (!tronApp) throwTronAppMissing()
-      test.slow()
-      await testBracketInsertionThenTransformsThenDeletion(
+    for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+      test(`Import the bracket part into an assembly and transform it (scene selection) ${rendererTag}`, async ({
         context,
         page,
         homePage,
@@ -670,10 +659,24 @@ test.describe(
         editor,
         toolbar,
         cmdBar,
-        'scene',
-        folderSetupFn
-      )
-    })
+        tronApp,
+        folderSetupFn,
+      }) => {
+        if (!tronApp) throwTronAppMissing()
+        test.slow()
+        await testBracketInsertionThenTransformsThenDeletion(
+          context,
+          page,
+          homePage,
+          scene,
+          editor,
+          toolbar,
+          cmdBar,
+          'scene',
+          folderSetupFn
+        )
+      })
+    }
 
     test(
       `Import foreign parts into assembly and delete them`,

@@ -1014,196 +1014,208 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
     })
   })
 
-  test(`Shell point-and-click`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = in)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Shell point-and-click ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
 extrude001 = extrude(sketch001, length = 30)`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    // One dumb hardcoded screen pixel value
-    // Any idea here how to select a cap without clicking in the scene?
-    const testPoint = { x: 575, y: 200 }
-    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const shellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
-    const editedShellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
-
-    await test.step(`Go through the command bar flow without preselected faces`, async () => {
-      await toolbar.shellButton.click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'faces',
-        currentArgValue: '',
-        headerArguments: {
-          Faces: '',
-          Thickness: '',
-        },
-        highlightedHeaderArg: 'faces',
-        commandName: 'Shell',
-      })
-      await clickOnCap()
-      await toolbar.expectSelection('1 face')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'thickness',
-        currentArgValue: '5',
-        headerArguments: {
-          Faces: '1 face',
-          Thickness: '',
-        },
-        highlightedHeaderArg: 'thickness',
-        commandName: 'Shell',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Faces: '1 face',
-          Thickness: '5',
-        },
-        commandName: 'Shell',
-      })
-      await cmdBar.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
       await scene.settled()
-      await editor.expectEditor.toContain(shellDeclaration)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [shellDeclaration],
-        highlightedCode: '',
+
+      const shellDeclaration =
+        'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
+      const editedShellDeclaration =
+        'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
+
+      await test.step(`Go through the command bar flow without preselected faces`, async () => {
+        await toolbar.shellButton.click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'faces',
+          currentArgValue: '',
+          headerArguments: {
+            Faces: '',
+            Thickness: '',
+          },
+          highlightedHeaderArg: 'faces',
+          commandName: 'Shell',
+        })
+        const [clickOnCap] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 1,
+          stream: { x: 575, y: 200, format: 'pixels' },
+        })
+        await clickOnCap()
+        await toolbar.expectSelection('1 face')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'thickness',
+          currentArgValue: '5',
+          headerArguments: {
+            Faces: '1 face',
+            Thickness: '',
+          },
+          highlightedHeaderArg: 'thickness',
+          commandName: 'Shell',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Faces: '1 face',
+            Thickness: '5',
+          },
+          commandName: 'Shell',
+        })
+        await cmdBar.submit()
+      })
+
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await scene.settled()
+        await editor.expectEditor.toContain(shellDeclaration)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [shellDeclaration],
+          highlightedCode: '',
+        })
+      })
+
+      await test.step('Edit shell via feature tree selection works', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Shell',
+          0
+        )
+        await operationButton.dblclick()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'thickness',
+          currentArgValue: '5',
+          headerArguments: {
+            Thickness: '5',
+          },
+          highlightedHeaderArg: 'thickness',
+          commandName: 'Shell',
+        })
+        await page.keyboard.insertText('2')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Thickness: '2',
+          },
+          commandName: 'Shell',
+        })
+        await cmdBar.submit()
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(editedShellDeclaration)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [editedShellDeclaration],
+          highlightedCode: '',
+        })
+      })
+
+      await test.step('Delete shell via feature tree selection', async () => {
+        await editor.closePane()
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Shell',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await editor.expectEditor.not.toContain(shellDeclaration)
       })
     })
+  }
 
-    await test.step('Edit shell via feature tree selection works', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
-      await operationButton.dblclick()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'thickness',
-        currentArgValue: '5',
-        headerArguments: {
-          Thickness: '5',
-        },
-        highlightedHeaderArg: 'thickness',
-        commandName: 'Shell',
-      })
-      await page.keyboard.insertText('2')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Thickness: '2',
-        },
-        commandName: 'Shell',
-      })
-      await cmdBar.submit()
-      await scene.settled()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(editedShellDeclaration)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [editedShellDeclaration],
-        highlightedCode: '',
-      })
-    })
-
-    await test.step('Delete shell via feature tree selection', async () => {
-      await editor.closePane()
-      const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await editor.expectEditor.not.toContain(shellDeclaration)
-    })
-  })
-
-  test(`Delete Face point-and-click`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = in)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Delete Face point-and-click ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
 extrude001 = extrude(sketch001, length = 30)`
-    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 575, y: 200 }
-    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-
-    await test.step(`Go through the command bar flow`, async () => {
-      await toolbar.selectSurface('delete-face')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'faces',
-        currentArgValue: '',
-        headerArguments: {
-          Faces: '',
-        },
-        highlightedHeaderArg: 'faces',
-        commandName: 'Delete Face',
-      })
-      await clickOnCap()
-      await toolbar.expectSelection('1 face')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Faces: '1 face',
-        },
-        commandName: 'Delete Face',
-      })
-      await cmdBar.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
+      const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await homePage.goToModelingScene()
       await scene.settled()
-      await editor.expectEditor.toContain(deleteDeclaration)
-    })
 
-    await test.step('Delete delete face via feature tree selection', async () => {
-      await editor.closePane()
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'surface001',
-        0
-      )
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await editor.expectEditor.not.toContain(deleteDeclaration)
+      await test.step(`Go through the command bar flow`, async () => {
+        await toolbar.selectSurface('delete-face')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'faces',
+          currentArgValue: '',
+          headerArguments: {
+            Faces: '',
+          },
+          highlightedHeaderArg: 'faces',
+          commandName: 'Delete Face',
+        })
+        const [clickOnCap] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 1,
+          stream: { x: 575, y: 200, format: 'pixels' },
+        })
+        await clickOnCap()
+        await toolbar.expectSelection('1 face')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Faces: '1 face',
+          },
+          commandName: 'Delete Face',
+        })
+        await cmdBar.submit()
+      })
+
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await scene.settled()
+        await editor.expectEditor.toContain(deleteDeclaration)
+      })
+
+      await test.step('Delete delete face via feature tree selection', async () => {
+        await editor.closePane()
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'surface001',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await editor.expectEditor.not.toContain(deleteDeclaration)
+      })
     })
-  })
+  }
 
   test('Revolve point-and-click', async ({
     context,
@@ -3341,16 +3353,17 @@ extrude001 = extrude(sketch001, length = 30)
     })
   })
 
-  test('Hole point-and-click', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `sketch001 = startSketchOn(XZ)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Hole point-and-click ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [-5, -5])
   |> angledLine(angle = 0deg, length = 10, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 10)
@@ -3358,159 +3371,162 @@ profile001 = startProfile(sketch001, at = [-5, -5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 10)`
-    await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
+      await test.step('Settle the scene', async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
 
-      // Close panes to ensure toolbar buttons are visible
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
+        // Close panes to ensure toolbar buttons are visible
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
 
-    await test.step('Add the hole through the command flow', async () => {
-      await toolbar.holeButton.click()
-      const testPoint = { x: 600, y: 250 }
-      const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'face',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '',
-          CutAt: '',
-          HoleBody: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'face',
+      await test.step('Add the hole through the command flow', async () => {
+        await toolbar.holeButton.click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'face',
+          currentArgValue: '',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '',
+            CutAt: '',
+            HoleBody: '',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'face',
+        })
+        const [clickOnCap] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 2,
+          stream: { x: 600, y: 250, format: 'pixels' },
+        })
+        await clickOnCap()
+        await toolbar.expectSelection('1 face')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'cutAt',
+          currentArgValue: '[0, 0]',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '',
+            HoleBody: '',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'cutAt',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'holeBody',
+          currentArgValue: '',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: '',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'holeBody',
+        })
+        await cmdBar.selectOption({ name: 'Blind' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'blindDepth',
+          currentArgValue: '2',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '',
+            BlindDiameter: '',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'blindDepth',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'blindDiameter',
+          currentArgValue: '1',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'blindDiameter',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'holeType',
+          currentArgValue: '',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: '',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'holeType',
+        })
+        await cmdBar.selectOption({ name: 'Simple' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'holeBottom',
+          currentArgValue: '',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: '',
+          },
+          highlightedHeaderArg: 'holeBottom',
+        })
+        await cmdBar.selectOption({ name: 'Flat' }).click()
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Hole',
+          headerArguments: {
+            Face: '1 face',
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: 'flat',
+          },
+        })
+        await cmdBar.submit()
       })
-      await clickOnCap()
-      await toolbar.expectSelection('1 face')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'cutAt',
-        currentArgValue: '[0, 0]',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '',
-          HoleBody: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'cutAt',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeBody',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'holeBody',
-      })
-      await cmdBar.selectOption({ name: 'Blind' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'blindDepth',
-        currentArgValue: '2',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '',
-          BlindDiameter: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'blindDepth',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'blindDiameter',
-        currentArgValue: '1',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'blindDiameter',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeType',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'holeType',
-      })
-      await cmdBar.selectOption({ name: 'Simple' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeBottom',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'holeBottom',
-      })
-      await cmdBar.selectOption({ name: 'Flat' }).click()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-      })
-      await cmdBar.submit()
-    })
 
-    await test.step('Expect hole call added to the editor', async () => {
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn(XZ)
+      await test.step('Expect hole call added to the editor', async () => {
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [-5, -5])
   |> angledLine(angle = 0deg, length = 10, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 10)
@@ -3526,137 +3542,137 @@ hole001 = hole::hole(
   holeBody =   hole::blind(depth = 2, diameter = 1),
   holeType =   hole::simple(),
 )`,
-        { shouldNormalise: true }
-      )
-    })
+          { shouldNormalise: true }
+        )
+      })
 
-    await test.step('Edit the hole from the feature-tree', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const holeOperation = await toolbar.getFeatureTreeOperation('Hole', 0)
-      await holeOperation.dblclick()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-        commandName: 'Hole',
+      await test.step('Edit the hole from the feature-tree', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const holeOperation = await toolbar.getFeatureTreeOperation('Hole', 0)
+        await holeOperation.dblclick()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: 'flat',
+          },
+          commandName: 'Hole',
+        })
+        await page.getByRole('button', { name: 'Cut at' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'cutAt',
+          currentArgValue: '[0, 0]',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[0, 0]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: 'flat',
+          },
+          highlightedHeaderArg: 'cutAt',
+        })
+        // Update cut at from [0, 0] to [2, 2]
+        await page.getByTestId('vector2d-x-input').fill('2')
+        await page.getByTestId('vector2d-y-input').fill('2')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[2, 2]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: 'flat',
+          },
+        })
+        await page.getByRole('button', { name: 'Hole type' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'holeType',
+          currentArgValue: '',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[2, 2]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'simple',
+            HoleBottom: 'flat',
+          },
+          highlightedHeaderArg: 'holeType',
+        })
+        await cmdBar.selectOption({ name: 'Countersink' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'countersinkAngle',
+          currentArgValue: '90deg',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[2, 2]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'countersink',
+            CountersinkDiameter: '',
+            CountersinkAngle: '',
+            HoleBottom: 'flat',
+          },
+          highlightedHeaderArg: 'countersinkAngle',
+        })
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill('80deg')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'countersinkDiameter',
+          currentArgValue: '2',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[2, 2]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'countersink',
+            CountersinkDiameter: '',
+            CountersinkAngle: '80deg',
+            HoleBottom: 'flat',
+          },
+          highlightedHeaderArg: 'countersinkDiameter',
+        })
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill('3')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Hole',
+          headerArguments: {
+            CutAt: '[2, 2]',
+            HoleBody: 'blind',
+            BlindDepth: '2',
+            BlindDiameter: '1',
+            HoleType: 'countersink',
+            CountersinkDiameter: '3',
+            CountersinkAngle: '80deg',
+            HoleBottom: 'flat',
+          },
+        })
+        await cmdBar.submit()
       })
-      await page.getByRole('button', { name: 'Cut at' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'cutAt',
-        currentArgValue: '[0, 0]',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'cutAt',
-      })
-      // Update cut at from [0, 0] to [2, 2]
-      await page.getByTestId('vector2d-x-input').fill('2')
-      await page.getByTestId('vector2d-y-input').fill('2')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-      })
-      await page.getByRole('button', { name: 'Hole type' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeType',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'holeType',
-      })
-      await cmdBar.selectOption({ name: 'Countersink' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'countersinkAngle',
-        currentArgValue: '90deg',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'countersink',
-          CountersinkDiameter: '',
-          CountersinkAngle: '',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'countersinkAngle',
-      })
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('80deg')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'countersinkDiameter',
-        currentArgValue: '2',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'countersink',
-          CountersinkDiameter: '',
-          CountersinkAngle: '80deg',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'countersinkDiameter',
-      })
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('3')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'countersink',
-          CountersinkDiameter: '3',
-          CountersinkAngle: '80deg',
-          HoleBottom: 'flat',
-        },
-      })
-      await cmdBar.submit()
-    })
 
-    await test.step('Expect hole call updated in the editor', async () => {
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `hole001 = hole::hole(
+      await test.step('Expect hole call updated in the editor', async () => {
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `hole001 = hole::hole(
   extrude001,
   face = capEnd001,
   cutAt = [2, 2],
@@ -3664,8 +3680,9 @@ hole001 = hole::hole(
   holeBody =   hole::blind(depth = 2, diameter = 1),
   holeType =   hole::countersink(angle = 80deg, diameter = 3),
 )`,
-        { shouldNormalise: true }
-      )
+          { shouldNormalise: true }
+        )
+      })
     })
-  })
+  }
 })

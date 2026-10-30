@@ -62,6 +62,7 @@ import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
   TEST_SETTINGS,
   TEST_SETTINGS_KEY,
+  geometryOnlyForTestTags,
   playwrightPluginSettings,
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
@@ -1039,6 +1040,7 @@ export async function setup(
   userFeatures: readonly Feature[] = [],
   { cloudSyncEnabled = false }: { cloudSyncEnabled?: boolean } = {}
 ) {
+  const localRendererEnabled = geometryOnlyForTestTags(testInfo?.tags)
   const testProjectSettings =
     TEST_SETTINGS.project &&
     typeof TEST_SETTINGS.project === 'object' &&
@@ -1097,6 +1099,14 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...(localRendererEnabled === undefined
+            ? {}
+            : {
+                modeling: {
+                  ...TEST_SETTINGS.modeling,
+                  use_local_renderer: localRendererEnabled,
+                },
+              }),
           plugins: playwrightPluginSettings({
             cloudSyncEnabled,
             zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),
