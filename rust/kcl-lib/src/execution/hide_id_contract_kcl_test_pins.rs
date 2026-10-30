@@ -241,7 +241,7 @@ async fn execute_and_observe_open(
         .graph
         .values()
         .filter_map(|artifact| match artifact {
-            Artifact::Path(path) => Some((path.id, path.plane_id)),
+            Artifact::Path(path) => path.plane_id.map(|plane_id| (path.id, plane_id)),
             _ => None,
         })
         .collect();

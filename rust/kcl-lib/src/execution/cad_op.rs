@@ -107,6 +107,9 @@ pub fn op_from_kcl_value(value: &KclValue) -> OpKclValue {
         KclValue::Solid { value } => OpKclValue::Solid {
             value: Box::new(OpSolid::new(value.artifact_id)),
         },
+        KclValue::Path3d { value } => OpKclValue::Path3d {
+            artifact_id: value.artifact_id,
+        },
         KclValue::Helix { value } => OpKclValue::Helix {
             value: Box::new(OpHelix::new(value.artifact_id)),
         },

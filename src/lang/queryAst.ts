@@ -2058,7 +2058,7 @@ export function retrieveSelectionsFromOpArg(
     opArg.value.type === 'Helix'
   ) {
     artifactIds = [opArg.value.value.artifactId]
-  } else if (opArg.value.type === 'Segment') {
+  } else if (opArg.value.type === 'Segment' || opArg.value.type === 'Path3d') {
     artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'Uuid') {
     artifactIds = [opArg.value.value]
@@ -2069,7 +2069,7 @@ export function retrieveSelectionsFromOpArg(
       if (v.type === 'Solid' || v.type === 'Sketch' || v.type === 'Helix') {
         return [v.value.artifactId]
       }
-      if (v.type === 'Segment') {
+      if (v.type === 'Segment' || v.type === 'Path3d') {
         return [v.artifact_id]
       }
       if (v.type === 'Uuid') {

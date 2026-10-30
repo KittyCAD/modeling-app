@@ -11,6 +11,7 @@ import {
   getSegmentArtifactForEdgeCut,
   getEdgeCutConsumedCodeRef,
   isFaceFromLegacySketch,
+  getPlaneFromArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
@@ -120,6 +121,19 @@ function addMappedRegion(
 }
 
 describe('getMergedSweepBodyArtifact', () => {
+  it('does not assign a sketch plane to a spatial path or its segments', () => {
+    const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+    const path = artifactGraph.get(sourceSegment.pathId)
+    if (path?.type !== 'path') throw new Error('Missing test path')
+    path.subType = 'spatial'
+    delete path.planeId
+
+    expect(getPlaneFromArtifact(path, artifactGraph)).toBeInstanceOf(Error)
+    expect(getPlaneFromArtifact(sourceSegment, artifactGraph)).toBeInstanceOf(
+      Error
+    )
+  })
+
   function createFaceMergeGraph(faceType: 'cap' | 'wall' = 'cap') {
     const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
     const sweeps = ['base', 'first', 'second'].map((suffix) => {

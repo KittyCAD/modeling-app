@@ -93,6 +93,9 @@ pub enum KclValueView {
     Solid {
         value: Box<SolidView>,
     },
+    Path3d {
+        value: JsonValue,
+    },
     Helix {
         value: Box<HelixView>,
     },
