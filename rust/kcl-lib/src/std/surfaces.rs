@@ -493,18 +493,6 @@ pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<Kc
             specifier: edge::parse_edge_refs_to_references(curves, None, exec_state, &args).await?,
         }
     };
-    let result = inner_planar_surface(target, tolerance, exec_state, args).await?;
-    Ok(KclValue::Solid {
-        value: Box::new(result),
-    })
-}
-
-async fn inner_planar_surface(
-    target: PlanarSurfaceTarget,
-    tolerance: Option<TyF64>,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Solid, KclError> {
     let tolerance = LengthUnit(
         tolerance
             .as_ref()
@@ -524,18 +512,20 @@ async fn inner_planar_surface(
         .batch_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, surface_id), cmd)
         .await?;
 
-    after_surface_creation(surface_id.into(), None, exec_state, &args).await
+    let surface = after_surface_creation(surface_id.into(), None, exec_state, &args).await?;
+    Ok(KclValue::Solid {
+        value: Box::new(surface),
+    })
 }
 
 #[cfg(test)]
 mod tests {
-    use kcmc::length_unit::LengthUnit;
-
     use super::*;
+    use crate::execution::MockConfig;
     use crate::execution::parse_execute;
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_returns_one_surface_in_mock_execution() {
+    async fn planar_surface_uses_the_command_id() {
         let result = parse_execute(
             r#"
 @settings(kclVersion = 3.0, experimentalFeatures = allow)
@@ -550,17 +540,22 @@ surface = planarSurface(selected, tolerance = 0.01mm)
         .await
         .unwrap();
 
-        let command = result
+        let (command_id, command) = result
             .root_module_artifact_commands()
             .iter()
             .find_map(|artifact_command| match &artifact_command.command {
-                ModelingCmd::CreatePlanarSurface(command) => Some(command),
+                ModelingCmd::CreatePlanarSurface(command) => Some((artifact_command.cmd_id, command)),
                 _ => None,
             })
             .expect("expected a CreatePlanarSurface command");
 
         assert!(matches!(command.target, PlanarSurfaceTarget::Region { .. }));
         assert_eq!(command.tolerance, LengthUnit(0.01));
+        let KclValue::Solid { value: surface } = result.variable("surface") else {
+            panic!("expected a surface body");
+        };
+        assert_eq!(surface.id, command_id);
+        assert_eq!(surface.artifact_id, command_id.into());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -619,11 +614,6 @@ surface = planarSurface({input})
             );
         }
     }
-}
-
-#[cfg(test)]
-mod body_type_tests {
-    use crate::execution::MockConfig;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_body_type_queries_use_locally_known_type() {
