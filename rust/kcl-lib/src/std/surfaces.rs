@@ -499,26 +499,6 @@ pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<Kc
     })
 }
 
-fn require_single_surface(
-    surface_ids: Vec<uuid::Uuid>,
-    source_range: crate::SourceRange,
-) -> Result<uuid::Uuid, KclError> {
-    match surface_ids.as_slice() {
-        [surface_id] => Ok(*surface_id),
-        [] => Err(KclError::new_semantic(KclErrorDetails::new(
-            "The curves passed to `planarSurface` did not form a closed region.".to_owned(),
-            vec![source_range],
-        ))),
-        _ => Err(KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "The curves passed to `planarSurface` formed {} regions; exactly one region is required.",
-                surface_ids.len()
-            ),
-            vec![source_range],
-        ))),
-    }
-}
-
 async fn inner_planar_surface(
     target: PlanarSurfaceTarget,
     tolerance: Option<TyF64>,
@@ -558,7 +538,7 @@ async fn inner_planar_surface(
                 vec![args.source_range],
             )));
         };
-        require_single_surface(resp.surfaces, args.source_range)?
+        resp.surface
     };
 
     after_surface_creation(surface_id.into(), None, exec_state, &args).await
@@ -655,23 +635,6 @@ surface = planarSurface({input})
                 "{error:?}"
             );
         }
-    }
-
-    #[test]
-    fn planar_surface_requires_exactly_one_engine_surface() {
-        let source_range = crate::SourceRange::default();
-        let surface_id = uuid::Uuid::new_v4();
-        assert_eq!(
-            require_single_surface(vec![surface_id], source_range).unwrap(),
-            surface_id
-        );
-
-        let no_surfaces = require_single_surface(Vec::new(), source_range).unwrap_err();
-        assert!(no_surfaces.message().contains("did not form a closed region"));
-
-        let multiple_surfaces =
-            require_single_surface(vec![uuid::Uuid::new_v4(), uuid::Uuid::new_v4()], source_range).unwrap_err();
-        assert!(multiple_surfaces.message().contains("formed 2 regions"));
     }
 }
 
