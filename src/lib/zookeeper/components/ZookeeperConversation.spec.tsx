@@ -823,14 +823,12 @@ describe('ZookeeperConversation', () => {
         expect(
           screen.getByTestId('ml-response-retry-status')
         ).toHaveTextContent(infoText)
-        expect(
-          screen.queryByTestId('ml-response-info-chat-bubble')
-        ).not.toBeInTheDocument()
       } else {
-        expect(
-          screen.getByTestId('ml-response-info-chat-bubble')
-        ).toHaveTextContent(infoText)
+        expect(screen.queryByText(infoText)).not.toBeInTheDocument()
       }
+      expect(
+        screen.queryByTestId('ml-response-info-chat-bubble')
+      ).not.toBeInTheDocument()
       expect(
         screen.getByTestId('ml-response-chat-bubble-thinking')
       ).toBeInTheDocument()
