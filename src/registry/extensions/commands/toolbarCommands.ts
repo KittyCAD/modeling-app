@@ -12,7 +12,6 @@ import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
-import type { SketchTool } from '@src/machines/modelingSharedTypes'
 import { constraintToolMetadata } from '@src/machines/sketchSolve/constraints/constraintMetadata'
 import {
   type EquipTool,
@@ -29,7 +28,6 @@ import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCo
 import type { StateFrom } from 'xstate'
 
 const TOOLBAR_COMMAND_GROUP_ID = 'toolbar'
-const SKETCH_TOOL_NONE: SketchTool = 'none'
 
 export { TOOLBAR_COMMAND_IDS }
 
@@ -42,15 +40,6 @@ type ToolbarCommandConfig = {
   icon?: Command['icon']
   scopes: Command['scopes']
   onSubmit: Command['onSubmit']
-}
-
-type LegacySketchToolCommand = {
-  id: string
-  displayName: string
-  description: string
-  icon?: Command['icon']
-  tool: SketchTool
-  isActive: (state: ModelingState) => boolean
 }
 
 type SketchSolveToolCommand = {
@@ -126,34 +115,6 @@ export function createToolbarCommands(
 
     kclManager.sendModelingEvent(event)
     return true
-  }
-
-  function createLegacySketchToolCommand({
-    id,
-    displayName,
-    description,
-    icon,
-    tool,
-    isActive,
-  }: LegacySketchToolCommand): Command {
-    return createToolbarCommand({
-      id,
-      displayName,
-      description,
-      icon,
-      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
-      onSubmit: () => {
-        const state = getModelingState()
-        if (!state || state.matches('Sketch no face')) {
-          return
-        }
-
-        return sendModelingEvent({
-          type: 'change tool',
-          data: { tool: isActive(state) ? SKETCH_TOOL_NONE : tool },
-        })
-      },
-    })
   }
 
   function createSketchSolveToolCommand({
@@ -300,18 +261,6 @@ export function createToolbarCommands(
     }
   }
 
-  function cancelLegacySketchTool() {
-    const state = getModelingState()
-    if (!state?.matches('Sketch') || state.matches({ Sketch: 'SketchIdle' })) {
-      return
-    }
-
-    return sendModelingEvent({
-      type: 'change tool',
-      data: { tool: SKETCH_TOOL_NONE },
-    })
-  }
-
   return [
     createToolbarCommand({
       id: TOOLBAR_COMMAND_IDS.modeling.sketch,
@@ -328,69 +277,6 @@ export function createToolbarCommands(
       icon: 'arrowShortLeft',
       scopes: [MODE_SKETCHING_COMMAND_SCOPE, MODE_SKETCH_NO_FACE_COMMAND_SCOPE],
       onSubmit: exitSketch,
-    }),
-    createToolbarCommand({
-      id: TOOLBAR_COMMAND_IDS.sketching.cancelTool,
-      displayName: 'Cancel sketch tool',
-      description: 'Cancel the active sketch tool.',
-      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
-      onSubmit: cancelLegacySketchTool,
-    }),
-    createLegacySketchToolCommand({
-      id: TOOLBAR_COMMAND_IDS.sketching.line,
-      displayName: 'Line',
-      description: 'Start drawing straight lines.',
-      icon: 'line',
-      tool: 'line',
-      isActive: (state) => state.matches({ Sketch: 'Line tool' }),
-    }),
-    createLegacySketchToolCommand({
-      id: TOOLBAR_COMMAND_IDS.sketching.threePointArc,
-      displayName: 'Three-Point Arc',
-      description: 'Draw a circular arc defined by three points.',
-      icon: 'arc',
-      tool: 'arcThreePoint',
-      isActive: (state) => state.matches({ Sketch: 'Arc three point tool' }),
-    }),
-    createLegacySketchToolCommand({
-      id: TOOLBAR_COMMAND_IDS.sketching.tangentialArc,
-      displayName: 'Tangential Arc',
-      description: 'Start drawing an arc tangent to the current segment.',
-      icon: 'arc',
-      tool: 'tangentialArc',
-      isActive: (state) => state.matches({ Sketch: 'Tangential arc to' }),
-    }),
-    createLegacySketchToolCommand({
-      id: TOOLBAR_COMMAND_IDS.sketching.circleCenter,
-      displayName: 'Center Circle',
-      description: 'Start drawing a circle from its center.',
-      icon: 'circle',
-      tool: 'circle',
-      isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
-    }),
-    createLegacySketchToolCommand({
-      id: TOOLBAR_COMMAND_IDS.sketching.circleThreePoints,
-      displayName: '3-Point Circle',
-      description: 'Draw a circle defined by three points.',
-      icon: 'circle',
-      tool: 'circleThreePoint',
-      isActive: (state) => state.matches({ Sketch: 'Circle three point tool' }),
-    }),
-    createLegacySketchToolCommand({
-      id: TOOLBAR_COMMAND_IDS.sketching.cornerRectangle,
-      displayName: 'Corner Rectangle',
-      description: 'Start drawing a rectangle.',
-      icon: 'rectangle',
-      tool: 'rectangle',
-      isActive: (state) => state.matches({ Sketch: 'Rectangle tool' }),
-    }),
-    createLegacySketchToolCommand({
-      id: TOOLBAR_COMMAND_IDS.sketching.centerRectangle,
-      displayName: 'Center Rectangle',
-      description: 'Start drawing a rectangle from its center.',
-      icon: 'rectangle',
-      tool: 'center rectangle',
-      isActive: (state) => state.matches({ Sketch: 'Center Rectangle tool' }),
     }),
     createToolbarCommand({
       id: TOOLBAR_COMMAND_IDS.sketchSolve.exit,
