@@ -121,20 +121,17 @@ export default class RustContext {
   }
 
   async sendAddFile(file: ApiFile) {
-    this.projectRevision += 1
     const context = await this._checkContextInstance()
     return context.add_file(this.projectId, JSON.stringify(file))
   }
 
   async sendUpdateFile(fileId: number, code: string) {
-    this.projectRevision += 1
     if (!this.hasOpenedProject) return
     const context = await this._checkContextInstance()
     return context.update_file(this.projectId, fileId, code)
   }
 
   async sendRemoveFile(fileId: number) {
-    this.projectRevision += 1
     const context = await this._checkContextInstance()
     return context.remove_file(this.projectId, fileId)
   }
