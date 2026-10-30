@@ -344,7 +344,7 @@ describe('Zookeeper session controller', () => {
 
   it('refreshes a cloud mutation once and ignores another project', async () => {
     const h = createHarness({ cloudProjectId: 'remote-one' })
-    const change = { callId: 'call-1', projectId: 'remote-one' }
+    const change = { callId: 'call-1', projectId: 'remote-one', revision: '2' }
     h.actor.emit('ready', { cloudProjectChange: change })
     h.actor.emit('ready', { cloudProjectChange: { ...change } })
     h.actor.emit('ready', {
@@ -357,10 +357,41 @@ describe('Zookeeper session controller', () => {
     await waitFor(() => expect(h.reloadFiles).toHaveBeenCalledOnce())
     expect(h.refreshProject).toHaveBeenCalledExactlyOnceWith(
       'remote-one',
-      expect.any(Function)
+      expect.any(Function),
+      '2'
     )
     expect(h.reloadFiles).toHaveBeenCalledOnce()
     expect(h.readFolders).not.toHaveBeenCalled()
+  })
+
+  it('supersedes an in-flight refresh when a newer mutation arrives', async () => {
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    const gate = deferred<undefined>()
+    h.refreshProject.mockReturnValueOnce(gate.promise)
+    h.actor.emit('ready', {
+      cloudProjectChange: {
+        callId: 'call-1',
+        projectId: 'remote-one',
+        revision: '2',
+      },
+    })
+    await waitFor(() => expect(h.refreshProject).toHaveBeenCalledOnce())
+    const isCurrent = h.refreshProject.mock.calls[0][1]
+    h.actor.emit('ready', {
+      cloudProjectChange: {
+        callId: 'call-2',
+        projectId: 'remote-one',
+        revision: '3',
+      },
+    })
+    expect(isCurrent?.()).toBe(false)
+    gate.resolve(undefined)
+    await waitFor(() => expect(h.reloadFiles).toHaveBeenCalledOnce())
+    expect(h.refreshProject).toHaveBeenLastCalledWith(
+      'remote-one',
+      expect.any(Function),
+      '3'
+    )
   })
 
   it('leaves local projects on the file-edit path', async () => {

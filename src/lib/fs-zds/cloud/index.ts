@@ -463,7 +463,8 @@ export function createCloudFileSystem(
     openProject,
     refreshProject: async (
       id: string,
-      isCurrent: () => boolean = () => true
+      isCurrent: () => boolean = () => true,
+      revision?: string
     ) => {
       // A first open already downloads the current snapshot.
       if (!opened.has(id)) {
@@ -481,7 +482,10 @@ export function createCloudFileSystem(
               )
             )
           const requestConfig = config()
-          const remote = await api.getRemoteProject(requestConfig, id)
+          const remote =
+            revision === undefined
+              ? await api.getRemoteProject(requestConfig, id)
+              : { ...opened.get(id)!.remote, revision }
           const archive = await parseProjectArchive(
             await api.downloadRemoteProjectArchive(requestConfig, id)
           )

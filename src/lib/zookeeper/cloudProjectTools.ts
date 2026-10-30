@@ -3,6 +3,7 @@ import { isArray, isRecord } from '@src/lib/utils'
 export interface CloudProjectToolChange {
   callId: string
   projectId: string
+  revision?: string
 }
 
 const mutations = new Set([
@@ -68,5 +69,9 @@ export function parseCloudProjectToolChange(
   const metadata = projectMetadata(result.output)
   if (typeof metadata?.id !== 'string' || !metadata.id) return
   if (result.project_id !== `cloud:${metadata.id}`) return
-  return { callId: result.call_id, projectId: metadata.id }
+  return {
+    callId: result.call_id,
+    projectId: metadata.id,
+    revision: String(metadata.revision),
+  }
 }

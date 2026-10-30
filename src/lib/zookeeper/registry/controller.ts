@@ -129,6 +129,7 @@ class SessionController implements ZookeeperSessionController {
 
   private cloudRefreshQueue: Promise<void> = Promise.resolve()
   private pendingCloudRefreshes = 0
+  private cloudChangeGeneration = 0
   private lastCloudChange?: CloudProjectToolChange
   private readonly cloudToolCalls = new Set<string>()
 
@@ -622,9 +623,11 @@ class SessionController implements ZookeeperSessionController {
       }
     }
     if (!refresh) return
+    const cloudChangeGeneration = ++this.cloudChangeGeneration
     const generation = this.clearOperationGeneration
     const isCurrent = () =>
       this.active &&
+      this.cloudChangeGeneration === cloudChangeGeneration &&
       this.clearOperationGeneration === generation &&
       this.getProject()?.cloudProjectId === projectId
     this.pendingCloudRefreshes += 1
@@ -632,7 +635,7 @@ class SessionController implements ZookeeperSessionController {
       .catch(reportRejection)
       .then(async () => {
         if (!isCurrent()) return
-        await cloud.refreshProject(projectId, isCurrent)
+        await cloud.refreshProject(projectId, isCurrent, change?.revision)
         if (!isCurrent()) return
         const project = this.getReadyZdsProject()
         if (!project) return

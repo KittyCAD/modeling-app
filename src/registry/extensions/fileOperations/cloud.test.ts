@@ -446,6 +446,22 @@ describe('memory cloud storage', () => {
     expect(storage.projects.value[0].revision).toBe('1')
   })
 
+  it('uses a mutation revision for the refreshed snapshot and its next save without fetching metadata', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    vi.mocked(api.getRemoteProject).mockClear()
+    await storage.refreshProject('one', () => true, 'latest-mutation')
+    expect(api.getRemoteProject).not.toHaveBeenCalled()
+    expect(storage.projects.value[0].revision).toBe('latest-mutation')
+    await storage.operations.writeFile(
+      posix.join(root, 'main.kcl'),
+      'next edit'
+    )
+    expect(api.updateRemoteProject).toHaveBeenCalledWith(
+      expect.objectContaining({ expectedRevision: 'latest-mutation' })
+    )
+  })
+
   it('accepts each incoming revision without rechecking or retrying the download', async () => {
     const { storage } = setup()
     await storage.openProject('one')

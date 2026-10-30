@@ -27,6 +27,7 @@ describe('cloud MCP mutation returns', () => {
     expect(parseCloudProjectToolChange(result(name))).toEqual({
       callId: 'call-1',
       projectId: 'one',
+      revision: '2',
     })
   })
   it('reads the MCP structured and text result envelopes', () => {
