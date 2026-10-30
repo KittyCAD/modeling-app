@@ -131,28 +131,20 @@ describe('resolveArguments', () => {
   })
 
   it.each(['A,B', '["A","B"]'])(
-    'preserves variable creation for transformed input %s',
+    'preserves variable creation for datum input %s',
     async (input) => {
+      const kclExpression = '["A","B"]'
       const arg = {
         inputType: 'kcl',
         required: true,
         allowArrays: true,
         allowStringArrays: true,
-        inputToKclValue: (value) =>
-          value.startsWith('[')
-            ? value
-            : `[${value
-                .split(',')
-                .map((item) => JSON.stringify(item.trim()))
-                .join(', ')}]`,
-        kclValueToInput: (value) =>
-          value
-            .replace(/[\[\]"]/g, '')
-            .split(',')
-            .map((item) => item.trim())
-            .join(', '),
+        inputToKclValue: (value) => {
+          if (value === 'A,B') return kclExpression
+          return value
+        },
       } satisfies CommandKclArgument
-      const calculated = await namedExpression(arg.inputToKclValue(input))
+      const calculated = await namedExpression(kclExpression)
       const draft = updateKclArgument({ datums: input }, 'datums', arg, {
         source: 'calculation',
         value: calculated,
