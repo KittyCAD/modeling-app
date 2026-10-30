@@ -264,6 +264,16 @@ export default defineConfig([
     },
   },
   {
+    files: [
+      'src/**/*.{test,spec}.{ts,tsx}',
+      'packages/**/*.{test,spec}.{ts,tsx}',
+    ],
+    rules: {
+      // Tests deliberately exercise throwing providers and rejected callbacks.
+      'suggest-no-throw/suggest-no-throw': 'off',
+    },
+  },
+  {
     files: ['packages/registry/src/**/*.{ts,tsx}'],
     rules: {
       'suggest-no-throw/suggest-no-throw': 'off',
