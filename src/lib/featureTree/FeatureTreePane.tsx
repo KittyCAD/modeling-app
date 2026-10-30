@@ -29,6 +29,7 @@ import {
   findSameVisibleStdLibOperationAfterSourceChange,
   getOperationKey,
   getOperationTreeNodeKey,
+  groupHistoryOperations,
   isOperationTreeBranch,
   type OperationTreeNode,
 } from '@src/lib/featureTree/featureTreeOperationTree'
@@ -57,10 +58,8 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { FeatureTreeMenu } from '@src/lib/featureTree/FeatureTreeMenu'
 import { FeatureHistoryControls } from '@src/lib/featureTree/FeatureHistoryControls'
-import {
-  getFeatureHistory,
-  type FeatureBlock,
-} from '@src/lib/featureTree/featureHistory'
+import { getFeatureHistory } from '@src/lib/featureTree/featureHistory'
+import { useRollbackTreeSnapshot } from '@src/lib/featureTree/useRollbackTreeSnapshot'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
@@ -278,59 +277,38 @@ export const FeatureTreePaneContents = memo(() => {
   )
   const visibilityOperations = getAllOperations(kclManager.operationsByModule)
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
-  const history = useMemo(
+  const currentHistory = useMemo(
     () => getFeatureHistory(kclManager.ast, operationsCode),
     [kclManager.ast, operationsCode]
   )
+  const rollbackView = useRollbackTreeSnapshot({
+    file: kclManager,
+    code: kclManager.codeSignal.value,
+    history: currentHistory,
+    operations: operationList,
+  })
+  const history = rollbackView.history
+  const showHistoryView =
+    !hasParseErrors &&
+    (rollbackView.active || (!isReadOnlyFeatureTree && !kclManager.isExecuting))
   const historyDisabled =
     isReadOnlyFeatureTree ||
     kclManager.isExecuting ||
     !modelingState.matches('idle')
 
-  const nodesByBlock = new Map<FeatureBlock, OperationTreeNode[]>()
-  const unassignedNodes: OperationTreeNode[] = []
-  // Sketch groups remain intact, while variable streaks can span statements.
-  const historyNodes = operationList.flatMap((node): OperationTreeNode[] =>
-    isArray(node) && node[0]?.type !== 'GroupBegin' ? node : [node]
+  const { nodesByBlock, unassignedNodes } = groupHistoryOperations(
+    history,
+    rollbackView.operations
   )
-  for (const node of historyNodes) {
-    const operation = isArray(node)
-      ? node[0]
-      : isOperationTreeBranch(node)
-        ? node.parent
-        : node
-    const range =
-      operation && 'sourceRange' in operation
-        ? operation.sourceRange
-        : undefined
-    if (
-      range?.[2] === ROOT_MODULE_ID &&
-      range[0] === history.rollbackRange?.[0] &&
-      range[1] === history.rollbackRange?.[1]
-    )
-      continue
-    let low = 0
-    let high = history.blocks.length - 1
-    let match: FeatureBlock | undefined
-    while (range?.[2] === ROOT_MODULE_ID && low <= high) {
-      const middle = Math.floor((low + high) / 2)
-      const block = history.blocks[middle]
-      if (range[0] < block.sourceStart) high = middle - 1
-      else if (range[0] > block.sourceEnd) low = middle + 1
-      else {
-        const isPipelineBinding =
-          operation?.type === 'VariableDeclaration' &&
-          block.stage?.index === 0 &&
-          range[1] <= block.statement.end
-        match =
-          range[1] <= block.sourceEnd || isPipelineBinding ? block : undefined
-        break
-      }
-    }
-    if (match)
-      nodesByBlock.set(match, [...(nodesByBlock.get(match) ?? []), node])
-    else unassignedNodes.push(node)
-  }
+  const freshGroups =
+    rollbackView.active &&
+    !kclManager.isExecuting &&
+    !hasParseErrors &&
+    !kclManager.errors.length &&
+    currentHistory.rollbackIndex === history.rollbackIndex &&
+    kclManager.lastSuccessfulCode === kclManager.codeSignal.value
+      ? groupHistoryOperations(currentHistory, operationList)
+      : undefined
 
   function changeHistory(code: string) {
     // A file switch, editor update or execution during a drag invalidates it.
@@ -338,9 +316,19 @@ export const FeatureTreePaneContents = memo(() => {
     kclManager.updateCodeEditor(code, { shouldExecute: true })
   }
 
+  function changeRollback(code: string, index: number) {
+    if (historyDisabled || kclManager.code !== history.code) return
+    rollbackView.beginRollback(code, index)
+    kclManager.updateCodeEditor(code, { shouldExecute: true })
+  }
+
   // Live execution tracking: expand only the active module branch.
-  const liveActiveModuleId = kclManager.liveActiveModuleId
-  const liveLatestOperationKey = kclManager.liveLatestOperationKey
+  const liveActiveModuleId = rollbackView.active
+    ? null
+    : kclManager.liveActiveModuleId
+  const liveLatestOperationKey = rollbackView.active
+    ? null
+    : kclManager.liveLatestOperationKey
 
   function goToError() {
     layout.openPane(DefaultLayoutPaneID.Code)
@@ -363,7 +351,7 @@ export const FeatureTreePaneContents = memo(() => {
         className="absolute inset-0 p-1 box-border overflow-auto mr-1"
       >
         <>
-          {kclManager.isExecuting && (
+          {kclManager.isExecuting && !rollbackView.active && (
             <div className="text-xs bg-primary/10 text-primary py-2 px-2 rounded flex-none mb-2 border border-primary/20">
               Updating feature tree...
             </div>
@@ -432,7 +420,7 @@ export const FeatureTreePaneContents = memo(() => {
               </div>
             </div>
           )}
-          {isReadOnlyFeatureTree || kclManager.isExecuting ? (
+          {!showHistoryView ? (
             operationList.map((node) => (
               <OperationTreeNodeItem
                 key={getOperationTreeNodeKey(node)}
@@ -451,20 +439,34 @@ export const FeatureTreePaneContents = memo(() => {
             ))
           ) : (
             <FeatureHistoryControls
-              key={kclManager.id}
+              key={`${kclManager.id}:${kclManager.path}`}
               history={history}
               disabled={historyDisabled}
               hasImportedExitBinding={kclManager.variables.exit !== undefined}
               onChange={changeHistory}
-              renderBlock={(block, suppressed) => {
-                const nodes = suppressed ? [] : (nodesByBlock.get(block) ?? [])
+              onRollback={changeRollback}
+              renderBlock={(block, suppressed, index) => {
+                const cachedNodes = nodesByBlock.get(block) ?? []
+                const freshNodes =
+                  !suppressed &&
+                  freshGroups?.nodesByBlock.get(currentHistory.blocks[index])
+                const nodes = rollbackView.active
+                  ? freshNodes || cachedNodes
+                  : suppressed
+                    ? []
+                    : cachedNodes
+                const cached = rollbackView.active && !freshNodes
                 return nodes.length > 0 ? (
-                  nodes.map((node) => (
+                  nodes.map((node, nodeIndex) => (
                     <OperationTreeNodeItem
-                      key={getOperationTreeNodeKey(node)}
+                      key={getOperationTreeNodeKey(
+                        cachedNodes[nodeIndex] ?? node
+                      )}
                       node={node}
-                      code={operationsCode}
-                      isStaleReference={false}
+                      code={
+                        cached ? rollbackView.operationsCode : operationsCode
+                      }
+                      isStaleReference={cached}
                       sketchNoFace={sketchNoFace}
                       systemDeps={systemDeps}
                       modelingActor={modelingActor}
@@ -486,13 +488,12 @@ export const FeatureTreePaneContents = memo(() => {
               }}
             />
           )}
-          {!isReadOnlyFeatureTree &&
-            !kclManager.isExecuting &&
+          {showHistoryView &&
             unassignedNodes.map((node) => (
               <OperationTreeNodeItem
                 key={getOperationTreeNodeKey(node)}
                 node={node}
-                code={operationsCode}
+                code={rollbackView.operationsCode}
                 isStaleReference={false}
                 isModuleOwned
                 liveLatestOperationKey={liveLatestOperationKey}

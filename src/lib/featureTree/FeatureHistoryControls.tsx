@@ -19,13 +19,19 @@ export function FeatureHistoryControls({
   disabled,
   hasImportedExitBinding = false,
   onChange,
+  onRollback,
   renderBlock,
 }: {
   history: FeatureHistory
   disabled: boolean
   hasImportedExitBinding?: boolean
   onChange: (code: string) => void
-  renderBlock: (block: FeatureBlock, suppressed: boolean) => ReactNode
+  onRollback?: (code: string, index: number) => void
+  renderBlock: (
+    block: FeatureBlock,
+    suppressed: boolean,
+    index: number
+  ) => ReactNode
 }) {
   const [drag, setDrag] = useState<Drag | null>(null)
   const [dropIndex, setDropIndex] = useState<number | null>(null)
@@ -71,7 +77,9 @@ export function FeatureHistoryControls({
       toast.error('Rename the exit binding before using the rollback bar.')
       return
     }
-    onChange(setHistoryRollback(history, index))
+    const code = setHistoryRollback(history, index)
+    if (onRollback) onRollback(code, index)
+    else onChange(code)
   }
 
   function boundary(index: number) {
@@ -225,7 +233,7 @@ export function FeatureHistoryControls({
             <div
               className={`min-w-0 flex-1 ${index >= history.rollbackIndex ? 'opacity-40' : ''}`}
             >
-              {renderBlock(block, index >= history.rollbackIndex)}
+              {renderBlock(block, index >= history.rollbackIndex, index)}
             </div>
           </div>
         </Fragment>

@@ -137,35 +137,39 @@ describe('feature history imports and hidden calls', () => {
     }
   )
 
-  it('omits standalone, assigned and pipeline hide calls while preserving their source', () => {
-    const code =
-      '@settings(kclVersion = 3.0)\na = 1\nhide(XY)\nhidden = hide(YZ)\nplanes = [XY]\n  |> hide()\nb = 2\n'
-    const sourceHistory = history(code)
-    expect(sourceHistory.blocks.filter((block) => block.hidden)).toHaveLength(3)
-    const onChange = vi.fn()
-    render(
-      <FeatureHistoryControls
-        history={sourceHistory}
-        disabled={false}
-        onChange={onChange}
-        renderBlock={(block) => <span>{block.label}</span>}
-      />
-    )
-    expect(screen.queryByText('hide(XY)')).not.toBeInTheDocument()
-    expect(screen.queryByText('hidden')).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'Move hide' })
-    ).not.toBeInTheDocument()
-    expect(screen.getAllByRole('button')).toHaveLength(3)
-    expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '3')
-    fireEvent.keyDown(screen.getByRole('slider'), { key: 'ArrowUp' })
-    expect(onChange).toHaveBeenCalledWith(
-      code.replace('b = 2', ROLLBACK_CODE + 'b = 2')
-    )
-    expect(
-      setHistoryRollback(history(setHistoryRollback(sourceHistory, 5)), 6)
-    ).toBe(code)
-  })
+  it.each(['hide', 'region'])(
+    'omits standalone, assigned and pipeline %s calls while preserving their source',
+    (helper) => {
+      const code = `@settings(kclVersion = 3.0)\na = 1\n${helper}(XY)\nhidden = ${helper}(YZ)\nplanes = [XY]\n  |> ${helper}()\nb = 2\n`
+      const sourceHistory = history(code)
+      expect(sourceHistory.blocks.filter((block) => block.hidden)).toHaveLength(
+        3
+      )
+      const onChange = vi.fn()
+      render(
+        <FeatureHistoryControls
+          history={sourceHistory}
+          disabled={false}
+          onChange={onChange}
+          renderBlock={(block) => <span>{block.label}</span>}
+        />
+      )
+      expect(screen.queryByText(`${helper}(XY)`)).not.toBeInTheDocument()
+      expect(screen.queryByText('hidden')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: `Move ${helper}` })
+      ).not.toBeInTheDocument()
+      expect(screen.getAllByRole('button')).toHaveLength(3)
+      expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '3')
+      fireEvent.keyDown(screen.getByRole('slider'), { key: 'ArrowUp' })
+      expect(onChange).toHaveBeenCalledWith(
+        code.replace('b = 2', ROLLBACK_CODE + 'b = 2')
+      )
+      expect(
+        setHistoryRollback(history(setHistoryRollback(sourceHistory, 5)), 6)
+      ).toBe(code)
+    }
+  )
 
   it('keeps a persisted rollback bar visible next to omitted hide calls', () => {
     const code =

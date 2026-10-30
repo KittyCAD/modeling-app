@@ -153,7 +153,7 @@ export function getFeatureHistory(
         text,
         hidden:
           rawExpression?.type === 'CallExpressionKw' &&
-          rawExpression.callee.name.name === 'hide',
+          ['hide', 'region'].includes(rawExpression.callee.name.name),
         sourceStart: expression?.start ?? statement.start,
         sourceEnd: expression?.end ?? statement.end,
         stage: expression

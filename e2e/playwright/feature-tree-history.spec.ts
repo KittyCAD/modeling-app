@@ -39,10 +39,32 @@ test.describe('Feature tree history controls', { tag: '@web' }, () => {
     ).toBeVisible()
     await editor.expectEditor.toContain('b = 2\nc = a + 1')
 
+    const originalTree = await page
+      .getByTestId('feature-tree-history')
+      .elementHandle()
+    const originalHandle = await page
+      .getByRole('button', { name: 'Move a', exact: true })
+      .elementHandle()
     await bar.dragTo(page.getByTestId('feature-tree-boundary-2'))
     await editor.expectEditor.toContain('|> exit() // zds:rollback')
     await scene.settled()
     await expect(bar).toHaveAttribute('aria-valuenow', '2')
+    expect(
+      await page.evaluate(
+        (element) =>
+          element ===
+          document.querySelector('[data-testid="feature-tree-history"]'),
+        originalTree
+      )
+    ).toBe(true)
+    expect(
+      await page.evaluate((element) => element?.isConnected, originalHandle)
+    ).toBe(true)
+    await expect(
+      page
+        .getByTestId('feature-tree-history')
+        .getByRole('button', { name: /^Move / })
+    ).toHaveCount(5)
 
     await page.reload()
     await scene.settled()
