@@ -104,6 +104,18 @@ describe.each([
     expect(diskRemove).not.toHaveBeenCalled()
   })
 
+  it('does not upload identical bytes, including after a remote refresh', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    await fs.refreshProject('one', () => true, 'remote-revision')
+    const file = paths.join(root, 'main.kcl')
+    await fs.writeFile(file, new Uint8Array(await fs.readFile(file)))
+    expect(api.updateRemoteProject).not.toHaveBeenCalled()
+    expect(fs.saves.value.get('one')?.state).toBe('saved')
+    await fs.writeFile(file, encoder.encode('user edit'))
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+  })
+
   it('includes a staged thumbnail in the next file save without another PUT', async () => {
     const { fs } = setup()
     const root = await fs.openProject('one')

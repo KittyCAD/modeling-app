@@ -207,7 +207,6 @@ export function createCloudFileSystem(
           )
           const value = await work(previousState)
           const after = await collect(pathFor(id))
-          if (persist) await commit(id, after, requestConfig)
           const changes: CloudFileChange[] = []
           for (const file of after) {
             const old = before.get(file.relativePath)
@@ -227,8 +226,15 @@ export function createCloudFileSystem(
               path: paths.join(pathFor(id), relativePath),
               eventType: 'unlink',
             })
+          if (
+            persist &&
+            (changes.length > 0 ||
+              pendingThumbnails.has(id) ||
+              previousState?.state === 'failed')
+          )
+            await commit(id, after, requestConfig)
           notify(changes)
-          if (!persist && saves.peek().get(id)?.state === 'saving')
+          if (saves.peek().get(id)?.state === 'saving')
             state(id, previousState ?? { state: 'saved' })
           return value
         } catch (error) {
