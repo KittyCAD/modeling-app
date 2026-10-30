@@ -100,15 +100,18 @@ describe('resolveArguments', () => {
     if ('errors' in oldResult || 'errors' in newResult)
       throw new Error('Unable to calculate test expressions')
 
+    // The user changes radius from 5 to 1.
     const edited = updateKclArgument({ radius: oldResult }, 'radius', arg, {
       source: 'edit',
       value: '1',
     })
+    // The old calculation for 5 arrives late and must not overwrite the edit.
     const afterOldResult = updateKclArgument(edited, 'radius', arg, {
       source: 'calculation',
       value: oldResult,
     })
     expect(afterOldResult.radius).toBe('1')
+    // Accept the calculation for 1, then submit that value.
     const current = updateKclArgument(afterOldResult, 'radius', arg, {
       source: 'calculation',
       value: newResult,
