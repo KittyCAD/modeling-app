@@ -68,7 +68,6 @@ helix001 = helix(
 
 test.describe('Face API selection regressions', { tag: '@web' }, () => {
   test('2.9 fillets a generated Chamfer boundary edge', async ({
-    context,
     page,
     scene,
     modelingDialog,
@@ -78,17 +77,12 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, edgeTreatmentCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
-    if ((await editor.getCurrentCode()).trim() !== edgeTreatmentCode.trim()) {
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', edgeTreatmentCode)
-      )
-    }
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', edgeTreatmentCode)
+    )
     await editor.closePane()
     await scene.moveCameraTo(
       { x: -3.14, y: -11, z: 16.25 },
@@ -114,7 +108,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
   })
 
   test('2.10 fillets an outer Shell rim edge', async ({
-    context,
     page,
     scene,
     modelingDialog,
@@ -124,17 +117,12 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, shellCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
-    if ((await editor.getCurrentCode()).trim() !== shellCode.trim()) {
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', shellCode)
-      )
-    }
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', shellCode)
+    )
     await editor.closePane()
     await scene.moveCameraTo({ x: 48, y: -38, z: 34 }, { x: 15, y: 11, z: 7 })
 
@@ -157,7 +145,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
   })
 
   test('2.12 surface-extrudes an untouched outer CSG edge', async ({
-    context,
     page,
     scene,
     modelingDialog,
@@ -167,19 +154,12 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, csgSurfaceExtrudeCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
-    if (
-      (await editor.getCurrentCode()).trim() !== csgSurfaceExtrudeCode.trim()
-    ) {
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', csgSurfaceExtrudeCode)
-      )
-    }
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', csgSurfaceExtrudeCode)
+    )
     await editor.closePane()
     await scene.moveCameraTo({ x: 48, y: -42, z: 34 }, { x: 13, y: 9, z: 5 })
 
@@ -203,7 +183,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
   })
 
   test('selects a standalone helix from the viewport', async ({
-    context,
     page,
     scene,
     cmdBar,
@@ -212,17 +191,12 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, standaloneHelixCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
-    if ((await editor.getCurrentCode()).trim() !== standaloneHelixCode.trim()) {
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', standaloneHelixCode)
-      )
-    }
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', standaloneHelixCode)
+    )
     await editor.closePane()
     await scene.moveCameraTo({ x: 24, y: -24, z: 18 }, { x: 0, y: 0, z: 10 })
 

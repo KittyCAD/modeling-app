@@ -1083,7 +1083,6 @@ helix001 = helix(
     scene,
     editor,
     toolbar,
-    modelingDialog,
   }) => {
     // Code samples
     const initialCode = `sketch001 = sketch(on = XY) {
@@ -1507,7 +1506,6 @@ extrude001 = extrude(region001, length = -12)`
     scene,
     editor,
     toolbar,
-    modelingDialog,
   }) => {
     // Code samples
     const initialCode = `@settings(defaultLengthUnit = in)
@@ -3760,7 +3758,7 @@ hole001 = hole::hole(
   )
 })
 
-test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
+test.describe('Point-and-click tests', { tag: '@web' }, () => {
   test('Selects objects and annotations from the feature tree for Named View exceptions', async ({
     page,
     homePage,
