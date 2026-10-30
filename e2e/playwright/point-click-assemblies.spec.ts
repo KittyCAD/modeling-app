@@ -236,8 +236,7 @@ test.describe(
         fn: (dir: string) => Promise<void>
       ) => Promise<{ dir: string }>
     ) {
-      const selectedObjects =
-        selectionType === 'scene' ? /^1 (path|other)$/ : '1 other'
+      const selectedObjects = /^1 (path|other)$/
       async function selectBracket() {
         if (selectionType === 'scene') {
           // The bracket is only visible in the lower-right of the default view
