@@ -1,4 +1,4 @@
-import { viteEnv } from '@src/env'
+import env from '@src/env'
 import {
   CloudStorageError,
   withCloudFailureContext,
@@ -57,8 +57,10 @@ function retryAfterDelayMs(value: string | null) {
 }
 
 function getBaseUrl(config: CloudApiConfig) {
-  // Temporary: keep cloud storage on dev while the rest of the API runs locally.
-  return (config.baseUrl || 'https://api.dev.zoo.dev').replace(/\/+$/g, '')
+  return (config.baseUrl || env().VITE_ZOO_API_BASE_URL || '').replace(
+    /\/+$/g,
+    ''
+  )
 }
 
 async function cloudFetchUncategorized(
@@ -73,12 +75,8 @@ async function cloudFetchUncategorized(
   }
 
   const headers = new Headers(init.headers)
-  const token =
-    (baseUrl === 'https://api.dev.zoo.dev' &&
-      viteEnv().VITE_ZOO_DEV_API_TOKEN) ||
-    config.token
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`)
+  if (config.token) {
+    headers.set('Authorization', `Bearer ${config.token}`)
   }
 
   const response = await fetchWithSessionExpiration(`${baseUrl}${targetPath}`, {

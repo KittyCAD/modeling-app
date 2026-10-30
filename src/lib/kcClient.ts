@@ -1,30 +1,18 @@
 import { Client } from '@kittycad/lib'
 import type { ApiError } from '@kittycad/lib'
-import { viteEnv } from '@src/env'
+import env from '@src/env'
 import { isDesktop } from '@src/lib/isDesktop'
 import { notifySessionExpiredFromResponse } from '@src/lib/sessionExpired'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import isomorphicFetch from 'isomorphic-fetch'
 
 export function createKCClient(
   token?: string,
   baseUrlOverride?: string
 ): Client {
-  const baseUrl = baseUrlOverride || withAPIBaseURL('')
+  const baseUrl = baseUrlOverride || env().VITE_ZOO_API_BASE_URL
   const injectedFetch = (async (input: any, init?: any) => {
-    const opts: RequestInit = { ...(init || {}) }
-    // Temporary: SDK project storage/publication requests also use dev.
-    const url = new URL(input)
-    if (/^\/(?:user\/)?projects(?:\/|$)/.test(url.pathname)) {
-      input = new URL(url.pathname + url.search, 'https://api.dev.zoo.dev').href
-      const devToken = viteEnv().VITE_ZOO_DEV_API_TOKEN
-      if (devToken) {
-        const headers = new Headers(opts.headers)
-        headers.set('Authorization', `Bearer ${devToken}`)
-        opts.headers = headers
-      }
-    }
     const impl = typeof fetch !== 'undefined' ? fetch : isomorphicFetch
+    const opts: RequestInit = { ...(init || {}) }
     if (!isDesktop()) {
       opts.credentials = 'include'
     }
