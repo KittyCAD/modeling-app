@@ -40,6 +40,49 @@ describe('attachment preview dialogs', () => {
     expect(trigger).toHaveFocus()
   })
 
+  test('allows text previews exactly at 1 MiB', async () => {
+    const file = new File(['é'.repeat(512 * 1024)], 'reference.txt', {
+      type: 'text/plain',
+    })
+    const read = vi
+      .spyOn(file, 'text')
+      .mockResolvedValue('At the preview limit')
+    render(
+      <ZookeeperAttachment file={file} className="">
+        {file.name}
+      </ZookeeperAttachment>
+    )
+    fireEvent.click(screen.getByRole('button', { name: file.name }))
+    expect(await screen.findByText('At the preview limit')).toBeInTheDocument()
+    expect(read).toHaveBeenCalledOnce()
+  })
+
+  test.each(['local', 'replayed'])(
+    'rejects oversized %s text before reading it',
+    (source) => {
+      const content = `${'é'.repeat(512 * 1024)}a`
+      const file =
+        source === 'local'
+          ? new File([content], 'reference.txt', { type: 'text/plain' })
+          : {
+              name: 'reference.txt',
+              mimetype: 'text/plain',
+              data: Array.from(new TextEncoder().encode(content)),
+            }
+      const read = vi.spyOn(Blob.prototype, 'text')
+      render(
+        <ZookeeperAttachment file={file} className="">
+          {file.name}
+        </ZookeeperAttachment>
+      )
+      fireEvent.click(screen.getByRole('button', { name: file.name }))
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Text files larger than 1 MiB cannot be previewed.'
+      )
+      expect(read).not.toHaveBeenCalled()
+    }
+  )
+
   test('does not offer a text preview for binary attachments', () => {
     const file = new File(['binary'], 'reference.pdf', {
       type: 'application/pdf',

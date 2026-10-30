@@ -8,6 +8,7 @@ import { reportRejection } from '@src/lib/trap'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 type AttachmentFile = File | MlCopilotFile
+const MAX_TEXT_PREVIEW_BYTES = 1024 * 1024
 
 export function ZookeeperAttachment({
   file,
@@ -126,6 +127,10 @@ function AttachmentContents({
   file: AttachmentFile
   isImage: boolean
 }) {
+  const textTooLarge =
+    !isImage &&
+    (file instanceof File ? file.size : file.data.length) >
+      MAX_TEXT_PREVIEW_BYTES
   const [preview, setPreview] = useState<{
     file: AttachmentFile
     content?: string
@@ -133,6 +138,7 @@ function AttachmentContents({
   }>()
 
   useEffect(() => {
+    if (textTooLarge) return
     const blob =
       file instanceof File
         ? file
@@ -156,8 +162,11 @@ function AttachmentContents({
     return () => {
       active = false
     }
-  }, [file, isImage])
+  }, [file, isImage, textTooLarge])
 
+  if (textTooLarge) {
+    return <p role="alert">Text files larger than 1 MiB cannot be previewed.</p>
+  }
   if (preview?.file !== file) return <p role="status">Loading preview…</p>
   if (preview.failed) {
     return <p role="alert">Could not preview this attachment.</p>
