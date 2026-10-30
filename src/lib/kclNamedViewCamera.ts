@@ -5,14 +5,10 @@ import type {
 } from '@rust/kcl-lib/bindings/Artifact'
 
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { NamedViewCameraSnapshot } from '@src/lang/modifyAst/namedViews'
 import { AxisNames } from '@src/lib/constants'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { err } from '@src/lib/trap'
-import {
-  engineStreamZoomToFit,
-  engineViewIsometric,
-  uuidv4,
-} from '@src/lib/utils'
+import { PerspectiveCamera, Vector3 } from 'three'
 
 const ORIENTATION_AXES = {
   front: AxisNames.NEG_Y,
@@ -21,7 +17,7 @@ const ORIENTATION_AXES = {
   right: AxisNames.X,
   top: AxisNames.Z,
   bottom: AxisNames.NEG_Z,
-  isometric: null, // Engine positions this for us
+  isometric: null, // viewIsometric() positions this
 } satisfies Record<ArtifactOrientation, AxisNames | null>
 
 /**
@@ -29,6 +25,97 @@ const ORIENTATION_AXES = {
  * sites use 0.2.
  */
 const FIT_PADDING = 0.1
+
+/** Read the client camera in the form `view::directed` stores in KCL. */
+export async function captureNamedViewCamera(
+  controls: Pick<
+    SceneInfra['camControls'],
+    'camera' | 'isPerspective' | 'getCameraView'
+  >
+): Promise<NamedViewCameraSnapshot | Error> {
+  const { camera, isPerspective } = controls
+  camera.updateMatrixWorld()
+  const position = camera.position.clone()
+  const rotation = camera.quaternion.clone()
+  const zoom = camera.zoom
+  const direction = camera.getWorldDirection(new Vector3()).normalize()
+  const up = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion).normalize()
+
+  const engineView = await controls.getCameraView()
+  if (err(engineView)) return engineView
+  if (
+    camera !== controls.camera ||
+    isPerspective !== controls.isPerspective ||
+    !position.equals(camera.position) ||
+    !rotation.equals(camera.quaternion) ||
+    zoom !== camera.zoom
+  ) {
+    return new Error('The camera changed while capturing the view. Try again.')
+  }
+
+  const target = engineView.pivot_position
+  const distance = engineView.eye_offset
+
+  const numbers = [
+    direction.x,
+    direction.y,
+    direction.z,
+    up.x,
+    up.y,
+    up.z,
+    target.x,
+    target.y,
+    target.z,
+    distance,
+  ]
+  if (!numbers.every(Number.isFinite) || distance <= 0) {
+    return new Error('Could not read the current camera.')
+  }
+
+  return {
+    look: {
+      type: 'directed',
+      direction: {
+        x: direction.x,
+        y: direction.y,
+        z: direction.z,
+        units: null,
+      },
+      up: { x: up.x, y: up.y, z: up.z, units: null },
+    },
+    target: { ...target, units: 'mm' },
+    distance,
+    projection: isPerspective ? 'perspective' : 'orthographic',
+  }
+}
+
+export function onCameraMoved(
+  controls: Pick<
+    SceneInfra['camControls'],
+    'camera' | 'target' | 'cameraChange'
+  >,
+  onMove: () => void
+): () => void {
+  const initialCamera = controls.camera.clone()
+  const initialTarget = controls.target.clone()
+  return controls.cameraChange.add(() => {
+    const camera = controls.camera
+    const projectionChanged =
+      camera.type !== initialCamera.type ||
+      (camera instanceof PerspectiveCamera &&
+        initialCamera instanceof PerspectiveCamera &&
+        camera.fov !== initialCamera.fov)
+    if (
+      projectionChanged ||
+      !camera.position.equals(initialCamera.position) ||
+      !camera.quaternion.equals(initialCamera.quaternion) ||
+      camera.zoom !== initialCamera.zoom ||
+      !controls.target.equals(initialTarget)
+    ) {
+      onMove()
+    }
+  })
+}
 
 function enginePoint(point: ArtifactPoint3d): {
   x: number
@@ -41,11 +128,9 @@ function enginePoint(point: ArtifactPoint3d): {
 export async function applyNamedViewCamera({
   camera,
   sceneInfra,
-  engineCommandManager,
 }: {
   camera: ArtifactCameraView
   sceneInfra: SceneInfra
-  engineCommandManager: ConnectionManager
 }): Promise<void> {
   await applyProjection({ camera, sceneInfra })
 
@@ -56,8 +141,8 @@ export async function applyNamedViewCamera({
     const axis = ORIENTATION_AXES[camera.look.orientation]
 
     if (axis === null) {
-      // `view_isometric` frames the model itself.
-      await engineViewIsometric({ engineCommandManager, padding: FIT_PADDING })
+      // viewIsometric() frames the model itself.
+      await sceneInfra.camControls.viewIsometric({ padding: FIT_PADDING })
 
       if (target === undefined && distance === undefined) {
         return
@@ -84,13 +169,11 @@ export async function applyNamedViewCamera({
       target,
       distance,
       sceneInfra,
-      engineCommandManager,
     })
   }
 
   if (target === undefined || distance === undefined) {
-    await engineStreamZoomToFit({ engineCommandManager, padding: FIT_PADDING })
-    await getCameraSettings(engineCommandManager)
+    await sceneInfra.camControls.zoomToFit({ padding: FIT_PADDING })
   }
 }
 
@@ -110,14 +193,12 @@ async function lookAlongDirection({
   target,
   distance,
   sceneInfra,
-  engineCommandManager,
 }: {
   direction: ArtifactPoint3d
   up: ArtifactPoint3d
   target: { x: number; y: number; z: number } | undefined
   distance: number | undefined
   sceneInfra: SceneInfra
-  engineCommandManager: ConnectionManager
 }): Promise<void> {
   const center = target ?? {
     x: sceneInfra.camControls.target.x,
@@ -130,31 +211,13 @@ async function lookAlongDirection({
       sceneInfra.camControls.target
     )
 
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      center,
-      vantage: {
-        x: center.x - direction.x * eyeDistance,
-        y: center.y - direction.y * eyeDistance,
-        z: center.z - direction.z * eyeDistance,
-      },
-      up: enginePoint(up),
+  await sceneInfra.camControls.lookAt({
+    center,
+    vantage: {
+      x: center.x - direction.x * eyeDistance,
+      y: center.y - direction.y * eyeDistance,
+      z: center.z - direction.z * eyeDistance,
     },
-  })
-  await getCameraSettings(engineCommandManager)
-}
-
-async function getCameraSettings(
-  engineCommandManager: ConnectionManager
-): Promise<void> {
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
+    up: enginePoint(up),
   })
 }

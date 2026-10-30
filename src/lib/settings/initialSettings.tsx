@@ -236,7 +236,7 @@ function createCoreSettings() {
        * needs its own kind of engine session.
        */
       useLocalRenderer: new Setting<boolean>({
-        defaultValue: true,
+        defaultValue: false,
         hideOnLevel: 'project',
         description:
           'Render the 3D scene on this device instead of streaming it as video from the engine. Takes effect after restarting the app.',

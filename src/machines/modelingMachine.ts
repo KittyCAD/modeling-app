@@ -294,7 +294,6 @@ async function enterSketchSolveFromSketchBlockArtifact({
   kclManager,
   rustContext,
   engineCommandManager,
-  defaultUnit,
   projectRef,
   wasmInstance,
   signal,
@@ -303,7 +302,6 @@ async function enterSketchSolveFromSketchBlockArtifact({
   kclManager: KclManager
   rustContext: RustContext
   engineCommandManager: ConnectionManager
-  defaultUnit?: ModelingMachineContext['store']['defaultUnit']
   projectRef?: { current: Project | undefined }
   wasmInstance: ModuleType
   signal?: AbortSignal
@@ -372,12 +370,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
       0,
       0,
       0,
-      sketchBlockArtifact.sketchId,
-      {
-        settings: {
-          modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-        },
-      }
+      sketchBlockArtifact.sketchId
     )
     if (!editSketchResult) {
       const errorMessage = 'Failed to edit sketch'
@@ -2081,16 +2074,9 @@ export const modelingMachine = setup({
         return {}
       },
     }),
-    'Center camera on selection': ({ context: { engineCommandManager } }) => {
-      engineCommandManager
-        .sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_center_to_selection',
-            camera_movement: 'vantage',
-          },
-        })
+    'Center camera on selection': ({ context: { kclManager } }) => {
+      kclManager.sceneInfra.camControls
+        .centerOnSelection()
         .catch(reportRejection)
     },
     'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
@@ -3203,7 +3189,6 @@ export const modelingMachine = setup({
               rustContext: RustContext
               engineCommandManager: ConnectionManager
               wasmInstance: ModuleType
-              defaultUnit?: ModelingMachineContext['store']['defaultUnit']
               projectRef?: { current: Project | undefined }
             }
           | undefined
@@ -3222,7 +3207,6 @@ export const modelingMachine = setup({
           rustContext,
           engineCommandManager,
           wasmInstance,
-          defaultUnit,
           projectRef,
         } = input
         await kclManager.flushPendingEditorExecution()
@@ -3341,6 +3325,8 @@ export const modelingMachine = setup({
           const legacySketchBlock = sketchBlockOnExtrudedFace(
             kclManager.ast,
             {
+              artifact: legacyFaceArtifact,
+              entityRef: { type: 'face', face_id: legacyFaceArtifact.id },
               codeRef: legacyFaceCodeRef,
             },
             faceRequiringSourceMaterialization.sketchPathToNode,
@@ -3349,7 +3335,7 @@ export const modelingMachine = setup({
             wasmInstance
           )
           if (err(legacySketchBlock)) {
-            return reject(new Error('Incompatible face, please try another'))
+            return reject(legacySketchBlock)
           }
 
           await updateModelingState(
@@ -3376,7 +3362,6 @@ export const modelingMachine = setup({
             kclManager,
             rustContext,
             engineCommandManager,
-            defaultUnit,
             projectRef,
             wasmInstance,
             signal,
@@ -3449,12 +3434,7 @@ export const modelingMachine = setup({
             0, // projectId - using 0 as placeholder
             0, // fileId - using 0 as placeholder
             0, // version - using 0 as placeholder
-            sketchArgs,
-            {
-              settings: {
-                modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-              },
-            }
+            sketchArgs
           )
         } catch (error) {
           await rustContext.hackSetProgram(
@@ -3510,7 +3490,6 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               engineCommandManager: ConnectionManager
-              defaultUnit?: ModelingMachineContext['store']['defaultUnit']
               projectRef?: { current: Project | undefined }
             }
           | undefined
@@ -3529,7 +3508,6 @@ export const modelingMachine = setup({
           kclManager,
           rustContext,
           engineCommandManager,
-          defaultUnit,
           projectRef,
         } = input
         const wasmInstance = await kclManager.wasmInstancePromise
@@ -3547,7 +3525,6 @@ export const modelingMachine = setup({
           kclManager,
           rustContext,
           engineCommandManager,
-          defaultUnit,
           projectRef,
           wasmInstance,
           signal,
@@ -7756,7 +7733,6 @@ export const modelingMachine = setup({
             rustContext: context.rustContext,
             engineCommandManager: context.engineCommandManager,
             wasmInstance: context.wasmInstance,
-            defaultUnit: context.store.defaultUnit,
             projectRef: context.projectRef,
           }
         },
@@ -7773,7 +7749,6 @@ export const modelingMachine = setup({
               kclManager: context.kclManager,
               rustContext: context.rustContext,
               engineCommandManager: context.engineCommandManager,
-              defaultUnit: context.store.defaultUnit,
               projectRef: context.projectRef,
             }
           }
@@ -7796,7 +7771,6 @@ export const modelingMachine = setup({
                 kclManager: context.kclManager,
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,
-                defaultUnit: context.store.defaultUnit,
                 projectRef: context.projectRef,
               }
             }

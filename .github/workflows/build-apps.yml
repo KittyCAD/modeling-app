@@ -165,6 +165,10 @@ jobs:
         # electron-builder doesn't have a concept of release vs debug,
         # this is just not doing any codesign or release yml generation, and points to dev infra
         run: npm run tronb:package:dev
+        # The dev build runs out of memory with Node's default ~2GB heap on
+        # the macOS and Windows runners.
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Build the app (release)
         if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true' }}

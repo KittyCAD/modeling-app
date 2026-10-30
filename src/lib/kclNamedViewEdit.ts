@@ -1,4 +1,12 @@
+import type {
+  ArtifactOrientation,
+  ArtifactProjection,
+  ArtifactVisibility,
+} from '@rust/kcl-lib/bindings/Artifact'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Orientation } from '@rust/kcl-lib/bindings/Orientation'
+import type { Projection } from '@rust/kcl-lib/bindings/Projection'
+import type { Visibility } from '@rust/kcl-lib/bindings/Visibility'
 
 import { toUtf16 } from '@src/lang/errors'
 import {
@@ -13,12 +21,34 @@ import type {
   Program,
 } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import { STD_LIB_ENUMS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import { isErr } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
+
+const ORIENTATIONS = {
+  front: 'Front',
+  back: 'Back',
+  left: 'Left',
+  right: 'Right',
+  top: 'Top',
+  bottom: 'Bottom',
+  isometric: 'Isometric',
+} satisfies Record<ArtifactOrientation, Orientation>
+
+const PROJECTIONS = {
+  orthographic: 'Orthographic',
+  perspective: 'Perspective',
+} satisfies Record<ArtifactProjection, Projection>
+
+const BASELINES = {
+  show: { baseline: 'Show', exceptKey: 'hideIds' },
+  hide: { baseline: 'Hide', exceptKey: 'showIds' },
+} satisfies Record<
+  ArtifactVisibility,
+  { baseline: Visibility; exceptKey: 'showIds' | 'hideIds' }
+>
 
 function isOrientedCameraCall(
   camera: Expr | undefined
@@ -56,14 +86,14 @@ export async function prepareNamedViewEditCommand({
   const camera = callResult.node.arguments.find(
     (argument) => argument.label?.name === 'camera'
   )?.arg
-  const look = artifact.camera.look
-  if (!isOrientedCameraCall(camera) || look.type !== 'oriented') {
-    return new Error('Editing custom cameras is not supported yet.')
-  }
+  const orientedCamera = isOrientedCameraCall(camera) ? camera : undefined
   const extractCameraArgument = async (
     name: 'target' | 'distance'
   ): Promise<KclCommandValue | undefined | Error> => {
-    const argument = camera.arguments.find(
+    if (!orientedCamera) {
+      return undefined
+    }
+    const argument = orientedCamera.arguments.find(
       (candidate) => candidate.label?.name === name
     )?.arg
     if (!argument) {
@@ -91,29 +121,35 @@ export async function prepareNamedViewEditCommand({
     return distance
   }
 
-  const exceptIds =
-    artifact.baseline === 'show' ? artifact.hideIds : artifact.showIds
+  const { baseline, exceptKey } = BASELINES[artifact.baseline]
+  const exceptIds = artifact[exceptKey]
   const except =
     exceptIds.length > 0
       ? retrieveSelectionsFromArtifactIds(exceptIds, artifactGraph)
       : undefined
 
-  const orientation = STD_LIB_ENUMS['view::Orientation'].find(
-    (value) => value.toLowerCase() === look.orientation
-  )
-  if (!orientation) {
-    return new Error('Could not determine the named view orientation.')
+  // Other camera expressions stay intact unless the user recaptures or changes mode.
+  const look = artifact.camera.look
+  let orientation: Orientation | undefined
+  switch (look.type) {
+    case 'oriented':
+      orientation = orientedCamera ? ORIENTATIONS[look.orientation] : undefined
+      break
+    case 'directed':
+      orientation = undefined
+      break
   }
   const argDefaultValues: ModelingCommandSchema['Named View'] = {
     name: artifact.name,
+    cameraMode: orientation ? 'oriented' : 'directed',
+    camera: orientedCamera ? undefined : camera,
     orientation,
     target,
     distance,
-    projection:
-      artifact.camera.projection === 'orthographic'
-        ? 'Orthographic'
-        : 'Perspective',
-    baseline: artifact.baseline === 'show' ? 'Show' : 'Hide',
+    projection: orientation
+      ? PROJECTIONS[artifact.camera.projection]
+      : undefined,
+    baseline,
     // Selection reconstruction is best-effort; edits preserve the original except expression.
     except: isErr(except) ? undefined : except,
     nodeToEdit: structuredClone(artifact.codeRef.pathToNode),
