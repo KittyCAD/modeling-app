@@ -5,11 +5,19 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 describe('attachment preview dialogs', () => {
   afterEach(() => vi.restoreAllMocks())
 
-  test('reads the full text only on open and preserves its whitespace', async () => {
+  test.each([
+    ['reference.txt', 'text/plain'],
+    ['README.MD', ''],
+    ['reference.json', 'application/octet-stream'],
+    ['reference', 'application/json'],
+    ['reference', 'application/schema+json'],
+    ['reference', 'application/xml; charset=utf-8'],
+    ['reference', 'application/yaml'],
+    ['reference', 'application/toml'],
+    ['main.kcl', ''],
+  ])('previews %s (%s) lazily', async (name, type) => {
     const content = `First line\n\n  ${'long reference '.repeat(1000)}\nLast line`
-    const file = new File([content], 'reference.txt', {
-      type: 'text/plain',
-    })
+    const file = new File([content], name, { type })
     const read = vi.spyOn(file, 'text')
     render(
       <ZookeeperAttachment file={file} className="">
@@ -30,6 +38,19 @@ describe('attachment preview dialogs', () => {
     )
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(trigger).toHaveFocus()
+  })
+
+  test('does not offer a text preview for binary attachments', () => {
+    const file = new File(['binary'], 'reference.pdf', {
+      type: 'application/pdf',
+    })
+    render(
+      <ZookeeperAttachment file={file} className="">
+        {file.name}
+      </ZookeeperAttachment>
+    )
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    expect(screen.getByText(file.name)).toBeInTheDocument()
   })
 
   test('handles image errors and releases the preview URL on close', () => {

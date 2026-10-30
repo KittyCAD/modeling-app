@@ -3,6 +3,29 @@ export const getEXTNoPeriod = (filePath: string) => {
   return extension
 }
 
+export function isTextFile(filePath: string): boolean {
+  const extension = getEXTNoPeriod(filePath)?.toLowerCase()
+  return (
+    filePath.includes('.') &&
+    [
+      'txt',
+      'md',
+      'markdown',
+      'csv',
+      'tsv',
+      'json',
+      'jsonl',
+      'ndjson',
+      'xml',
+      'yaml',
+      'yml',
+      'toml',
+      'kcl',
+      'log',
+    ].includes(extension ?? '')
+  )
+}
+
 /**
  * These extensions are expected to be included in `import_file_extensions()`.
  * We cannot derive their literal types from it because the generated WASM

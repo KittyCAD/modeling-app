@@ -1,7 +1,8 @@
 import { Dialog } from '@headlessui/react'
 import type { MlCopilotFile } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { isImageMimetype } from '@src/lib/mimeTypes'
+import { isTextFile } from '@src/lib/fileExtensions'
+import { isImageMimetype, isTextMimetype } from '@src/lib/mimeTypes'
 import type { ZookeeperAttachmentFetchState } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { reportRejection } from '@src/lib/trap'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
@@ -33,7 +34,7 @@ export function ZookeeperAttachment({
   const mimetype = file instanceof File ? file.type : file.mimetype
   const isImage = isImageMimetype(mimetype)
   const canPreview =
-    isImage || mimetype.startsWith('text/') || file.name.endsWith('.txt')
+    isImage || isTextMimetype(mimetype) || isTextFile(file.name)
   const needsFetch =
     !(file instanceof File) &&
     file.data.length === 0 &&
