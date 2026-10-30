@@ -74,6 +74,53 @@ function createGroupEnd(): Operation {
 }
 
 describe('buildOperationTree', () => {
+  it.each(['hide', 'region'])(
+    'omits %s calls and their assigned result rows',
+    (helper) => {
+      const hide = createStdLibCallOperation(helper, [10, 20, 0])
+      const assignment = createVariableDeclarationOperation(
+        [10, 20, 0],
+        'hidden'
+      )
+      const visible = createStdLibCallOperation('extrude', [30, 40, 0])
+      expect(
+        buildOperationTree({ map: { 0: [hide, assignment, visible] } }, 0)
+      ).toEqual([visible])
+    }
+  )
+
+  it.each(['hide', 'region'])(
+    'does not reintroduce %s calls while restoring sketch children',
+    (helper) => {
+      const begin = createSketchBlockBegin([0, 50, 0])
+      const hide = createStdLibCallOperation(helper, [10, 20, 0])
+      const assignment = createVariableDeclarationOperation(
+        [10, 20, 0],
+        'hidden'
+      )
+      const line = createStdLibCallOperation('line', [30, 40, 0])
+      const end = createGroupEnd()
+      expect(
+        buildOperationTree(
+          { map: { 0: [begin, hide, assignment, line, end] } },
+          0
+        )
+      ).toEqual([[begin, line, end]])
+    }
+  )
+
+  it.each(['hide', 'region'])(
+    'omits %s calls from imported module branches',
+    (helper) => {
+      const parent = createModuleInstanceOperation(1, [0, 5, 0])
+      const hide = createStdLibCallOperation(helper, [10, 20, 1])
+      const visible = createStdLibCallOperation('extrude', [30, 40, 1])
+      expect(
+        buildOperationTree({ map: { 0: [parent], 1: [hide, visible] } }, 0)
+      ).toEqual([{ parent, children: [visible] }])
+    }
+  )
+
   it('nests imported module operations under the root module instance', () => {
     const operationsByModule: OperationsByModule = {
       map: {

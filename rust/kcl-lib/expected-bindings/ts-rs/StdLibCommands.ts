@@ -1854,7 +1854,7 @@ export default {
     "summary": "Exit the program early.",
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": []
   },

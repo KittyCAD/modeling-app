@@ -1,8 +1,17 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
-import { getOperationsForModule, type OperationsByModule } from '@src/lang/wasm'
+import {
+  getOperationsForModule,
+  ROOT_MODULE_ID,
+  type OperationsByModule,
+} from '@src/lang/wasm'
+import type {
+  FeatureBlock,
+  FeatureHistory,
+} from '@src/lib/featureTree/featureHistory'
 import {
   filterOperations,
+  filterNonFeatureOperations,
   groupNestedOperations,
   groupOperationTypeStreaks,
 } from '@src/lib/operationGrouping'
@@ -17,6 +26,56 @@ export type OperationTreeBranch = {
 }
 
 export type OperationTreeNode = Operation | Operation[] | OperationTreeBranch
+
+export function groupHistoryOperations(
+  history: FeatureHistory,
+  operationList: OperationTreeNode[]
+) {
+  const nodesByBlock = new Map<FeatureBlock, OperationTreeNode[]>()
+  const unassignedNodes: OperationTreeNode[] = []
+  const historyNodes = operationList.flatMap((node): OperationTreeNode[] =>
+    isArray(node) && node[0]?.type !== 'GroupBegin' ? node : [node]
+  )
+  for (const node of historyNodes) {
+    const operation = isArray(node)
+      ? node[0]
+      : isOperationTreeBranch(node)
+        ? node.parent
+        : node
+    const range =
+      operation && 'sourceRange' in operation
+        ? operation.sourceRange
+        : undefined
+    if (
+      range?.[2] === ROOT_MODULE_ID &&
+      range[0] === history.rollbackRange?.[0] &&
+      range[1] === history.rollbackRange?.[1]
+    )
+      continue
+    let low = 0
+    let high = history.blocks.length - 1
+    let match: FeatureBlock | undefined
+    while (range?.[2] === ROOT_MODULE_ID && low <= high) {
+      const middle = Math.floor((low + high) / 2)
+      const block = history.blocks[middle]
+      if (range[0] < block.sourceStart) high = middle - 1
+      else if (range[0] > block.sourceEnd) low = middle + 1
+      else {
+        const isPipelineBinding =
+          operation?.type === 'VariableDeclaration' &&
+          block.stage?.index === 0 &&
+          range[1] <= block.statement.end
+        match =
+          range[1] <= block.sourceEnd || isPipelineBinding ? block : undefined
+        break
+      }
+    }
+    if (match)
+      nodesByBlock.set(match, [...(nodesByBlock.get(match) ?? []), node])
+    else unassignedNodes.push(node)
+  }
+  return { nodesByBlock, unassignedNodes }
+}
 
 export function isOperationTreeBranch(
   node: OperationTreeNode
@@ -134,11 +193,14 @@ function isSameSourceOperation(left: Operation, right: Operation): boolean {
 }
 
 function buildModuleOperationList(operations: Operation[]) {
+  // Nested groups use the original stream, so filter helper calls before both
+  // selecting rows and restoring sketch children.
+  const visibleOperations = filterNonFeatureOperations(operations)
   return groupNestedOperations(
-    groupOperationTypeStreaks(filterOperations(operations), [
+    groupOperationTypeStreaks(filterOperations(visibleOperations), [
       'VariableDeclaration',
     ]),
-    operations,
+    visibleOperations,
     (groupBegin) => groupBegin.group.type === 'SketchBlock'
   )
 }

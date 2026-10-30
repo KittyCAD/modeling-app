@@ -15,5 +15,5 @@
 ///
 /// On the other hand, if you import a function from another module, and that
 /// function calls `exit()`, then calling the function exits the caller.
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn exit() {}

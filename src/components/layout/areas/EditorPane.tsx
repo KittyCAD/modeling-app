@@ -14,6 +14,7 @@ import {
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { CodeExecutionControls } from '@src/components/layout/areas/CodeExecutionControls'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import {
@@ -103,12 +104,15 @@ export const EditorPaneContents = () => {
   }
 
   return (
-    <div className="relative h-full">
-      <div
-        id="code-mirror-override"
-        className="absolute inset-0 pr-1"
-        ref={editorParent}
-      />
+    <div className="relative h-full min-h-0 flex flex-col">
+      <CodeExecutionControls />
+      <div className="relative flex-1 min-h-0">
+        <div
+          id="code-mirror-override"
+          className="absolute inset-0 pr-1"
+          ref={editorParent}
+        />
+      </div>
     </div>
   )
 }

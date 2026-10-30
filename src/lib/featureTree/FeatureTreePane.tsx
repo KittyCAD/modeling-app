@@ -29,6 +29,7 @@ import {
   findSameVisibleStdLibOperationAfterSourceChange,
   getOperationKey,
   getOperationTreeNodeKey,
+  groupHistoryOperations,
   isOperationTreeBranch,
   type OperationTreeNode,
 } from '@src/lib/featureTree/featureTreeOperationTree'
@@ -56,6 +57,9 @@ import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { FeatureTreeMenu } from '@src/lib/featureTree/FeatureTreeMenu'
+import { FeatureHistoryControls } from '@src/lib/featureTree/FeatureHistoryControls'
+import { getFeatureHistory } from '@src/lib/featureTree/featureHistory'
+import { useRollbackTreeSnapshot } from '@src/lib/featureTree/useRollbackTreeSnapshot'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
@@ -273,10 +277,58 @@ export const FeatureTreePaneContents = memo(() => {
   )
   const visibilityOperations = getAllOperations(kclManager.operationsByModule)
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
+  const currentHistory = useMemo(
+    () => getFeatureHistory(kclManager.ast, operationsCode),
+    [kclManager.ast, operationsCode]
+  )
+  const rollbackView = useRollbackTreeSnapshot({
+    file: kclManager,
+    code: kclManager.codeSignal.value,
+    history: currentHistory,
+    operations: operationList,
+  })
+  const history = rollbackView.history
+  const showHistoryView =
+    !hasParseErrors &&
+    (rollbackView.active || (!isReadOnlyFeatureTree && !kclManager.isExecuting))
+  const historyDisabled =
+    isReadOnlyFeatureTree ||
+    kclManager.isExecuting ||
+    !modelingState.matches('idle')
+
+  const { nodesByBlock, unassignedNodes } = groupHistoryOperations(
+    history,
+    rollbackView.operations
+  )
+  const freshGroups =
+    rollbackView.active &&
+    !kclManager.isExecuting &&
+    !hasParseErrors &&
+    !kclManager.errors.length &&
+    currentHistory.rollbackIndex === history.rollbackIndex &&
+    kclManager.lastSuccessfulCode === kclManager.codeSignal.value
+      ? groupHistoryOperations(currentHistory, operationList)
+      : undefined
+
+  function changeHistory(code: string) {
+    // A file switch, editor update or execution during a drag invalidates it.
+    if (historyDisabled || kclManager.code !== history.code) return
+    kclManager.updateCodeEditor(code, { shouldExecute: true })
+  }
+
+  function changeRollback(code: string, index: number) {
+    if (historyDisabled || kclManager.code !== history.code) return
+    rollbackView.beginRollback(code, index)
+    kclManager.updateCodeEditor(code, { shouldExecute: true })
+  }
 
   // Live execution tracking: expand only the active module branch.
-  const liveActiveModuleId = kclManager.liveActiveModuleId
-  const liveLatestOperationKey = kclManager.liveLatestOperationKey
+  const liveActiveModuleId = rollbackView.active
+    ? null
+    : kclManager.liveActiveModuleId
+  const liveLatestOperationKey = rollbackView.active
+    ? null
+    : kclManager.liveLatestOperationKey
 
   function goToError() {
     layout.openPane(DefaultLayoutPaneID.Code)
@@ -296,10 +348,10 @@ export const FeatureTreePaneContents = memo(() => {
     <div className="relative">
       <section
         data-testid="debug-panel"
-        className="absolute inset-0 p-1 box-border overflow-auto mr-1"
+        className="absolute inset-0 p-1 box-border overflow-auto mr-1 flex flex-col"
       >
         <>
-          {kclManager.isExecuting && (
+          {kclManager.isExecuting && !rollbackView.active && (
             <div className="text-xs bg-primary/10 text-primary py-2 px-2 rounded flex-none mb-2 border border-primary/20">
               Updating feature tree...
             </div>
@@ -368,22 +420,91 @@ export const FeatureTreePaneContents = memo(() => {
               </div>
             </div>
           )}
-          {operationList.map((node) => (
-            <OperationTreeNodeItem
-              key={getOperationTreeNodeKey(node)}
-              node={node}
-              code={operationsCode}
-              isStaleReference={isReadOnlyFeatureTree}
-              sketchNoFace={sketchNoFace}
-              systemDeps={systemDeps}
-              modelingActor={modelingActor}
-              engineCommandManager={engineCommandManager}
-              onSelect={selectOperation}
-              visibilityOperations={visibilityOperations}
-              liveActiveModuleId={liveActiveModuleId}
-              liveLatestOperationKey={liveLatestOperationKey}
+          {!showHistoryView ? (
+            operationList.map((node) => (
+              <OperationTreeNodeItem
+                key={getOperationTreeNodeKey(node)}
+                node={node}
+                code={operationsCode}
+                isStaleReference={isReadOnlyFeatureTree}
+                sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={selectOperation}
+                visibilityOperations={visibilityOperations}
+                liveActiveModuleId={liveActiveModuleId}
+                liveLatestOperationKey={liveLatestOperationKey}
+              />
+            ))
+          ) : (
+            <FeatureHistoryControls
+              key={`${kclManager.id}:${kclManager.path}`}
+              history={history}
+              disabled={historyDisabled}
+              hasImportedExitBinding={kclManager.variables.exit !== undefined}
+              onChange={changeHistory}
+              onRollback={changeRollback}
+              renderBlock={(block, suppressed, index) => {
+                const cachedNodes = nodesByBlock.get(block) ?? []
+                const freshNodes =
+                  !suppressed &&
+                  freshGroups?.nodesByBlock.get(currentHistory.blocks[index])
+                const nodes = rollbackView.active
+                  ? freshNodes || cachedNodes
+                  : suppressed
+                    ? []
+                    : cachedNodes
+                const cached = rollbackView.active && !freshNodes
+                return nodes.length > 0 ? (
+                  nodes.map((node, nodeIndex) => (
+                    <OperationTreeNodeItem
+                      key={getOperationTreeNodeKey(
+                        cachedNodes[nodeIndex] ?? node
+                      )}
+                      node={node}
+                      code={
+                        cached ? rollbackView.operationsCode : operationsCode
+                      }
+                      isStaleReference={cached}
+                      sketchNoFace={sketchNoFace}
+                      systemDeps={systemDeps}
+                      modelingActor={modelingActor}
+                      engineCommandManager={engineCommandManager}
+                      onSelect={selectOperation}
+                      visibilityOperations={visibilityOperations}
+                      liveActiveModuleId={liveActiveModuleId}
+                      liveLatestOperationKey={liveLatestOperationKey}
+                    />
+                  ))
+                ) : (
+                  <div
+                    className="px-2 py-1 text-sm truncate"
+                    title={block.label}
+                  >
+                    {block.label}
+                  </div>
+                )
+              }}
             />
-          ))}
+          )}
+          {showHistoryView &&
+            unassignedNodes.map((node) => (
+              <OperationTreeNodeItem
+                key={getOperationTreeNodeKey(node)}
+                node={node}
+                code={rollbackView.operationsCode}
+                isStaleReference={false}
+                isModuleOwned
+                liveLatestOperationKey={liveLatestOperationKey}
+                sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={selectOperation}
+                visibilityOperations={visibilityOperations}
+              />
+            ))}
         </>
       </section>
     </div>

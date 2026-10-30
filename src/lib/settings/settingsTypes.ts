@@ -74,7 +74,9 @@ export type WildcardSetEvent<T extends SettingsPaths = SettingsPaths> = {
 }
 
 export type DynamicBooleanSetEvent = {
-  type: `set.${'modeling' | 'plugins'}.${string}`
+  type:
+    | `set.${'modeling' | 'plugins'}.${string}`
+    | 'set.textEditor.automaticallyRender'
   data: {
     level: SettingsLevel
     value: boolean
