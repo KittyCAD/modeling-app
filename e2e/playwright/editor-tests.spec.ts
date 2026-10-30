@@ -1090,7 +1090,6 @@ sketch001 = startSketchOn(XZ)
     )
 
     // Now hit undo
-    await page.locator('.cm-content[data-language="kcl"]').focus()
     await page.keyboard.press('ControlOrMeta+Z')
 
     await page.waitForTimeout(100)
