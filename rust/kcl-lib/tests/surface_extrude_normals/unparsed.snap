@@ -1,0 +1,46 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing surface_extrude_normals.kcl
+---
+bladeLoopRadius = 10
+bladeExitRadius = 10
+bladeTailLength = 80
+bladeBladeColor = "#ef5b2a"
+bladeBladeWidth = 100
+
+bladeSketch = sketch(on = XZ) {
+  arc1 = arc(start = [var 10mm, var 0mm], end = [var 6.43mm, var -7.66mm], center = [var 0mm, var 0mm])
+  coincident([arc1.center, ORIGIN])
+  arc2 = arc(start = [var 10mm, var 0mm], end = [var 20mm, var -10mm], center = [var 20mm, var 0mm])
+  coincident([arc2.start, arc1.start])
+  line1 = line(start = [var 20mm, var -10mm], end = [var 100mm, var -10mm])
+  coincident([line1.start, arc2.end])
+  horizontal(line1)
+  tangent([line1, arc2])
+  line2 = line(start = [var 6.43mm, var -7.66mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line2.start, arc1.end])
+  coincident([line2.end, arc1.center])
+  line3 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm], construction = true)
+  coincident([line3.start, line2.end])
+  coincident([line3.end, arc2.start])
+  line4 = line(start = [var 10mm, var 0mm], end = [var 20mm, var 0mm], construction = true)
+  coincident([line4.start, line3.end])
+  coincident([line4.end, arc2.center])
+  horizontal(line4)
+  horizontal(line3)
+  radius(arc2) == bladeExitRadius
+  radius(arc1) == bladeExitRadius
+  angle([line3, line2]) == 130
+  distance([line1.start, line1.end]) == bladeTailLength
+}
+
+bladeBody = extrude(
+  [
+    bladeSketch.arc1,
+    bladeSketch.arc2,
+    bladeSketch.line1
+  ],
+  length = bladeBladeWidth,
+  symmetric = true,
+  bodyType = SURFACE,
+)
