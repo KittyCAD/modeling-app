@@ -658,7 +658,7 @@ description: Operations executed surface_extrude_edge_specifier_direction.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 6.7,
+            "value": 2.0,
             "ty": {
               "type": "Default",
               "value": {
@@ -688,6 +688,32 @@ description: Operations executed surface_extrude_edge_specifier_direction.kcl
           },
           {
             "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "hide",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },

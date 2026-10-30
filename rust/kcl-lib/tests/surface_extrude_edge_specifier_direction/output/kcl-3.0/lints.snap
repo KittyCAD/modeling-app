@@ -14,7 +14,7 @@ description: Lints surface_extrude_edge_specifier_direction.kcl
     "description": "extrude uses target with deprecated edge stdlib; prefer edge specifier { sideFaces = [...] }",
     "pos": [
       689,
-      847,
+      845,
       0
     ],
     "overridden": false,
