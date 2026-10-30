@@ -618,7 +618,7 @@ struct SketchArgsState {
 struct SketchBodyState {
     node: Arc<Node<SketchBlock>>,
     sketch_id: ObjectId,
-    sketch_surface: SketchSurface,
+    sketch_surface: Option<SketchSurface>,
     sketch_block_artifact_id: ArtifactId,
     saved_sketch_block: Option<SketchBlockState>,
     saved_sketch_mode: bool,
@@ -2573,7 +2573,7 @@ async fn sketch_args_finish(
 async fn sketch_block_body_setup(
     node: Arc<Node<SketchBlock>>,
     sketch_id: ObjectId,
-    sketch_surface: SketchSurface,
+    sketch_surface: Option<SketchSurface>,
     konts: &mut Vec<Kont>,
     exec_state: &mut ExecState,
     ctx: &ExecutorContext,
@@ -2586,6 +2586,7 @@ async fn sketch_block_body_setup(
 
     // Track that we're executing a sketch block.
     let initial_sketch_block_state = SketchBlockState {
+        spatial: node.spatial.then(Default::default),
         sketch_id: Some(sketch_id),
         ..Default::default()
     };

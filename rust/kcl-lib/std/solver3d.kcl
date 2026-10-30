@@ -1,0 +1,76 @@
+/// World-space sketch geometry and constraints, available inside sketch3d blocks.
+@no_std
+@settings(defaultLengthUnit = mm)
+
+export ORIGIN = [0mm, 0mm, 0mm]
+export CCW = "ccw"
+export CW = "cw"
+
+/// Create a point with three world coordinates.
+@(impl = std_rust_constrainable)
+export fn point(at: any): any {}
+/// Create a line between two world points.
+@(impl = std_rust_constrainable)
+export fn line(start: any, end: any, construction?: bool): any {}
+/// Create an arc in the plane defined by its center and normal.
+@(impl = std_rust_constrainable)
+export fn arc(start: any, end: any, center: any, normal: [number; 3], direction?: string, construction?: bool): any {}
+/// Create a circle in the plane defined by its center and normal.
+@(impl = std_rust_constrainable)
+export fn circle(start: any, center: any, normal: [number; 3], construction?: bool): any {}
+
+/// Make world points coincide.
+@(impl = std_rust_constrainable)
+export fn coincident(@objects: any) {}
+export fixed = coincident
+/// Constrain a line and circle, or two circles, to share a tangent.
+@(impl = std_rust_constrainable)
+export fn tangent(@objects: any) {}
+/// Constrain Euclidean distance with == and a length.
+@(impl = std_rust_constrainable)
+export fn distance(@objects: any) {}
+/// Constrain signed X distance with == and a length.
+@(impl = std_rust_constrainable)
+export fn horizontalDistance(@objects: any) {}
+/// Constrain signed Y distance with == and a length.
+@(impl = std_rust_constrainable)
+export fn verticalDistance(@objects: any) {}
+/// Constrain signed Z distance with == and a length.
+@(impl = std_rust_constrainable)
+export fn depthDistance(@objects: any) {}
+/// Constrain radius with == and a positive length.
+@(impl = std_rust_constrainable)
+export fn radius(@objects: any) {}
+/// Constrain diameter with == and a positive length.
+@(impl = std_rust_constrainable)
+export fn diameter(@objects: any) {}
+/// Constrain two or more line lengths.
+@(impl = std_rust_constrainable)
+export fn equalLength(@objects: any) {}
+/// Constrain two or more circular radii.
+@(impl = std_rust_constrainable)
+export fn equalRadius(@objects: any) {}
+/// Constrain lines to be parallel in space.
+@(impl = std_rust_constrainable)
+export fn parallel(@objects: any) {}
+/// Constrain lines to be perpendicular in space.
+@(impl = std_rust_constrainable)
+export fn perpendicular(@objects: any) {}
+/// Constrain the unsigned angle between spatial lines with == and an angle.
+@(impl = std_rust_constrainable)
+export fn angle(@objects: any) {}
+/// Align geometry with the world X axis.
+@(impl = std_rust_constrainable)
+export fn horizontal(@objects: any) {}
+/// Align geometry with the world Y axis.
+@(impl = std_rust_constrainable)
+export fn vertical(@objects: any) {}
+/// Align geometry with the world Z axis.
+@(impl = std_rust_constrainable)
+export fn depth(@objects: any) {}
+/// Place a point at a line or circular arc's midpoint.
+@(impl = std_rust_constrainable)
+export fn midpoint(@objects: any, point: any) {}
+/// Make two points symmetric about a spatial line.
+@(impl = std_rust_constrainable)
+export fn symmetric(@objects: any, axis: any) {}

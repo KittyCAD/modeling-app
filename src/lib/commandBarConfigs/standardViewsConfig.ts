@@ -4,6 +4,7 @@ import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import { engineStreamZoomToFit } from '@src/lib/utils'
 import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
+import { fitSketch3dView } from '@src/clientSideScene/sketch3dView'
 
 export function createStandardViewsCommands(kclManager: KclManager) {
   const { engineCommandManager, sceneInfra } = kclManager
@@ -104,6 +105,21 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
+      const spatial = kclManager.execState.spatialSketches
+      if (
+        spatial?.length &&
+        [...kclManager.artifactGraph.values()].every(
+          (artifact) =>
+            artifact.type === 'sketchBlock' || artifact.type === 'plane'
+        ) &&
+        fitSketch3dView(
+          spatial.flatMap((o) =>
+            o.kind.type === 'Sketch3d' ? o.kind.segments : []
+          ),
+          sceneInfra.camControls
+        )
+      )
+        return
       engineStreamZoomToFit({ engineCommandManager, padding: 0.1 }).catch(
         reportRejection
       )

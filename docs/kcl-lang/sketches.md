@@ -119,3 +119,72 @@ An [arc](/docs/kcl-std/functions/std-solver-arc) sweeps counterclockwise from
 its start point to its end point by default. If it takes the long or opposite
 path, set `direction = CW`. Changing the direction is clearer than swapping
 endpoints and then repairing every dependent constraint.
+
+## Experimental 3D sketch blocks
+
+Use `sketch3d() { ... }` to define geometry in world coordinates. The block
+has no `on` plane. Points have three length coordinates, and lines, points,
+arcs, and circles are independent entities connected with constraints.
+
+```kcl
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
+
+spatial = sketch3d() {
+  edge = line(start = [0mm, 0mm, 0mm], end = [var 5mm, var 0mm, var 7mm])
+  distance([edge.start, edge.end]) == 10mm
+  horizontalDistance([edge.start, edge.end]) == 6mm
+  verticalDistance([edge.start, edge.end]) == 0mm
+
+  bend = arc(
+    start = [var 10mm, 0mm, 20mm],
+    end = [0mm, var 10mm, 20mm],
+    center = [0mm, 0mm, 20mm],
+    normal = [0, 0, 1],
+  )
+  radius(bend) == 10mm
+
+  ring = circle(
+    start = [0mm, 20mm, var 5mm],
+    center = [0mm, 20mm, 0mm],
+    normal = [1, 0, 0],
+    construction = true,
+  )
+  diameter(ring) == 10mm
+  marker = point(at = [var 2mm, var 3mm, var 4mm])
+  fixed([marker, [2mm, 3mm, 4mm]])
+}
+```
+
+Literal coordinates are fixed. `var` coordinates are initial guesses, and
+dimensions use `==` just as in a 2D sketch block. A distance includes all
+three coordinates. `horizontalDistance`, `verticalDistance`, and
+`depthDistance` measure signed world X, Y, and Z offsets, respectively.
+`horizontal`, `vertical`, and `depth` align lines with those world axes.
+
+Each circular entity specifies its own fixed, nonzero `normal`, which need
+not be axis aligned. The normal determines its plane and counterclockwise
+direction. An arc may specify `direction = CW`. Its endpoints stay the same
+distance from its center. Tangency supports line/circular and circular/circular
+pairs. Angles between spatial lines are unsigned, between 0 and 180 degrees.
+Symmetry about a spatial line rotates paired points 180 degrees around it.
+
+The block also supports point coincidence, point-on-line/circle coincidence,
+parallel and perpendicular lines, equal lengths, equal radii, line and arc midpoints,
+and symmetry. `ORIGIN` means `[0mm, 0mm, 0mm]` inside a 3D block.
+Conflicting constraints produce an error; remove the constraint or undo the edit.
+
+In the app, open the dropdown beside **Start Sketch** and choose **3D Sketch**,
+then create or select a block. Loaded spatial sketches render without entering
+sketch mode and are framed automatically. Use **Fit sketch** to frame the selected
+block again. Add geometry
+with coordinate fields, or choose **Draw in view** and click points on an XY,
+XZ, or YZ working plane at the selected offset. Orbit to view the result from
+another direction. Arcs use center, start, and end clicks, in that order.
+Select geometry or handles in the view or panel, then apply a constraint or
+dimension. Coordinate edits preserve fixed versus variable literal coordinates;
+edit parameter expressions in the code editor. **Finish sketch** returns to
+the modeling toolbar. Changes participate in editor undo and redo.
+
+This experimental implementation renders spatial sketches in the client
+viewport. It does not yet create sketch regions or profiles for solid
+operations. The existing 2D sketch workflow remains available for those operations.

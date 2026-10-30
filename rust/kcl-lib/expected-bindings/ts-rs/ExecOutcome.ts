@@ -2,6 +2,7 @@
 import type { ArtifactGraph } from "./Artifact";
 import type { CompilationIssue } from "./CompilationIssue";
 import type { DefaultPlanes } from "./DefaultPlanes";
+import type { ApiObject } from "./FrontendApi";
 import type { KclValueView } from "./KclValueView";
 import type { ModuleId } from "./ModuleId";
 import type { ModulePath } from "./ModulePath";
@@ -25,6 +26,10 @@ operations: OperationsByModule,
  * Output artifact graph.
  */
 artifactGraph: ArtifactGraph, 
+/**
+ * World-space sketch overlays, including their source references for editing.
+ */
+spatialSketches?: Array<ApiObject>, 
 /**
  * Execution-backed metadata used by Z0006 and future auto-refactors.
  */

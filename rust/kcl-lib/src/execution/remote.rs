@@ -347,6 +347,12 @@ impl UploadedProject {
                 map: response.operations,
             },
             artifact_graph: response.artifact_graph,
+            spatial_sketches: response
+                .scene_objects
+                .iter()
+                .filter(|object| matches!(object.kind, kcl_api::ObjectKind::Sketch3d(_)))
+                .cloned()
+                .collect(),
             scene_objects: response.scene_objects,
             source_range_to_object: Default::default(),
             var_solutions: Default::default(),

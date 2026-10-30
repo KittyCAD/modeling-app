@@ -522,6 +522,7 @@ impl std::fmt::Display for ConsumedSolidOperation {
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SketchBlockState {
+    pub spatial: Option<crate::execution::sketch3d::SpatialState>,
     pub sketch_vars: Vec<KclValue>,
     pub sketch_id: Option<ObjectId>,
     pub sketch_constraints: Vec<ObjectId>,
@@ -802,6 +803,14 @@ impl ExecState {
             engine_scene_generation: ctx.cache.engine_scene_generation().await,
             operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
+            spatial_sketches: self
+                .global
+                .root_module_artifacts
+                .scene_objects
+                .iter()
+                .filter(|obj| matches!(obj.kind, kcl_api::ObjectKind::Sketch3d(_)))
+                .cloned()
+                .collect(),
             scene_objects: self.global.root_module_artifacts.scene_objects,
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             var_solutions: self.global.root_module_artifacts.var_solutions,

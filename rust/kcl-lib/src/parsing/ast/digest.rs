@@ -644,6 +644,9 @@ impl Node<ElseIf> {
 
 impl Node<SketchBlock> {
     compute_digest!(|slf, hasher| {
+        if slf.spatial {
+            hasher.update(b"sketch3d");
+        }
         for argument in &mut slf.arguments {
             if let Some(l) = &mut argument.label {
                 hasher.update(l.compute_digest());

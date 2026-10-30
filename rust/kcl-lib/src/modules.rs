@@ -90,6 +90,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "runtime" => Some(include_str!("../std/runtime.kcl")),
         "sketch" => Some(include_str!("../std/sketch.kcl")),
         "solver" => Some(include_str!("../std/solver.kcl")),
+        "solver3d" => Some(include_str!("../std/solver3d.kcl")),
         "turns" => Some(include_str!("../std/turns.kcl")),
         "types" => Some(include_str!("../std/types.kcl")),
         "solid" => Some(include_str!("../std/solid.kcl")),
@@ -208,7 +209,7 @@ impl ModulePathExt for ModulePath {
     /// Returns true if this is a path to the solver module that should only be
     /// accessible from sketch blocks. This is how we create a kind of DSL.
     fn is_solver_module(&self) -> bool {
-        matches!(self, ModulePath::Std { value } if value == "solver")
+        matches!(self, ModulePath::Std { value } if matches!(value.as_str(), "solver" | "solver3d"))
     }
 
     fn expect_path(&self) -> &TypedPath {

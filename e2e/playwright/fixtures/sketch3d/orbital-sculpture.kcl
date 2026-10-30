@@ -1,0 +1,84 @@
+// Orbital sculpture: a miniature armillary sphere on a tripod.
+// Requires the sketch3d prototype in modeling-app PR #14769.
+// Open 3D sketch mode, select observatory, and orbit around the rings.
+// This is a constrained wire sculpture, not a solid model.
+@settings(kclVersion = 3.0, defaultLengthUnit = mm, experimentalFeatures = allow)
+
+observatory = sketch3d() {
+  // A vertical mast. The guesses deliberately start slightly off-axis.
+  mast = line(
+    start = [0mm, 0mm, 0mm],
+    end = [var 1mm, var -1mm, var 65mm],
+    construction = true,
+  )
+  depth(mast)
+  distance([mast.start, mast.end]) == 72mm
+
+  // A horizontal equator. Change this diameter to resize the outer ring.
+  equator = circle(
+    center = [0mm, 0mm, 44mm],
+    start = [var 28mm, 0mm, 44mm],
+    normal = [0, 0, 1],
+  )
+  diameter(equator) == 60mm
+
+  // A second ring stands in the YZ plane.
+  meridian = circle(
+    center = [0mm, 0mm, 44mm],
+    start = [0mm, var 25mm, 44mm],
+    normal = [1, 0, 0],
+  )
+  radius(meridian) == 26mm
+
+  // The third ring lives in an oblique plane, not XY, XZ, or YZ.
+  // Its normal and plane constraint make the radial X and Y oppose each other.
+  tiltedOrbit = circle(
+    center = [0mm, 0mm, 44mm],
+    start = [var 13mm, var -12mm, 44mm],
+    normal = [1, 1, 1],
+  )
+  radius(tiltedOrbit) == 20mm
+
+  // Find the diametrically opposite equator anchor through spatial symmetry.
+  westAnchor = point(at = [var -27mm, var 1mm, var 43mm])
+  symmetric([equator.start, westAnchor], axis = mast)
+
+  // A clockwise semicircle in the XZ plane forms the overhead handle.
+  // Sharing the equator radius keeps its anchors on the outer ring.
+  handle = arc(
+    center = [0mm, 0mm, 44mm],
+    start = westAnchor.at,
+    end = equator.start,
+    normal = [0, -1, 0],
+    direction = CW,
+  )
+  crown = point(at = [var 0mm, var 0mm, var 72mm])
+  midpoint(handle, point = crown)
+
+  // These stays inherit solved coordinates rather than copying the guesses.
+  eastStay = line(start = mast.end, end = equator.start)
+  westStay = line(start = mast.end, end = westAnchor.at)
+  northStay = line(start = mast.end, end = meridian.start)
+  orbitStay = line(start = mast.end, end = tiltedOrbit.start)
+
+  // A small suspended core shares the same center as all three large rings.
+  core = circle(
+    center = [0mm, 0mm, 44mm],
+    start = [var 7mm, 0mm, 44mm],
+    normal = [0, 1, 0],
+  )
+  diameter(core) == 12mm
+  drop = line(start = crown.at, end = core.start)
+
+  // The tripod uses three genuinely spatial legs and a triangular ground frame.
+  footEast = point(at = [var 18mm, var 1mm, var 1mm])
+  fixed([footEast, [22mm, 0mm, 0mm]])
+  footNorthWest = point(at = [-11mm, 19mm, 0mm])
+  footSouthWest = point(at = [-11mm, -19mm, 0mm])
+  legEast = line(start = footEast.at, end = [0mm, 0mm, 22mm])
+  legNorthWest = line(start = footNorthWest.at, end = legEast.end)
+  legSouthWest = line(start = footSouthWest.at, end = legEast.end)
+  groundA = line(start = footEast.at, end = footNorthWest.at)
+  groundB = line(start = footNorthWest.at, end = footSouthWest.at)
+  groundC = line(start = footSouthWest.at, end = footEast.at)
+}

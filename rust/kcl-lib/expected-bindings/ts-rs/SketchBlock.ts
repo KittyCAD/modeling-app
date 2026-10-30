@@ -4,4 +4,8 @@ import type { LabeledArg } from "./LabeledArg";
 import type { Node } from "./Node";
 import type { NonCodeMeta } from "./NonCodeMeta";
 
-export type SketchBlock = { "type": "SketchBlock", arguments: Array<LabeledArg>, body: Node<Block>, non_code_meta?: NonCodeMeta, digest?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number], };
+export type SketchBlock = { "type": "SketchBlock", 
+/**
+ * A world-space sketch has no supporting plane.
+ */
+spatial?: boolean, arguments: Array<LabeledArg>, body: Node<Block>, non_code_meta?: NonCodeMeta, digest?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number], };

@@ -24,6 +24,7 @@ import {
 } from '@src/lib/constants'
 import type { HotkeySequence } from '@src/lib/hotkeys'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
+import { sketch3dEditRequest } from '@src/lib/sketch3dMode'
 import { getSelectedDefaultPlane } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -637,97 +638,122 @@ export function buildToolbarConfig(
         ),
       items: [
         {
-          id: 'sketch',
-          command: TOOLBAR_COMMAND_IDS.modeling.sketch,
-          onClick: (props) => {
-            const {
-              modelingSend,
-              modelingState,
-              sketchPathId,
-              editorHasFocus,
-            } = props
-            const isSketchBlock = isSketchBlockSelected(
-              modelingState.context.selectionRanges,
-              modelingState.context.kclManager.artifactGraph
-            )
-            const selectedSketchTarget =
-              getSelectedSketchTarget(modelingState.context.selectionRanges)
-                ?.id ?? null
-
-            if (isLegacySketchEditRequest(props)) {
-              return
-            }
-
-            // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
-            if ((editorHasFocus && sketchPathId) || isSketchBlock) {
-              modelingSend({ type: 'Enter sketch' })
-            } else if (selectedSketchTarget) {
-              modelingSend({
-                type: 'Enter sketch',
-                data: {
-                  forceNewSketch: true,
-                  keepDefaultPlaneVisibility: true,
-                },
-              })
-              void selectSketchPlane(
-                selectedSketchTarget,
-                modelingState.context.kclManager
-              )
-            } else {
-              // No sketch context - start new sketch
-              modelingSend({
-                type: 'Enter sketch',
-                data: { forceNewSketch: true },
-              })
-            }
-          },
-          icon: 'sketch',
-          iconColor: ({ modelingState }) =>
-            getSelectedSketchIconColor(modelingState.context.selectionRanges),
-          status: 'available',
-          disabled: (_state, _wasmInstance, props) =>
-            Boolean(props && isLegacySketchEditRequest(props)),
-          disabledReason: (_state, props) =>
-            props && isLegacySketchEditRequest(props)
-              ? LEGACY_SKETCH_MODE_REMOVED_MESSAGE
-              : undefined,
-          title: ({ editorHasFocus, sketchPathId, modelingState }) => {
-            const isSketchBlock = isSketchBlockSelected(
-              modelingState.context.selectionRanges,
-              modelingState.context.kclManager.artifactGraph
-            )
-
-            if ((editorHasFocus && sketchPathId) || isSketchBlock) {
-              return 'Edit Sketch'
-            }
-
-            return 'Start Sketch'
-          },
-          tooltipTitle: ({ editorHasFocus, sketchPathId, modelingState }) => {
-            const isSketchBlock = isSketchBlockSelected(
-              modelingState.context.selectionRanges,
-              modelingState.context.kclManager.artifactGraph
-            )
-
-            if ((editorHasFocus && sketchPathId) || isSketchBlock) {
-              return 'Edit Sketch'
-            }
-
-            const selectedSketchTarget = getSelectedSketchTarget(
-              modelingState.context.selectionRanges
-            )
-            if (selectedSketchTarget) {
-              return selectedSketchTarget.title
-            }
-
-            return 'Start Sketch'
-          },
-          showTitle: true,
-          description: 'Start drawing a 2D sketch.',
-          links: [
+          id: 'sketch-modes',
+          array: [
             {
-              label: 'KCL docs',
-              url: withSiteBaseURL('/docs/kcl-lang/sketches'),
+              id: 'sketch',
+              command: TOOLBAR_COMMAND_IDS.modeling.sketch,
+              onClick: (props) => {
+                const {
+                  modelingSend,
+                  modelingState,
+                  sketchPathId,
+                  editorHasFocus,
+                } = props
+                const isSketchBlock = isSketchBlockSelected(
+                  modelingState.context.selectionRanges,
+                  modelingState.context.kclManager.artifactGraph
+                )
+                const selectedSketchTarget =
+                  getSelectedSketchTarget(modelingState.context.selectionRanges)
+                    ?.id ?? null
+
+                if (isLegacySketchEditRequest(props)) {
+                  return
+                }
+
+                // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
+                if ((editorHasFocus && sketchPathId) || isSketchBlock) {
+                  modelingSend({ type: 'Enter sketch' })
+                } else if (selectedSketchTarget) {
+                  modelingSend({
+                    type: 'Enter sketch',
+                    data: {
+                      forceNewSketch: true,
+                      keepDefaultPlaneVisibility: true,
+                    },
+                  })
+                  void selectSketchPlane(
+                    selectedSketchTarget,
+                    modelingState.context.kclManager
+                  )
+                } else {
+                  // No sketch context - start new sketch
+                  modelingSend({
+                    type: 'Enter sketch',
+                    data: { forceNewSketch: true },
+                  })
+                }
+              },
+              icon: 'sketch',
+              iconColor: ({ modelingState }) =>
+                getSelectedSketchIconColor(
+                  modelingState.context.selectionRanges
+                ),
+              status: 'available',
+              disabled: (_state, _wasmInstance, props) =>
+                Boolean(props && isLegacySketchEditRequest(props)),
+              disabledReason: (_state, props) =>
+                props && isLegacySketchEditRequest(props)
+                  ? LEGACY_SKETCH_MODE_REMOVED_MESSAGE
+                  : undefined,
+              title: ({ editorHasFocus, sketchPathId, modelingState }) => {
+                const isSketchBlock = isSketchBlockSelected(
+                  modelingState.context.selectionRanges,
+                  modelingState.context.kclManager.artifactGraph
+                )
+
+                if ((editorHasFocus && sketchPathId) || isSketchBlock) {
+                  return 'Edit Sketch'
+                }
+
+                return 'Start Sketch'
+              },
+              tooltipTitle: ({
+                editorHasFocus,
+                sketchPathId,
+                modelingState,
+              }) => {
+                const isSketchBlock = isSketchBlockSelected(
+                  modelingState.context.selectionRanges,
+                  modelingState.context.kclManager.artifactGraph
+                )
+
+                if ((editorHasFocus && sketchPathId) || isSketchBlock) {
+                  return 'Edit Sketch'
+                }
+
+                const selectedSketchTarget = getSelectedSketchTarget(
+                  modelingState.context.selectionRanges
+                )
+                if (selectedSketchTarget) {
+                  return selectedSketchTarget.title
+                }
+
+                return 'Start Sketch'
+              },
+              showTitle: true,
+              description: 'Start drawing a 2D sketch.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL('/docs/kcl-lang/sketches'),
+                },
+              ],
+            },
+            {
+              id: 'sketch3d',
+              title: '3D Sketch',
+              icon: 'sketch',
+              status: 'available',
+              links: [],
+              description: 'Draw and constrain a sketch in 3D.',
+              onClick: ({ modelingState }) => {
+                sketch3dEditRequest.value = {
+                  editor: modelingState.context.kclManager,
+                  label: '',
+                }
+              },
             },
           ],
         },

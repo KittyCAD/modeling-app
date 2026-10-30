@@ -2999,6 +2999,7 @@ dependencies = [
  "libm",
  "miette",
  "mime_guess",
+ "nalgebra",
  "nalgebra-glm",
  "num-traits",
  "parse-display",

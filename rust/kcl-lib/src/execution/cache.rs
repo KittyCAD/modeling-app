@@ -206,6 +206,14 @@ impl GlobalState {
             engine_scene_generation: ctx.cache.engine_scene_generation().await,
             operations: self.exec_state.operations_by_module(),
             artifact_graph: self.exec_state.artifacts.graph,
+            spatial_sketches: self
+                .exec_state
+                .root_module_artifacts
+                .scene_objects
+                .iter()
+                .filter(|obj| matches!(obj.kind, kcl_api::ObjectKind::Sketch3d(_)))
+                .cloned()
+                .collect(),
             scene_objects: self.exec_state.root_module_artifacts.scene_objects,
             source_range_to_object: self.exec_state.root_module_artifacts.source_range_to_object,
             var_solutions: self.exec_state.root_module_artifacts.var_solutions,

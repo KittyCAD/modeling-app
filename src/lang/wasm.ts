@@ -338,6 +338,7 @@ export const isPathToNode = (input: unknown): input is PathToNode =>
   typeof input[0][1] === 'string'
 
 export interface ExecState {
+  spatialSketches?: RustExecOutcome['spatialSketches']
   variables: { [key in string]?: KclValueView }
   operations: OperationsByModule
   artifactGraph: ArtifactGraph
@@ -502,6 +503,7 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
 
   return {
     variables: execOutcome.variables,
+    spatialSketches: execOutcome.spatialSketches,
     operations: execOutcome.operations,
     artifactGraph,
     legacyAngleRefactorMetadata,

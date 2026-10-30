@@ -42,7 +42,7 @@ export type ApiObject = { id: ApiObjectId, kind: ApiObjectKind, label: string, c
 
 export type ApiObjectId = number;
 
-export type ApiObjectKind = { "type": "Nil" } | { "type": "Plane" } & ApiPlane | { "type": "Face" } & ApiFace | { "type": "Wall" } & ApiWall | { "type": "Cap" } & ApiCap | { "type": "Sketch" } & ApiSketch | { "type": "Segment", segment: ApiSegment, } | { "type": "Constraint", constraint: ApiConstraint, };
+export type ApiObjectKind = { "type": "Nil" } | { "type": "Plane" } & ApiPlane | { "type": "Face" } & ApiFace | { "type": "Wall" } & ApiWall | { "type": "Cap" } & ApiCap | { "type": "Sketch" } & ApiSketch | { "type": "Sketch3d" } & Sketch3d | { "type": "Segment", segment: ApiSegment, } | { "type": "Constraint", constraint: ApiConstraint, };
 
 export type ApiPlane = { "object": ApiObjectId } | { "default": PlaneName } | { "primitiveFace": PrimitiveFacePlane };
 
@@ -83,6 +83,8 @@ export type ArcDirection = "ccw" | "cw";
 export type CircleCtor = { start: ApiPoint2d<Expr>, center: ApiPoint2d<Expr>, construction?: boolean, };
 
 export type Coincident = { segments: Array<ConstraintSegment>, };
+
+export type Constraint3d = { kind: string, source: ApiSourceRef, };
 
 export type ConstraintLabelPositionEdit = { constraintId: ApiObjectId, labelPosition: ApiPoint2d<Number>, };
 
@@ -159,11 +161,18 @@ export type SceneGraph = { project: ApiProjectId, file: ApiFileId, version: ApiV
 
 export type SceneGraphDelta = { new_graph: SceneGraph, new_objects: Array<ApiObjectId>, invalidates_ids: boolean, exec_outcome: ExecOutcome, };
 
+export type Segment3d = { label: string, kind: string, points: Array<[number, number, number]>, normal: [number, number, number] | null, clockwise: boolean, construction: boolean, source: ApiSourceRef, };
+
 export type SegmentCtor = { "type": "Point" } & PointCtor | { "type": "Line" } & LineCtor | { "type": "Arc" } & ArcCtor | { "type": "Circle" } & CircleCtor | { "type": "ControlPointSpline" } & ControlPointSplineCtor;
 
 export type SegmentDragAnchor = { segmentId: ApiObjectId, target: ApiPoint2d<Number>, };
 
 export type SetProgramOutcome = { "type": "Success", sceneGraph: SceneGraph, execOutcome: ExecOutcome, checkpointId: SketchCheckpointId | null, } | { "type": "ExecFailure", error: KclErrorWithOutputs, };
+
+/**
+ * Solved world-space geometry. Coordinates are always in millimeters.
+ */
+export type Sketch3d = { segments: Array<Segment3d>, constraints: Array<Constraint3d>, degrees_of_freedom: number, };
 
 /**
  * Arguments for creating a new sketch. This is similar to the constructor of

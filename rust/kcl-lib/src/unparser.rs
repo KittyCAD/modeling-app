@@ -1382,7 +1382,12 @@ impl SketchBlock {
         let name = Name {
             name: Node {
                 inner: Identifier {
-                    name: SketchBlock::CALLEE_NAME.to_owned(),
+                    name: if self.spatial {
+                        "sketch3d"
+                    } else {
+                        SketchBlock::CALLEE_NAME
+                    }
+                    .to_owned(),
                     digest: None,
                 },
                 start: Default::default(),
