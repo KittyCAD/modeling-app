@@ -128,6 +128,12 @@ describe('direct project session file actions', () => {
     }
     vi.mocked(getProjectInfo).mockResolvedValueOnce(metadata('Fresh'))
     await s.session.refreshProject()
+    expect(getProjectInfo).toHaveBeenCalledWith(
+      expect.anything(),
+      '/project',
+      expect.anything(),
+      { createMissingEntrypoint: false }
+    )
     expect(s.project.projectIORefSignal.value).toMatchObject({
       title: 'Fresh',
       cloudProjectId: 'remote',

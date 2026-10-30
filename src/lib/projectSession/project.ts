@@ -435,7 +435,8 @@ export class ZDSProject {
     const project = await getProjectInfo(
       this.app.fileOperations,
       this.path,
-      await this.app.wasmPromise
+      await this.app.wasmPromise,
+      { createMissingEntrypoint: false }
     )
     if (!isCurrent()) return
     const existing = new Map(this.files.map((file) => [file.path, file]))
@@ -470,7 +471,7 @@ export class ZDSProject {
         getSettingsFromActorContext(this.app.settings.actor)
       )
     )
-      await editor.executeCode(editor.code)
+      await editor.executeCode(editor.code, { updateThumbnail: false })
   }
 
   /**

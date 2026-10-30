@@ -761,7 +761,10 @@ export class KclManager extends File {
           // Nothing written out yet by ourselves, or it's not the same as the current file content
           // -> this must be an external change -> re-execute.
           this.updateCodeEditor(code, {
-            shouldExecute: !isInSketchMode,
+            // Cloud refreshes rebuild the full Rust snapshot and execute once there.
+            shouldExecute:
+              !isInSketchMode &&
+              !this.systemDeps.project.peek()?.cloudProjectId,
             shouldResetCamera: !isInSketchMode,
             shouldAddToHistory: true,
             // We explicitly do not write to the file here since we are loading from

@@ -24,7 +24,9 @@ export function ProjectFileWatcher() {
     )
       return
     try {
-      await app.refreshProjects()
+      if (project?.projectIORefSignal.peek().cloudProjectId)
+        await app.projectSession.refreshProject()
+      else await app.refreshProjects()
     } catch (error) {
       if (app.project === project && isPathNotFoundError(error))
         await app.registry.get(routerService).navigate(PATHS.HOME)

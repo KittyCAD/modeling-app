@@ -249,6 +249,30 @@ describe('desktop utilities', () => {
   })
 
   describe('listProjects', () => {
+    it('does not create an entrypoint during read-only project discovery', async () => {
+      const { instance } = await buildTheWorldNode()
+      const projectPath = '/test/projects/project-without-kcl-files'
+      const originalStat = mockElectron.stat.getMockImplementation()!
+      mockElectron.stat.mockImplementation((path: string) =>
+        path === `${projectPath}/main.kcl`
+          ? Promise.reject('ENOENT')
+          : originalStat(path)
+      )
+      await getDefaultKclFileForDir(
+        testFileOperations,
+        projectPath,
+        {
+          name: 'empty',
+          path: projectPath,
+          children: [],
+          metadata: null,
+        },
+        await instance,
+        false
+      )
+      expect(mockElectron.writeFile).not.toHaveBeenCalled()
+    })
+
     it('preserves main.kcl created after discovery observed an empty project', async () => {
       const { instance } = await buildTheWorldNode()
       const projectPath = '/test/projects/project-without-kcl-files'

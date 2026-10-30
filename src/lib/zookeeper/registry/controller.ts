@@ -648,6 +648,13 @@ class SessionController implements ZookeeperSessionController {
         ) {
           const currentProject = this.getProject()
           if (!isCurrent() || !currentProject) return
+          if (
+            !(await this.deps.fileOperations.exists(
+              currentProject.default_file
+            ))
+          )
+            return
+          if (!isCurrent()) return
           await this.deps.session.openFile(currentProject.default_file, {
             projectPath: currentProject.path,
           })

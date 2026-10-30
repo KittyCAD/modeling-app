@@ -472,6 +472,14 @@ test(
       .click()
     await expect(page).toHaveURL(/__zoo_cloud__.*main\.kcl/)
     await expect.poll(() => connected, { timeout: 30_000 }).toBe(true)
+    // This storage scenario has no engine connection; do not wait for modeling.
+    await page.evaluate(() => {
+      const settings = window.app.settings.get().textEditor as Record<
+        string,
+        { user?: boolean }
+      >
+      settings.automaticallyRender.user = false
+    })
     await expect
       .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
       .toBe(0)
@@ -533,6 +541,29 @@ test(
         )
       )
       .toEqual({ added: true, deleted: false, id: projectId })
+    expect(remote.uploads).toHaveLength(initialUploads)
+    delete remote.project.files['main.kcl']
+    remote.project.revision = String(Number(remote.project.revision) + 1)
+    send({
+      tool_output: {
+        result: {
+          type: 'project_rm',
+          call_id: 'cloud-remove-1',
+          project_id: `cloud:${projectId}`,
+          ok: true,
+          output: cloudProjectResponse(remote.project),
+        },
+      },
+    })
+    await expect
+      .poll(() => page.evaluate(() => window.app.project?.files.length))
+      .toBe(0)
+    expect(
+      await page.evaluate(
+        async (root) => window.app.fileOperations.exists(`${root}/main.kcl`),
+        root
+      )
+    ).toBe(false)
     expect(remote.uploads).toHaveLength(initialUploads)
   }
 )

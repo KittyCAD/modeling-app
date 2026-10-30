@@ -1,4 +1,5 @@
 import * as screenshot from '@src/lib/screenshot'
+import * as desktop from '@src/lib/desktop'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import { signal } from '@preact/signals-core'
 import { createProjectForTest } from '@src/unitTestUtils'
@@ -516,6 +517,48 @@ describe('KclManager settings ownership', () => {
 })
 
 describe('KclManager live operation updates', () => {
+  it('rebuilds a refreshed cloud project without creating files or generating a thumbnail', async () => {
+    const { app } = createKclManagerTestHarness()
+    const metadata = createProjectForTest('/project')
+    metadata.cloudProjectId = 'remote'
+    metadata.children = [
+      { name: 'main.kcl', path: metadata.default_file, children: null },
+    ]
+    const read = vi
+      .spyOn(app.projectSession.textFileIO, 'read')
+      .mockResolvedValue('')
+    const getProjectInfo = vi
+      .spyOn(desktop, 'getProjectInfo')
+      .mockResolvedValue(metadata)
+    try {
+      const project = await app.openProject(metadata)
+      const editor = await project.openEditor(
+        metadata.default_file,
+        undefined,
+        '',
+        false
+      )
+      project.executingPath = editor.path
+      const open = vi
+        .spyOn(editor.rustContext, 'sendOpenProject')
+        .mockResolvedValue()
+      const execute = vi.spyOn(editor, 'executeCode').mockResolvedValue()
+      await project.reloadFilesFromStorage(() => true)
+      expect(getProjectInfo).toHaveBeenCalledWith(
+        app.fileOperations,
+        metadata.path,
+        expect.anything(),
+        { createMissingEntrypoint: false }
+      )
+      expect(open).toHaveBeenCalledOnce()
+      expect(execute).toHaveBeenCalledWith('', { updateThumbnail: false })
+    } finally {
+      getProjectInfo.mockRestore()
+      read.mockRestore()
+      app.dispose()
+    }
+  })
+
   it.each([false, true])(
     'routes generated thumbnails through the project session (cloud: %s)',
     async (cloud) => {
@@ -1677,23 +1720,37 @@ describe('KclManager diagnostics', () => {
     write.mockRestore()
   })
 
-  it('reloads clean editor state from disk watcher updates', async () => {
-    const { kclManager } = createKclManagerTestHarness('from disk')
+  it.each([false, true])(
+    'reloads clean editor state and defers cloud execution to the project refresh (cloud: %s)',
+    async (cloud) => {
+      const { kclManager } = createKclManagerTestHarness('from disk')
+      const update = vi.spyOn(kclManager, 'updateCodeEditor')
 
-    kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
-    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
-    ;(kclManager as any).markFileCodeAsSynced('from disk')
+      kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
+      kclManager.systemDeps.project = signal(
+        createProjectForTest('/tmp/project')
+      )
+      if (cloud) kclManager.systemDeps.project.value!.cloudProjectId = 'remote'
+      ;(kclManager as any).markFileCodeAsSynced('from disk')
 
-    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external edit')
+      vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external edit')
 
-    const watchHandler = kclManager.onWatchEvent.at(-1)
-    expect(watchHandler).toBeDefined()
+      const watchHandler = kclManager.onWatchEvent.at(-1)
+      expect(watchHandler).toBeDefined()
 
-    watchHandler?.('change', kclManager.path)
-    await flushPromises()
+      watchHandler?.('change', kclManager.path)
+      await flushPromises()
 
-    expect(kclManager.code).toBe('external edit')
-  })
+      expect(kclManager.code).toBe('external edit')
+      expect(update).toHaveBeenCalledWith(
+        'external edit',
+        expect.objectContaining({
+          shouldExecute: !cloud,
+          shouldWriteToDisk: false,
+        })
+      )
+    }
+  )
 
   it('does not reload Zookeeper disk watcher updates into the active editor', async () => {
     const { kclManager } = createKclManagerTestHarness('from disk')

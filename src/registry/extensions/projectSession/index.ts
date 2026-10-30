@@ -127,7 +127,8 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       const refreshed = await getProjectInfo(
         ctx.services.get(fileOperationsService),
         current.path,
-        await wasm
+        await wasm,
+        { createMissingEntrypoint: !metadata.cloudProjectId }
       )
       if (project.peek() !== current || refreshGeneration !== generation) return
       current.projectIORefSignal.value = {

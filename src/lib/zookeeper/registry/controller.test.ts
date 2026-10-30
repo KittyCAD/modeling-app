@@ -505,20 +505,28 @@ describe('Zookeeper session controller', () => {
     expect(h.reloadFiles).not.toHaveBeenCalled()
   })
 
-  it('returns to the default file when a cloud tool removes the executing file', async () => {
-    vi.spyOn(fsZds, 'relative').mockReturnValue('main.kcl')
-    const h = createHarness({ cloudProjectId: 'remote-one' })
-    h.fileExists.mockResolvedValue(false)
-    h.actor.emit('ready', {
-      cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
-    })
-    await waitFor(() =>
-      expect(h.navigateToFile).toHaveBeenCalledWith(
-        '/projects/bracket/main.kcl',
-        { projectPath: '/projects/bracket' }
+  it.each([true, false])(
+    'only navigates to an existing default file after cloud removal (fallback exists: %s)',
+    async (hasFallback) => {
+      vi.spyOn(fsZds, 'relative').mockReturnValue('main.kcl')
+      const h = createHarness({ cloudProjectId: 'remote-one' })
+      h.fileExists.mockResolvedValueOnce(false).mockResolvedValue(hasFallback)
+      h.actor.emit('ready', {
+        cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
+      })
+      await waitFor(() => expect(h.fileExists).toHaveBeenCalledTimes(2))
+      if (!hasFallback) {
+        expect(h.navigateToFile).not.toHaveBeenCalled()
+        return
+      }
+      await waitFor(() =>
+        expect(h.navigateToFile).toHaveBeenCalledWith(
+          '/projects/bracket/main.kcl',
+          { projectPath: '/projects/bracket' }
+        )
       )
-    )
-  })
+    }
+  )
 
   it('owns billing transitions and auth rotation without a mounted pane', () => {
     const { actor, billingSend, controller, conversationStore } =

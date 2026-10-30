@@ -585,7 +585,8 @@ export async function getDefaultKclFileForDir(
   fileOperations: FileOperationsRegistryService,
   projectDir: string,
   file: FileEntry,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  createMissingEntrypoint = true
 ) {
   // Make sure the dir is a directory.
   const isFileEntryDir = await statIsDirectory(fileOperations, projectDir)
@@ -609,10 +610,12 @@ export async function getDefaultKclFileForDir(
               fileOperations,
               entry.path,
               entry,
-              wasmInstance
+              wasmInstance,
+              createMissingEntrypoint
             )
           }
         }
+        if (!createMissingEntrypoint) return defaultFilePath
         // If we didn't find a kcl file, create one.
         const configuration = await readAppSettingsFile(
           fileOperations,
@@ -685,7 +688,8 @@ const directoryCount = (file: FileEntry) => {
 export async function getProjectInfo(
   fileOperations: FileOperationsRegistryService,
   projectPath: string,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  options: { createMissingEntrypoint?: boolean } = {}
 ): Promise<Project> {
   // Check the directory.
   let stats: FileStat | undefined
@@ -738,7 +742,8 @@ export async function getProjectInfo(
       fileOperations,
       projectPath,
       walked,
-      wasmInstance
+      wasmInstance,
+      options.createMissingEntrypoint
     )
   }
   const projectTomlMetadata = canReadWriteProjectPath
