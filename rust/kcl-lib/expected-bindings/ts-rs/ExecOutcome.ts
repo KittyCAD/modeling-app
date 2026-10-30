@@ -7,6 +7,7 @@ import type { ModuleId } from "./ModuleId";
 import type { ModulePath } from "./ModulePath";
 import type { OperationsByModule } from "./OperationsByModule";
 import type { RefactorMetadata } from "./RefactorMetadata";
+import type { ResolvedViewBatch } from "./ResolvedViewBatch";
 
 /**
  * Outcome of executing a program.  This is used in TS.
@@ -25,6 +26,10 @@ operations: OperationsByModule,
  * Output artifact graph.
  */
 artifactGraph: ArtifactGraph, 
+/**
+ * Resolved views, present only for successful actual execution.
+ */
+namedViews: ResolvedViewBatch | null, 
 /**
  * Execution-backed metadata used by Z0006 and future auto-refactors.
  */

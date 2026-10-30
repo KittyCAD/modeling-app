@@ -48,6 +48,7 @@ export default class RustContext {
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
   public readonly planesCreated = new LegacySignal()
+  public readonly namedViewsInvalidated = new LegacySignal()
 
   constructor(
     public readonly wasmInstancePromise: Promise<ModuleType>,
@@ -79,6 +80,7 @@ export default class RustContext {
 
   /** Project lifecycle method for WASM, setting up initial snapshot of project */
   async sendOpenProject(currentFilePath: string | null, kclFiles: ApiFile[]) {
+    this.namedViewsInvalidated.dispatch()
     const context = await this._checkContextInstance()
     await context.open_project(
       this.projectId,
@@ -142,6 +144,7 @@ export default class RustContext {
       // Return the result.
       return outcome
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       this.setDefaultPlanes(err.defaultPlanes)
       return Promise.reject(err)
@@ -256,6 +259,7 @@ export default class RustContext {
     path?: string
   ): Promise<ExecState> {
     const instance = await this._checkContextInstance()
+    this.namedViewsInvalidated.dispatch()
 
     try {
       const result = await instance.bustCacheAndResetScene(
@@ -319,11 +323,13 @@ export default class RustContext {
         JSON.stringify(settings)
       )
       if (result.type !== 'Success') {
+        this.namedViewsInvalidated.dispatch()
         return result
       }
 
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
+        this.namedViewsInvalidated.dispatch()
         return Promise.reject(checkpointId)
       }
 
@@ -332,6 +338,7 @@ export default class RustContext {
         checkpointId,
       }
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
@@ -487,6 +494,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
