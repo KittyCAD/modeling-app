@@ -24,12 +24,24 @@ sketch001 = sketch(on = XZ) {
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await scene.moveCameraTo({ x: 0, y: -100, z: 0 })
+    await editor.selectText('sketch(on = XZ)')
     await toolbar.extrudeButton.click()
     await expect(modelingDialog.selection('Profiles')).toBeFocused()
+    await expect(modelingDialog.selection('Profiles')).toHaveText(
+      'Select in the scene'
+    )
+    await expect(modelingDialog.submitButton).toBeDisabled()
+    await editor.selectText('sketch(on = XZ)')
     const [selectProfile] = scene.makeMouseHelpers(0.38, 0.5, {
       format: 'ratio',
     })
-    await selectProfile()
+    await page.keyboard.down('Shift')
+    try {
+      await selectProfile()
+      await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
+    } finally {
+      await page.keyboard.up('Shift')
+    }
     await expect(modelingDialog.submitButton).toBeEnabled()
     await expect(modelingDialog.selection('Profiles')).not.toBeFocused()
     await scene.waitForExecutionDoneAfter(async () => {
