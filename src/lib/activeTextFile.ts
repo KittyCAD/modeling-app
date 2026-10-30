@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-core'
 
+import { MAX_TEXT_FILE_BYTES } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
@@ -42,7 +43,6 @@ export const activeTextFileSignal = signal<ActiveTextFile | null>(null)
 
 // Preserve the UTF-8 byte order mark when editing.
 const decoder = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true })
-export const MAX_EDITABLE_TEXT_FILE_BYTES = 1024 * 1024
 const FILE_TOO_LARGE_MESSAGE = 'Text files larger than 1 MiB cannot be edited.'
 const UNSUPPORTED_TEXT_MESSAGE = 'This file is binary or is not UTF-8 text.'
 
@@ -175,7 +175,7 @@ export async function openActiveTextFile(
   try {
     const stat = await fileOperations.stat(path)
     if (requestId !== latestOpenRequestId) return
-    if (stat.size > MAX_EDITABLE_TEXT_FILE_BYTES) {
+    if (stat.size > MAX_TEXT_FILE_BYTES) {
       return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
     }
 
@@ -184,7 +184,7 @@ export async function openActiveTextFile(
       return
     }
     // Recheck the snapshot in case the file grew after stat.
-    if (bytes.byteLength > MAX_EDITABLE_TEXT_FILE_BYTES) {
+    if (bytes.byteLength > MAX_TEXT_FILE_BYTES) {
       return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
     }
 

@@ -1,6 +1,7 @@
 import { Dialog } from '@headlessui/react'
 import type { MlCopilotFile } from '@kittycad/lib'
-import { CustomIcon } from '@src/components/CustomIcon'
+import { ActionIcon } from '@src/components/ActionIcon'
+import { MAX_TEXT_FILE_BYTES } from '@src/lib/constants'
 import { isTextFile } from '@src/lib/fileExtensions'
 import { isImageMimetype, isTextMimetype } from '@src/lib/mimeTypes'
 import type { ZookeeperAttachmentFetchState } from '@src/lib/zookeeper/zookeeperManagerMachine'
@@ -8,7 +9,6 @@ import { reportRejection } from '@src/lib/trap'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 type AttachmentFile = File | MlCopilotFile
-const MAX_TEXT_PREVIEW_BYTES = 1024 * 1024
 
 export function ZookeeperAttachment({
   file,
@@ -82,9 +82,9 @@ export function ZookeeperAttachment({
                   aria-label="Close preview"
                   onClick={() => setOpen(false)}
                 >
-                  <CustomIcon
-                    name="close"
-                    className="w-5 h-5 rounded-sm bg-chalkboard-20 text-chalkboard-80 dark:bg-chalkboard-80 dark:text-chalkboard-20 group-hover:brightness-110"
+                  <ActionIcon
+                    icon="close"
+                    className="!self-center rounded-sm text-chalkboard-80 dark:text-chalkboard-20 group-hover:brightness-110"
                   />
                 </button>
               </div>
@@ -129,8 +129,7 @@ function AttachmentContents({
 }) {
   const textTooLarge =
     !isImage &&
-    (file instanceof File ? file.size : file.data.length) >
-      MAX_TEXT_PREVIEW_BYTES
+    (file instanceof File ? file.size : file.data.length) > MAX_TEXT_FILE_BYTES
   const [preview, setPreview] = useState<{
     file: AttachmentFile
     content?: string
