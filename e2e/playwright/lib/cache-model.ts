@@ -1,7 +1,6 @@
 import { expect } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { isArray } from '@src/lib/utils'
-import { PNG } from 'pngjs'
 
 export const cacheModelCode = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 radiusValue = 10mm
@@ -64,6 +63,7 @@ export async function cacheSceneReceipt(page: Page) {
       artifacts: [...editor.artifactGraph.keys()].sort(),
       defaultPlanes: editor.rustContext.defaultPlanes,
       sessionId: editor.engineCommandManager.engineSessionId,
+      apiCallId: editor.engineCommandManager.apiCallId,
       engineSceneGeneration: editor.execState.engineSceneGeneration,
       publishedGeneration: editor.engineSceneGenerationSignal.peek(),
       scalar: editor.variables.x,
@@ -108,62 +108,24 @@ export async function cacheSceneReceipt(page: Page) {
   }
 }
 
-export async function presentedEngineFrame(page: Page) {
-  const frame = await page.locator('#video-stream').evaluate((video) => {
-    if (
-      !(video instanceof HTMLVideoElement) ||
-      video.paused ||
-      video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA
-    )
-      throw new Error('The actual engine video must be playing')
-    const canvas = document.createElement('canvas')
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-    const context = canvas.getContext('2d')
-    if (!context) throw new Error('Unable to read the presented engine frame')
-    context.drawImage(video, 0, 0)
-    return {
-      dataUrl: canvas.toDataURL('image/png'),
-      streamId:
-        video.srcObject instanceof MediaStream ? video.srcObject.id : null,
-    }
+export async function cacheSceneVolume(page: Page) {
+  const response = await page.evaluate(async () => {
+    const editor = window.app.project?.executingEditor.value
+    if (!editor) throw new Error('No executing editor')
+    return editor.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: crypto.randomUUID(),
+      cmd: { type: 'volume', entity_ids: [], output_unit: 'mm3' },
+    })
   })
-  const buffer = Buffer.from(
-    frame.dataUrl.slice(frame.dataUrl.indexOf(',') + 1),
-    'base64'
+  const reply = isArray(response) ? response[0] : response
+  if (
+    !reply ||
+    !reply.success ||
+    !('resp' in reply) ||
+    reply.resp.type !== 'modeling' ||
+    reply.resp.data.modeling_response.type !== 'volume'
   )
-  return { buffer, image: PNG.sync.read(buffer), streamId: frame.streamId }
-}
-
-export async function presentedModel(page: Page) {
-  const { image, streamId } = await presentedEngineFrame(page)
-  const { width, height, data } = image
-  const background = (width + 1) * 4
-  let foregroundPixels = 0
-  let centerPixels = 0
-  let centerForegroundPixels = 0
-  for (let y = Math.floor(height / 5); y < height * 0.8; y++)
-    for (let x = Math.floor(width / 5); x < width * 0.8; x++) {
-      const index = (y * width + x) * 4
-      const foreground =
-        Math.abs(data[index] - data[background]) +
-          Math.abs(data[index + 1] - data[background + 1]) +
-          Math.abs(data[index + 2] - data[background + 2]) >=
-        80
-      if (foreground) foregroundPixels++
-      if (
-        x >= width * 0.475 &&
-        x < width * 0.525 &&
-        y >= height * 0.475 &&
-        y < height * 0.525
-      ) {
-        centerPixels++
-        if (foreground) centerForegroundPixels++
-      }
-    }
-  return {
-    foregroundPixels,
-    centerForegroundFraction: centerForegroundPixels / centerPixels,
-    streamId,
-  }
+    throw new Error('The real engine must return its live volume')
+  return reply.resp.data.modeling_response.data.volume
 }

@@ -3,11 +3,7 @@ import {
   cacheModelCode as modelCode,
   cacheSceneReceipt as sceneReceipt,
 } from '@e2e/playwright/lib/cache-model'
-import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
-import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import fsp from 'node:fs/promises'
-import path from 'node:path'
 
 test.use({ mockApiRoutes: false })
 
@@ -73,10 +69,10 @@ async function waitForModeling(page: Page) {
   })
 }
 
-test.describe('Rust-owned sketch cache lifecycle', { tag: '@desktop' }, () => {
+test.describe('Rust-owned sketch cache lifecycle', { tag: '@web' }, () => {
   test('unchanged sketch handoffs reuse the loaded solid', async ({
     page,
-    tronApp,
+    fs,
     folderSetupFn,
     homePage,
     scene,
@@ -84,22 +80,40 @@ test.describe('Rust-owned sketch cache lifecycle', { tag: '@desktop' }, () => {
     editor,
   }) => {
     test.setTimeout(90_000)
-    if (!tronApp) throwTronAppMissing()
-    await tronApp.cleanProjectDir({
-      ...TEST_SETTINGS,
-      modeling: {
-        ...TEST_SETTINGS.modeling,
-        enable_ssao: false,
-        fixed_size_grid: false,
-        backface_color: '#123456',
-        show_scale_grid: false,
-      },
-    })
     await folderSetupFn(async (directory) => {
-      const project = path.join(directory, 'sketch-cache-lifecycle')
-      await fsp.mkdir(project, { recursive: true })
-      await fsp.writeFile(path.join(project, 'main.kcl'), modelCode)
+      const project = await fs.join(directory, 'sketch-cache-lifecycle')
+      await fs.mkdir(project, { recursive: true })
+      await fs.writeFile(
+        await fs.join(project, 'main.kcl'),
+        new TextEncoder().encode(modelCode)
+      )
     })
+    await page.evaluate(() => {
+      const settings = window.app.settings.actor
+      settings.send({
+        type: 'set.modeling.defaultUnit',
+        data: { level: 'user', value: 'in' },
+      })
+      settings.send({
+        type: 'set.modeling.enableSSAO',
+        data: { level: 'user', value: false },
+      })
+      settings.send({
+        type: 'set.modeling.fixedSizeGrid',
+        data: { level: 'user', value: false },
+      })
+      settings.send({
+        type: 'set.modeling.backfaceColor',
+        data: { level: 'user', value: '#123456' },
+      })
+      settings.send({
+        type: 'set.modeling.showScaleGrid',
+        data: { level: 'user', value: false },
+      })
+    })
+    await page.waitForFunction(() =>
+      window.app.settings.actor.getSnapshot().matches('idle')
+    )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.openProject('sketch-cache-lifecycle')
     await scene.settled()

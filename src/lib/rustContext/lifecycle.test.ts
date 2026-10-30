@@ -157,7 +157,7 @@ describe('RustContext plane notifications', () => {
     context.destroy()
   })
 
-  it.each(['connection', 'project', 'destroy'])(
+  it.each(['connection', 'project', 'reopened project', 'destroy'])(
     'does not publish an old result after its %s owner retires',
     async (retired) => {
       const { first, manager, context, notification, parse } = planeOwner()
@@ -179,10 +179,12 @@ describe('RustContext plane notifications', () => {
           handleMessage: vi.fn(),
           getCloudProjectId: () => undefined,
         })
-      } else if (retired === 'project') {
+      } else if (retired === 'project' || retired === 'reopened project') {
         await context.sendOpenProject('/replacement/main.kcl', [
           { ...main, path: '/replacement/main.kcl' },
         ])
+        if (retired === 'reopened project')
+          await context.sendOpenProject(main.path, [main])
       } else context.destroy()
       if (retired !== 'destroy') await parse()
       const before = notification.mock.calls.length

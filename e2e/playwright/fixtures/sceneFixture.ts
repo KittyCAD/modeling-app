@@ -489,8 +489,7 @@ export class SceneFixture {
   }
 
   connectionEstablished = async () => {
-    // The test deadline bounds connection setup and lets the app retry.
-    const timeout = 0
+    const timeout = 30_000
     await Promise.all([
       expect(this.networkToggleConnected).toBeVisible({ timeout }),
       expect(this.engineConnectionsSpinner).not.toBeVisible({ timeout }),
