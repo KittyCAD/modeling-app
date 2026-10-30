@@ -63,6 +63,10 @@ export class ModelingDialogFixture {
     return this.locator.getByRole('combobox', { name: fieldLabel(label) })
   }
 
+  selectedOption(label: string | RegExp) {
+    return this.options(label).locator('option:checked')
+  }
+
   selection(label: string) {
     return this.locator.getByRole('button', {
       name: `Select ${label}`,
