@@ -348,7 +348,7 @@ export const FeatureTreePaneContents = memo(() => {
     <div className="relative">
       <section
         data-testid="debug-panel"
-        className="absolute inset-0 p-1 box-border overflow-auto mr-1"
+        className="absolute inset-0 p-1 box-border overflow-auto mr-1 flex flex-col"
       >
         <>
           {kclManager.isExecuting && !rollbackView.active && (

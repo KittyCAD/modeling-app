@@ -45,7 +45,13 @@ test.describe('Feature tree history controls', { tag: '@web' }, () => {
     const originalHandle = await page
       .getByRole('button', { name: 'Move a', exact: true })
       .elementHandle()
-    await bar.dragTo(page.getByTestId('feature-tree-boundary-2'))
+    // Release over the feature itself, away from the thin gap above it.
+    await bar.dragTo(
+      page.getByRole('button', { name: 'Move abs', exact: true }),
+      {
+        targetPosition: { x: 4, y: 2 },
+      }
+    )
     await editor.expectEditor.toContain('|> exit() // zds:rollback')
     await scene.settled()
     await expect(bar).toHaveAttribute('aria-valuenow', '2')

@@ -47,6 +47,33 @@ function history(code = 'a = 1\nb = 1\n') {
   )
 }
 
+function measureBoundaries(offset = 0) {
+  return [0, 1, 2].map((index) =>
+    vi
+      .spyOn(
+        screen.getByTestId(`feature-tree-boundary-${index}`),
+        'getBoundingClientRect'
+      )
+      .mockReturnValue(new DOMRect(0, offset + index * 60, 200, 12))
+  )
+}
+
+function dragAt(
+  type: 'dragover' | 'drop',
+  element: Element,
+  clientY: number,
+  dataTransfer: object
+) {
+  // Happy DOM's DragEvent omits mouse coordinates, unlike browser DragEvents.
+  const event = new MouseEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    clientY,
+  })
+  Object.defineProperty(event, 'dataTransfer', { value: dataTransfer })
+  fireEvent(element, event)
+}
+
 describe('feature history controls', () => {
   it('moves the rollback bar by keyboard and announces the boundary', () => {
     const onChange = vi.fn()
@@ -120,5 +147,100 @@ describe('feature history controls', () => {
     expect(screen.getByRole('button', { name: 'Move a' })).toBeDisabled()
     fireEvent.keyDown(screen.getByRole('slider'), { key: 'Home' })
     expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('snaps a rollback dropped on feature content to the closest gap', () => {
+    const onChange = vi.fn()
+    render(
+      <FeatureHistoryControls
+        history={history()}
+        disabled={false}
+        onChange={onChange}
+        renderBlock={(block) => <span>{block.label}</span>}
+      />
+    )
+    measureBoundaries()
+    const dataTransfer = { setData: vi.fn(), effectAllowed: '', dropEffect: '' }
+    fireEvent.dragStart(screen.getByRole('slider'), { dataTransfer })
+    dragAt('dragover', screen.getByText('a'), 45, dataTransfer)
+    expect(screen.getByTestId('feature-tree-boundary-1')).toContainElement(
+      screen.getByTestId('feature-tree-drop-indicator')
+    )
+    dragAt('drop', screen.getByText('a'), 45, dataTransfer)
+    expect(onChange).toHaveBeenCalledWith('a = 1\n' + ROLLBACK_CODE + 'b = 1\n')
+  })
+
+  it('snaps to the first gap when released above the feature rows', () => {
+    const onChange = vi.fn()
+    render(
+      <FeatureHistoryControls
+        history={history()}
+        disabled={false}
+        onChange={onChange}
+        renderBlock={(block) => block.label}
+      />
+    )
+    measureBoundaries()
+    const dataTransfer = { setData: vi.fn(), effectAllowed: '', dropEffect: '' }
+    fireEvent.dragStart(screen.getByRole('slider'), { dataTransfer })
+    dragAt(
+      'drop',
+      screen.getByTestId('feature-tree-history'),
+      -50,
+      dataTransfer
+    )
+    expect(onChange).toHaveBeenCalledWith(ROLLBACK_CODE + 'a = 1\nb = 1\n')
+  })
+
+  it('accepts the blank space below the last feature as the final gap', () => {
+    const onChange = vi.fn()
+    render(
+      <FeatureHistoryControls
+        history={{ ...history(), rollbackIndex: 0 }}
+        disabled={false}
+        onChange={onChange}
+        renderBlock={(block) => block.label}
+      />
+    )
+    measureBoundaries()
+    const dataTransfer = { setData: vi.fn(), effectAllowed: '', dropEffect: '' }
+    fireEvent.dragStart(screen.getByRole('slider'), { dataTransfer })
+    dragAt(
+      'dragover',
+      screen.getByTestId('feature-tree-history'),
+      500,
+      dataTransfer
+    )
+    expect(screen.getByTestId('feature-tree-boundary-2')).toContainElement(
+      screen.getByTestId('feature-tree-drop-indicator')
+    )
+    dragAt(
+      'drop',
+      screen.getByTestId('feature-tree-history'),
+      500,
+      dataTransfer
+    )
+    expect(onChange).toHaveBeenCalledWith('a = 1\nb = 1\n')
+  })
+
+  it('uses the current row positions at release instead of a stale hover target', () => {
+    const onChange = vi.fn()
+    render(
+      <FeatureHistoryControls
+        history={history()}
+        disabled={false}
+        onChange={onChange}
+        renderBlock={(block) => <span>{block.label}</span>}
+      />
+    )
+    const measurements = measureBoundaries()
+    const dataTransfer = { setData: vi.fn(), effectAllowed: '', dropEffect: '' }
+    fireEvent.dragStart(screen.getByRole('slider'), { dataTransfer })
+    dragAt('dragover', screen.getByText('a'), 45, dataTransfer)
+    measurements.forEach((measurement, index) =>
+      measurement.mockReturnValue(new DOMRect(0, 30 + index * 60, 200, 12))
+    )
+    dragAt('drop', screen.getByText('a'), 45, dataTransfer)
+    expect(onChange).toHaveBeenCalledWith(ROLLBACK_CODE + 'a = 1\nb = 1\n')
   })
 })

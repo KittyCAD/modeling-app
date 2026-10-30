@@ -5,7 +5,7 @@ import {
   reorderHistoryBlock,
   setHistoryRollback,
 } from '@src/lib/featureTree/featureHistory'
-import { Fragment, useState, type ReactNode } from 'react'
+import { Fragment, useRef, useState, type ReactNode } from 'react'
 import toast from 'react-hot-toast'
 
 type Drag = { code: string } & (
@@ -35,6 +35,7 @@ export function FeatureHistoryControls({
 }) {
   const [drag, setDrag] = useState<Drag | null>(null)
   const [dropIndex, setDropIndex] = useState<number | null>(null)
+  const boundaryElements = useRef(new Map<number, HTMLDivElement>())
   const canRollback = !history.blocks.some(({ statement }) => {
     if (statement.type === 'VariableDeclaration')
       return statement.declaration.id.name === 'exit'
@@ -82,31 +83,31 @@ export function FeatureHistoryControls({
     else onChange(code)
   }
 
+  function closestBoundary(clientY: number) {
+    let closest = boundaries[0]
+    let distance = Number.POSITIVE_INFINITY
+    for (const index of boundaries) {
+      const element = boundaryElements.current.get(index)
+      if (!element) continue
+      const rect = element.getBoundingClientRect()
+      const nextDistance = Math.abs(clientY - (rect.top + rect.height / 2))
+      if (nextDistance < distance) {
+        closest = index
+        distance = nextDistance
+      }
+    }
+    return closest
+  }
+
   function boundary(index: number) {
     const active = index === activeBoundary
     return (
       <div
         className={`relative h-3 flex items-center ${disabled ? 'opacity-40' : ''}`}
         data-testid={`feature-tree-boundary-${index}`}
-        onDragOver={(event) => {
-          if (!drag || disabled || drag.code !== history.code) return
-          event.preventDefault()
-          event.dataTransfer.dropEffect = 'move'
-          setDropIndex(index)
-        }}
-        onDragLeave={() => setDropIndex(null)}
-        onDrop={(event) => {
-          if (!drag || disabled || drag.code !== history.code) return
-          event.preventDefault()
-          if (drag.type === 'rollback') {
-            rollback(index)
-          } else {
-            const result = reorderHistoryBlock(history, drag.index, index)
-            if (result instanceof Error) toast.error(result.message)
-            else onChange(result)
-          }
-          setDrag(null)
-          setDropIndex(null)
+        ref={(element) => {
+          if (element) boundaryElements.current.set(index, element)
+          else boundaryElements.current.delete(index)
         }}
       >
         {active && (
@@ -157,14 +158,48 @@ export function FeatureHistoryControls({
           </div>
         )}
         {dropIndex === index && (
-          <div className="pointer-events-none h-0.5 w-full bg-primary" />
+          <div
+            data-testid="feature-tree-drop-indicator"
+            className="pointer-events-none h-0.5 w-full bg-primary"
+          />
         )}
       </div>
     )
   }
 
   return (
-    <div data-testid="feature-tree-history">
+    <div
+      data-testid="feature-tree-history"
+      className="flex-1"
+      onDragOver={(event) => {
+        if (!drag || disabled || drag.code !== history.code) return
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'move'
+        setDropIndex(closestBoundary(event.clientY))
+      }}
+      onDragLeave={(event) => {
+        if (
+          !(event.relatedTarget instanceof Node) ||
+          !event.currentTarget.contains(event.relatedTarget)
+        )
+          setDropIndex(null)
+      }}
+      onDrop={(event) => {
+        if (!drag || disabled || drag.code !== history.code) return
+        event.preventDefault()
+        // Re-measure at release so scrolling or expanded groups cannot leave
+        // the drop attached to an outdated hover target.
+        const index = closestBoundary(event.clientY)
+        if (drag.type === 'rollback') rollback(index)
+        else {
+          const result = reorderHistoryBlock(history, drag.index, index)
+          if (result instanceof Error) toast.error(result.message)
+          else onChange(result)
+        }
+        setDrag(null)
+        setDropIndex(null)
+      }}
+    >
       {visibleBlocks.map(({ block, index }) => (
         <Fragment key={block.start}>
           {boundary(index)}
