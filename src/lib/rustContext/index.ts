@@ -53,8 +53,7 @@ export default class RustContext {
     public readonly wasmInstancePromise: Promise<ModuleType>,
     private readonly engineCommandManager: ConnectionManager,
     public readonly settingsActor: SettingsActorType,
-    private projectId = 0,
-    private readonly geometryOnly = false
+    private projectId = 0
   ) {
     this.initialization = this.createContextFromWasm()
     void this.initialization.catch((error: unknown) => {
@@ -68,8 +67,7 @@ export default class RustContext {
     const context = new instance.Context(
       this.engineCommandManager,
       projectFsManager,
-      undefined,
-      this.geometryOnly
+      undefined
     )
     this.ctxInstance = context
     return context
@@ -200,7 +198,7 @@ export default class RustContext {
   async export(
     format: DeepPartial<OutputFormat3d>,
     settings: DeepPartial<Configuration>,
-    toastId: string
+    toastId?: string
   ): Promise<ModelingAppFile[] | undefined> {
     const instance = await this._checkContextInstance()
 
@@ -211,7 +209,9 @@ export default class RustContext {
       )
     } catch (e: any) {
       const parsed: RustKclError = JSON.parse(e.toString())
-      toast.error(parsed.details.msg, { id: toastId })
+      if (toastId) {
+        toast.error(parsed.details.msg, { id: toastId })
+      }
       return
     }
   }
