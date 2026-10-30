@@ -517,7 +517,7 @@ describe('KclManager settings ownership', () => {
 })
 
 describe('KclManager live operation updates', () => {
-  it('rebuilds a refreshed cloud project without creating files or generating a thumbnail', async () => {
+  it('refreshes cloud files without writing, generating thumbnails, or waiting for execution', async () => {
     const { app } = createKclManagerTestHarness()
     const metadata = createProjectForTest('/project')
     metadata.cloudProjectId = 'remote'
@@ -530,6 +530,7 @@ describe('KclManager live operation updates', () => {
     const getProjectInfo = vi
       .spyOn(desktop, 'getProjectInfo')
       .mockResolvedValue(metadata)
+    const execution = Promise.withResolvers<undefined>()
     try {
       const project = await app.openProject(metadata)
       const editor = await project.openEditor(
@@ -542,7 +543,9 @@ describe('KclManager live operation updates', () => {
       const open = vi
         .spyOn(editor.rustContext, 'sendOpenProject')
         .mockResolvedValue()
-      const execute = vi.spyOn(editor, 'executeCode').mockResolvedValue()
+      const execute = vi
+        .spyOn(editor, 'executeCode')
+        .mockReturnValue(execution.promise)
       await project.reloadFilesFromStorage(() => true)
       expect(getProjectInfo).toHaveBeenCalledWith(
         app.fileOperations,
@@ -553,6 +556,7 @@ describe('KclManager live operation updates', () => {
       expect(open).toHaveBeenCalledOnce()
       expect(execute).toHaveBeenCalledWith('', { updateThumbnail: false })
     } finally {
+      execution.resolve(undefined)
       getProjectInfo.mockRestore()
       read.mockRestore()
       app.dispose()

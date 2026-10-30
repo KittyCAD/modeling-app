@@ -472,14 +472,6 @@ test(
       .click()
     await expect(page).toHaveURL(/__zoo_cloud__.*main\.kcl/)
     await expect.poll(() => connected, { timeout: 30_000 }).toBe(true)
-    // This storage scenario has no engine connection; do not wait for modeling.
-    await page.evaluate(() => {
-      const settings = window.app.settings.get().textEditor as Record<
-        string,
-        { user?: boolean }
-      >
-      settings.automaticallyRender.user = false
-    })
     await expect
       .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
       .toBe(0)

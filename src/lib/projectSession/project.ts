@@ -471,7 +471,9 @@ export class ZDSProject {
         getSettingsFromActorContext(this.app.settings.actor)
       )
     )
-      await editor.executeCode(editor.code, { updateThumbnail: false })
+      void editor
+        .executeCode(editor.code, { updateThumbnail: false })
+        .catch(reportRejection)
   }
 
   /**
