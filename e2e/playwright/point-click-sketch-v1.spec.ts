@@ -707,6 +707,7 @@ extrude001 = extrude(sketch001, length = 30)`
       await toolbar.expectSelection('1 face')
 
       await expect(modelingDialog.input('thickness')).toHaveText('5')
+      await editor.openPane()
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -717,7 +718,7 @@ extrude001 = extrude(sketch001, length = 30)`
       await editor.expectEditor.toContain(shellDeclaration)
       await editor.expectState({
         diagnostics: [],
-        activeLines: [],
+        activeLines: [shellDeclaration],
         highlightedCode: '',
       })
     })
@@ -877,14 +878,17 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         'angle001'
       )
 
-      await expect(modelingDialog.submitButton).toBeEnabled()
-
+      await modelingDialog
+        .options('sketch axis')
+        .selectOption({ label: 'X Axis' })
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
-        newCodeToFind.replace('angle = 360deg', 'angle = angle001')
+        newCodeToFind
+          .replace('angle = 360deg', 'angle = angle001')
+          .replace('axis = rectangleSegmentA001', 'axis = X')
       )
     })
   })

@@ -1741,6 +1741,7 @@ extrude001 = extrude(profile001, length = 500)`
       await toolbar.expectSelection('1 face')
 
       await expect(modelingDialog.input('thickness')).toHaveText('5')
+      await editor.openPane()
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -1751,7 +1752,7 @@ extrude001 = extrude(profile001, length = 500)`
       await editor.expectEditor.toContain(shellDeclaration)
       await editor.expectState({
         diagnostics: [],
-        activeLines: [],
+        activeLines: [shellDeclaration],
       })
     })
 

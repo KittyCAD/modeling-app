@@ -240,14 +240,22 @@ export async function deleteFromSelection(
     ['extrude', 'revolve', 'sweep', 'loft', 'blend'].includes(selectedCallName)
   const isSelectedCallExpression =
     selectedAstNode.node.type === 'CallExpressionKw'
-  if (varDecNodeInit?.type === 'PipeExpression') {
+  // Pipes can be standalone expressions as well as variable initializers.
+  const pipe = getNodeFromPath<PipeExpression | CallExpressionKw>(
+    ast,
+    selection.codeRef.pathToNode,
+    wasmInstance,
+    'PipeExpression'
+  )
+  if (err(pipe)) return pipe
+  if (pipe.node.type === 'PipeExpression') {
     const pipeBodyIndex = selection.codeRef.pathToNode.findIndex(
       ([key, kind]) => key === 'body' && kind === 'PipeExpression'
     )
     const pipeItemIndex = selection.codeRef.pathToNode[pipeBodyIndex + 1]?.[0]
     const pipeItem =
       typeof pipeItemIndex === 'number' && pipeItemIndex > 0
-        ? varDecNodeInit.body[pipeItemIndex]
+        ? pipe.node.body[pipeItemIndex]
         : undefined
     // Legacy Sketch 1 segment, wall, and cap selections can point to a sketch
     // pipe stage. Removing that stage would delete sketch code instead of the
@@ -262,7 +270,7 @@ export async function deleteFromSelection(
       !isGeometrySelection &&
       pipeItem?.type === 'CallExpressionKw' &&
       typeof pipeItemIndex === 'number' &&
-      varDecNodeInit.body.length > 1
+      pipe.node.body.length > 1
     ) {
       // Match the whole pipe stage so selecting a nested call (e.g. translate
       // inside union) cannot delete the enclosing operation instead.
@@ -272,15 +280,15 @@ export async function deleteFromSelection(
       ) {
         return new Error('Cannot delete a nested call as a pipe stage')
       }
-      const varDecClone = getNodeFromPath<VariableDeclarator>(
+      const pipeClone = getNodeFromPath<PipeExpression>(
         astClone,
         selection.codeRef.pathToNode,
         wasmInstance,
-        'VariableDeclarator'
+        'PipeExpression'
       )
-      if (err(varDecClone)) return varDecClone
-      if (varDecClone.node.init.type === 'PipeExpression') {
-        varDecClone.node.init.body.splice(pipeItemIndex, 1)
+      if (err(pipeClone)) return pipeClone
+      if (pipeClone.node.type === 'PipeExpression') {
+        pipeClone.node.body.splice(pipeItemIndex, 1)
         return astClone
       }
     }

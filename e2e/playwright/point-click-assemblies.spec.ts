@@ -428,12 +428,14 @@ test.describe(
         await toolbar.openFeatureTreeOperationContextMenu('Rotate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()
-        // Deleting the piped Rotate also removes its enclosing Scale call.
-        if (selectionType === 'feature-tree') {
-          await toolbar.openFeatureTreeOperationContextMenu('Scale', 0)
-          await page.getByTestId('context-menu-delete').click()
-          await scene.settled()
-        }
+        await editor.expectEditor.not.toContain('rotate(')
+        await editor.expectEditor.toContain('scale(bracket, factor = 1.2)')
+        await editor.expectEditor.toContain('translate(bracket, x = 1, y = 2)')
+        await toolbar.openFeatureTreeOperationContextMenu('Scale', 0)
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled()
+        await editor.expectEditor.not.toContain('scale(')
+        await editor.expectEditor.toContain('translate(bracket, x = 1, y = 2)')
         await toolbar.openFeatureTreeOperationContextMenu('Translate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()

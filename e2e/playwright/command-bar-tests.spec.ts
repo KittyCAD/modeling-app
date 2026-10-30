@@ -606,6 +606,66 @@ export exported = 2`,
     }
   )
 
+  test('Command bar steps back through optional and required Export arguments', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    modelingDialog,
+  }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle001 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle001])
+extrude001 = extrude(region001, length = 10mm)`
+      )
+    })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await cmdBar.openCmdBar()
+    await cmdBar.cmdOptions.getByText('Export', { exact: true }).click()
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({ stage: 'arguments', currentArgKey: 'type' })
+    await cmdBar.selectOption({ name: 'STL', exact: true }).click()
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({ stage: 'review' })
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await cmdBar.clickHeaderArgument('scale')
+    await cmdBar.clearNonRequiredButton.click()
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({ stage: 'review' })
+    const review = await cmdBar.getState()
+    if (review.stage !== 'review') throw new Error('Expected Export review')
+
+    await cmdBar.clickOptionalArgument('scale')
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({
+        stage: 'arguments',
+        currentArgKey: 'Scale',
+      })
+    // Leave the optional argument unconfirmed, then traverse both kinds of fields.
+    for (const name of ['Up', 'storage', 'type']) {
+      await cmdBar.stepBackButton.click()
+      await expect
+        .poll(() => cmdBar.getState())
+        .toMatchObject({
+          stage: 'arguments',
+          currentArgKey: name,
+          headerArguments: review.headerArguments,
+        })
+    }
+    await cmdBar.stepBackButton.click()
+    await cmdBar.expectState({ stage: 'commandBarClosed' })
+  })
+
   test('Can cancel a modeling dialog with an unfinished optional input', async ({
     page,
     homePage,

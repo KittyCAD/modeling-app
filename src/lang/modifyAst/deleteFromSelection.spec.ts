@@ -10,6 +10,28 @@ import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
 describe('Deleting operations from a pipe', () => {
+  it('preserves a standalone Scale when deleting its piped Rotate', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const base = `@settings(kclVersion = 3.0)
+import "bracket.kcl" as bracket
+scale(bracket, factor = 1.2)`
+    const rotate = 'rotate(axis = Z, angle = 0.2)'
+    const code = `${base}\n  |> ${rotate}`
+    const ast = assertParse(code, instance)
+    const start = code.indexOf(rotate)
+    const result = await deleteFromSelection(
+      ast,
+      { codeRef: codeRefFromRange([start, start + rotate.length, 0], ast) },
+      {},
+      new Map(),
+      instance
+    )
+    if (err(result)) throw result
+    expect(recast(result, instance)).toBe(
+      recast(assertParse(base, instance), instance)
+    )
+  })
+
   // Rows contain: selected operation name, appended pipe stage, reject nested call.
   it.each([
     ['appearance', 'appearance(color = "#7093ad", roughness = 55)'],
