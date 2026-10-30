@@ -3,7 +3,8 @@ import { signal } from '@preact/signals-core'
 import { MAX_TEXT_FILE_BYTES } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { reportRejection } from '@src/lib/trap'
+import { decodeTextFile } from '@src/lib/textFiles'
+import { isErr, reportRejection } from '@src/lib/trap'
 import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
@@ -41,10 +42,7 @@ export type ActiveTextFile =
 
 export const activeTextFileSignal = signal<ActiveTextFile | null>(null)
 
-// Preserve the UTF-8 byte order mark when editing.
-const decoder = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true })
 const FILE_TOO_LARGE_MESSAGE = 'Text files larger than 1 MiB cannot be edited.'
-const UNSUPPORTED_TEXT_MESSAGE = 'This file is binary or is not UTF-8 text.'
 
 /** Debounce for writing edits to disk, mirroring `KclManager.writeToFile`. */
 const WRITE_DEBOUNCE_MS = 1000
@@ -188,19 +186,9 @@ export async function openActiveTextFile(
       return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
     }
 
-    let text: string
-    try {
-      text = decoder.decode(bytes)
-      // Allow tabs and line endings, but reject other control characters.
-      for (const character of text) {
-        const isControlCharacter = /\p{Control}/u.test(character)
-        const isAllowedWhitespace = '\t\n\r'.includes(character)
-        if (isControlCharacter && !isAllowedWhitespace) {
-          return setActiveTextFileError(path, name, UNSUPPORTED_TEXT_MESSAGE)
-        }
-      }
-    } catch {
-      return setActiveTextFileError(path, name, UNSUPPORTED_TEXT_MESSAGE)
+    const text = decodeTextFile(bytes)
+    if (isErr(text)) {
+      return setActiveTextFileError(path, name, text.message)
     }
     activeTextFileSignal.value = {
       path,

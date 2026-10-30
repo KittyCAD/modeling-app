@@ -6,19 +6,12 @@ describe('attachment preview dialogs', () => {
   afterEach(() => vi.restoreAllMocks())
 
   test.each([
-    ['reference.txt', 'text/plain'],
-    ['README.MD', ''],
-    ['reference.json', 'application/octet-stream'],
-    ['reference', 'application/json'],
-    ['reference', 'application/schema+json'],
-    ['reference', 'application/xml; charset=utf-8'],
-    ['reference', 'application/yaml'],
-    ['reference', 'application/toml'],
-    ['main.kcl', ''],
+    ['README', ''],
+    ['reference.custom', 'application/octet-stream'],
   ])('previews %s (%s) lazily', async (name, type) => {
     const content = `First line\n\n  ${'long reference '.repeat(1000)}\nLast line`
     const file = new File([content], name, { type })
-    const read = vi.spyOn(file, 'text')
+    const read = vi.spyOn(file, 'arrayBuffer')
     render(
       <ZookeeperAttachment file={file} className="">
         {file.name}
@@ -45,8 +38,10 @@ describe('attachment preview dialogs', () => {
       type: 'text/plain',
     })
     const read = vi
-      .spyOn(file, 'text')
-      .mockResolvedValue('At the preview limit')
+      .spyOn(file, 'arrayBuffer')
+      .mockResolvedValue(
+        new TextEncoder().encode('At the preview limit').buffer
+      )
     render(
       <ZookeeperAttachment file={file} className="">
         {file.name}
@@ -69,7 +64,7 @@ describe('attachment preview dialogs', () => {
               mimetype: 'text/plain',
               data: Array.from(new TextEncoder().encode(content)),
             }
-      const read = vi.spyOn(Blob.prototype, 'text')
+      const read = vi.spyOn(Blob.prototype, 'arrayBuffer')
       render(
         <ZookeeperAttachment file={file} className="">
           {file.name}
@@ -83,18 +78,23 @@ describe('attachment preview dialogs', () => {
     }
   )
 
-  test('does not offer a text preview for binary attachments', () => {
-    const file = new File(['binary'], 'reference.pdf', {
-      type: 'application/pdf',
-    })
-    render(
-      <ZookeeperAttachment file={file} className="">
-        {file.name}
-      </ZookeeperAttachment>
-    )
-    expect(screen.queryByRole('button')).not.toBeInTheDocument()
-    expect(screen.getByText(file.name)).toBeInTheDocument()
-  })
+  test.each([[0xff], [0], [0x1b]])(
+    'rejects binary or invalid UTF-8 bytes %j',
+    async (byte) => {
+      const file = new File([new Uint8Array([byte])], 'reference.txt', {
+        type: 'text/plain',
+      })
+      render(
+        <ZookeeperAttachment file={file} className="">
+          {file.name}
+        </ZookeeperAttachment>
+      )
+      fireEvent.click(screen.getByRole('button', { name: file.name }))
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'This file is binary or is not UTF-8 text.'
+      )
+    }
+  )
 
   test('handles image errors and releases the preview URL on close', () => {
     vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:preview')
@@ -127,9 +127,9 @@ describe('attachment preview dialogs', () => {
   })
 
   test('ignores a text read that finishes after the selected file changes', async () => {
-    let finishRead: (value: string) => void = () => {}
+    let finishRead: (value: ArrayBuffer) => void = () => {}
     const first = new File(['old'], 'first.txt', { type: 'text/plain' })
-    vi.spyOn(first, 'text').mockReturnValue(
+    vi.spyOn(first, 'arrayBuffer').mockReturnValue(
       new Promise((resolve) => {
         finishRead = resolve
       })
@@ -151,7 +151,7 @@ describe('attachment preview dialogs', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'Text preview' })
     await within(dialog).findByText('Current text')
-    finishRead('Stale text')
+    finishRead(new TextEncoder().encode('Stale text').buffer)
     await Promise.resolve()
     expect(dialog.querySelector('pre')?.textContent).toBe('Current text')
   })

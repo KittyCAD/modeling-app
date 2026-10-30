@@ -2,10 +2,10 @@ import { Dialog } from '@headlessui/react'
 import type { MlCopilotFile } from '@kittycad/lib'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { MAX_TEXT_FILE_BYTES } from '@src/lib/constants'
-import { isTextFile } from '@src/lib/fileExtensions'
-import { isImageMimetype, isTextMimetype } from '@src/lib/mimeTypes'
+import { isImageMimetype } from '@src/lib/mimeTypes'
+import { decodeTextFile } from '@src/lib/textFiles'
 import type { ZookeeperAttachmentFetchState } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 type AttachmentFile = File | MlCopilotFile
@@ -34,8 +34,6 @@ export function ZookeeperAttachment({
 
   const mimetype = file instanceof File ? file.type : file.mimetype
   const isImage = isImageMimetype(mimetype)
-  const canPreview =
-    isImage || isTextMimetype(mimetype) || isTextFile(file.name)
   const needsFetch =
     !(file instanceof File) &&
     file.data.length === 0 &&
@@ -46,23 +44,18 @@ export function ZookeeperAttachment({
 
   return (
     <>
-      {canPreview || canFetch ? (
-        <button
-          ref={triggerRef}
-          type="button"
-          className={className}
-          aria-haspopup={canPreview ? 'dialog' : undefined}
-          disabled={!canPreview && fetchState?.status === 'loading'}
-          onClick={() => {
-            if (canPreview) setOpen(true)
-            if (canFetch && fetchState?.status !== 'loading') onFetch()
-          }}
-        >
-          {children}
-        </button>
-      ) : (
-        <div className={className}>{children}</div>
-      )}
+      <button
+        ref={triggerRef}
+        type="button"
+        className={className}
+        aria-haspopup="dialog"
+        onClick={() => {
+          setOpen(true)
+          if (canFetch && fetchState?.status !== 'loading') onFetch()
+        }}
+      >
+        {children}
+      </button>
       {open && (
         <Dialog
           open={true}
@@ -133,7 +126,7 @@ function AttachmentContents({
   const [preview, setPreview] = useState<{
     file: AttachmentFile
     content?: string
-    failed?: boolean
+    error?: string
   }>()
 
   useEffect(() => {
@@ -149,13 +142,18 @@ function AttachmentContents({
     }
 
     let active = true
-    blob.text().then(
-      (content) => {
-        if (active) setPreview({ file, content })
+    blob.arrayBuffer().then(
+      (bytes) => {
+        if (!active) return
+        const content = decodeTextFile(bytes)
+        setPreview(
+          isErr(content) ? { file, error: content.message } : { file, content }
+        )
       },
       (error: unknown) => {
         reportRejection(error)
-        if (active) setPreview({ file, failed: true })
+        if (active)
+          setPreview({ file, error: 'Could not preview this attachment.' })
       }
     )
     return () => {
@@ -167,8 +165,8 @@ function AttachmentContents({
     return <p role="alert">Text files larger than 1 MiB cannot be previewed.</p>
   }
   if (preview?.file !== file) return <p role="status">Loading preview…</p>
-  if (preview.failed) {
-    return <p role="alert">Could not preview this attachment.</p>
+  if (preview.error) {
+    return <p role="alert">{preview.error}</p>
   }
   return isImage ? (
     <img
@@ -177,7 +175,9 @@ function AttachmentContents({
       className="mx-auto max-h-[70vh] max-w-full object-contain"
       onError={() =>
         setPreview((current) =>
-          current === preview ? { file, failed: true } : current
+          current === preview
+            ? { file, error: 'Could not preview this attachment.' }
+            : current
         )
       }
     />
