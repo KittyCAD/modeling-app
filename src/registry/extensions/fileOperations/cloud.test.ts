@@ -68,6 +68,18 @@ const setup = (accountId?: () => string) => {
 }
 
 describe('memory cloud storage', () => {
+  it('resolves read-only cloud paths from memory', async () => {
+    const { storage, diskWrite } = setup()
+    const root = await storage.openProject('one')
+    const file = posix.join(root, 'main.kcl')
+
+    expect(await storage.operations.realpath(file)).toBe(file)
+    expect(await storage.operations.statReadOnly(file)).toMatchObject({
+      kind: 'file',
+    })
+    expect(diskWrite).not.toHaveBeenCalled()
+  })
+
   it('keeps all content off disk and resolves writes after cloud acknowledgement', async () => {
     const { storage, diskWrite } = setup()
     const root = await storage.openProject('one')

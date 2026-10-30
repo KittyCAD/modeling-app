@@ -199,6 +199,10 @@ export function createMemoryFileSystem(
         birthtime: new Date(time),
       }
     },
+    realpath: async (path) => {
+      get(path)
+      return key(path)
+    },
     access: async (path) => {
       get(path)
     },
