@@ -517,51 +517,74 @@ describe('KclManager settings ownership', () => {
 })
 
 describe('KclManager live operation updates', () => {
-  it('refreshes cloud files without writing, generating thumbnails, or waiting for execution', async () => {
-    const { app } = createKclManagerTestHarness()
-    const metadata = createProjectForTest('/project')
-    metadata.cloudProjectId = 'remote'
-    metadata.children = [
-      { name: 'main.kcl', path: metadata.default_file, children: null },
-    ]
-    const read = vi
-      .spyOn(app.projectSession.textFileIO, 'read')
-      .mockResolvedValue('')
-    const getProjectInfo = vi
-      .spyOn(desktop, 'getProjectInfo')
-      .mockResolvedValue(metadata)
-    const execution = Promise.withResolvers<undefined>()
-    try {
-      const project = await app.openProject(metadata)
-      const editor = await project.openEditor(
-        metadata.default_file,
-        undefined,
-        '',
-        false
-      )
-      project.executingPath = editor.path
-      const open = vi
-        .spyOn(editor.rustContext, 'sendOpenProject')
-        .mockResolvedValue()
-      const execute = vi
-        .spyOn(editor, 'executeCode')
-        .mockReturnValue(execution.promise)
-      await project.reloadFilesFromStorage(() => true)
-      expect(getProjectInfo).toHaveBeenCalledWith(
-        app.fileOperations,
-        metadata.path,
-        expect.anything(),
-        { createMissingEntrypoint: false }
-      )
-      expect(open).toHaveBeenCalledOnce()
-      expect(execute).toHaveBeenCalledWith('', { updateThumbnail: false })
-    } finally {
-      execution.resolve(undefined)
-      getProjectInfo.mockRestore()
-      read.mockRestore()
-      app.dispose()
+  it.each([false, true])(
+    'updates a cloud buffer without relying on its watcher, preserving unsaved edits: %s',
+    async (dirty) => {
+      const { app } = createKclManagerTestHarness()
+      const metadata = createProjectForTest('/project')
+      metadata.cloudProjectId = 'remote'
+      metadata.children = [
+        { name: 'main.kcl', path: metadata.default_file, children: null },
+      ]
+      const read = vi
+        .spyOn(app.projectSession.textFileIO, 'read')
+        .mockResolvedValue('')
+      const getProjectInfo = vi
+        .spyOn(desktop, 'getProjectInfo')
+        .mockResolvedValue(metadata)
+      const execution = Promise.withResolvers<undefined>()
+      try {
+        const project = await app.openProject(metadata)
+        const editor = await project.openEditor(
+          metadata.default_file,
+          undefined,
+          '',
+          false
+        )
+        project.executingPath = editor.path
+        if (dirty)
+          editor.updateCodeEditor('local draft', {
+            shouldExecute: false,
+            shouldWriteToDisk: false,
+          })
+        read.mockResolvedValue('downloaded source')
+        const write = vi.spyOn(editor.textFileIO, 'write')
+        const open = vi
+          .spyOn(editor.rustContext, 'sendOpenProject')
+          .mockResolvedValue()
+        const execute = vi
+          .spyOn(editor, 'executeCode')
+          .mockReturnValue(execution.promise)
+        await project.reloadFilesFromStorage(() => true)
+        expect(getProjectInfo).toHaveBeenCalledWith(
+          app.fileOperations,
+          metadata.path,
+          expect.anything(),
+          { createMissingEntrypoint: false }
+        )
+        expect(open).toHaveBeenCalledOnce()
+        expect(open).toHaveBeenCalledWith(
+          editor.path,
+          expect.arrayContaining([
+            expect.objectContaining({
+              path: editor.path,
+              text: dirty ? 'local draft' : 'downloaded source',
+            }),
+          ])
+        )
+        expect(editor.code).toBe(dirty ? 'local draft' : 'downloaded source')
+        expect(execute).toHaveBeenCalledWith(editor.code, {
+          updateThumbnail: false,
+        })
+        expect(write).not.toHaveBeenCalled()
+      } finally {
+        execution.resolve(undefined)
+        getProjectInfo.mockRestore()
+        read.mockRestore()
+        app.dispose()
+      }
     }
-  })
+  )
 
   it.each([false, true])(
     'routes generated thumbnails through the project session (cloud: %s)',
@@ -591,6 +614,12 @@ describe('KclManager live operation updates', () => {
         vi.spyOn(editor.rustContext, 'execute').mockResolvedValue(
           editor.execState
         )
+        const edit = (code: string) =>
+          editor.updateCodeEditor(code, {
+            shouldExecute: false,
+            shouldWriteToDisk: false,
+          })
+        edit('@settings(kclVersion = 3.0)\nwidth = 1\n')
         await editor.executeAst({ ast: createEmptyAst(), executionId: 101 })
         expect(thumbnail).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({ writeThumbnail: expect.any(Function) })
@@ -598,6 +627,9 @@ describe('KclManager live operation updates', () => {
         const { isCurrent } = thumbnail.mock.calls[0][0]
         expect(isCurrent()).toBe(true)
         thumbnail.mockClear()
+        await editor.executeAst({ ast: createEmptyAst() })
+        expect(thumbnail).not.toHaveBeenCalled()
+        edit('@settings(kclVersion = 3.0)\nwidth = 2\n')
         await editor.executeAst({
           ast: createEmptyAst(),
           updateThumbnail: false,
@@ -611,6 +643,7 @@ describe('KclManager live operation updates', () => {
           ...metadata,
           default_file: editor.path,
         }
+        edit('@settings(kclVersion = 3.0)\nwidth = 3\n')
         await editor.executeAst({ ast: createEmptyAst() })
         expect(thumbnail).toHaveBeenCalledOnce()
       } finally {

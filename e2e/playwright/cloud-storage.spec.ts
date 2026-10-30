@@ -476,6 +476,8 @@ test(
       .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
       .toBe(0)
     const initialUploads = remote.uploads.length
+    // A save temporarily unwatches the editor; refresh must still apply its source.
+    await page.evaluate(() => window.app.singletons.kclManager.unwatch())
     send({
       tool_output: {
         result: {

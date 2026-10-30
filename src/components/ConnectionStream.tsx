@@ -33,7 +33,6 @@ import {
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { prepareEditCommand } from '@src/lib/featureTree'
-import { createProjectThumbnail } from '@src/lib/screenshot'
 import {
   getEngineRegionSelectionFromPoint,
   normalizeEntityReference,
@@ -69,14 +68,7 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const {
-    settings,
-    project,
-    wasmPromise,
-    commands,
-    fileOperations,
-    projectSession,
-  } = useApp()
+  const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -314,11 +306,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onPageMountedParams = useMemo(
     () => ({
       callback: () => {
-        const initialPath = kclManager.path
-        const isCurrentEntrypoint = () =>
-          projectSession.getProject() === project &&
-          kclManager.path === initialPath &&
-          initialPath === project?.projectIORefSignal.peek().default_file
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -332,22 +319,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           setShowManualConnect,
           sceneInfra,
           settingsActor: settings.actor,
+        }).catch((e) => {
+          console.warn(e)
+          setShowManualConnect(true)
         })
-          .then(() => {
-            // Capture after the initial zoom; cloud persistence joins the next save.
-            if (projectIORef?.path && isCurrentEntrypoint()) {
-              createProjectThumbnail({
-                fileOperations,
-                projectDirectoryWithoutEndingSlash: projectIORef.path,
-                writeThumbnail: projectSession.writeThumbnail,
-                isCurrent: isCurrentEntrypoint,
-              })
-            }
-          })
-          .catch((e) => {
-            console.warn(e)
-            setShowManualConnect(true)
-          })
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

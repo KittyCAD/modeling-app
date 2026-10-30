@@ -461,7 +461,15 @@ export class ZDSProject {
         this.closeEditor(openEditor.path)
     // The controller navigates to the default file when the executing file was
     // removed. Never execute the deleted editor's stale buffer.
-    if (!files.some((file) => file.path === editor.path)) return
+    const currentFile = apiFiles.find((file) => file.path === editor.path)
+    if (!currentFile) return
+    if (!editor.hasUnsavedLocalChanges() || editor.code === currentFile.text)
+      editor.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: editor.path,
+        nextContent: currentFile.text,
+        shouldSyncRust: false,
+      })
+    else currentFile.text = editor.code
     await editor.rustContext.sendOpenProject(editor.path, apiFiles)
     if (!isCurrent() || this.executingEditor.value !== editor) return
     if (

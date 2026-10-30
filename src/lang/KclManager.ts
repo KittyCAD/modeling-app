@@ -2085,7 +2085,7 @@ export class KclManager extends File {
     this.persistRecoverySnapshot()
   }
 
-  private hasUnsavedLocalChanges() {
+  hasUnsavedLocalChanges() {
     return !isCodeTheSame(this.code, this._lastKnownFileCode)
   }
 
@@ -2407,6 +2407,10 @@ export class KclManager extends File {
           : compilationIssuesToDiagnostics(execState.issues, code)
       )
       this.execState = execState
+      const sourceChanged = !isCodeTheSame(
+        this.lastSuccessfulCode,
+        codeThatExecuted
+      )
       if (!errors.length) {
         this.lastSuccessfulVariables = execState.variables
         this.lastSuccessfulOperations = execState.operations
@@ -2457,6 +2461,7 @@ export class KclManager extends File {
         pathThatExecuted === this.systemDeps.project.peek()?.default_file
       if (
         args.updateThumbnail !== false &&
+        sourceChanged &&
         !isInterrupted &&
         errors.length === 0 &&
         project &&
@@ -3387,9 +3392,11 @@ export class KclManager extends File {
   synchronizeCurrentEditorAfterDirectGlobalReplay({
     filePath,
     nextContent,
+    shouldSyncRust = true,
   }: {
     filePath: string
     nextContent: string | null
+    shouldSyncRust?: boolean
   }) {
     if (filePath !== this.path || nextContent === null) {
       return false
@@ -3401,6 +3408,7 @@ export class KclManager extends File {
       shouldExecute: false,
       shouldResetCamera: false,
       shouldWriteToDisk: false,
+      shouldSyncRust,
     })
     this.markFileCodeAsSynced(nextContent)
     return true

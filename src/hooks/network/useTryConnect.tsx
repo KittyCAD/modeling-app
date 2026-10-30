@@ -197,7 +197,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   })
   // Rebuild from current source instead of replaying a queued execution from previous connection.
   kclManager.executeIsStale = null
-  await kclManager.executeCode()
+  await kclManager.executeCode(undefined, { updateThumbnail: false })
   // This prevents an old rebuild from restoring its camera onto a replacement connection.
   if (engineCommandManager.connection !== connection) {
     return
