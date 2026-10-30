@@ -18,10 +18,14 @@ const bracket = fs.readFileSync(
   'utf8'
 )
 
-test(
-  'can start sketches after creating and switching KCL files',
-  { tag: '@web' },
-  async ({ page, homePage, toolbar, scene, editor }) => {
+test.describe('Regression tests', { tag: '@web' }, () => {
+  test('can start sketches after creating and switching KCL files', async ({
+    page,
+    homePage,
+    toolbar,
+    scene,
+    editor,
+  }) => {
     await homePage.createAndGoToProject('sketch-file-switching')
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await toolbar.openPane(DefaultLayoutPaneID.Files)
@@ -56,8 +60,8 @@ test(
         await toolbar.exitSketch()
       })
     }
-  }
-)
+  })
+})
 
 test.describe('Regression tests', { tag: '@desktop' }, () => {
   // bugs we found that don't fit neatly into other categories
