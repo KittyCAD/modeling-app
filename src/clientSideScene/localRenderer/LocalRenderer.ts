@@ -26,6 +26,7 @@ import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import { DprDetector } from '@src/lib/DprDetector'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -43,7 +44,6 @@ import {
   OrthographicCamera,
   PerspectiveCamera,
   Scene,
-  Sphere,
   Texture,
   Vector3,
 } from 'three'
@@ -68,6 +68,17 @@ import type {
 } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
+
+/** glTF is Y-up in meters; the shared navigation camera is Z-up in mm. */
+function gltfToEngineBounds({ min, max }: Box3) {
+  const bounds = new Box3(
+    new Vector3(min.x, -max.z, min.y),
+    new Vector3(max.x, -min.z, max.y)
+  )
+  bounds.min.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
+  bounds.max.divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
+  return bounds
+}
 
 // The installed typings omit support for reconstructing normals from depth.
 type CreateAmbientOcclusion = (
@@ -131,7 +142,8 @@ export class LocalRenderer {
   private executionVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
-  private hasFittedModel = false
+  /** A camera reset waiting for the next model. The first model always gets one. */
+  private cameraResetPending = true
   private previewCamera: PerspectiveCamera | OrthographicCamera | null = null
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
@@ -217,11 +229,14 @@ export class LocalRenderer {
     return plane?.group.visible ? plane.mesh : null
   }
 
-  private updateSelection() {
-    const targets = this.selectedEntityIds
+  private getSelectedTargets() {
+    return this.selectedEntityIds
       .map((id) => this.getPlaneTarget(id) ?? this.targetByEntityId.get(id))
       .filter(isNonNullable)
-    this.gpu?.selectionHighlightRenderer.setSelection(targets)
+  }
+
+  private updateSelection() {
+    this.gpu?.selectionHighlightRenderer.setSelection(this.getSelectedTargets())
     this.scheduleRender()
   }
 
@@ -832,6 +847,32 @@ export class LocalRenderer {
     this.syncPreviewCameraFromShared()
   }
 
+  /**
+   * What zoom to fit frames, as in the engine: the loaded model and the
+   * visible planes. In the engine's world: Z up, in mm.
+   */
+  getFitBounds(): Box3 | undefined {
+    const bounds = this.gpu?.planeRenderer.getVisibleBounds() ?? new Box3()
+    if (this.currentModel) {
+      bounds.union(
+        gltfToEngineBounds(new Box3().setFromObject(this.currentModel))
+      )
+    }
+    return bounds.isEmpty() ? undefined : bounds
+  }
+
+  /**
+   * What center view on selection centers on, as in the engine: the selected
+   * entities. In the engine's world: Z up, in mm.
+   */
+  getSelectionBounds(): Box3 | undefined {
+    const bounds = new Box3()
+    for (const target of this.getSelectedTargets()) {
+      bounds.union(new Box3().setFromObject(target))
+    }
+    return bounds.isEmpty() ? undefined : gltfToEngineBounds(bounds)
+  }
+
   private clearModel() {
     const { gpu } = this
     this.loadedSceneGeneration = null
@@ -998,11 +1039,14 @@ export class LocalRenderer {
     this.scheduleRender()
 
     this.container.style.opacity = '1'
-    // Execution may finish while the GPU/environment is initializing, or before
-    // this renderer is mounted. Load that completed scene once, too.
+    // Models load on ExecutionDone, which this renderer misses if the execution
+    // finished before it was created or while initialize() waited for the GPU.
+    // So load the current file's finished execution here, in case ExecutionDone
+    // was missed. A file switch empties execState, so an execution from the
+    // previous file doesn't count.
     if (
       !kclManager.isExecuting &&
-      kclManager.engineSceneGenerationSignal.peek() > 0 &&
+      kclManager.execState.engineSceneGeneration !== null &&
       !kclManager.hasErrors()
     ) {
       void this.refreshModel().catch(reportRejection)
@@ -1051,6 +1095,7 @@ export class LocalRenderer {
       this.clearModel()
       this.loadedSceneGeneration = sceneGeneration
       this.rebuildSelectionTargets()
+      this.resetCameraIfPending()
       this.onModelLoadSettled?.(true)
       return
     }
@@ -1106,10 +1151,7 @@ export class LocalRenderer {
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
       this.updateAmbientOcclusionScale(bounds)
-      if (!this.hasFittedModel && !bounds.isEmpty()) {
-        this.fitSharedCameraToModel(bounds)
-        this.hasFittedModel = true
-      }
+      this.resetCameraIfPending()
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
       this.onModelLoadSettled?.(true)
@@ -1126,42 +1168,37 @@ export class LocalRenderer {
     this.onModelLoadSettled?.()
   }
 
-  private fitSharedCameraToModel(bounds: Box3) {
-    const controls = this.kclManager.sceneInfra.camControls
-    const camera = controls.camera
-    const sphere = bounds.getBoundingSphere(new Sphere())
-    // glTF is Y-up in meters; the shared navigation camera is Z-up in mm.
-    const center = new Vector3(
-      sphere.center.x,
-      -sphere.center.z,
-      sphere.center.y
-    ).divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
-    const radius = Math.max(
-      sphere.radius / ENGINE_MILLIMETERS_TO_GLTF_METERS,
-      0.001
-    )
-    const direction = camera.position.clone().sub(controls.target)
-    if (direction.lengthSq() === 0) direction.set(1, -1, 1)
-    direction.normalize()
-    let distance = radius * 3
-    if (camera instanceof PerspectiveCamera) {
-      const halfFovY = (camera.getEffectiveFOV() * Math.PI) / 360
-      const aspect =
-        Math.max(this.container.clientWidth, 1) /
-        Math.max(this.container.clientHeight, 1)
-      const halfFovX = Math.atan(Math.tan(halfFovY) * aspect)
-      distance = (radius * 1.2) / Math.sin(Math.min(halfFovX, halfFovY))
+  /**
+   * The reset after an execution, once its model is on screen. A failed
+   * execution loads no model, so its reset waits for the next one.
+   */
+  resetCameraAfterModelLoad() {
+    if (
+      this.loadedSceneGeneration ===
+      this.kclManager.engineSceneGenerationSignal.peek()
+    ) {
+      this.resetCamera()
     } else {
-      camera.zoom =
-        Math.min(camera.right - camera.left, camera.top - camera.bottom) /
-        (2 * radius * 1.2)
+      this.cameraResetPending = true
     }
-    controls.target.copy(center)
-    camera.position.copy(center).addScaledVector(direction, distance)
-    camera.lookAt(center)
-    camera.updateProjectionMatrix()
-    camera.updateMatrixWorld(true)
-    controls.onCameraChange()
+  }
+
+  /**
+   * Also stands in for the reset after opening a project, which local mode
+   * skips because the model is not loaded yet.
+   */
+  private resetCameraIfPending() {
+    if (this.cameraResetPending) {
+      this.cameraResetPending = false
+      this.resetCamera()
+    }
+  }
+
+  private resetCamera() {
+    resetCameraPosition({
+      sceneInfra: this.kclManager.sceneInfra,
+      settingsActor: this.kclManager.systemDeps.settings,
+    }).catch(reportRejection)
   }
 }
 
