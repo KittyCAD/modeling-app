@@ -1,11 +1,15 @@
+#[cfg(test)]
+mod proptests;
+pub(crate) mod serde;
+
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use ::serde::Deserialize;
+use ::serde::Serialize;
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_api::UnitLength;
-use serde::Serialize;
-use serde::Serializer;
 
 use crate::CompilationIssue;
 use crate::KclError;
@@ -62,7 +66,7 @@ use crate::std::args::TyF64;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub enum KclObjectKind {
     #[default]
     Default,
@@ -91,28 +95,24 @@ impl KclObjectKind {
 }
 
 /// Any KCL value.
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq, Deserialize)]
 #[serde(tag = "type")]
 pub enum KclValue {
     Uuid {
         value: ::uuid::Uuid,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Bool {
         value: bool,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Number {
         value: f64,
         ty: NumericType,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     String {
         value: String,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Enum {
@@ -126,14 +126,12 @@ pub enum KclValue {
     },
     Tuple {
         value: Vec<KclValue>,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     // An array where all values have a shared type (not necessarily the same principal type).
     HomArray {
         value: Vec<KclValue>,
         // The type of values, not the array type.
-        #[serde(skip)]
         ty: RuntimeType,
     },
     Object {
@@ -141,11 +139,10 @@ pub enum KclValue {
         constrainable: bool,
         #[serde(default, skip_serializing_if = "KclObjectKind::is_default")]
         object_kind: KclObjectKind,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     TagIdentifier(Box<TagIdentifier>),
-    TagDeclarator(BoxNode<TagDeclarator>),
+    TagDeclarator(#[serde(with = "self::serde::tag_node")] BoxNode<TagDeclarator>),
     GdtAnnotation {
         value: Box<GdtAnnotation>,
     },
@@ -179,38 +176,25 @@ pub enum KclValue {
     },
     ImportedGeometry(ImportedGeometry),
     Function {
-        #[serde(serialize_with = "function_value_stub")]
         value: Box<FunctionSource>,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Module {
         value: ModuleId,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Type {
-        #[serde(skip)]
         value: TypeDef,
         experimental: bool,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     KclNone {
         value: KclNone,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
 }
 
-fn function_value_stub<S>(_value: &FunctionSource, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    serializer.serialize_unit()
-}
-
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct NamedParam {
     pub experimental: bool,
     /// Constraint marking the KCL version in which this parameter was added.
@@ -489,9 +473,9 @@ pub enum FunctionBody {
     Kcl(EnvironmentRef),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum TypeDef {
-    RustRepr(PrimitiveType, StdFnProps),
+    RustRepr(PrimitiveType, #[serde(with = "self::serde::std_fn_props")] StdFnProps),
     Alias(RuntimeType),
     /// Shared rather than owned so that every value of the enum points at the
     /// one declaration object, and so that reading the type out of memory,
@@ -519,7 +503,7 @@ impl TypeDef {
 /// the declaration site. Importing under an alias renames the binding, not the
 /// type, so it leaves identity untouched. Two enums declaring identical variant
 /// names are still distinct types.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct EnumTypeId {
     module_id: ModuleId,
     declared_name: String,
@@ -545,7 +529,7 @@ impl EnumTypeId {
 }
 
 /// A declared enum: its identity plus its variants in declaration order.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EnumTypeDef {
     id: EnumTypeId,
     variants: Vec<String>,
@@ -625,20 +609,12 @@ impl EnumTypeDef {
 /// can reach a module that never imported the type at all. The declaration is
 /// reachable, not part of the value: identity and equality read the declaration's
 /// id and the variant name, never a representation.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EnumValue {
-    /// Serialized as `enum_id` so that the exposed shape stays the nominal
-    /// identity plus the variant, and no declaration data leaks into snapshots
-    /// or the memory pane.
-    #[serde(rename = "enum_id", serialize_with = "serialize_enum_def_id")]
+    /// Retain the declaration so a deserialized value can still resolve its variants.
     def: Arc<EnumTypeDef>,
     variant: String,
-    #[serde(skip)]
     meta: Vec<Metadata>,
-}
-
-fn serialize_enum_def_id<S: Serializer>(def: &Arc<EnumTypeDef>, serializer: S) -> Result<S::Ok, S::Error> {
-    def.id().serialize(serializer)
 }
 
 /// Two values are equal when they name the same variant of the same declaration.
@@ -1650,22 +1626,20 @@ mod tests {
         );
     }
 
-    /// Serialization is the third such surface, and the one that reaches
-    /// `program_memory.snap`. A value holds its whole declaration, so this pins
-    /// that only the identity and the variant are written out: the declaration
-    /// will carry `@repr` values, and those must not appear here.
     #[test]
-    fn enum_values_serialize_as_identity_and_variant() {
+    fn enum_values_roundtrip_with_declaration_and_metadata() {
+        let original = color_red();
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: KclValue = serde_json::from_str(&json).unwrap();
         assert_eq!(
-            serde_json::to_value(color_red()).unwrap(),
-            serde_json::json!({
-                "type": "Enum",
-                "value": {
-                    "enum_id": { "module_id": 0, "declared_name": "Color" },
-                    "variant": "Red",
-                },
-            })
+            serde_json::to_value(&restored).unwrap(),
+            serde_json::to_value(&original).unwrap()
         );
+        assert_eq!(restored, original);
+        let KclValue::Enum { value } = restored else {
+            panic!("expected enum value")
+        };
+        assert_eq!(value.def.variants(), ["Red", "Green"]);
     }
 
     #[test]

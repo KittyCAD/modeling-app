@@ -40,7 +40,7 @@ use crate::parsing::ast::types::Type;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum RuntimeType {
     Primitive(PrimitiveType),
     Array(Box<RuntimeType>, ArrayLen),
@@ -616,7 +616,7 @@ impl ArrayLen {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum PrimitiveType {
     Any,
     Never,
