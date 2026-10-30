@@ -3,7 +3,6 @@ import { useAppState } from '@src/AppState'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
-import { LegacySketchModeBanner } from '@src/components/Announcements'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip, {
   RICH_TOOLTIP_SURFACE_CLASS_NAME,
@@ -813,8 +812,6 @@ const Toolbar_ = memo(
               <p className="text-xs">{symmetricToolPrompt}</p>
             </div>
           )}
-          {modelingMachineStateToToolbarModeName(props.state) ===
-            'sketching' && <LegacySketchModeBanner />}
         </div>
       </menu>
     )
