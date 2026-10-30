@@ -97,7 +97,7 @@ export function ProjectLibraryPreviewRow({
     projectLibraryDrag?.getLibraryDropTargetProps(library)
   const isActiveDropTarget =
     projectLibraryDrag?.isLibraryDragOver(library) ?? false
-  const sectionClassName = `mx-1 flex flex-col gap-3 rounded-sm border p-2 transition-colors ${
+  const sectionClassName = `mx-1 flex flex-col gap-3 rounded-sm border p-2 ${
     isActiveDropTarget
       ? 'border-primary bg-primary/5 ring-2 ring-primary/30 dark:bg-primary/10'
       : 'border-transparent'

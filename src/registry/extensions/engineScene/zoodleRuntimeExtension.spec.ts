@@ -35,7 +35,7 @@ describe('zoodle runtime extension', () => {
         registry.get(engineSceneStreamClassNamesValueSpec)
       )
     ).toBe(
-      'absolute inset-4 z-20 rounded-lg transition-all duration-150 ease-out before:content-[""] before:absolute before:-inset-4 before:bg-ml-green'
+      'absolute inset-4 z-20 rounded-lg before:content-[""] before:absolute before:-inset-4 before:bg-ml-green'
     )
   })
 
