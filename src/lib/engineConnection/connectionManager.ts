@@ -1,8 +1,4 @@
-import type {
-  ModelingCmdReq,
-  WebSocketRequest,
-  WebSocketResponse,
-} from '@kittycad/lib'
+import type { ModelingCmdReq, WebSocketResponse } from '@kittycad/lib'
 import {
   decode as msgpackDecode,
   encode as msgpackEncode,
@@ -114,6 +110,7 @@ export class ConnectionManager extends EventTarget {
   get engineSessionId(): string | undefined {
     return this.connection?.id
   }
+
   private reconnectingConnection: Connection | undefined
   private prepareForReconnect:
     | ((signal: AbortSignal) => Promise<undefined | Error>)
@@ -832,10 +829,15 @@ export class ConnectionManager extends EventTarget {
     }
 
     if (command.type === 'modeling_cmd_batch_req') {
-      this.connection.send(command)
-      // TODO - handlePendingCommands does not handle batch commands
-      // return this.handlePendingCommand(command.requests[0].cmd_id, command.cmd)
-      return Promise.resolve(null)
+      if (!command.responses) {
+        this.connection.send(command)
+        return null
+      }
+      return this.sendCommand(
+        command.batch_id,
+        { command, idToRangeMap: {}, range: defaultSourceRange() },
+        true
+      ).then(([response]) => response)
     }
 
     if (command.type !== 'modeling_cmd_req') {
@@ -1104,42 +1106,36 @@ export class ConnectionManager extends EventTarget {
         message.resp.type === 'modeling_batch' &&
         pending.command.type === 'modeling_cmd_batch_req'
       ) {
-        const individualPendingResponses: {
-          [key: string]: WebSocketRequest
-        } = {}
+        const responses = message.resp.data.responses
+        // Response maps are unordered. Deliver each acknowledged command in
+        // request order, before the resolved promise's continuation runs.
         pending.command.requests.forEach(({ cmd, cmd_id }) => {
-          individualPendingResponses[cmd_id] = {
-            type: 'modeling_cmd_req',
-            cmd,
-            cmd_id,
-          }
-        })
-        Object.entries(message.resp.data.responses).forEach(
-          ([commandId, response]) => {
-            if (!('response' in response)) return
-            const command = individualPendingResponses[commandId]
-            if (!command) return
-            if (command.type === 'modeling_cmd_req')
-              this.addCommandLog({
-                type: CommandLogType.ReceiveReliable,
-                data: {
-                  type: 'modeling',
-                  data: {
-                    modeling_response: response.response,
-                  },
-                },
-                id: commandId,
-                cmd_type: command?.cmd?.type,
-              })
-
-            this.responseMap[commandId] = {
+          const response = responses[cmd_id]
+          if (!response || !('response' in response)) return
+          this.addCommandLog({
+            type: CommandLogType.ReceiveReliable,
+            data: {
               type: 'modeling',
               data: {
                 modeling_response: response.response,
               },
-            }
+            },
+            id: cmd_id,
+            cmd_type: cmd.type,
+          })
+
+          if (response.response.type === cmd.type) {
+            Object.values(
+              this.subscriptions[response.response.type] || {}
+            ).forEach((callback) => callback(response.response))
           }
-        )
+          this.responseMap[cmd_id] = {
+            type: 'modeling',
+            data: {
+              modeling_response: response.response,
+            },
+          }
+        })
       }
     }
   }
@@ -1744,11 +1740,35 @@ export class ConnectionManager extends EventTarget {
       })
     )
 
-    return await this.sendSceneCommand({
+    const response = await this.sendSceneCommand({
       type: 'modeling_cmd_batch_req',
       batch_id: uuidv4(),
       requests,
-      responses: false,
+      responses: true,
     })
+    const acknowledgement = isArray(response) ? response[0] : response
+    const results =
+      acknowledgement &&
+      isModelingBatchResponse(acknowledgement) &&
+      acknowledgement.success
+        ? acknowledgement.resp.data.responses
+        : undefined
+    for (const request of requests) {
+      const result = results?.[request.cmd_id]
+      if (
+        !result ||
+        !('response' in result) ||
+        result.response.type !== 'object_visible'
+      ) {
+        return Promise.reject(
+          new Error(
+            getResponseErrorMessage(
+              result && 'errors' in result ? [result] : response,
+              'Object visibility command was not acknowledged'
+            )
+          )
+        )
+      }
+    }
   }
 }
