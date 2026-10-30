@@ -5883,6 +5883,49 @@ test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
     userFeatures: ['modeling_dialogs'],
   })
 
+  test('Offset Plane autocomplete works without a selection and after reopening', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(
+        '',
+        '@settings(kclVersion = 3.0)\noffsetDistance = 5mm\n'
+      )
+    )
+    const offset = modelingDialog.input(/^offset$/i)
+    const suggestion = page.locator('.cm-completionLabel', {
+      hasText: /^offsetDistance$/,
+    })
+
+    await toolbar.offsetPlaneButton.click()
+    await offset.fill('offsetD')
+    await expect(suggestion).toBeVisible()
+    await offset.press('Enter')
+    await expect(offset).toHaveText('offsetDistance')
+    await toolbar.selectDefaultPlane('Front plane')
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await editor.expectEditor.toContain(
+      'plane001 = offsetPlane(XZ, offset = offsetDistance)'
+    )
+
+    await toolbar.offsetPlaneButton.click()
+    await offset.fill('offsetD')
+    await expect(suggestion).toBeVisible()
+    await offset.press('Enter')
+    await expect(offset).toHaveText('offsetDistance')
+    await modelingDialog.cancelButton.click()
+  })
+
   test('Selects objects and annotations from the feature tree for Named View exceptions', async ({
     page,
     homePage,
