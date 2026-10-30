@@ -154,6 +154,7 @@ import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { StepSchema } from '@src/lib/stepSchema'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -4479,7 +4480,7 @@ export const modelingMachine = setup({
         }
 
         if (format.type === 'step') {
-          format.schema = schema ?? 'ap242'
+          format.schema = schema ?? StepSchema.Ap242
         }
 
         if (

@@ -25,6 +25,7 @@ import {
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type RustContext from '@src/lib/rustContext'
+import { StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -142,9 +143,7 @@ describe('STEP schema export requests', () => {
   }
 
   const schemas: ModelingCommandSchema['Export']['schema'][] = [
-    'ap203',
-    'ap214',
-    'ap242',
+    ...Object.values(StepSchema),
     undefined,
   ]
   it.each(schemas)(
@@ -174,7 +173,7 @@ describe('STEP schema export requests', () => {
   it.each(otherFormats)(
     'omits a stale STEP schema when exporting %s',
     async (type) => {
-      const format = await exportFormat({ type, schema: 'ap214' })
+      const format = await exportFormat({ type, schema: StepSchema.Ap214 })
       expect(format).toMatchObject({ type })
       expect(format).not.toHaveProperty('schema')
     }

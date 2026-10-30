@@ -4,7 +4,6 @@ import type {
   OutputFormat3d,
   UnitLength,
 } from '@kittycad/lib'
-import type { StepSchema } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
@@ -56,6 +55,7 @@ import {
 import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { STEP_SCHEMA_LABELS, StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -514,20 +514,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         displayName: 'Schema',
         required: false,
         prepopulate: true,
-        defaultValue: 'ap242',
+        defaultValue: StepSchema.Ap242,
         hidden: (commandContext) =>
           commandContext.argumentsToSubmit.type !== 'step',
         options: (commandContext) => {
-          const schema = commandContext.argumentsToSubmit.schema ?? 'ap242'
-          return [
-            {
-              name: 'AP203 (Edition 2)',
-              value: 'ap203',
-              isCurrent: schema === 'ap203',
-            },
-            { name: 'AP214', value: 'ap214', isCurrent: schema === 'ap214' },
-            { name: 'AP242', value: 'ap242', isCurrent: schema === 'ap242' },
-          ]
+          const schema =
+            commandContext.argumentsToSubmit.schema ?? StepSchema.Ap242
+          return Object.values(StepSchema).map((value) => ({
+            name: STEP_SCHEMA_LABELS[value],
+            value,
+            isCurrent: schema === value,
+          }))
         },
       },
       up: {
