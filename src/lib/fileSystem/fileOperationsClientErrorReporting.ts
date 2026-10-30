@@ -15,6 +15,7 @@ export type FileOperationsOperation =
   | 'remove'
   | 'rename'
   | 'stat'
+  | 'lstat'
   | 'write-file'
 
 const SAFE_CAUSE_CODES = new Set([

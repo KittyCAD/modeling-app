@@ -31,7 +31,7 @@ import {
   deactivateZoodleRuntimeExtension,
 } from '@src/registry/extensions/engineScene/zoodleRuntimeExtension'
 import type { ChangeEvent, ReactNode } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
 const MAX_INLINE_PASTE_LENGTH = 5_000
@@ -46,6 +46,8 @@ export interface ZookeeperConversationProps {
   // Callers can provide a local component today, then swap to a remotely
   // authored source later without changing the conversation layout below.
   welcomeMessage?: ReactNode
+  toolbarActions?: ReactNode
+  localExchanges?: { id: string; afterExchange: number; content: ReactNode }[]
   onProcess: (
     request: string,
     mode: MlCopilotModeId | undefined,
@@ -58,6 +60,7 @@ export interface ZookeeperConversationProps {
   onOpenBilling?: () => void
   interruptedTurnAwaitingResume?: boolean
   isResumingInterruptedTurn?: boolean
+  resumeDisabled?: boolean
   onResumeInterruptedTurn?: () => void
   connectionError?: string
   accessDeniedCode?: MlCopilotAccessDeniedCode
@@ -174,6 +177,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
 }
 
 export interface ZookeeperExtraInputsProps {
+  toolbarActions?: ReactNode
   context?: Extract<ZookeeperManagerPromptContext, { type: 'selections' }>
   mode?: MlCopilotModeId
   onSetMode: (mode: MlCopilotModeId) => void
@@ -252,6 +256,7 @@ export const ZookeeperExtraInputs = (props: ZookeeperExtraInputsProps) => {
             <span>Zoodle</span>
           </Tooltip>
         </button>
+        {props.toolbarActions}
       </div>
     </div>
   )
@@ -291,6 +296,7 @@ const MlCopilotSelectionsContext = (props: {
 }
 
 interface ZookeeperConversationInputProps {
+  toolbarActions?: ReactNode
   contexts: ZookeeperManagerPromptContext[]
   onProcess: ZookeeperConversationProps['onProcess']
   onCancel: ZookeeperConversationProps['onCancel']
@@ -647,6 +653,7 @@ export const ZookeeperConversationInput = (
           data-testid="ml-ephant-composer-actions"
         >
           <ZookeeperExtraInputs
+            toolbarActions={props.toolbarActions}
             context={selectionsContext}
             mode={mode}
             onSetMode={(m) => {
@@ -699,7 +706,8 @@ export const ZookeeperConversationInput = (
 export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const exchangesLength = props.conversation?.exchanges.length ?? 0
-  const hasMessages = exchangesLength > 0
+  const totalExchanges = exchangesLength + (props.localExchanges?.length ?? 0)
+  const hasMessages = totalExchanges > 0
   const lastExchange = exchangesLength
     ? props.conversation?.exchanges[exchangesLength - 1]
     : undefined
@@ -708,12 +716,12 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
 
   // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
-    if (exchangesLength === 0 || !refScroll.current) return
+    if (totalExchanges === 0 || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
       behavior: 'smooth',
     })
-  }, [exchangesLength])
+  }, [totalExchanges])
 
   // Autoscroll: right after Zookeeper completes its turn in the exchange.
   useEffect(() => {
@@ -724,22 +732,37 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     })
   }, [isEndOfStream])
 
-  const exchangeCards = props.conversation?.exchanges.flatMap(
-    (exchange: Exchange, exchangeIndex: number, list) => {
-      const isLastResponse = exchangeIndex === list.length - 1
-      return (
-        <ExchangeCard
-          key={`exchange-${exchangeIndex}`}
-          {...exchange}
-          userAvatar={props.userAvatarSrc}
-          isLastResponse={isLastResponse}
-          onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
-          attachmentFetches={props.attachmentFetches}
-          onFetchAttachment={props.onFetchAttachment}
-        />
+  const localExchangesAt = (index: number) =>
+    props.localExchanges
+      ?.filter(
+        (exchange) =>
+          Math.min(exchange.afterExchange, exchangesLength) === index
       )
-    }
-  )
+      .map((exchange) => (
+        <Fragment key={exchange.id}>{exchange.content}</Fragment>
+      )) ?? []
+  const exchangeCards = [
+    ...localExchangesAt(0),
+    ...(props.conversation?.exchanges.flatMap(
+      (exchange: Exchange, exchangeIndex: number, list) => {
+        const isLastResponse =
+          exchangeIndex === list.length - 1 &&
+          localExchangesAt(list.length).length === 0
+        return [
+          <ExchangeCard
+            key={`exchange-${exchangeIndex}`}
+            {...exchange}
+            userAvatar={props.userAvatarSrc}
+            isLastResponse={isLastResponse}
+            onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
+            attachmentFetches={props.attachmentFetches}
+            onFetchAttachment={props.onFetchAttachment}
+          />,
+          ...localExchangesAt(exchangeIndex + 1),
+        ]
+      }
+    ) ?? []),
+  ]
   const shouldShowWelcomeMessage = isNonNullable(props.welcomeMessage)
 
   return (
@@ -812,7 +835,10 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                             className="h-7 w-fit focus-visible:outline-appForeground"
                             iconStart={{ icon: 'arrowRight' }}
                             onClick={props.onResumeInterruptedTurn}
-                            disabled={props.isResumingInterruptedTurn}
+                            disabled={
+                              props.isResumingInterruptedTurn ||
+                              props.resumeDisabled
+                            }
                             tabIndex={0}
                           >
                             {props.isResumingInterruptedTurn
@@ -839,6 +865,12 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   </Loading>
                 </div>
               )}
+              {(props.isLoading ||
+                props.showManualConnect ||
+                (props.needsReconnect && props.connectionFailed)) &&
+                props.localExchanges?.map((exchange) => (
+                  <Fragment key={exchange.id}>{exchange.content}</Fragment>
+                ))}
             </div>
           </div>
           {props.queue.length > 0 && (
@@ -893,6 +925,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           ) : null}
           <div className="border-t b-4">
             <ZookeeperConversationInput
+              toolbarActions={props.toolbarActions}
               contexts={props.contexts}
               disabled={props.disabled || props.isLoading}
               hasPromptCompleted={props.hasPromptCompleted}
