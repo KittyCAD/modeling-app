@@ -1,6 +1,6 @@
 // Under KCL 3.0, `orientProfilePerpendicular` defaults to the value of
 // `translateProfileToPath`, and the sweep always uses algorithm version 2.
-@settings(defaultLengthUnit = mm, kclVersion = "3.0-preview")
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 // Two identical profiles on the XY plane.
 profileSketch = sketch(on = XY) {
