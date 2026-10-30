@@ -13,6 +13,7 @@ export interface FeatureBlock {
   text: string
   label: string
   movable: boolean
+  hidden: boolean
   sourceStart: number
   sourceEnd: number
   stage?: { pipeline: number; index: number; expression: Expr }
@@ -26,15 +27,18 @@ export interface FeatureHistory {
   code: string
 }
 
+function statementExpression(statement: BodyItem): Expr | undefined {
+  return statement.type === 'VariableDeclaration'
+    ? statement.declaration.init
+    : statement.type === 'ExpressionStatement'
+      ? statement.expression
+      : undefined
+}
+
 function pipelineExpression(
   statement: BodyItem
 ): Extract<Expr, { type: 'PipeExpression' }> | undefined {
-  const expression =
-    statement.type === 'VariableDeclaration'
-      ? statement.declaration.init
-      : statement.type === 'ExpressionStatement'
-        ? statement.expression
-        : undefined
+  const expression = statementExpression(statement)
   return expression?.type === 'PipeExpression' ? expression : undefined
 }
 
@@ -127,11 +131,7 @@ export function getFeatureHistory(
       const text = pendingComments + code.slice(partStart, partEnd)
       pendingComments = ''
       const expression = expressions?.[partIndex]
-      const rawExpression =
-        expression ??
-        (statement.type === 'ExpressionStatement'
-          ? statement.expression
-          : undefined)
+      const rawExpression = expression ?? statementExpression(statement)
       const marker = partIndex > 0 ? '|> ' + ROLLBACK_CODE : ROLLBACK_CODE
       if (
         rawExpression &&
@@ -151,6 +151,9 @@ export function getFeatureHistory(
         start: partStart,
         end: partEnd,
         text,
+        hidden:
+          rawExpression?.type === 'CallExpressionKw' &&
+          rawExpression.callee.name.name === 'hide',
         sourceStart: expression?.start ?? statement.start,
         sourceEnd: expression?.end ?? statement.end,
         stage: expression

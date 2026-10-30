@@ -454,6 +454,7 @@ export const FeatureTreePaneContents = memo(() => {
               key={kclManager.id}
               history={history}
               disabled={historyDisabled}
+              hasImportedExitBinding={kclManager.variables.exit !== undefined}
               onChange={changeHistory}
               renderBlock={(block, suppressed) => {
                 const nodes = suppressed ? [] : (nodesByBlock.get(block) ?? [])

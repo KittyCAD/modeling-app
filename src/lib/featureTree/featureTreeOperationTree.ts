@@ -3,6 +3,7 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { getOperationsForModule, type OperationsByModule } from '@src/lang/wasm'
 import {
   filterOperations,
+  filterHideOperations,
   groupNestedOperations,
   groupOperationTypeStreaks,
 } from '@src/lib/operationGrouping'
@@ -134,11 +135,14 @@ function isSameSourceOperation(left: Operation, right: Operation): boolean {
 }
 
 function buildModuleOperationList(operations: Operation[]) {
+  // Nested groups use the original stream, so filter hide calls before both
+  // selecting rows and restoring sketch children.
+  const visibleOperations = filterHideOperations(operations)
   return groupNestedOperations(
-    groupOperationTypeStreaks(filterOperations(operations), [
+    groupOperationTypeStreaks(filterOperations(visibleOperations), [
       'VariableDeclaration',
     ]),
-    operations,
+    visibleOperations,
     (groupBegin) => groupBegin.group.type === 'SketchBlock'
   )
 }

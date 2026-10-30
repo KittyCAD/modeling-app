@@ -17,28 +17,53 @@ type Drag = { code: string } & (
 export function FeatureHistoryControls({
   history,
   disabled,
+  hasImportedExitBinding = false,
   onChange,
   renderBlock,
 }: {
   history: FeatureHistory
   disabled: boolean
+  hasImportedExitBinding?: boolean
   onChange: (code: string) => void
   renderBlock: (block: FeatureBlock, suppressed: boolean) => ReactNode
 }) {
   const [drag, setDrag] = useState<Drag | null>(null)
   const [dropIndex, setDropIndex] = useState<number | null>(null)
-  const canRollback = !history.blocks.some((block) =>
-    block.statement.type === 'VariableDeclaration'
-      ? block.statement.declaration.id.name === 'exit'
-      : block.statement.type === 'ImportStatement' &&
-        (isGlobImport(block.statement) ||
-          (block.statement.selector.type === 'List' &&
-            block.statement.selector.items.some(
-              (item) => (item.alias ?? item.name).name === 'exit'
-            )) ||
-          (block.statement.selector.type === 'None' &&
-            block.statement.selector.alias?.name === 'exit'))
+  const canRollback = !history.blocks.some(({ statement }) => {
+    if (statement.type === 'VariableDeclaration')
+      return statement.declaration.id.name === 'exit'
+    if (statement.type !== 'ImportStatement') return false
+    // Standard-library glob imports can only supply the built-in exit itself.
+    // For project modules, inspect execution results instead of assuming every
+    // wildcard import shadows exit.
+    if (isGlobImport(statement))
+      return statement.path.type !== 'Std' && hasImportedExitBinding
+    const standardExit =
+      statement.path.type === 'Std' &&
+      statement.path.path.join('::') === 'std::runtime'
+    if (statement.selector.type === 'List') {
+      return statement.selector.items.some(
+        (item) =>
+          (item.alias ?? item.name).name === 'exit' &&
+          !(standardExit && item.name.name === 'exit')
+      )
+    }
+    return (
+      statement.selector.type === 'None' &&
+      statement.selector.alias?.name === 'exit'
+    )
+  })
+  const visibleBlocks = history.blocks.flatMap((block, index) =>
+    block.hidden ? [] : [{ block, index }]
   )
+  const boundaries = [
+    ...visibleBlocks.map(({ index }) => index),
+    history.blocks.length,
+  ]
+  const activeBoundary =
+    boundaries.find((index) => index >= history.rollbackIndex) ??
+    history.blocks.length
+  const activeBoundaryPosition = boundaries.indexOf(activeBoundary)
 
   function rollback(index: number) {
     if (disabled || index === history.rollbackIndex) return
@@ -50,7 +75,7 @@ export function FeatureHistoryControls({
   }
 
   function boundary(index: number) {
-    const active = index === history.rollbackIndex
+    const active = index === activeBoundary
     return (
       <div
         className={`relative h-3 flex items-center ${disabled ? 'opacity-40' : ''}`}
@@ -82,9 +107,9 @@ export function FeatureHistoryControls({
             tabIndex={disabled ? -1 : 0}
             aria-label="Rollback bar"
             aria-valuemin={0}
-            aria-valuemax={history.blocks.length}
-            aria-valuenow={index}
-            aria-valuetext={`${index} of ${history.blocks.length} KCL blocks executed`}
+            aria-valuemax={visibleBlocks.length}
+            aria-valuenow={activeBoundaryPosition}
+            aria-valuetext={`${activeBoundaryPosition} of ${visibleBlocks.length} features executed`}
             aria-disabled={disabled}
             title="Drag to roll back. Use arrow keys to move; End restores all features."
             draggable={!disabled}
@@ -101,13 +126,18 @@ export function FeatureHistoryControls({
             onKeyDown={(event) => {
               const next =
                 event.key === 'Home'
-                  ? 0
+                  ? boundaries[0]
                   : event.key === 'End'
                     ? history.blocks.length
                     : event.key === 'ArrowUp'
-                      ? Math.max(0, index - 1)
+                      ? boundaries[Math.max(0, activeBoundaryPosition - 1)]
                       : event.key === 'ArrowDown'
-                        ? Math.min(history.blocks.length, index + 1)
+                        ? boundaries[
+                            Math.min(
+                              boundaries.length - 1,
+                              activeBoundaryPosition + 1
+                            )
+                          ]
                         : undefined
               if (next === undefined) return
               event.preventDefault()
@@ -127,7 +157,7 @@ export function FeatureHistoryControls({
 
   return (
     <div data-testid="feature-tree-history">
-      {history.blocks.map((block, index) => (
+      {visibleBlocks.map(({ block, index }) => (
         <Fragment key={block.start}>
           {boundary(index)}
           <div className="flex items-start" data-feature-block={index}>

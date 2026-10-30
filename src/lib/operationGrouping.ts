@@ -163,7 +163,7 @@ const operationFilters = [
   isNotUserFunctionWithNoOperations,
   isNotInsideGroup,
   isNotGroupEnd,
-  isNotHideOperation,
+  filterHideOperations,
 ]
 
 /**
@@ -234,6 +234,20 @@ function isNotGroupEnd(ops: Operation[]): Operation[] {
 /**
  * A filter to exclude `hide()` operations from a list of operations.
  */
-function isNotHideOperation(ops: Operation[]): Operation[] {
-  return ops.filter((op) => !(op.type === 'StdLibCall' && op.name === 'hide'))
+export function filterHideOperations(ops: Operation[]): Operation[] {
+  const hideRanges = new Set(
+    ops.flatMap((op) =>
+      op.type === 'StdLibCall' && op.name === 'hide'
+        ? [op.sourceRange.join('-')]
+        : []
+    )
+  )
+  return ops.filter(
+    (op) =>
+      !(op.type === 'StdLibCall' && op.name === 'hide') &&
+      !(
+        op.type === 'VariableDeclaration' &&
+        hideRanges.has(op.sourceRange.join('-'))
+      )
+  )
 }
