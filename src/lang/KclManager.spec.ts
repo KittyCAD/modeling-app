@@ -18,7 +18,7 @@ import {
   operationsStateField,
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
-import { KclManager } from '@src/lang/KclManager'
+import { KclManager, KclManagerEvents } from '@src/lang/KclManager'
 import { KCLError } from '@src/lang/errors'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { Connection } from '@src/lib/engineConnection/connection'
@@ -978,6 +978,18 @@ describe('KclManager resolved views', () => {
     vi.spyOn(instance.Context.prototype, 'execute').mockResolvedValueOnce(delta)
     await kclManager.executeAst({ ast: createEmptyAst() })
   }
+
+  it('notifies renderer consumers only after execution becomes idle', async () => {
+    const executionStates: boolean[] = []
+    const onComplete = () => executionStates.push(kclManager.isExecuting)
+    kclManager.addEventListener(KclManagerEvents.ExecutionDone, onComplete)
+    try {
+      await executeActualViews(resolvedViews('rendered-object'))
+      expect(executionStates).toEqual([false])
+    } finally {
+      kclManager.removeEventListener(KclManagerEvents.ExecutionDone, onComplete)
+    }
+  })
 
   it('stores actual results and replaces them with a resolved empty Default', async () => {
     expect(kclManager.execState.namedViews).toBeNull()

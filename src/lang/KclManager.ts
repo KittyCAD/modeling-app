@@ -2266,6 +2266,7 @@ export class KclManager extends File {
       this.executionGeneration === generation && this.path === pathThatExecuted
     const connection = this.engineCommandManager.connection
     let completion: ExecutionCompletionStatus = 'cleanup'
+    let completedExecution: KclExecutionDoneDetail | undefined
 
     try {
       const ast = args.ast || this.ast
@@ -2415,19 +2416,11 @@ export class KclManager extends File {
         })
       }
 
-      if (isCurrent()) this.isExecuting = false
-      this.dispatchEvent(
-        new CustomEvent<KclExecutionDoneDetail>(
-          KclManagerEvents.ExecutionDone,
-          {
-            detail: {
-              successful: !isInterrupted && errors.length === 0,
-              isInterrupted,
-              hasErrors: errors.length > 0,
-            },
-          }
-        )
-      )
+      completedExecution = {
+        successful: !isInterrupted && errors.length === 0,
+        isInterrupted,
+        hasErrors: errors.length > 0,
+      }
     } finally {
       this._cancelTokens.delete(currentExecutionId)
       // Only this run may release its status; an old run must not stop a new one.
@@ -2442,6 +2435,17 @@ export class KclManager extends File {
       }
       this.notifyExecutionCompletion(completion)
       finishExecution()
+      if (completedExecution && isCurrent()) {
+        // The local renderer only loads a completed scene while execution is idle.
+        this.dispatchEvent(
+          new CustomEvent<KclExecutionDoneDetail>(
+            KclManagerEvents.ExecutionDone,
+            {
+              detail: completedExecution,
+            }
+          )
+        )
+      }
     }
   }
 

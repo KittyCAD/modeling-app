@@ -55,11 +55,13 @@ afterEach(() => {
 function createProject(path = '/project/parts/main.kcl') {
   const filePath = signal(path)
   const flush = vi.fn(async () => true)
+  const resetForFileSwitch = vi.fn()
   const editor = {
     get path() {
       return filePath.value
     },
     flushWriteToFile: flush,
+    resetForFileSwitch,
   } as unknown as KclManager
   const project = {
     path: '/project',
@@ -67,7 +69,7 @@ function createProject(path = '/project/parts/main.kcl') {
     executingPathSignal: signal(filePath),
     executingEditor: signal(editor),
   } as unknown as ZDSProject
-  return { project, filePath, flush }
+  return { project, filePath, flush, resetForFileSwitch }
 }
 function setup(storage?: ProjectStorage) {
   const exists = vi.fn(async () => false)
@@ -187,6 +189,7 @@ describe('direct project session file actions', () => {
         clearProjectId: true,
       })
       .then(complete)
+    expect(s.resetForFileSwitch).toHaveBeenCalledOnce()
     expect(s.navigate).toHaveBeenCalledWith(
       expect.stringContaining('?keep=value'),
       expect.anything()

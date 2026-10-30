@@ -63,7 +63,6 @@ describe('tryConnecting', () => {
       tearDown: vi.fn(),
     }
     const rustContext = {
-      clearSceneAndBustCache: vi.fn().mockResolvedValue(undefined),
       wasmInstancePromise: Promise.resolve({}),
     }
     const kclManager = {
@@ -114,7 +113,6 @@ describe('tryConnecting', () => {
         geometryOnly ? 0 : 1
       )
     }
-    expect(rustContext.clearSceneAndBustCache).toHaveBeenCalledTimes(3)
     expect(kclManager.executeCode).toHaveBeenCalledTimes(3)
     expect(manager.tearDown).not.toHaveBeenCalled()
     unmount()
