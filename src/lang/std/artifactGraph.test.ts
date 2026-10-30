@@ -7,6 +7,7 @@ import {
   getCommonFacesForEdge,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
+  getSweepFromSuspectedSweepSurface,
   getMergedSweepBodyArtifact,
   getSegmentArtifactForEdgeCut,
   getEdgeCutConsumedCodeRef,
@@ -912,5 +913,39 @@ describe('edge-independent artifact traversal', () => {
     expect(
       getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
     ).toBe(artifactGraph.get('sweep-cut'))
+  })
+})
+
+it('resolves a treatment face to its Boolean output rather than a contributing sweep', () => {
+  const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+  addMappedRegion(artifactGraph, sourceSegment, 'boolean', true)
+  const body: Artifact = {
+    type: 'compositeSolid',
+    id: 'boolean-output',
+    subType: 'subtract',
+    consumed: false,
+    solidIds: ['sweep-boolean'],
+    toolIds: [],
+    codeRef,
+  }
+  artifactGraph.set(body.id, body)
+  const cut: Artifact = {
+    type: 'edgeCut',
+    id: 'chamfer-face',
+    subType: 'chamfer',
+    bodyId: body.id,
+    edgeIds: [],
+    codeRef,
+  }
+  artifactGraph.set(cut.id, cut)
+  expect(getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)).toBe(body)
+  expect(
+    coerceSelectionsToBody(
+      { graphSelections: [{ artifact: cut, codeRef }], otherSelections: [] },
+      artifactGraph
+    )
+  ).toEqual({
+    graphSelections: [{ artifact: body, codeRef }],
+    otherSelections: [],
   })
 })
