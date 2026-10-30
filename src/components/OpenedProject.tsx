@@ -302,7 +302,7 @@ export function OpenedProject() {
               autoUpdateDownloadProgress,
               autoUpdateReady,
               onRestartToUpdate: () => {
-                window.electron?.appRestart()
+                window.electron?.appRestart().catch(reportRejection)
               },
             }),
             ...registryGlobalStatusBarItems,
