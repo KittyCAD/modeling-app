@@ -46,7 +46,7 @@ flowchart LR
   23["SweepEdge Adjacent"]
   24["SweepEdge Opposite"]
   25["SweepEdge Adjacent"]
-  26["Sweep Extrusion<br>[689, 847, 0]<br>Consumed: false"]
+  26["Sweep Extrusion<br>[689, 845, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   27["SketchBlock<br>[158, 508, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]

@@ -14,8 +14,11 @@ extrude001 = extrude(region001, length = 5, tagEnd = $capEnd)
 
 extrude002 = extrude(
   extrude001.sketch.tags.line1,
-  length = 6.7,
+  length = 2,
   bodyType = SURFACE,
   direction = { sideFaces = [region001.tags.line1, capEnd] },
   method = NEW,
 )
+
+// Keep the sheets disjoint and hide the source solid to avoid coplanar render overlaps.
+hide(extrude001)

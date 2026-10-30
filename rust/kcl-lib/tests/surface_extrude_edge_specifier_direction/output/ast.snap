@@ -1139,12 +1139,12 @@ description: Result of parsing surface_extrude_edge_specifier_direction.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "6.7",
+                  "raw": "2",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
-                    "value": 6.7,
+                    "value": 2.0,
                     "suffix": "None"
                   }
                 }
@@ -1477,6 +1477,61 @@ description: Result of parsing surface_extrude_edge_specifier_direction.kcl
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "hide",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "extrude001",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "moduleId": 0,
+        "preComments": [
+          "// Keep the sheets disjoint and hide the source solid to avoid coplanar render overlaps."
+        ],
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
       }
     ],
     "commentStart": 0,
@@ -1565,6 +1620,18 @@ description: Result of parsing surface_extrude_edge_specifier_direction.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
           {
             "commentStart": 0,
             "end": 0,
