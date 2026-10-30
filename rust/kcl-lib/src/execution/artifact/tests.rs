@@ -1175,13 +1175,12 @@ fn build_entity_clone_id_maps_from_child_queries() {
 }
 
 #[test]
-fn planar_surface_artifact_uses_the_created_body_id_and_source_range() {
+fn planar_surface_artifact_uses_the_command_id_and_source_range() {
     let code = "surface001 = planarSurface(region001)";
     let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
     let range = SourceRange::new("surface001 = ".len(), code.len(), ModuleId::default());
     let cmd_id = Uuid::new_v4();
-    let surface_id = Uuid::new_v4();
     let curve_id = Uuid::new_v4();
     let artifact_command = ArtifactCommand {
         cmd_id,
@@ -1204,9 +1203,7 @@ fn planar_surface_artifact_uses_the_created_body_id_and_source_range() {
 
     let responses = AHashMap::from_iter([(
         cmd_id,
-        OkModelingCmdResponse::CreatePlanarSurface(
-            serde_json::from_value(serde_json::json!({ "surface": surface_id })).unwrap(),
-        ),
+        OkModelingCmdResponse::CreatePlanarSurface(serde_json::from_value(serde_json::json!({})).unwrap()),
     )]);
     let updated = artifacts_to_update(
         &IndexMap::default(),
@@ -1225,7 +1222,7 @@ fn planar_surface_artifact_uses_the_created_body_id_and_source_range() {
     let Artifact::Sweep(surface) = &updated[0] else {
         panic!("Expected CreatePlanarSurface to create a sweep artifact, got: {updated:?}");
     };
-    assert_eq!(surface.id, ArtifactId::new(surface_id));
+    assert_eq!(surface.id, ArtifactId::new(cmd_id));
     assert_eq!(surface.sub_type, SweepSubType::PlanarSurface);
     // A topology-only edge has no sketch path in the artifact graph.
     assert_eq!(surface.path_id, None);
