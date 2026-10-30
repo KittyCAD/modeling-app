@@ -1,15 +1,12 @@
 import type { Page } from '@playwright/test'
 import {
   cacheModelCode as modelCode,
-  presentedModel,
+  cacheSceneReceipt as modelReceipt,
+  cacheSceneVolume,
   waitForExecutedModel as waitForValidModel,
 } from '@e2e/playwright/lib/cache-model'
-import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
-import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import fsp from 'node:fs/promises'
-import path from 'node:path'
 
 test.use({ mockApiRoutes: false })
 
@@ -39,172 +36,175 @@ async function waitForParseFailure(page: Page, code: string) {
   await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
 }
 
-async function modelReceipt(page: Page) {
-  return page.evaluate(() => {
-    const editor = window.app.project?.executingEditor.value
-    if (!editor) throw new Error('No executing editor')
-    return {
-      path: editor.path,
-      code: editor.code,
-      lastSuccessfulCode: editor.lastSuccessfulCode,
-      artifacts: [...editor.artifactGraph.keys()].sort(),
-      connectionId: editor.engineCommandManager.engineSessionId,
-      apiCallId: editor.engineCommandManager.apiCallId,
-    }
-  })
+async function expectCylinderVolume(page: Page, radius: number) {
+  const expected = Math.PI * radius ** 2 * 5
+  await expect
+    .poll(async () => Math.abs((await cacheSceneVolume(page)) / expected - 1))
+    .toBeLessThan(0.001)
 }
 
-test.describe(
-  'Rust-owned execution cache lifecycle',
-  { tag: '@desktop' },
-  () => {
-    test('same-file lexical and syntax errors retain the model, another invalid file clears it', async ({
-      page,
-      tronApp,
-      folderSetupFn,
-      homePage,
-      toolbar,
-      editor,
-      scene,
-    }) => {
-      test.setTimeout(90_000)
-      if (!tronApp) throwTronAppMissing()
-      await tronApp.cleanProjectDir({
-        ...TEST_SETTINGS,
-        modeling: { ...TEST_SETTINGS.modeling, show_scale_grid: false },
-      })
-      await folderSetupFn(async (directory) => {
-        const project = path.join(directory, 'cache-file-identity')
-        await fsp.mkdir(project, { recursive: true })
-        await fsp.writeFile(path.join(project, 'main.kcl'), modelCode)
-        // Identical invalid bytes must not make a different file inherit A's scene.
-        await fsp.writeFile(path.join(project, 'invalid.kcl'), syntaxErrorCode)
-      })
-      await homePage.openProject('cache-file-identity')
-      await scene.settled()
-      await waitForValidModel(page, modelCode)
-      await scene.moveCameraTo({ x: 45, y: -60, z: 45 }, { x: 0, y: 0, z: 2.5 })
-      await expect
-        .poll(async () => (await presentedModel(page)).centerForegroundFraction)
-        .toBeGreaterThan(0.9)
-      const original = await modelReceipt(page)
-
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      for (const invalidCode of [lexicalErrorCode, syntaxErrorCode]) {
-        const successful = await modelReceipt(page)
-        await editor.codeContent.fill(invalidCode)
-        await waitForParseFailure(page, invalidCode)
-        const retained = await modelReceipt(page)
-        expect(retained.path).toBe(original.path)
-        expect(retained.lastSuccessfulCode).toBe(successful.lastSuccessfulCode)
-        expect(retained.artifacts).toEqual(successful.artifacts)
-        await expect
-          .poll(
-            async () => (await presentedModel(page)).centerForegroundFraction
-          )
-          .toBeGreaterThan(0.9)
-        if (invalidCode === lexicalErrorCode) {
-          await editor.codeContent.fill(modelCode)
-          await waitForValidModel(page, modelCode)
-        }
-      }
-
-      await toolbar.openPane(DefaultLayoutPaneID.Files)
-      await toolbar.openFile('invalid.kcl')
-      // Both files contain the same invalid source. Wait for the file handoff
-      // before accepting diagnostics left over from the original editor.
-      await expect
-        .poll(() =>
-          page.evaluate(() => window.app.project?.executingEditor.value?.path)
-        )
-        .toBe(path.join(path.dirname(original.path), 'invalid.kcl'))
-      await waitForParseFailure(page, syntaxErrorCode)
-      await expect
-        .poll(async () => (await modelReceipt(page)).path)
-        .not.toBe(original.path)
-      await expect
-        .poll(async () => (await modelReceipt(page)).artifacts)
-        .toEqual([])
-      await expect
-        .poll(async () => (await presentedModel(page)).foregroundPixels)
-        .toBe(0)
-    })
-
-    test('a real socket teardown reconstructs the current file and accepts the next edit', async ({
-      page,
-      tronApp,
-      folderSetupFn,
-      homePage,
-      toolbar,
-      editor,
-      scene,
-    }) => {
-      test.setTimeout(90_000)
-      if (!tronApp) throwTronAppMissing()
-      await tronApp.cleanProjectDir({
-        ...TEST_SETTINGS,
-        modeling: { ...TEST_SETTINGS.modeling, show_scale_grid: false },
-      })
-      await folderSetupFn(async (directory) => {
-        const project = path.join(directory, 'cache-engine-session')
-        await fsp.mkdir(project, { recursive: true })
-        await fsp.writeFile(path.join(project, 'main.kcl'), modelCode)
-      })
-      await homePage.openProject('cache-engine-session')
-      await scene.settled()
-      await waitForValidModel(page, modelCode)
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await scene.moveCameraTo({ x: 45, y: -60, z: 45 }, { x: 0, y: 0, z: 2.5 })
-      await expect
-        .poll(async () => (await presentedModel(page)).centerForegroundFraction)
-        .toBeGreaterThan(0.9)
-      const before = await modelReceipt(page)
-      const beforeFrame = await presentedModel(page)
-      expect(before.connectionId).toBeTruthy()
-      expect(before.apiCallId).toBeTruthy()
-      expect(beforeFrame.streamId).toBeTruthy()
-
-      // Close the real live socket. Its production close handler owns teardown,
-      // reconnect and rebuilding; no fabricated event or cache API is involved.
-      await page.evaluate(() => {
-        const connection =
-          window.app.project?.executingEditor.value?.engineCommandManager
-            .connection
-        if (connection?.websocket?.readyState !== WebSocket.OPEN)
-          throw new Error('The real engine socket is not open')
-        connection.websocket.close(1000, 'cache lifecycle reconnect regression')
-      })
-      await expect
-        .poll(async () => (await modelReceipt(page)).connectionId, {
-          timeout: 30_000,
-        })
-        .not.toBe(before.connectionId)
-      await waitForValidModel(page, modelCode)
-      await scene.settled()
-      const after = await modelReceipt(page)
-      expect(after.path).toBe(before.path)
-      expect(after.connectionId).toBeTruthy()
-      expect(after.apiCallId).toBeTruthy()
-      expect(after.apiCallId).not.toBe(before.apiCallId)
-      await expect
-        .poll(async () => (await presentedModel(page)).streamId)
-        .not.toBe(beforeFrame.streamId)
-      await scene.moveCameraTo({ x: 45, y: -60, z: 45 }, { x: 0, y: 0, z: 2.5 })
-      await expect
-        .poll(async () => (await presentedModel(page)).centerForegroundFraction)
-        .toBeGreaterThan(0.9)
-      const rebuiltFrame = await presentedModel(page)
-
-      const editedCode = modelCode.replace(
-        'radiusValue = 10mm',
-        'radiusValue = 15mm'
+test.describe('Rust-owned execution cache lifecycle', { tag: '@web' }, () => {
+  test('same-file lexical and syntax errors retain the model, another invalid file clears it', async ({
+    page,
+    fs,
+    folderSetupFn,
+    homePage,
+    toolbar,
+    editor,
+    scene,
+  }) => {
+    test.setTimeout(90_000)
+    await folderSetupFn(async (directory) => {
+      const project = await fs.join(directory, 'cache-file-identity')
+      await fs.mkdir(project, { recursive: true })
+      await fs.writeFile(
+        await fs.join(project, 'main.kcl'),
+        new TextEncoder().encode(modelCode)
       )
-      await editor.codeContent.fill(editedCode)
-      await waitForValidModel(page, editedCode)
-      await expect
-        .poll(async () => (await presentedModel(page)).foregroundPixels)
-        .toBeGreaterThan(rebuiltFrame.foregroundPixels * 1.3)
-      expect((await modelReceipt(page)).connectionId).toBe(after.connectionId)
+      // Identical invalid bytes must not make a different file inherit A's scene.
+      await fs.writeFile(
+        await fs.join(project, 'invalid.kcl'),
+        new TextEncoder().encode(syntaxErrorCode)
+      )
     })
+    await homePage.openProject('cache-file-identity')
+    await scene.settled()
+    await waitForValidModel(page, modelCode)
+    const original = await modelReceipt(page)
+    expect(original.bodyId).toBeTruthy()
+    expect(original.engineBodyIds).toContain(original.bodyId)
+
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
+    for (const invalidCode of [lexicalErrorCode, syntaxErrorCode]) {
+      const successful = await modelReceipt(page)
+      await editor.codeContent.fill(invalidCode)
+      await waitForParseFailure(page, invalidCode)
+      const retained = await modelReceipt(page)
+      expect(retained.path).toBe(original.path)
+      expect(retained.lastSuccessfulCode).toBe(successful.lastSuccessfulCode)
+      expect(retained.artifacts).toEqual(successful.artifacts)
+      expect(retained.engineBodyIds).toEqual(successful.engineBodyIds)
+      if (invalidCode === lexicalErrorCode) {
+        await editor.codeContent.fill(modelCode)
+        await waitForValidModel(page, modelCode)
+      }
+    }
+
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+    await toolbar.openFile('invalid.kcl')
+    // Wait for the file handoff before accepting the previous file's diagnostics.
+    const invalidPath = await fs.join(
+      await fs.dirname(original.path),
+      'invalid.kcl'
+    )
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.app.project?.executingEditor.value?.path)
+      )
+      .toBe(invalidPath)
+    await waitForParseFailure(page, syntaxErrorCode)
+    const invalid = await modelReceipt(page)
+    expect(invalid.path).not.toBe(original.path)
+    expect(invalid.artifacts).toEqual([])
+    expect(invalid.engineBodyIds).toEqual([])
+  })
+
+  for (const duringExecution of [false, true]) {
+    test(
+      duringExecution
+        ? 'a real socket teardown during execution reconstructs the current file and accepts the next edit'
+        : 'a real socket teardown reconstructs the current file and accepts the next edit',
+      async ({ page, fs, folderSetupFn, homePage, toolbar, editor, scene }) => {
+        test.setTimeout(90_000)
+        await folderSetupFn(async (directory) => {
+          const project = await fs.join(directory, 'cache-engine-session')
+          await fs.mkdir(project, { recursive: true })
+          await fs.writeFile(
+            await fs.join(project, 'main.kcl'),
+            new TextEncoder().encode(modelCode)
+          )
+        })
+        await homePage.openProject('cache-engine-session')
+        await scene.settled()
+        await waitForValidModel(page, modelCode)
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        const before = await modelReceipt(page)
+        expect(before.sessionId).toBeTruthy()
+        expect(before.apiCallId).toBeTruthy()
+        expect(before.bodyId).toBeTruthy()
+        expect(before.engineBodyIds).toContain(before.bodyId)
+        await expectCylinderVolume(page, 10)
+
+        const interruptedCode = duringExecution
+          ? modelCode.replace('radiusValue = 10mm', 'radiusValue = 12mm')
+          : modelCode
+        if (duringExecution) {
+          // Close atomically while a real Wasm modeling command awaits its reply.
+          // A scene query or an already-finished execution cannot satisfy this.
+          const interrupted = page.waitForFunction((code) => {
+            const current = window.app.project?.executingEditor.value
+            const manager = current?.engineCommandManager
+            const socket = manager?.connection?.websocket
+            if (
+              !current ||
+              current.code.trim() !== code.trim() ||
+              !current.isExecutingSignal.value ||
+              !Object.values(manager?.pendingCommands ?? {}).some(
+                (pending) => !pending.isSceneCommand
+              ) ||
+              socket?.readyState !== WebSocket.OPEN
+            )
+              return false
+            const session = manager?.engineSessionId
+            socket.close(1000, 'cache lifecycle in-flight reconnect regression')
+            return session
+          }, interruptedCode)
+          const [interruptedSession] = await Promise.all([
+            interrupted,
+            editor.codeContent.fill(interruptedCode),
+          ])
+          expect(await interruptedSession.jsonValue()).toBe(before.sessionId)
+          await interruptedSession.dispose()
+        } else {
+          await page.evaluate(() => {
+            const socket =
+              window.app.project?.executingEditor.value?.engineCommandManager
+                .connection?.websocket
+            if (socket?.readyState !== WebSocket.OPEN)
+              throw new Error('The real engine socket is not open')
+            socket.close(1000, 'cache lifecycle reconnect regression')
+          })
+        }
+        await expect
+          .poll(() =>
+            page.evaluate(
+              () =>
+                window.app.project?.executingEditor.value?.engineCommandManager
+                  .engineSessionId
+            )
+          )
+          .not.toBe(before.sessionId)
+        await scene.settled()
+        await waitForValidModel(page, interruptedCode)
+        const after = await modelReceipt(page)
+        expect(after.path).toBe(before.path)
+        expect(after.sessionId).toBeTruthy()
+        expect(after.sessionId).not.toBe(before.sessionId)
+        expect(after.apiCallId).toBeTruthy()
+        expect(after.apiCallId).not.toBe(before.apiCallId)
+        expect(after.bodyId).toBeTruthy()
+        expect(after.engineBodyIds).toContain(after.bodyId)
+        await expectCylinderVolume(page, duringExecution ? 12 : 10)
+
+        const editedCode = modelCode.replace(
+          'radiusValue = 10mm',
+          'radiusValue = 15mm'
+        )
+        await editor.codeContent.fill(editedCode)
+        await waitForValidModel(page, editedCode)
+        await expectCylinderVolume(page, 15)
+        expect((await modelReceipt(page)).sessionId).toBe(after.sessionId)
+      }
+    )
   }
-)
+})
