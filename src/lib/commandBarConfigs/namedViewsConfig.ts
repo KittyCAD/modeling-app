@@ -4,8 +4,6 @@ import type {
   Point4d,
   WorldCoordinateSystem,
 } from '@kittycad/lib'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { isArray } from '@src/lib/utils'
 import toast from 'react-hot-toast'
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
@@ -15,7 +13,7 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import type { CameraControls } from '@src/clientSideScene/CameraControls'
 import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem {
@@ -97,7 +95,7 @@ function cameraViewStateToNamedView(
 }
 
 export function createNamedViewsCommand(
-  engineCommandManager: ConnectionManager,
+  camControls: CameraControls,
   settingsActor: SettingsActorType
 ) {
   const getSettings = (): SettingsType => {
@@ -107,8 +105,7 @@ export function createNamedViewsCommand(
   }
   // Creates a command to be registered in the command bar.
   // The createNamedViewsCommand will prompt the user for a name and then
-  // hit the engine for the camera properties and write them back to disk
-  // in project.toml.
+  // read the camera's view and write it back to disk in project.toml.
   const createNamedViewCommand: Command = {
     scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Create named view',
@@ -124,61 +121,36 @@ export function createNamedViewsCommand(
           return toast.error('Unable to create named view, missing name.')
         }
 
-        // Retrieve camera view state from the engine
-        const cameraGetViewResponse =
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'default_camera_get_view' },
-          })
-
-        const r = isArray(cameraGetViewResponse)
-          ? cameraGetViewResponse[0]
-          : cameraGetViewResponse
-
-        if (!r) {
-          return toast.error('Unable to create named view, websocket failure.')
+        const view = await camControls.getCameraView()
+        if (err(view)) {
+          return toast.error('Unable to create named view.')
+        }
+        const requestedView = cameraViewStateToNamedView(data.name, view)
+        if (err(requestedView)) {
+          toast.error('Unable to create named view.')
+          return
+        }
+        // Retrieve application state for namedViews
+        const namedViews = {
+          ...settingsActor.getSnapshot().context.app.namedViews.current,
         }
 
-        const rr = r
-        if (isModelingResponse(rr)) {
-          if (rr.success) {
-            if (
-              rr.resp.data.modeling_response.type === 'default_camera_get_view'
-            ) {
-              const view = rr.resp.data.modeling_response.data
-              const requestedView = cameraViewStateToNamedView(
-                data.name,
-                view.view
-              )
-              if (err(requestedView)) {
-                toast.error('Unable to create named view.')
-                return
-              }
-              // Retrieve application state for namedViews
-              const namedViews = {
-                ...settingsActor.getSnapshot().context.app.namedViews.current,
-              }
-
-              // Create and set namedViews application state
-              const uniqueUuidV4 = uuidv4()
-              const requestedNamedViews = {
-                ...namedViews,
-                [uniqueUuidV4]: requestedView,
-              }
-              settingsActor.send({
-                type: `set.app.namedViews`,
-                data: {
-                  level: 'project',
-                  value: requestedNamedViews,
-                  toastCallback: () => {
-                    toast.success(`Named view ${requestedView.name} created.`)
-                  },
-                },
-              })
-            }
-          }
+        // Create and set namedViews application state
+        const uniqueUuidV4 = uuidv4()
+        const requestedNamedViews = {
+          ...namedViews,
+          [uniqueUuidV4]: requestedView,
         }
+        settingsActor.send({
+          type: `set.app.namedViews`,
+          data: {
+            level: 'project',
+            value: requestedNamedViews,
+            toastCallback: () => {
+              toast.success(`Named view ${requestedView.name} created.`)
+            },
+          },
+        })
       }
       invokeAndForgetCreateNamedView().catch(reportRejection)
     },
@@ -257,7 +229,7 @@ export function createNamedViewsCommand(
     },
   }
 
-  // Read the named view from settings state and pass that camera information to the engine command to set the view of the engine camera
+  // Read the named view from settings state and apply it to the camera
   const loadNamedViewCommand: Command = {
     scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Load named view',
@@ -289,18 +261,7 @@ export function createNamedViewsCommand(
             return
           }
 
-          // Only send the specific camera information, the NamedView itself
-          // is not directly compatible with the engine API
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'default_camera_set_view',
-              view: {
-                ...cameraViewState,
-              },
-            },
-          })
+          await camControls.setCameraView(cameraViewState)
 
           const isPerspective = !engineViewData.is_ortho
 
@@ -313,18 +274,6 @@ export function createNamedViewsCommand(
             },
           })
 
-          // Update the camera by triggering the callback workflow to get the camera settings
-          // Setting the view won't update the client side camera.
-          // Asking for the default camera settings after setting the view will internally sync the camera
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'default_camera_get_settings',
-            },
-          })
-
-          // We do not have the promise of the engine command for ensuring the camera projection has been completed.
           toast.success(`Named view ${name} loaded.`)
         } else {
           toast.error(`Unable to load named view, could not find named view.`)

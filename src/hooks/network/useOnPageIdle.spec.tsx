@@ -103,6 +103,32 @@ describe('useOnPageIdle', () => {
     unmount()
   })
 
+  test('does not start the stream idle timer when disabled', async () => {
+    const startCallback = vi.fn()
+    const idleCallback = vi.fn()
+
+    const { unmount } = renderHook(() =>
+      useOnPageIdle({
+        startCallback,
+        idleCallback,
+        enabled: false,
+      })
+    )
+
+    await advance(30_000)
+
+    expect(
+      hookMocks.state.kclManager.sceneInfra.camControls.saveRemoteCameraState
+    ).not.toHaveBeenCalled()
+    expect(
+      hookMocks.state.kclManager.engineCommandManager.tearDown
+    ).not.toHaveBeenCalled()
+    expect(startCallback).not.toHaveBeenCalled()
+    expect(idleCallback).not.toHaveBeenCalled()
+
+    unmount()
+  })
+
   test('starts the idle countdown only after KCL finishes executing', async () => {
     const startCallback = vi.fn()
     const idleCallback = vi.fn()
@@ -240,6 +266,7 @@ describe('useOnPageIdle', () => {
     'KCL execution',
     'modeling interaction',
     'idle disabled',
+    'hook disabled',
     'idle duration changed',
     'unmount',
   ])('cancels a pending idle teardown after %s', async (change) => {
@@ -248,8 +275,9 @@ describe('useOnPageIdle', () => {
     controls.saveRemoteCameraState = vi.fn(() => save.promise)
     const idleCallback = vi.fn()
     const startCallback = vi.fn()
-    const { rerender, unmount } = renderHook(() =>
-      useOnPageIdle({ startCallback, idleCallback })
+    const { rerender, unmount } = renderHook(
+      ({ enabled }) => useOnPageIdle({ startCallback, idleCallback, enabled }),
+      { initialProps: { enabled: true } }
     )
 
     await advance(5_000)
@@ -262,13 +290,15 @@ describe('useOnPageIdle', () => {
         hookMocks.state.kclManager.isExecuting = true
       } else if (change === 'modeling interaction') {
         hookMocks.state.modelingValue = 'sketch'
-        rerender()
+        rerender({ enabled: true })
       } else if (change === 'idle disabled') {
         hookMocks.state.streamIdleMode = 0
-        rerender()
+        rerender({ enabled: true })
+      } else if (change === 'hook disabled') {
+        rerender({ enabled: false })
       } else if (change === 'idle duration changed') {
         hookMocks.state.streamIdleMode = 10_000
-        rerender()
+        rerender({ enabled: true })
       } else {
         unmount()
       }
