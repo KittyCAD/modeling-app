@@ -1205,7 +1205,7 @@ fn planar_surface_artifact_uses_the_created_body_id_and_source_range() {
     let responses = AHashMap::from_iter([(
         cmd_id,
         OkModelingCmdResponse::CreatePlanarSurface(
-            serde_json::from_value(serde_json::json!({ "surfaces": [surface_id] })).unwrap(),
+            serde_json::from_value(serde_json::json!({ "surface": surface_id })).unwrap(),
         ),
     )]);
     let updated = artifacts_to_update(

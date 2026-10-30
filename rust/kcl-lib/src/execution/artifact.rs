@@ -2073,12 +2073,7 @@ fn artifacts_to_update(
         }
         ModelingCmd::CreatePlanarSurface(cmd) => {
             let surface_id = match response {
-                Some(OkModelingCmdResponse::CreatePlanarSurface(response)) => {
-                    let [surface_id] = response.surfaces.as_slice() else {
-                        return Ok(Vec::new());
-                    };
-                    ArtifactId::new(*surface_id)
-                }
+                Some(OkModelingCmdResponse::CreatePlanarSurface(response)) => ArtifactId::new(response.surface),
                 // Mock execution assigns the command ID to the created surface.
                 None => id,
                 Some(_) => return Ok(Vec::new()),
