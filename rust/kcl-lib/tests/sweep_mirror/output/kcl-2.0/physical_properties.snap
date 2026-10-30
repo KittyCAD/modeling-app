@@ -7,12 +7,12 @@ description: Physical properties sweep_mirror.kcl
     "center": {
       "x": 0.0,
       "y": 2.2344176542023524,
-      "z": 2.745615228095534
+      "z": 2.745615228095535
     },
     "dimensions": {
       "x": 8.250000000000002,
       "y": 6.263897515979254,
-      "z": 5.491230456191068
+      "z": 5.49123045619107
     },
     "unit": "mm"
   },
@@ -24,6 +24,6 @@ description: Physical properties sweep_mirror.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.00076069709501377
+    "value": 0.0007606983590489428
   }
 }
