@@ -4,6 +4,7 @@
 //! be added without moving call sites first.
 
 mod arena;
+pub(crate) mod snapshot;
 
 use std::env;
 use std::fmt;
@@ -186,6 +187,10 @@ pub(crate) struct ProgramMemory {
 }
 
 /// Switchable KCL stack facade.
+///
+/// Serde snapshots include the whole underlying arena and executable values.
+/// Snapshot only while execution is quiescent; restoring creates an independent
+/// arena. The snapshot format is internal and versioned separately from KCL.
 #[derive(Debug, Clone)]
 pub(crate) struct Stack {
     pub(crate) memory: Arc<ProgramMemory>,

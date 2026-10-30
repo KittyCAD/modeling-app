@@ -203,6 +203,8 @@
 //! needed. Popping an env either removes the last empty unreferenced table entry, or keeps the entry
 //! and marks it read-only after any safe compaction.
 
+mod snapshot;
+
 use std::fmt;
 use std::sync::Arc;
 use std::sync::OnceLock;
@@ -251,7 +253,7 @@ pub(crate) struct Stack {
 /// a call frame's parent is pinned eagerly by the snapshot taken at closure
 /// creation, and `push_new_env_for_scope`'s parent is pinned eagerly by the
 /// snapshot at push, so both carry `None` here.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 enum ParentPin {
     /// This environment never pins its parent itself.
     None,

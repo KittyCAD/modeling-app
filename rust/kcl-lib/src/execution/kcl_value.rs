@@ -1,9 +1,12 @@
+mod snapshot;
+
 use std::collections::HashMap;
 use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_api::UnitLength;
+use serde::Deserialize;
 use serde::Serialize;
 use serde::Serializer;
 
@@ -62,7 +65,7 @@ use crate::std::args::TyF64;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub enum KclObjectKind {
     #[default]
     Default,
@@ -210,7 +213,7 @@ where
     serializer.serialize_unit()
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct NamedParam {
     pub experimental: bool,
     /// Constraint marking the KCL version in which this parameter was added.
@@ -519,7 +522,7 @@ impl TypeDef {
 /// the declaration site. Importing under an alias renames the binding, not the
 /// type, so it leaves identity untouched. Two enums declaring identical variant
 /// names are still distinct types.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct EnumTypeId {
     module_id: ModuleId,
     declared_name: String,

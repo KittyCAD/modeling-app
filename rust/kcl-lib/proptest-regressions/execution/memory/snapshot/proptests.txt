@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 66ed46430aeb544b04f707abea226001f859734a315559f7df1fa815c52dc548 # shrinks to bindings = {"": Tuple { value: [Tuple { value: [Tuple { value: [SketchVar { value: SketchVar { id: SketchVarId(18446744073709551615), initial_value: 2.748505522955563e-163, ty: Known(Count), node_path: None, meta: [] } }], meta: [] }], meta: [] }], meta: [] }}

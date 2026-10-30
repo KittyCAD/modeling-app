@@ -5,6 +5,8 @@
 //! - [`NamedViewValue`] pairs a camera with the view's declared visibility.
 //! - The Rust enums correspond to the KCL enums declared in `std/view.kcl`.
 
+mod snapshot;
+
 use std::collections::HashSet;
 
 use serde::Serialize;

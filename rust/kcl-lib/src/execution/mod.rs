@@ -179,6 +179,7 @@ pub(crate) mod kcl_value;
 pub(crate) mod kcl_value_view;
 pub(crate) mod machine;
 mod memory;
+pub(crate) use memory::snapshot as memory_snapshot;
 mod modeling;
 #[cfg(not(target_arch = "wasm32"))]
 mod remote;

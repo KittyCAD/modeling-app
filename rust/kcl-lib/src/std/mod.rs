@@ -225,7 +225,14 @@ impl StdFnProps {
 ///
 /// Region and solid policies are independent, so their modifiers may be chained.
 pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
-    match (path, fn_name) {
+    try_std_fn(path, fn_name).unwrap_or_else(|| {
+        panic!("No implementation found for {path}::{fn_name}, please add it to this big match statement")
+    })
+}
+
+/// Resolve snapshot identities without panicking on unknown or newer builtins.
+pub(crate) fn try_std_fn(path: &str, fn_name: &str) -> Option<(crate::std::StdFn, StdFnProps)> {
+    Some(match (path, fn_name) {
         ("gdt", "datum") => (
             |e, a| Box::pin(crate::std::gdt::datum(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::gdt::datum"),
@@ -920,10 +927,8 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::operation::facing(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::operation::facing"),
         ),
-        (module, fn_name) => {
-            panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
-        }
-    }
+        _ => return None,
+    })
 }
 
 pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {

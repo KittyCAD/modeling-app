@@ -1,3 +1,5 @@
+mod snapshot;
+
 use std::f64::consts::TAU;
 use std::ops::Add;
 use std::ops::AddAssign;
