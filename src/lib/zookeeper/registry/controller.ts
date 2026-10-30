@@ -631,11 +631,13 @@ class SessionController implements ZookeeperSessionController {
       this.clearOperationGeneration === generation &&
       this.getProject()?.cloudProjectId === projectId
     this.pendingCloudRefreshes += 1
+    let filesRefreshed = false
     this.cloudRefreshQueue = this.cloudRefreshQueue
       .catch(reportRejection)
       .then(async () => {
         if (!isCurrent()) return
         await cloud.refreshProject(projectId, isCurrent, change?.revision)
+        filesRefreshed = true
         if (!isCurrent()) return
         const project = this.getReadyZdsProject()
         if (!project) return
@@ -655,7 +657,9 @@ class SessionController implements ZookeeperSessionController {
         if (!isCurrent()) return
         reportRejection(error)
         toast.error(
-          'Could not refresh the cloud project. Your current files were kept. Resolve any failed saves before reloading.'
+          filesRefreshed
+            ? 'Cloud files refreshed, but modeling could not be updated.'
+            : 'Could not refresh the cloud project. Your current files were kept. Resolve any failed saves before reloading.'
         )
       })
       .finally(() => {

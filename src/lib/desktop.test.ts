@@ -284,7 +284,7 @@ describe('createNewProjectDirectory', () => {
     expect(projectToml).toContain('title = "Windows Dropbox"')
   })
 
-  it('preserves project metadata when writing project settings', async () => {
+  it('preserves project metadata and skips unchanged project settings writes', async () => {
     const projectDirectoryPath = createTempDirectoryPath()
     const projectPath = fsZds.join(projectDirectoryPath, 'test-1')
     createdProjectDirectoryPaths.push(projectDirectoryPath)
@@ -314,5 +314,17 @@ describe('createNewProjectDirectory', () => {
     expect(projectToml).toContain('project_id = "project-123"')
     expect(projectToml).toContain('id = "new-settings-id"')
     expect(projectToml).not.toContain('old-settings-id')
+
+    const writeFile = vi.spyOn(testFileOperations, 'writeFile')
+    try {
+      await overwriteProjectTomlWithNewSettings(
+        testFileOperations,
+        projectPath,
+        '[settings.meta]\nid = "new-settings-id"\n'
+      )
+      expect(writeFile).not.toHaveBeenCalled()
+    } finally {
+      writeFile.mockRestore()
+    }
   })
 })

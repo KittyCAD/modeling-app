@@ -103,6 +103,7 @@ export const settingsMachine = setup({
       {
         doNotPersist: boolean
         context: SettingsMachineContext
+        level?: SettingsLevel
         toastCallback?: () => void
       }
     >(async ({ input }) => {
@@ -125,7 +126,7 @@ export const settingsMachine = setup({
         wasmInstancePromise,
         settings,
         extensionSettings,
-        currentProject?.path
+        input.level === 'user' ? undefined : currentProject?.path
       )
 
       if (input.toastCallback) {
@@ -655,13 +656,19 @@ export const settingsMachine = setup({
         onError: {
           target: 'idle',
           actions: [
-            () => {
-              console.error('Error persisting settings')
+            ({ event }) => {
+              console.error('Error persisting settings', event.error)
             },
             'flushDeferredSettingsEvents',
           ],
         },
         input: ({ context, event }) => {
+          const level =
+            'data' in event
+              ? event.data.level
+              : 'level' in event
+                ? event.level
+                : undefined
           if (
             event.type === 'set.app.namedViews' &&
             'toastCallback' in event.data
@@ -669,6 +676,7 @@ export const settingsMachine = setup({
             return {
               doNotPersist: event.doNotPersist ?? false,
               context,
+              level,
               toastCallback: event.data.toastCallback,
             }
           }
@@ -676,6 +684,7 @@ export const settingsMachine = setup({
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
+            level,
           }
         },
       },

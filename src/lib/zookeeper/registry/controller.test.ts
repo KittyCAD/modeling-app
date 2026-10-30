@@ -394,6 +394,34 @@ describe('Zookeeper session controller', () => {
     )
   })
 
+  it.each([false, true])(
+    'distinguishes storage and modeling refresh failures: %s',
+    async (filesRefreshed) => {
+      const h = createHarness({ cloudProjectId: 'remote-one' })
+      const toastError = vi
+        .spyOn(toast, 'error')
+        .mockImplementation(() => 'toast-id')
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      if (filesRefreshed)
+        h.reloadFiles.mockRejectedValueOnce(new Error('Modeling failed'))
+      else h.refreshProject.mockRejectedValueOnce(new Error('Download failed'))
+      h.actor.emit('ready', {
+        cloudProjectChange: {
+          callId: 'call-1',
+          projectId: 'remote-one',
+          revision: '2',
+        },
+      })
+      await waitFor(() =>
+        expect(toastError).toHaveBeenCalledWith(
+          filesRefreshed
+            ? 'Cloud files refreshed, but modeling could not be updated.'
+            : 'Could not refresh the cloud project. Your current files were kept. Resolve any failed saves before reloading.'
+        )
+      )
+    }
+  )
+
   it('leaves local projects on the file-edit path', async () => {
     const h = createHarness()
     h.actor.emit('ready', {

@@ -101,6 +101,22 @@ test(
     await expect(page.locator('.cm-content').first()).toContainText(
       'Direct cloud load'
     )
+    await expect
+      .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
+      .toBe(0)
+    const initialUploads = remote.uploads.length
+    await page.evaluate(() =>
+      window.app.settings.actor.send({
+        type: 'set.app.theme',
+        data: { level: 'user', value: 'dark' },
+      })
+    )
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.app.settings.actor.getSnapshot().value)
+      )
+      .toBe('idle')
+    expect(remote.uploads).toHaveLength(initialUploads)
     remote.project.files['main.kcl'] =
       '@settings(kclVersion = 3.0)\n// Changed on another device\n'
     remote.project.revision = '2'

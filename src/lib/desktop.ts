@@ -771,7 +771,6 @@ export async function overwriteProjectTomlWithNewSettings(
   tomlStr: string
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
-  await ensureDirectory(fileOperations, projectPath)
   if (err(tomlStr)) {
     return Promise.reject(tomlStr)
   }
@@ -784,11 +783,13 @@ export async function overwriteProjectTomlWithNewSettings(
       existingProjectToml,
       tomlStr
     )
+    if (projectToml === existingProjectToml) return
   } catch (error) {
     if (!isPathNotFoundError(error)) {
       return Promise.reject(error)
     }
   }
+  await ensureDirectory(fileOperations, projectPath)
   return fileOperations.writeFile(projectSettingsFilePath, projectToml)
 }
 
