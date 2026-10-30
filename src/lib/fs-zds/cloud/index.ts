@@ -465,7 +465,11 @@ export function createCloudFileSystem(
       id: string,
       isCurrent: () => boolean = () => true
     ) => {
-      await openProject(id)
+      // A first open already downloads the current snapshot.
+      if (!opened.has(id)) {
+        await openProject(id)
+        return
+      }
       return enqueue(
         id,
         async (previousState) => {

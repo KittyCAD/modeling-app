@@ -20,7 +20,7 @@ vi.mock('@src/lib/app', () => ({
     }
 
     beginFileRouteLoad = vi.fn(() => vi.fn())
-    registry = { get: vi.fn() }
+    registry = { get: vi.fn(), optional: vi.fn() }
     settings = { actor: {} }
     singletons = { kclManager: { wasmInstancePromise: Promise.resolve({}) } }
   },
@@ -110,5 +110,37 @@ describe('fileLoader legacy web bookmarks', () => {
     )
     expect(registryGet).not.toHaveBeenCalled()
     expect(loadAndValidateSettings).not.toHaveBeenCalled()
+  })
+
+  it('refreshes a direct cloud file route before loading project settings', async () => {
+    const app = new App(App.getDefaultSystems())
+    const refreshed = Promise.withResolvers<undefined>()
+    const refreshProject = vi.fn(() => refreshed.promise)
+    const openProject = vi.fn()
+    vi.spyOn(app.registry, 'get').mockReturnValue({
+      root: '/__zoo_cloud__',
+      idFor: () => 'one',
+      refreshProject,
+      openProject,
+    })
+    const id = '/__zoo_cloud__/one/parts/main.kcl'
+    const loading = fileLoader({ app })({
+      request: new Request(
+        `https://app.zoo.dev/file/${encodeURIComponent(id)}`
+      ),
+      params: { id },
+      context: undefined,
+      unstable_pattern: '/file/:id',
+    })
+    await vi.waitFor(() =>
+      expect(refreshProject).toHaveBeenCalledWith('one', expect.any(Function))
+    )
+    expect(loadAndValidateSettings).not.toHaveBeenCalled()
+    const finished = expect(loading).rejects.toThrow(
+      'Unexpected project lookup'
+    )
+    refreshed.resolve(undefined)
+    await finished
+    expect(openProject).not.toHaveBeenCalled()
   })
 })

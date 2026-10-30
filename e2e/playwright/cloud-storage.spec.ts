@@ -89,6 +89,29 @@ async function mockCloud(context: BrowserContext) {
 }
 
 test(
+  'loads current cloud files from a direct modeling URL and after reloading it',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    const remote = await mockCloud(context)
+    await setup(context, page, testInfo)
+    const main = `/__zoo_cloud__/${projectId}/main.kcl`
+    remote.project.files['main.kcl'] += '// Direct cloud load\n'
+    await page.goto(`/file/${encodeURIComponent(main)}`)
+    await expect(page.locator('.cm-content').first()).toContainText(
+      'Direct cloud load'
+    )
+    remote.project.files['main.kcl'] =
+      '@settings(kclVersion = 3.0)\n// Changed on another device\n'
+    remote.project.revision = '2'
+    await page.reload({ waitUntil: 'domcontentloaded' })
+    await expect(page.locator('.cm-content').first()).toContainText(
+      'Changed on another device'
+    )
+  }
+)
+
+test(
   'opens, saves, and reloads cloud files without modifying a historical disk mirror',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {

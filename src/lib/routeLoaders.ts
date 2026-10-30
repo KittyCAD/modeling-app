@@ -136,8 +136,7 @@ export const fileLoader =
       const location = await resolveProjectLocation(params.id, cloud.exists)
       assertCurrent()
       if (location.type === 'cloud') {
-        const path = await cloud.openProject(location.id)
-        assertCurrent()
+        const path = fsZds.join(cloud.root, location.id)
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(path)}${new URL(routerData.request.url).search}`
         )
@@ -149,7 +148,15 @@ export const fileLoader =
     const cloudStorage = app.registry.get(cloudStorageService)
     if (params.id?.startsWith(`${cloudStorage.root}${fsZds.sep}`)) {
       await waitForCloudAuth()
-      await cloudStorage.openProject(cloudStorage.idFor(params.id))
+      const id = cloudStorage.idFor(params.id)
+      if (current?.path !== fsZds.join(cloudStorage.root, id)) {
+        await cloudStorage.refreshProject(
+          id,
+          () => !routerData.request.signal.aborted
+        )
+      } else {
+        await cloudStorage.openProject(id)
+      }
       assertCurrent()
     }
 

@@ -55,6 +55,23 @@ describe.each([
     return { fs, diskWrite, diskRemove }
   }
 
+  it('downloads once on the first refresh and fetches new bytes when reopening', async () => {
+    const { fs } = setup()
+    await fs.refreshProject('one')
+    expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(1)
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+      { relativePath: 'main.kcl', data: encoder.encode('updated remotely') },
+    ])
+    await fs.refreshProject('one')
+    expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
+    expect(
+      new TextDecoder().decode(
+        await fs.readFile(paths.join(fs.root, 'one', 'main.kcl'))
+      )
+    ).toBe('updated remotely')
+    expect(api.updateRemoteProject).not.toHaveBeenCalled()
+  })
+
   it('works through the filesystem interface and waits for acknowledged saves without blocking memory reads', async () => {
     const { fs, diskWrite, diskRemove } = setup()
     const backing: IZooDesignStudioFS = fs
