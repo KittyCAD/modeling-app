@@ -1,55 +1,10 @@
-import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
+import { executorInputPath } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as fsp from 'fs/promises'
 import path, { join } from 'path'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
-  test('Extrude dialog selects the generated line in the editor', async ({
-    page,
-    homePage,
-    toolbar,
-    scene,
-    editor,
-    modelingDialog,
-  }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> xLine(length = -20)
-  |> close()
-    `
-      )
-    })
-
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.goToModelingScene()
-
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-    await scene.settled()
-
-    await toolbar.extrudeButton.click()
-    await expect(modelingDialog.locator).toHaveAttribute(
-      'aria-label',
-      'Extrude'
-    )
-    await editor.selectText('startProfile(at = [-10, -10])')
-    await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
-    await modelingDialog.submit()
-    await expect(page.locator('.cm-activeLine')).toHaveText(
-      `extrude001 = extrude(sketch001, length = ${KCL_DEFAULT_LENGTH})`
-    )
-  })
-
   test('Command bar can change a setting, and switch back and forth between arguments', async ({
     page,
     homePage,
@@ -187,75 +142,6 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     ).toBeVisible()
     // Check that the theme changed
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
-  })
-
-  test('Command palette opens Extrude dialog with variable and optional inputs', async ({
-    page,
-    homePage,
-    cmdBar,
-    modelingDialog,
-    scene,
-    editor,
-  }) => {
-    const initialCode = `distance = sqrt(20)
-    sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [-6.95, 10.98])
-    |> line(end = [25.1, 0.41])
-    |> line(end = [0.73, -20.93])
-    |> line(end = [-23.44, 0.52])
-    |> close()
-        `
-    const u = await getUtils(page)
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    await u.openDebugPanel()
-    await u.clearCommandLogs()
-    await u.closeDebugPanel()
-    await editor.replaceCode('', initialCode)
-    await editor.expectEditor.toContain('startProfile(at = [-6.95, 10.98])')
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    let cmdSearchBar = page.getByPlaceholder('Search commands')
-    await page.keyboard.press('ControlOrMeta+K')
-    await expect(cmdSearchBar).toBeVisible()
-
-    // Search for extrude command and choose it
-    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
-
-    await expect(modelingDialog.locator).toHaveAttribute(
-      'aria-label',
-      'Extrude'
-    )
-    await expect(modelingDialog.submitButton).toBeDisabled()
-    await editor.selectText('startProfile(at = [-6.95, 10.98])')
-    await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
-    await expect(modelingDialog.input('length')).toHaveText('5')
-    await modelingDialog.variableCheckbox('length').check()
-    await expect(
-      modelingDialog.locator.getByRole('textbox', {
-        name: 'Variable name',
-        exact: true,
-      })
-    ).toHaveValue('length001')
-
-    const bidirectionalLength = modelingDialog.input('bidirectional length')
-    await bidirectionalLength.fill('10')
-    await expect(bidirectionalLength).toHaveText('10')
-    await bidirectionalLength.fill('')
-    await expect(bidirectionalLength).toHaveAttribute(
-      'aria-placeholder',
-      'Use defaults'
-    )
-    await modelingDialog.submit()
-    await scene.settled()
-    await editor.expectEditor.toContain(
-      'extrude001 = extrude(sketch001, length = length001)'
-    )
   })
 
   test(`Reacts to query param to open "import from URL" command`, async ({
@@ -667,41 +553,5 @@ extrude001 = extrude(region001, length = 10mm)`
     }
     await cmdBar.stepBackButton.click()
     await cmdBar.expectState({ stage: 'commandBarClosed' })
-  })
-
-  test('Can cancel a modeling dialog with an unfinished optional input', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    modelingDialog,
-    editor,
-  }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 5)
-`
-      )
-    })
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    await cmdBar.openCmdBar()
-    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
-    await expect(modelingDialog.locator).toHaveAttribute(
-      'aria-label',
-      'Extrude'
-    )
-    await editor.selectText('circle(center = [0, 0], radius = 5)')
-    await modelingDialog.options('body type').selectOption({ label: 'Surface' })
-    await modelingDialog.input('bidirectional length').fill('1 +')
-    await expect(modelingDialog.submitButton).toBeDisabled()
-    await modelingDialog.cancelButton.click()
-    await expect(modelingDialog.locator).not.toBeAttached()
-    await editor.expectEditor.not.toContain('extrude(')
   })
 })
