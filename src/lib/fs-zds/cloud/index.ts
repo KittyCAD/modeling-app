@@ -481,28 +481,18 @@ export function createCloudFileSystem(
               )
             )
           const requestConfig = config()
-          // Metadata and archive use separate requests. Recheck the revision so a
-          // concurrent cloud mutation cannot mix one snapshot with another revision.
-          for (let attempt = 0; attempt < 3; attempt += 1) {
-            const remote = await api.getRemoteProject(requestConfig, id)
-            const archive = await parseProjectArchive(
-              await api.downloadRemoteProjectArchive(requestConfig, id)
-            )
-            const latest = await api.getRemoteProject(requestConfig, id)
-            if (config().accountId !== requestConfig.accountId)
-              return Promise.reject(
-                new Error('Cloud account changed during refresh.')
-              )
-            if (!isCurrent()) return
-            if (String(remote.revision) !== String(latest.revision)) continue
-            clearThumbnail(id)
-            await hydrate(id, archive)
-            acknowledge(id, latest, archive)
-            return
-          }
-          return Promise.reject(
-            new Error('Cloud project kept changing during refresh. Try again.')
+          const remote = await api.getRemoteProject(requestConfig, id)
+          const archive = await parseProjectArchive(
+            await api.downloadRemoteProjectArchive(requestConfig, id)
           )
+          if (config().accountId !== requestConfig.accountId)
+            return Promise.reject(
+              new Error('Cloud account changed during refresh.')
+            )
+          if (!isCurrent()) return
+          clearThumbnail(id)
+          await hydrate(id, archive)
+          acknowledge(id, remote, archive)
         },
         false,
         false
