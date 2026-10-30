@@ -410,11 +410,11 @@ pub struct ExecOutcome {
 /// Parsing an execution source also owns file-switch and engine-session semantics.
 /// The Rust scene generation distinguishes recreated planes with deterministic
 /// reused IDs from an unchanged scene observed by another parse.
+/// The AST and its version are present together, or absent on parse errors.
 #[derive(Debug, Clone, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct ParsedExecutionSource {
-    pub program: Option<crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>>,
-    pub kcl_version: Option<KclVersion>,
+    pub program: Option<crate::parsing::ParsedProgram>,
     pub issues: Vec<CompilationIssue>,
     pub default_planes: Option<DefaultPlanes>,
     pub engine_scene_generation: usize,
@@ -1756,8 +1756,10 @@ impl ExecutorContext {
             ..KclErrorWithOutputs::no_outputs(error)
         })?;
         Ok(ParsedExecutionSource {
-            kcl_version: program.as_ref().map(|program| program.kcl_version),
-            program: program.map(|program| program.ast),
+            program: program.map(|program| crate::parsing::ParsedProgram {
+                kcl_version: program.kcl_version,
+                ast: program.ast,
+            }),
             issues,
             default_planes,
             engine_scene_generation,

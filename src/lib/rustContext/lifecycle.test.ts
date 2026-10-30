@@ -94,7 +94,6 @@ function parsedPlanes(
 ): ParsedExecutionSource {
   return {
     program: null,
-    kcl_version: null,
     issues: [],
     default_planes: value,
     engine_scene_generation: generation,

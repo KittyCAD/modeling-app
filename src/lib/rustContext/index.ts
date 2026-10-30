@@ -240,8 +240,8 @@ export default class RustContext {
         planeOwner
       )
       return new ParseResult(
-        parsed.program,
-        parsed.kcl_version,
+        parsed.program?.ast ?? null,
+        parsed.program?.kcl_version ?? null,
         parsed.issues.filter((issue) => issue.severity !== 'Warning'),
         parsed.issues.filter((issue) => issue.severity === 'Warning')
       )
