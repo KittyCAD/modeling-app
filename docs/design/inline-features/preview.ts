@@ -4,8 +4,10 @@ import { EditorView, keymap, lineNumbers } from '@codemirror/view'
 import {
   inlineFeaturesField,
   inlineFeaturesTheme,
+  inlinePlanesField,
   revealInlineFeature,
   setInlineFeatures,
+  setInlinePlanes,
 } from '../../../src/editor/plugins/inlineFeatures'
 
 // This fixture exercises the production CodeMirror extension without WASM,
@@ -23,6 +25,12 @@ plate = extrude(profile, length = thickness)
 // These values stay visible and editable
 holeDiameter = 6
 edgeRadius = 2
+boltCount = 4
+boltCircle = 60
+clearance = 0.25
+plateWidth = 100
+plateLength = 140
+mountOffset = 20
 
 // Finishing operations
 holes = sketch(on = XY) {
@@ -61,10 +69,12 @@ const view = new EditorView({
     doc: source,
     extensions: [
       lineNumbers(),
+      EditorView.lineWrapping,
       history(),
       theme.of(EditorView.theme({})),
       keymap.of([...defaultKeymap, ...historyKeymap]),
       inlineFeaturesField,
+      inlinePlanesField,
       inlineFeaturesTheme,
       EditorView.updateListener.of((update) => {
         const state = update.state.field(inlineFeaturesField)
@@ -72,9 +82,11 @@ const view = new EditorView({
           const button = feature.host.querySelector<HTMLButtonElement>(
             '.cm-inline-feature-code-toggle'
           )!
-          button.textContent = state.expanded.has(feature.id)
-            ? '⌃ Hide code'
-            : '‹ › Show code'
+          button.textContent = state.expanded.has(feature.id) ? '⌃' : '‹ ›'
+          button.title = state.expanded.has(feature.id)
+            ? 'Hide code'
+            : 'Show code'
+          button.setAttribute('aria-label', button.title)
           button.setAttribute(
             'aria-expanded',
             String(state.expanded.has(feature.id))
@@ -108,7 +120,7 @@ const features = definitions.map((definition) => {
   const toggle = document.createElement('button')
   toggle.type = 'button'
   toggle.className = 'cm-inline-feature-code-toggle'
-  toggle.textContent = '‹ › Show code'
+  toggle.textContent = '‹ ›'
   toggle.onclick = () =>
     view.dispatch({
       effects: revealInlineFeature.of({
@@ -119,7 +131,21 @@ const features = definitions.map((definition) => {
   host.append(row, toggle)
   return { id, from, to, operations: [], host }
 })
-view.dispatch({ effects: setInlineFeatures.of(features) })
+const planes = document.createElement('div')
+planes.className = 'cm-inline-planes'
+planes.innerHTML = [
+  'Front plane|XZ|#628fd8',
+  'Top plane|XY|#cf6969',
+  'Side plane|YZ|#5baf81',
+]
+  .map((plane) => {
+    const [name, axis, color] = plane.split('|')
+    return `<div class="plane-row"><button class="feature-row"><span class="feature-icon">▱</span><span class="feature-name">${name}</span><span class="plane-axis" style="color:${color}">${axis}</span></button><button class="plane-visibility" aria-label="Toggle ${name} visibility">◉</button></div>`
+  })
+  .join('')
+view.dispatch({
+  effects: [setInlineFeatures.of(features), setInlinePlanes.of(planes)],
+})
 document.querySelector<HTMLInputElement>('#separate')!.onchange = (event) => {
   const separate = (event.target as HTMLInputElement).checked
   view.dispatch({

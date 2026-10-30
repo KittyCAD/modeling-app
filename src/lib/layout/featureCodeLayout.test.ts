@@ -4,7 +4,7 @@ import { applyFeatureCodeLayout } from './featureCodeLayout'
 import { LayoutType } from './types'
 
 describe('feature and code layout preference', () => {
-  it('merges an open tree into code and keeps Bodies available', () => {
+  it('merges an open tree into code without keeping a Bodies pane', () => {
     const original = structuredClone(playwrightLayoutConfig)
     if (
       original.type !== LayoutType.Splits ||
@@ -20,11 +20,12 @@ describe('feature and code layout preference', () => {
     ) {
       throw new Error('Unexpected merged layout')
     }
-    expect(merged.children[0].activeIndices).toEqual([1])
+    expect(merged.children[0].activeIndices).toEqual([0])
     expect(merged.children[0].children[0]).toMatchObject({
-      id: 'inline-bodies',
-      areaType: 'bodies',
+      id: 'code',
+      areaType: 'codeEditor',
     })
+    expect(JSON.stringify(merged)).not.toContain('bodies')
     expect(original.children[0].children[0].id).toBe('feature-tree')
     expect(applyFeatureCodeLayout(merged, false)).toEqual(merged)
   })
@@ -41,5 +42,6 @@ describe('feature and code layout preference', () => {
     }
     expect(separated.children[0].activeIndices).toEqual([0, 1])
     expect(separated.children[0].children[0].id).toBe('feature-tree')
+    expect(JSON.stringify(separated)).not.toContain('bodies')
   })
 })

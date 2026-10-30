@@ -103,6 +103,27 @@ class FeatureWidget extends WidgetType {
   }
 }
 
+/** Planes are UI at the top of the same scroller, never source text. */
+export const setInlinePlanes = StateEffect.define<HTMLElement>()
+export const inlinePlanesField = StateField.define<DecorationSet>({
+  create: () => Decoration.none,
+  update(value, transaction) {
+    for (const effect of transaction.effects) {
+      if (effect.is(setInlinePlanes)) {
+        return Decoration.set([
+          Decoration.widget({
+            widget: new FeatureWidget(effect.value),
+            block: true,
+            side: -2,
+          }).range(0),
+        ])
+      }
+    }
+    return value
+  },
+  provide: (field) => EditorView.decorations.from(field),
+})
+
 interface InlineState {
   features: (InlineFeature & { host: HTMLElement })[]
   expanded: ReadonlySet<string>
@@ -176,13 +197,14 @@ export const inlineFeaturesField = StateField.define<InlineState>({
 
 export const inlineFeaturesTheme = EditorView.baseTheme({
   '.cm-inline-feature': {
-    margin: '3px 8px 3px 0',
-    border: '1px solid var(--chalkboard-20, #d4d4d4)',
-    borderRadius: '6px',
-    overflow: 'hidden',
+    margin: '0 8px 0 0',
+    display: 'flex',
+    alignItems: 'center',
     fontFamily: 'var(--sans-serif, sans-serif)',
-    background: 'var(--color-bg-1, transparent)',
+    background: 'transparent',
   },
+  '.cm-inline-feature-operations': { flex: '1', minWidth: '0' },
+  '.cm-inline-planes': { margin: '0 8px 12px 0', fontFamily: 'sans-serif' },
   '.cm-inline-feature [data-testid="feature-tree-operation-item"]': {
     borderRadius: '5px',
   },
@@ -190,12 +212,11 @@ export const inlineFeaturesTheme = EditorView.baseTheme({
     font: 'inherit',
     fontSize: '11px',
     cursor: 'pointer',
-    padding: '3px 8px',
+    padding: '4px 6px',
     border: 'none',
     background: 'transparent',
     color: 'inherit',
     opacity: '0.65',
   },
   '.cm-inline-feature-code-toggle:hover': { opacity: '1' },
-  '&dark .cm-inline-feature': { borderColor: '#41444a' },
 })

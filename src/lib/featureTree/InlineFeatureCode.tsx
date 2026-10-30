@@ -5,13 +5,18 @@ import {
   inlineFeaturesCompartment,
   inlineFeaturesField,
   inlineFeaturesTheme,
+  inlinePlanesField,
   revealInlineFeature,
   setInlineFeatures,
+  setInlinePlanes,
 } from '@src/editor/plugins/inlineFeatures'
 import { toUtf16 } from '@src/lang/errors'
 import { getOperationsForCurrentFile } from '@src/lang/wasm'
 import { useSingletons } from '@src/lib/boot'
-import { InlineFeatureItem } from '@src/lib/featureTree/FeatureTreePane'
+import {
+  InlineFeatureItem,
+  InlineFeaturePlanes,
+} from '@src/lib/featureTree/FeatureTreePane'
 import { getOperationKey } from '@src/lib/featureTree/featureTreeOperationTree'
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -31,6 +36,12 @@ export function InlineFeatureCode() {
     kclManager.hasEditsSinceLastExecutionSignal.value ||
     kclManager.errorsSignal.value.length > 0
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set())
+  const planesHost = useMemo(() => {
+    const host = document.createElement('div')
+    host.className = 'cm-inline-planes'
+    host.contentEditable = 'false'
+    return host
+  }, [])
   const features = useMemo(() => {
     if (unsafe || !ast || code !== kclManager.lastSuccessfulCode) {
       return []
@@ -58,6 +69,7 @@ export function InlineFeatureCode() {
       effects: [
         inlineFeaturesCompartment.reconfigure([
           inlineFeaturesField,
+          inlinePlanesField,
           inlineFeaturesTheme,
           EditorView.updateListener.of((update) => {
             const next = update.state.field(inlineFeaturesField).expanded
@@ -70,9 +82,10 @@ export function InlineFeatureCode() {
           }),
         ]),
         setInlineFeatures.of(features),
+        setInlinePlanes.of(planesHost),
       ],
     })
-  }, [view, features])
+  }, [view, features, planesHost])
 
   useEffect(
     () => () => {
@@ -81,42 +94,50 @@ export function InlineFeatureCode() {
     [view]
   )
 
-  return features.map((feature) =>
-    createPortal(
-      <>
-        {feature.operations.map((item) => (
-          <InlineFeatureItem
-            key={getOperationKey(item)}
-            item={item}
-            onRevealCode={() =>
-              view.dispatch({
-                effects: revealInlineFeature.of({
-                  id: feature.id,
-                  expanded: true,
-                }),
-              })
-            }
-          />
-        ))}
-        <button
-          type="button"
-          className="cm-inline-feature-code-toggle"
-          aria-expanded={expanded.has(feature.id)}
-          aria-label={`${expanded.has(feature.id) ? 'Hide' : 'Show'} feature code`}
-          onClick={() =>
-            view.dispatch({
-              effects: revealInlineFeature.of({
-                id: feature.id,
-                expanded: !expanded.has(feature.id),
-              }),
-            })
-          }
-        >
-          {expanded.has(feature.id) ? '⌃ Hide code' : '‹ › Show code'}
-        </button>
-      </>,
-      feature.host,
-      feature.id
-    )
+  return (
+    <>
+      {createPortal(<InlineFeaturePlanes />, planesHost)}
+      {features.map((feature) =>
+        createPortal(
+          <>
+            <div className="cm-inline-feature-operations">
+              {feature.operations.map((item) => (
+                <InlineFeatureItem
+                  key={getOperationKey(item)}
+                  item={item}
+                  onRevealCode={() =>
+                    view.dispatch({
+                      effects: revealInlineFeature.of({
+                        id: feature.id,
+                        expanded: true,
+                      }),
+                    })
+                  }
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              className="cm-inline-feature-code-toggle"
+              aria-expanded={expanded.has(feature.id)}
+              aria-label={`${expanded.has(feature.id) ? 'Hide' : 'Show'} feature code`}
+              title={`${expanded.has(feature.id) ? 'Hide' : 'Show'} code`}
+              onClick={() =>
+                view.dispatch({
+                  effects: revealInlineFeature.of({
+                    id: feature.id,
+                    expanded: !expanded.has(feature.id),
+                  }),
+                })
+              }
+            >
+              {expanded.has(feature.id) ? '⌃' : '‹ ›'}
+            </button>
+          </>,
+          feature.host,
+          feature.id
+        )
+      )}
+    </>
   )
 }

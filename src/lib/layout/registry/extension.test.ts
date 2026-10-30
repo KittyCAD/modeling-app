@@ -313,7 +313,7 @@ describe('layout extension', () => {
         targetNodeId: DefaultLayoutToolbarID.Left,
       })
     ).toMatchObject({
-      activeIndices: [1],
+      activeIndices: [0],
       sizes: [100],
     })
 
@@ -326,7 +326,7 @@ describe('layout extension', () => {
     if (toolbar?.type !== LayoutType.Panes) {
       throw new Error('Expected a pane toolbar')
     }
-    expect(toolbar.activeIndices).toEqual([1, 3])
+    expect(toolbar.activeIndices).toEqual([0, 2])
     toolbar.sizes = [25, 75]
     layout.set(resized)
     expect(layout.openPane('code')).toEqual(resized)
@@ -395,7 +395,7 @@ describe('layout extension', () => {
         rootLayout: layout.get(),
         targetNodeId: 'left-toolbar',
       })
-    ).toMatchObject({ activeIndices: [1] })
+    ).toMatchObject({ activeIndices: [0] })
   })
 
   it('applies contributed user-feature transformations after settings hydrate', () => {

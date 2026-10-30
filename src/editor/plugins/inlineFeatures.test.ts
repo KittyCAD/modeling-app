@@ -4,8 +4,10 @@ import { describe, expect, it } from 'vitest'
 import {
   collectInlineFeatures,
   inlineFeaturesField,
+  inlinePlanesField,
   revealInlineFeature,
   setInlineFeatures,
+  setInlinePlanes,
 } from './inlineFeatures'
 
 function call(start: number, end: number, name = 'extrude'): Operation {
@@ -100,6 +102,24 @@ describe('inline feature source projection', () => {
 })
 
 describe('inline feature editor state', () => {
+  it('keeps planes inside the editor ahead of line one through source edits', () => {
+    const host = document.createElement('div')
+    const initial = EditorState.create({
+      doc: 'height = 12',
+      extensions: [inlinePlanesField],
+    })
+    const installed = initial.update({
+      effects: setInlinePlanes.of(host),
+    }).state
+    const edited = installed.update({
+      changes: { from: 0, insert: '// note\n' },
+    }).state
+    const ranges = edited.field(inlinePlanesField)
+    const first = ranges.iter()
+    expect(ranges.size).toBe(1)
+    expect(first.from).toBe(0)
+    expect(edited.doc.toString()).toBe('// note\nheight = 12')
+  })
   function state() {
     const initial = EditorState.create({
       doc: 'body = extrude(p)\nheight = 12',

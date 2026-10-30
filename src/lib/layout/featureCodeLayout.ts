@@ -1,7 +1,11 @@
-import { featureTreePaneConfig } from '@src/lib/layout/configs/default'
-import { AreaType, type Layout, LayoutType } from '@src/lib/layout/types'
+import {
+  AreaType,
+  type Layout,
+  LayoutType,
+  type PaneChild,
+} from '@src/lib/layout/types'
 
-/** Keep Bodies available while the operation tree moves into the code editor. */
+/** One model editor by default. The optional tree has no separate Bodies pane. */
 export function applyFeatureCodeLayout(
   layout: Layout,
   separate: boolean
@@ -11,53 +15,56 @@ export function applyFeatureCodeLayout(
     if (!('children' in node)) {
       return
     }
-    if (node.type === LayoutType.Panes) {
-      const codeIndex = node.children.findIndex((child) => child.id === 'code')
-      const treeIndex = node.children.findIndex(
-        (child) => child.id === 'feature-tree' || child.id === 'inline-bodies'
+    if (
+      node.type === LayoutType.Panes &&
+      node.children.some((child) => child.id === 'code')
+    ) {
+      const hadTree = node.children.some((child) => child.id === 'feature-tree')
+      const active = node.activeIndices.map((index, i) => ({
+        id: node.children[index]?.id,
+        size: node.sizes[i] ?? 0,
+      }))
+      node.children = node.children.filter(
+        (child) => child.id !== 'feature-tree' && child.id !== 'inline-bodies'
       )
-      if (codeIndex >= 0 && treeIndex >= 0) {
-        const wasTree = node.children[treeIndex].id === 'feature-tree'
-        const hadTree = node.activeIndices.includes(treeIndex)
-        const hadCode = node.activeIndices.includes(codeIndex)
-        const activeBefore = node.activeIndices.join(',')
-        node.children[treeIndex] = separate
-          ? wasTree
-            ? node.children[treeIndex]
-            : structuredClone(featureTreePaneConfig)
-          : {
-              id: 'inline-bodies',
-              label: 'Bodies',
-              icon: 'model',
-              type: LayoutType.Simple,
-              areaType: AreaType.Bodies,
-            }
-        node.children[codeIndex].label = separate
-          ? 'Code Editor'
-          : 'Features & Code'
-        if (separate && !wasTree && (hadCode || hadTree)) {
-          node.activeIndices = [
-            treeIndex,
-            codeIndex,
-            ...node.activeIndices.filter(
-              (index) => index !== treeIndex && index !== codeIndex
-            ),
-          ]
-        } else if (!separate && wasTree && hadTree) {
-          node.activeIndices = [
-            ...new Set(
-              node.activeIndices.map((index) =>
-                index === treeIndex ? codeIndex : index
-              )
-            ),
-          ]
+      const codeIndex = node.children.findIndex((child) => child.id === 'code')
+      node.children[codeIndex].label = separate
+        ? 'Code Editor'
+        : 'Features & Code'
+      if (separate) {
+        const tree: PaneChild = {
+          id: 'feature-tree',
+          label: 'Feature Tree',
+          icon: 'model',
+          type: LayoutType.Simple,
+          areaType: AreaType.FeatureTree,
         }
-        if (node.activeIndices.join(',') !== activeBefore) {
-          node.sizes = node.activeIndices.map(
-            () => 100 / node.activeIndices.length
-          )
+        node.children.splice(codeIndex, 0, tree)
+        const code = active.find(
+          ({ id }) => id === 'code' || id === 'inline-bodies'
+        )
+        if (!hadTree && code) {
+          const half = code.size / 2
+          code.id = 'code'
+          code.size = half
+          active.unshift({ id: 'feature-tree', size: half })
         }
       }
+      const weights = new Map<string, number>()
+      for (const pane of active) {
+        const id =
+          pane.id === 'inline-bodies' ||
+          (!separate && pane.id === 'feature-tree')
+            ? 'code'
+            : pane.id
+        if (id && node.children.some((child) => child.id === id)) {
+          weights.set(id, (weights.get(id) ?? 0) + pane.size)
+        }
+      }
+      node.activeIndices = Array.from(weights.keys()).map((id) =>
+        node.children.findIndex((child) => child.id === id)
+      )
+      node.sizes = Array.from(weights.values())
     }
     node.children.forEach(visit)
   }

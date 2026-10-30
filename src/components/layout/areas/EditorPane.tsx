@@ -31,7 +31,6 @@ import {
   scheduleActiveTextFileWrite,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { InlineFeaturePlanes } from '@src/lib/featureTree/FeatureTreePane'
 import { InlineFeatureCode } from '@src/lib/featureTree/InlineFeatureCode'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -113,11 +112,6 @@ export const EditorPaneContents = () => {
   return (
     <div className="relative h-full flex flex-col min-h-0">
       {!separateTree && <InlineFeatureCode />}
-      {!separateTree && (
-        <div className="px-2 py-1 border-b border-chalkboard-20 dark:border-chalkboard-80">
-          <InlineFeaturePlanes />
-        </div>
-      )}
       <div className="relative flex-1 min-h-0">
         <div
           id="code-mirror-override"
