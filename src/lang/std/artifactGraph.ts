@@ -29,13 +29,16 @@ import type {
 } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 /** Shape needed to recover a sweep edge's source segment. */
-type SweepEdgeLike = { segId: string; sweepId?: string }
 /**
  * Shared "resolved selection" shape used after resolving a SelectionV2 row back to code.
  * codeRef is always present; artifact remains optional because some flows can only recover
  * source-range context initially and defer artifact lookup to the next step.
  */
-export type ResolvedGraphSelection = { codeRef: CodeRef; artifact?: Artifact }
+export type ResolvedGraphSelection = {
+  codeRef: CodeRef
+  artifact?: Artifact
+  entityRef?: Selection['entityRef']
+}
 import { err } from '@src/lib/trap'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
@@ -190,9 +193,7 @@ export function getPatternArtifactForCopyId(
   return [...artifactGraph.values()].find(
     (artifact): artifact is Extract<Artifact, { type: 'pattern' }> =>
       artifact.type === 'pattern' &&
-      (artifact.copyIds.includes(id) ||
-        artifact.copyFaceIds.includes(id) ||
-        artifact.copyEdgeIds.includes(id))
+      (artifact.copyIds.includes(id) || artifact.copyFaceIds.includes(id))
   )
 }
 
@@ -324,18 +325,7 @@ export function getWallCodeRef(
   return seg.codeRef
 }
 
-export function getSweepEdgeCodeRef(
-  edge: SweepEdgeLike,
-  artifactGraph: ArtifactGraph
-): CodeRef | Error {
-  const seg = getArtifactOfTypes(
-    { key: edge.segId, types: ['segment'] },
-    artifactGraph
-  )
-  if (err(seg)) return seg
-  return seg.codeRef
-}
-/** Read consumed edge id from EdgeCut; Rust bindings use camelCase (edgeIds). */
+/** Find a legacy treatment's source sketch segment by its treatment link. */
 export function getSegmentForEdgeCut(
   edgeCutId: string,
   artifactGraph: ArtifactGraph
@@ -493,44 +483,6 @@ export function getMergedSweepBodyArtifact(
   return new Error('Cycle detected while resolving sweep body')
 }
 
-export function getCommonFacesForEdge(
-  artifact: SegmentArtifact,
-  artifactGraph: ArtifactGraph
-): Extract<Artifact, { type: 'wall' | 'cap' }>[] | Error {
-  const candidates =
-    'pathId' in artifact
-      ? [artifact, ...getMappedRegionSegments(artifact, artifactGraph)]
-      : [artifact]
-
-  let commonFaces: Extract<Artifact, { type: 'wall' | 'cap' }>[] | null = null
-
-  for (const candidate of candidates) {
-    const faces = getArtifactsOfTypes(
-      { keys: candidate.commonSurfaceIds, types: ['wall', 'cap'] },
-      artifactGraph
-    )
-    if (err(faces)) {
-      return faces
-    }
-    if (faces.size === 0) {
-      continue
-    }
-
-    const candidateFaces = [...faces.values()]
-    const commonFaceIds = new Set(commonFaces?.map(({ id }) => id))
-    if (
-      commonFaces &&
-      (commonFaces.length !== candidateFaces.length ||
-        candidateFaces.some(({ id }) => !commonFaceIds.has(id)))
-    ) {
-      return new Error('Segment maps to more than one set of common faces')
-    }
-    commonFaces = candidateFaces
-  }
-
-  return commonFaces ?? new Error('No common face found')
-}
-
 export function getSweepArtifactFromSelection(
   selection: ResolvedGraphSelection,
   artifactGraph: ArtifactGraph
@@ -663,9 +615,6 @@ export function getCodeRefsByArtifactId(
     return err(extrusion) ? [codeRef] : [codeRef, extrusion.codeRef]
   } else if (artifact?.type === 'segment') {
     return [artifact.codeRef]
-  } else if (artifact?.type === 'sweepEdge') {
-    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
-    return err(codeRef) ? null : [codeRef]
   } else if (artifact?.type === 'edgeCut') {
     const codeRef = artifact.codeRef
     const consumedCodeRef = getEdgeCutConsumedCodeRef(artifact, artifactGraph)

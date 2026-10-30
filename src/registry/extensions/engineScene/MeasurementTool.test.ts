@@ -151,13 +151,11 @@ describe('MeasurementTool helpers', () => {
       'copy-1',
       'copy-2',
       'copy-face-1',
-      'copy-edge-1',
     ])
     expect(getMeasurementEntities(selections)).toEqual([
       { id: 'copy-1', kind: 'body' },
       { id: 'copy-2', kind: 'body' },
       { id: 'copy-face-1', kind: 'face' },
-      { id: 'copy-edge-1', kind: 'edge' },
     ])
   })
 

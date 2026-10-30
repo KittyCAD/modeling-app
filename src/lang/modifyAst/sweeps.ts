@@ -22,6 +22,7 @@ import {
   createEdgeRefObjectExpression,
   entityReferenceToEdgeRefPayload,
   retrieveEdgeSelectionFromOpValue,
+  retrieveEdgeSelectionsFromLegacyOpArgs,
 } from '@src/lang/modifyAst/edges'
 import {
   getFacesExprsFromSelection,
@@ -38,12 +39,10 @@ import {
   resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import {
-  getArtifactOfTypes,
-  getSweepEdgeCodeRef,
-} from '@src/lang/std/artifactGraph'
+import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  EdgeRefactorMeta,
   CallExpressionKw,
   Expr,
   LabeledArg,
@@ -1109,7 +1108,8 @@ function getSketchNamesFromHideArg(
 // Sort of an inverse from getAxisExpression
 export function retrieveAxisOrEdgeSelectionsFromOpArg(
   opArg: OpArg,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  edgeRefactorMetadata: EdgeRefactorMeta[] = []
 ):
   | Error
   | {
@@ -1200,25 +1200,15 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
     edge = edgeSelection
   } else if (axisValue.type === 'Uuid') {
     axisOrEdge = 'Edge'
-    const artifact = getArtifactOfTypes(
-      {
-        key: axisValue.value,
-        types: ['sweepEdge'],
-      },
-      artifactGraph
+    edge = retrieveEdgeSelectionsFromLegacyOpArgs(
+      null,
+      opArg,
+      artifactGraph,
+      undefined,
+      edgeRefactorMetadata
     )
-    if (err(artifact)) {
-      return new Error("Couldn't find related edge artifact")
-    }
-
-    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
-    if (err(codeRef)) {
-      return new Error("Couldn't find related edge code ref")
-    }
-
-    edge = {
-      graphSelections: [{ artifact, codeRef }],
-      otherSelections: [],
+    if (edge.graphSelections.length === 0) {
+      return new Error("Couldn't find related edge selection")
     }
   } else {
     return new Error('The type of the axis argument is unsupported')

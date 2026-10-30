@@ -44,10 +44,9 @@ import {
   getArtifactFromRange,
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
-  getCommonFacesForEdge,
   getFaceCodeRef,
   getMergedSweepBodyArtifact,
-  getSegmentForEdgeCut,
+  getPatternArtifactForCopyId,
   getSweepArtifactFromSelection,
   type ResolvedGraphSelection,
   type CodeRef as SelectionCodeRef,
@@ -64,7 +63,6 @@ import type {
   ExpressionStatement,
   PathToNode,
   Program,
-  SegmentArtifact,
   SweepArtifact,
   VariableDeclarator,
 } from '@src/lang/wasm'
@@ -658,43 +656,32 @@ export function getPrimitiveEdgeSelections(
       selection.primitiveType === 'edge'
   )
 }
-/**
- * Converts a resolved edge selection to an EntityReference with face information.
- * This is used for the new face-based edge selection API (selectionsV2).
- */
+/** A code anchor is not enough to infer a selected solid edge. */
 export function edgeSelectionToEntityReference(
-  selection: ResolvedGraphSelection & { artifact: Artifact },
-  artifactGraph: ArtifactGraph
+  selection: ResolvedGraphSelection,
+  _artifactGraph: ArtifactGraph
 ): EntityReference | Error {
+  if (selection.entityRef?.type === 'edge') return selection.entityRef
   const artifact = selection.artifact
-  // Edge artifacts are segment or edgeCut (sweepEdge removed in selectionsV2)
-  let segmentArtifact: SegmentArtifact | null = null
-  if (artifact.type === 'segment') {
-    segmentArtifact = artifact
-  } else if (artifact.type === 'edgeCut') {
-    segmentArtifact = getSegmentForEdgeCut(artifact.id, artifactGraph)
+  // Legacy treatment-face axis inference used the consumed segment's faces.
+  // Keep that behavior without looking up a consumed 3D edge or its adjacency.
+  if (
+    artifact?.type === 'edgeCut' &&
+    artifact.sourceSelectorIndex == null &&
+    artifact.inputFaces
+  ) {
+    return {
+      type: 'edge',
+      side_faces: artifact.inputFaces.sideFaces,
+      ...(artifact.inputFaces.endFaces?.length
+        ? { end_faces: artifact.inputFaces.endFaces }
+        : {}),
+      ...(artifact.inputFaces.index != null
+        ? { index: artifact.inputFaces.index }
+        : {}),
+    }
   }
-  if (!segmentArtifact) {
-    return new Error('Selection is not an edge (segment or edgeCut)')
-  }
-
-  // Get the faces that form this edge
-  const commonFaces = getCommonFacesForEdge(segmentArtifact, artifactGraph)
-  if (err(commonFaces)) {
-    return commonFaces
-  }
-
-  // Extract face IDs from face artifacts
-  const faceIds = commonFaces.map((face) => face.id)
-
-  if (faceIds.length === 0) {
-    return new Error('No faces found for edge')
-  }
-
-  return {
-    type: 'edge',
-    side_faces: faceIds,
-  }
+  return new Error('Solid-edge selections require explicit face references')
 }
 
 /**
@@ -2660,25 +2647,9 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       const resolved = resolveToCodeRef(v2Sel, artifactGraph)
       if (!resolved?.artifact) continue
 
-      // Convert segment/edgeCut selections into the V2 `edge` entityRef shape
-      // expected by edgeRef payload creation.
-      const edgeEntityRef:
-        | Extract<EntityReference, { type: 'edge' }>
-        | undefined =
-        v2Sel.entityRef?.type === 'edge'
-          ? v2Sel.entityRef
-          : (() => {
-              const er = edgeSelectionToEntityReference(
-                {
-                  ...resolved,
-                  artifact: resolved.artifact,
-                },
-                artifactGraph
-              )
-              return err(er)
-                ? undefined
-                : (er as Extract<EntityReference, { type: 'edge' }>)
-            })()
+      // A source sketch segment alone cannot identify a particular solid edge.
+      const edgeEntityRef =
+        v2Sel.entityRef?.type === 'edge' ? v2Sel.entityRef : undefined
 
       if (!edgeEntityRef) continue
       if (edgeEntityRef.side_faces.length < 2) continue
@@ -2827,13 +2798,8 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
         for (const v2Sel of bodySelections.graphSelections) {
           const resolved = resolveToCodeRef(v2Sel, artifactGraph)
           if (!resolved?.artifact) continue
-          const entityRef = edgeSelectionToEntityReference(
-            { codeRef: resolved.codeRef, artifact: resolved.artifact },
-            artifactGraph
-          )
-          if (err(entityRef) || entityRef.type !== 'edge') {
-            continue
-          }
+          const entityRef = v2Sel.entityRef
+          if (entityRef?.type !== 'edge') continue
 
           const payload = entityReferenceToEdgeRefPayload(entityRef)
           const result = createEdgeRefObjectExpression(
@@ -3458,7 +3424,8 @@ export function retrieveEdgeSelectionsFromLegacyOpArgs(
   _unlabeledArg: unknown,
   tagsArg: OpArg,
   artifactGraph: ArtifactGraph,
-  _code?: string
+  _code?: string,
+  edgeRefactorMetadata: EdgeRefactorMeta[] = []
 ) {
   if (
     !tagsArg?.value ||
@@ -3495,30 +3462,51 @@ export function retrieveEdgeSelectionsFromLegacyOpArgs(
       continue
     }
 
+    if (v.type === 'Uuid' && artifactGraph.get(key)?.type !== 'segment') {
+      // Legacy helpers already record the exact faces resolved at execution.
+      // Recover a display selection from those faces, never from a 3D edge record.
+      const candidates = edgeRefactorMetadata.filter(
+        (meta) => meta.edgeId === key
+      )
+      const contained = candidates.filter(
+        (meta) =>
+          meta.sourceRange[2] === tagsArg.sourceRange[2] &&
+          meta.sourceRange[0] >= tagsArg.sourceRange[0] &&
+          meta.sourceRange[1] <= tagsArg.sourceRange[1]
+      )
+      const matches = contained.length > 0 ? contained : candidates
+      const meta = matches[0]
+      if (
+        !meta ||
+        matches.some(
+          (other) =>
+            JSON.stringify([other.faceIds, other.endFaceIds]) !==
+            JSON.stringify([meta.faceIds, meta.endFaceIds])
+        )
+      )
+        continue
+      const codeRef = findCodeRefForEdgeReference(meta.faceIds, artifactGraph)
+      if (!codeRef) continue
+      graphSelections.push({
+        codeRef,
+        engineEntityId: key,
+        entityRef: {
+          type: 'edge',
+          side_faces: meta.faceIds,
+          ...(meta.endFaceIds?.length ? { end_faces: meta.endFaceIds } : {}),
+        },
+      })
+      continue
+    }
     const artifact = getArtifactOfTypes(
-      { key, types: ['segment', 'sweepEdge', 'edgeCut'] },
+      { key, types: ['segment', 'edgeCut'] },
       artifactGraph
     )
-    if (err(artifact)) {
-      console.warn('No artifact found for tag', key)
-      continue
-    }
-
+    if (isErr(artifact)) continue
     const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-    if (!codeRefs || codeRefs.length === 0) {
-      console.warn('No codeRefs found for artifact', artifact)
-      continue
-    }
-
-    let entityRef: EntityReference | undefined
-    if (artifact.type === 'sweepEdge') {
-      const sideFaces = artifact.commonSurfaceIds
-      if (!sideFaces || sideFaces.length < 2) continue
-      entityRef = { type: 'edge', side_faces: sideFaces }
-    } else {
-      const pathId = artifact.type === 'segment' ? artifact.pathId : undefined
-      entityRef = artifactToEntityRef(artifact.type, artifact.id, pathId)
-    }
+    if (!codeRefs?.length) continue
+    const pathId = artifact.type === 'segment' ? artifact.pathId : undefined
+    const entityRef = artifactToEntityRef(artifact.type, artifact.id, pathId)
     if (!entityRef) continue
     graphSelections.push({ entityRef, codeRef: codeRefs[0] })
   }
@@ -3543,7 +3531,8 @@ function findCodeRefForEdgeReference(
   artifactGraph: ArtifactGraph
 ): SelectionCodeRef | null {
   const artifacts = faceIds.flatMap((id) => {
-    const artifact = artifactGraph.get(id)
+    const artifact =
+      artifactGraph.get(id) ?? getPatternArtifactForCopyId(id, artifactGraph)
     return artifact ? [artifact] : []
   })
   // Legacy selectors can name a sketch segment directly. Face API selectors

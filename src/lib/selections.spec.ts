@@ -1475,7 +1475,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     }
   )
 
-  test('prefers adjacent/opposite edge references over primitive index references', async () => {
+  test('uses primitive references when adjacent faces cannot be expressed without new tags', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse(MY_CODE, instance)
     const edgeArtifact = ___artifactGraph.get(
@@ -1498,7 +1498,15 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     const references = await getSelectionReferences({
       graphSelections: [
         {
-          artifact: edgeArtifact,
+          engineEntityId: edgeArtifact.id,
+          engineTopologyFallback: {
+            parentId: sweepArtifact.id,
+            primitiveIndex: 2,
+          },
+          entityRef: {
+            type: 'edge',
+            side_faces: edgeArtifact.commonSurfaceIds ?? [],
+          },
           codeRef: segmentArtifact.codeRef,
         },
       ],
@@ -1517,7 +1525,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     })
 
     expect(references).toHaveLength(1)
-    expect(references[0].code).toBe('getNextAdjacentEdge(seg01)')
+    expect(references[0].code).toBe('edgeId(extrude002, index = 2)')
   })
 
   test('prefers directly tagged swept face references over primitive index references', async () => {
@@ -3200,11 +3208,7 @@ describe('pattern copy selection highlighting', () => {
 
     const result = codeToIdSelections(selections, artifactGraph, [])
 
-    expect(result.map(({ id }) => id)).toEqual([
-      'copy-body-id',
-      'copy-face-id',
-      'copy-edge-id',
-    ])
+    expect(result.map(({ id }) => id)).toEqual(['copy-body-id', 'copy-face-id'])
   })
 
   test('keeps a selected copied pattern entity highlighted through selection batching', () => {

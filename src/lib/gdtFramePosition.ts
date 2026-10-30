@@ -205,11 +205,7 @@ export function getEngineEntityIdsForGdtSelections(
       return [artifact.id]
     }
 
-    return [
-      ...artifact.copyIds,
-      ...artifact.copyFaceIds,
-      ...artifact.copyEdgeIds,
-    ]
+    return [...artifact.copyIds, ...artifact.copyFaceIds]
   })
 
   return deduplicateArtifactIds(entityIds)

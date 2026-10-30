@@ -156,9 +156,11 @@ export type EdgeCut = { id: ArtifactId, subType: EdgeCutSubType,
  * Index of the source selector in an `edges` argument, when this edge cut
  * was created from an edge-reference command.
  */
-sourceSelectorIndex?: number | null, consumedEdgeId?: ArtifactId | null, edgeIds: Array<ArtifactId>, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
+sourceSelectorIndex?: number | null, inputFaces?: EdgeCutInputFaces | null, consumedEdgeId?: ArtifactId | null, edgeIds: Array<ArtifactId>, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
 
 export type EdgeCutEdge = { id: ArtifactId, edgeCutId: ArtifactId, surfaceId: ArtifactId, };
+
+export type EdgeCutInputFaces = { sideFaces: Array<ArtifactId>, endFaces?: Array<ArtifactId>, index?: number | null, };
 
 export type EdgeCutSubType = "fillet" | "chamfer" | "custom";
 

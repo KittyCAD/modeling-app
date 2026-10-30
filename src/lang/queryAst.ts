@@ -24,7 +24,6 @@ import {
   getPatternArtifactForCopyId,
   getSegmentArtifactForEdgeCut,
   getSegmentForEdgeCut,
-  getSweepEdgeCodeRef,
   getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
@@ -1293,7 +1292,11 @@ export function selectionV2Equals(a: Selection, b: Selection): boolean {
 export function resolveToCodeRef(
   s: Selection,
   artifactGraph: ArtifactGraph | undefined
-): { codeRef: CodeRef; artifact?: Artifact } | null {
+): {
+  codeRef: CodeRef
+  artifact?: Artifact
+  entityRef?: EntityReference
+} | null {
   const codeRef =
     s.codeRef ??
     (s.entityRef && artifactGraph
@@ -1310,7 +1313,11 @@ export function resolveToCodeRef(
       : codeRef.range && artifactGraph
         ? (getArtifactFromRange(codeRef.range, artifactGraph) ?? undefined)
         : undefined
-  return { codeRef, artifact }
+  return {
+    codeRef,
+    artifact,
+    ...(s.entityRef ? { entityRef: s.entityRef } : {}),
+  }
 }
 
 export function getVariableNameFromNodePath(
@@ -2112,12 +2119,7 @@ export function retrieveSelectionsFromArtifactIds(
       }
     }
 
-    const codeRefs =
-      artifact.type === 'sweepEdge'
-        ? [getSweepEdgeCodeRef(artifact, artifactGraph)].filter(
-            (codeRef): codeRef is CodeRef => !err(codeRef)
-          )
-        : getCodeRefsByArtifactId(artifact.id, artifactGraph)
+    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       continue
     }
@@ -2640,7 +2642,6 @@ export function findAllChildrenAndOrderByPlaceInCode(
     } else if (current?.type === 'pattern') {
       pushToSomething(currentId, current.copyIds)
       pushToSomething(currentId, current.copyFaceIds)
-      pushToSomething(currentId, current.copyEdgeIds)
     }
     result.add(currentId)
   }
@@ -2926,14 +2927,6 @@ export function getSketchSegmentNameFromSourceSurface(
   let selectedSegment: Extract<Artifact, { type: 'segment' }> | null = null
   if (segmentArtifact.type === 'segment') {
     selectedSegment = segmentArtifact
-  } else if (segmentArtifact.type === 'sweepEdge') {
-    const segment = getArtifactOfTypes(
-      { key: segmentArtifact.segId, types: ['segment'] },
-      artifactGraph
-    )
-    if (!err(segment) && segment.type === 'segment') {
-      selectedSegment = segment
-    }
   } else if (segmentArtifact.type === 'wall') {
     const segment = getArtifactOfTypes(
       { key: segmentArtifact.segId, types: ['segment'] },
@@ -3033,11 +3026,9 @@ export function getRegionSketchTagExprFromSourceSurface(
   const segmentId =
     segmentArtifact.type === 'segment'
       ? segmentArtifact.id
-      : segmentArtifact.type === 'sweepEdge'
+      : segmentArtifact.type === 'wall'
         ? segmentArtifact.segId
-        : segmentArtifact.type === 'wall'
-          ? segmentArtifact.segId
-          : null
+        : null
   if (!segmentId) {
     return null
   }

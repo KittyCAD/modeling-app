@@ -168,7 +168,6 @@ describe('GD&T frame defaults', () => {
       'cap-1',
       'copy-1',
       'copy-face-1',
-      'copy-edge-1',
     ])
   })
 

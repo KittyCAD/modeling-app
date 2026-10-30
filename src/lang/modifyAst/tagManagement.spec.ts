@@ -1,3 +1,4 @@
+import { getCommonFacesForEdge } from '@src/lang/std/artifactGraph.testFixtures'
 import type { KclManager } from '@src/lang/KclManager'
 import { createLocalName } from '@src/lang/create'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
@@ -96,6 +97,14 @@ const createSelectionWithFirstMatchingArtifact = async (
   const selection: ResolvedGraphSelection = {
     codeRef,
     artifact: firstArtifactsOfType,
+  }
+  if (firstArtifactsOfType.type === 'segment') {
+    const faces = getCommonFacesForEdge(firstArtifactsOfType, artifactGraph)
+    if (!err(faces))
+      selection.entityRef = {
+        type: 'edge',
+        side_faces: faces.map((face) => face.id),
+      }
   }
 
   return { selection }

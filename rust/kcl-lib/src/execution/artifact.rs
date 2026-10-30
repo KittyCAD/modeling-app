@@ -972,6 +972,11 @@ fn remap_artifact_for_clone(
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
             source_selector_index: source.source_selector_index,
+            input_faces: source.input_faces.as_ref().map(|faces| EdgeCutInputFaces {
+                side_faces: remap_ids_for_clone(&faces.side_faces, entity_id_map),
+                end_faces: remap_ids_for_clone(&faces.end_faces, entity_id_map),
+                index: faces.index,
+            }),
             consumed_edge_id: remap_opt_id_for_clone(source.consumed_edge_id, entity_id_map),
             edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
             surface_id: remap_opt_id_for_clone(source.surface_id, entity_id_map),
@@ -2458,6 +2463,16 @@ fn artifacts_to_update(
                 id,
                 sub_type: edge_cut_sub_type(cmd.cut_type),
                 source_selector_index: None,
+                input_faces: match artifacts.get(&edge_id) {
+                    Some(Artifact::Segment(segment)) if !segment.common_surface_ids.is_empty() => {
+                        Some(EdgeCutInputFaces {
+                            side_faces: segment.common_surface_ids.clone(),
+                            end_faces: Vec::new(),
+                            index: None,
+                        })
+                    }
+                    _ => None,
+                },
                 consumed_edge_id: Some(edge_id),
                 edge_ids: Vec::new(),
                 surface_id: None,
@@ -2487,6 +2502,16 @@ fn artifacts_to_update(
                 id,
                 sub_type: edge_cut_sub_type_v2(cmd.cut_type),
                 source_selector_index: None,
+                input_faces: match artifacts.get(&edge_id) {
+                    Some(Artifact::Segment(segment)) if !segment.common_surface_ids.is_empty() => {
+                        Some(EdgeCutInputFaces {
+                            side_faces: segment.common_surface_ids.clone(),
+                            end_faces: Vec::new(),
+                            index: None,
+                        })
+                    }
+                    _ => None,
+                },
                 consumed_edge_id: Some(edge_id),
                 edge_ids: Vec::new(),
                 surface_id: None,
@@ -2515,6 +2540,21 @@ fn artifacts_to_update(
                         id: face_id,
                         sub_type: edge_cut_sub_type_v2(cmd.cut_type),
                         source_selector_index: Some(source_selector_index),
+                        input_faces: Some(EdgeCutInputFaces {
+                            side_faces: cmd.edges_references[source_selector_index]
+                                .side_faces
+                                .iter()
+                                .copied()
+                                .map(ArtifactId::new)
+                                .collect(),
+                            end_faces: cmd.edges_references[source_selector_index]
+                                .end_faces
+                                .iter()
+                                .copied()
+                                .map(ArtifactId::new)
+                                .collect(),
+                            index: cmd.edges_references[source_selector_index].index,
+                        }),
                         consumed_edge_id: None,
                         edge_ids: Vec::new(),
                         surface_id: None,

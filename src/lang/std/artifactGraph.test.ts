@@ -1,10 +1,10 @@
+import { getCommonFacesForEdge } from '@src/lang/std/artifactGraph.testFixtures'
 import {
   type Artifact,
   type ResolvedGraphSelection,
   coerceSelectionsToBody,
   getArtifactFromRange,
   getBodiesFromArtifactGraph,
-  getCommonFacesForEdge,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
   getMergedSweepBodyArtifact,

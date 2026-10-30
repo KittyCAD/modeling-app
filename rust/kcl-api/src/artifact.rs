@@ -526,12 +526,26 @@ pub struct EdgeCut {
     /// was created from an edge-reference command.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_selector_index: Option<usize>,
+    // Faces used by the input selector, independent of 3D edge records.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input_faces: Option<EdgeCutInputFaces>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub consumed_edge_id: Option<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct EdgeCutInputFaces {
+    pub side_faces: Vec<ArtifactId>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub end_faces: Vec<ArtifactId>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub index: Option<u32>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
