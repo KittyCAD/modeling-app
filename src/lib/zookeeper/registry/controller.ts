@@ -25,10 +25,13 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
-import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import { collectProjectFiles } from '@src/lib/fileSystem/projectFiles'
 import { S } from '@src/machines/utils'
-import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
+import type { ProjectOperationsService } from '@src/lib/fileSystem/projectOperations'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import type { CloudStorageService } from '@src/registry/contracts/fileOperations'
+import type { CloudProjectToolChange } from '@src/lib/zookeeper/cloudProjectTools'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom, Subscription } from 'xstate'
@@ -38,11 +41,13 @@ export interface ZookeeperSessionControllerDependencies {
   billing: BillingRegistryService
   conversationStore: ZookeeperConversationStore
   fileOperations: FileOperationsRegistryService
+  cloudStorage?: Pick<CloudStorageService, 'refreshProject'>
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
   projectId: string | undefined
   projectPath: string
-  systemIO: SystemIORegistryService
+  session: Pick<ProjectSessionService, 'refreshProject' | 'openFile'>
+  projectOperations: Pick<ProjectOperationsService, 'applyEdits'>
 }
 
 export interface QueuedMessage {
@@ -122,6 +127,12 @@ class SessionController implements ZookeeperSessionController {
     `zookeeper-file-write:${crypto.randomUUID()}`
   private wasPromptRunning = false
 
+  private cloudRefreshQueue: Promise<void> = Promise.resolve()
+  private pendingCloudRefreshes = 0
+  private cloudChangeGeneration = 0
+  private lastCloudChange?: CloudProjectToolChange
+  private readonly cloudToolCalls = new Set<string>()
+
   private readonly history: ZookeeperEditPatchHistory
   private readonly fileRequestProcessor: ZookeeperFileRequestProcessor
 
@@ -146,7 +157,8 @@ class SessionController implements ZookeeperSessionController {
       },
       isSessionCurrent: () => this.active && this.getZdsProject() !== undefined,
       kclManager: deps.kclManager,
-      systemIOActor: deps.systemIO.actor,
+      session: deps.session,
+      projectOperations: deps.projectOperations,
       onQueueIdle: () => {
         const snapshot = this.actor.getSnapshot()
         this.continueCheck(snapshot, this.resumeInterruptedTurnPending)
@@ -454,6 +466,7 @@ class SessionController implements ZookeeperSessionController {
       .finally(() => this.history.dispose())
     this.disposal = Promise.allSettled([
       workerDisposal,
+      this.cloudRefreshQueue,
       ...this.persistenceOperations,
     ]).then((results) => {
       const failure = results.find((result) => result.status === 'rejected')
@@ -572,8 +585,11 @@ class SessionController implements ZookeeperSessionController {
       return
     }
 
+    this.refreshCloudProjectFromSnapshot(snapshot)
+
     try {
-      this.history.handleActorSnapshot(snapshot)
+      if (!this.getProject()?.cloudProjectId)
+        this.history.handleActorSnapshot(snapshot)
     } catch (error: unknown) {
       console.error('Failed to update Zookeeper history.', error)
     }
@@ -588,6 +604,67 @@ class SessionController implements ZookeeperSessionController {
     this.tryConnectWhenIdle(snapshot)
     this.reconcileReconnect(snapshot)
     this.flushQueue(snapshot)
+  }
+
+  private refreshCloudProjectFromSnapshot(snapshot: ZookeeperSnapshot) {
+    const projectId = this.getProject()?.cloudProjectId
+    const cloud = this.deps.cloudStorage
+    if (!projectId || !cloud) return
+    const change = snapshot.context.cloudProjectChange
+    let refresh = false
+    if (change && change !== this.lastCloudChange) {
+      this.lastCloudChange = change
+      if (
+        change.projectId === projectId &&
+        !this.cloudToolCalls.has(change.callId)
+      ) {
+        this.cloudToolCalls.add(change.callId)
+        refresh = true
+      }
+    }
+    if (!refresh) return
+    const cloudChangeGeneration = ++this.cloudChangeGeneration
+    const generation = this.clearOperationGeneration
+    const isCurrent = () =>
+      this.active &&
+      this.cloudChangeGeneration === cloudChangeGeneration &&
+      this.clearOperationGeneration === generation &&
+      this.getProject()?.cloudProjectId === projectId
+    this.pendingCloudRefreshes += 1
+    this.cloudRefreshQueue = this.cloudRefreshQueue
+      .catch(reportRejection)
+      .then(async () => {
+        if (!isCurrent()) return
+        await cloud.refreshProject(projectId, isCurrent, change?.revision)
+        if (!isCurrent()) return
+        const project = this.getReadyZdsProject()
+        if (!project) return
+        await project.reloadFilesFromStorage(isCurrent)
+        if (!isCurrent()) return
+        if (
+          !(await this.deps.fileOperations.exists(this.deps.kclManager.path))
+        ) {
+          const currentProject = this.getProject()
+          if (!isCurrent() || !currentProject) return
+          await this.deps.session.openFile(currentProject.default_file, {
+            projectPath: currentProject.path,
+          })
+        }
+      })
+      .catch((error: unknown) => {
+        if (!isCurrent()) return
+        reportRejection(error)
+        toast.error(
+          'Could not refresh the cloud project. Your current files were kept. Resolve any failed saves before reloading.'
+        )
+      })
+      .finally(() => {
+        this.pendingCloudRefreshes -= 1
+        if (!this.active || this.pendingCloudRefreshes) return
+        const current = this.actor.getSnapshot()
+        this.continueCheck(current, this.resumeInterruptedTurnPending)
+        this.flushQueue(current)
+      })
   }
 
   private updateBilling(isPromptRunning: boolean) {
@@ -734,7 +811,8 @@ class SessionController implements ZookeeperSessionController {
     }
     if (
       this.continueCheckInFlight ||
-      this.fileRequestProcessor.hasPendingRequests
+      this.fileRequestProcessor.hasPendingRequests ||
+      this.pendingCloudRefreshes > 0
     ) {
       return
     }
@@ -750,6 +828,9 @@ class SessionController implements ZookeeperSessionController {
       this.actor.send({
         type: ZookeeperManagerStates.ContinueCheck,
         projectName: project.name,
+        projectId: project.cloudProjectId
+          ? `cloud:${project.cloudProjectId}`
+          : `local:${project.projectId ?? project.path}`,
         projectFiles: [],
       })
       return
@@ -797,6 +878,9 @@ class SessionController implements ZookeeperSessionController {
         this.actor.send({
           type: ZookeeperManagerStates.ContinueCheck,
           projectName: project.name,
+          projectId: project.cloudProjectId
+            ? `cloud:${project.cloudProjectId}`
+            : `local:${project.projectId ?? project.path}`,
           projectFiles,
           engineApiCallId: kclManager.engineCommandManager.apiCallId,
           activeFile: activeFileRelativeToProject({
@@ -842,6 +926,7 @@ class SessionController implements ZookeeperSessionController {
   private isReadyForPrompt(snapshot: ZookeeperSnapshot) {
     return (
       !this.fileRequestProcessor.hasPendingRequests &&
+      this.pendingCloudRefreshes === 0 &&
       snapshot.matches({
         [ZookeeperManagerStates.Ready]: {
           [ZookeeperManagerStates.Request]: S.Await,

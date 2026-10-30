@@ -7,6 +7,7 @@ import {
   createUniqueFile as createUniqueFileOperation,
   exists as existsOperation,
   type FileOperations,
+  type FileOperationsOptions,
   fileOperationsLayer,
   move as moveOperation,
   pendingFileOperations,
@@ -45,17 +46,29 @@ export interface FileOperationsRuntime {
  * consumers use the conventional FileOperations Promise facade.
  */
 export function createFileOperationsRuntime(
-  backing: IZooDesignStudioFS
+  backing: IZooDesignStudioFS,
+  options: FileOperationsOptions = {}
 ): FileOperationsRuntime {
   const baseLayer = fileSystemLayer(backing)
-  const layer = fileOperationsLayer(backing).pipe(Layer.provide(baseLayer))
+  const layer = fileOperationsLayer(backing, options).pipe(
+    Layer.provide(baseLayer)
+  )
   const runtime = ManagedRuntime.make(layer)
+  const active = new Set<Promise<unknown>>()
+  const track = <T>(task: Promise<T>) => {
+    active.add(task)
+    void task.then(
+      () => active.delete(task),
+      () => active.delete(task)
+    )
+    return task
+  }
 
   const runRuntimePromise = async <A, E, R extends FileOperations>(
     program: Effect.Effect<A, E, R>,
     onFailure?: (error: E) => void
   ): Promise<A> => {
-    const result = await runtime.runPromise(program.pipe(Effect.either))
+    const result = await track(runtime.runPromise(program.pipe(Effect.either)))
     if (Either.isLeft(result)) {
       onFailure?.(result.left)
       return Promise.reject(result.left)
@@ -120,7 +133,10 @@ export function createFileOperationsRuntime(
 
   return {
     operations,
-    dispose: runtime.dispose,
+    dispose: async () => {
+      while (active.size) await Promise.allSettled([...active])
+      await runtime.dispose()
+    },
   }
 }
 

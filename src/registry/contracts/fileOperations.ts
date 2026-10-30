@@ -1,4 +1,6 @@
+import type { CloudStorageService } from '@src/registry/extensions/fileOperations'
 import { defineContract, defineService } from '@kittycad/registry'
+import type { ProjectOperationsService } from '@src/lib/fileSystem/projectOperations'
 import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
 import type {
   CopyOptions,
@@ -51,9 +53,29 @@ export interface FileOperationsRegistryService {
 }
 
 export const fileOperationsContract = defineContract({
+  cloudStorageService: defineService<CloudStorageService>(
+    'fileOperations.cloud'
+  ),
+  projectOperationsService: defineService<ProjectOperationsService>(
+    'fileOperations.projects'
+  ),
   fileOperationsService: defineService<FileOperationsRegistryService>(
     'fileOperations.service'
   ),
 })
 
-export const { fileOperationsService } = fileOperationsContract
+export const {
+  fileOperationsService,
+  projectOperationsService,
+  cloudStorageService,
+} = fileOperationsContract
+
+export type { CloudStorageService } from '@src/registry/extensions/fileOperations'
+export type {
+  PublishCurrentProjectArgs,
+  ProjectPublishSubmission,
+  CurrentProjectPublicationDetails,
+  PublishedProject,
+} from '@src/registry/extensions/fileOperations/publication'
+
+export type { ProjectOperationsService } from '@src/lib/fileSystem/projectOperations'

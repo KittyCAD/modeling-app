@@ -141,7 +141,20 @@ export class FileOperations extends Context.Tag('zds/FileOperations')<
   FileOperationsService
 >() {}
 
-const makeFileOperations = (backing: IZooDesignStudioFS) =>
+export interface FileOperationsOptions {
+  /**
+   * The backing replaces each file's bytes atomically before awaiting persistence.
+   * File reads may proceed while a write waits for remote acknowledgement.
+   * Directory reads and all mutations remain coordinated. Disk and browser
+   * storage retain coordinated file reads by default.
+   */
+  readonly atomicFileReads?: boolean
+}
+
+const makeFileOperations = (
+  backing: IZooDesignStudioFS,
+  options: FileOperationsOptions
+) =>
   Effect.gen(function* () {
     const fileSystem = yield* FileSystem
     const pending = yield* SubscriptionRef.make(0)
@@ -231,7 +244,12 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
       path: string,
       operation: Effect.Effect<A, E, R>
     ) =>
-      withPathLocks(pathLockRequirements(backing, [path], 'shared'), operation)
+      options.atomicFileReads
+        ? operation
+        : withPathLocks(
+            pathLockRequirements(backing, [path], 'shared'),
+            operation
+          )
 
     const coordinateDirectoryRead = <A, E, R>(
       path: string,
@@ -468,8 +486,10 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
     })
   })
 
-export const fileOperationsLayer = (backing: IZooDesignStudioFS) =>
-  Layer.effect(FileOperations, makeFileOperations(backing))
+export const fileOperationsLayer = (
+  backing: IZooDesignStudioFS,
+  options: FileOperationsOptions = {}
+) => Layer.effect(FileOperations, makeFileOperations(backing, options))
 
 export const pendingFileOperations = FileOperations.pipe(
   Effect.flatMap((operations) => operations.pending)

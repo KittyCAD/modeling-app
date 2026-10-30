@@ -1,12 +1,13 @@
+import type { App } from '@src/lib/app'
+import fsZds from '@src/lib/fs-zds'
+import { trap } from '@src/lib/trap'
+import toast from 'react-hot-toast'
 import { invertedEffects } from '@codemirror/commands'
 import type { Extension, Transaction } from '@codemirror/state'
 import { Annotation, Compartment, StateEffect } from '@codemirror/state'
 import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
 import type { KclManager } from '@src/lang/KclManager'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { EditorView } from 'codemirror'
-import type { ActorRefFrom } from 'xstate'
 
 const fsEffectCompartment = new Compartment()
 export const fsIgnoreAnnotationType = Annotation.define<true>()
@@ -53,12 +54,9 @@ export const fsMoveFile = (props: FSEffectProps) => h(moveFile.of(props))
 /**
  * Builder function to provide necessary system dependencies for the
  * FS history extension. This is where FS un/redo editor events
- * actually call systemIO APIs.
+ * apply file operations.
  */
-export function buildFSHistoryExtension(
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>,
-  kclManager: KclManager
-) {
+export function buildFSHistoryExtension(app: App, kclManager: KclManager) {
   const fsWiredListener = EditorView.updateListener.of((vu) => {
     for (const tr of vu.transactions) {
       if (tr.annotation(fsIgnoreAnnotationType)) {
@@ -66,17 +64,25 @@ export function buildFSHistoryExtension(
       }
       for (const e of tr.effects) {
         if (e.is(restoreFile) || e.is(archiveFile) || e.is(moveFile)) {
-          const type = e.is(moveFile)
-            ? SystemIOMachineEvents.moveRecursive
-            : SystemIOMachineEvents.moveRecursiveAndNavigate
-
-          systemIOActor.send({
-            type,
-            data: {
-              ...e.value,
-              successMessage: getSuccessMessage(e, tr),
-            },
-          })
+          const current = app.project
+          const root = app.projectDirectoryPath
+          const { src, target, requestedProjectName, requestedFileName } =
+            e.value
+          void (async () => {
+            await app.fileOperations.move(src, target)
+            await app.refreshProjects()
+            if (app.project !== current) return
+            if (!e.is(moveFile)) {
+              const projectPath = fsZds.join(root, requestedProjectName)
+              await app.projectSession.openFile(
+                requestedFileName
+                  ? fsZds.join(projectPath, requestedFileName)
+                  : projectPath,
+                { projectPath }
+              )
+            }
+            toast.success(getSuccessMessage(e, tr))
+          })().catch(trap)
         }
       }
     }

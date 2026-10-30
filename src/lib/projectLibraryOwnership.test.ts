@@ -1,3 +1,4 @@
+import { posix } from '@chainner/node-path'
 import {
   getProjectLibraryOwnership,
   projectWithLibraryOwnership,
@@ -8,7 +9,9 @@ import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
 
 function directoryLibrary(path: string): ProjectLibrarySetting {
   return { title: 'Projects', path, type: DIRECTORY_PROJECT_LIBRARY_TYPE }
@@ -49,10 +52,10 @@ describe('project library ownership', () => {
     await expect(
       getProjectLibraryOwnership(
         [cloudLibrary('/cloud/team/')],
-        '/cloud/team/bracket'
+        '/__zoo_cloud__/bracket'
       )
     ).resolves.toEqual({
-      libraryPath: '/cloud/team',
+      libraryPath: '/__zoo_cloud__',
       libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
     })
   })

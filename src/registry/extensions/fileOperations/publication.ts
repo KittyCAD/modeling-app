@@ -1,0 +1,404 @@
+import type { ProjectSummaryResponse } from '@kittycad/lib'
+import { listClientItems } from '@src/lib/apiPagination'
+import {
+  createRemoteProject,
+  getRemoteProject as getCloudProject,
+  updateRemoteProject,
+} from '@src/lib/fs-zds/cloud/api'
+import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
+import env, { getEnvironmentNameFromEnv } from '@src/env'
+import { collectProjectFilesForUpload } from '@src/lib/fileSystem/projectFiles'
+import type {
+  ProjectArchiveFile,
+  ProjectUploadPublicationMetadata,
+} from '@src/lib/fs-zds/cloud/types'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import { readProjectSettingsFile } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { toProjectRelativePath } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { getProjectTomlContents } from '@src/lib/projectToml'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import toast from 'react-hot-toast'
+
+export type PublishCurrentProjectArgs = {
+  expectedRevision?: string
+  deletedPaths?: string[]
+  fileOperations: FileOperationsRegistryService
+  token: string
+  project: Project | undefined
+  currentFilePath: string
+  currentFileContents: string
+  wasmInstance: ModuleType
+  submission: ProjectPublishSubmission
+  remoteProjectId?: string
+}
+
+export type ProjectPublishSubmission = {
+  title: string
+  description: string
+  categoryIds: string[]
+}
+
+export type CurrentProjectPublicationDetails = {
+  projectId: string
+  publicationStatus: KclProjectPublicationStatus
+  title: string
+  description: string
+  categoryIds: string[]
+  publishedAt?: string
+  submittedAt?: string
+  updatedAt: string
+}
+
+/** Remote identity of the project submitted to Aquarium. */
+export type PublishedProject = {
+  remoteProjectId: string
+}
+
+type CurrentProjectUploadArgs = Omit<PublishCurrentProjectArgs, 'project'> & {
+  project: Project
+}
+
+export async function publishCurrentProject(
+  args: PublishCurrentProjectArgs
+): Promise<PublishedProject | false> {
+  if (!args.token) {
+    toast.error('You need to be signed in to publish a project.', {
+      duration: 5000,
+    })
+    return false
+  }
+
+  if (!args.project) {
+    toast.error('You need an open project to publish.', {
+      duration: 5000,
+    })
+    return false
+  }
+
+  const uploadedProject = await ensureCurrentProjectUploaded({
+    ...args,
+    project: args.project,
+  })
+  if (err(uploadedProject)) {
+    toast.error(getPublishErrorMessage(uploadedProject), {
+      duration: 5000,
+    })
+    return false
+  }
+
+  const publishedProject = await kcCall(() =>
+    projects.publish_project({
+      client: uploadedProject.client,
+      id: uploadedProject.projectId,
+    })
+  )
+  if (err(publishedProject)) {
+    toast.error(getPublishErrorMessage(publishedProject), {
+      duration: 5000,
+    })
+    return false
+  }
+
+  toast.success(
+    publishedProject.publication_status === 'published'
+      ? 'Project published.'
+      : 'Project submitted for review.',
+    {
+      duration: 5000,
+    }
+  )
+
+  return {
+    remoteProjectId: uploadedProject.projectId,
+  }
+}
+
+function getPublishErrorMessage(error: Error) {
+  if (
+    /(?:category|categories)/i.test(error.message) &&
+    /not active|inactive|does not exist|invalid/i.test(error.message)
+  ) {
+    return 'One or more selected categories are no longer available. Choose an active category and try again.'
+  }
+
+  return error.message
+}
+
+export async function getCurrentProjectPublicationDetails({
+  fileOperations,
+  token,
+  project,
+  wasmInstance,
+  remoteProjectId,
+}: {
+  fileOperations: FileOperationsRegistryService
+  token: string
+  project: Project | undefined
+  wasmInstance: ModuleType
+  remoteProjectId?: string
+}): Promise<CurrentProjectPublicationDetails | null | Error> {
+  if (!token || !project) {
+    return null
+  }
+
+  let projectId = remoteProjectId
+  if (!projectId) {
+    const environmentName = getCurrentEnvironmentName()
+    if (err(environmentName)) {
+      return environmentName
+    }
+    const localProjectId = await getCloudProjectIdForEnvironment(
+      fileOperations,
+      project.path,
+      wasmInstance,
+      environmentName
+    )
+    if (err(localProjectId)) {
+      return localProjectId
+    }
+    projectId = localProjectId
+  }
+
+  if (!projectId) {
+    return null
+  }
+
+  const client = createKCClient(token)
+  const remoteProject = await getRemoteProject({
+    client,
+    projectId,
+  })
+  if (err(remoteProject)) {
+    return remoteProject
+  }
+
+  return {
+    projectId,
+    publicationStatus: remoteProject.publication_status,
+    title: remoteProject.title || getDefaultProjectTitle(project),
+    description: remoteProject.description || '',
+    categoryIds: remoteProject.category_ids || [],
+    publishedAt: remoteProject.publication.last_published_at,
+    submittedAt: remoteProject.publication.submitted_at,
+    updatedAt: remoteProject.updated_at,
+  }
+}
+
+async function ensureCurrentProjectUploaded(
+  args: CurrentProjectUploadArgs
+): Promise<
+  | {
+      client: ReturnType<typeof createKCClient>
+      projectId: string
+    }
+  | Error
+> {
+  const project = args.project
+  const environmentName = getCurrentEnvironmentName()
+  if (err(environmentName)) {
+    return environmentName
+  }
+
+  const uploadFiles = await buildProjectUploadFiles({
+    fileOperations: args.fileOperations,
+    project,
+    currentFilePath: args.currentFilePath,
+    currentFileContents: args.currentFileContents,
+    wasmInstance: args.wasmInstance,
+  })
+  if (err(uploadFiles)) {
+    return uploadFiles
+  }
+
+  const client = createKCClient(args.token)
+  const existingProjectId =
+    args.remoteProjectId ??
+    (await getCloudProjectIdForEnvironment(
+      args.fileOperations,
+      project.path,
+      args.wasmInstance,
+      environmentName
+    ))
+  if (err(existingProjectId)) {
+    return existingProjectId
+  }
+
+  try {
+    const config = { enabled: true, token: args.token }
+    const publicationMetadata = getProjectUploadPublicationMetadata(
+      args.submission
+    )
+    if (existingProjectId) {
+      const remote = await getCloudProject(config, existingProjectId)
+      if (remote.revision === undefined || remote.revision === null)
+        return new Error('Cloud project is missing its revision.')
+      await updateRemoteProject({
+        config,
+        projectPath: project.path,
+        project: remote,
+        files: uploadFiles,
+        expectedRevision: args.expectedRevision ?? String(remote.revision),
+        deletedPaths: args.deletedPaths,
+        publicationMetadata,
+      })
+      return { client, projectId: existingProjectId }
+    }
+    const remote = await createRemoteProject(
+      config,
+      project.path,
+      uploadFiles,
+      publicationMetadata
+    )
+    return { client, projectId: remote.id }
+  } catch (error) {
+    return error instanceof Error
+      ? error
+      : new Error('Publication save failed.')
+  }
+}
+
+function getProjectUploadPublicationMetadata(
+  submission: ProjectPublishSubmission
+): ProjectUploadPublicationMetadata {
+  return {
+    description: submission.description.trim(),
+    category_ids: submission.categoryIds,
+  }
+}
+
+function getDefaultProjectTitle(project: Project) {
+  return (
+    getProjectDisplayName(project) || getPathLeaf(project.path) || 'project'
+  )
+}
+
+function getRemoteProject({
+  client,
+  projectId,
+}: {
+  client: ReturnType<typeof createKCClient>
+  projectId: string
+}) {
+  return kcCall(() =>
+    projects.get_project({
+      client,
+      id: projectId,
+    })
+  )
+}
+
+async function buildProjectUploadFiles({
+  fileOperations,
+  project,
+  currentFilePath,
+  currentFileContents,
+  wasmInstance,
+}: Omit<PublishCurrentProjectArgs, 'token' | 'project' | 'submission'> & {
+  project: Project
+}): Promise<ProjectArchiveFile[] | Error> {
+  let files: ProjectArchiveFile[]
+  try {
+    files = await collectProjectFilesForUpload({
+      fileOperations,
+      projectRoot: project.path,
+    })
+  } catch (error) {
+    return error instanceof Error
+      ? error
+      : new Error('Could not read the project files for publication.')
+  }
+
+  const currentRelativePath = toProjectRelativePath(
+    project.path,
+    currentFilePath
+  )
+  files = files.map((file) =>
+    file.relativePath === currentRelativePath
+      ? {
+          ...file,
+          data: new TextEncoder().encode(currentFileContents),
+        }
+      : file
+  )
+
+  const hasProjectSettings = files.some(
+    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  )
+  if (hasProjectSettings) {
+    return files
+  }
+
+  const projectToml = await getProjectTomlContents({
+    fileOperations,
+    projectPath: project.path,
+    wasmInstance,
+  })
+  if (err(projectToml)) {
+    return projectToml
+  }
+
+  return [
+    ...files,
+    {
+      relativePath: PROJECT_SETTINGS_FILE_NAME,
+      data: new TextEncoder().encode(projectToml),
+    },
+  ]
+}
+
+async function getCloudProjectIdForEnvironment(
+  fileOperations: FileOperationsRegistryService,
+  projectPath: string,
+  wasmInstance: ModuleType,
+  environmentName: string
+): Promise<string | undefined | Error> {
+  try {
+    const projectSettings = await readProjectSettingsFile(
+      fileOperations,
+      projectPath,
+      wasmInstance
+    )
+    const cloud = projectSettings.cloud ?? {}
+    return cloud[environmentName]?.project_id
+  } catch (error) {
+    return new Error(
+      `Failed to read local project settings: ${error instanceof Error ? error.message : String(error)}`
+    )
+  }
+}
+
+function getCurrentEnvironmentName(): string | Error {
+  const environmentName = getEnvironmentNameFromEnv(env())
+  if (environmentName !== undefined) {
+    return environmentName
+  }
+
+  return new Error('Could not determine the active API environment.')
+}
+
+function getPathLeaf(path: string) {
+  return path.split(fsZds.sep).filter(Boolean).at(-1)
+}
+
+export async function getCloudPublicationStatus(id: string, token?: string) {
+  const remote = await projects.get_project({
+    client: createKCClient(token),
+    id,
+  })
+  return {
+    publicationStatus: remote.publication_status,
+    feedback: remote.publication?.feedback ?? undefined,
+  }
+}
+export async function getCloudPublicationStatuses(token?: string) {
+  return listClientItems<ProjectSummaryResponse>(
+    createKCClient(token),
+    '/user/projects'
+  )
+}

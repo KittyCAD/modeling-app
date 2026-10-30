@@ -1,14 +1,3 @@
-import {
-  cloudSyncStatus,
-  getCloudSyncProjectMetadataIndex,
-  getCloudSyncProjectModifiedTime,
-} from '@src/lib/cloudSync'
-import { reportCloudSyncConflictCopyDetected } from '@src/lib/cloudSync/clientErrorReporting'
-import {
-  clearLegacyConflictCopyReferences,
-  clearOutboxEntriesTouchingProject,
-  deleteProjectMetadata,
-} from '@src/lib/cloudSync/syncDb'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import {
   canReadWriteDirectory,
@@ -216,35 +205,6 @@ export function sortProjectDirectoryEntriesByModifiedDesc(
   )
 }
 
-function normalizeProjectPathForCloudMetadata(projectPath: string) {
-  return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
-}
-
-/**
- * Deletes conflict-copy project folders created by older cloud sync builds.
- *
- * TODO: Delete this cleanup after cloud_sync_conflict_copy_detected client error
- * reports drop to zero, confirming generated conflict-copy projects have aged
- * out of active clients.
- */
-async function deleteLegacyCloudConflictCopyProject(
-  fileOperations: FileOperationsRegistryService,
-  projectPath: string
-) {
-  try {
-    await fileOperations.remove(projectPath)
-  } catch (error) {
-    if (!isPathNotFoundError(error)) {
-      return Promise.reject(error)
-    }
-  }
-
-  await clearOutboxEntriesTouchingProject(projectPath)
-  await clearLegacyConflictCopyReferences(projectPath)
-  await deleteProjectMetadata(projectPath)
-  reportCloudSyncConflictCopyDetected()
-}
-
 export function shouldSendProjectFolderReadProgress(
   folders: readonly Project[] | undefined
 ) {
@@ -284,9 +244,6 @@ export async function readProjectsFromProjectDirectory({
   }
 
   await mkdirOrNOOP(fileOperations, projectDirectoryPath)
-  const cloudProjectMetadataByPath = cloudSyncStatus.value.enabled
-    ? await getCloudSyncProjectMetadataIndex().catch(() => new Map())
-    : new Map()
   const entries: ProjectDirectoryEntry[] = []
   let firstProjectStatFailure: unknown
   let projectStatFailureCount = 0
@@ -323,13 +280,7 @@ export async function readProjectsFromProjectDirectory({
     entries.push({
       name: entry,
       path: projectPath,
-      modified:
-        getCloudSyncProjectModifiedTime(
-          cloudProjectMetadataByPath.get(
-            normalizeProjectPathForCloudMetadata(projectPath)
-          ),
-          stat.modifiedAt
-        ) ?? stat.modifiedAt,
+      modified: stat.modifiedAt,
     })
   }
 
@@ -351,30 +302,11 @@ export async function readProjectsFromProjectDirectory({
       return projects
     }
 
-    const cloudMetadata = cloudProjectMetadataByPath.get(
-      normalizeProjectPathForCloudMetadata(entry.path)
-    )
-    if (cloudMetadata?.syncExcluded?.reason === 'conflict-copy') {
-      await deleteLegacyCloudConflictCopyProject(
-        fileOperations,
-        entry.path
-      ).catch(reportRejection)
-      continue
-    }
-
     const project = await getProjectInfo(
       fileOperations,
       entry.path,
       wasmInstance
     )
-    project.cloudProjectId ??= cloudMetadata?.remoteProjectId
-    project.cloudConflict = cloudMetadata?.conflict
-    if (project.metadata) {
-      project.metadata.modified = getCloudSyncProjectModifiedTime(
-        cloudMetadata,
-        project.metadata.modified
-      )
-    }
     if (
       project.kcl_file_count === 0 &&
       project.readWriteAccess &&

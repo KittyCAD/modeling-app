@@ -77,6 +77,22 @@ describe('Effect filesystem operations', () => {
     )
   })
 
+  it('drains submitted writes before disposing the runtime', async () => {
+    const gate = createGate()
+    const writeFile = vi.fn(async () => {
+      await gate.promise
+    })
+    const runtime = createRuntime({ ...nodeFileSystem.impl, writeFile })
+    const write = runtime.operations.writeFile('/tmp/zds-runtime-drain.kcl', '')
+    const disposed = vi.fn()
+    const disposal = runtime.dispose().then(disposed)
+    await vi.waitFor(() => expect(writeFile).toHaveBeenCalledOnce())
+    expect(disposed).not.toHaveBeenCalled()
+    gate.open()
+    await Promise.all([write, disposal])
+    expect(disposed).toHaveBeenCalledOnce()
+  })
+
   const testPath = (...parts: string[]) => {
     if (parts.length === 1) {
       roots.push(parts[0])

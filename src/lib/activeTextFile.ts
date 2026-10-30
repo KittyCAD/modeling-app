@@ -1,9 +1,10 @@
 import { signal } from '@preact/signals-core'
 
 import { isPathNotFoundError } from '@src/lib/desktop'
+import { EDITOR_SAVE_DEBOUNCE_MS } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
-import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 /**
@@ -46,9 +47,6 @@ export const MAX_EDITABLE_TEXT_FILE_BYTES = 1024 * 1024
 const FILE_TOO_LARGE_MESSAGE = 'Text files larger than 1 MiB cannot be edited.'
 const UNSUPPORTED_TEXT_MESSAGE = 'This file is binary or is not UTF-8 text.'
 
-/** Debounce for writing edits to disk, mirroring `KclManager.writeToFile`. */
-const WRITE_DEBOUNCE_MS = 1000
-
 /**
  * Guards the async read in `openActiveTextFile` against races: if a newer open
  * (or a clear) happens while an older read is in flight, the older read's result
@@ -65,6 +63,10 @@ let pendingWrite: {
   path: string
   text: string
 } | null = null
+const outgoingWrites = new Map<
+  string,
+  { text: string; promise: Promise<void> }
+>()
 let pendingWriteTimeout: ReturnType<typeof setTimeout> | undefined
 
 async function performWrite(
@@ -72,15 +74,23 @@ async function performWrite(
   path: string,
   text: string
 ): Promise<void> {
-  try {
+  const previous = outgoingWrites.get(path)
+  const write = { text, promise: Promise.resolve() }
+  outgoingWrites.set(path, write)
+  write.promise = (async () => {
+    await previous?.promise.catch(() => undefined)
     await fileOperations.writeFile(path, text)
+  })()
+  try {
+    await write.promise
+    if (outgoingWrites.get(path) === write) outgoingWrites.delete(path)
   } catch (error) {
     // The file may have been deleted/moved out from under us (e.g. via the
     // file tree). Don't recreate it or surface a scary error in that case.
     if (isPathNotFoundError(error)) {
       return
     }
-    reportSystemIOError({
+    reportFileOperationError({
       error,
       operation: 'save_text_file',
       risk: 'write',
@@ -139,7 +149,7 @@ export function scheduleActiveTextFileWrite(
     if (write) {
       void performWrite(write.fileOperations, write.path, write.text)
     }
-  }, WRITE_DEBOUNCE_MS)
+  }, EDITOR_SAVE_DEBOUNCE_MS)
 }
 
 /** Clear the active text file, persisting any pending edits first. */
@@ -159,8 +169,8 @@ export async function openActiveTextFile(
   path: string
 ): Promise<void> {
   const requestId = ++latestOpenRequestId
-  // Persist edits to the outgoing file before switching.
-  await flushActiveTextFileWrite()
+  // The outgoing write owns its path and buffer; display the next file immediately.
+  void flushActiveTextFileWrite()
   if (requestId !== latestOpenRequestId) return
 
   const name = fsZds.basename(path)
@@ -179,6 +189,7 @@ export async function openActiveTextFile(
       return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
     }
 
+    const outgoing = outgoingWrites.get(path)
     const bytes = await fileOperations.readFile(path)
     if (requestId !== latestOpenRequestId) {
       return
@@ -205,7 +216,7 @@ export async function openActiveTextFile(
     activeTextFileSignal.value = {
       path,
       name,
-      text,
+      text: outgoingWrites.get(path)?.text ?? outgoing?.text ?? text,
       status: 'ready',
     }
   } catch (error) {

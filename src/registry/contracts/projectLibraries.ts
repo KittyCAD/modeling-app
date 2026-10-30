@@ -17,7 +17,8 @@ import {
 } from '@src/lib/projectLibraries'
 import type { HideOnPlatformValue } from '@src/lib/settings/settingsTypes'
 import { isArray } from '@src/lib/utils'
-import type { CloudProjectRelationship } from '@src/registry/contracts/cloudSync'
+import type { RemoteProjectSummary } from '@src/lib/fs-zds/cloud/types'
+type CloudProjectRelationship = { remoteProject?: RemoteProjectSummary }
 import type {
   HomeProjectEntry,
   HomeProjectOpenResult,
@@ -68,9 +69,8 @@ export type ProjectLibraryRealizationLibraryRef = Pick<
  *
  * A local realization is one concrete project folder on disk. The same local
  * realization may be visible through multiple libraries when library paths
- * overlap, but cloud identity is not resolved here. If two local realizations
- * point at the same cloud project ID, they remain two realizations so cloudSync
- * can classify and clean them up with full disk/metadata context.
+ * overlap. Cloud projects are contributed separately from the server; legacy
+ * cloud metadata never causes a local realization to be synchronized or removed.
  */
 export interface ProjectLibraryRealization {
   id: string

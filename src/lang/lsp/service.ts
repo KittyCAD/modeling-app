@@ -1,4 +1,8 @@
 import {
+  serveFileReads,
+  type FileReadOperations,
+} from '@src/lib/fileSystem/workerBridge'
+import {
   FromServer,
   IntoServer,
   LanguageServerClient,
@@ -50,17 +54,20 @@ type FileSnapshot = {
 }
 
 type CreateLspServiceOptions = {
+  getFileOperations?: () => FileReadOperations
   getAuth: () => AuthRegistryService
   getUserFeatures: () => UserFeaturesRegistryService
 }
 
 export function createLspService({
   getAuth,
+  getFileOperations,
   getUserFeatures,
 }: CreateLspServiceOptions): {
   service: LspService
   dispose: () => void
 } {
+  let disposeFileReads: (() => void) | undefined
   let auth: AuthRegistryService | null = null
   let authSubscription: Subscription | undefined
   let userFeatures: UserFeaturesRegistryService | null = null
@@ -308,14 +315,24 @@ export function createLspService({
       kclRuntimeFlags,
     }
 
-    lspWorker.postMessage({
-      worker: LspWorker.Kcl,
-      eventType: LspWorkerEventType.Init,
-      eventData: initEvent,
-    })
+    if (getFileOperations) {
+      const channel = new MessageChannel()
+      disposeFileReads = serveFileReads(channel.port1, getFileOperations())
+      initEvent.fileReads = channel.port2
+    }
+    lspWorker.postMessage(
+      {
+        worker: LspWorker.Kcl,
+        eventType: LspWorkerEventType.Init,
+        eventData: initEvent,
+      },
+      initEvent.fileReads ? [initEvent.fileReads] : []
+    )
   }
 
   function stopRuntime() {
+    disposeFileReads?.()
+    disposeFileReads = undefined
     pendingStartup?.abortController.abort()
     pendingStartup = undefined
     detachCodeMirror()

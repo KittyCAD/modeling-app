@@ -431,7 +431,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       // if ('delta' in response) {
       //   return response.delta.delta
       // }
-      if ('info' in response && !isTransientRetryInfoResponse(response)) {
+      if ('info' in response && !isNonTerminalInfoResponse(response)) {
         return <Delta key={index}>{response.info.text}</Delta>
       }
       return null

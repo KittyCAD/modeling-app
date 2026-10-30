@@ -9,10 +9,8 @@ import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { authMachine } from '@src/machines/authMachine'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import {
-  SystemIOMachineEvents,
-  type SystemIOActor,
-} from '@src/machines/systemIO/utils'
+import type { ProjectOperationsService } from '@src/lib/fileSystem/projectOperations'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 import type { ActorRefFrom } from 'xstate'
@@ -26,7 +24,8 @@ export function modelingMenuCallbackMostActions({
   currentProject,
   kclManager,
   settingsActor,
-  systemIOActor,
+  projectOperations,
+  projectSession,
 }: {
   settings: SettingsType
   navigate: NavigateFunction
@@ -36,7 +35,8 @@ export function modelingMenuCallbackMostActions({
   currentProject?: Project
   kclManager: KclManager
   settingsActor: SettingsActorType
-  systemIOActor: SystemIOActor
+  projectOperations: ProjectOperationsService
+  projectSession: ProjectSessionService
 }) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -55,16 +55,16 @@ export function modelingMenuCallbackMostActions({
       if (!currentProject) {
         return
       }
-      systemIOActor.send({
-        type: SystemIOMachineEvents.duplicateProject,
-        data: {
-          projectName: currentProject.name,
-          projectPath: currentProject.path,
-          requestedProjectName: getProjectDisplayName(currentProject),
-          currentFilePath: filePath,
-          currentFileContents: kclManager.code,
-        },
-      })
+      projectOperations
+        .duplicateProject(
+          currentProject,
+          getProjectDisplayName(currentProject),
+          filePath ? { path: filePath, contents: kclManager.code } : undefined
+        )
+        .then((project) =>
+          projectSession.openFile(project.path, { projectPath: project.path })
+        )
+        .catch(reportRejection)
     } else if (data.menuLabel === 'File.Open project') {
       commandBarActor.send({
         type: 'Find and select command',

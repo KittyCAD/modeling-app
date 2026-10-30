@@ -1,3 +1,6 @@
+import type { App } from '@src/lib/app'
+import fsZds from '@src/lib/fs-zds'
+import { reportRejection } from '@src/lib/trap'
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
@@ -17,8 +20,6 @@ import {
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -29,7 +30,7 @@ import type {
   ProjectLibraryOperation,
 } from '@src/registry/contracts/projectLibraries'
 import toast from 'react-hot-toast'
-import type { ActorRefFrom, ContextFrom } from 'xstate'
+import type { ContextFrom } from 'xstate'
 export type ProjectsCommandSchema = {
   'Create project': {
     name: string
@@ -63,7 +64,7 @@ interface HomeProjectCommandTarget {
 }
 
 export function createProjectCommands({
-  systemIOActor,
+  app,
   getCurrentProjectDirectoryName,
   getCurrentProjectPath,
   getCurrentProjectLibraryId,
@@ -72,7 +73,14 @@ export function createProjectCommands({
   getHomeProjectActions,
   getHomeProjectEntries,
 }: {
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  app: Pick<
+    App,
+    | 'projectOperations'
+    | 'projectSession'
+    | 'projectDirectoryPath'
+    | 'defaultProjectName'
+    | 'refreshProjects'
+  >
   getCurrentProjectDirectoryName?: () => string | undefined
   getCurrentProjectPath?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
@@ -81,21 +89,8 @@ export function createProjectCommands({
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
   getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
 }) {
-  /**
-   * Helper functions instead of importing these due to circular deps.
-   * unable to resolve this in a cleaner way at the moment.
-   * This is safe in terms of logic but visually ugly.
-   * TODO: https://github.com/KittyCAD/modeling-app/issues/6032
-   */
-  const folderSnapshot = () => {
-    const { folders } = systemIOActor.getSnapshot().context
-    return folders
-  }
-
-  const defaultProjectFolderNameSnapshot = () => {
-    const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
-    return defaultProjectFolderName
-  }
+  const folderSnapshot = () => app.projectOperations.projects.value
+  const defaultProjectFolderNameSnapshot = () => app.defaultProjectName
 
   const currentProjectDirectoryNameSnapshot = () =>
     getCurrentProjectDirectoryName?.()
@@ -330,10 +325,9 @@ export function createProjectCommands({
           })
         }
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.navigateToProject,
-          data: { requestedProjectName: record.name },
-        })
+        app.projectSession
+          .openFile(fsZds.join(app.projectDirectoryPath, record.name))
+          .catch(reportRejection)
       }
     },
     args: {
@@ -390,13 +384,18 @@ export function createProjectCommands({
           })
         }
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.createProject,
-          data: {
-            requestedProjectName,
-            requestedProjectTitle,
-          },
-        })
+        app.projectOperations
+          .createProject({
+            directory: app.projectDirectoryPath,
+            name: requestedProjectName,
+            title: requestedProjectTitle,
+          })
+          .then((project) =>
+            app.projectSession.openFile(project.default_file, {
+              projectPath: project.path,
+            })
+          )
+          .catch(reportRejection)
       }
     },
     args: {
@@ -517,10 +516,10 @@ export function createProjectCommands({
           return target.actions.delete(target.project)
         }
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.deleteProject,
-          data: { requestedProjectName: record.name },
-        })
+        app.projectOperations
+          .deleteProject(fsZds.join(app.projectDirectoryPath, record.name))
+          .then(() => app.refreshProjects())
+          .catch(reportRejection)
       }
     },
     reviewMessage: ({ argumentsToSubmit }) => {
@@ -570,14 +569,15 @@ export function createProjectCommands({
           ? hash.replace(/^#/, '')
           : window.location.pathname
         const isOnHomePage = pathname.startsWith(PATHS.HOME)
-        systemIOActor.send({
-          type: SystemIOMachineEvents.renameProject,
-          data: {
-            requestedProjectName: record.newName,
-            projectName: record.oldName,
-            redirect: !isOnHomePage, // only redirect when renaming from within a project
-          },
-        })
+        const path = fsZds.join(app.projectDirectoryPath, record.oldName)
+        app.projectOperations
+          .renameProject(path, record.newName)
+          .then(async () => {
+            await app.refreshProjects()
+            if (!isOnHomePage)
+              await app.projectSession.openFile(path, { projectPath: path })
+          })
+          .catch(reportRejection)
       }
     },
     args: {
@@ -645,14 +645,19 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.importFileFromURL,
-          data: {
-            requestedProjectName: record.projectName,
-            requestedCode: record.code,
-            requestedFileNameWithExtension: record.name,
-          },
-        })
+        const root = fsZds.join(
+          app.projectDirectoryPath,
+          record.projectName || app.defaultProjectName
+        )
+        app.projectOperations
+          .writeFiles(root, [
+            { path: record.name, contents: record.code ?? '' },
+          ])
+          .then(async (paths) => {
+            await app.refreshProjects()
+            await app.projectSession.openFile(paths[0], { projectPath: root })
+          })
+          .catch(reportRejection)
       }
     },
     args: {

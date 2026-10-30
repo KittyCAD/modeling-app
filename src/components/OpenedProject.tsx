@@ -4,10 +4,6 @@ import { AppHeader } from '@src/components/AppHeader'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import {
-  checkOpenedProjectPresence,
-  getZookeeperProjectReloadBehavior,
-} from '@src/components/openedProjectUtils'
-import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
@@ -36,20 +32,17 @@ import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 
-import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { useApplyRememberedOnboardingWorkflow } from '@src/routes/Onboarding/utils'
-import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import ModalContainer from 'react-modal-promise'
-// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project navigation and onboarding query detection (useLocation, useNavigate, useSearchParams).
-import { useLocation, useNavigate } from 'react-router-dom'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project navigation and onboarding query detection (useLocation, useSearchParams).
+import { useLocation } from 'react-router-dom'
 
 export function OpenedProject() {
   useSignals()
@@ -61,105 +54,22 @@ export function OpenedProject() {
       )
     }
   }, [app.fileOperations])
-  const { auth, billing, settings, layout, project, systemIOActor, registry } =
-    app
+  const { auth, billing, settings, layout, project, registry } = app
   const { kclManager } = useSingletons()
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
-  const { state: modelingState, send: modelingSend } = useModelingContext()
+  const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const location = useLocation()
-  const navigate = useNavigate()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
-  const lastOperation = useLastOperation()
-  const projects = useFolders()
   const lsp = registry.get(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
-
-  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
-
-  // Handle our project folder disappearing (Go back to Projects listing)
-  useEffect(() => {
-    if (
-      systemIOState !== SystemIOMachineStates.idle ||
-      !projectPath ||
-      !projects
-    ) {
-      return
-    }
-
-    if (
-      [
-        SystemIOMachineStates.creatingProject,
-        SystemIOMachineStates.renamingProject,
-        SystemIOMachineStates.importFileFromURL,
-      ].includes(lastOperation)
-    ) {
-      return
-    }
-
-    let cancelled = false
-    void checkOpenedProjectPresence({
-      fileOperations: app.fileOperations,
-      projectPath,
-      projects,
-    }).then((presence) => {
-      if (cancelled) {
-        return
-      }
-      if (presence.type === 'error') {
-        reportRejection(presence.error)
-        return
-      }
-      if (presence.type === 'missing') {
-        void navigate(PATHS.HOME)
-      }
-    })
-
-    return () => {
-      cancelled = true
-    }
-  }, [
-    app.fileOperations,
-    lastOperation,
-    navigate,
-    projectPath,
-    projects,
-    systemIOState,
-  ])
-
-  // ZOOKEEPER BEHAVIOR EXCEPTION
-  // Only fires on state changes, to deal with Zookeeper control.
-  useEffect(() => {
-    if (systemIOState !== 'idle') {
-      return
-    }
-    if (
-      kclManager.zookeeperManagerMachineBulkManipulatingFileSystem === false
-    ) {
-      return
-    }
-    const reloadBehavior = getZookeeperProjectReloadBehavior(modelingState)
-    kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
-
-    if (reloadBehavior === 'exit-sketch-solve') {
-      toast(
-        'Zookeeper updated the project while sketch mode was active. Exiting sketch mode to reload safely.'
-      )
-      modelingSend({ type: 'Exit sketch' })
-      return
-    }
-
-    kclManager.scheduleCurrentCodeExecution(
-      reloadBehavior === 'execute-and-reset-camera'
-    )
-  }, [systemIOState, kclManager, modelingState, modelingSend])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {

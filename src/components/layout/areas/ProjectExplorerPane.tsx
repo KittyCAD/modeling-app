@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
@@ -14,22 +15,18 @@ import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
 } from '@src/lib/layout'
-import { parentPathRelativeToProject } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
-import {
-  useFolders,
-  useProjectDirectoryPath,
-} from '@src/machines/systemIO/hooks'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { use, useCallback, useEffect, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useRef, useState, useMemo } from 'react'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands, fileOperations, project, systemIOActor, layout } = useApp()
+  useSignals()
+  const app = useApp()
+  const { commands, fileOperations, project, layout } = app
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const projects = useFolders()
-  const projectDirectoryPath = useProjectDirectoryPath()
+  const metadata = project?.projectIORefSignal.value
+  const projects = useMemo(() => (metadata ? [metadata] : []), [metadata])
   const projectRef = useRef(project?.projectIORefSignal)
   const [theProject, setTheProject] = useState<Project | null>(null)
   const file = project?.executingFileEntry.value
@@ -47,11 +44,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     }
 
     const loadedProject = project.projectIORefSignal.value
-    if (projects === undefined) {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
-    }
 
     const duplicated = getProjectExplorerProjectWithPlaceholders({
       loadedProject,
@@ -62,7 +54,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       return
     }
     setTheProject(duplicated)
-  }, [file, projects, project, systemIOActor])
+  }, [file, projects, project])
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
@@ -99,11 +91,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
   const onRowClicked = useCallback(
     (entry: FileExplorerEntry) => {
-      const requestedFileName = parentPathRelativeToProject(
-        entry.path,
-        projectDirectoryPath
-      )
-
       // Only open the file if it is a kcl file.
       if (
         projectRef.current?.value.name &&
@@ -112,26 +99,12 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       ) {
         // Leaving any open text file for the KCL editor.
         clearActiveTextFile()
-        const name = projectRef.current.value.name.slice()
 
         const navigateHelper = () => {
-          systemIOActor.send({
-            type: SystemIOMachineEvents.navigateToFile,
-            data: {
-              requestedProjectName: name,
-              requestedFileName: requestedFileName,
-            },
-          })
-        }
-        const navigateAfterFlush = () => {
-          void kclManager
-            .flushWriteToFile()
-            .then((saved) => {
-              if (saved) navigateHelper()
-            })
+          app.projectSession
+            .openFile(entry.path, { projectPath: project?.path })
             .catch(reportRejection)
         }
-
         if (modelingMachineState.matches('Sketch')) {
           modelingSend({ type: 'Cancel' })
           const waitForIdlePromise = new Promise((resolve) => {
@@ -143,11 +116,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             })
           })
           waitForIdlePromise.catch(reportRejection).finally(() => {
-            navigateAfterFlush()
+            navigateHelper()
           })
         } else {
-          // immediately navigate
-          navigateAfterFlush()
+          // The current project captures outgoing saves without blocking selection.
+          navigateHelper()
         }
       } else if (projectRef.current?.value.name && entry.children == null) {
         // Inspect file contents before allowing edits, regardless of extension.
@@ -157,13 +130,12 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     },
     [
       fileOperations,
-      kclManager,
       modelingActor,
       modelingMachineState,
       modelingSend,
       openCodeEditorPaneIfClosed,
-      projectDirectoryPath,
-      systemIOActor,
+      app,
+      project,
     ]
   )
 
@@ -214,7 +186,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onRowEnter={onRowClicked}
             canNavigate={true}
             readOnly={false}
-            overrideApplicationProjectDirectory={projectDirectoryPath}
+            overrideApplicationProjectDirectory={app.projectDirectoryPath}
           />
         </div>
       ) : (

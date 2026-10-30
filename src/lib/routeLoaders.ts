@@ -1,9 +1,13 @@
+import fsZds from '@src/lib/fs-zds'
+import { authService } from '@src/registry/contracts/auth'
+import { cloudStorageService } from '@src/registry/contracts/fileOperations'
+import { resolveProjectLocation } from '@src/lib/fileSystem/mounts'
+import { reportRejection } from '@src/lib/trap'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import {
-  getParentAbsolutePath,
   getRouterSearchFromRequestUrl,
   PATHS,
   parseProjectRoute,
@@ -11,16 +15,9 @@ import {
 } from '@src/lib/paths'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
-import {
-  getOnboardingChildRoute,
-  isRequestedFileLoaded,
-} from '@src/lib/routeLoaderNavigation'
+import { getOnboardingChildRoute } from '@src/lib/routeLoaderNavigation'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import type { HomeLoaderData } from '@src/lib/types'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
@@ -82,12 +79,85 @@ export const fileLoader =
       settings: { actor: settingsActor },
     } = app
     const { kclManager } = app.singletons
-    const { params } = routerData
-
+    const params = { ...routerData.params }
     // Old web bookmarks encode /browser/... as the file route's id. These
     // paths no longer identify projects, so return home before filesystem I/O.
     if (params.id?.startsWith('/browser')) {
       return redirect(PATHS.HOME)
+    }
+
+    if (params.id?.startsWith('local:')) {
+      const url = new URL(routerData.request.url)
+      url.pathname = url.pathname.replace(
+        encodeURIComponent(params.id),
+        encodeURIComponent(params.id.slice(6))
+      )
+      return redirect(url.pathname + url.search)
+    }
+    // A file already belonging to the open project needs no project/settings reload.
+    const current = app.project
+    const target = params.id
+    const requestPath = new URL(routerData.request.url).pathname
+    if (
+      current &&
+      !kclManager.modelingState?.matches('sketchSolveMode') &&
+      target?.endsWith(FILE_EXT) &&
+      fsZds
+        .resolve(target)
+        .startsWith(`${fsZds.resolve(current.path)}${fsZds.sep}`) &&
+      !requestPath.includes('/onboarding') &&
+      !requestPath.endsWith('/settings') &&
+      (await app.fileOperations.exists(target))
+    ) {
+      assertCurrent()
+      await current.openEditor(
+        target,
+        kclManager,
+        undefined,
+        true,
+        assertCurrent,
+        { deferModeling: true }
+      )
+      assertCurrent()
+      return
+    }
+    const waitForCloudAuth = async () => {
+      const auth = app.registry.optional(authService)
+      if (auth)
+        await waitFor(auth.actor, (state) => !state.matches('checkIfLoggedIn'))
+      assertCurrent()
+    }
+    if (
+      params.id?.startsWith('cloud:') ||
+      (params.id && !params.id.includes('/') && !params.id.includes('\\'))
+    ) {
+      await waitForCloudAuth()
+      const cloud = app.registry.get(cloudStorageService)
+      const location = await resolveProjectLocation(params.id, cloud.exists)
+      assertCurrent()
+      if (location.type === 'cloud') {
+        const path = fsZds.join(cloud.root, location.id)
+        return redirect(
+          `${PATHS.FILE}/${encodeURIComponent(path)}${new URL(routerData.request.url).search}`
+        )
+      }
+      params.id = location.id
+      assertCurrent()
+    }
+
+    const cloudStorage = app.registry.get(cloudStorageService)
+    if (params.id?.startsWith(`${cloudStorage.root}${fsZds.sep}`)) {
+      await waitForCloudAuth()
+      const id = cloudStorage.idFor(params.id)
+      if (current?.path !== fsZds.join(cloudStorage.root, id)) {
+        await cloudStorage.refreshProject(
+          id,
+          () => !routerData.request.signal.aborted
+        )
+      } else {
+        await cloudStorage.openProject(id)
+      }
+      assertCurrent()
     }
 
     const wasmInstance = await kclManager.wasmInstancePromise
@@ -178,6 +248,7 @@ export const fileLoader =
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
+    projectFsManager.setOperations(app.fileOperations)
     projectFsManager.dir = projectPath
 
     const defaultProjectData = {
@@ -199,6 +270,9 @@ export const fileLoader =
     assertCurrent()
 
     const project = maybeProjectInfo ?? defaultProjectData
+    const cloud = app.registry.get(cloudStorageService)
+    if (projectPath.startsWith(`${cloud.root}${fsZds.sep}`))
+      project.cloudProjectId = cloud.idFor(projectPath)
 
     // Fire off the event to load the project settings
     // once we know it's idle.
@@ -225,44 +299,12 @@ export const fileLoader =
     )
     assertCurrent()
 
-    const requestedFileName =
-      app.systemIOActor.getSnapshot().context.requestedFileName
-    if (
-      isRequestedFileLoaded({
-        requestedFileName,
-        projectName,
-        projectPath,
-        currentFilePath,
-      })
-    ) {
-      requestedFileName.onProjectLoaderComplete?.()
-    }
-
-    const requestedProjectDirectoryPath =
-      projectRef.projectIORefSignal.value.libraryPath ??
-      getParentAbsolutePath(project.path)
-    const systemIOSnapshot = app.systemIOActor.getSnapshot()
-    // Same-directory file navigation should not restart SystemIO's own
-    // post-mutation folder refresh.
-    const shouldSyncProjectDirectory =
-      requestedProjectDirectoryPath !==
-        systemIOSnapshot.context.projectDirectoryPath ||
-      (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
-        systemIOSnapshot.context.folders === undefined)
-    if (shouldSyncProjectDirectory) {
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath,
-        },
-      })
-    }
+    void app.refreshProjects().catch(reportRejection)
   }
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
 
-// Should also clear currently loaded projects in SystemIO. They may be stale.
 export const homeLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {

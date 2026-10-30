@@ -1399,6 +1399,116 @@ describe('zookeeperManagerMachine', () => {
     })
   })
 
+  it.each(['local', 'cloud'] as const)(
+    'sends project files only for local projects on prompts and resume (%s)',
+    async (storage) => {
+      const ws = new TestSocket() as TestWebSocket
+      const send = vi.fn()
+      ws.send = send
+      const { kclManager, engineCommandManager, instance } =
+        await buildTheWorldAndNoEngineConnection(true)
+      const projectFiles: FileMeta[] = [
+        {
+          type: 'kcl',
+          relPath: 'parts/main.kcl',
+          absPath: '/demo/parts/main.kcl',
+          fileContents: '@settings(kclVersion = 3.0)\n',
+          execStateFileNamesIndex: 0,
+        },
+        { type: 'other', relPath: 'notes.txt', data: new Blob(['notes']) },
+      ]
+      const context = {
+        ...zookeeperDefaultContext({}),
+        ws,
+        conversation: {
+          exchanges: [
+            {
+              request: { type: 'user' as const, content: 'Inspect' },
+              responses: [],
+              deltasAggregated: '',
+            },
+          ],
+        },
+      }
+      const prompt: Extract<
+        ZookeeperManagerEvents,
+        { type: ZookeeperManagerTransitions.MessageSend }
+      > = {
+        type: ZookeeperManagerTransitions.MessageSend,
+        prompt: 'Inspect the project',
+        projectForPromptOutput: {
+          name: 'demo',
+          path: '/demo',
+          children: [],
+          default_file: '/demo/parts/main.kcl',
+          directory_count: 1,
+          kcl_file_count: 1,
+          metadata: null,
+          readWriteAccess: true,
+          ...(storage === 'cloud' ? { cloudProjectId: 'remote-one' } : {}),
+        },
+        applicationProjectDirectory: '/demo',
+        fileSelectedDuringPrompting: {
+          entry: {
+            name: 'main.kcl',
+            path: '/demo/parts/main.kcl',
+            children: null,
+          },
+          content: '@settings(kclVersion = 3.0)\n',
+        },
+        projectFiles,
+        selections: null,
+        artifactGraph: new Map(),
+        kclManager,
+        engineCommandManager,
+        wasmInstance: instance,
+        additionalFiles: [new File(['reference'], 'reference.txt')],
+      }
+      const resume: Extract<
+        ZookeeperManagerEvents,
+        { type: ZookeeperManagerStates.ContinueCheck }
+      > = {
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectId: `${storage}:remote-one`,
+        projectFiles,
+        activeFile: 'parts/main.kcl',
+      }
+      for (const event of [prompt, resume]) {
+        const logic = zookeeperManagerMachine.implementations.actors[event.type]
+        if (!logic || !('transition' in logic))
+          throw new Error('Missing request actor')
+        const actor = createActor(logic, { input: { context, event } })
+        const result = toPromise(actor)
+        actor.start()
+        await result
+      }
+      const requests = send.mock.calls
+        .map(([payload]) =>
+          typeof payload === 'string'
+            ? JSON.parse(payload)
+            : msgpack.decode(payload)
+        )
+        .filter((request) => request.type !== 'system')
+      expect(requests).toHaveLength(2)
+      for (const request of requests) {
+        expect(request.project_id).toMatch(new RegExp(`^${storage}:`))
+        expect(request.active_file).toBe('parts/main.kcl')
+        expect(request.current_files).toEqual(
+          storage === 'cloud'
+            ? {}
+            : {
+                'parts/main.kcl': Array.from(
+                  new TextEncoder().encode('@settings(kclVersion = 3.0)\n')
+                ),
+                'notes.txt': Array.from(new TextEncoder().encode('notes')),
+              }
+        )
+      }
+      expect(requests[0].additional_files[0].name).toBe('reference.txt')
+    }
+  )
+
   it('rejects oversized encoded prompts before sending anything', async () => {
     const encode = vi
       .spyOn(msgpack, 'encode')

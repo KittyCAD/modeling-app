@@ -3,6 +3,7 @@ import type {
   WebSocketRequest,
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
+import { viteEnv } from '@src/env'
 import { EngineDebugger } from '@src/lib/debugger'
 import {
   createOnConnectionStateChange,
@@ -144,7 +145,7 @@ export class Connection extends EventTarget {
       metadata: { id: this.id },
     })
     this.url = url
-    this._token = token
+    this._token = viteEnv().VITE_ZOO_DEV_API_TOKEN || token
     this.handleOnDataChannelMessage = handleOnDataChannelMessage
     this.recordShutdownTrigger = recordShutdownTrigger
     this.tearDownManager = tearDownManager

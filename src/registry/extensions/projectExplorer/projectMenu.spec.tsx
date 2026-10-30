@@ -67,9 +67,10 @@ function createProjectMenuApp() {
         actor: commandsActor,
         send: vi.fn(),
       },
-      systemIOActor: {
-        send: vi.fn(),
+      projectOperations: {
+        duplicateProject: vi.fn(async () => ({ path: '/projects/duplicated' })),
       },
+      projectSession: { openFile: vi.fn(async () => undefined) },
       settings: {
         actor: {},
         useSettings: () => ({
@@ -155,14 +156,11 @@ describe('project explorer project menu', () => {
       }
       fireEvent.click(duplicateButton)
 
-      expect(app.systemIOActor.send).toHaveBeenCalledWith({
-        type: 'duplicate project',
-        data: {
-          projectName: projectWellFormed.name,
-          projectPath: projectWellFormed.path,
-          requestedProjectName: projectWellFormed.title,
-        },
-      })
+      expect(app.projectOperations.duplicateProject).toHaveBeenCalledWith(
+        projectWellFormed,
+        projectWellFormed.title,
+        undefined
+      )
     } finally {
       dispose()
     }

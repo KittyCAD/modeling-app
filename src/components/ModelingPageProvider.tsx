@@ -62,7 +62,14 @@ export const ModelingPageProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { auth, commands, settings, project, systemIOActor } = useApp()
+  const {
+    auth,
+    commands,
+    settings,
+    project,
+    projectOperations,
+    projectSession,
+  } = useApp()
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
@@ -207,7 +214,8 @@ export const ModelingPageProvider = ({
     navigate,
     settings: settingsValues,
     settingsActor,
-    systemIOActor,
+    projectOperations,
+    projectSession,
   })
   useMenuListener(cb)
 
@@ -252,7 +260,6 @@ export const ModelingPageProvider = ({
       },
       specialPropsForInsertCommand: { providedOptions },
       project: projectIORef?.value,
-      systemIOActor,
       wasmInstance,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!

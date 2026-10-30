@@ -33,7 +33,7 @@ import {
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { prepareEditCommand } from '@src/lib/featureTree'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { createProjectThumbnail } from '@src/lib/screenshot'
 import {
   getEngineRegionSelectionFromPoint,
   normalizeEntityReference,
@@ -69,7 +69,14 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands, fileOperations } = useApp()
+  const {
+    settings,
+    project,
+    wasmPromise,
+    commands,
+    fileOperations,
+    projectSession,
+  } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -307,6 +314,11 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onPageMountedParams = useMemo(
     () => ({
       callback: () => {
+        const initialPath = kclManager.path
+        const isCurrentEntrypoint = () =>
+          projectSession.getProject() === project &&
+          kclManager.path === initialPath &&
+          initialPath === project?.projectIORefSignal.peek().default_file
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -322,11 +334,13 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           settingsActor: settings.actor,
         })
           .then(() => {
-            // Take a screen shot after the page mounts and zoom to fit runs
-            if (projectIORef && projectIORef.path) {
-              createThumbnailPNGOnDesktop({
+            // Capture after the initial zoom; cloud persistence joins the next save.
+            if (projectIORef?.path && isCurrentEntrypoint()) {
+              createProjectThumbnail({
                 fileOperations,
                 projectDirectoryWithoutEndingSlash: projectIORef.path,
+                writeThumbnail: projectSession.writeThumbnail,
+                isCurrent: isCurrentEntrypoint,
               })
             }
           })

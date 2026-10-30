@@ -5,12 +5,11 @@ import {
   cloudProjectResponse,
   routeCloudProjects,
   zipProject,
-} from '@e2e/playwright/lib/cloudSyncTestUtils'
+} from '@e2e/playwright/lib/cloudProjectTestUtils'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { playwrightPluginSettings } from '@e2e/playwright/storageStates'
 import { mockClientErrorReports } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { Page } from '@playwright/test'
 import { DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH } from '@src/lib/projectLibraries'
 
 const FLOW_TIMEOUT = 30_000
@@ -72,13 +71,10 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
     const sourceMainFile = path.join(sourceProjectPath, 'main.kcl')
     const sourceProjectToml = path.join(sourceProjectPath, 'project.toml')
     const publicationTitle = 'Published directory project'
-    const movedProjectPath = path.join(
-      cloudLibraryPath,
-      'published-directory-project'
-    )
+    const remoteProjectId = '12945000-0000-4000-8000-000000000101'
+    const movedProjectPath = path.resolve('/__zoo_cloud__', remoteProjectId)
     const movedMainFile = path.join(movedProjectPath, 'main.kcl')
     const movedProjectToml = path.join(movedProjectPath, 'project.toml')
-    const remoteProjectId = '12945000-0000-4000-8000-000000000101'
     const categoryId = '12945000-0000-4000-8000-000000000201'
     const remoteProjects: CloudProject[] = []
     const remoteArchives = new Map<string, Buffer>()
@@ -108,7 +104,6 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
       },
       { appData: testAppDataPath, home: testHomePath }
     )
-    await clearCloudSyncState(page)
     await tronApp.cleanProjectDir({
       plugins: playwrightPluginSettings({ cloudSyncEnabled: true }),
       app: {
@@ -297,34 +292,25 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
       .poll(() => apiCalls.publishes, { timeout: FLOW_TIMEOUT })
       .toEqual([remoteProjectId])
     expect(await pathExists(sourceProjectPath)).toBe(false)
-    expect(await pathExists(movedMainFile)).toBe(true)
+    expect(await pathExists(movedMainFile)).toBe(false)
 
-    const [movedMainContents, movedTomlContents] = await Promise.all([
-      fsp.readFile(movedMainFile, 'utf8'),
-      fsp.readFile(movedProjectToml, 'utf8'),
-    ])
+    const [movedMainContents, movedTomlContents] = await page.evaluate(
+      async (paths) =>
+        Promise.all(
+          paths.map(async (file) =>
+            new TextDecoder().decode(
+              await window.app.fileOperations.readFile(file)
+            )
+          )
+        ),
+      [movedMainFile, movedProjectToml]
+    )
     expect(movedMainContents).toBe('publishedPart = 42\n')
     expect(movedTomlContents).toContain(`title = "${publicationTitle}"`)
     expect(movedTomlContents).toContain('default_file = "main.kcl"')
     expect(movedTomlContents).toContain('[custom]')
     expect(movedTomlContents).toContain('keep = "yes"')
-    expect(movedTomlContents).toContain(`project_id = "${remoteProjectId}"`)
 
-    await expect
-      .poll(() => readCloudSyncState(page), { timeout: FLOW_TIMEOUT })
-      .toMatchObject({
-        outboxCount: 0,
-        projects: [
-          {
-            localProjectPath: movedProjectPath,
-            remoteProjectId,
-            remoteRevision: expect.stringMatching(
-              /^directory-publish-rev-[12]$/
-            ),
-            conflict: undefined,
-          },
-        ],
-      })
     expect(await page.evaluate(() => window.__publishFlowMessages)).toEqual([
       'Project submitted for review.',
     ])
@@ -342,68 +328,4 @@ async function pathExists(targetPath: string) {
   } catch {
     return false
   }
-}
-
-async function readCloudSyncState(page: Page) {
-  return page.evaluate(async () => {
-    type StoredProject = {
-      localProjectPath: string
-      remoteProjectId?: string
-      remoteRevision?: string
-      conflict?: unknown
-    }
-
-    const db = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open('zds-opfs-cloud-sync', 1)
-      request.onerror = () => reject(request.error)
-      request.onsuccess = () => resolve(request.result)
-    })
-    const getAll = (storeName: string) =>
-      new Promise<StoredProject[]>((resolve, reject) => {
-        const request = db
-          .transaction(storeName, 'readonly')
-          .objectStore(storeName)
-          .getAll()
-        request.onerror = () => reject(request.error)
-        request.onsuccess = () => resolve(request.result)
-      })
-
-    const [projects, outbox] = await Promise.all([
-      getAll('projects'),
-      getAll('outbox'),
-    ])
-    db.close()
-    return {
-      outboxCount: outbox.length,
-      projects: projects.map((project) => ({
-        localProjectPath: project.localProjectPath,
-        remoteProjectId: project.remoteProjectId,
-        remoteRevision: project.remoteRevision,
-        conflict: project.conflict,
-      })),
-    }
-  })
-}
-
-async function clearCloudSyncState(page: Page) {
-  await expect
-    .poll(
-      async () => {
-        try {
-          await page.evaluate(
-            () =>
-              new Promise<void>((resolve, reject) => {
-                const request = indexedDB.deleteDatabase('zds-opfs-cloud-sync')
-                request.onerror = () => reject(request.error)
-                request.onsuccess = () => resolve()
-              })
-          )
-          return true
-        } catch {
-          return false
-        }
-      },
-      { timeout: FLOW_TIMEOUT }
-    )
-    .toBe(true)
 }

@@ -1,5 +1,6 @@
 import type { ProjectResponse } from '@kittycad/lib'
 import type { Project } from '@src/lib/project'
+import type { ProjectArchiveFile } from '@src/lib/fs-zds/cloud/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 function makeRemoteProject(
@@ -38,14 +39,14 @@ const mockState = vi.hoisted(() => ({
     baseUrl: 'https://api.dev.zoo.dev',
   })),
   kcCall: vi.fn(async (fn: () => Promise<unknown>) => await fn()),
-  createProject: vi.fn(async () =>
+  createProject: vi.fn(async (..._args: unknown[]) =>
     makeRemoteProject({
       id: 'project-created',
       title: 'bracket',
       description: '',
     })
   ),
-  updateProject: vi.fn(async () => makeRemoteProject()),
+  updateProject: vi.fn(async (_input?: unknown) => makeRemoteProject()),
   getProject: vi.fn(async () => makeRemoteProject()),
   publishProject: vi.fn(async () =>
     makeRemoteProject({
@@ -67,7 +68,7 @@ const mockState = vi.hoisted(() => ({
     return new TextEncoder().encode(`raw:${path}`)
   }),
   fsWriteFile: vi.fn(async (_path: string, _data: Uint8Array) => {}),
-  collectLocalProjectFilesForCloudSync: vi.fn(async () => [
+  collectProjectFilesForUpload: vi.fn(async () => [
     {
       relativePath: '.gitignore',
       data: new TextEncoder().encode('thumbnail.png\n'),
@@ -85,9 +86,24 @@ const mockState = vi.hoisted(() => ({
   ]),
 }))
 
-vi.mock('@src/lib/cloudSync/localManifest', () => ({
-  collectLocalProjectFilesForCloudSync:
-    mockState.collectLocalProjectFilesForCloudSync,
+vi.mock('@src/lib/fs-zds/cloud/api', () => ({
+  createRemoteProject: mockState.createProject,
+  getRemoteProject: async (_config: unknown, id: string) => ({
+    ...(await mockState.getProject()),
+    id,
+  }),
+  updateRemoteProject: async (input: {
+    project: { id: string }
+    expectedRevision: string
+  }) =>
+    mockState.updateProject({
+      id: input.project.id,
+      expectedRevision: input.expectedRevision,
+    }),
+}))
+
+vi.mock('@src/lib/fileSystem/projectFiles', () => ({
+  collectProjectFilesForUpload: mockState.collectProjectFilesForUpload,
 }))
 
 vi.mock('@src/env', async () => {
@@ -151,7 +167,7 @@ import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import {
   getCurrentProjectPublicationDetails as getCurrentProjectPublicationDetailsWithFileOperations,
   publishCurrentProject as publishCurrentProjectWithFileOperations,
-} from '@src/lib/share'
+} from '@src/registry/extensions/fileOperations/publication'
 
 const publishCurrentProject = (
   args: Omit<
@@ -223,38 +239,20 @@ describe('publishCurrentProject', () => {
     expect(published).toEqual({
       remoteProjectId: 'project-created',
     })
-    expect(mockState.createProject).toHaveBeenCalledWith({
-      client: {
-        mocked: true,
-        token: 'token-123',
-        baseUrl: 'https://api.dev.zoo.dev',
-      },
-      files: expect.any(Array),
-    })
-    const createProjectCall = mockState.createProject.mock.calls.at(0) as
-      | [
-          {
-            files: Array<{ name: string; data: Blob }>
-          },
-        ]
-      | undefined
-    const createProjectArgs = createProjectCall?.[0]
-    const createProjectFiles = createProjectArgs?.files ?? []
-    const bodyFile = createProjectFiles.find((file) => file.name === 'body')
-
-    expect(bodyFile).toBeDefined()
-    await expect(bodyFile?.data.text()).resolves.toBe(
-      JSON.stringify({
-        title: 'Bracket',
+    expect(mockState.createProject).toHaveBeenCalledWith(
+      { enabled: true, token: 'token-123' },
+      '/projects/bracket',
+      expect.any(Array),
+      {
         description: 'A mounting bracket.',
         category_ids: ['category-a', 'category-b'],
-        entrypoint_path: 'main.kcl',
-        project_toml_path: 'project.toml',
-      })
+      }
     )
-    expect(createProjectFiles.map((file) => file.name)).toContain('.gitignore')
-    const mainFile = createProjectFiles.find((file) => file.name === 'main.kcl')
-    await expect(mainFile?.data.text()).resolves.toBe(
+    const files = mockState.createProject.mock
+      .calls[0][2] as ProjectArchiveFile[]
+    expect(files.map((file) => file.relativePath)).toContain('.gitignore')
+    const mainFile = files.find((file) => file.relativePath === 'main.kcl')
+    expect(new TextDecoder().decode(mainFile?.data)).toBe(
       'part001 = startSketchOn(XY)'
     )
     expect(mockState.fsWriteFile).not.toHaveBeenCalled()
@@ -273,10 +271,8 @@ describe('publishCurrentProject', () => {
   })
 
   it('shows a useful error when a category is rejected', async () => {
-    mockState.createProject.mockResolvedValueOnce(
-      new Error(
-        'category `retired-category` is not active or does not exist'
-      ) as never
+    mockState.createProject.mockRejectedValueOnce(
+      new Error('category `retired-category` is not active or does not exist')
     )
 
     const published = await publishCurrentProject({
@@ -300,7 +296,7 @@ describe('publishCurrentProject', () => {
     expect(mockState.publishProject).not.toHaveBeenCalled()
   })
 
-  it('publishes the project identity returned by an awaited cloud sync', async () => {
+  it('publishes the acknowledged cloud identity with a revision guard', async () => {
     const published = await publishCurrentProject({
       token: 'token-123',
       project: makeProject(),
@@ -313,11 +309,15 @@ describe('publishCurrentProject', () => {
         categoryIds: ['category-a'],
       },
       remoteProjectId: 'project-synced',
+      expectedRevision: 'acknowledged-revision',
     })
 
     expect(published).toEqual({ remoteProjectId: 'project-synced' })
     expect(mockState.updateProject).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'project-synced' })
+      expect.objectContaining({
+        id: 'project-synced',
+        expectedRevision: 'acknowledged-revision',
+      })
     )
     expect(mockState.createProject).not.toHaveBeenCalled()
     expect(mockState.readProjectSettingsFile).not.toHaveBeenCalled()

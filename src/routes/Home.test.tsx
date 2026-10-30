@@ -115,7 +115,7 @@ describe('HomeHeader', () => {
     })
 
     expect(
-      screen.getByText(/Projects in this library sync to your Zoo account/)
+      screen.getByText(/Projects in this library are saved to your Zoo account/)
     ).toBeInTheDocument()
     expect(
       screen.getByText(
@@ -156,7 +156,7 @@ describe('ProjectLibraryPreviewRow', () => {
     )
     expect(libraryLink).toHaveTextContent('Personal Cloud')
     expect(summaryDescription).toHaveTextContent(
-      'Projects in this library sync to your Zoo account'
+      'Projects in this library are saved to your Zoo account'
     )
     expect(summaryDescription).not.toHaveTextContent('zoo://personal')
     expect(screen.getByRole('tooltip', { hidden: true })).toBeInTheDocument()

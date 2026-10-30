@@ -1,17 +1,16 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  pluginsValueSpec,
   provide,
   provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
-import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultProjectLibrarySettings,
@@ -39,12 +38,10 @@ import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import {
-  ExpectedSystemIOError,
-  reportSystemIOError,
-  type SystemIOErrorRisk,
-} from '@src/machines/systemIO/errorReporting'
-import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+  ExpectedFileOperationError,
+  reportFileOperationError,
+  type FileOperationRisk,
+} from '@src/lib/fileSystem/operationErrors'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import {
@@ -143,7 +140,7 @@ function warnMissingProjectLibraryTypeHandler(
 /**
  * Reads one configured library for one discovery pass. The result is still only
  * a set of local observations; the ValueSpec combiner later merges observations
- * of the same normalized path and cloudSync handles cloud identity.
+ * of the same normalized path. Cloud entries are contributed from the server.
  */
 async function readConfiguredProjectLibraryRealizations({
   library,
@@ -197,6 +194,7 @@ function projectLibraryWatchTargetsFromLibraries(
   const targetsByPath = new Map<string, ProjectLibraryWatchTarget>()
 
   for (const library of libraries) {
+    if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) continue
     const path = library.path.trim()
     const normalizedPath = normalizeProjectLibraryWatchPath(path)
     if (!path || !normalizedPath || normalizedPath === fsZds.sep) {
@@ -530,7 +528,7 @@ function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
 
 type DirectoryProjectOperationReport = {
   operation: string
-  risk: SystemIOErrorRisk
+  risk: FileOperationRisk
 }
 
 async function runReportedDirectoryProjectOperation<T>({
@@ -542,7 +540,7 @@ async function runReportedDirectoryProjectOperation<T>({
   try {
     return await run()
   } catch (error) {
-    reportSystemIOError({
+    reportFileOperationError({
       error,
       source: 'DirectoryProjectLibrary',
       ...report,
@@ -582,23 +580,23 @@ function withReportedDirectoryProjectOperations(
   return {
     ...operations,
     createProject: report(operations.createProject, {
-      operation: SystemIOMachineActors.createProject,
+      operation: 'create project',
       risk: 'write',
     }),
     duplicateProject: report(operations.duplicateProject, {
-      operation: SystemIOMachineActors.duplicateProject,
+      operation: 'duplicate project',
       risk: 'write',
     }),
     renameProject: report(operations.renameProject, {
-      operation: SystemIOMachineActors.renameProject,
+      operation: 'rename project',
       risk: 'write',
     }),
     deleteProject: report(operations.deleteProject, {
-      operation: SystemIOMachineActors.deleteProject,
+      operation: 'delete project',
       risk: 'destructive',
     }),
     moveProjectTo: report(operations.moveProjectTo, {
-      operation: SystemIOMachineActors.moveRecursive,
+      operation: 'move project',
       risk: 'destructive',
     }),
   }
@@ -611,13 +609,12 @@ function reportDirectoryProjectStatFailures({
   error: unknown
   count: number
 }) {
-  reportSystemIOError({
+  reportFileOperationError({
     error,
-    operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+    operation: 'list projects',
     risk: 'read',
     source: 'DirectoryProjectLibrary',
-    dedupeKey:
-      'SystemIO:DirectoryProjectLibrary:read folders from project directory:stat_project',
+    dedupeKey: 'DirectoryProjectLibrary:listProjects:stat_project',
     extra: {
       phase: 'stat_project',
       skippedProjectCount: count,
@@ -627,17 +624,9 @@ function reportDirectoryProjectStatFailures({
 
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const fileOperations = () => ctx.services.get(fileOperationsService)
-  const cloudSync = ctx.services.signal(cloudSyncService)
-  const plugins = ctx.valueSpecs.signal(pluginsValueSpec)
-  const isCloudSyncPluginActive = () => {
-    const plugin = plugins.value.find(
-      (candidate) => candidate.id === CLOUD_SYNC_PLUGIN_ID
-    )
-    return plugin ? ctx.services.get(plugin.service).active.value : false
-  }
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    new ExpectedSystemIOError('Missing WASM promise registry value.')
+    new ExpectedFileOperationError('Missing WASM promise registry value.')
   /**
    * Directory operations know the configured library they changed, so they
    * refresh that library's local realization discovery directly.
@@ -733,32 +722,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           return
         }
 
-        // A cloud ID can outlive access to the plugin that manages it. Only an
-        // active cloudSync plugin owns relationship-aware local cleanup;
-        // otherwise this remains an ordinary directory-library delete.
-        const useCloudSyncDelete = Boolean(
-          project.remoteProjectId && isCloudSyncPluginActive()
-        )
-        const cloudSyncActions = useCloudSyncDelete
-          ? cloudSync.value
-          : undefined
-        if (
-          useCloudSyncDelete &&
-          cloudSyncActions?.status.value.enabled !== true
-        ) {
-          return Promise.reject(
-            new ExpectedSystemIOError('Cloud sync is not enabled.')
-          )
-        }
-
-        if (useCloudSyncDelete && project.remoteProjectId) {
-          await cloudSyncActions?.deleteLocalProjectRealizations(
-            project.remoteProjectId,
-            project.localProjectPath
-          )
-        } else {
-          await fileOperations().remove(project.localProjectPath)
-        }
+        await fileOperations().remove(project.localProjectPath)
         refreshLocalProjectRealizations(library)
       },
     },
@@ -815,7 +779,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           return runReportedDirectoryProjectOperation({
-            operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+            operation: 'list projects',
             risk: 'read',
             run: async () => {
               const projects = await readProjectsFromProjectDirectory({

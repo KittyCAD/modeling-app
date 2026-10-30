@@ -17,7 +17,7 @@ import {
   isResponseComplete,
   type ZookeeperManagerActor,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import { normalizeKCLFileDeletePath } from '@src/machines/systemIO/utils'
+import { normalizeKCLFileDeletePath } from '@src/lib/fileSystem/projectFiles'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
 

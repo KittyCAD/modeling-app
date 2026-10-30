@@ -15,7 +15,7 @@ import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import type {
   CurrentProjectPublicationDetails,
   ProjectPublishSubmission,
-} from '@src/lib/share'
+} from '@src/registry/contracts/fileOperations'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 

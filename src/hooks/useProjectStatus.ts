@@ -1,10 +1,9 @@
+import { useApp } from '@src/lib/boot'
+import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import type {
   KclProjectPublicationStatus,
   ProjectSummaryResponse,
 } from '@kittycad/lib'
-import { projects } from '@kittycad/lib'
-import { listClientItems } from '@src/lib/apiPagination'
-import { createKCClient } from '@src/lib/kcClient'
 import { useEffect, useMemo, useState } from 'react'
 
 export type ProjectStatus = {
@@ -23,6 +22,7 @@ export function useProjectStatus(
   cloudProjectId: string | undefined,
   token?: string
 ): ProjectStatus | null {
+  const { registry } = useApp()
   const [status, setStatus] = useState<ProjectStatus | null>(null)
 
   useEffect(() => {
@@ -36,16 +36,11 @@ export function useProjectStatus(
 
     async function fetchStatus() {
       try {
-        const client = createKCClient(token)
-        const remote = await projects.get_project({
-          client,
-          id: projectId,
-        })
+        const result = await registry
+          .get(cloudStorageService)
+          .getProjectStatus(projectId)
         if (!cancelled) {
-          setStatus({
-            publicationStatus: remote.publication_status,
-            feedback: remote.publication?.feedback ?? undefined,
-          })
+          setStatus(result)
         }
       } catch (e) {
         console.error('Failed to fetch project status', e)
@@ -57,7 +52,7 @@ export function useProjectStatus(
     return () => {
       cancelled = true
     }
-  }, [token, cloudProjectId])
+  }, [token, cloudProjectId, registry])
 
   return status
 }
@@ -70,6 +65,7 @@ export function useProjectStatuses(
   homeProjects: readonly RemoteProjectReference[] | undefined,
   token?: string
 ): Map<string, ProjectStatus> {
+  const { registry } = useApp()
   const [remoteProjects, setRemoteProjects] = useState<
     ProjectSummaryResponse[]
   >([])
@@ -94,11 +90,9 @@ export function useProjectStatuses(
 
     async function fetchStatuses() {
       try {
-        const client = createKCClient(token)
-        const result = await listClientItems<ProjectSummaryResponse>(
-          client,
-          '/user/projects'
-        )
+        const result = await registry
+          .get(cloudStorageService)
+          .getProjectStatuses()
         if (!cancelled) {
           setRemoteProjects(result)
         }
@@ -112,7 +106,7 @@ export function useProjectStatuses(
     return () => {
       cancelled = true
     }
-  }, [token, remoteProjectIdsKey])
+  }, [token, remoteProjectIdsKey, registry])
 
   return useMemo(() => {
     const map = new Map<string, ProjectStatus>()
