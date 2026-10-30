@@ -50,8 +50,12 @@ function matchesTransformMenu(target: Element, expanded: boolean) {
   )
 }
 
+const extrudeDialogSelector =
+  '[data-testid="modeling-dialog"][aria-label="Extrude"]'
+
 function extrudeIsOpen(document: Document) {
   return (
+    document.querySelector(extrudeDialogSelector) !== null ||
     document
       .querySelector('[data-testid="command-name"]')
       ?.textContent?.trim() === 'Extrude'
@@ -251,6 +255,13 @@ export const interactionOutcomes = {
     matchesTarget: (target) =>
       matchesControl(target, interactions.extrudeOpen.testId),
     isReady(document) {
+      const dialog = document.querySelector(extrudeDialogSelector)
+      if (dialog) {
+        const selection = dialog.querySelector(
+          'button[aria-label="Select Profiles"]:enabled'
+        )
+        return isVisible(selection) && transitionsEnded(dialog)
+      }
       const panel = document.querySelector(
         '[data-testid="command-bar-wrapper"]'
       )
@@ -268,11 +279,15 @@ export const interactionOutcomes = {
   extrudeCancel: {
     ...interactions.extrudeCancel,
     matchesTarget: (target) =>
-      matchesControl(target, interactions.extrudeCancel.testId) &&
+      (matchesControl(target, interactions.extrudeCancel.testId) ||
+        target.closest(
+          `${extrudeDialogSelector} button[aria-label="Cancel"]`
+        ) !== null) &&
       extrudeIsOpen(target.ownerDocument),
     isReady(document) {
       return (
-        document.querySelector('[data-testid="command-bar-wrapper"]') === null
+        document.querySelector('[data-testid="command-bar-wrapper"]') ===
+          null && document.querySelector(extrudeDialogSelector) === null
       )
     },
   },
