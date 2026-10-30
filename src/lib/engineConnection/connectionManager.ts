@@ -1209,7 +1209,8 @@ export class ConnectionManager extends EventTarget {
   }
 
   async handleResize({ width, height }: { width: number; height: number }) {
-    if (!this.connection) {
+    const connection = this.connection
+    if (!connection) {
       console.warn('unable to resize, connection is not found')
       return
     }
@@ -1220,23 +1221,37 @@ export class ConnectionManager extends EventTarget {
     }
 
     // Make sure the connection is ready otherwise you are sending the events too early.
-    await this.connection.deferredConnection?.promise
-
-    this.streamDimensions = {
-      width,
-      height,
+    await connection.deferredConnection?.promise
+    // A resize belongs to the stream that requested it, not a replacement
+    // connection created while its readiness was pending.
+    if (this.connection !== connection) {
+      return
     }
 
+    if (
+      this.streamDimensions.width === width &&
+      this.streamDimensions.height === height
+    )
+      return
+
+    const cmdId = uuidv4()
     const resizeCmd: EngineCommand = {
       type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
+      cmd_id: cmdId,
       cmd: {
         type: 'reconfigure_stream',
-        ...this.streamDimensions,
+        width,
+        height,
         fps: 60, // This is required but it does next to nothing
       },
     }
-    this.connection.send(resizeCmd)
+    await this.sendCommand(
+      cmdId,
+      { command: resizeCmd, idToRangeMap: {}, range: defaultSourceRange() },
+      true
+    )
+    if (this.connection === connection)
+      this.streamDimensions = { width, height }
   }
 
   recordShutdownTrigger(options: ManagerTearDown) {
