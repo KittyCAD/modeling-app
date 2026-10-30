@@ -44,7 +44,7 @@ import { getSketchBlockForArtifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { deferredCallback, isNonNullable, isOverlap } from '@src/lib/utils'
+import { isNonNullable, isOverlap } from '@src/lib/utils'
 import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   CONSTRAINT_TYPE,
@@ -181,10 +181,6 @@ export type UpdateSketchOutcomeEvent = {
      * suppressed until the interaction commits.
      */
     suppressExecOutcomeIssues?: boolean
-    /**
-     * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
-     */
-    debounceEditorUpdate?: boolean
     /**
      * Defaults to true because most sketch-solve outcomes come from point/click
      * tools whose Rust-generated sourceDelta is the new source of truth. Direct
@@ -1322,44 +1318,6 @@ function getSketchSolveScaleFactor(context: SketchSolveContext): number {
   )
 }
 
-// Debounced editor update function - persists across calls
-// This allows us to cancel editor updates if a double-click is detected
-// The debounce delay is short (100ms) to minimize perceived lag while still allowing cancellation
-// We store the latest kclManager reference so the debounced function can access it
-const debouncedEditorUpdate = deferredCallback(
-  ({
-    text,
-    kclManager,
-    sceneGraphDelta,
-    shouldWriteToDisk,
-    shouldAddToHistory,
-    refreshLintDiagnostics,
-    spec,
-  }: {
-    text: string
-    kclManager: KclManager
-    sceneGraphDelta: SceneGraphDelta
-    shouldWriteToDisk: boolean
-    shouldAddToHistory: boolean
-    refreshLintDiagnostics: boolean
-    spec: { effects: StateEffect<unknown>[] }
-  }) => {
-    kclManager.updateCodeEditor(
-      text,
-      {
-        shouldWriteToDisk,
-        shouldAddToHistory,
-        shouldExecute: false,
-      },
-      spec
-    )
-    kclManager.syncSketchSolveOutcome(text, sceneGraphDelta, {
-      refreshLintDiagnostics,
-    })
-  },
-  200
-)
-
 export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update sketch outcome')
 
@@ -1461,41 +1419,20 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     }
   }
 
-  // Update editor - debounce only if explicitly requested (e.g., for single-click that might be double-click)
-  // This allows frequent updates (dragging handles) to be immediate, while others can be debounce
-  // a good example of this is When a user double clicks with the line tool, we want to end the chaining and so
-  // - First click still adds the new segment and coincident constraint
-  // - Followed closely by the second click making it a double click, in which case we want to delete the recently added segments, but don't want flicker in the editor
-  if (event.data.debounceEditorUpdate) {
-    // Debounce editor update - this can be cancelled if a double-click is detected
-    // by calling the debounced function again with new text before the delay expires
-    // If a new update comes in within 200ms, the previous one is cancelled
-    debouncedEditorUpdate({
-      text: event.data.sourceDelta.text,
-      kclManager: context.kclManager,
-      sceneGraphDelta,
+  context.kclManager.updateCodeEditor(
+    event.data.sourceDelta.text,
+    {
+      shouldExecute: false,
       shouldWriteToDisk,
       shouldAddToHistory,
-      refreshLintDiagnostics,
-      spec: editorAdditionalSpec,
-    })
-  } else {
-    // Update editor immediately - no debounce for frequent updates like onMove
-    context.kclManager.updateCodeEditor(
-      event.data.sourceDelta.text,
-      {
-        shouldExecute: false,
-        shouldWriteToDisk,
-        shouldAddToHistory,
-      },
-      editorAdditionalSpec
-    )
-    context.kclManager.syncSketchSolveOutcome(
-      event.data.sourceDelta.text,
-      sceneGraphDelta,
-      { refreshLintDiagnostics }
-    )
-  }
+    },
+    editorAdditionalSpec
+  )
+  context.kclManager.syncSketchSolveOutcome(
+    event.data.sourceDelta.text,
+    sceneGraphDelta,
+    { refreshLintDiagnostics }
+  )
 
   return {
     sketchExecOutcome: {
