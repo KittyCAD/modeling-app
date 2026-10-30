@@ -1,11 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import {
-  resolveArguments,
-  updateKclArgument,
-} from '@src/components/ModelingDialog/arguments'
-import type { CommandKclArgument } from '@src/components/CommandBar/CommandKclInput'
-import { createLocalName, createVariableDeclaration } from '@src/lang/create'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { resolveArguments } from '@src/components/ModelingDialog/arguments'
 import { assertParse } from '@src/lang/wasm'
 import type { Command } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -70,93 +64,6 @@ describe('resolveArguments', () => {
       assertParse('@settings(kclVersion = 3.0)\nvalue = 1', world.instance)
     )
   }
-
-  async function namedExpression(text: string) {
-    const value = await stringToKclExpression(text, world.rustContext, {
-      allowArrays: true,
-      allowStringArrays: true,
-    })
-    assertNotErr(value)
-    if ('errors' in value)
-      throw new Error('Unable to calculate test expression')
-    return {
-      ...value,
-      variableName: 'parameter001',
-      insertIndex: 0,
-      variableIdentifierAst: createLocalName('parameter001'),
-      variableDeclarationAst: createVariableDeclaration(
-        'parameter001',
-        value.valueAst
-      ),
-    }
-  }
-
-  it('keeps a newer edit when an earlier calculation reports its result', async () => {
-    const arg = { inputType: 'kcl', required: true } as const
-    const oldResult = await stringToKclExpression('5', world.rustContext)
-    const newResult = await stringToKclExpression('1', world.rustContext)
-    assertNotErr(oldResult)
-    assertNotErr(newResult)
-    if ('errors' in oldResult || 'errors' in newResult)
-      throw new Error('Unable to calculate test expressions')
-
-    // The user changes radius from 5 to 1.
-    const edited = updateKclArgument({ radius: oldResult }, 'radius', arg, {
-      source: 'edit',
-      value: '1',
-    })
-    // The old calculation for 5 arrives late and must not overwrite the edit.
-    const afterOldResult = updateKclArgument(edited, 'radius', arg, {
-      source: 'calculation',
-      value: oldResult,
-    })
-    expect(afterOldResult.radius).toBe('1')
-    // Accept the calculation for 1, then submit that value.
-    const current = updateKclArgument(afterOldResult, 'radius', arg, {
-      source: 'calculation',
-      value: newResult,
-    })
-    const submitted = await resolve({ radius: arg }, current)
-    assertNotErr(submitted)
-    expect(submitted.radius).toEqual(newResult)
-  })
-
-  it('preserves variable creation when the editor text has surrounding whitespace', async () => {
-    const arg: CommandKclArgument = { inputType: 'kcl', required: true }
-    const calculated = await namedExpression('6')
-    const draft = updateKclArgument({ radius: ' 6 ' }, 'radius', arg, {
-      source: 'calculation',
-      value: calculated,
-    })
-    const submitted = await resolve({ radius: arg }, draft)
-    assertNotErr(submitted)
-    expect(submitted.radius).toEqual(calculated)
-  })
-
-  it.each(['A,B', '["A","B"]'])(
-    'preserves variable creation for datum input %s',
-    async (input) => {
-      const kclExpression = '["A","B"]'
-      const arg = {
-        inputType: 'kcl',
-        required: true,
-        allowArrays: true,
-        allowStringArrays: true,
-        inputToKclValue: (value) => {
-          if (value === 'A,B') return kclExpression
-          return value
-        },
-      } satisfies CommandKclArgument
-      const calculated = await namedExpression(kclExpression)
-      const draft = updateKclArgument({ datums: input }, 'datums', arg, {
-        source: 'calculation',
-        value: calculated,
-      })
-      const submitted = await resolve({ datums: arg }, draft)
-      assertNotErr(submitted)
-      expect(submitted.datums).toEqual(calculated)
-    }
-  )
 
   it('drops inactive creation drafts but preserves static metadata', async () => {
     const result = await resolve(

@@ -1,9 +1,4 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import {
-  getKclInputValue,
-  type CommandKclArgument,
-  type CommandKclChange,
-} from '@src/components/CommandBar/CommandKclInput'
 import { evaluateCommandArgumentFlags } from '@src/components/CommandBar/utils'
 import type { ArtifactGraph, Program } from '@src/lang/wasm'
 import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
@@ -63,28 +58,6 @@ export function hasValue(value: unknown): boolean {
   return isSelections(value)
     ? value.graphSelections.length + value.otherSelections.length > 0
     : value !== undefined && value !== null && value !== ''
-}
-
-export function updateKclArgument(
-  values: Record<string, unknown>,
-  name: string,
-  arg: CommandKclArgument,
-  change: CommandKclChange
-): Record<string, unknown> {
-  if (change.source === 'calculation') {
-    const toExpression = (input: string) => {
-      const trimmed = input.trim()
-      return arg.inputToKclValue ? arg.inputToKclValue(trimmed) : trimmed
-    }
-    const current = toExpression(getKclInputValue(arg, values[name]))
-    // Calculated values already contain the expression used by the editor.
-    const calculated = isKclCommandValue(change.value)
-      ? change.value.valueText
-      : toExpression(change.value)
-    // A calculation effect can finish after the editor has reported newer text.
-    if (current !== calculated) return values
-  }
-  return { ...values, [name]: change.value }
 }
 
 export function getDialogFields(context: CommandBarContext): DialogField[] {
