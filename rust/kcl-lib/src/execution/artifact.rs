@@ -2072,12 +2072,6 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::CreatePlanarSurface(cmd) => {
-            let surface_id = match response {
-                Some(OkModelingCmdResponse::CreatePlanarSurface(response)) => ArtifactId::new(response.surface),
-                // Mock execution assigns the command ID to the created surface.
-                None => id,
-                Some(_) => return Ok(Vec::new()),
-            };
             let path_id = match &cmd.target {
                 kcmc::shared::PlanarSurfaceTarget::Region { region_id } => {
                     match artifacts.get(&ArtifactId::new(*region_id)) {
@@ -2088,7 +2082,7 @@ fn artifacts_to_update(
                 kcmc::shared::PlanarSurfaceTarget::Edge { .. } => None,
             };
             return Ok(vec![Artifact::Sweep(Sweep {
-                id: surface_id,
+                id,
                 sub_type: SweepSubType::PlanarSurface,
                 path_id,
                 surface_ids: Vec::new(),

@@ -2934,7 +2934,7 @@ export type PlanarSurfaceTarget = { "edge": {
  */
 specifier: Array<EdgeSpecifier>, } } | { "region": { 
 /**
- * Create a 2D surface which spans this region.
+ * Create a surface which spans this region.
  */
 region_id: string, } };
 

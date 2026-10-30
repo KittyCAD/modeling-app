@@ -519,27 +519,10 @@ async fn inner_planar_surface(
             .build(),
     );
 
-    let surface_id = if args.ctx.no_engine_commands().await {
-        let surface_id = exec_state.next_uuid();
-        exec_state
-            .batch_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, surface_id), cmd)
-            .await?;
-        surface_id
-    } else {
-        let response = exec_state
-            .send_modeling_cmd(ModelingCmdMeta::from_args(exec_state, &args), cmd)
-            .await?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::CreatePlanarSurface(resp),
-        } = response
-        else {
-            return Err(KclError::new_engine(KclErrorDetails::new(
-                format!("CreatePlanarSurface response was not as expected: {response:?}"),
-                vec![args.source_range],
-            )));
-        };
-        resp.surface
-    };
+    let surface_id = exec_state.next_uuid();
+    exec_state
+        .batch_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, surface_id), cmd)
+        .await?;
 
     after_surface_creation(surface_id.into(), None, exec_state, &args).await
 }
