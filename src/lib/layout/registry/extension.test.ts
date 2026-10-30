@@ -1,9 +1,9 @@
 import type { Feature } from '@kittycad/lib'
 import {
-  Registry,
   defineRegistryItem,
   provide,
   provideService,
+  Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
@@ -12,6 +12,12 @@ import {
   defaultLayoutConfig,
 } from '@src/lib/layout/configs/default'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+import { applyFeatureCodeLayout } from '@src/lib/layout/featureCodeLayout'
+import {
+  layoutService,
+  layoutUserFeatureTransformationsValueSpec,
+} from '@src/lib/layout/registry/contract'
+import layoutRegistryItem from '@src/lib/layout/registry/extension'
 import type { Layout } from '@src/lib/layout/types'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import {
@@ -28,11 +34,6 @@ import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-import layoutRegistryItem from '@src/lib/layout/registry/extension'
-import {
-  layoutService,
-  layoutUserFeatureTransformationsValueSpec,
-} from '@src/lib/layout/registry/contract'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const playwrightRuntime: RuntimeInfo = {
@@ -190,6 +191,7 @@ describe('layout extension', () => {
 
   it('applies the tab preference to loading, opening, contributions, and resets', () => {
     const settings = createSettings()
+    settings.textEditor.featureTreeAboveCode.user = true
     const service = createSettingsService({ settings })
 
     const savedLayout = togglePaneLayoutNode({
@@ -357,11 +359,43 @@ describe('layout extension', () => {
 
     const layout = registry.get(layoutService)
 
-    expect(layout.get()).toEqual(playwrightLayoutConfig)
-    expect(layout.signal.value).toEqual(playwrightLayoutConfig)
+    expect(layout.get()).toEqual(
+      applyFeatureCodeLayout(playwrightLayoutConfig, false)
+    )
+    expect(layout.signal.value).toEqual(
+      applyFeatureCodeLayout(playwrightLayoutConfig, false)
+    )
     expect(layout).toMatchObject({
       applyContributions: expect.any(Function),
     })
+    const preference = registry.get(settingsService).get()
+      .textEditor.featureTreeAboveCode
+    preference.user = true
+    expect(
+      findLayoutChildNode({
+        rootLayout: layout.get(),
+        targetNodeId: 'feature-tree',
+      })
+    ).toBeDefined()
+    const toolbar = findLayoutChildNode({
+      rootLayout: layout.get(),
+      targetNodeId: 'left-toolbar',
+    })
+    expect(toolbar).toMatchObject({ activeIndices: [0, 1] })
+    preference.user = false
+    expect(
+      findLayoutChildNode({
+        rootLayout: layout.get(),
+        targetNodeId: 'feature-tree',
+      })
+    ).toBeUndefined()
+    layout.openPane('feature-tree')
+    expect(
+      findLayoutChildNode({
+        rootLayout: layout.get(),
+        targetNodeId: 'left-toolbar',
+      })
+    ).toMatchObject({ activeIndices: [1] })
   })
 
   it('applies contributed user-feature transformations after settings hydrate', () => {

@@ -1,15 +1,6 @@
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import type {
-  LayoutsWithMetadata,
-  PaneOpenBehavior,
-} from '@src/lib/layout/types'
-import type { OnboardingStatus } from '@src/lib/onboardingPaths'
-import { useRef } from 'react'
-
-import { NIL as uuidNIL } from 'uuid'
-
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
@@ -19,18 +10,24 @@ import {
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import type {
+  LayoutsWithMetadata,
+  PaneOpenBehavior,
+} from '@src/lib/layout/types'
+import type { OnboardingStatus } from '@src/lib/onboardingPaths'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import type {
   DynamicSettingsCategories,
   ResolvedExtensionSettings,
 } from '@src/lib/settings/extensionSettings'
+import { Setting } from '@src/lib/settings/Setting'
 import type { BaseUnit, SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import { isEnumMember } from '@src/lib/types'
-import { capitaliseFC, isArray } from '@src/lib/utils'
-import { hexToRgba } from '@src/lib/utils'
-import { Setting } from '@src/lib/settings/Setting'
+import { capitaliseFC, hexToRgba, isArray } from '@src/lib/utils'
+import { useRef } from 'react'
+import { NIL as uuidNIL } from 'uuid'
 
 const MS_IN_MINUTE = 1000 * 60
 const COLOR_INPUT_DEBOUNCE_MS = 500
@@ -535,6 +532,14 @@ function createCoreSettings() {
      * behind a bundled editor/plugin later.
      */
     textEditor: {
+      featureTreeAboveCode: new Setting<boolean>({
+        hideOnLevel: 'project',
+        defaultValue: false,
+        description:
+          'Show the feature tree above the code instead of inline feature buttons.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: { inputType: 'boolean' },
+      }),
       /**
        * Whether to wrap text in the editor or overflow with scroll
        */

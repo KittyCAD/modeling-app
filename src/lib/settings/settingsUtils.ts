@@ -546,6 +546,10 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
   ]),
   defineAppOnlySection('text_editor', [
     defineBooleanAppOnlyField(
+      { category: 'textEditor', field: 'featureTreeAboveCode' },
+      'feature_tree_above_code'
+    ),
+    defineBooleanAppOnlyField(
       { category: 'textEditor', field: 'textWrapping' },
       'text_wrapping'
     ),
@@ -622,6 +626,10 @@ const PROJECT_APP_ONLY_SETTINGS_SECTIONS = [
     ),
   ]),
   defineAppOnlySection('text_editor', [
+    defineBooleanAppOnlyField(
+      { category: 'textEditor', field: 'featureTreeAboveCode' },
+      'feature_tree_above_code'
+    ),
     defineBooleanAppOnlyField(
       { category: 'textEditor', field: 'textWrapping' },
       'text_wrapping'

@@ -31,6 +31,8 @@ import {
   scheduleActiveTextFileWrite,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { InlineFeaturePlanes } from '@src/lib/featureTree/FeatureTreePane'
+import { InlineFeatureCode } from '@src/lib/featureTree/InlineFeatureCode'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { getResolvedTheme } from '@src/lib/theme'
@@ -59,6 +61,9 @@ export const editorShortcutMeta = {
 }
 
 export const EditorPane = (props: AreaTypeComponentProps) => {
+  const { settings } = useApp()
+  const separateTree =
+    settings.useSettings().textEditor.featureTreeAboveCode.current
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -68,7 +73,7 @@ export const EditorPane = (props: AreaTypeComponentProps) => {
       <LayoutPanelHeader
         id={props.layout.id}
         icon="code"
-        title={props.layout.label}
+        title={separateTree ? props.layout.label : 'Features & Code'}
         Menu={KclEditorMenu}
         onClose={props.onClose}
       />
@@ -79,6 +84,9 @@ export const EditorPane = (props: AreaTypeComponentProps) => {
 
 export const EditorPaneContents = () => {
   useSignals()
+  const { settings } = useApp()
+  const separateTree =
+    settings.useSettings().textEditor.featureTreeAboveCode.current
   const { kclManager } = useSingletons()
   const activeTextFile = activeTextFileSignal.value
   const editorParent = useRef<HTMLDivElement>(null)
@@ -103,12 +111,20 @@ export const EditorPaneContents = () => {
   }
 
   return (
-    <div className="relative h-full">
-      <div
-        id="code-mirror-override"
-        className="absolute inset-0 pr-1"
-        ref={editorParent}
-      />
+    <div className="relative h-full flex flex-col min-h-0">
+      {!separateTree && <InlineFeatureCode />}
+      {!separateTree && (
+        <div className="px-2 py-1 border-b border-chalkboard-20 dark:border-chalkboard-80">
+          <InlineFeaturePlanes />
+        </div>
+      )}
+      <div className="relative flex-1 min-h-0">
+        <div
+          id="code-mirror-override"
+          className="absolute inset-0 pr-1"
+          ref={editorParent}
+        />
+      </div>
     </div>
   )
 }
@@ -325,6 +341,27 @@ const KclEditorKclMenu = () => {
 
   return (
     <HeaderMenu>
+      <Menu.Item>
+        <button
+          type="button"
+          className={styles.button}
+          onClick={() =>
+            settingsActor.send({
+              type: 'set.textEditor.featureTreeAboveCode',
+              data: {
+                level: 'user',
+                value: !settings.get().textEditor.featureTreeAboveCode.current,
+              },
+            })
+          }
+        >
+          <span>
+            {settings.get().textEditor.featureTreeAboveCode.current
+              ? 'Merge features into code'
+              : 'Show feature tree above code'}
+          </span>
+        </button>
+      </Menu.Item>
       <Menu.Item>
         <button
           type="button"
