@@ -47,6 +47,7 @@ import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
+import '@src/lib/featureTree/inlineFeatureEditor.css'
 
 type Singletons = ReturnType<typeof useSingletons>
 
@@ -67,7 +68,7 @@ export const EditorPane = (props: AreaTypeComponentProps) => {
     <LayoutPanel
       title={props.layout.label}
       id={`${props.layout.id}-pane`}
-      className="border-none"
+      className={separateTree ? 'border-none' : 'border-none feature-code-pane'}
     >
       <LayoutPanelHeader
         id={props.layout.id}

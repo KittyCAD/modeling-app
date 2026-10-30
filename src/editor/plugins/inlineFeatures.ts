@@ -198,25 +198,9 @@ export const inlineFeaturesField = StateField.define<InlineState>({
 export const inlineFeaturesTheme = EditorView.baseTheme({
   '.cm-inline-feature': {
     margin: '0 8px 0 0',
-    display: 'flex',
-    alignItems: 'center',
-    fontFamily: 'var(--sans-serif, sans-serif)',
+    display: 'block',
     background: 'transparent',
   },
-  '.cm-inline-feature-operations': { flex: '1', minWidth: '0' },
-  '.cm-inline-planes': { margin: '0 8px 12px 0', fontFamily: 'sans-serif' },
-  '.cm-inline-feature [data-testid="feature-tree-operation-item"]': {
-    borderRadius: '5px',
-  },
-  '.cm-inline-feature-code-toggle': {
-    font: 'inherit',
-    fontSize: '11px',
-    cursor: 'pointer',
-    padding: '4px 6px',
-    border: 'none',
-    background: 'transparent',
-    color: 'inherit',
-    opacity: '0.65',
-  },
-  '.cm-inline-feature-code-toggle:hover': { opacity: '1' },
+  '.cm-inline-feature-operations': { minWidth: '0' },
+  '.cm-inline-planes': { margin: '0 8px 12px 0' },
 })

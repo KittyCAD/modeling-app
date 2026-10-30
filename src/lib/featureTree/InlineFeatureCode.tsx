@@ -1,4 +1,6 @@
+import { syntaxHighlighting } from '@codemirror/language'
 import { EditorView } from '@codemirror/view'
+import { classHighlighter } from '@lezer/highlight'
 import { useSignals } from '@preact/signals-react/runtime'
 import {
   collectInlineFeatures,
@@ -71,6 +73,8 @@ export function InlineFeatureCode() {
           inlineFeaturesField,
           inlinePlanesField,
           inlineFeaturesTheme,
+          EditorView.editorAttributes.of({ 'data-inline-features': 'true' }),
+          syntaxHighlighting(classHighlighter),
           EditorView.updateListener.of((update) => {
             const next = update.state.field(inlineFeaturesField).expanded
             if (
@@ -99,41 +103,32 @@ export function InlineFeatureCode() {
       {createPortal(<InlineFeaturePlanes />, planesHost)}
       {features.map((feature) =>
         createPortal(
-          <>
-            <div className="cm-inline-feature-operations">
-              {feature.operations.map((item) => (
-                <InlineFeatureItem
-                  key={getOperationKey(item)}
-                  item={item}
-                  onRevealCode={() =>
+          <div className="cm-inline-feature-operations">
+            {feature.operations.map((item) => (
+              <InlineFeatureItem
+                key={getOperationKey(item)}
+                item={item}
+                codeDisclosure={{
+                  expanded: expanded.has(feature.id),
+                  onToggle: () =>
                     view.dispatch({
                       effects: revealInlineFeature.of({
                         id: feature.id,
-                        expanded: true,
+                        expanded: !expanded.has(feature.id),
                       }),
-                    })
-                  }
-                />
-              ))}
-            </div>
-            <button
-              type="button"
-              className="cm-inline-feature-code-toggle"
-              aria-expanded={expanded.has(feature.id)}
-              aria-label={`${expanded.has(feature.id) ? 'Hide' : 'Show'} feature code`}
-              title={`${expanded.has(feature.id) ? 'Hide' : 'Show'} code`}
-              onClick={() =>
-                view.dispatch({
-                  effects: revealInlineFeature.of({
-                    id: feature.id,
-                    expanded: !expanded.has(feature.id),
-                  }),
-                })
-              }
-            >
-              {expanded.has(feature.id) ? '⌃' : '‹ ›'}
-            </button>
-          </>,
+                    }),
+                }}
+                onRevealCode={() =>
+                  view.dispatch({
+                    effects: revealInlineFeature.of({
+                      id: feature.id,
+                      expanded: true,
+                    }),
+                  })
+                }
+              />
+            ))}
+          </div>,
           feature.host,
           feature.id
         )
