@@ -209,7 +209,6 @@ extrude001 = extrude(
     editor,
     toolbar,
     scene,
-    modelingDialog,
   }) => {
     const initialCode = `closedSketch = sketch(on = XZ) {
   circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
@@ -271,7 +270,6 @@ openSketch = sketch(on = XY) {
 
   test(`Shift-click to select and deselect faces`, async ({
     context,
-    modelingDialog,
     toolbar,
     page,
     homePage,
@@ -325,15 +323,7 @@ sketch001 = extrude(region001, length = -12)`
   test(
     `Offset plane point-and-click`,
     { tag: '@web' },
-    async ({
-      context,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      modelingDialog,
-    }) => {
+    async ({ homePage, scene, editor, toolbar, modelingDialog }) => {
       const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
       await homePage.goToModelingScene()
       await scene.settled()
