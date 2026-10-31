@@ -640,6 +640,17 @@ impl Stack {
         Ok(())
     }
 
+    /// Builtins use the prelude as their lexical parent, without preserving a module root.
+    pub fn push_new_env_for_builtin(&mut self) -> Result<(), KclError> {
+        let parent = *self.memory.std.get().ok_or_else(|| {
+            arena_invariant_failed(
+                "pushing a builtin environment",
+                "standard library prelude must be initialized",
+            )
+        })?;
+        self.push_new_env_for_call(parent)
+    }
+
     /// Push a stack frame for an inline scope.
     ///
     /// This should be used for blocks but is currently only used for mock execution.
@@ -1409,6 +1420,22 @@ mod tests {
         // deferred parent pinning, the block's creation marked the frame as
         // possibly-referenced forever.
         assert_eq!(mem.memory.envs_with_bindings(), 0);
+    }
+
+    #[test]
+    fn builtin_calls_release_empty_and_bound_frames() {
+        let mut stack = stack_for_tests();
+        stack.add("preludeValue".to_owned(), val(42), sr()).unwrap();
+        let initial_len = stack.memory.environments.read().unwrap().len();
+        for _ in 0..100 {
+            stack.push_new_env_for_builtin().unwrap();
+            assert_get(&stack, "preludeValue", 42);
+            stack.pop_env().unwrap();
+            stack.push_new_env_for_builtin().unwrap();
+            stack.add("localValue".to_owned(), val(7), sr()).unwrap();
+            stack.pop_env().unwrap();
+        }
+        assert_eq!(stack.memory.environments.read().unwrap().len(), initial_len);
     }
 
     #[test]
