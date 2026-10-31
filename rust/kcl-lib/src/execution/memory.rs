@@ -390,12 +390,6 @@ impl Stack {
         }
     }
 
-    pub fn snapshot(&mut self) -> Result<EnvironmentRef, KclError> {
-        match &mut self.backend {
-            StackBackend::Arena(stack) => stack.snapshot(),
-        }
-    }
-
     pub fn add(&mut self, key: String, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         match &mut self.backend {
             StackBackend::Arena(stack) => stack.add(key, value, source_range),
