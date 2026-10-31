@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use std::sync::Arc;
+
 pub use kcl_api::OpHelix;
 pub use kcl_api::OpKclValue;
 pub use kcl_api::OpSketch;
@@ -6,14 +9,36 @@ pub use kcl_api::Operation;
 
 use super::ArtifactId;
 use super::KclValue;
+use crate::NodePath;
 use crate::NodePathExt;
+use crate::SourceRange;
 
 pub trait OperationExt {
-    fn fill_node_paths(&mut self, programs: &crate::execution::ProgramLookup, cached_body_items: usize);
+    fn fill_node_paths(
+        &mut self,
+        programs: &crate::execution::ProgramLookup,
+        cached_body_items: usize,
+        paths: &mut HashMap<SourceRange, Arc<NodePath>>,
+    );
 }
 
 impl OperationExt for Operation {
-    fn fill_node_paths(&mut self, programs: &crate::execution::ProgramLookup, cached_body_items: usize) {
+    fn fill_node_paths(
+        &mut self,
+        programs: &crate::execution::ProgramLookup,
+        cached_body_items: usize,
+        paths: &mut HashMap<SourceRange, Arc<NodePath>>,
+    ) {
+        let mut fill = |node_path: &mut Arc<NodePath>, range: SourceRange| {
+            if node_path.is_empty() {
+                *node_path = paths
+                    .entry(range)
+                    .or_insert_with(|| {
+                        Arc::new(NodePath::from_range(programs, cached_body_items, range).unwrap_or_default())
+                    })
+                    .clone();
+            }
+        };
         match self {
             Operation::StdLibCall {
                 node_path,
@@ -26,7 +51,7 @@ impl OperationExt for Operation {
                 // instead of the `subtract()` call that's deep inside the
                 // stdlib.
                 let range = stdlib_entry_source_range.as_ref().unwrap_or(source_range);
-                node_path.fill_placeholder(programs, cached_body_items, *range);
+                fill(node_path, *range);
             }
             Operation::VariableDeclaration {
                 node_path,
@@ -43,7 +68,7 @@ impl OperationExt for Operation {
                 source_range,
                 ..
             } => {
-                node_path.fill_placeholder(programs, cached_body_items, *source_range);
+                fill(node_path, *source_range);
             }
             Operation::GroupEnd => {}
         }
