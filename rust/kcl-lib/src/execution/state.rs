@@ -1155,8 +1155,8 @@ impl ExecState {
     pub(crate) fn push_op(&mut self, op: Operation) {
         let index = self.mod_local.artifacts.operations.len();
         self.mod_local.artifacts.operations.push(op);
-        if let Some(operation) = self.mod_local.artifacts.operations.last().cloned()
-            && let Some(callbacks) = &self.execution_callbacks
+        if let Some(callbacks) = &self.execution_callbacks
+            && let Some(operation) = self.mod_local.artifacts.operations.last().cloned()
         {
             callbacks.on_operation(OperationCallbackArgs {
                 module_id: self.mod_local.module_id,
@@ -1422,7 +1422,13 @@ impl ExecState {
         &self,
         current: crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
     ) -> ProgramLookup {
-        ProgramLookup::new(current, self.global.module_infos.clone())
+        let mut lookup = ProgramLookup::new(current, Default::default());
+        for (id, info) in &self.global.module_infos {
+            if let ModuleRepr::Kcl(program, _) = &info.repr {
+                lookup.programs.entry(*id).or_insert_with(|| program.clone());
+            }
+        }
+        lookup
     }
 
     pub(crate) async fn build_artifact_graph(
