@@ -31,7 +31,6 @@ export interface TooltipProps extends React.HTMLProps<HTMLDivElement> {
   wrapperClassName?: string
   contentClassName?: string
   wrapperStyle?: React.CSSProperties
-  delay?: number
   hoverOnly?: boolean
   inert?: boolean
 }
@@ -109,7 +108,6 @@ export default function Tooltip({
   wrapperClassName: className,
   contentClassName,
   wrapperStyle = {},
-  delay = 0,
   hoverOnly = false,
   inert = true,
   ...rest
@@ -147,17 +145,29 @@ export default function Tooltip({
       window.removeEventListener('scroll', updateFallbackPosition, true)
       tooltip.current?.hidePopover()
     }
+    const hideOnActivation = (event: MouseEvent) => {
+      // Rich cards are interactive, but activating their trigger ends the help.
+      if (
+        event.target instanceof Node &&
+        tooltip.current?.contains(event.target)
+      ) {
+        return
+      }
+      hide()
+    }
 
     parent.addEventListener('mouseenter', show)
     parent.addEventListener('mouseleave', hide)
     parent.addEventListener('focus', show)
     parent.addEventListener('blur', hide)
+    parent.addEventListener('click', hideOnActivation)
 
     return () => {
       parent.removeEventListener('mouseenter', show)
       parent.removeEventListener('mouseleave', hide)
       parent.removeEventListener('focus', show)
       parent.removeEventListener('blur', hide)
+      parent.removeEventListener('click', hideOnActivation)
       window.removeEventListener('resize', updateFallbackPosition)
       window.removeEventListener('scroll', updateFallbackPosition, true)
     }
@@ -173,10 +183,7 @@ export default function Tooltip({
       } ${styles.tooltipWrapper} ${hoverOnly ? '' : styles.withFocus} ${
         styles[position]
       } ${className}`}
-      style={Object.assign(
-        { '--_delay': delay + 'ms' } as React.CSSProperties,
-        wrapperStyle
-      )}
+      style={wrapperStyle}
       {...rest}
     >
       <TooltipSurface className={contentClassName}>{children}</TooltipSurface>
