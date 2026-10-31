@@ -125,6 +125,55 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
+export async function waitForAuthentication(page: Page) {
+  // A document reload can finish while Auth still hides the Home route.
+  try {
+    await page.waitForFunction(() => {
+      const snapshot = window.app?.auth.actor.getSnapshot()
+      return snapshot !== undefined && !snapshot.matches('checkIfLoggedIn')
+    })
+  } catch (error) {
+    let diagnosticTimeout: ReturnType<typeof setTimeout> | undefined
+    try {
+      // Bound this failure-only read so a renderer hang cannot block cleanup.
+      const diagnostic = await Promise.race([
+        page
+          .evaluate(() => {
+            const snapshot = window.app?.auth.actor.getSnapshot()
+            return {
+              readyState: document.readyState,
+              visibility: document.visibilityState,
+              focused: document.hasFocus(),
+              appPresent: window.app !== undefined,
+              authStatus: snapshot?.status ?? null,
+              authState: snapshot?.value ?? null,
+              didAuth:
+                performance.getEntriesByName('code/didAuth', 'mark').length > 0,
+              online: navigator.onLine,
+            }
+          })
+          .catch(() => ({ diagnosticUnavailable: true })),
+        new Promise<{ diagnosticUnavailable: true }>((resolve) => {
+          diagnosticTimeout = setTimeout(
+            () => resolve({ diagnosticUnavailable: true }),
+            2000
+          )
+        }),
+      ])
+      throw new Error(
+        `Home authentication readiness failed: ${JSON.stringify(diagnostic)}`,
+        { cause: error }
+      )
+    } finally {
+      if (diagnosticTimeout) clearTimeout(diagnosticTimeout)
+    }
+  }
+  expect(
+    await page.evaluate(() => window.app.auth.actor.getSnapshot().value),
+    'Home startup requires loggedIn authentication'
+  ).toBe('loggedIn')
+}
+
 export async function waitForAppLoad(page: Page) {
   const home = page.getByTestId('home-section')
   const modelingScene = page.getByRole('button', { name: 'Start Sketch' })

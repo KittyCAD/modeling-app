@@ -43,6 +43,7 @@ import {
   settingsToToml,
   setup,
   waitForAppLoad,
+  waitForAuthentication,
 } from '@e2e/playwright/test-utils'
 import type { ILog } from '@src/lib/debugger'
 import { isArray } from '@src/lib/utils'
@@ -126,8 +127,7 @@ export class AuthenticatedApp {
     await this.page.setViewportSize(this.viewPortSize)
 
     await u.waitForAuth()
-    if (!mockApiRoutes)
-      await new HomePageFixture(this.page).waitForAuthentication()
+    if (!mockApiRoutes) await waitForAuthentication(this.page)
   }
   getInputFile = (fileName: string) => {
     return fsp.readFile(
@@ -446,8 +446,7 @@ export class ElectronZoo {
     // Force a hard reload, destroying the stream and other state
     await this.page.reload()
     await waitForAppLoad(this.page)
-    if (!mockApiRoutes)
-      await new HomePageFixture(this.page).waitForAuthentication()
+    if (!mockApiRoutes) await waitForAuthentication(this.page)
   }
 
   async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
