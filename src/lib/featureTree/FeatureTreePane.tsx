@@ -55,7 +55,6 @@ import { Disclosure } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { FeatureTreeMenu } from '@src/lib/featureTree/FeatureTreeMenu'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
@@ -75,6 +74,11 @@ import {
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
+import { FeatureTreeMenu } from '@src/lib/featureTree/FeatureTreeMenu'
+import {
+  type CodeDisclosure,
+  InlineOperationRow,
+} from '@src/lib/featureTree/InlineOperationRow'
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
@@ -711,6 +715,10 @@ export const OperationItemWrapper = memo(
     className,
     Tooltip,
     size = 'default',
+    isSelected,
+    inline = false,
+    codeDisclosure,
+    inlineDetail,
     ...props
   }: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
     icon: CustomIconName
@@ -722,10 +730,37 @@ export const OperationItemWrapper = memo(
     Tooltip?: ReactNode
     isSelected?: boolean
     size?: 'default' | 'sm'
+    inline?: boolean
+    codeDisclosure?: CodeDisclosure
+    inlineDetail?: string
   } & OpValueProps) => {
+    if (inline) {
+      return (
+        <InlineOperationRow
+          {...props}
+          icon={icon}
+          label={variableName ?? name}
+          detail={
+            inlineDetail ??
+            (valueDetail
+              ? getOperationCalculatedDisplay(valueDetail.calculated)
+              : variableName
+                ? name
+                : undefined)
+          }
+          visibility={visibilityToggle}
+          disclosure={codeDisclosure}
+          selected={isSelected}
+          errors={errors?.length}
+          menuItems={menuItems}
+          tooltip={Tooltip}
+        />
+      )
+    }
     return (
       <RowItemWithIconMenuAndToggle
         {...props}
+        isSelected={isSelected}
         icon={icon}
         size={size}
         LabelSecondary={
@@ -810,6 +845,9 @@ export function VariableTooltipContents({
 }
 
 interface OperationProps {
+  inline?: boolean
+  codeDisclosure?: CodeDisclosure
+  onRevealCode?: () => void
   item: Operation
   code: string
   isStaleReference?: boolean
@@ -943,6 +981,9 @@ async function prepareFeatureTreeEditCommand({
  * for an operation in the feature tree.
  */
 const OperationItem = ({
+  inline,
+  codeDisclosure,
+  onRevealCode,
   item,
   code,
   isStaleReference = false,
@@ -1449,6 +1490,8 @@ const OperationItem = ({
 
   return (
     <OperationItemWrapper
+      inline={inline}
+      codeDisclosure={codeDisclosure}
       icon={getOperationIcon(item)}
       name={name}
       type={item.type}
@@ -1507,6 +1550,7 @@ const OperationItem = ({
           : isStaleReference || isModuleOwned
             ? undefined
             : () => {
+                onRevealCode?.()
                 void selectOperation()
               }
       }
@@ -1568,12 +1612,91 @@ const OperationItem = ({
   )
 }
 
+/** Reuse the feature tree's selection, context menu, and edit flows inside the
+ * editor. The source projection owns reveal/collapse and future drag gestures. */
+export function InlineFeatureItem({
+  item,
+  onRevealCode,
+  codeDisclosure,
+}: {
+  item: Operation
+  onRevealCode: () => void
+  codeDisclosure: CodeDisclosure
+}) {
+  useSignals()
+  const { commands } = useApp()
+  const { kclManager } = useSingletons()
+  const { actor, state, send } = useModelingContext()
+  const systemDeps = useMemo(
+    () => ({
+      kclManager,
+      commandBarActor: commands.actor,
+      sceneInfra: kclManager.sceneInfra,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
+      rustContext: kclManager.rustContext,
+    }),
+    [kclManager, commands.actor]
+  )
+  return (
+    <OperationItem
+      inline
+      codeDisclosure={codeDisclosure}
+      item={item}
+      code={kclManager.codeSignal.value}
+      onRevealCode={onRevealCode}
+      sketchNoFace={state.matches('Sketch no face')}
+      systemDeps={systemDeps}
+      modelingActor={actor}
+      engineCommandManager={kclManager.engineCommandManager}
+      visibilityOperations={getAllOperations(kclManager.operationsByModule)}
+      liveLatestOperationKey={null}
+      onSelect={(sourceRange) =>
+        sendSelectionEvent({ sourceRange, kclManager, modelingSend: send })
+      }
+    />
+  )
+}
+
+export function InlineFeaturePlanes() {
+  useSignals()
+  const { commands, settings } = useApp()
+  const { kclManager } = useSingletons()
+  const { state } = useModelingContext()
+  const systemDeps = useMemo(
+    () => ({
+      kclManager,
+      commandBarActor: commands.actor,
+      sceneInfra: kclManager.sceneInfra,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
+      rustContext: kclManager.rustContext,
+    }),
+    [kclManager, commands.actor]
+  )
+  const values = settings.useSettings()
+  if (state.matches('Sketch')) {
+    return null
+  }
+  return (
+    <DefaultPlanes
+      inline
+      systemDeps={systemDeps}
+      disabled={shouldDisableModelingForUnrenderedChanges({
+        settings: values,
+        hasEditsSinceLastExecution:
+          kclManager.hasEditsSinceLastExecutionSignal.value,
+      })}
+    />
+  )
+}
+
 const DefaultPlanes = ({
   systemDeps,
   disabled = false,
+  inline = false,
 }: {
   systemDeps: SystemDeps
   disabled?: boolean
+  inline?: boolean
 }) => {
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
@@ -1655,10 +1778,12 @@ const DefaultPlanes = ({
   ] as const
 
   return (
-    <div className="mb-2">
+    <div className={inline ? undefined : 'mb-2'}>
       {planes.map((plane) => (
         <OperationItemWrapper
           key={plane.key}
+          inline={inline}
+          inlineDetail={plane.key.toUpperCase()}
           customSuffix={plane.customSuffix}
           icon={'plane'}
           name={plane.name}

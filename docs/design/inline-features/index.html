@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Inline editor — production components</title></head>
+<body class="dark">
+  <main style="display:grid;grid-template-columns:minmax(280px,380px) 1fr;height:100vh;padding:24px;gap:24px;box-sizing:border-box">
+    <section class="feature-code-pane" style="display:grid;grid-template-rows:34px minmax(0,1fr);min-height:0">
+      <div style="font-size:12px;padding:8px 12px">Features &amp; Code</div>
+      <div style="position:relative;min-height:0"><div id="code-mirror-override" style="position:absolute;inset:0"></div></div>
+    </section>
+    <aside style="padding:16px;max-width:420px;font-size:13px;line-height:1.6">
+      <h1 style="font-size:16px">Production component fixture</h1>
+      <p>This fixture imports the app stylesheet, inline row component, and CodeMirror extension directly. It has no separate editor styling or simulated viewport.</p>
+      <p>Feature actions here use sample data. Verify modeling behavior and final appearance in the Vercel app preview.</p>
+      <label><input id="theme" type="checkbox" checked /> Dark theme</label>
+    </aside>
+  </main>
+  <script type="module" src="./preview.ts"></script>
+</body>
+</html>

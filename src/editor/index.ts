@@ -34,14 +34,15 @@ import {
   rectangularSelection,
 } from '@codemirror/view'
 import interact from '@replit/codemirror-interact'
-import { localHistoryTarget } from '@src/editor/HistoryView'
 import { historyCompartment } from '@src/editor/compartments'
+import { localHistoryTarget } from '@src/editor/HistoryView'
 import { lineHighlightField } from '@src/editor/highlightextension'
 import { createHistoryExtension } from '@src/editor/historyConfig'
 import { kclAstExtension } from '@src/editor/plugins/ast'
 import { blurOnEscape } from '@src/editor/plugins/blurOnEsc'
 import { diagnosticTooltipCloseButton } from '@src/editor/plugins/diagnosticTooltipCloseButton'
 import { executionEffectsExtension } from '@src/editor/plugins/execution'
+import { inlineFeaturesCompartment } from '@src/editor/plugins/inlineFeatures'
 import { operationsExtension } from '@src/editor/plugins/operations'
 import { sketchSceneGraphCompartment } from '@src/editor/plugins/sketch'
 import { themeCompartment } from '@src/editor/plugins/theme'
@@ -70,6 +71,7 @@ export function baseEditorExtensions() {
     localHistoryTarget.of([]),
     kclAstExtension(),
     operationsExtension(),
+    inlineFeaturesCompartment.of([]),
     closeBrackets(),
     codeFolding(),
     keymap.of([
