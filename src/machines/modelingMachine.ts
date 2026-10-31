@@ -154,6 +154,7 @@ import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { StepSchema } from '@src/lib/stepSchema'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -4447,7 +4448,7 @@ export const modelingMachine = setup({
           return new Error(errorMessage)
         }
 
-        const { up, scale, ...formatData } = data
+        const { up, scale, schema, ...formatData } = data
         const format = {
           ...formatData,
         } as Partial<OutputFormat3d>
@@ -4460,6 +4461,10 @@ export const modelingMachine = setup({
         // Set all the un-configurable defaults here.
         if (format.type === 'gltf') {
           format.presentation = 'pretty'
+        }
+
+        if (format.type === 'step') {
+          format.schema = schema ?? StepSchema.Ap242
         }
 
         if (
