@@ -78,7 +78,8 @@ export function groupNestedOperations(
 ): NestedOpList {
   if (
     !opList.some(
-      (item) => !isArray(item) && item.type === 'GroupBegin' && shouldGroup(item)
+      (item) =>
+        !isArray(item) && item.type === 'GroupBegin' && shouldGroup(item)
     )
   ) {
     return [...opList]
