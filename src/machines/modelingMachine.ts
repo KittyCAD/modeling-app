@@ -154,6 +154,7 @@ import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { StepSchema } from '@src/lib/stepSchema'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -272,7 +273,6 @@ async function enterSketchSolveFromSketchBlockArtifact({
   kclManager,
   rustContext,
   engineCommandManager,
-  defaultUnit,
   projectRef,
   wasmInstance,
 }: {
@@ -280,7 +280,6 @@ async function enterSketchSolveFromSketchBlockArtifact({
   kclManager: KclManager
   rustContext: RustContext
   engineCommandManager: ConnectionManager
-  defaultUnit?: ModelingMachineContext['store']['defaultUnit']
   projectRef?: { current: Project | undefined }
   wasmInstance: ModuleType
 }): Promise<{
@@ -340,12 +339,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
       0,
       0,
       0,
-      sketchBlockArtifact.sketchId,
-      {
-        settings: {
-          modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-        },
-      }
+      sketchBlockArtifact.sketchId
     )
     if (!editSketchResult) {
       const errorMessage = 'Failed to edit sketch'
@@ -3159,7 +3153,6 @@ export const modelingMachine = setup({
               rustContext: RustContext
               engineCommandManager: ConnectionManager
               wasmInstance: ModuleType
-              defaultUnit?: ModelingMachineContext['store']['defaultUnit']
               projectRef?: { current: Project | undefined }
             }
           | undefined
@@ -3178,7 +3171,6 @@ export const modelingMachine = setup({
           rustContext,
           engineCommandManager,
           wasmInstance,
-          defaultUnit,
           projectRef,
         } = input
         await kclManager.flushPendingEditorExecution()
@@ -3297,6 +3289,8 @@ export const modelingMachine = setup({
           const legacySketchBlock = sketchBlockOnExtrudedFace(
             kclManager.ast,
             {
+              artifact: legacyFaceArtifact,
+              entityRef: { type: 'face', face_id: legacyFaceArtifact.id },
               codeRef: legacyFaceCodeRef,
             },
             faceRequiringSourceMaterialization.sketchPathToNode,
@@ -3305,7 +3299,7 @@ export const modelingMachine = setup({
             wasmInstance
           )
           if (err(legacySketchBlock)) {
-            return reject(new Error('Incompatible face, please try another'))
+            return reject(legacySketchBlock)
           }
 
           await updateModelingState(
@@ -3332,7 +3326,6 @@ export const modelingMachine = setup({
             kclManager,
             rustContext,
             engineCommandManager,
-            defaultUnit,
             projectRef,
             wasmInstance,
           })
@@ -3404,12 +3397,7 @@ export const modelingMachine = setup({
             0, // projectId - using 0 as placeholder
             0, // fileId - using 0 as placeholder
             0, // version - using 0 as placeholder
-            sketchArgs,
-            {
-              settings: {
-                modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-              },
-            }
+            sketchArgs
           )
         } catch (error) {
           await rustContext.hackSetProgram(
@@ -3455,7 +3443,6 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               engineCommandManager: ConnectionManager
-              defaultUnit?: ModelingMachineContext['store']['defaultUnit']
               projectRef?: { current: Project | undefined }
             }
           | undefined
@@ -3474,7 +3461,6 @@ export const modelingMachine = setup({
           kclManager,
           rustContext,
           engineCommandManager,
-          defaultUnit,
           projectRef,
         } = input
         const wasmInstance = await kclManager.wasmInstancePromise
@@ -3492,7 +3478,6 @@ export const modelingMachine = setup({
           kclManager,
           rustContext,
           engineCommandManager,
-          defaultUnit,
           projectRef,
           wasmInstance,
         })
@@ -4463,7 +4448,7 @@ export const modelingMachine = setup({
           return new Error(errorMessage)
         }
 
-        const { up, scale, ...formatData } = data
+        const { up, scale, schema, ...formatData } = data
         const format = {
           ...formatData,
         } as Partial<OutputFormat3d>
@@ -4476,6 +4461,10 @@ export const modelingMachine = setup({
         // Set all the un-configurable defaults here.
         if (format.type === 'gltf') {
           format.presentation = 'pretty'
+        }
+
+        if (format.type === 'step') {
+          format.schema = schema ?? StepSchema.Ap242
         }
 
         if (
@@ -7651,7 +7640,6 @@ export const modelingMachine = setup({
             rustContext: context.rustContext,
             engineCommandManager: context.engineCommandManager,
             wasmInstance: context.wasmInstance,
-            defaultUnit: context.store.defaultUnit,
             projectRef: context.projectRef,
           }
         },
@@ -7668,7 +7656,6 @@ export const modelingMachine = setup({
               kclManager: context.kclManager,
               rustContext: context.rustContext,
               engineCommandManager: context.engineCommandManager,
-              defaultUnit: context.store.defaultUnit,
               projectRef: context.projectRef,
             }
           }
@@ -7691,7 +7678,6 @@ export const modelingMachine = setup({
                 kclManager: context.kclManager,
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,
-                defaultUnit: context.store.defaultUnit,
                 projectRef: context.projectRef,
               }
             }

@@ -17,10 +17,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 687,
-            "end": 702,
+            "commentStart": 677,
+            "end": 692,
             "moduleId": 0,
-            "start": 687,
+            "start": 677,
             "type": "TagDeclarator",
             "value": "cornerChamfer1"
           },
@@ -38,10 +38,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 773,
-            "end": 782,
+            "commentStart": 763,
+            "end": 772,
             "moduleId": 0,
-            "start": 773,
+            "start": 763,
             "type": "TagDeclarator",
             "value": "chamfer1"
           },
@@ -59,10 +59,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 872,
+            "commentStart": 847,
+            "end": 862,
             "moduleId": 0,
-            "start": 857,
+            "start": 847,
             "type": "TagDeclarator",
             "value": "cornerChamfer2"
           },
@@ -80,10 +80,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 957,
-            "end": 966,
+            "commentStart": 947,
+            "end": 956,
             "moduleId": 0,
-            "start": 957,
+            "start": 947,
             "type": "TagDeclarator",
             "value": "chamfer2"
           },
@@ -112,10 +112,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
               0.0
             ],
             "tag": {
-              "commentStart": 687,
-              "end": 702,
+              "commentStart": 677,
+              "end": 692,
               "moduleId": 0,
-              "start": 687,
+              "start": 677,
               "type": "TagDeclarator",
               "value": "cornerChamfer1"
             },
@@ -153,10 +153,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
               0.125
             ],
             "tag": {
-              "commentStart": 773,
-              "end": 782,
+              "commentStart": 763,
+              "end": 772,
               "moduleId": 0,
-              "start": 773,
+              "start": 763,
               "type": "TagDeclarator",
               "value": "chamfer1"
             },
@@ -194,10 +194,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
               4.125
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 872,
+              "commentStart": 847,
+              "end": 862,
               "moduleId": 0,
-              "start": 857,
+              "start": 847,
               "type": "TagDeclarator",
               "value": "cornerChamfer2"
             },
@@ -235,10 +235,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
               4.0
             ],
             "tag": {
-              "commentStart": 957,
-              "end": 966,
+              "commentStart": 947,
+              "end": 956,
               "moduleId": 0,
-              "start": 957,
+              "start": 947,
               "type": "TagDeclarator",
               "value": "chamfer2"
             },
@@ -595,10 +595,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
             0.0
           ],
           "tag": {
-            "commentStart": 687,
-            "end": 702,
+            "commentStart": 677,
+            "end": 692,
             "moduleId": 0,
-            "start": 687,
+            "start": 677,
             "type": "TagDeclarator",
             "value": "cornerChamfer1"
           },
@@ -636,10 +636,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
             0.125
           ],
           "tag": {
-            "commentStart": 773,
-            "end": 782,
+            "commentStart": 763,
+            "end": 772,
             "moduleId": 0,
-            "start": 773,
+            "start": 763,
             "type": "TagDeclarator",
             "value": "chamfer1"
           },
@@ -677,10 +677,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
             4.125
           ],
           "tag": {
-            "commentStart": 857,
-            "end": 872,
+            "commentStart": 847,
+            "end": 862,
             "moduleId": 0,
-            "start": 857,
+            "start": 847,
             "type": "TagDeclarator",
             "value": "cornerChamfer2"
           },
@@ -718,10 +718,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
             4.0
           ],
           "tag": {
-            "commentStart": 957,
-            "end": 966,
+            "commentStart": 947,
+            "end": 956,
             "moduleId": 0,
-            "start": 957,
+            "start": 947,
             "type": "TagDeclarator",
             "value": "chamfer2"
           },
@@ -846,10 +846,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 687,
-            "end": 702,
+            "commentStart": 677,
+            "end": 692,
             "moduleId": 0,
-            "start": 687,
+            "start": 677,
             "type": "TagDeclarator",
             "value": "cornerChamfer1"
           },
@@ -867,10 +867,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 773,
-            "end": 782,
+            "commentStart": 763,
+            "end": 772,
             "moduleId": 0,
-            "start": 773,
+            "start": 763,
             "type": "TagDeclarator",
             "value": "chamfer1"
           },
@@ -888,10 +888,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 872,
+            "commentStart": 847,
+            "end": 862,
             "moduleId": 0,
-            "start": 857,
+            "start": 847,
             "type": "TagDeclarator",
             "value": "cornerChamfer2"
           },
@@ -909,10 +909,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 957,
-            "end": 966,
+            "commentStart": 947,
+            "end": 956,
             "moduleId": 0,
-            "start": 957,
+            "start": 947,
             "type": "TagDeclarator",
             "value": "chamfer2"
           },
@@ -941,10 +941,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
               0.0
             ],
             "tag": {
-              "commentStart": 687,
-              "end": 702,
+              "commentStart": 677,
+              "end": 692,
               "moduleId": 0,
-              "start": 687,
+              "start": 677,
               "type": "TagDeclarator",
               "value": "cornerChamfer1"
             },
@@ -982,10 +982,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
               0.125
             ],
             "tag": {
-              "commentStart": 773,
-              "end": 782,
+              "commentStart": 763,
+              "end": 772,
               "moduleId": 0,
-              "start": 773,
+              "start": 763,
               "type": "TagDeclarator",
               "value": "chamfer1"
             },
@@ -1023,10 +1023,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
               4.125
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 872,
+              "commentStart": 847,
+              "end": 862,
               "moduleId": 0,
-              "start": 857,
+              "start": 847,
               "type": "TagDeclarator",
               "value": "cornerChamfer2"
             },
@@ -1064,10 +1064,10 @@ description: Variables in memory after executing chamfers_referencing_other_cham
               4.0
             ],
             "tag": {
-              "commentStart": 957,
-              "end": 966,
+              "commentStart": 947,
+              "end": 956,
               "moduleId": 0,
-              "start": 957,
+              "start": 947,
               "type": "TagDeclarator",
               "value": "chamfer2"
             },

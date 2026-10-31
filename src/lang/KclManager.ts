@@ -113,12 +113,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import {
-  createActor,
-  type Actor,
-  type StateFrom,
-  type Subscription,
-} from 'xstate'
+import type { StateFrom } from 'xstate'
 
 import {
   addLineHighlight,
@@ -126,7 +121,6 @@ import {
 } from '@src/editor/highlightextension'
 
 import {
-  batch,
   computed,
   effect,
   signal,
@@ -194,8 +188,6 @@ import {
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import toast from 'react-hot-toast'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import type { ProjectSystemDeps } from '@src/lib/projectSession/project'
 import { File } from '@src/lib/projectSession/file'
 
@@ -388,76 +380,16 @@ export class KclManager extends File {
     return this._wasmInstance
   }
   readonly systemDeps: ProjectSystemDeps
-  /** Modeling interactions live with this editor, independently of React mounts. */
-  private _modelingActor: Actor<typeof modelingMachine> | undefined
-  private _modelingActorPromise:
-    | Promise<Actor<typeof modelingMachine>>
-    | undefined
-  private modelingSubscription: Subscription | undefined
-  private closed = false
-  private modelingGeneration = 0
+  private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
+  /** React publishes modeling snapshots for consumers such as Named Views. */
   private readonly _modelingState = signal<StateFrom<
     typeof modelingMachine
   > | null>(null)
-
-  /** Resolve current project metadata at use time, including after legacy file reuse. */
-  readonly modelingProjectRef: { readonly current: Project | undefined }
 
   get modelingStateSignal(): ReadonlySignal<StateFrom<
     typeof modelingMachine
   > | null> {
     return this._modelingState
-  }
-
-  /** Retain a stopped actor for the outgoing view while its replacement loads. */
-  get modelingActor() {
-    return this._modelingActor
-  }
-
-  /** Lazily load the machine to keep editor construction independent of the UI import graph. */
-  get modelingActorPromise(): Promise<Actor<typeof modelingMachine>> {
-    return (this._modelingActorPromise ??= this.initializeModelingActor())
-  }
-
-  private async initializeModelingActor(): Promise<
-    Actor<typeof modelingMachine>
-  > {
-    const generation = this.modelingGeneration
-    const [{ modelingMachine }, wasmInstance] = await Promise.all([
-      import('@src/machines/modelingMachine'),
-      this.wasmInstancePromise,
-    ])
-    if (this.closed || generation !== this.modelingGeneration) {
-      return Promise.reject(
-        new Error('Cannot initialize modeling for a closed editor.')
-      )
-    }
-    const { modeling } = getSettingsFromActorContext(this.systemDeps.settings)
-    const actor = createActor(modelingMachine, {
-      input: {
-        kclManager: this,
-        engineCommandManager: this.engineCommandManager,
-        rustContext: this.rustContext,
-        machineManager: this.systemDeps.machineManager,
-        commandBarActor: this.systemDeps.commandBar,
-        wasmInstance,
-        fileName: getStringAfterLastSeparator(this.path),
-        projectRef: this.modelingProjectRef,
-        store: {
-          cameraProjection: modeling.cameraProjection,
-          defaultUnit: modeling.defaultUnit,
-        },
-      },
-    })
-    this._modelingActor = actor
-    this.modelingSubscription = actor.subscribe((state) => {
-      batch(() => {
-        this.selectionRanges = state.context.selectionRanges
-        this._modelingState.value = state
-      })
-    })
-    actor.start()
-    return actor
   }
 
   // CORE STATE
@@ -702,7 +634,7 @@ export class KclManager extends File {
     // a KclManager without a ZDSProject.
     if (
       path !== this.path ||
-      !this.systemDeps.project.value?.path ||
+      !this.systemDeps.projectPath.value ||
       this.path.length < 1
     ) {
       return
@@ -1879,12 +1811,6 @@ export class KclManager extends File {
       return editor
     }
 
-    // The legacy singleton can be reopened after its previous project disposed it.
-    // Actor ownership still ends at close; reopening creates a fresh actor on demand.
-    if (providedEditor.closed) {
-      providedEditor._modelingActorPromise = undefined
-      providedEditor.closed = false
-    }
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     await providedEditor.flushWriteToFile({ suppressConflictToast: true })
     providedEditor.flushRecoverySnapshot()
@@ -1939,11 +1865,6 @@ export class KclManager extends File {
     // Register our additional, KclManager-specific watch event handler
     this.onWatchEvent.push(this.#onWatchEvent)
     this.systemDeps = systemDeps
-    this.modelingProjectRef = {
-      get current() {
-        return systemDeps.project.value
-      },
-    }
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)
     this.engineCommandManager = this.systemDeps.engineCommandManager
@@ -2002,15 +1923,6 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
-    if (this.closed) return
-    this.closed = true
-    this.modelingGeneration += 1
-    this.modelingSubscription?.unsubscribe()
-    this.modelingSubscription = undefined
-    this._modelingActor?.stop()
-    // The outgoing route can still render while its replacement is loading.
-    // Keep its stopped actor readable until reopening installs the next one.
-    this._modelingState.value = null
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.sceneSettingsActive.value = false
@@ -2766,16 +2678,25 @@ export class KclManager extends File {
     this._selectionRanges = selectionRanges
     this._selectionRangesSignal.value = selectionRanges
   }
-  /** Send only while this editor owns a running modeling actor. */
+  set modelingSend(send: (eventInfo: ModelingMachineEvent) => void) {
+    this._modelingSend = send
+  }
+  /**
+   * Send an event to the modeling machine.
+   * Returns false if the modeling machine is not available.
+   */
   sendModelingEvent(event: ModelingMachineEvent): boolean {
-    if (this.closed || this._modelingActor?.getSnapshot().status !== 'active') {
-      return false
+    if (this._modelingSend) {
+      this._modelingSend(event)
+      return true
     }
-    this._modelingActor.send(event)
-    return true
+    return false
   }
   get modelingState(): StateFrom<typeof modelingMachine> | null {
     return this._modelingState.value
+  }
+  set modelingState(state: StateFrom<typeof modelingMachine>) {
+    this._modelingState.value = state
   }
   get highlightRange(): Array<[number, number]> {
     return this._highlightRange
@@ -3030,12 +2951,12 @@ export class KclManager extends File {
         untracked(() => {
           if (!active || !this.engineCommandManager.connection) return
           const path = this.path
-          const projectPath = this.systemDeps.project.peek()?.path
+          const projectPath = this.systemDeps.projectPath.peek()
           const isCurrent = () =>
             !cancelled &&
             this.sceneSettingsActive.peek() &&
             this.path === path &&
-            this.systemDeps.project.peek()?.path === projectPath
+            this.systemDeps.projectPath.peek() === projectPath
           const executeIfCurrent = () => {
             if (isCurrent()) return this.executeCode()
           }
@@ -3527,7 +3448,7 @@ export class KclManager extends File {
       return // don't repeat events
     }
     this._lastEvent = { event: stringEvent, time: Date.now() }
-    this.sendModelingEvent(eventInfo.modelingEvent)
+    this._modelingSend(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.engineCommandManager.sendSceneCommand(event)

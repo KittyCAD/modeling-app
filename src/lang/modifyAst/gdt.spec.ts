@@ -58,7 +58,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
+    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -291,7 +291,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $seg02')
       expect(newCode).toContain('tag = $seg03')
       // Should create three separate GDT annotations (one per face)
-      const gdtCalls = newCode.match(/gdt::flatness/g)
+      const gdtCalls = newCode.match(/note\d{3} = gdt::flatness/g)
       expect(gdtCalls).toHaveLength(3)
       // Verify each face has its own annotation
       expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
@@ -2119,7 +2119,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (err(newCode)) throw newCode
 
       // A note is standalone: no faces/edges selection, just the text.
-      expect(newCode).toContain('gdt::note(note = "Note:")')
+      expect(newCode).toContain('note001 = gdt::note(note = "Note:")')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

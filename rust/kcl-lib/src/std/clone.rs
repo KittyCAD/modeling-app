@@ -366,7 +366,7 @@ fn restore_face_tags(solid: &mut Solid, face_tag_names: &[String], exec_state: &
                 exec_state.stack().current_epoch(),
                 TagEngineInfo {
                     id: surface.get_id(),
-                    surface: Some(surface.clone()),
+                    surface: Some(surface),
                     path: None,
                     geometry: Geometry::Solid(solid_copy),
                 },

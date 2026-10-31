@@ -1,5 +1,3 @@
-import { signal } from '@preact/signals-core'
-import { createProjectForTest } from '@src/unitTestUtils'
 import type { Diagnostic } from '@codemirror/lint'
 import { EditorView } from '@codemirror/view'
 import type {
@@ -136,9 +134,9 @@ function liveOperationTestApi(kclManager: KclManager): LiveOperationTestApi {
 }
 
 function enableSketchSolveEditorExecution(kclManager: KclManager) {
-  vi.spyOn(kclManager, 'modelingState', 'get').mockReturnValue({
+  kclManager.modelingState = {
     matches: (value: unknown) => value === 'sketchSolveMode',
-  } as unknown as NonNullable<KclManager['modelingState']>)
+  } as unknown as NonNullable<KclManager['modelingState']>
   kclManager.engineCommandManager.connection = {
     connected: true,
   } as unknown as typeof kclManager.engineCommandManager.connection
@@ -416,9 +414,9 @@ describe('KclManager settings ownership', () => {
         )
         const controls = kclManager.sceneInfra.camControls
         const projection = vi.spyOn(controls, 'engineCameraProjection', 'set')
-        vi.spyOn(kclManager, 'modelingState', 'get').mockReturnValue({
+        kclManager.modelingState = {
           matches: (state: unknown) => state === mode,
-        } as unknown as NonNullable<KclManager['modelingState']>)
+        } as unknown as NonNullable<KclManager['modelingState']>
         kclManager.setSceneSettingsActive(true)
         app.settings.get().modeling.cameraProjection.user =
           controls.engineCameraProjection === 'perspective'
@@ -1159,10 +1157,7 @@ describe('KclManager diagnostics', () => {
     const checkpointId = 55
     const modelingSendSpy = vi.fn()
     enableSketchSolveEditorExecution(kclManager)
-    vi.spyOn(kclManager, 'sendModelingEvent').mockImplementation((event) => {
-      modelingSendSpy(event)
-      return true
-    })
+    kclManager.modelingSend = modelingSendSpy
 
     vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
     vi.spyOn(kclManager.rustContext, 'hackSetProgram').mockResolvedValue({
@@ -1200,10 +1195,7 @@ describe('KclManager diagnostics', () => {
     const deferredExecution = createDeferred<undefined>()
     const modelingSendSpy = vi.fn()
     enableSketchSolveEditorExecution(kclManager)
-    vi.spyOn(kclManager, 'sendModelingEvent').mockImplementation((event) => {
-      modelingSendSpy(event)
-      return true
-    })
+    kclManager.modelingSend = modelingSendSpy
 
     vi.spyOn(kclManager, 'executeCode').mockReturnValue(
       deferredExecution.promise
@@ -1239,10 +1231,7 @@ describe('KclManager diagnostics', () => {
       >()
     const modelingSendSpy = vi.fn()
     enableSketchSolveEditorExecution(kclManager)
-    vi.spyOn(kclManager, 'sendModelingEvent').mockImplementation((event) => {
-      modelingSendSpy(event)
-      return true
-    })
+    kclManager.modelingSend = modelingSendSpy
 
     vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
     const hackSetProgramSpy = vi
@@ -1416,7 +1405,7 @@ describe('KclManager diagnostics', () => {
     const { kclManager } = createKclManagerTestHarness('from disk')
 
     kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
-    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
+    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
     ;(kclManager as any).markFileCodeAsSynced('from disk')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external edit')
@@ -1436,7 +1425,7 @@ describe('KclManager diagnostics', () => {
 
     kclManager.path = '/tmp/kcl-manager-zookeeper-watch-test.kcl'
     kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
-    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
+    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
     ;(kclManager as any).markFileCodeAsSynced('from disk')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('zookeeper edit')
@@ -1456,11 +1445,12 @@ describe('KclManager diagnostics', () => {
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
     const testInternals = kclManager as unknown as {
       markFileCodeAsSynced(code: string): void
+      systemDeps: { projectPath: { value: string } }
     }
 
     kclManager.path = '/tmp/kcl-manager-zookeeper-watch-test.kcl'
     kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
-    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
+    testInternals.systemDeps.projectPath.value = '/tmp/project'
     testInternals.markFileCodeAsSynced('from disk')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue(
@@ -1483,10 +1473,11 @@ describe('KclManager diagnostics', () => {
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
     const testInternals = kclManager as unknown as {
       markFileCodeAsSynced(code: string): void
+      systemDeps: { projectPath: { value: string } }
     }
 
     kclManager.path = '/tmp/kcl-manager-external-watch-test.kcl'
-    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
+    testInternals.systemDeps.projectPath.value = '/tmp/project'
     testInternals.markFileCodeAsSynced('from disk')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external edit')
@@ -1509,11 +1500,12 @@ describe('KclManager diagnostics', () => {
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
     const testInternals = kclManager as unknown as {
       markFileCodeAsSynced(code: string): void
+      systemDeps: { projectPath: { value: string } }
     }
 
     kclManager.path = '/tmp/kcl-manager-zookeeper-history-pending-test.kcl'
     kclManager.zookeeperHistoryRecordingInProgress = true
-    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
+    testInternals.systemDeps.projectPath.value = '/tmp/project'
     testInternals.markFileCodeAsSynced('from disk')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue(
@@ -1650,7 +1642,7 @@ describe('KclManager diagnostics', () => {
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
 
     kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
-    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
+    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
     ;(kclManager as any).markFileCodeAsSynced('local base')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockReturnValue(
@@ -1715,13 +1707,10 @@ describe('KclManager diagnostics', () => {
       }
     })
 
-    vi.spyOn(kclManager, 'modelingState', 'get').mockReturnValue({
+    kclManager.modelingState = {
       matches: (value: unknown) => value === 'sketchSolveMode',
-    } as any)
-    vi.spyOn(kclManager, 'sendModelingEvent').mockImplementation((event) => {
-      modelingSendSpy(event)
-      return true
-    })
+    } as any
+    kclManager.modelingSend = modelingSendSpy
 
     vi.spyOn(kclManager.rustContext, 'restoreSketchCheckpoint').mockReturnValue(
       deferredRestore.promise
@@ -1759,13 +1748,10 @@ describe('KclManager diagnostics', () => {
     const { kclManager } = createKclManagerTestHarness(baselineCode)
     const modelingSendSpy = vi.fn()
 
-    vi.spyOn(kclManager, 'modelingState', 'get').mockReturnValue({
+    kclManager.modelingState = {
       matches: (value: unknown) => value === 'sketchSolveMode',
-    } as any)
-    vi.spyOn(kclManager, 'sendModelingEvent').mockImplementation((event) => {
-      modelingSendSpy(event)
-      return true
-    })
+    } as any
+    kclManager.modelingSend = modelingSendSpy
     ;(kclManager as any).lastCommittedCode = baselineCode
     ;(kclManager as any).lastCommittedAdditionalSpec = {
       sketchCheckpointId: preDragCheckpointId,
