@@ -8,8 +8,6 @@ sketch001 = sketch(on = XY) {
 region001 = region(segments = [sketch001.circle1])`
 
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
-  test.use({ userFeatures: ['modeling_dialogs'] })
-
   test('Submits with Enter after scene selection', async ({
     page,
     homePage,
@@ -53,6 +51,85 @@ sketch001 = sketch(on = XZ) {
       await expect(modelingDialog.locator).not.toBeAttached()
     })
     await editor.expectEditor.toContain('extrude(region001, length = 5)')
+    await expect(editor.activeLine).toHaveText(
+      'extrude001 = extrude(region001, length = 5)'
+    )
+  })
+
+  test('Command palette opens Extrude dialog with variable and optional inputs', async ({
+    homePage,
+    scene,
+    editor,
+    cmdBar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', `${profileCode}\nlength = 10mm`)
+    )
+    // Close the editor so the palette offers modeling commands.
+    await editor.closePane()
+    await cmdBar.openCmdBar()
+    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
+    await expect(modelingDialog.locator).toHaveAttribute(
+      'aria-label',
+      'Extrude'
+    )
+    await expect(modelingDialog.submitButton).toBeDisabled()
+    await editor.selectText('region001 = region')
+    await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
+    await expect(modelingDialog.input('length')).toHaveText('5')
+    await modelingDialog.variableCheckbox('length').check()
+    await expect(
+      modelingDialog.locator.getByRole('textbox', {
+        name: 'Variable name',
+        exact: true,
+      })
+    ).toHaveValue('length001')
+
+    const bidirectionalLength = modelingDialog.input('bidirectional length')
+    await bidirectionalLength.fill('10')
+    await expect(bidirectionalLength).toHaveText('10')
+    await bidirectionalLength.fill('')
+    await expect(bidirectionalLength).toHaveAttribute(
+      'aria-placeholder',
+      'Use defaults'
+    )
+    await modelingDialog.submit()
+    await scene.settled()
+    await editor.expectEditor.toContain('length001 = 5')
+    await editor.expectEditor.toContain(
+      'extrude001 = extrude(region001, length = length001)'
+    )
+  })
+
+  test('Can cancel a modeling dialog with an unfinished optional input', async ({
+    homePage,
+    scene,
+    editor,
+    cmdBar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', profileCode)
+    )
+    await editor.closePane()
+    await cmdBar.openCmdBar()
+    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
+    await expect(modelingDialog.locator).toHaveAttribute(
+      'aria-label',
+      'Extrude'
+    )
+    await editor.selectText('region001 = region')
+    await modelingDialog.options('body type').selectOption({ label: 'Surface' })
+    await modelingDialog.input('bidirectional length').fill('1 +')
+    await expect(modelingDialog.submitButton).toBeDisabled()
+    await modelingDialog.cancelButton.click()
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await editor.expectEditor.not.toContain('extrude(')
   })
 
   test('Preserves an Extrude draft while hiding an obstruction', async ({

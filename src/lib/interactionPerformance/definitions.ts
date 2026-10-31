@@ -81,13 +81,12 @@ export const interactions = {
     id: 'zds.toolbar.extrude.open',
     testId: 'extrude',
     budgetMs: 150,
-    outcome:
-      'Extrude has a visible selection prompt and enabled selection input',
+    outcome: 'Extrude has a visible, enabled profile selection control',
   },
   extrudeCancel: {
     id: 'zds.toolbar.extrude.cancel',
     testId: 'command-bar-close-button',
     budgetMs: 150,
-    outcome: 'Extrude command palette is no longer rendered',
+    outcome: 'Extrude controls are no longer rendered',
   },
 } satisfies Record<string, InteractionDescription>
