@@ -468,7 +468,7 @@ async fn inner_join(
     }
 }
 
-/// Fill one region or a closed boundary of swept-body edges with a planar surface.
+/// Fill regions or a closed boundary of swept-body edges with planar surfaces.
 pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let curves: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "curves",
@@ -479,19 +479,24 @@ pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<Kc
         exec_state,
     )?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
-    let target = if let [KclValue::Sketch { value }] = curves.as_slice() {
-        if value.origin_sketch_id.is_none() {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Select a region with `region(...)`, or pass a list of Face API edge selectors to `planarSurface`."
-                    .to_owned(),
-                vec![args.source_range],
-            )));
-        }
-        PlanarSurfaceTarget::Region { region_id: value.id }
+    let targets = if matches!(curves.first(), Some(KclValue::Sketch { .. })) {
+        curves
+            .iter()
+            .map(|curve| match curve {
+                KclValue::Sketch { value } if value.origin_sketch_id.is_some() => {
+                    Ok(PlanarSurfaceTarget::Region { region_id: value.id })
+                }
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Pass only regions created with `region(...)`, or a list of Face API edge selectors to `planarSurface`."
+                        .to_owned(),
+                    vec![args.source_range],
+                ))),
+            })
+            .collect::<Result<Vec<_>, KclError>>()?
     } else {
-        PlanarSurfaceTarget::Edge {
+        vec![PlanarSurfaceTarget::Edge {
             specifier: edge::parse_edge_refs_to_references(curves, None, exec_state, &args).await?,
-        }
+        }]
     };
     let tolerance = LengthUnit(
         tolerance
@@ -500,22 +505,28 @@ pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<Kc
             .unwrap_or(DEFAULT_TOLERANCE_MM),
     );
 
-    let cmd = ModelingCmd::from(
-        mcmd::CreatePlanarSurface::builder()
-            .target(target)
-            .tolerance(tolerance)
-            .build(),
-    );
+    let mut surface_ids = Vec::with_capacity(targets.len());
+    for target in targets {
+        let surface_id = exec_state.next_uuid();
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args_id(exec_state, &args, surface_id),
+                ModelingCmd::from(
+                    mcmd::CreatePlanarSurface::builder()
+                        .target(target)
+                        .tolerance(tolerance)
+                        .build(),
+                ),
+            )
+            .await?;
+        surface_ids.push(surface_id);
+    }
 
-    let surface_id = exec_state.next_uuid();
-    exec_state
-        .batch_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, surface_id), cmd)
-        .await?;
-
-    let surface = after_surface_creation(surface_id.into(), None, exec_state, &args).await?;
-    Ok(KclValue::Solid {
-        value: Box::new(surface),
-    })
+    let mut surfaces = Vec::with_capacity(surface_ids.len());
+    for surface_id in surface_ids {
+        surfaces.push(after_surface_creation(surface_id.into(), None, exec_state, &args).await?);
+    }
+    Ok(surfaces.into())
 }
 
 #[cfg(test)]
@@ -559,6 +570,57 @@ surface = planarSurface(selected, tolerance = 0.01mm)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_batches_regions_in_input_order() {
+        let result = parse_execute(
+            r#"
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
+profile = sketch(on = XY) {
+  left = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+  right = circle(start = [12mm, 0mm], center = [10mm, 0mm])
+}
+leftRegion = region(segments = [profile.left])
+rightRegion = region(segments = [profile.right])
+surfaces = planarSurface([leftRegion, rightRegion])
+"#,
+        )
+        .await
+        .unwrap();
+        let region_ids = ["leftRegion", "rightRegion"].map(|name| {
+            let KclValue::Sketch { value } = result.variable(name) else {
+                panic!("expected a region");
+            };
+            value.id
+        });
+        let commands = result
+            .root_module_artifact_commands()
+            .iter()
+            .enumerate()
+            .filter_map(|(index, command)| match &command.command {
+                ModelingCmd::CreatePlanarSurface(params) => Some((index, command.cmd_id, params)),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        let surfaces = result.variable("surfaces").into_array();
+        assert_eq!(commands.len(), 2);
+        assert_eq!(surfaces.len(), 2);
+        assert_eq!(commands[1].0, commands[0].0 + 1);
+        assert_ne!(commands[0].1, commands[1].1);
+        for (index, surface) in surfaces.iter().enumerate() {
+            assert_eq!(
+                commands[index].2.target,
+                PlanarSurfaceTarget::Region {
+                    region_id: region_ids[index]
+                }
+            );
+            let KclValue::Solid { value } = surface else {
+                panic!("expected a surface body");
+            };
+            assert_eq!(value.id, commands[index].1);
+            assert_eq!(value.artifact_id, commands[index].1.into());
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn planar_surface_preserves_face_api_disambiguation() {
         let result = parse_execute(
             r#"
@@ -595,21 +657,31 @@ surface = planarSurface([{
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_rejects_sketches_and_sketch_curves() {
-        for input in ["profile", "[profile.circle1]"] {
+    async fn planar_surface_rejects_sketches_and_mixed_inputs() {
+        for input in [
+            "profile",
+            "[profile.circle1]",
+            "[]",
+            "[selected, { sideFaces = [body.sketch.tags.circle1] }]",
+            "[{ sideFaces = [body.sketch.tags.circle1] }, selected]",
+        ] {
             let error = parse_execute(&format!(
                 r#"
 @settings(kclVersion = 3.0, experimentalFeatures = allow)
 profile = sketch(on = XY) {{
   circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
 }}
+selected = region(segments = [profile.circle1])
+body = extrude(selected, length = 5mm)
 surface = planarSurface({input})
 "#,
             ))
             .await
             .unwrap_err();
             assert!(
-                error.message().contains("region") || error.message().contains("sideFaces"),
+                error.message().contains("region")
+                    || error.message().contains("sideFaces")
+                    || error.message().contains("empty array"),
                 "{error:?}"
             );
         }

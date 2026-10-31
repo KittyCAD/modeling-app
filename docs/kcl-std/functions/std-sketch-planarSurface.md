@@ -1,35 +1,39 @@
 ---
 title: "planarSurface"
 subtitle: "Function in std::sketch"
-excerpt: "Fills one closed region to make a single planar surface contained by its boundary."
+excerpt: "Fills closed regions to make planar surfaces contained by their boundaries."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-Fills one closed region to make a single planar surface contained by its boundary.
+Fills closed regions to make planar surfaces contained by their boundaries.
 
 ```kcl
 planarSurface(
   @curves: Sketch | [any; 1+],
   tolerance?: number(Length),
-): Solid
+): [Solid; 1+]
 ```
 
-Pass one region created with `region(...)`, or a non-empty list of Face API
-edge selectors which form one closed, connected, coplanar boundary.
+Pass one region or a list of regions created with `region(...)`.
+Each region creates a separate surface, so `planarSurface([region001, region002])`
+returns two surfaces. A single region returns one surface.
+Alternatively, pass a non-empty list of Face API edge selectors which form
+one closed, connected, coplanar boundary to create one surface.
+Regions and edge selectors cannot be mixed in the same call.
 Edges must be provided in the order they connect.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `curves` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [[`any`](/docs/kcl-std/types/std-types-any); 1+] | One region created with `region(...)`, or Face API edge selectors (`{ sideFaces, endFaces?, index? }`) enclosing a planar surface. | Yes |
+| `curves` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [[`any`](/docs/kcl-std/types/std-types-any); 1+] | Regions created with `region(...)`, or Face API edge selectors (`{ sideFaces, endFaces?, index? }`) enclosing one planar surface. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples
