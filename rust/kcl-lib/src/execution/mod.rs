@@ -89,7 +89,6 @@ pub(crate) use state::declared_kcl_version;
 use crate::CompilationIssue;
 use crate::ExecError;
 use crate::KclErrorWithOutputs;
-use crate::NodePathExt;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::engine::EngineBatchContext;
@@ -2164,7 +2163,7 @@ impl ExecutorContext {
                         import_stmt.selector,
                         crate::parsing::ast::types::ImportSelector::Glob(_)
                     ),
-                    node_path: crate::NodePath::placeholder(),
+                    node_path: kcl_api::Operation::placeholder_node_path(),
                     source_range,
                 });
             }
@@ -2539,6 +2538,7 @@ impl ExecutorContext {
                 (err, env_ref)
             });
 
+        let mut node_paths = std::collections::HashMap::new();
         // Fill in NodePath for operations.
         let programs = &exec_state.build_program_lookup(program.clone());
         let cached_body_items = exec_state.global.artifacts.cached_body_items();
@@ -2549,12 +2549,12 @@ impl ExecutorContext {
             .iter_mut()
             .skip(start_op)
         {
-            op.fill_node_paths(programs, cached_body_items);
+            op.fill_node_paths(programs, cached_body_items, &mut node_paths);
         }
         for module in exec_state.global.module_infos.values_mut() {
             if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
                 for op in &mut outcome.artifacts.operations {
-                    op.fill_node_paths(programs, cached_body_items);
+                    op.fill_node_paths(programs, cached_body_items, &mut node_paths);
                 }
             }
         }
@@ -2859,6 +2859,7 @@ mod tests {
 
     use super::*;
     use crate::ModuleId;
+    use crate::NodePathExt;
     use crate::errors::KclErrorDetails;
     use crate::errors::Severity;
     use crate::execution::kcl_value::TypeDef;

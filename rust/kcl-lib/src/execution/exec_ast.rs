@@ -19,8 +19,6 @@ use kcl_api::PointCtor;
 use kcl_api::UnitAngle;
 
 use crate::CompilationIssue;
-use crate::NodePath;
-use crate::NodePathExt;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -1218,7 +1216,7 @@ impl ExecutorContext {
                 name,
                 module_id,
                 glob: matches!(import_stmt.selector, ImportSelector::Glob(_)),
-                node_path: NodePath::placeholder(),
+                node_path: Operation::placeholder_node_path(),
                 source_range,
             });
         }
@@ -1645,7 +1643,7 @@ impl ExecutorContext {
                 name: var_name.clone(),
                 value: op_from_kcl_value(&rhs),
                 visibility: variable_declaration.visibility,
-                node_path: NodePath::placeholder(),
+                node_path: Operation::placeholder_node_path(),
                 source_range,
             });
         }
@@ -2513,7 +2511,7 @@ impl Node<SketchBlock> {
 
             exec_state.push_op(Operation::GroupBegin {
                 group: Group::SketchBlock { sketch_id },
-                node_path: NodePath::placeholder(),
+                node_path: Operation::placeholder_node_path(),
                 source_range: range,
             });
             artifact_id
