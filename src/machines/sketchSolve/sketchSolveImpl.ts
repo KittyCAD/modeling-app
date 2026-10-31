@@ -1,4 +1,5 @@
 import type {
+  ApiConstraint,
   ApiObject,
   Expr,
   SceneGraphDelta,
@@ -120,6 +121,19 @@ export type SketchSolveMachineEvent =
   | { type: 'pick hovered tool' }
   | { type: 'unequip tool' }
   | {
+      type: 'apply suggested constraint'
+      data: {
+        payload: ApiConstraint
+        selectedIds: SketchSolveSelectionId[]
+        sceneGraphDelta: SceneGraphDelta
+      }
+    }
+  | {
+      type: 'apply suggested geometry'
+      data: { segment: SegmentCtor; sceneGraphDelta: SceneGraphDelta }
+    }
+  | { type: 'suggested geometry settled' }
+  | {
       type: 'equip tool'
       data: { tool: EquipTool }
       keepSelection?: boolean
@@ -238,6 +252,11 @@ export type SketchSolveContext = {
   pendingToolName?: EquipTool
   pendingToolKeepSelection?: boolean
   keepSelectionAfterToolCompletion: boolean
+  continuationPending?: boolean
+  pendingGeometrySuggestion?: {
+    segment: SegmentCtor
+    sceneGraphDelta: SceneGraphDelta
+  }
   selectedIds: Array<SketchSolveSelectionId>
   selectionCoordinates: SelectionCoordinates
   duringAreaSelectIds: Array<number>

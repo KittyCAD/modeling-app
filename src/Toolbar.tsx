@@ -7,6 +7,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip, {
   RICH_TOOLTIP_SURFACE_CLASS_NAME,
 } from '@src/components/Tooltip'
+import { viteEnv } from '@src/env'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
@@ -20,6 +21,7 @@ import {
 } from '@src/lib/automaticRendering'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { commandKey, isModelingDialogCommand } from '@src/lib/commandUtils'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -49,6 +51,8 @@ import { reportRejection } from '@src/lib/trap'
 import { isArray, type Platform } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getSymmetricToolSelectionStep } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { SketchConstraintSuggestions } from '@src/machines/sketchSolve/constraints/SketchConstraintSuggestions'
+import { SketchNextStepSuggestions } from '@src/machines/sketchSolve/continuation/SketchNextStepSuggestions'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import {
   findKeymapItemForCommand,
@@ -60,7 +64,7 @@ import { projectSession } from '@src/registry/contracts/projectSession'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useSelector } from '@xstate/react'
 import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
-import type { SnapshotFrom } from 'xstate'
+import type { ActorRefFrom, SnapshotFrom } from 'xstate'
 
 type ToolbarProps = {
   isExecuting: boolean
@@ -101,6 +105,15 @@ const Toolbar_ = memo(
       app.registry.signal(projectSession).value?.executingEditor.value
     const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
     const toolbarConfig = useToolbarConfig()
+    const hasExperimentalSketchFeatures = app.userFeatures.useHas(
+      EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+      false
+    )
+    const showExperimentalSuggestions =
+      hasExperimentalSketchFeatures ||
+      (viteEnv().VERCEL_ENV === 'preview' &&
+        viteEnv().MODELING_APP_GIT_REF ===
+          'codex/sketch-constraint-suggestions-poc')
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
       'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
@@ -774,6 +787,28 @@ const Toolbar_ = memo(
               </div>
             )
           })}
+          {showExperimentalSuggestions &&
+            toolbarConfigurationName === 'sketchSolve' &&
+            props.state.children.sketchSolveMachine && (
+              <>
+                <SketchConstraintSuggestions
+                  actor={
+                    props.state.children.sketchSolveMachine as ActorRefFrom<
+                      typeof sketchSolveMachine
+                    >
+                  }
+                  disabled={disableAllButtons || disableSketchToolbar}
+                />
+                <SketchNextStepSuggestions
+                  actor={
+                    props.state.children.sketchSolveMachine as ActorRefFrom<
+                      typeof sketchSolveMachine
+                    >
+                  }
+                  disabled={disableAllButtons || disableSketchToolbar}
+                />
+              </>
+            )}
         </ul>
         <div className="flex flex-col items-center absolute top-full left-1/2 -translate-x-1/2">
           <ToolbarToasts />

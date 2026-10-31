@@ -25,7 +25,7 @@ import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import type { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecCallbacks, ExecState } from '@src/lang/wasm'
 import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
@@ -655,6 +655,31 @@ export default class RustContext {
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
+    }
+  }
+
+  /** Solve a proposed constraint without updating the sketch or undo history. */
+  async previewConstraint(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    constraint: ApiConstraint,
+    settings: DeepPartial<Configuration>
+  ): Promise<SceneGraphDelta> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      return await instance.preview_constraint(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(constraint),
+        JSON.stringify(settings)
+      )
+    } catch (e: unknown) {
+      try {
+        return Promise.reject(errFromErrWithOutputs(e))
+      } catch {
+        return Promise.reject(e instanceof Error ? e : new Error(String(e)))
+      }
     }
   }
 
