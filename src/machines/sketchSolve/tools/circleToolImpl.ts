@@ -9,7 +9,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import {
   isCircleSegment,
   isPointSegment,
@@ -27,6 +26,7 @@ import {
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { resolveSketchPoint } from '@src/machines/sketchSolve/tools/sketchCoordinates'
 import { type ActionArgs, type AssignArgs, type ProvidedActor } from 'xstate'
 
 export const TOOL_ID = 'Circle tool'
@@ -95,7 +95,7 @@ export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
         mousePosition,
         mouseEvent: args.mouseEvent,
       })
-      const [x, y] = snappingCandidate?.position ?? mousePosition
+      const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
       const dx = x - context.centerPoint[0]
       const dy = y - context.centerPoint[1]
       const radius = Math.sqrt(dx * dx + dy * dy)
@@ -125,7 +125,7 @@ export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
         mousePosition,
         mouseEvent: args.mouseEvent,
       })
-      const [x, y] = snappingCandidate?.position ?? mousePosition
+      const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
 
       segmentUtilsMap.ArcSegment.removePreviewCircle(context.sceneInfra)
       self.send({
@@ -154,7 +154,7 @@ export function addPointListener({ self, context }: ToolActionArgs) {
           mousePosition,
           mouseEvent: args.mouseEvent,
         })
-        const [x, y] = snappingCandidate?.position ?? mousePosition
+        const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
         self.send({
           type: 'add point',
           data: [x, y],
@@ -310,12 +310,12 @@ export async function createCircleActor({
     const segmentCtor: SegmentCtor = {
       type: 'Circle',
       center: {
-        x: { type: 'Var', value: roundOff(centerPoint[0]), units },
-        y: { type: 'Var', value: roundOff(centerPoint[1]), units },
+        x: { type: 'Var', value: centerPoint[0], units },
+        y: { type: 'Var', value: centerPoint[1], units },
       },
       start: {
-        x: { type: 'Var', value: roundOff(startPoint[0]), units },
-        y: { type: 'Var', value: roundOff(startPoint[1]), units },
+        x: { type: 'Var', value: startPoint[0], units },
+        y: { type: 'Var', value: startPoint[1], units },
       },
     }
 
