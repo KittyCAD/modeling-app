@@ -381,9 +381,16 @@ export class KclManager extends File {
   }
   set wasmInstancePromise(newInstancePromise: Promise<ModuleType>) {
     this.systemDeps.wasmInstancePromise = newInstancePromise
-    void this.systemDeps.wasmInstancePromise.then((instance) => {
-      this._wasmInstance = instance
-    })
+    void newInstancePromise
+      .then((instance) => {
+        if (
+          !this.closed &&
+          this.systemDeps.wasmInstancePromise === newInstancePromise
+        ) {
+          this._wasmInstance = instance
+        }
+      })
+      .catch(reportRejection)
   }
   /**
    * You probably should use `wasmInstancePromise` instead.

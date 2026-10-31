@@ -4,7 +4,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
-import RustContext from '@src/lib/rustContext'
+import { createRustContext } from '@src/lib/rustContext'
 import {
   type RustContextRegistryService,
   rustContextService,
@@ -27,7 +27,7 @@ export const rustContextExtension = defineRegistryItemFactory((ctx) => {
     const settings = ctx.services.get(settingsService)
 
     service = {
-      context: new RustContext(
+      context: createRustContext(
         wasmPromise,
         engineConnection.manager,
         settings.actor

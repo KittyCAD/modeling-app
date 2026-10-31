@@ -49,7 +49,9 @@ vi.mock('@kittycad/codemirror-lsp-client', () => {
 })
 
 vi.mock('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib', () => ({
+  Context: class {},
   default: mocks.wasmInit,
+  initSync: vi.fn(),
   LspServerConfig: class {},
   lsp_run_kcl: mocks.run,
   set_kcl_runtime_flags: mocks.setFlags,
