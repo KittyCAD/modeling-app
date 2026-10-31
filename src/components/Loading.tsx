@@ -178,14 +178,7 @@ const Loading = ({
         {isUnrecoverableError ? '' : children || 'Loading'}
       </p>
 
-      <div
-        className={
-          `text-base h-[1em] ` +
-          (countdown !== undefined &&
-            countdown <= 1 &&
-            'transition-opacity duration-1000 opacity-0')
-        }
-      >
+      <div className="text-base h-[1em]">
         {countdown !== undefined && countdown > 0 && isRetrying && (
           <span>Connecting in {countdown}s</span>
         )}

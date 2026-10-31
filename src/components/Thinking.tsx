@@ -454,7 +454,7 @@ const AttachmentFetchItem = (props: {
   return (
     <button
       type="button"
-      className="flex w-full flex-row items-center gap-2 rounded p-2 text-left transition-colors hover:bg-chalkboard-20 disabled:cursor-default disabled:hover:bg-transparent dark:hover:bg-chalkboard-90"
+      className="flex w-full flex-row items-center gap-2 rounded p-2 text-left hover:bg-chalkboard-20 disabled:cursor-default disabled:hover:bg-transparent dark:hover:bg-chalkboard-90"
       aria-label={`${props.file.name}: ${action}`}
       disabled={isLoading || props.onFetchAttachment === undefined}
       onClick={() => props.onFetchAttachment?.(props.attachmentRef)}
@@ -485,7 +485,7 @@ const ImageFileItem = (props: {
         onClick={() =>
           props.url && props.onDownload(props.url, props.file.name)
         }
-        className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
+        className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded text-left w-full"
         title={`Click to download ${props.file.name}`}
       >
         <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
@@ -502,7 +502,7 @@ const ImageFileItem = (props: {
       </span>
       <button
         onClick={() => props.onDownload(props.url!, props.file.name)}
-        className="m-0 w-fit max-w-full cursor-pointer overflow-hidden rounded border border-chalkboard-30 bg-transparent p-0 text-left transition-opacity hover:opacity-80 dark:border-chalkboard-80"
+        className="m-0 w-fit max-w-full cursor-pointer overflow-hidden rounded border border-chalkboard-30 bg-transparent p-0 text-left hover:opacity-80 dark:border-chalkboard-80"
         title={`Click to download ${props.file.name}`}
       >
         <img
@@ -635,7 +635,7 @@ const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
           <button
             key={`${file.name}-${index}`}
             onClick={() => url && handleDownload(url, file.name)}
-            className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
+            className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded text-left w-full"
             title={`Click to download ${file.name}`}
           >
             <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
@@ -965,7 +965,7 @@ export const Thinking = (
       isProgrammaticScrollRef.current = true
       refViewFull.current.scrollTo({
         top: refViewFull.current.scrollHeight,
-        behavior: 'smooth',
+        behavior: 'instant',
       })
     })
   }, [
