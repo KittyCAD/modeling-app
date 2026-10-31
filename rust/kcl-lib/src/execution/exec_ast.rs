@@ -1972,7 +1972,8 @@ impl ExecutorContext {
                 || attrs.impl_ == annotations::Impl::RustConstraint)
         {
             if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
-                let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
+                let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name())
+                    .map_err(|err| err.override_source_ranges(vec![metadata.source_range]))?;
                 (
                     KclValue::Function {
                         value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
