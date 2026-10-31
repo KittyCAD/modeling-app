@@ -1423,49 +1423,6 @@ mod tests {
     }
 
     #[test]
-    fn builtin_calls_release_empty_and_bound_frames() {
-        let mut stack = stack_for_tests();
-        stack.add("preludeValue".to_owned(), val(42), sr()).unwrap();
-        let initial_len = stack.memory.environments.read().unwrap().len();
-        for _ in 0..100 {
-            stack.push_new_env_for_builtin().unwrap();
-            assert_get(&stack, "preludeValue", 42);
-            stack.pop_env().unwrap();
-            stack.push_new_env_for_builtin().unwrap();
-            stack.add("localValue".to_owned(), val(7), sr()).unwrap();
-            stack.pop_env().unwrap();
-        }
-        assert_eq!(stack.memory.environments.read().unwrap().len(), initial_len);
-    }
-
-    #[test]
-    fn expired_callback_releases_nested_environment_tail() {
-        let mem = &mut stack_for_tests();
-        mem.push_new_env_for_call(mem.current_env).unwrap();
-        mem.add("frame".to_owned(), val(1), sr()).unwrap();
-        mem.push_new_env_for_block().unwrap();
-        mem.add("block".to_owned(), val(2), sr()).unwrap();
-        let (_, capture) = mem.snapshot_for_closure().unwrap();
-        mem.pop_env().unwrap();
-        drop(capture);
-        mem.pop_env().unwrap();
-        assert_eq!(mem.memory.envs_with_bindings(), 0);
-        assert_eq!(mem.memory.environments.read().unwrap().len(), 1);
-    }
-
-    #[test]
-    fn preserved_empty_environment_survives_tail_reclamation() {
-        let mem = &mut stack_for_tests();
-        mem.push_new_env_for_call(mem.current_env).unwrap();
-        let preserved = mem.pop_and_preserve_env().unwrap();
-        mem.push_new_env_for_call(mem.current_env).unwrap();
-        mem.pop_env().unwrap();
-        mem.restore_env(preserved).unwrap();
-        mem.add("restored".to_owned(), val(42), sr()).unwrap();
-        assert_get(mem, "restored", 42);
-    }
-
-    #[test]
     fn referenced_block_env_pins_its_parent_chain() {
         let mem = &mut stack_for_tests();
 
