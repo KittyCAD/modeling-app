@@ -25,6 +25,7 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'
+export const MAX_TEXT_FILE_BYTES = 1024 * 1024
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
 export const LEGACY_SKETCH_MODE_REMOVED_MESSAGE =

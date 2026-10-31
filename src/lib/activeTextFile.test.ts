@@ -1,3 +1,4 @@
+import { MAX_TEXT_FILE_BYTES } from '@src/lib/constants'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -113,7 +114,7 @@ describe('text file detection', () => {
 
   it('rejects oversized files before reading them', async () => {
     mocks.stat.mockResolvedValueOnce({
-      size: mod.MAX_EDITABLE_TEXT_FILE_BYTES + 1,
+      size: MAX_TEXT_FILE_BYTES + 1,
     })
     await mod.openActiveTextFile(fileOperations, '/proj/large.log')
     expect(mocks.readFile).not.toHaveBeenCalled()
@@ -125,7 +126,7 @@ describe('text file detection', () => {
 
   it('rejects files that grow past the limit between stat and read', async () => {
     mocks.readFile.mockResolvedValueOnce(
-      new Uint8Array(mod.MAX_EDITABLE_TEXT_FILE_BYTES + 1).fill(97)
+      new Uint8Array(MAX_TEXT_FILE_BYTES + 1).fill(97)
     )
     await mod.openActiveTextFile(fileOperations, '/proj/growing.log')
     expect(mod.activeTextFileSignal.value).toMatchObject({
@@ -135,8 +136,8 @@ describe('text file detection', () => {
   })
 
   it('accepts a file exactly at the size limit', async () => {
-    const text = 'a'.repeat(mod.MAX_EDITABLE_TEXT_FILE_BYTES)
-    mocks.stat.mockResolvedValueOnce({ size: mod.MAX_EDITABLE_TEXT_FILE_BYTES })
+    const text = 'a'.repeat(MAX_TEXT_FILE_BYTES)
+    mocks.stat.mockResolvedValueOnce({ size: MAX_TEXT_FILE_BYTES })
     mocks.readFile.mockResolvedValueOnce(text)
     await mod.openActiveTextFile(fileOperations, '/proj/boundary.txt')
     expect(mod.activeTextFileSignal.value).toMatchObject({

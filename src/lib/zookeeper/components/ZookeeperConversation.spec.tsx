@@ -1599,6 +1599,25 @@ describe('ZookeeperConversation', () => {
       expect(firstFile.name).not.toBe(secondFile.name)
     })
 
+    test('previews a composer attachment without sending it', async () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const text = 'Reference '.padEnd(10_001, 'a')
+      fireEvent.paste(textarea, {
+        clipboardData: { files: [], getData: () => text },
+      })
+
+      fireEvent.click(await screen.findByText(/^Reference /))
+      const dialog = screen.getByRole('dialog', { name: 'Text preview' })
+      await within(dialog).findByText(text)
+      expect(handleProcess).not.toHaveBeenCalled()
+      fireEvent.click(
+        within(dialog).getByRole('button', { name: 'Close preview' })
+      )
+      expect(screen.getByText(/^Reference /)).toBeInTheDocument()
+    })
+
     test('allows removing attached files', async () => {
       renderConversation()
 
