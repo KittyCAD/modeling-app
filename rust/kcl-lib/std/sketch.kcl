@@ -3536,3 +3536,48 @@ export fn region(
   /// The sketch that the region is from. This is required when point is a `Point2d`.
   sketch?: any,
 ): Sketch {}
+
+/// Fills one closed region to make a single planar surface contained by its boundary.
+///
+/// Pass one region created with `region(...)`, or a non-empty list of Face API
+/// edge selectors which form one closed, connected, coplanar boundary.
+/// Edges must be provided in the order they connect.
+/// ```kcl,no3d,sketchSolve
+/// // Select a closed region explicitly before filling it.
+/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
+///
+/// // Sketch a closed quadrilateral
+/// sketch001 = sketch(on = XY) {
+///   line1 = line(start = [var -3.33mm, var 2.33mm], end = [var -3.28mm, var -3.27mm])
+///   line2 = line(start = [var -3.28mm, var -3.27mm], end = [var 3.97mm, var -2.69mm])
+///   line3 = line(start = [var 3.97mm, var -2.69mm], end = [var 3.94mm, var 1.55mm])
+///   line4 = line(start = [var 3.94mm, var 1.55mm], end = [var -3.33mm, var 2.33mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+/// }
+///
+/// region001 = region(point = [0mm, 0mm], sketch = sketch001)
+/// mySurface = planarSurface(region001)
+/// ```
+/// ```kcl,sketchSolve
+/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
+///
+/// // In this example, we'll extrude a cylinder with no caps, then use
+/// // `planarSurface` to create a separate surface for one cap.
+/// sketch001 = sketch(on = XY) {
+///   circle1 = circle(start = [var 0.87mm, var 0.63mm], center = [var -1.35mm, var 3mm])
+/// }
+/// hidden001 = hide(sketch001)
+/// region001 = region(point = [-3.5682909mm, 5.3681754mm], sketch = sketch001)
+/// extrude001 = extrude(region001, length = -5, bodyType = SURFACE)
+/// cap = planarSurface([{ sideFaces = [extrude001.sketch.tags.circle1], index = 0 }])
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = true)
+export fn planarSurface(
+    /// One region created with `region(...)`, or Face API edge selectors (`{ sideFaces, endFaces?, index? }`) enclosing a planar surface.
+  @curves: Sketch | [any; 1+],
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
+  tolerance?: number(Length),
+): Solid {}

@@ -2071,6 +2071,30 @@ fn artifacts_to_update(
             };
             return Ok(return_arr);
         }
+        ModelingCmd::CreatePlanarSurface(cmd) => {
+            let path_id = match &cmd.target {
+                kcmc::shared::PlanarSurfaceTarget::Region { region_id } => {
+                    match artifacts.get(&ArtifactId::new(*region_id)) {
+                        Some(Artifact::Path(path)) => Some(path.id),
+                        _ => None,
+                    }
+                }
+                kcmc::shared::PlanarSurfaceTarget::Edge { .. } => None,
+            };
+            return Ok(vec![Artifact::Sweep(Sweep {
+                id,
+                sub_type: SweepSubType::PlanarSurface,
+                path_id,
+                surface_ids: Vec::new(),
+                edge_ids: Vec::new(),
+                code_ref,
+                source_sweep_id: None,
+                trajectory_id: None,
+                method: ArtifactSweepMethod::New,
+                consumed: false,
+                pattern_ids: Vec::new(),
+            })]);
+        }
         ModelingCmd::SurfaceBlend(surface_blend_cmd) => {
             let surface_id_to_path_id = |surface_id: ArtifactId| -> Option<ArtifactId> {
                 match artifacts.get(&surface_id) {
