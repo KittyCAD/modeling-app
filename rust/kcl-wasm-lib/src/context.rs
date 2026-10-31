@@ -172,6 +172,28 @@ impl Context {
         Ok((owner, ctx))
     }
 
+    /// Parse an execution entry point using Rust-owned scene/cache lifecycle.
+    #[wasm_bindgen(js_name = parseForExecution)]
+    pub async fn parse_for_execution(
+        &self,
+        source: &str,
+        settings: &str,
+        path: Option<String>,
+    ) -> Result<JsValue, JsValue> {
+        let (_owner, ctx) = self
+            .executor_for_operation(settings, path.as_deref(), ExecutionMode::Engine)
+            .await
+            .map_err(|error| {
+                JsValue::from_serde(&error).unwrap_or_else(|error| JsValue::from_str(&error.to_string()))
+            })?;
+        // Use the same owner lock as execution so parsing another entry point
+        // cannot clear a scene while its previous execution is publishing.
+        match ctx.parse_for_execution(source).await {
+            Ok(parsed) => JsValue::from_serde(&parsed).map_err(|error| JsValue::from_str(&error.to_string())),
+            Err(error) => Err(JsValue::from_serde(&error).map_err(|error| JsValue::from_str(&error.to_string()))?),
+        }
+    }
+
     /// Execute a program.
     #[wasm_bindgen]
     pub async fn execute(

@@ -285,7 +285,10 @@ impl ExecState {
             entity_clone_info: None,
             omit_from_graph: false,
         });
-        meta.ctx.engine.async_modeling_cmd(id, meta.source_range, cmd).await
+        meta.ctx
+            .engine
+            .async_modeling_cmd(&meta.ctx.engine_batch, id, meta.source_range, cmd)
+            .await
     }
 
     /// Force flush the batch queue.
