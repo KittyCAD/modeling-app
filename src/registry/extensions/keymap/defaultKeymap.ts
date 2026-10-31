@@ -429,13 +429,6 @@ export const defaultKeymap: KeymapDocument = {
       keystrokes: ['m'],
       command: 'modeling:Mirror 3D',
     },
-    {
-      id: 'toolbar.sketch-no-face.cancel',
-      title: 'Cancel Sketch',
-      when: [MODE_SKETCH_NO_FACE_KEYMAP_SCOPE],
-      keystrokes: ['escape'],
-      command: TOOLBAR_COMMAND_IDS.sketching.exit,
-    },
     ...createExitSketchBindings({
       id: 'toolbar.sketch.exit',
       scope: MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
