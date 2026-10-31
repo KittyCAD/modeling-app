@@ -208,37 +208,70 @@ export function addPlanarSurface({
   const { graphSelections, otherSelections } = curves
   const selectionCount = graphSelections.length + otherSelections.length
   if (selectionCount === 0) {
-    return new Error('Select one sketch region or swept-body edges.')
+    return new Error('Select sketch regions or swept-body edges.')
   }
 
   let modifiedAst = structuredClone(ast)
   let pathIfPipe: PathToNode | undefined
   let curvesExpr: Expr
-  if (otherSelections.length > 0) {
-    const [region] = otherSelections
-    if (selectionCount !== 1 || !isEngineRegionSelection(region)) {
+  const engineRegions = otherSelections.filter(isEngineRegionSelection)
+  const onlyRegions =
+    engineRegions.length === otherSelections.length &&
+    graphSelections.every((selection) => {
+      if (selection.entityRef?.type === 'edge') return false
+      const artifact = resolveToCodeRef(selection, artifactGraph)?.artifact
+      const path =
+        artifact?.type === 'solid2d'
+          ? artifactGraph.get(artifact.pathId)
+          : artifact
+      return path?.type === 'path' && path.subType === 'region'
+    })
+  if (onlyRegions) {
+    const regions = getVariableExprsFromSelection(
+      { graphSelections, otherSelections: [] },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance
+    )
+    if (isErr(regions)) return regions
+    if (regions.exprs.length !== graphSelections.length) {
+      return new Error('Could not resolve the selected regions in code.')
+    }
+    if (
+      regions.exprs.filter((expr) => expr.type === 'PipeSubstitution').length >
+      1
+    ) {
       return new Error(
-        'Select one sketch region or a list of swept-body edges.'
+        'Assign variables to the selected regions before combining them.'
       )
     }
-    const engineRegions = [region]
-    const hidden = addHideCallsForRegionSketches({
-      engineRegions,
-      modifiedAst,
-      artifactGraph,
-      wasmInstance,
-    })
-    if (isErr(hidden)) return hidden
-    modifiedAst = hidden
-    const regions = insertRegionVariablesAndOffsetPathToNode({
-      engineRegions,
-      modifiedAst,
-      artifactGraph,
-      wasmInstance,
-    })
-    if (isErr(regions)) return regions
-    curvesExpr = regions[0]
-  } else if (graphSelections[0].entityRef?.type === 'edge') {
+    pathIfPipe = regions.pathIfPipe
+    if (engineRegions.length > 0) {
+      const hidden = addHideCallsForRegionSketches({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (isErr(hidden)) return hidden
+      modifiedAst = hidden
+      const insertedRegions = insertRegionVariablesAndOffsetPathToNode({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (isErr(insertedRegions)) return insertedRegions
+      regions.exprs.push(...insertedRegions)
+    }
+    curvesExpr =
+      regions.exprs.length === 1
+        ? regions.exprs[0]
+        : createArrayExpression(regions.exprs)
+  } else if (
+    otherSelections.length === 0 &&
+    graphSelections[0].entityRef?.type === 'edge'
+  ) {
     const edges: Expr[] = []
     for (const selection of graphSelections) {
       const edge = getPlanarBodyEdgeExpression({
@@ -266,35 +299,9 @@ export function addPlanarSurface({
     }
     curvesExpr = createArrayExpression(edges)
   } else {
-    const artifact = resolveToCodeRef(
-      graphSelections[0],
-      artifactGraph
-    )?.artifact
-    const path =
-      artifact?.type === 'solid2d'
-        ? artifactGraph.get(artifact.pathId)
-        : artifact
-    if (
-      selectionCount !== 1 ||
-      path?.type !== 'path' ||
-      path.subType !== 'region'
-    ) {
-      return new Error(
-        'Select a sketch region or a Face API edge from the viewport.'
-      )
-    }
-    const region = getVariableExprsFromSelection(
-      curves,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance
+    return new Error(
+      'Select sketch regions or a list of Face API edges from the viewport.'
     )
-    if (isErr(region)) return region
-    if (region.exprs.length !== 1) {
-      return new Error('Could not resolve the selected region in code.')
-    }
-    curvesExpr = region.exprs[0]
-    pathIfPipe = region.pathIfPipe
   }
 
   const call = createCallExpressionStdLibKw(

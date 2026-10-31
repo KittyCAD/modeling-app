@@ -2337,7 +2337,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'Planar Surface': {
     description:
-      'Fill a sketch region or a closed loop of swept-body edges with a surface.',
+      'Fill sketch regions or a closed loop of swept-body edges with surfaces.',
     icon: 'planarSurface',
     status: 'experimental',
     needsReview: true,
@@ -2352,7 +2352,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'selection',
             displayName: 'Profiles',
             description:
-              'Select one sketch region, or coplanar swept-body edges in the order they connect.',
+              'Select sketch regions, or coplanar swept-body edges in the order they connect.',
             selectionTypes: [
               'segment',
               'sweepEdge',

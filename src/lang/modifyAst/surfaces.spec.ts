@@ -370,6 +370,12 @@ sketch001 = sketch(on = XY) {
   circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
 }`
 
+  const twoRegions = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
+  circle2 = circle(start = [40mm, 0mm], center = [30mm, 0mm])
+}`
+
   async function setup(code = circle) {
     return getAstAndArtifactGraph(
       code,
@@ -378,13 +384,8 @@ sketch001 = sketch(on = XY) {
     )
   }
 
-  it('creates and hides one region from a multi-region sketch', async () => {
-    const code = `@settings(kclVersion = 3.0)
-sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
-  circle2 = circle(start = [40mm, 0mm], center = [30mm, 0mm])
-}`
-    const { ast, artifactGraph } = await setup(code)
+  it('creates multiple viewport regions and hides their sketch once', async () => {
+    const { ast, artifactGraph } = await setup(twoRegions)
     const sketch = [...artifactGraph.values()].find(
       (artifact) => artifact.type === 'sketchBlock'
     )
@@ -401,16 +402,62 @@ sketch001 = sketch(on = XY) {
             sketchId: sketch.id,
             point: { x: 0, y: 0 },
           },
+          {
+            type: 'engineRegion',
+            id: 'second-region',
+            sketchId: sketch.id,
+            point: { x: 30, y: 0 },
+          },
         ],
       },
       wasmInstance: instanceInThisFile,
     })
     if (err(result)) throw result
-    expect(
-      recast(result.modifiedAst, instanceInThisFile)
-    ).toContain(`hidden001 = hide(sketch001)
+    const code = recast(result.modifiedAst, instanceInThisFile)
+    if (err(code)) throw code
+    expect(code).toContain(`hidden001 = hide(sketch001)
 region001 = region(point = [0mm, 0mm], sketch = sketch001)
-surface001 = planarSurface(region001)`)
+region002 = region(point = [30mm, 0mm], sketch = sketch001)
+surface001 = planarSurface([region001, region002])`)
+    expect(code.match(/hide\(sketch001\)/g)).toHaveLength(1)
+    expect(
+      await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+    ).toBeUndefined()
+  })
+
+  it('combines authored and viewport regions', async () => {
+    const { ast, artifactGraph } = await setup(`${twoRegions}
+region001 = region(segments = [sketch001.circle1])`)
+    const sketch = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'sketchBlock'
+    )
+    const region = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'path' && artifact.subType === 'region'
+    )
+    if (!sketch || !region) throw new Error('Missing sketch or region')
+    const result = addPlanarSurface({
+      ast,
+      artifactGraph,
+      curves: {
+        ...createSelectionFromArtifacts([region], artifactGraph),
+        otherSelections: [
+          {
+            type: 'engineRegion',
+            id: 'selected-region',
+            sketchId: sketch.id,
+            point: { x: 30, y: 0 },
+          },
+        ],
+      },
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(result)) throw result
+    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+      'surface001 = planarSurface([region001, region002])'
+    )
     expect(
       await mockExecAstAndReportErrors(
         result.modifiedAst,
@@ -522,7 +569,7 @@ extrude(region001, length = 5mm) |> translate(x = 25mm)`)
     ).toBeUndefined()
   })
 
-  it('rejects empty, whole-sketch, and multiple-region selections', async () => {
+  it('rejects empty, whole-sketch, and mixed selections', async () => {
     const { ast, artifactGraph } = await setup()
     const sketch = [...artifactGraph.values()].find(
       (artifact) => artifact.type === 'sketchBlock'
@@ -538,8 +585,10 @@ extrude(region001, length = 5mm) |> translate(x = 25mm)`)
       { graphSelections: [], otherSelections: [] },
       createSelectionFromArtifacts([sketch], artifactGraph),
       {
-        graphSelections: [],
-        otherSelections: [region, { ...region, id: 'other-region' }],
+        graphSelections: [
+          { entityRef: { type: 'edge', side_faces: ['face'] } },
+        ],
+        otherSelections: [region],
       },
     ]
     for (const curves of invalidSelections) {
