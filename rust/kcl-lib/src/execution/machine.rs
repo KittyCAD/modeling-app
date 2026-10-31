@@ -2582,7 +2582,7 @@ async fn sketch_block_body_setup(
     let sketch_block_artifact_id = node.scene_setup(sketch_id, &sketch_surface, exec_state)?;
 
     // Don't early return until the stack frame is popped!
-    node.prep_mem(exec_state.mut_stack().snapshot()?, exec_state)?;
+    exec_state.mut_stack().push_new_env_for_block()?;
 
     // Track that we're executing a sketch block.
     let initial_sketch_block_state = SketchBlockState {
@@ -2615,14 +2615,7 @@ async fn sketch_block_body_setup(
 
     // Execute the user body in a child scope, so the aliases aren't included
     // in the returned sketch object.
-    let parent = match exec_state.mut_stack().snapshot() {
-        Ok(p) => p,
-        Err(e) => {
-            sketch_body_cleanup(body_state, exec_state);
-            return Err(e);
-        }
-    };
-    if let Err(e) = exec_state.mut_stack().push_new_env_for_call(parent) {
+    if let Err(e) = exec_state.mut_stack().push_new_env_for_block() {
         sketch_body_cleanup(body_state, exec_state);
         return Err(e);
     }
