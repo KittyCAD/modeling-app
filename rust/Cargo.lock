@@ -3166,7 +3166,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.254"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue4877-clarify-planar-surface-body-docs#475fd9642449f718035af336fc6d656657ae4b59"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers%2Fplanar-face-api#50af83c3d2a4a8535b0022b061e7bfd7828fd923"
 dependencies = [
  "anyhow",
  "bon",
@@ -3200,7 +3200,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.14"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue4877-clarify-planar-surface-body-docs#475fd9642449f718035af336fc6d656657ae4b59"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers%2Fplanar-face-api#50af83c3d2a4a8535b0022b061e7bfd7828fd923"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -3211,7 +3211,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.15"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue4877-clarify-planar-surface-body-docs#475fd9642449f718035af336fc6d656657ae4b59"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers%2Fplanar-face-api#50af83c3d2a4a8535b0022b061e7bfd7828fd923"
 dependencies = [
  "proc-macro2",
  "quote",
