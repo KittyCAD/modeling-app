@@ -1,6 +1,7 @@
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { doAndWaitForImageDiff } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import {
@@ -12,13 +13,27 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
-test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
+// Restore the camera used when these files were preloaded.
+async function resetView(scene: SceneFixture) {
+  await scene.moveCameraTo({ x: 0, y: -128, z: 64 })
+  await doAndWaitForImageDiff(scene.streamWrapper, async () => {
+    await scene.streamWrapper.click({
+      button: 'right',
+      position: { x: 10, y: 100 },
+    })
+    await scene.page
+      .getByTestId('view-controls-menu')
+      .getByRole('button', { name: 'Reset view' })
+      .click()
+  })
+}
+
+test.describe('Point-and-click tests', { tag: '@web' }, () => {
   test.use({
     userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG],
   })
 
   test('Create an Extrude operation with a tag', async ({
-    context,
     editor,
     homePage,
     page,
@@ -31,12 +46,10 @@ test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
 }
 region001 = region(segments = [sketch001.circle1])`
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, code)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     })
 
     await test.step('Add extrude with tags', async () => {
@@ -74,7 +87,6 @@ region001 = region(segments = [sketch001.circle1])`
   })
 
   test('Edit an Extrude operation with a tag via Feature Tree', async ({
-    context,
     editor,
     homePage,
     page,
@@ -92,12 +104,10 @@ extrude001 = extrude(
   tagEnd = $myEndTag,
   bodyType = SURFACE,
 )`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, code)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
 
     await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
 
@@ -204,7 +214,6 @@ extrude001 = extrude(
   })
 
   test(`Verify user can double-click to edit a sketch`, async ({
-    context,
     homePage,
     editor,
     toolbar,
@@ -222,11 +231,13 @@ openSketch = sketch(on = XY) {
 }
 `
 
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, initialCode)
-
     await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
+    // Match the cursor position of an initially loaded file.
+    await editor.scrollToText('closedSketch = sketch(on = XZ) {')
 
     const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
       scene.makeMouseHelpers(0.65, 0.5, {
@@ -269,7 +280,7 @@ openSketch = sketch(on = XY) {
   })
 
   test(`Shift-click to select and deselect faces`, async ({
-    context,
+    editor,
     toolbar,
     page,
     homePage,
@@ -294,13 +305,13 @@ sketch001 = extrude(region001, length = -12)`
 
     // Setup
     await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
 
     // Click helpers
@@ -320,52 +331,53 @@ sketch001 = extrude(region001, length = -12)`
     })
   })
 
-  test(
-    `Offset plane point-and-click`,
-    { tag: '@web' },
-    async ({ homePage, scene, editor, toolbar, modelingDialog }) => {
-      const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
-      await homePage.goToModelingScene()
+  test(`Offset plane point-and-click`, async ({
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
+    await homePage.goToModelingScene()
+    await scene.settled()
+
+    await test.step(`Fill the modeling dialog`, async () => {
+      await toolbar.offsetPlaneButton.click()
+      await modelingDialog.selection('Plane').click()
+      await toolbar.selectDefaultPlane('Front plane')
+
+      await expect(modelingDialog.input('offset')).toHaveText('5')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+    })
+
+    await test.step(`Confirm code is added to the editor`, async () => {
+      await editor.expectEditor.toContain(expectedOutput)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [expectedOutput],
+        highlightedCode: '',
+      })
+    })
+
+    await test.step('Delete offset plane via feature tree selection', async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'plane001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await expect(toolbar.selectionStatus).not.toContainText('No selection')
+      await toolbar.removeFeatureTreeOperation(operationButton)
       await scene.settled()
-
-      await test.step(`Fill the modeling dialog`, async () => {
-        await toolbar.offsetPlaneButton.click()
-        await modelingDialog.selection('Plane').click()
-        await toolbar.selectDefaultPlane('Front plane')
-
-        await expect(modelingDialog.input('offset')).toHaveText('5')
-
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-      })
-
-      await test.step(`Confirm code is added to the editor`, async () => {
-        await editor.expectEditor.toContain(expectedOutput)
-        await editor.expectState({
-          diagnostics: [],
-          activeLines: [expectedOutput],
-          highlightedCode: '',
-        })
-      })
-
-      await test.step('Delete offset plane via feature tree selection', async () => {
-        await editor.closePane()
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'plane001',
-          0
-        )
-        await operationButton.click({ button: 'left' })
-        await expect(toolbar.selectionStatus).not.toContainText('No selection')
-        await toolbar.removeFeatureTreeOperation(operationButton)
-        await scene.settled()
-        await expect(toolbar.selectionStatus).toContainText('No selection')
-        await editor.expectEditor.not.toContain(expectedOutput)
-      })
-    }
-  )
+      await expect(toolbar.selectionStatus).toContainText('No selection')
+      await editor.expectEditor.not.toContain(expectedOutput)
+    })
+  })
 
   test(`Mirror point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -383,12 +395,12 @@ plane001 = offsetPlane(YZ, offset = 10)`
       'solid001 = mirror3d(extrude001, across = plane001)'
 
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     await test.step(`Fill the modeling dialog`, async () => {
@@ -433,7 +445,6 @@ plane001 = offsetPlane(YZ, offset = 10)`
   })
 
   test(`Helix point-and-click around sweepEdge with edit and delete flows`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -456,12 +467,13 @@ extrude001 = extrude(region001, length = 100)`
     const testPoint = { x: 564, y: 371 }
     const [clickOnEdge] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
 
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
+    await resetView(scene)
 
     await test.step(`Fill the modeling dialog`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
@@ -554,7 +566,6 @@ extrude001 = extrude(region001, length = 100)`
   })
 
   test(`Loft point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -573,12 +584,12 @@ sketch002 = sketch(on = plane001) {
 hidden001 = hide(sketch002)
 region002 = region(point = [0mm, 0mm], sketch = sketch002)`
     // TODO: replace point with segments = [sketch002.circle1] when the issue is fixed
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
     await page.setBodyDimensions({ width: 1500, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
 
     const loftDeclaration = 'loft001 = loft([region001, region002])'
     const editedLoftDeclaration =
@@ -639,7 +650,6 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
   // Note: testing the helix case here for sweep as it's the only one we can't
   // test in src\lang\modifyAst\sweeps.test.ts
   test(`Sweep point-and-click helix`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -675,11 +685,11 @@ region001 = region(segments = [sketch001.circle1])`
   translateProfileToPath = false,
   orientProfilePerpendicular = false,
 )`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
 
     await test.step(`Add sweep through the modeling dialog`, async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
@@ -727,7 +737,6 @@ region001 = region(segments = [sketch001.circle1])`
   })
 
   test(`Fillet point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -753,12 +762,12 @@ extrude001 = extrude(region001, length = -12)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
-    const firstEdgeLocation = { x: 600, y: 195 }
+    const firstEdgeLocation = { x: 600, y: 205 }
     const [clickOnFirstEdge] = scene.makeMouseHelpers(
       firstEdgeLocation.x,
       firstEdgeLocation.y
     )
-    const secondEdgeLocation = { x: 600, y: 383 }
+    const secondEdgeLocation = { x: 600, y: 374 }
     const [clickOnSecondEdge] = scene.makeMouseHelpers(
       secondEdgeLocation.x,
       secondEdgeLocation.y
@@ -766,12 +775,13 @@ extrude001 = extrude(region001, length = -12)`
 
     // Setup
     await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await resetView(scene)
     })
 
     // Test 1: Modeling dialog with preselected edges
@@ -909,7 +919,6 @@ extrude001 = extrude(region001, length = -12)`
   })
 
   test(`Fillet point-and-click edit standalone expression`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -925,12 +934,12 @@ region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 100)
 fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.circle1)])`
     await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
     await test.step('Edit fillet', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
@@ -951,7 +960,6 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tag
   })
 
   test('Should automatically fix revolve axis that is incompatible with P&C upon edit', async ({
-    context,
     page,
     homePage,
     scene,
@@ -974,12 +982,12 @@ revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
 `
 
     await test.step('Initial test setup', async () => {
-      await context.addInitScript((code: string) => {
-        localStorage.setItem('persistCode', code)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     await test.step('Edit revolve via feature tree (triggers auto-fix then edit)', async () => {
@@ -1013,7 +1021,6 @@ revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
   })
 
   test('Should automatically fix helix axis that is incompatible with P&C upon edit', async ({
-    context,
     page,
     homePage,
     scene,
@@ -1038,12 +1045,12 @@ helix001 = helix(
 `
 
     await test.step('Initial test setup', async () => {
-      await context.addInitScript((code: string) => {
-        localStorage.setItem('persistCode', code)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     await test.step('Edit helix via feature tree (triggers auto-fix then edit)', async () => {
@@ -1077,7 +1084,6 @@ helix001 = helix(
   })
 
   test(`Fillet point-and-click delete`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -1132,12 +1138,12 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
 
     // Setup
     await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     // Test
@@ -1237,7 +1243,6 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
   })
 
   test(`Fillet with large radius should update code even if engine fails`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -1262,16 +1267,17 @@ region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5)`
     // Locators
     // TODO: find a way to select sweepEdges in a different way
-    const edgeLocation = { x: 649, y: 283 }
+    const edgeLocation = { x: 617, y: 283 }
 
     // Setup
     await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await resetView(scene)
     })
 
     // Test
@@ -1314,7 +1320,6 @@ extrude001 = extrude(region001, length = 5)`
   })
 
   test(`Chamfer point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -1341,17 +1346,18 @@ extrude001 = extrude(region001, length = -12)`
     const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], length=5,)`
 
     // Locators
-    const firstEdgeLocation = { x: 600, y: 193 }
-    const secondEdgeLocation = { x: 600, y: 383 }
+    const firstEdgeLocation = { x: 600, y: 205 }
+    const secondEdgeLocation = { x: 600, y: 374 }
 
     // Setup
     await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await resetView(scene)
       await editor.closePane()
     })
 
@@ -1500,7 +1506,6 @@ extrude001 = extrude(region001, length = -12)`
   })
 
   test(`Chamfer point-and-click delete`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -1559,12 +1564,12 @@ chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line2, ca
 
     // Setup
     await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
       await editor.closePane()
     })
 
@@ -1672,7 +1677,6 @@ chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line2, ca
   })
 
   test(`Shell point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -1687,13 +1691,14 @@ sketch001 = sketch(on = XZ) {
 }
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 30)`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
+    await resetView(scene)
 
     // One dumb hardcoded screen pixel value
     // Any idea here how to select a cap without clicking in the scene?
@@ -1813,7 +1818,6 @@ extrude001 = extrude(profile001, length = 500)`
   })
 
   test(`Delete Face point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -1829,11 +1833,12 @@ sketch001 = sketch(on = XZ) {
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 30)`
     const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
+    await resetView(scene)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 575, y: 200 }
@@ -1893,8 +1898,10 @@ chamfer001 = chamfer(
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await editor.replaceCode('', initialCode)
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
     await editor.closePane()
     await scene.moveCameraTo(
       { x: 573.4, y: -539.4, z: 453.32 },
@@ -1947,8 +1954,10 @@ hide(sketch001)`
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await editor.replaceCode('', initialCode)
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
     await editor.closePane()
     await scene.moveCameraTo(
       { x: 5.72, y: -14.38, z: 26.13 },
@@ -2003,8 +2012,10 @@ hide(sketch001)`
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await editor.replaceCode('', initialCode)
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
     await editor.closePane()
     await scene.moveCameraTo(
       { x: 39.68, y: -7.24, z: 19.4 },
@@ -2028,7 +2039,6 @@ hide(sketch001)`
   })
 
   test('Revolve point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -2069,12 +2079,13 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   },
 )`
 
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
+    await resetView(scene)
 
     await test.step('Add revolve feature via point-and-click', async () => {
       // select line of code
@@ -2090,7 +2101,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         .options('axis or edge')
         .selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
-      const [clickOnFirstEdge] = scene.makeMouseHelpers(0.5, 0.23, {
+      const [clickOnFirstEdge] = scene.makeMouseHelpers(0.5, 0.28, {
         format: 'ratio',
       })
       await clickOnFirstEdge()
@@ -2134,48 +2145,52 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     })
   })
 
-  test(
-    `Translate helix point-and-click`,
-    { tag: '@web' },
-    async ({ page, homePage, scene, editor, toolbar, modelingDialog }) => {
-      const initialCode = `helix001 = helix(
+  test(`Translate helix point-and-click`, async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const initialCode = `helix001 = helix(
   axis = Z,
   radius = 5,
   length = 10,
   revolutions = 5,
   angleStart = 0,
     )`
-      const expectedTranslateCode = `translate(helix001, x = 20)`
+    const expectedTranslateCode = `translate(helix001, x = 20)`
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await editor.replaceCode('', initialCode)
-      await scene.settled()
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
 
-      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
-      await operationButton.click({ button: 'right' })
-      await page.getByTestId('context-menu-set-translate').click()
+    const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
+    await operationButton.click({ button: 'right' })
+    await page.getByTestId('context-menu-set-translate').click()
 
-      await modelingDialog.selection('Objects').click()
-      await expect(modelingDialog.selection('Objects')).toHaveText('1 helix')
+    await modelingDialog.selection('Objects').click()
+    await expect(modelingDialog.selection('Objects')).toHaveText('1 helix')
 
-      await expect(modelingDialog.input('x')).toHaveText('5')
-      await modelingDialog.input('x').fill('20')
+    await expect(modelingDialog.input('x')).toHaveText('5')
+    await modelingDialog.input('x').fill('20')
 
-      await modelingDialog.submit()
-      await scene.settled()
+    await modelingDialog.submit()
+    await scene.settled()
 
-      await editor.expectEditor.toContain(expectedTranslateCode)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [expectedTranslateCode],
-        highlightedCode: '',
-      })
-    }
-  )
+    await editor.expectEditor.toContain(expectedTranslateCode)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: [expectedTranslateCode],
+      highlightedCode: '',
+    })
+  })
 
   test('Blend point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -2210,12 +2225,12 @@ profile002 = startProfile(sketch002, at = [-1, 0])
     }
 
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     await test.step('Click blend in the surface toolbar group', async () => {
@@ -2253,7 +2268,6 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   })
 
   test('Flip Surface point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -2270,13 +2284,13 @@ extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = 
     const flipSurfaceDeclaration = `surface001 = flipSurface(extrude001)`
 
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1500, height: 1000 })
       await homePage.waitForAuthentication()
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     await test.step('Start Flip Surface and select extrude001 in the feature tree', async () => {
@@ -2315,7 +2329,6 @@ extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = 
   })
 
   test('Join Surfaces point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -2338,12 +2351,12 @@ extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)`
     const joinDeclaration = `surface001 = joinSurfaces([extrude001, extrude002])`
 
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1500, height: 1000 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     await test.step('Start Join and select two surfaces', async () => {
@@ -2377,7 +2390,6 @@ extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)`
   })
 
   test(`Appearance point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -2392,13 +2404,13 @@ region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 1)`
     const declaration = `appearance(extrude001, color = "#ff0000")`
     const editedDeclaration = `appearance(extrude001, color = "#00ff00")`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.waitForAuthentication()
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
 
     await test.step(`Go through the Set Appearance flow`, async () => {
       const operationButton = await toolbar.getFeatureTreeOperation(
@@ -2453,7 +2465,6 @@ extrude001 = extrude(region001, length = 1)`
   })
 
   test('Pattern Circular 3D point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -2467,12 +2478,12 @@ extrude001 = extrude(region001, length = 1)`
 region001 = region(segments = [sketch001.circle1])
 solid001 = extrude(region001, length = 5)`
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     await test.step('Add Pattern Circular 3D to the scene', async () => {
@@ -2664,7 +2675,6 @@ solid001 = extrude(region001, length = 5)`
   })
 
   test('Pattern Linear 3D point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -2678,12 +2688,12 @@ solid001 = extrude(region001, length = 5)`
 region001 = region(segments = [sketch001.circle1])
 solid001 = extrude(region001, length = 5)`
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
       // await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
 
@@ -2835,7 +2845,6 @@ solid001 = extrude(region001, length = 5)`
   })
 
   test('GDT Flatness from modeling dialog', async ({
-    context,
     page,
     homePage,
     scene,
@@ -2851,12 +2860,13 @@ sketch001 = sketch(on = XZ) {
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 30)`
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await resetView(scene)
 
       // Close panes to ensure toolbar buttons are visible
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
@@ -3038,7 +3048,6 @@ extrude001 = extrude(region001, length = 30)`
   })
 
   test('GDT Datum from modeling dialog', async ({
-    context,
     page,
     homePage,
     scene,
@@ -3054,12 +3063,13 @@ sketch001 = sketch(on = XZ) {
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 30)`
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await resetView(scene)
 
       // Close panes to ensure toolbar buttons are visible
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
@@ -3221,7 +3231,6 @@ extrude001 = extrude(region001, length = 30)`
   })
 
   test('Hole point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -3241,12 +3250,13 @@ extrude001 = extrude(region001, length = 30)`
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 10)`
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await resetView(scene)
 
       // Close panes to ensure toolbar buttons are visible
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
@@ -3342,424 +3352,394 @@ hole001 = hole::hole(
     })
   })
 
-  test(
-    'Helical gear point-and-click with edit and delete',
-    { tag: '@web' },
-    async ({
-      context,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      modelingDialog,
-    }) => {
-      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+  test('Helical gear point-and-click with edit and delete', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
 
-      const selectGearCommand = async (
-        item: 'gear-helical' | 'gear-spur' | 'gear-ring'
-      ) => {
-        await page
-          .locator('[data-onboarding-id="gears-dropdown-button"]')
-          .click()
-        await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
-        await page.getByTestId(`dropdown-${item}`).click()
-      }
+    const selectGearCommand = async (
+      item: 'gear-helical' | 'gear-spur' | 'gear-ring'
+    ) => {
+      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
+      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+      await page.getByTestId(`dropdown-${item}`).click()
+    }
 
-      await test.step('Settle the scene', async () => {
-        await context.addInitScript((initialCode) => {
-          localStorage.setItem('persistCode', initialCode)
-        }, initialCode)
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        await homePage.goToModelingScene()
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
+    await test.step('Settle the scene', async () => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
 
-      await test.step('Create helical gear via toolbar group', async () => {
-        await selectGearCommand('gear-helical')
-        await expect(modelingDialog.input('n teeth')).toHaveText('10')
-        await modelingDialog.input('n teeth').fill('12')
-        await modelingDialog.input('module').fill('2.2')
-        await modelingDialog.input('pressure angle').fill('25deg')
-        await modelingDialog.input('helix angle').fill('30deg')
-        await modelingDialog.input('gear height').fill('8')
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `gear001 = gear::helical(
+    await test.step('Create helical gear via toolbar group', async () => {
+      await selectGearCommand('gear-helical')
+      await expect(modelingDialog.input('n teeth')).toHaveText('10')
+      await modelingDialog.input('n teeth').fill('12')
+      await modelingDialog.input('module').fill('2.2')
+      await modelingDialog.input('pressure angle').fill('25deg')
+      await modelingDialog.input('helix angle').fill('30deg')
+      await modelingDialog.input('gear height').fill('8')
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::helical(
   nTeeth = 12,
   module = 2.2,
   pressureAngle = 25deg,
   helixAngle = 30deg,
   gearHeight = 8,
 )`,
-          { shouldNormalise: true }
-        )
-      })
+        { shouldNormalise: true }
+      )
+    })
 
-      await test.step('Edit helical gear via feature tree', async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'gear001',
-          0
-        )
-        await operationButton.dblclick({ button: 'left' })
-        await expect(modelingDialog.input('gear height')).toHaveText('8')
+    await test.step('Edit helical gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await expect(modelingDialog.input('gear height')).toHaveText('8')
 
-        await expect(modelingDialog.input('helix angle')).toHaveText('30deg')
-        await modelingDialog.input('helix angle').fill('15deg')
+      await expect(modelingDialog.input('helix angle')).toHaveText('30deg')
+      await modelingDialog.input('helix angle').fill('15deg')
 
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `gear001 = gear::helical(
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::helical(
   nTeeth = 12,
   module = 2.2,
   pressureAngle = 25deg,
   helixAngle = 15deg,
   gearHeight = 8,
 )`,
-          { shouldNormalise: true }
-        )
-      })
+        { shouldNormalise: true }
+      )
+    })
 
-      await test.step('Delete helical gear via feature tree', async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'gear001',
-          0
-        )
-        await operationButton.click({ button: 'left' })
-        await page.keyboard.press('Delete')
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.not.toContain('gear::helical(')
-        await expect(
-          await toolbar.getFeatureTreeOperation('gear001', 0)
-        ).not.toBeVisible()
-      })
+    await test.step('Delete helical gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.not.toContain('gear::helical(')
+      await expect(
+        await toolbar.getFeatureTreeOperation('gear001', 0)
+      ).not.toBeVisible()
+    })
+  })
+
+  test('Spur gear point-and-click with edit and delete', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+
+    const selectGearCommand = async (
+      item: 'gear-helical' | 'gear-spur' | 'gear-ring'
+    ) => {
+      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
+      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+      await page.getByTestId(`dropdown-${item}`).click()
     }
-  )
 
-  test(
-    'Spur gear point-and-click with edit and delete',
-    { tag: '@web' },
-    async ({
-      context,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      modelingDialog,
-    }) => {
-      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+    await test.step('Settle the scene', async () => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
 
-      const selectGearCommand = async (
-        item: 'gear-helical' | 'gear-spur' | 'gear-ring'
-      ) => {
-        await page
-          .locator('[data-onboarding-id="gears-dropdown-button"]')
-          .click()
-        await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
-        await page.getByTestId(`dropdown-${item}`).click()
-      }
-
-      await test.step('Settle the scene', async () => {
-        await context.addInitScript((initialCode) => {
-          localStorage.setItem('persistCode', initialCode)
-        }, initialCode)
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        await homePage.goToModelingScene()
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
-
-      await test.step('Create spur gear via toolbar group', async () => {
-        await selectGearCommand('gear-spur')
-        await expect(modelingDialog.input('n teeth')).toHaveText('21')
-        await modelingDialog.input('n teeth').fill('22')
-        await modelingDialog.input('module').fill('1.8')
-        await modelingDialog.input('pressure angle').fill('16deg')
-        await modelingDialog.input('gear height').fill('6')
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `gear001 = gear::spur(
+    await test.step('Create spur gear via toolbar group', async () => {
+      await selectGearCommand('gear-spur')
+      await expect(modelingDialog.input('n teeth')).toHaveText('21')
+      await modelingDialog.input('n teeth').fill('22')
+      await modelingDialog.input('module').fill('1.8')
+      await modelingDialog.input('pressure angle').fill('16deg')
+      await modelingDialog.input('gear height').fill('6')
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::spur(
   nTeeth = 22,
   module = 1.8,
   pressureAngle = 16deg,
   gearHeight = 6,
 )`,
-          { shouldNormalise: true }
-        )
-      })
+        { shouldNormalise: true }
+      )
+    })
 
-      await test.step('Edit spur gear via feature tree', async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'gear001',
-          0
-        )
-        await operationButton.dblclick({ button: 'left' })
-        await expect(modelingDialog.input('gear height')).toHaveText('6')
-        await modelingDialog.input('gear height').fill('7')
+    await test.step('Edit spur gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await expect(modelingDialog.input('gear height')).toHaveText('6')
+      await modelingDialog.input('gear height').fill('7')
 
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `gear001 = gear::spur(
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::spur(
   nTeeth = 22,
   module = 1.8,
   pressureAngle = 16deg,
   gearHeight = 7,
 )`,
-          { shouldNormalise: true }
-        )
-      })
+        { shouldNormalise: true }
+      )
+    })
 
-      await test.step('Delete spur gear via feature tree', async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'gear001',
-          0
-        )
-        await operationButton.click({ button: 'left' })
-        await page.keyboard.press('Delete')
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.not.toContain('gear::spur(')
-        await expect(
-          await toolbar.getFeatureTreeOperation('gear001', 0)
-        ).not.toBeVisible()
-      })
+    await test.step('Delete spur gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.not.toContain('gear::spur(')
+      await expect(
+        await toolbar.getFeatureTreeOperation('gear001', 0)
+      ).not.toBeVisible()
+    })
+  })
+
+  test('Herringbone gear point-and-click with edit and delete', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+
+    const selectGearCommand = async (
+      item: 'gear-helical' | 'gear-herringbone' | 'gear-spur' | 'gear-ring'
+    ) => {
+      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
+      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+      await page.getByTestId(`dropdown-${item}`).click()
     }
-  )
 
-  test(
-    'Herringbone gear point-and-click with edit and delete',
-    { tag: '@web' },
-    async ({
-      context,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      modelingDialog,
-    }) => {
-      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+    await test.step('Settle the scene', async () => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
 
-      const selectGearCommand = async (
-        item: 'gear-helical' | 'gear-herringbone' | 'gear-spur' | 'gear-ring'
-      ) => {
-        await page
-          .locator('[data-onboarding-id="gears-dropdown-button"]')
-          .click()
-        await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
-        await page.getByTestId(`dropdown-${item}`).click()
-      }
-
-      await test.step('Settle the scene', async () => {
-        await context.addInitScript((initialCode) => {
-          localStorage.setItem('persistCode', initialCode)
-        }, initialCode)
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        await homePage.goToModelingScene()
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
-
-      await test.step('Create herringbone gear via toolbar group', async () => {
-        await selectGearCommand('gear-herringbone')
-        await expect(modelingDialog.input('n teeth')).toHaveText('10')
-        await modelingDialog.input('n teeth').fill('11')
-        await modelingDialog.input('module').fill('2.3')
-        await modelingDialog.input('pressure angle').fill('24deg')
-        await modelingDialog.input('gear height').fill('6')
-        await modelingDialog.input('helix angle').fill('35deg')
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `gear001 = gear::herringbone(
+    await test.step('Create herringbone gear via toolbar group', async () => {
+      await selectGearCommand('gear-herringbone')
+      await expect(modelingDialog.input('n teeth')).toHaveText('10')
+      await modelingDialog.input('n teeth').fill('11')
+      await modelingDialog.input('module').fill('2.3')
+      await modelingDialog.input('pressure angle').fill('24deg')
+      await modelingDialog.input('gear height').fill('6')
+      await modelingDialog.input('helix angle').fill('35deg')
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::herringbone(
   nTeeth = 11,
   module = 2.3,
   pressureAngle = 24deg,
   gearHeight = 6,
   helixAngle = 35deg,
 )`,
-          { shouldNormalise: true }
-        )
-      })
+        { shouldNormalise: true }
+      )
+    })
 
-      await test.step('Edit herringbone gear via feature tree', async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'gear001',
-          0
-        )
-        await operationButton.dblclick({ button: 'left' })
-        await expect(modelingDialog.input('helix angle')).toHaveText('35deg')
-        await modelingDialog.input('helix angle').fill('20deg')
+    await test.step('Edit herringbone gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await expect(modelingDialog.input('helix angle')).toHaveText('35deg')
+      await modelingDialog.input('helix angle').fill('20deg')
 
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `gear001 = gear::herringbone(
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::herringbone(
   nTeeth = 11,
   module = 2.3,
   pressureAngle = 24deg,
   gearHeight = 6,
   helixAngle = 20deg,
 )`,
-          { shouldNormalise: true }
-        )
-      })
+        { shouldNormalise: true }
+      )
+    })
 
-      await test.step('Delete herringbone gear via feature tree', async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'gear001',
-          0
-        )
-        await operationButton.click({ button: 'left' })
-        await page.keyboard.press('Delete')
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.not.toContain('gear::herringbone(')
-        await expect(
-          await toolbar.getFeatureTreeOperation('gear001', 0)
-        ).not.toBeVisible()
-      })
+    await test.step('Delete herringbone gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.not.toContain('gear::herringbone(')
+      await expect(
+        await toolbar.getFeatureTreeOperation('gear001', 0)
+      ).not.toBeVisible()
+    })
+  })
+
+  test('Ring gear point-and-click with edit and delete', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+
+    const selectGearCommand = async (
+      item: 'gear-helical' | 'gear-spur' | 'gear-ring'
+    ) => {
+      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
+      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+      await page.getByTestId(`dropdown-${item}`).click()
     }
-  )
 
-  test(
-    'Ring gear point-and-click with edit and delete',
-    { tag: '@web' },
-    async ({
-      context,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      modelingDialog,
-    }) => {
-      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+    await test.step('Settle the scene', async () => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
 
-      const selectGearCommand = async (
-        item: 'gear-helical' | 'gear-spur' | 'gear-ring'
-      ) => {
-        await page
-          .locator('[data-onboarding-id="gears-dropdown-button"]')
-          .click()
-        await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
-        await page.getByTestId(`dropdown-${item}`).click()
-      }
-
-      await test.step('Settle the scene', async () => {
-        await context.addInitScript((initialCode) => {
-          localStorage.setItem('persistCode', initialCode)
-        }, initialCode)
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        await homePage.goToModelingScene()
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
-
-      await test.step('Create ring gear via toolbar group', async () => {
-        await selectGearCommand('gear-ring')
-        await expect(modelingDialog.input('n teeth')).toHaveText('40')
-        await modelingDialog.fillInput('n teeth', '42')
-        await modelingDialog.fillInput('module', '1.3')
-        await modelingDialog.fillInput('pressure angle', '14deg')
-        await modelingDialog.fillInput('helix angle', '-20deg')
-        await modelingDialog.fillInput('gear height', '5')
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `gear001 = gear::ring(
+    await test.step('Create ring gear via toolbar group', async () => {
+      await selectGearCommand('gear-ring')
+      await expect(modelingDialog.input('n teeth')).toHaveText('40')
+      await modelingDialog.fillInput('n teeth', '42')
+      await modelingDialog.fillInput('module', '1.3')
+      await modelingDialog.fillInput('pressure angle', '14deg')
+      await modelingDialog.fillInput('helix angle', '-20deg')
+      await modelingDialog.fillInput('gear height', '5')
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::ring(
   nTeeth = 42,
   module = 1.3,
   pressureAngle = 14deg,
   helixAngle = -20deg,
   gearHeight = 5,
 )`,
-          { shouldNormalise: true }
-        )
-      })
+        { shouldNormalise: true }
+      )
+    })
 
-      await test.step('Edit ring gear via feature tree', async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'gear001',
-          0
-        )
-        await operationButton.dblclick({ button: 'left' })
+    await test.step('Edit ring gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
 
-        await expect(modelingDialog.input('n teeth')).toHaveText('42')
-        await modelingDialog.fillInput('n teeth', '48')
+      await expect(modelingDialog.input('n teeth')).toHaveText('42')
+      await modelingDialog.fillInput('n teeth', '48')
 
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `gear001 = gear::ring(
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::ring(
   nTeeth = 48,
   module = 1.3,
   pressureAngle = 14deg,
   helixAngle = -20deg,
   gearHeight = 5,
 )`,
-          { shouldNormalise: true }
-        )
-      })
+        { shouldNormalise: true }
+      )
+    })
 
-      await test.step('Delete ring gear via feature tree', async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'gear001',
-          0
-        )
-        await operationButton.click({ button: 'left' })
-        await page.keyboard.press('Delete')
-        await scene.settled()
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.not.toContain('gear::ring(')
-        await expect(
-          await toolbar.getFeatureTreeOperation('gear001', 0)
-        ).not.toBeVisible()
-      })
-    }
-  )
-})
+    await test.step('Delete ring gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.not.toContain('gear::ring(')
+      await expect(
+        await toolbar.getFeatureTreeOperation('gear001', 0)
+      ).not.toBeVisible()
+    })
+  })
 
-test.describe('Point-and-click tests', { tag: '@web' }, () => {
   test('Selects objects and annotations from the feature tree for Named View exceptions', async ({
     page,
     homePage,
