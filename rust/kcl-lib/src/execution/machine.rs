@@ -2712,6 +2712,33 @@ mod tests {
         parse_execute(code).await
     }
 
+    #[tokio::test]
+    async fn unknown_rust_std_fn_returns_internal_error() {
+        let code = "@settings(kclVersion = 3.0)\n@(impl = std_rust)\nfn missing() {}";
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::execution::new_mock_executor_context(None);
+        let mut exec_state = ExecState::new(&ctx);
+        exec_state.mod_local.path = crate::execution::ModulePath::Std {
+            value: "math".to_owned(),
+        };
+        exec_state.mod_local.inside_stdlib = true;
+        ctx.handle_annotations(program.ast.inner_attrs.iter(), BodyType::Root, &mut exec_state)
+            .await
+            .unwrap();
+        exec_state.mut_stack().push_new_root_env(false).unwrap();
+
+        let error = ctx
+            .exec_block(&program.ast, &mut exec_state, BodyType::Root)
+            .await
+            .unwrap_err();
+
+        assert!(matches!(error, KclError::Internal { .. }));
+        assert!(error.message().contains("math::missing"));
+        assert_eq!(error.source_ranges().len(), 1);
+        let range = error.source_ranges()[0];
+        assert_eq!(&code[range.start()..range.end()], "() {}");
+    }
+
     /// A program whose trailing modeling commands are still sitting in the
     /// engine's batch queue when the terminal statement runs. (No close() or
     /// similar: operations that send immediately would drain the queue
