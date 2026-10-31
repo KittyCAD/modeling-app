@@ -270,11 +270,33 @@ struct Environment {
     // An outer scope, if one exists.
     parent: Option<EnvironmentRef>,
     might_be_refed: bool,
-    closure_pins: Vec<Weak<()>>,
+    closure_pins: Vec<ClosureCapture>,
     parent_pin: ParentPin,
     // The id of the `Stack` if this `Environment` is on a call stack. If this is >0 then it may
     // only be read or written by that `Stack`; if 0 then the env is read-only.
     owner: usize,
+}
+
+#[derive(Debug, Clone)]
+struct ClosureCapture {
+    pin: Weak<()>,
+    epoch: usize,
+    // Count recursive self-bindings, including copies in cached arenas.
+    recursive_owners: Weak<()>,
+    _recursive_owner: Option<Arc<()>>,
+}
+
+impl ClosureCapture {
+    fn is_external(&self) -> bool {
+        self.pin.strong_count() > self.recursive_owners.strong_count()
+    }
+}
+
+impl Drop for Environment {
+    fn drop(&mut self) {
+        // Unregister recursive bindings before releasing their strong references.
+        self.closure_pins.clear();
+    }
 }
 
 type EnvStore = Vec<Arc<RwLock<Environment>>>;
@@ -551,8 +573,15 @@ impl ProgramMemory {
 
         env.read_only();
         drop(env);
-        // A callback can outlive a child frame but die before its caller returns.
-        // Reclaim that now-unreferenced tail as well as the current frame.
+        // A surviving child can strand earlier dead frames below the arena tail.
+        // Visit this call's descendants in reverse so releasing a child can
+        // release its ancestors before we inspect them.
+        for index in (old.index()..envs.len()).rev() {
+            let mut candidate = self.write_env(&envs[index], index, "reclaiming child environments")?;
+            if candidate.owner == 0 {
+                candidate.reclaim_unreferenced();
+            }
+        }
         while let Some(last) = envs.last() {
             let last = self.read_env(last, envs.len() - 1, "reclaiming environment tail")?;
             if last.owner != 0 || last.is_referenced() {
@@ -823,8 +852,15 @@ impl Stack {
     }
 
     /// Keep captures alive only while a closure using them is alive.
-    pub fn snapshot_for_closure(&mut self) -> Result<(EnvironmentRef, Arc<()>), KclError> {
+    pub(crate) fn snapshot_for_closure(&mut self) -> Result<(EnvironmentRef, Arc<()>), KclError> {
+        self.capture_closure(false)
+    }
+
+    fn capture_closure(&mut self, recursive: bool) -> Result<(EnvironmentRef, Arc<()>), KclError> {
         let pin = Arc::new(());
+        let recursive_owners = Arc::new(());
+        self.memory.stats.epoch_count.fetch_add(1, Ordering::Relaxed);
+        let epoch = self.memory.epoch.fetch_add(1, Ordering::Relaxed);
         let envs = self.memory.read_env_table("snapshotting a closure")?;
         let mut current = Some(self.current_env);
         while let Some(reference) = current {
@@ -834,12 +870,16 @@ impl Stack {
             let mut env = self
                 .memory
                 .write_env(env, reference.index(), "snapshotting a closure")?;
-            env.closure_pins.retain(|pin| pin.strong_count() > 0);
-            env.closure_pins.push(Arc::downgrade(&pin));
+            env.closure_pins.retain(|capture| capture.pin.strong_count() > 0);
+            let recursive_owner = recursive && reference.index() == self.current_env.index();
+            env.closure_pins.push(ClosureCapture {
+                pin: Arc::downgrade(&pin),
+                recursive_owners: Arc::downgrade(&recursive_owners),
+                epoch: epoch.min(reference.epoch()),
+                _recursive_owner: recursive_owner.then(|| Arc::clone(&recursive_owners)),
+            });
             current = env.parent;
         }
-        self.memory.stats.epoch_count.fetch_add(1, Ordering::Relaxed);
-        let epoch = self.memory.epoch.fetch_add(1, Ordering::Relaxed);
         Ok((EnvironmentRef::at_epoch(self.current_env.index(), epoch), pin))
     }
 
@@ -920,8 +960,11 @@ impl Stack {
         }
 
         // Fix up the placeholder env ref now that the name is bound.
-        let fixed_env_ref = self.snapshot()?;
-        let fixed_closure = value.map_env_ref_and_epoch(placeholder_env_ref, fixed_env_ref);
+        let (fixed_env_ref, pin) = self.capture_closure(true)?;
+        let mut fixed_closure = value.map_env_ref_and_epoch(placeholder_env_ref, fixed_env_ref);
+        if let KclValue::Function { value, .. } = &mut fixed_closure {
+            value.capture_pin = Some(pin);
+        }
         let original_env_index = original_env.index();
         let original_env = self
             .memory
@@ -1189,7 +1232,7 @@ impl Environment {
     }
 
     fn is_referenced(&self) -> bool {
-        self.might_be_refed || self.closure_pins.iter().any(|pin| pin.strong_count() > 0)
+        self.might_be_refed || self.closure_pins.iter().any(|capture| capture.is_external())
     }
 
     // True if the env is empty and has no external references.
@@ -1205,15 +1248,38 @@ impl Environment {
     ///
     /// See module docs for more details.
     fn compact(&mut self, owner: usize, op: &str) -> Result<(), KclError> {
-        // Don't compress if there might be a closure or import referencing us.
-        if self.is_referenced() {
-            return Ok(());
-        }
-
         self.check_owned_by(owner, op)?;
-        self.bindings = IndexMap::new();
-        self.closure_pins.clear();
+        self.reclaim_unreferenced();
         Ok(())
+    }
+
+    fn reclaim_unreferenced(&mut self) {
+        self.prune_captures();
+        if !self.is_referenced() {
+            self.bindings = IndexMap::new();
+            self.closure_pins.clear();
+        }
+    }
+
+    fn prune_captures(&mut self) {
+        // A snapshot cannot see bindings created after its epoch. Removing those
+        // bindings can release closures that otherwise keep their own frame alive.
+        if !self.might_be_refed {
+            loop {
+                let last_visible = self
+                    .closure_pins
+                    .iter()
+                    .filter(|capture| capture.is_external())
+                    .map(|capture| capture.epoch)
+                    .max();
+                let before = self.bindings.len();
+                self.bindings
+                    .retain(|_, (epoch, _)| last_visible.is_some_and(|visible| *epoch <= visible));
+                if self.bindings.len() == before {
+                    break;
+                }
+            }
+        }
     }
 
     fn get(&self, key: &str, epoch: usize) -> Result<KclValue, Option<EnvironmentRef>> {
