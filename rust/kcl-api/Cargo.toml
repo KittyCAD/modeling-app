@@ -1,6 +1,6 @@
 [package]
 name = "kcl-api"
-version = "0.2.193"
+version = "0.2.194"
 edition = "2024"
 description = "KCL API"
 license = "MIT"
@@ -16,7 +16,7 @@ arbitrary = { version = "1", features = ["derive"], optional = true }
 euler = "0.5"
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 kittycad-unit-conversion-derive = "0.1.0"
-kcl-error = { version = "=0.2.193", path = "../kcl-error" }
+kcl-error = { version = "=0.2.194", path = "../kcl-error" }
 kittycad-point = { version = "0.1.0" }
 # Fork of <crates.io/crates/measurements>
 measurements = { package = "kittycad-measurements", version = "0.11.2" }
@@ -31,7 +31,7 @@ ts-rs = { workspace = true }
 uuid = { workspace = true, features = ["v4", "v5", "js", "serde"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-typed-path = "0.12.3"
+typed-path = "0.13.0"
 
 [lints]
 workspace = true

@@ -78,10 +78,10 @@ pipx install maturin
 >
 > `pip install maturin` should also work if you don't want to use pipx.
 
-There are four main commands:
+The main commands are:
 
-- `maturin publish` builds the crate into python packages and publishes them to pypi.
-- `maturin build` builds the wheels and stores them in a folder (`target/wheels` by default), but doesn't upload them. It's possible to upload those with [twine](https://github.com/pypa/twine) or `maturin upload`.
+- `maturin build` builds the wheels and stores them in a folder (`target/wheels` by default).
+- `uv publish <path-to-distributions>/*` uploads previously built wheels and source distributions to PyPI. Set `UV_PUBLISH_TOKEN` to your PyPI API token.
 - `maturin develop` builds the crate and installs it as a python module directly in the current virtualenv. Note that while `maturin develop` is faster, it doesn't support all the feature that running `pip install` after `maturin build` supports.
 
 `pyo3` bindings are automatically detected. 

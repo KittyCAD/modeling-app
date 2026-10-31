@@ -17,10 +17,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 658,
-            "end": 679,
+            "commentStart": 648,
+            "end": 669,
             "moduleId": 0,
-            "start": 658,
+            "start": 648,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -31,10 +31,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 763,
-            "end": 769,
+            "commentStart": 753,
+            "end": 759,
             "moduleId": 0,
-            "start": 763,
+            "start": 753,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -52,10 +52,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 933,
-            "end": 939,
+            "commentStart": 923,
+            "end": 929,
             "moduleId": 0,
-            "start": 933,
+            "start": 923,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -77,10 +77,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
               317.2
             ],
             "tag": {
-              "commentStart": 658,
-              "end": 679,
+              "commentStart": 648,
+              "end": 669,
               "moduleId": 0,
-              "start": 658,
+              "start": 648,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -101,10 +101,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
               317.2
             ],
             "tag": {
-              "commentStart": 763,
-              "end": 769,
+              "commentStart": 753,
+              "end": 759,
               "moduleId": 0,
-              "start": 763,
+              "start": 753,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -142,10 +142,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
               99.94
             ],
             "tag": {
-              "commentStart": 933,
-              "end": 939,
+              "commentStart": 923,
+              "end": 929,
               "moduleId": 0,
-              "start": 933,
+              "start": 923,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -243,10 +243,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 658,
-            "end": 679,
+            "commentStart": 648,
+            "end": 669,
             "moduleId": 0,
-            "start": 658,
+            "start": 648,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -257,10 +257,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 763,
-            "end": 769,
+            "commentStart": 753,
+            "end": 759,
             "moduleId": 0,
-            "start": 763,
+            "start": 753,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -278,10 +278,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 933,
-            "end": 939,
+            "commentStart": 923,
+            "end": 929,
             "moduleId": 0,
-            "start": 933,
+            "start": 923,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -292,10 +292,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1170,
-            "end": 1176,
+            "commentStart": 1160,
+            "end": 1166,
             "moduleId": 0,
-            "start": 1170,
+            "start": 1160,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -306,10 +306,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1226,
-            "end": 1232,
+            "commentStart": 1216,
+            "end": 1222,
             "moduleId": 0,
-            "start": 1226,
+            "start": 1216,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -341,10 +341,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
               317.2
             ],
             "tag": {
-              "commentStart": 658,
-              "end": 679,
+              "commentStart": 648,
+              "end": 669,
               "moduleId": 0,
-              "start": 658,
+              "start": 648,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -365,10 +365,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
               317.2
             ],
             "tag": {
-              "commentStart": 763,
-              "end": 769,
+              "commentStart": 753,
+              "end": 759,
               "moduleId": 0,
-              "start": 763,
+              "start": 753,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -406,10 +406,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
               99.94
             ],
             "tag": {
-              "commentStart": 933,
-              "end": 939,
+              "commentStart": 923,
+              "end": 929,
               "moduleId": 0,
-              "start": 933,
+              "start": 923,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -529,10 +529,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           },
           "edgeId": "[uuid]",
           "tag": {
-            "commentStart": 1170,
-            "end": 1176,
+            "commentStart": 1160,
+            "end": 1166,
             "moduleId": 0,
-            "start": 1170,
+            "start": 1160,
             "type": "TagDeclarator",
             "value": "seg03"
           }
@@ -552,10 +552,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           },
           "edgeId": "[uuid]",
           "tag": {
-            "commentStart": 1226,
-            "end": 1232,
+            "commentStart": 1216,
+            "end": 1222,
             "moduleId": 0,
-            "start": 1226,
+            "start": 1216,
             "type": "TagDeclarator",
             "value": "seg04"
           }
@@ -579,10 +579,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1849,
-            "end": 1870,
+            "commentStart": 1839,
+            "end": 1860,
             "moduleId": 0,
-            "start": 1849,
+            "start": 1839,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -593,10 +593,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1954,
-            "end": 1975,
+            "commentStart": 1944,
+            "end": 1965,
             "moduleId": 0,
-            "start": 1954,
+            "start": 1944,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -607,10 +607,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2077,
-            "end": 2098,
+            "commentStart": 2067,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2077,
+            "start": 2067,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -639,10 +639,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
               -278.35
             ],
             "tag": {
-              "commentStart": 1849,
-              "end": 1870,
+              "commentStart": 1839,
+              "end": 1860,
               "moduleId": 0,
-              "start": 1849,
+              "start": 1839,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -663,10 +663,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
               -278.35
             ],
             "tag": {
-              "commentStart": 1954,
-              "end": 1975,
+              "commentStart": 1944,
+              "end": 1965,
               "moduleId": 0,
-              "start": 1954,
+              "start": 1944,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -687,10 +687,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
               -146.08
             ],
             "tag": {
-              "commentStart": 2077,
-              "end": 2098,
+              "commentStart": 2067,
+              "end": 2088,
               "moduleId": 0,
-              "start": 2077,
+              "start": 2067,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -854,10 +854,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             317.2
           ],
           "tag": {
-            "commentStart": 658,
-            "end": 679,
+            "commentStart": 648,
+            "end": 669,
             "moduleId": 0,
-            "start": 658,
+            "start": 648,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -878,10 +878,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             317.2
           ],
           "tag": {
-            "commentStart": 763,
-            "end": 769,
+            "commentStart": 753,
+            "end": 759,
             "moduleId": 0,
-            "start": 763,
+            "start": 753,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -919,10 +919,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             99.94
           ],
           "tag": {
-            "commentStart": 933,
-            "end": 939,
+            "commentStart": 923,
+            "end": 929,
             "moduleId": 0,
-            "start": 933,
+            "start": 923,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1025,10 +1025,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             -278.35
           ],
           "tag": {
-            "commentStart": 1849,
-            "end": 1870,
+            "commentStart": 1839,
+            "end": 1860,
             "moduleId": 0,
-            "start": 1849,
+            "start": 1839,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -1049,10 +1049,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             -278.35
           ],
           "tag": {
-            "commentStart": 1954,
-            "end": 1975,
+            "commentStart": 1944,
+            "end": 1965,
             "moduleId": 0,
-            "start": 1954,
+            "start": 1944,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -1073,10 +1073,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             -146.08
           ],
           "tag": {
-            "commentStart": 2077,
-            "end": 2098,
+            "commentStart": 2067,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2077,
+            "start": 2067,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -1187,10 +1187,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             -277.34
           ],
           "tag": {
-            "commentStart": 1378,
-            "end": 1399,
+            "commentStart": 1368,
+            "end": 1389,
             "moduleId": 0,
-            "start": 1378,
+            "start": 1368,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -1211,10 +1211,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             -277.34
           ],
           "tag": {
-            "commentStart": 1482,
-            "end": 1503,
+            "commentStart": 1472,
+            "end": 1493,
             "moduleId": 0,
-            "start": 1482,
+            "start": 1472,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -1235,10 +1235,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             -172.53999999999996
           ],
           "tag": {
-            "commentStart": 1605,
-            "end": 1626,
+            "commentStart": 1595,
+            "end": 1616,
             "moduleId": 0,
-            "start": 1605,
+            "start": 1595,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },

@@ -38,6 +38,7 @@ __all__ = [
     "InventorImportOptions",
     "KclErrorInfo",
     "KclSession",
+    "NamedView",
     "NxImportOptions",
     "ObjExportOptions",
     "ObjImportOptions",
@@ -57,6 +58,7 @@ __all__ = [
     "StepImportOptions",
     "StepImportTargetRepresentation",
     "StepPresentation",
+    "StepSchema",
     "StlExportOptions",
     "StlImportOptions",
     "StlStorage",
@@ -518,6 +520,13 @@ class KclSession:
         Get 3D files containing this model.
         It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
         """
+
+@typing.final
+class NamedView:
+    r"""
+    Options for exporting glTF 2.0.
+    """
+    ...
 
 @typing.final
 class NxImportOptions:
@@ -1026,6 +1035,26 @@ class StepPresentation(enum.Enum):
     Pretty = ...
     r"""
     Add extra spaces to make the text more easily readable.
+    
+    This is the default setting.
+    """
+
+@typing.final
+class StepSchema(enum.Enum):
+    r"""
+    Specifies the STEP application protocol schema for export.
+    """
+    Ap203 = ...
+    r"""
+    AP203 edition 2.
+    """
+    Ap214 = ...
+    r"""
+    AP214.
+    """
+    Ap242 = ...
+    r"""
+    AP242.
     
     This is the default setting.
     """

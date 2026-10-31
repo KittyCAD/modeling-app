@@ -2409,7 +2409,7 @@ extrude001 = extrude(profile001, length = 5)`
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await editor.expectEditor.toContain(
         `
-        sketch002 = sketch(on = faceOf(extrude001, face = line1)) {
+        sketch002 = sketch(on = faceOf(extrude001, face = line3)) {
         }`,
         { shouldNormalise: true }
       )
