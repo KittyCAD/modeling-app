@@ -1,8 +1,15 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { ExchangeCard } from '@src/components/ExchangeCard'
-import { describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 describe('ExchangeCard replay attachments', () => {
+  beforeEach(() => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:image-preview')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+  })
+
+  afterEach(() => vi.restoreAllMocks())
+
   const attachmentRef = {
     prompt_id: '00000000-0000-4000-8000-000000000001',
     seq: 3,
@@ -35,7 +42,7 @@ describe('ExchangeCard replay attachments', () => {
       <ExchangeCard {...exchangeProps} onFetchAttachment={onFetchAttachment} />
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /reference\.png/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Image/ }))
     expect(onFetchAttachment).toHaveBeenCalledOnce()
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
 
@@ -50,7 +57,7 @@ describe('ExchangeCard replay attachments', () => {
     )
 
     expect(
-      screen.getByRole('button', { name: /reference\.png Loading…/ })
+      screen.getByRole('button', { name: /Image Loading…/ })
     ).toBeDisabled()
 
     rerender(
@@ -69,8 +76,13 @@ describe('ExchangeCard replay attachments', () => {
       />
     )
 
-    expect(screen.queryByRole('button', { name: /reference\.png/ })).toBeNull()
-    expect(screen.getByText('Loaded')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Attachment preview' })
+    ).toBeNull()
+    expect(
+      screen.getByRole('img', { name: 'Attachment preview' })
+    ).toHaveAttribute('src', 'blob:image-preview')
+    expect(screen.queryByText('Loaded')).not.toBeInTheDocument()
   })
 
   test('renders a metadata-only server file without a reasoning message', () => {
