@@ -44,6 +44,7 @@ function bindLocalFileSystem(activeFs: IZooDesignStudioFS): IZooDesignStudioFS {
     dirname: activeFs.dirname.bind(activeFs),
     getPath: activeFs.getPath.bind(activeFs),
     access: activeFs.access.bind(activeFs),
+    realpath: activeFs.realpath.bind(activeFs),
     cp: activeFs.cp.bind(activeFs),
     readFile: activeFs.readFile.bind(activeFs),
     rename: activeFs.rename.bind(activeFs),

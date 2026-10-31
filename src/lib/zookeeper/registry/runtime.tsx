@@ -30,6 +30,10 @@ import {
   fileOperationsService,
 } from '@src/registry/contracts/fileOperations'
 import {
+  type HomeProjectEntry,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
+import {
   layoutAreaLibraryValueSpec,
   layoutService,
 } from '@src/registry/contracts/layout'
@@ -61,6 +65,7 @@ type ZookeeperRuntimeServices = {
   auth: ReadonlySignal<AuthRegistryService | undefined>
   billing: ReadonlySignal<BillingRegistryService | undefined>
   fileOperations: ReadonlySignal<FileOperationsRegistryService | undefined>
+  libraryProjects?: ReadonlySignal<readonly HomeProjectEntry[]>
   projectSession: ReadonlySignal<ProjectSessionService | undefined>
   settings: ReadonlySignal<SettingsRegistryService | undefined>
   systemIO: ReadonlySignal<SystemIORegistryService | undefined>
@@ -85,7 +90,6 @@ const loadZookeeperSessionController = () =>
   import('@src/lib/zookeeper/registry/controller')
 
 const CONTROLLER_LOAD_RETRY_DELAY_MS = 1_000
-
 const pendingSessionDisposals = new Map<string, Promise<void>>()
 const pendingEditorDisposals = new WeakMap<KclManager, Promise<void>>()
 
@@ -238,7 +242,6 @@ export function createZookeeperRuntime(
       kclManager.path === executingFile?.path
     const apiToken = auth?.token.value ?? ''
     const isLoggedIn = auth?.isLoggedIn.value ?? false
-
     if (
       activation &&
       (activation.projectPath !== projectPath ||
@@ -307,6 +310,7 @@ export function createZookeeperRuntime(
             getEnvironmentNameFromEnv(env())
           ),
           fileOperations,
+          libraryProjects: services.libraryProjects,
           kclManager: next.kclManager,
           project: next.project,
           projectId: next.projectId,
@@ -417,6 +421,7 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
     auth: ctx.services.signal(authService),
     billing: ctx.services.signal(billingService),
     fileOperations: ctx.services.signal(fileOperationsService),
+    libraryProjects: ctx.valueSpecs.signal(homeProjectEntriesValueSpec),
     projectSession: ctx.services.signal(projectSession),
     settings: ctx.services.signal(settingsService),
     systemIO: ctx.services.signal(systemIOService),
