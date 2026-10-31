@@ -1,10 +1,11 @@
 import type { CommandKclArgument } from '@src/components/CommandBar/CommandKclInput'
 import type { CommandKclChange } from '@src/components/CommandBar/CommandKclInput'
 import { EditorView } from '@codemirror/view'
+import { completionStatus, startCompletion } from '@codemirror/autocomplete'
 import type { Expr } from '@src/lang/wasm'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { useCallback, useState } from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { assert, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
   const ast = { body: [], start: 0, end: 0, moduleId: 0, commentStart: 0 }
@@ -92,6 +93,28 @@ async function renderInput(
 }
 
 describe('CommandKclInput', () => {
+  it('consumes Enter while autocomplete is pending', async () => {
+    await renderInput()
+    const input = screen.getByRole('textbox', { name: 'Distance' })
+    const editor = EditorView.findFromDOM(input)
+    assert(editor)
+    act(() => {
+      startCompletion(editor)
+    })
+    expect(completionStatus(editor.state)).toBe('pending')
+
+    const enter = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      code: 'Enter',
+      bubbles: true,
+      cancelable: true,
+    })
+    fireEvent(input, enter)
+
+    expect(enter.defaultPrevented).toBe(true)
+    expect(editor.state.doc.toString()).toBe('5')
+  })
+
   it('reports toggling variable creation as a user edit before recalculation', async () => {
     const onChange = await renderInput()
     onChange.mockClear()

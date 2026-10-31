@@ -440,6 +440,35 @@ export interface PrevVariable<T> {
   ty: NumericType | undefined
 }
 
+function previousVariablesFromBody(
+  body: Program['body'],
+  memVars: VariableMap,
+  type: 'number' | 'string',
+  before = Number.POSITIVE_INFINITY
+): PrevVariable<number | string>[] {
+  if (!isArray(body)) return []
+  return body.flatMap((item) => {
+    if (item.type !== 'VariableDeclaration' || item.end > before) return []
+    const key = item.declaration.id.name
+    const variable = memVars[key]
+    if (
+      !variable ||
+      !('value' in variable) ||
+      (typeof variable.value !== 'number' &&
+        typeof variable.value !== 'string') ||
+      typeof variable.value !== type
+    )
+      return []
+    return [
+      {
+        key,
+        value: variable.value,
+        ty: variable.type === 'Number' ? variable.ty : undefined,
+      },
+    ]
+  })
+}
+
 export function findAllPreviousVariablesPath(
   ast: Program,
   memVars: VariableMap,
@@ -447,7 +476,7 @@ export function findAllPreviousVariablesPath(
   wasmInstance: ModuleType,
   type: 'number' | 'string' = 'number'
 ): {
-  variables: PrevVariable<typeof type extends 'number' ? number : string>[]
+  variables: PrevVariable<number | string>[]
   bodyPath: PathToNode
   insertIndex: number
 } {
@@ -477,20 +506,12 @@ export function findAllPreviousVariablesPath(
   }
   const { node: bodyItems } = _node2
 
-  const variables: PrevVariable<any>[] = []
-  bodyItems?.forEach?.((item) => {
-    if (item.type !== 'VariableDeclaration' || item.end > startRange) return
-    const varName = item.declaration.id.name
-    const varValue = memVars[varName]
-    if (!varValue || !('value' in varValue) || typeof varValue.value !== type) {
-      return
-    }
-    variables.push({
-      key: varName,
-      value: varValue.value,
-      ty: varValue.type === 'Number' ? varValue.ty : undefined,
-    })
-  })
+  const variables = previousVariablesFromBody(
+    bodyItems,
+    memVars,
+    type,
+    startRange
+  )
 
   return {
     insertIndex,
@@ -502,14 +523,21 @@ export function findAllPreviousVariablesPath(
 export function findAllPreviousVariables(
   ast: Program,
   memVars: VariableMap,
-  sourceRange: SourceRange,
+  sourceRange: SourceRange | undefined,
   wasmInstance: ModuleType,
   type: 'number' | 'string' = 'number'
 ): {
-  variables: PrevVariable<typeof type extends 'number' ? number : string>[]
+  variables: PrevVariable<number | string>[]
   bodyPath: PathToNode
   insertIndex: number
 } {
+  if (!sourceRange) {
+    return {
+      variables: previousVariablesFromBody(ast.body, memVars, type),
+      bodyPath: [['body', '']],
+      insertIndex: ast.body.length,
+    }
+  }
   const path = getNodePathFromSourceRange(ast, sourceRange)
   return findAllPreviousVariablesPath(ast, memVars, path, wasmInstance, type)
 }

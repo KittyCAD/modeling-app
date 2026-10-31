@@ -4,8 +4,12 @@ import type { Extension } from '@codemirror/state'
 
 /// Basically a fork of the `mentions` extension https://github.com/uiwjs/react-codemirror/blob/master/extensions/mentions/src/index.ts
 /// But it matches on any word, not just the `@` symbol
-export function varMentions(data: Completion[] = []): Extension {
+export function varMentions(
+  data: Completion[] = [],
+  config: { interactionDelay?: number } = {}
+): Extension {
   return autocompletion({
+    ...config,
     override: [
       (context: CompletionContext) => {
         let word = context.matchBefore(/(\w+)?/)
