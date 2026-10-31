@@ -5,7 +5,8 @@ import {
   addJoinSurfaces,
   addPlanarSurface,
 } from '@src/lang/modifyAst/surfaces'
-import { type Artifact, recast } from '@src/lang/wasm'
+import { addDelete } from '@src/lang/modifyAst/transforms'
+import { type Artifact, assertParse, recast } from '@src/lang/wasm'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import type RustContext from '@src/lib/rustContext'
 import {
@@ -464,6 +465,57 @@ region001 = region(segments = [sketch001.circle1])`)
         rustContextInThisFile
       )
     ).toBeUndefined()
+  })
+
+  it('preserves individual regions and surfaces stored in arrays', async () => {
+    const { ast, artifactGraph } = await setup(`${twoRegions}
+regions = [
+  region(segments = [sketch001.circle1]),
+  region(segments = [sketch001.circle2])
+]`)
+    const regions = [...artifactGraph.values()].filter(
+      (artifact) => artifact.type === 'path' && artifact.subType === 'region'
+    )
+    expect(regions).toHaveLength(2)
+    for (const selected of [[regions[1]], [regions[1], regions[0]]]) {
+      const result = addPlanarSurface({
+        ast,
+        artifactGraph,
+        curves: createSelectionFromArtifacts(selected, artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const code = recast(result.modifiedAst, instanceInThisFile)
+      if (err(code)) throw code
+      expect(code).toContain(
+        selected.length === 1
+          ? 'surface001 = planarSurface(regions[1])'
+          : 'surface001 = planarSurface([regions[1], regions[0]])'
+      )
+      const createdAst = assertParse(code, instanceInThisFile)
+      const created = await enginelessExecutor(
+        createdAst,
+        rustContextInThisFile
+      )
+      const surfaces = [...created.artifactGraph.values()].filter(
+        (artifact) =>
+          artifact.type === 'sweep' && artifact.subType === 'planarSurface'
+      )
+      expect(surfaces).toHaveLength(selected.length)
+      const deleted = addDelete({
+        ast: createdAst,
+        artifactGraph: created.artifactGraph,
+        objects: createSelectionFromArtifacts(
+          [surfaces.at(-1)!],
+          created.artifactGraph
+        ),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(deleted)) throw deleted
+      expect(recast(deleted.modifiedAst, instanceInThisFile)).toContain(
+        selected.length === 1 ? 'delete(surface001)' : 'delete(surface001[1])'
+      )
+    }
   })
 
   it('preserves the selected clone and all Face API disambiguators', async () => {

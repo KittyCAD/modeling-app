@@ -1635,11 +1635,35 @@ export function getVariableExprsFromSelection(
       }
 
       // Pointing to different variable case
-      if (pushedNames[name]) {
+      let expr: Expr = createLocalName(name)
+      const region =
+        artifact?.type === 'solid2d'
+          ? artifactGraph.get(artifact.pathId)
+          : artifact
+      if (
+        region?.type === 'path' &&
+        region.subType === 'region' &&
+        variable.node.declaration.init.type === 'ArrayExpression'
+      ) {
+        const index = variable.node.declaration.init.elements.findIndex(
+          (element) =>
+            element.start <= region.codeRef.range[0] &&
+            element.end >= region.codeRef.range[1]
+        )
+        if (index >= 0) {
+          expr = createMemberExpression(
+            name,
+            createLiteral(index, wasmInstance),
+            true
+          )
+        }
+      }
+      const key = expr.type === 'Name' ? name : splitOutputExprKey(expr)
+      if (pushedNames[key]) {
         continue
       }
-      exprs.push(createLocalName(name))
-      pushedNames[name] = true
+      exprs.push(expr)
+      pushedNames[key] = true
       continue
     } else if (variable.node.type === 'CallExpressionKw') {
       // no variable assignment in that call and not a pipe yet, we'll need to create it
@@ -1792,8 +1816,9 @@ function getSplitOutputExprFromSelection(
     }
   }
   const inferredOutputIndex =
-    artifact?.type === 'sweep' && artifact.subType === 'extrusion'
-      ? getMultiRegionExtrudeOutputIndex(
+    artifact?.type === 'sweep' &&
+    (artifact.subType === 'extrusion' || artifact.subType === 'planarSurface')
+      ? getMultiRegionSweepOutputIndex(
           artifact,
           ast,
           wasmInstance,
@@ -1884,35 +1909,49 @@ function getMultiOutputExtrudeInputExprFromPath(
   return null
 }
 
-function getMultiRegionExtrudeOutputIndex(
-  artifact: Artifact & { pathId?: string | null },
+function getMultiRegionSweepOutputIndex(
+  artifact: Extract<Artifact, { type: 'sweep' }>,
   ast: Node<Program>,
   wasmInstance: ModuleType,
   artifactGraph: ArtifactGraph
 ): number | null {
-  if (!artifact.pathId || !('codeRef' in artifact) || !artifact.codeRef) {
-    return null
-  }
-
-  const extrudeDecl = getNodeFromPath<VariableDeclaration>(
+  const sweepDecl = getNodeFromPath<VariableDeclaration>(
     ast,
     artifact.codeRef.pathToNode,
     wasmInstance,
     'VariableDeclaration'
   )
   if (
-    err(extrudeDecl) ||
-    extrudeDecl.node.type !== 'VariableDeclaration' ||
-    extrudeDecl.node.declaration.init.type !== 'CallExpressionKw'
+    err(sweepDecl) ||
+    sweepDecl.node.type !== 'VariableDeclaration' ||
+    sweepDecl.node.declaration.init.type !== 'CallExpressionKw'
   ) {
     return null
   }
 
-  const extrudeCall = extrudeDecl.node.declaration.init
+  const sweepCall = sweepDecl.node.declaration.init
   if (
-    extrudeCall.callee.type !== 'Name' ||
-    extrudeCall.callee.name.name !== 'extrude' ||
-    extrudeCall.unlabeled?.type !== 'ArrayExpression'
+    artifact.subType === 'planarSurface' &&
+    sweepCall.callee.type === 'Name' &&
+    sweepCall.callee.name.name === 'planarSurface'
+  ) {
+    // Planar surface commands and their artifacts follow the input order.
+    const outputs = [...artifactGraph.values()].filter(
+      (candidate) =>
+        candidate.type === 'sweep' &&
+        candidate.subType === 'planarSurface' &&
+        candidate.codeRef.range.every(
+          (value, index) => value === artifact.codeRef.range[index]
+        )
+    )
+    const index = outputs.findIndex((output) => output.id === artifact.id)
+    return outputs.length > 1 && index >= 0 ? index : null
+  }
+  if (
+    !artifact.pathId ||
+    sweepCall.callee.type !== 'Name' ||
+    sweepCall.callee.name.name !== 'extrude' ||
+    sweepCall.unlabeled?.type !== 'ArrayExpression'
   ) {
     return null
   }
@@ -1934,7 +1973,7 @@ function getMultiRegionExtrudeOutputIndex(
     return null
   }
 
-  for (const [index, element] of extrudeCall.unlabeled.elements.entries()) {
+  for (const [index, element] of sweepCall.unlabeled.elements.entries()) {
     if (element.type !== 'Name') {
       continue
     }

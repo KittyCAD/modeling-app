@@ -231,7 +231,9 @@ export function addPlanarSurface({
       { graphSelections, otherSelections: [] },
       artifactGraph,
       modifiedAst,
-      wasmInstance
+      wasmInstance,
+      undefined,
+      { preservePathInput: true }
     )
     if (isErr(regions)) return regions
     if (regions.exprs.length !== graphSelections.length) {
