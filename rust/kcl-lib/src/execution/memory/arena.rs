@@ -573,15 +573,18 @@ impl ProgramMemory {
 
         env.read_only();
         drop(env);
-        // A callback can outlive a child frame but die before its caller returns.
-        // Reclaim that now-unreferenced tail as well as the current frame.
-        while let Some(last) = envs.last() {
-            let mut last = self.write_env(last, envs.len() - 1, "reclaiming environment tail")?;
-            if last.owner != 0 {
-                break;
+        // A surviving child can strand earlier dead frames below the arena tail.
+        // Visit this call's descendants in reverse so releasing a child can
+        // release its ancestors before we inspect them.
+        for index in (old.index()..envs.len()).rev() {
+            let mut candidate = self.write_env(&envs[index], index, "reclaiming child environments")?;
+            if candidate.owner == 0 {
+                candidate.reclaim_unreferenced();
             }
-            last.prune_captures();
-            if last.is_referenced() {
+        }
+        while let Some(last) = envs.last() {
+            let last = self.read_env(last, envs.len() - 1, "reclaiming environment tail")?;
+            if last.owner != 0 || last.is_referenced() {
                 break;
             }
             drop(last);
@@ -1257,15 +1260,16 @@ impl Environment {
     /// See module docs for more details.
     fn compact(&mut self, owner: usize, op: &str) -> Result<(), KclError> {
         self.check_owned_by(owner, op)?;
-        self.prune_captures();
-        // Don't compress if there might be a closure or import referencing us.
-        if self.is_referenced() {
-            return Ok(());
-        }
-
-        self.bindings = IndexMap::new();
-        self.closure_pins.clear();
+        self.reclaim_unreferenced();
         Ok(())
+    }
+
+    fn reclaim_unreferenced(&mut self) {
+        self.prune_captures();
+        if !self.is_referenced() {
+            self.bindings = IndexMap::new();
+            self.closure_pins.clear();
+        }
     }
 
     fn prune_captures(&mut self) {
