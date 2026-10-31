@@ -1994,25 +1994,28 @@ impl ExecutorContext {
             // Snapshotting memory here is crucial for semantics so that we close
             // over variables. Variables defined lexically later shouldn't
             // be available to the function body.
-            let (env_ref, placeholder_env_ref) = if function_expression.name.is_some() {
+            let (env_ref, placeholder_env_ref, capture_pin) = if function_expression.name.is_some() {
                 // Recursive function needs a snapshot that includes
                 // itself.
                 let dummy = EnvironmentRef::dummy();
-                (dummy, Some(dummy))
+                (dummy, Some(dummy), None)
             } else {
-                (exec_state.mut_stack().snapshot()?, None)
+                let (env, pin) = exec_state.mut_stack().snapshot_for_closure()?;
+                (env, None, Some(pin))
             };
+            let mut function = FunctionSource::kcl(
+                function_expression.clone(),
+                env_ref,
+                KclFunctionSourceParams {
+                    std_props,
+                    experimental,
+                    include_in_feature_tree,
+                },
+            );
+            function.capture_pin = capture_pin;
             (
                 KclValue::Function {
-                    value: Box::new(FunctionSource::kcl(
-                        function_expression.clone(),
-                        env_ref,
-                        KclFunctionSourceParams {
-                            std_props,
-                            experimental,
-                            include_in_feature_tree,
-                        },
-                    )),
+                    value: Box::new(function),
                     meta: vec![metadata.to_owned()],
                 },
                 placeholder_env_ref,

@@ -157,6 +157,13 @@ pub(crate) struct ScopedNotYetAdded {
 }
 
 impl GlobalState {
+    pub(crate) fn take_operations_by_module(&mut self) -> OperationsByModule {
+        let root = std::mem::take(&mut self.root_module_artifacts.operations);
+        let mut operations = self.operations_by_module();
+        operations.insert(ModuleId::default(), root);
+        operations
+    }
+
     pub(crate) fn operations_by_module(&self) -> OperationsByModule {
         let mut operations = OperationsByModule::default();
         operations.insert(ModuleId::default(), self.root_module_artifacts.operations.clone());
@@ -783,7 +790,7 @@ impl ExecState {
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
     pub async fn into_exec_outcome(
-        self,
+        mut self,
         main_ref: EnvironmentRef,
         ctx: &ExecutorContext,
     ) -> Result<ExecOutcome, KclError> {
@@ -800,7 +807,7 @@ impl ExecState {
             variables,
             filenames: self.global.filenames(),
             engine_scene_generation: ctx.cache.engine_scene_generation().await,
-            operations: self.global.operations_by_module(),
+            operations: self.global.take_operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
             scene_objects: self.global.root_module_artifacts.scene_objects,
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
