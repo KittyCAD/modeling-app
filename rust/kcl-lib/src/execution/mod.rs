@@ -1957,10 +1957,11 @@ impl ExecutorContext {
                             (exec_state, None, PreserveMem::Normal)
                         }
                         None => {
+                            let result_env = cached_state.main.result_env;
                             let mut exec_state = cached_state.reconstitute_exec_state(self);
                             exec_state
                                 .mut_stack()
-                                .restore_env(cached_state.main.result_env)
+                                .restore_env(result_env)
                                 .map_err(KclErrorWithOutputs::no_outputs)?;
 
                             (exec_state, None, PreserveMem::Always)

@@ -182,15 +182,15 @@ impl GlobalState {
         self
     }
 
-    pub fn reconstitute_exec_state(&self, ctx: &ExecutorContext) -> exec_state::ExecState {
+    pub fn reconstitute_exec_state(self, ctx: &ExecutorContext) -> exec_state::ExecState {
         exec_state::ExecState {
             execution_callbacks: ctx.execution_callbacks.clone(),
-            global: self.exec_state.clone(),
-            mod_local: self.main.exec_state.clone(),
+            global: self.exec_state,
+            mod_local: self.main.exec_state,
         }
     }
 
-    pub async fn into_exec_outcome(self, ctx: &ExecutorContext) -> Result<ExecOutcome, KclError> {
+    pub async fn into_exec_outcome(mut self, ctx: &ExecutorContext) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         let variables = self.main.exec_state.variables(self.main.result_env)?;
@@ -204,7 +204,7 @@ impl GlobalState {
             variables,
             filenames: self.exec_state.filenames(),
             engine_scene_generation: ctx.cache.engine_scene_generation().await,
-            operations: self.exec_state.operations_by_module(),
+            operations: self.exec_state.take_operations_by_module(),
             artifact_graph: self.exec_state.artifacts.graph,
             scene_objects: self.exec_state.root_module_artifacts.scene_objects,
             source_range_to_object: self.exec_state.root_module_artifacts.source_range_to_object,
