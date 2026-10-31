@@ -1,4 +1,7 @@
-import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
+import {
+  closeOnboardingModalIfPresent,
+  waitForAuthentication,
+} from '@e2e/playwright/test-utils'
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
@@ -104,55 +107,7 @@ export class HomePageFixture {
     ).toBeVisible()
   }
 
-  waitForAuthentication = async () => {
-    // A document reload can finish while Auth still hides the Home route.
-    try {
-      await this.page.waitForFunction(() => {
-        const snapshot = window.app?.auth.actor.getSnapshot()
-        return snapshot !== undefined && !snapshot.matches('checkIfLoggedIn')
-      })
-    } catch (error) {
-      let diagnosticTimeout: ReturnType<typeof setTimeout> | undefined
-      try {
-        // Bound this failure-only read so a renderer hang cannot block cleanup.
-        const diagnostic = await Promise.race([
-          this.page
-            .evaluate(() => {
-              const snapshot = window.app?.auth.actor.getSnapshot()
-              return {
-                readyState: document.readyState,
-                visibility: document.visibilityState,
-                focused: document.hasFocus(),
-                appPresent: window.app !== undefined,
-                authStatus: snapshot?.status ?? null,
-                authState: snapshot?.value ?? null,
-                didAuth:
-                  performance.getEntriesByName('code/didAuth', 'mark').length >
-                  0,
-                online: navigator.onLine,
-              }
-            })
-            .catch(() => ({ diagnosticUnavailable: true })),
-          new Promise<{ diagnosticUnavailable: true }>((resolve) => {
-            diagnosticTimeout = setTimeout(
-              () => resolve({ diagnosticUnavailable: true }),
-              2000
-            )
-          }),
-        ])
-        throw new Error(
-          `Home authentication readiness failed: ${JSON.stringify(diagnostic)}`,
-          { cause: error }
-        )
-      } finally {
-        if (diagnosticTimeout) clearTimeout(diagnosticTimeout)
-      }
-    }
-    expect(
-      await this.page.evaluate(() => window.app.auth.actor.getSnapshot().value),
-      'Home startup requires loggedIn authentication'
-    ).toBe('loggedIn')
-  }
+  waitForAuthentication = () => waitForAuthentication(this.page)
 
   projectsLoaded = async () => {
     // Library defaults are applied during settings initialization after a reload.

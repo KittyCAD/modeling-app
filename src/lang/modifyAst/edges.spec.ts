@@ -464,7 +464,7 @@ fillet001 = fillet(extrude001, tags = edge001, radius = 1)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('keeps mixed face-reference and primitive edges on the same resolved Boolean body', async () => {
+    describe('mixed edges on a Boolean body', () => {
       const code = `@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XY) {
@@ -479,85 +479,100 @@ sketch002 = sketch(on = XY) {
 region002 = region(point = [0mm, 0mm], sketch = sketch002)
 extrude002 = extrude(region002, length = 10)
 part = subtract(extrude001, tools = extrude002)`
-      const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const sweeps = [...artifactGraph.values()].filter(
-        (a) => a.type === 'sweep'
-      )
-      expect(sweeps).toHaveLength(2)
-      const sourceSweep = sweeps.find(
-        (sweep) => sweep.codeRef.range[0] < code.indexOf('sketch002 =')
-      )
-      if (!sourceSweep) throw new Error('Original extrusion not found')
-      const sweepEdge = [...artifactGraph.values()].find(
-        (artifact) =>
-          artifact.type === 'sweepEdge' &&
-          artifact.sweepId === sourceSweep.id &&
-          artifact.subType === 'opposite'
-      )
-      const part = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'compositeSolid'
-      )
-      if (!sweepEdge || sweepEdge.type !== 'sweepEdge' || !part) {
-        throw new Error('Source edge or Boolean result not found')
-      }
-      const sideFaces = sweepEdge.commonSurfaceIds
-      if (!sideFaces || sideFaces.length < 2) {
-        throw new Error('Source edge adjacent faces not found')
-      }
-      const codeRef = getCodeRefsByArtifactId(sweepEdge.id, artifactGraph)?.[0]
-      if (!codeRef) throw new Error('Source edge code reference not found')
 
-      const selection: Selections = {
-        graphSelections: [
-          { entityRef: { type: 'edge', side_faces: sideFaces }, codeRef },
-        ],
-        otherSelections: [
-          {
-            entityId: 'irrelevant-for-this-test',
-            parentEntityId: part.id,
-            primitiveIndex: 0,
-            primitiveType: 'edge',
-            type: 'enginePrimitive',
-          },
-        ],
-      }
+      let originalModel: Awaited<ReturnType<typeof getAstAndArtifactGraph>>
 
-      const radius = (await stringToKclExpression(
-        '1',
-        rustContextInThisFile
-      )) as KclCommandValue
-      const result = addFillet({
-        ast,
-        artifactGraph,
-        selection,
-        radius,
-        wasmInstance: instanceInThisFile,
+      beforeEach(async () => {
+        // Build the invariant real model as a fixture; the test still executes
+        // and validates the generated mixed-edge fillets against the live engine.
+        originalModel = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        expect(kclManagerInThisFile.errors).toEqual([])
       })
-      if (err(result)) throw result
 
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      if (err(newCode)) throw newCode
-      expect(result.pathToNode).toHaveLength(2)
-      expect(newCode).toContain('edge001 = edgeId(part, index = 0)')
-      expect(newCode).toContain(
-        'fillet001 = fillet(part, tags = edge001, radius = 1)'
-      )
-      expect(newCode).toMatch(/fillet002 = fillet\(\s*part,\s*edges = \[/)
-      expect(newCode).toContain('region001.tags.circle1')
-      expect(newCode).not.toContain('getCommonEdge')
-      expect(newCode.indexOf('fillet001')).toBeLessThan(
-        newCode.indexOf('fillet002')
-      )
-      await getAstAndArtifactGraph(
-        newCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      expect(kclManagerInThisFile.errors).toEqual([])
+      it('keeps mixed face-reference and primitive edges on the same resolved Boolean body', async () => {
+        const { artifactGraph, ast } = originalModel
+        const sweeps = [...artifactGraph.values()].filter(
+          (a) => a.type === 'sweep'
+        )
+        expect(sweeps).toHaveLength(2)
+        const sourceSweep = sweeps.find(
+          (sweep) => sweep.codeRef.range[0] < code.indexOf('sketch002 =')
+        )
+        if (!sourceSweep) throw new Error('Original extrusion not found')
+        const sweepEdge = [...artifactGraph.values()].find(
+          (artifact) =>
+            artifact.type === 'sweepEdge' &&
+            artifact.sweepId === sourceSweep.id &&
+            artifact.subType === 'opposite'
+        )
+        const part = [...artifactGraph.values()].find(
+          (artifact) => artifact.type === 'compositeSolid'
+        )
+        if (!sweepEdge || sweepEdge.type !== 'sweepEdge' || !part) {
+          throw new Error('Source edge or Boolean result not found')
+        }
+        const sideFaces = sweepEdge.commonSurfaceIds
+        if (!sideFaces || sideFaces.length < 2) {
+          throw new Error('Source edge adjacent faces not found')
+        }
+        const codeRef = getCodeRefsByArtifactId(
+          sweepEdge.id,
+          artifactGraph
+        )?.[0]
+        if (!codeRef) throw new Error('Source edge code reference not found')
+
+        const selection: Selections = {
+          graphSelections: [
+            { entityRef: { type: 'edge', side_faces: sideFaces }, codeRef },
+          ],
+          otherSelections: [
+            {
+              entityId: 'irrelevant-for-this-test',
+              parentEntityId: part.id,
+              primitiveIndex: 0,
+              primitiveType: 'edge',
+              type: 'enginePrimitive',
+            },
+          ],
+        }
+
+        const radius = (await stringToKclExpression(
+          '1',
+          rustContextInThisFile
+        )) as KclCommandValue
+        const result = addFillet({
+          ast,
+          artifactGraph,
+          selection,
+          radius,
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) throw result
+
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+        expect(result.pathToNode).toHaveLength(2)
+        expect(newCode).toContain('edge001 = edgeId(part, index = 0)')
+        expect(newCode).toContain(
+          'fillet001 = fillet(part, tags = edge001, radius = 1)'
+        )
+        expect(newCode).toMatch(/fillet002 = fillet\(\s*part,\s*edges = \[/)
+        expect(newCode).toContain('region001.tags.circle1')
+        expect(newCode).not.toContain('getCommonEdge')
+        expect(newCode.indexOf('fillet001')).toBeLessThan(
+          newCode.indexOf('fillet002')
+        )
+        await getAstAndArtifactGraph(
+          newCode,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        expect(kclManagerInThisFile.errors).toEqual([])
+      })
     })
 
     it('should add a basic fillet call with edge selection (selectionV2)', async () => {
