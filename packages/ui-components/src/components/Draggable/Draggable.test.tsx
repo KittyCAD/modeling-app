@@ -145,6 +145,7 @@ describe('Draggable', () => {
         data-testid="draggable"
         Handle={<button type="button">Drag handle</button>}
         side="right"
+        style={{ height: 40, resize: 'both' }}
       >
         Drag me
       </Draggable>
@@ -165,6 +166,7 @@ describe('Draggable', () => {
 
     expect(draggable.style.top).toBe('20px')
     expect(draggable.style.left).toBe('20px')
+    expect(draggable.style.maxHeight).toBe('')
   })
 
   test('only starts dragging from the custom handle', () => {
