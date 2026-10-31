@@ -8,7 +8,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import { addVec, dot2d, scaleVec, subVec } from '@src/lib/utils2d'
 import {
   isLineSegment,
@@ -774,7 +773,7 @@ async function updateDraftRectangleFromCorners({
 function makeVarExpr(value: number, units: NumericSuffix) {
   return {
     type: 'Var' as const,
-    value: roundOff(value),
+    value,
     units,
   }
 }

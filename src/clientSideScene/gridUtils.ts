@@ -53,19 +53,39 @@ export function snapPointToGrid(
   options: GridSnapOptions
 ): { point: Coords2d; snapped: boolean } {
   const gridScaleFactor = getGridScaleFactor(options)
-  const snapSpacing =
-    (options.majorGridSpacing * gridScaleFactor) /
-    (options.minorGridsPerMajor * options.snapsPerMinor)
+  const majorSpacing = options.majorGridSpacing * gridScaleFactor
+  const divisions = options.minorGridsPerMajor * options.snapsPerMinor
+  const snapSpacing = majorSpacing / divisions
 
-  if (!Number.isFinite(snapSpacing) || snapSpacing <= 0) {
+  if (
+    !Number.isFinite(snapSpacing) ||
+    snapSpacing <= 0 ||
+    !Number.isSafeInteger(divisions) ||
+    divisions <= 0
+  ) {
+    return { point, snapped: false }
+  }
+
+  const indices = point.map((coordinate) =>
+    Math.round(coordinate / snapSpacing)
+  )
+  const coordinateAt = (index: number) => majorSpacing * (index / divisions)
+  // Adjacent grid locations must remain distinguishable at this magnitude.
+  if (
+    indices.some(
+      (index) =>
+        !Number.isSafeInteger(index) ||
+        !Number.isFinite(coordinateAt(index)) ||
+        Math.round(coordinateAt(index) / snapSpacing) !== index ||
+        coordinateAt(index - 1) === coordinateAt(index) ||
+        coordinateAt(index + 1) === coordinateAt(index)
+    )
+  ) {
     return { point, snapped: false }
   }
 
   return {
-    point: [
-      Math.round(point[0] / snapSpacing) * snapSpacing,
-      Math.round(point[1] / snapSpacing) * snapSpacing,
-    ],
+    point: [coordinateAt(indices[0]) || 0, coordinateAt(indices[1]) || 0],
     snapped: true,
   }
 }
