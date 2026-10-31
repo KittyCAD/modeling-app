@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@kittycad/lib": "^4.5.14",
-    "@tiptap/core": "^3.27.2",
+    "@tiptap/core": "^3.30.5",
     "@tiptap/extension-link": "^3.27.2",
     "@tiptap/markdown": "^3.27.2",
     "@tiptap/react": "^3.27.2",
