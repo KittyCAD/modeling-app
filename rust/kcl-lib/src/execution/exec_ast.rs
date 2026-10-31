@@ -1966,7 +1966,7 @@ impl ExecutorContext {
             .map(|a| a.include_in_feature_tree)
             // Use the default for the field, not the bool type.
             .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
-        let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
+        let (mut closure, placeholder_env_ref, capture_pin) = if let Some(attrs) = attrs
             && (attrs.impl_ == annotations::Impl::Rust
                 || attrs.impl_ == annotations::Impl::RustConstrainable
                 || attrs.impl_ == annotations::Impl::RustConstraint)
@@ -1978,6 +1978,7 @@ impl ExecutorContext {
                         value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
                         meta: vec![metadata.to_owned()],
                     },
+                    None,
                     None,
                 )
             } else {
@@ -2003,22 +2004,21 @@ impl ExecutorContext {
                 let (env, pin) = exec_state.mut_stack().snapshot_for_closure()?;
                 (env, None, Some(pin))
             };
-            let mut function = FunctionSource::kcl(
-                function_expression.clone(),
-                env_ref,
-                KclFunctionSourceParams {
-                    std_props,
-                    experimental,
-                    include_in_feature_tree,
-                },
-            );
-            function.capture_pin = capture_pin;
             (
                 KclValue::Function {
-                    value: Box::new(function),
+                    value: Box::new(FunctionSource::kcl(
+                        function_expression.clone(),
+                        env_ref,
+                        KclFunctionSourceParams {
+                            std_props,
+                            experimental,
+                            include_in_feature_tree,
+                        },
+                    )),
                     meta: vec![metadata.to_owned()],
                 },
                 placeholder_env_ref,
+                capture_pin,
             )
         };
 
@@ -2026,6 +2026,7 @@ impl ExecutorContext {
         // the declaration is written. Call sites consume the stored
         // resolutions and never look type names up themselves.
         if let KclValue::Function { value, .. } = &mut closure {
+            value.capture_pin = capture_pin;
             value.resolve_signature_types(exec_state, self).await?;
         }
 
