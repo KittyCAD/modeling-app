@@ -3,7 +3,9 @@ pub use kcl_api::Step;
 
 use super::BinaryPart;
 use super::BodyItem;
+use super::BoxNode;
 use super::Expr;
+use super::FunctionExpression;
 use crate::SourceRange;
 use crate::execution::ProgramLookup;
 use crate::parsing::ast::types::Node;
@@ -378,6 +380,15 @@ fn fill_node_paths_body_item(item: &mut BodyItem, mut path: NodePath) {
             path.push(Step::ReturnStatementArg);
             fill_node_paths_expr(&mut node.argument, path);
         }
+    }
+}
+
+/// Restore absolute node paths in a function loaded from interpreter memory.
+pub(crate) fn fill_function_node_paths(node: &mut BoxNode<FunctionExpression>, path: NodePath) {
+    let mut expr = Expr::FunctionExpression(node.clone());
+    fill_node_paths_expr(&mut expr, path);
+    if let Expr::FunctionExpression(restored) = expr {
+        *node = restored;
     }
 }
 

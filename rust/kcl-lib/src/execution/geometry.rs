@@ -61,18 +61,18 @@ use crate::util::MathExt;
 type Point3D = kcmc::shared::Point3d<f64>;
 
 /// A GD&T annotation.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct GdtAnnotation {
     /// The engine ID.
     pub id: uuid::Uuid,
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
 }
 
 /// A geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -151,7 +151,7 @@ impl From<Geometry> for Geometries {
 }
 
 /// Data for an imported geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ImportedGeometry {
@@ -159,10 +159,10 @@ pub struct ImportedGeometry {
     pub id: uuid::Uuid,
     /// The original file paths.
     pub value: Vec<String>,
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
     /// If the imported geometry has completed.
-    #[serde(skip)]
+    #[ts(skip)]
     completed: bool,
 }
 
@@ -473,7 +473,7 @@ impl HasAppearance {
 }
 
 /// A helix.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Helix {
@@ -490,11 +490,11 @@ pub struct Helix {
     /// The cylinder the helix was created on.
     pub cylinder_id: Option<uuid::Uuid>,
     pub units: UnitLength,
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Plane {
@@ -511,7 +511,7 @@ pub struct Plane {
     /// The information for the plane.
     #[serde(flatten)]
     pub info: PlaneInfo,
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -820,7 +820,7 @@ impl Plane {
 }
 
 /// A face.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Face {
@@ -839,12 +839,12 @@ pub struct Face {
     /// The solid the face is on.
     pub parent_solid: FaceParentSolid,
     pub units: UnitLength,
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
 }
 
 /// The limited subset of a face's parent solid needed by face-backed sketches.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FaceParentSolid {
@@ -867,7 +867,7 @@ impl FaceParentSolid {
 
 /// A bounded edge.
 /// Carries either `edge_id` (resolved) or `edge_specifier` (payload passed through for resolution in blend).
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BoundedEdge {
@@ -888,7 +888,7 @@ pub struct BoundedEdge {
 }
 
 /// Kind of plane.
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS, FromStr, Display)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS, FromStr, Display, Deserialize)]
 #[ts(export)]
 #[display(style = "camelCase")]
 pub enum PlaneKind {
@@ -906,9 +906,10 @@ pub enum PlaneKind {
     Custom,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+#[ts(tag = "type")]
 pub struct Sketch {
     /// The id of the sketch (this will change when the engine's reference to it changes).
     pub id: uuid::Uuid,
@@ -941,18 +942,17 @@ pub struct Sketch {
     #[ts(skip)]
     pub origin_sketch_id: Option<uuid::Uuid>,
     /// If the sketch includes a mirror.
-    #[serde(skip)]
+    #[ts(skip)]
     pub mirror: Option<uuid::Uuid>,
     /// If the sketch is a clone of another sketch.
-    #[serde(skip)]
+    #[ts(skip)]
     pub clone: Option<uuid::Uuid>,
     /// Synthetic pen-jump paths inserted to replay disconnected segment selections.
-    #[serde(skip)]
     #[ts(skip)]
     pub synthetic_jump_path_ids: Vec<uuid::Uuid>,
     pub units: UnitLength,
     /// Metadata.
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
     /// Has the profile been closed?
     /// If not given, defaults to yes, closed explicitly.
@@ -964,7 +964,6 @@ pub struct Sketch {
 }
 
 impl ProfileClosed {
-    #[expect(dead_code, reason = "it's not actually dead, it's called by serde")]
     fn explicitly() -> Self {
         Self::Explicitly
     }
@@ -975,7 +974,7 @@ impl ProfileClosed {
 }
 
 /// Has the profile been closed?
-#[derive(Debug, Serialize, Eq, PartialEq, Clone, Copy, Hash, Ord, PartialOrd, ts_rs::TS)]
+#[derive(Debug, Serialize, Eq, PartialEq, Clone, Copy, Hash, Ord, PartialOrd, ts_rs::TS, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum ProfileClosed {
     /// It's definitely open.
@@ -1027,7 +1026,7 @@ impl Sketch {
 }
 
 /// A sketch type.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum SketchSurface {
@@ -1273,33 +1272,30 @@ impl Sketch {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+#[ts(tag = "type")]
 pub struct Solid {
     /// The id of the solid.
     pub id: uuid::Uuid,
     /// Internal KCL value generation. The engine may reuse `id` for a new value.
-    #[serde(skip)]
     #[ts(skip)]
     pub value_id: uuid::Uuid,
     /// The engine entity whose children correspond to the topology references
     /// stored on this solid. Pattern copies retain their source topology,
     /// while consuming operations and clones replace it with their output.
-    #[serde(skip)]
     #[ts(skip)]
     pub(crate) topology_id: uuid::Uuid,
     /// Source sketch or region whose tags receive this body's face information
     /// in caller memory. Match this against the source's artifact ID, independently
     /// of the body's topology. Modifications preserve it; independent copies clear it.
     /// When unset, tag updates use the retained sketch's original topology ID.
-    #[serde(skip)]
     #[ts(skip)]
     pub(crate) tag_update_source_artifact_id: Option<ArtifactId>,
     /// The semantic body artifact from which a pattern copy was created.
     /// Pattern commands replace `artifact_id` with the copy's engine entity
     /// ID, so retain this to distinguish Sweep-backed bodies from composites.
-    #[serde(skip)]
     #[ts(skip)]
     pub(crate) pattern_source_artifact_id: Option<ArtifactId>,
     /// Body type known from the KCL operation that created this value.
@@ -1307,7 +1303,6 @@ pub struct Solid {
     /// Mock execution cannot query the engine for this, so retain it when it
     /// is known locally. Procedural operations whose result depends on engine
     /// topology may leave it unset.
-    #[serde(skip)]
     #[ts(skip)]
     pub(crate) best_guess_body_type: Option<kcmc::shared::BodyType>,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
@@ -1329,7 +1324,6 @@ pub struct Solid {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
     /// Batch-end fillet/chamfer command ids that do not have concrete edge ids.
-    #[serde(skip)]
     #[ts(skip)]
     pub pending_edge_cut_ids: Vec<uuid::Uuid>,
     /// The units of the solid.
@@ -1337,11 +1331,11 @@ pub struct Solid {
     /// Is this a sectional solid?
     pub sectional: bool,
     /// Metadata.
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 pub struct CreatorFace {
     /// The face id that served as the base.
@@ -1352,7 +1346,7 @@ pub struct CreatorFace {
     pub sketch: Sketch,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 pub struct CreatorEdge {
     /// The edge id that served as the base.
@@ -1362,7 +1356,7 @@ pub struct CreatorEdge {
 }
 
 /// How a solid was created.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(tag = "creatorType", rename_all = "camelCase")]
 pub enum SolidCreator {
@@ -1460,7 +1454,7 @@ impl From<&Solid> for FaceParentSolid {
 }
 
 /// A fillet or a chamfer.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EdgeCut {
@@ -1472,6 +1466,8 @@ pub enum EdgeCut {
         /// The engine id of the edge to fillet.
         #[serde(rename = "edgeId")]
         edge_id: uuid::Uuid,
+        #[serde(with = "crate::execution::kcl_value::serde::tag_node")]
+        #[ts(as = "Box<Option<TagNode>>")]
         tag: Box<Option<TagNode>>,
     },
     /// A chamfer.
@@ -1482,6 +1478,8 @@ pub enum EdgeCut {
         /// The engine id of the edge to chamfer.
         #[serde(rename = "edgeId")]
         edge_id: uuid::Uuid,
+        #[serde(with = "crate::execution::kcl_value::serde::tag_node")]
+        #[ts(as = "Box<Option<TagNode>>")]
         tag: Box<Option<TagNode>>,
     },
 }
@@ -1523,7 +1521,7 @@ impl EdgeCut {
     }
 }
 
-#[derive(Debug, Serialize, PartialEq, Clone, Copy, ts_rs::TS)]
+#[derive(Debug, Serialize, PartialEq, Clone, Copy, ts_rs::TS, Deserialize)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
@@ -1743,7 +1741,7 @@ impl Mul<f64> for Point3d {
 }
 
 /// A base path.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BasePath {
@@ -1755,6 +1753,8 @@ pub struct BasePath {
     pub to: [f64; 2],
     pub units: UnitLength,
     /// The tag of the path.
+    #[serde(with = "crate::execution::kcl_value::serde::tag_node")]
+    #[ts(as = "Option<TagNode>")]
     pub tag: Option<TagNode>,
     /// Metadata.
     #[serde(rename = "__geoMeta")]
@@ -1774,7 +1774,7 @@ impl BasePath {
 }
 
 /// Geometry metadata.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct GeoMeta {
@@ -1786,7 +1786,7 @@ pub struct GeoMeta {
 }
 
 /// A path.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Path {
@@ -2168,7 +2168,7 @@ fn linear_distance(
 }
 
 /// An extrude surface.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ExtrudeSurface {
@@ -2180,13 +2180,15 @@ pub enum ExtrudeSurface {
 }
 
 // Chamfer surface.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ChamferSurface {
     /// The id for the chamfer surface.
     pub face_id: uuid::Uuid,
     /// The tag.
+    #[serde(with = "crate::execution::kcl_value::serde::tag_node")]
+    #[ts(as = "Option<Node<TagDeclarator>>")]
     pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
@@ -2194,13 +2196,15 @@ pub struct ChamferSurface {
 }
 
 // Fillet surface.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FilletSurface {
     /// The id for the fillet surface.
     pub face_id: uuid::Uuid,
     /// The tag.
+    #[serde(with = "crate::execution::kcl_value::serde::tag_node")]
+    #[ts(as = "Option<Node<TagDeclarator>>")]
     pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
@@ -2208,13 +2212,15 @@ pub struct FilletSurface {
 }
 
 /// An extruded plane.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudePlane {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The tag.
+    #[serde(with = "crate::execution::kcl_value::serde::tag_node")]
+    #[ts(as = "Option<Node<TagDeclarator>>")]
     pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
@@ -2222,13 +2228,15 @@ pub struct ExtrudePlane {
 }
 
 /// An extruded arc.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudeArc {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The tag.
+    #[serde(with = "crate::execution::kcl_value::serde::tag_node")]
+    #[ts(as = "Option<Node<TagDeclarator>>")]
     pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
@@ -2291,7 +2299,7 @@ impl ExtrudeSurface {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, ts_rs::TS, Deserialize)]
 pub struct SketchVarId(pub usize);
 
 impl SketchVarId {
@@ -2307,7 +2315,7 @@ impl SketchVarId {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct SketchVar {
@@ -2316,7 +2324,7 @@ pub struct SketchVar {
     pub ty: NumericType,
     /// Used for solver feedback to source.
     pub node_path: Option<NodePath>,
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -2345,7 +2353,7 @@ impl SketchVar {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(tag = "type")]
 pub enum UnsolvedExpr {
@@ -2364,7 +2372,7 @@ impl UnsolvedExpr {
 
 pub type UnsolvedPoint2dExpr = [UnsolvedExpr; 2];
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ConstrainablePoint2d {
@@ -2372,14 +2380,14 @@ pub struct ConstrainablePoint2d {
     pub object_id: ObjectId,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 pub enum ConstrainablePoint2dOrOrigin {
     Point(ConstrainablePoint2d),
     Origin,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ConstrainableLine2d {
@@ -2387,7 +2395,7 @@ pub struct ConstrainableLine2d {
     pub object_id: ObjectId,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct UnsolvedSegment {
@@ -2397,13 +2405,13 @@ pub struct UnsolvedSegment {
     pub kind: UnsolvedSegmentKind,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
-    #[serde(skip)]
+    #[ts(skip)]
     pub node_path: Option<NodePath>,
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum UnsolvedSegmentKind {
@@ -2470,7 +2478,7 @@ impl UnsolvedSegmentKind {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Segment {
@@ -2481,14 +2489,13 @@ pub struct Segment {
     pub surface: SketchSurface,
     /// The engine ID of the sketch that this is a part of.
     pub sketch_id: Uuid,
-    #[serde(skip)]
     #[ts(skip)]
     pub sketch: Option<Arc<Sketch>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
-    #[serde(skip)]
+    #[ts(skip)]
     pub node_path: Option<NodePath>,
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -2504,7 +2511,7 @@ impl Segment {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SegmentKind {
@@ -2572,27 +2579,27 @@ pub enum SegmentKind {
     },
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct AbstractSegment {
     pub repr: SegmentRepr,
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 pub enum SegmentRepr {
     Unsolved { segment: Box<UnsolvedSegment> },
     Solved { segment: Box<Segment> },
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct SketchConstraint {
     pub kind: SketchConstraintKind,
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -2602,7 +2609,7 @@ pub enum AngleRayDirection {
     Reverse,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum AngleSector {
     One,
     Two,
@@ -2610,20 +2617,19 @@ pub enum AngleSector {
     Four,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum AngleConstraintMode {
     LinesAtAngle,
     PointsAtAngle { sector: AngleSector, inverse: bool },
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SketchConstraintKind {
     Angle {
         line0: ConstrainableLine2d,
         line1: ConstrainableLine2d,
-        #[serde(skip)]
         #[ts(skip)]
         mode: AngleConstraintMode,
         #[serde(rename = "labelPosition")]
