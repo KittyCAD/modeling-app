@@ -180,12 +180,15 @@ fn value() -> impl Strategy<Value = KclValue> {
 }
 
 proptest! {
+    /// Any arbitrary KCL value should be able to get serialized, then deserialized,
+    /// and come out the same as before. I.e. composing serialization and deserialization
+    /// should be the identity function.
     #[test]
-    fn kcl_value_roundtrips(value in value()) {
-        let json = serde_json::to_vec(&value).unwrap();
-        let restored: KclValue = serde_json::from_slice(&json).unwrap();
-        prop_assert_eq!(serde_json::to_value(&restored).unwrap(), serde_json::to_value(&value).unwrap());
-        prop_assert_eq!(restored, value);
+    fn kcl_value_roundtrips(input_value in value()) {
+        let serialized = serde_json::to_vec(&input_value).unwrap();
+        let output_value: KclValue = serde_json::from_slice(&serialized).unwrap();
+        prop_assert_eq!(serde_json::to_value(&output_value).unwrap(), serde_json::to_value(&input_value).unwrap());
+        prop_assert_eq!(output_value, input_value);
     }
 }
 
