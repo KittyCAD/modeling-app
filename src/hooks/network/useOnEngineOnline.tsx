@@ -3,7 +3,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { useEffect } from 'react'
 
-export function useOnVitestEngineOnline({
+export function useOnEngineOnline({
   callback,
   engineCommandManager,
 }: {
@@ -11,9 +11,9 @@ export function useOnVitestEngineOnline({
   engineCommandManager: ConnectionManager
 }) {
   useEffect(() => {
-    const onlineRequest = (event: CustomEvent) => {
+    const onlineRequest = () => {
       EngineDebugger.addLog({
-        label: 'useOnVitestEngineOnline',
+        label: 'useOnEngineOnline',
         message: 'request engine connection. OnlineRequest triggered.',
       })
       callback()
@@ -21,13 +21,13 @@ export function useOnVitestEngineOnline({
 
     engineCommandManager.addEventListener(
       EngineConnectionManagerEvents.OnlineRequest,
-      onlineRequest as EventListener
+      onlineRequest
     )
 
     return () => {
       engineCommandManager.removeEventListener(
         EngineConnectionManagerEvents.OnlineRequest,
-        onlineRequest as EventListener
+        onlineRequest
       )
     }
   }, [callback, engineCommandManager])

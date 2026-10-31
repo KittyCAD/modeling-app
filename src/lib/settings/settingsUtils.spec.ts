@@ -61,6 +61,16 @@ const projectLibrariesExtensionSettings = projectLibrariesSettingsContribution
 const createSettingsWithProjectLibraries = () =>
   createSettings(projectLibrariesExtensionSettings)
 
+describe('viewport rendering settings', () => {
+  it.each([true, false])('migrates legacy user SSAO = %s', (enabled) => {
+    const configuration = { settings: { modeling: { enable_ssao: enabled } } }
+    const mode = enabled ? 'ssao' : 'noeffect'
+    expect(
+      configurationToSettingsPayload(configuration).modeling?.viewportRendering
+    ).toBe(mode)
+  })
+})
+
 describe('testing settings initialization', () => {
   it.each(['multiple', 'single', 'invalid', undefined])(
     'parses tab open behavior %s with a multiple default',
