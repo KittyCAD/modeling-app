@@ -37,6 +37,7 @@ import type {
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type {
+  NamedView,
   OutputFormat3d,
   Point3d,
 } from '@rust/kcl-lib/bindings/ModelingCmd'
@@ -134,6 +135,7 @@ import {
   getSketchBlockForArtifact,
   isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
+import { listNamedViews } from '@src/lang/std/kclNamedViews'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import {
   crossProduct,
@@ -4457,6 +4459,72 @@ export const modelingMachine = setup({
           defaultUnit?.current ??
           // Fall back to app default units if the project setting is absent.
           DEFAULT_DEFAULT_LENGTH_UNIT
+
+        if (format.type === 'gltf' || format.type === 'step') {
+          const namedViews = listNamedViews({
+            artifactGraph: kclManager.artifactGraph,
+            filenames: kclManager.execState.filenames,
+          })
+          // Use a JSON object: Map entries are lost by JSON.stringify in export.
+          const views: Record<string, NamedView> = Object.create(null)
+          for (const view of namedViews) {
+            const { baseline, showIds, hideIds, camera } = view.artifact
+            const target = new Vector3(
+              camera.target?.x ?? 0,
+              camera.target?.y ?? 0,
+              camera.target?.z ?? 0
+            )
+            const { camControls } = kclManager.sceneInfra
+            const distance =
+              camera.distance ??
+              camControls.camera.position.distanceTo(camControls.target)
+            let direction: Vector3
+            let viewUp: Vector3
+            if (camera.look.type === 'directed') {
+              direction = new Vector3(
+                camera.look.direction.x,
+                camera.look.direction.y,
+                camera.look.direction.z
+              ).normalize()
+              viewUp = new Vector3(
+                camera.look.up.x,
+                camera.look.up.y,
+                camera.look.up.z
+              )
+            } else {
+              // Directions point from the eye toward the target, in Z-up space.
+              const directions = {
+                front: new Vector3(0, 1, 0),
+                back: new Vector3(0, -1, 0),
+                left: new Vector3(1, 0, 0),
+                right: new Vector3(-1, 0, 0),
+                top: new Vector3(0, 0, -1),
+                bottom: new Vector3(0, 0, 1),
+                isometric: new Vector3(-1, 1, -1).normalize(),
+              }
+              direction = directions[camera.look.orientation]
+              viewUp =
+                camera.look.orientation === 'top'
+                  ? new Vector3(0, 1, 0)
+                  : camera.look.orientation === 'bottom'
+                    ? new Vector3(0, -1, 0)
+                    : new Vector3(0, 0, 1)
+            }
+            // Remove any component along the viewing direction to get camera up.
+            viewUp.projectOnPlane(direction).normalize()
+            const vantage = target.clone().addScaledVector(direction, -distance)
+
+            views[view.artifact.name] = {
+              vantage: { x: vantage.x, y: vantage.y, z: vantage.z },
+              target: { x: target.x, y: target.y, z: target.z },
+              up: { x: viewUp.x, y: viewUp.y, z: viewUp.z },
+              projection: { type: camera.projection },
+              baseline: baseline,
+              except_ids: baseline === 'show' ? hideIds : showIds,
+            }
+          }
+          format.views = views
+        }
 
         // Set all the un-configurable defaults here.
         if (format.type === 'gltf') {
