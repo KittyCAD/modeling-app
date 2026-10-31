@@ -77,6 +77,8 @@ it('keeps a failed draft, resets for another edit, and discards its pending subm
     onSubmit,
     args: {
       name: { inputType: 'text', required: true },
+      tag: { inputType: 'tagDeclarator', required: false },
+      color: { inputType: 'color', required: true },
       detail: {
         inputType: 'string',
         required: false,
@@ -146,10 +148,17 @@ it('keeps a failed draft, resets for another edit, and discards its pending subm
   fireEvent.change(screen.getByRole('textbox', { name: 'Name *' }), {
     target: { value: 'second\nline' },
   })
+  fireEvent.change(screen.getByRole('textbox', { name: 'Tag' }), {
+    target: { value: '$cap001' },
+  })
+  expect(screen.getByRole('textbox', { name: 'Tag' })).toHaveValue('cap001')
+  expect(screen.getByLabelText('Color *')).toHaveValue('#000000')
   fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
   await waitFor(() =>
     expect(onSubmit).toHaveBeenCalledExactlyOnceWith({
       name: 'second\nline',
+      tag: 'cap001',
+      color: '#000000',
       nodeToEdit: 'second',
       detail: undefined,
     })

@@ -185,10 +185,22 @@ obstruction = extrude(region002, length = 20mm)`
     })
     await scene.settled()
 
+    await editor.selectText('revolve(')
     await toolbar.translateButton.click()
     await expect(dialog).toBeVisible()
-    await page.keyboard.press('Escape')
+    const xyz = modelingDialog.input(/^xyz$/i)
+    await modelingDialog.input(/^x$/i).fill('')
+    await xyz.fill('missingVector')
+    await expect(submit).toBeDisabled()
+    await xyz.fill('[1mm, 2mm, 3mm]')
+    await expect(submit).toBeEnabled()
+    await submit.click()
     await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('xyz = [1mm, 2mm, 3mm]')
+    await scene.settled()
+    await (await toolbar.getFeatureTreeOperation('Translate', 0)).dblclick()
+    await expect(xyz).toHaveText('[1mm, 2mm, 3mm]')
+    await page.keyboard.press('Escape')
   })
 
   test('Keeps Boolean target and tool selections when switching collectors', async ({
