@@ -81,7 +81,7 @@ describe('RustContext module lifecycle', () => {
       const context = owner(Promise.resolve(native.module))
       const { modeling } = context.settingsActor.getSnapshot().context
       modeling.defaultUnit.user = 'in'
-      modeling.enableSSAO.user = false
+      modeling.viewportRendering.user = 'noeffect'
       modeling.fixedSizeGrid.user = false
       modeling.backfaceColor.user = '#123456'
       expect(jsAppSettings(context.settingsActor)).toMatchObject({
