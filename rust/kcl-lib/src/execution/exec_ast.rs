@@ -2925,12 +2925,6 @@ impl Node<SketchBlock> {
     }
 }
 
-impl SketchBlock {
-    pub(super) fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) -> Result<(), KclError> {
-        exec_state.mut_stack().push_new_env_for_call(parent)
-    }
-}
-
 impl Node<SketchVar> {
     pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
