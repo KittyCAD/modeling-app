@@ -209,6 +209,7 @@ use std::sync::OnceLock;
 use std::sync::RwLock;
 use std::sync::RwLockReadGuard;
 use std::sync::RwLockWriteGuard;
+use std::sync::Weak;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
@@ -269,6 +270,7 @@ struct Environment {
     // An outer scope, if one exists.
     parent: Option<EnvironmentRef>,
     might_be_refed: bool,
+    closure_pins: Vec<Weak<()>>,
     parent_pin: ParentPin,
     // The id of the `Stack` if this `Environment` is on a call stack. If this is >0 then it may
     // only be read or written by that `Stack`; if 0 then the env is read-only.
@@ -547,14 +549,18 @@ impl ProgramMemory {
 
         env.compact(owner, "popping environment")?;
 
-        if env.is_empty() && old.index() == envs.len() - 1 {
-            // Special case: we can literally pop it.
-            drop(env);
-            envs.pop();
-            return Ok(());
-        }
-
         env.read_only();
+        drop(env);
+        // A callback can outlive a child frame but die before its caller returns.
+        // Reclaim that now-unreferenced tail as well as the current frame.
+        while let Some(last) = envs.last() {
+            let last = self.read_env(last, envs.len() - 1, "reclaiming environment tail")?;
+            if last.owner != 0 || last.is_referenced() {
+                break;
+            }
+            drop(last);
+            envs.pop();
+        }
         Ok(())
     }
 
@@ -756,6 +762,7 @@ impl Stack {
                 .memory
                 .write_env(&env_cell, old.index(), "preserving and popping environment")?;
             env.read_only();
+            env.mark_as_refed();
             // A preserved env stays alive by definition, so honor a block env's
             // deferred parent pin unconditionally.
             let parent_to_pin = (env.parent_pin == ParentPin::OnPopIfRefed)
@@ -801,6 +808,7 @@ impl Stack {
         let env_index = self.current_env.index();
         let env = self.memory.get_env_checked(env_index, "squashing an environment")?;
         let mut env = self.memory.write_env(&env, env_index, "squashing an environment")?;
+        env.closure_pins.append(&mut old_env.closure_pins);
         // Move the variables in the popped env into the current env.
         for (key, (epoch, value)) in old_env.take_bindings() {
             env.insert(
@@ -812,6 +820,27 @@ impl Stack {
             )?;
         }
         Ok(())
+    }
+
+    /// Keep captures alive only while a closure using them is alive.
+    pub fn snapshot_for_closure(&mut self) -> Result<(EnvironmentRef, Arc<()>), KclError> {
+        let pin = Arc::new(());
+        let envs = self.memory.read_env_table("snapshotting a closure")?;
+        let mut current = Some(self.current_env);
+        while let Some(reference) = current {
+            let env = envs
+                .get(reference.index())
+                .ok_or_else(|| arena_env_index_out_of_range("snapshotting a closure", reference.index(), envs.len()))?;
+            let mut env = self
+                .memory
+                .write_env(env, reference.index(), "snapshotting a closure")?;
+            env.closure_pins.retain(|pin| pin.strong_count() > 0);
+            env.closure_pins.push(Arc::downgrade(&pin));
+            current = env.parent;
+        }
+        self.memory.stats.epoch_count.fetch_add(1, Ordering::Relaxed);
+        let epoch = self.memory.epoch.fetch_add(1, Ordering::Relaxed);
+        Ok((EnvironmentRef::at_epoch(self.current_env.index(), epoch), pin))
     }
 
     /// Snapshot the current state of the memory.
@@ -1099,6 +1128,7 @@ impl Environment {
             bindings: self.bindings.clone(),
             parent: self.parent,
             might_be_refed: self.might_be_refed,
+            closure_pins: self.closure_pins.clone(),
             parent_pin: self.parent_pin,
             owner: 0,
         })
@@ -1126,6 +1156,7 @@ impl Environment {
             bindings: IndexMap::new(),
             parent,
             might_be_refed,
+            closure_pins: Vec::new(),
             parent_pin,
             owner,
         })
@@ -1136,6 +1167,7 @@ impl Environment {
             bindings: IndexMap::new(),
             parent: None,
             might_be_refed: false,
+            closure_pins: Vec::new(),
             parent_pin: ParentPin::None,
             owner: 0,
         }
@@ -1156,9 +1188,13 @@ impl Environment {
         self.might_be_refed = true;
     }
 
+    fn is_referenced(&self) -> bool {
+        self.might_be_refed || self.closure_pins.iter().any(|pin| pin.strong_count() > 0)
+    }
+
     // True if the env is empty and has no external references.
     fn is_empty(&self) -> bool {
-        self.bindings.is_empty() && !self.might_be_refed
+        self.bindings.is_empty() && !self.is_referenced()
     }
 
     /// Possibly compress this environment by deleting the memory.
@@ -1170,12 +1206,13 @@ impl Environment {
     /// See module docs for more details.
     fn compact(&mut self, owner: usize, op: &str) -> Result<(), KclError> {
         // Don't compress if there might be a closure or import referencing us.
-        if self.might_be_refed {
+        if self.is_referenced() {
             return Ok(());
         }
 
         self.check_owned_by(owner, op)?;
-        self.bindings.clear();
+        self.bindings = IndexMap::new();
+        self.closure_pins.clear();
         Ok(())
     }
 

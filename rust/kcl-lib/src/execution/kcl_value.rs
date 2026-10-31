@@ -322,6 +322,8 @@ pub struct FunctionSource {
     pub include_in_feature_tree: bool,
     pub std_props: Option<StdFnProps>,
     pub body: FunctionBody,
+    // The arena keeps weak handles; cloned closures share this lifetime.
+    pub(crate) capture_pin: Option<Arc<()>>,
     pub ast: BoxNode<FunctionExpression>,
 }
 
@@ -347,6 +349,7 @@ impl FunctionSource {
             include_in_feature_tree: attrs.include_in_feature_tree,
             std_props: Some(props),
             body: FunctionBody::Rust(func),
+            capture_pin: None,
             ast,
         }
     }
@@ -370,6 +373,7 @@ impl FunctionSource {
             include_in_feature_tree,
             std_props,
             body: FunctionBody::Kcl(memory),
+            capture_pin: None,
             ast,
         }
     }
