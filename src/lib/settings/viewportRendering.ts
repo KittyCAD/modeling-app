@@ -1,8 +1,7 @@
 import type { PostEffectType } from '@kittycad/lib'
 import { getThemeColorForEngine, Themes } from '@src/lib/theme'
 
-// Retro CAD is supported by the engine but is not in the current SDK yet.
-export type ViewportRendering = PostEffectType | 'retrocad'
+export type ViewportRendering = PostEffectType
 
 export const viewportRenderingOptions: {
   name: string
