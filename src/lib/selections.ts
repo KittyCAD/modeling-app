@@ -2,7 +2,7 @@ import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type {
   Point2d,
-  QueryEntityTypeWithPoint,
+  EntityReference as SdkEntityReference,
   RegionGetResolvableIntersectionInfo,
   WebSocketRequest,
 } from '@kittycad/lib'
@@ -1532,6 +1532,12 @@ export function normalizeEntityReference(
   if (typeof typeRaw !== 'string') return null
   const type = typeRaw.toLowerCase()
 
+  if (type === 'annotation') {
+    const annotation_id = raw.annotation_id ?? raw.annotationId
+    if (typeof annotation_id !== 'string') return null
+    return { type: 'annotation', annotation_id }
+  }
+
   if (type === 'plane') {
     const plane_id = raw.plane_id ?? raw.planeId
     if (typeof plane_id !== 'string') return null
@@ -1845,7 +1851,9 @@ export async function getEventForQueryEntityTypeWithPoint(
 
   // Get the entity ID from the EntityReference to find the artifact
   let entityId: string | undefined
-  if (entityRef.type === 'plane') {
+  if (entityRef.type === 'annotation') {
+    entityId = entityRef.annotation_id
+  } else if (entityRef.type === 'plane') {
     entityId = entityRef.plane_id
   } else if (entityRef.type === 'face') {
     entityId = entityRef.face_id
@@ -2164,16 +2172,21 @@ export function handleSelectionBatch({
   const selectionToEngine: SelectionToEngine[] = []
   let engineEvents: WebSocketRequest[] = []
 
-  const entityReferences: EntityReference[] = selections.graphSelections
+  // Select annotations by UUID until the SDK includes annotation references.
+  const entityReferences = selections.graphSelections
     .map((v2Sel) => v2Sel.entityRef)
-    .filter((ref): ref is EntityReference => ref !== undefined)
+    .filter(
+      (ref): ref is SdkEntityReference =>
+        ref !== undefined && ref.type !== 'annotation'
+    )
 
   if (entityReferences.length > 0) {
     engineEvents = setEngineEntitySelectionV2(entityReferences, systemDeps)
     const fallbackSelections = [
       ...selections.graphSelections
         .map((selection) => {
-          if (selection.entityRef) return undefined
+          if (selection.entityRef && selection.entityRef.type !== 'annotation')
+            return undefined
           const entityId = getEngineEntityIdForSelection(
             selection,
             artifactGraph
@@ -2520,7 +2533,7 @@ function resetAndSetEngineEntitySelectionCmds(
 }
 
 function setEngineEntitySelectionV2(
-  entityReferences: EntityReference[],
+  entityReferences: SdkEntityReference[],
   systemDeps: {
     engineCommandManager: ConnectionManager
   }
@@ -2550,8 +2563,14 @@ function getEngineEntityIdForSelection(
     return selection.engineEntityId
   }
 
+  if (selection.entityRef?.type === 'annotation') {
+    return selection.entityRef.annotation_id
+  }
+
   return resolveToCodeRef(selection, artifactGraph)?.artifact?.id
 }
+
+type QueryEntityTypeWithPoint = { reference?: EntityReference }
 
 function getQueryEntityTypeWithPointData(
   res: unknown
@@ -2679,7 +2698,9 @@ export function getSelectionCountByType(
     ).artifact
 
     if (v2Selection.entityRef) {
-      if (v2Selection.entityRef.type === 'helix') {
+      if (v2Selection.entityRef.type === 'annotation') {
+        incrementOrInitializeSelectionType('gdtAnnotation')
+      } else if (v2Selection.entityRef.type === 'helix') {
         incrementOrInitializeSelectionType('helix')
       } else if (v2Selection.entityRef.type === 'solid2d_edge') {
         incrementOrInitializeSelectionType('segment')
@@ -3800,7 +3821,10 @@ export function getCodeRefsFromEntityReference(
 ): Array<{ range: SourceRange }> | null {
   const codeRefs: Array<{ range: SourceRange }> = []
 
-  if (entityRef.type === 'helix' && entityRef.helix_id) {
+  if (entityRef.type === 'annotation') {
+    const refs = getCodeRefsByArtifactId(entityRef.annotation_id, artifactGraph)
+    if (refs?.length) codeRefs.push({ range: refs[0].range })
+  } else if (entityRef.type === 'helix' && entityRef.helix_id) {
     const refs = getCodeRefsByArtifactId(entityRef.helix_id, artifactGraph)
     if (refs?.length) codeRefs.push({ range: refs[0].range })
   } else if (entityRef.type === 'segment' && entityRef.segment_id) {
