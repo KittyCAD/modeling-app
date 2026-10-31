@@ -10,12 +10,10 @@ import type { ColorRepresentation, Intersection } from 'three'
 import {
   BoxGeometry,
   CanvasTexture,
-  Clock,
   Color,
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
-  Quaternion,
   Raycaster,
   SRGBColorSpace,
   Scene,
@@ -34,7 +32,6 @@ export default function AxisGizmo() {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection | null>(null)
-  const cameraPassiveUpdateTimer = useRef(0)
   const disableOrbitRef = useRef(false)
   const isPointerOverRef = useRef(false)
   const isHoverRefreshPausedRef = useRef(false)
@@ -115,9 +112,11 @@ export default function AxisGizmo() {
       doRayCast(mouse)
     }
 
-    const clock = new Clock()
-    const clientCamera = sceneInfra.camControls.camera
-    const currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
+    const updateCameraOrientation = () => {
+      const quaternion = sceneInfra.camControls.camera.quaternion
+      camera.position.set(0, 0, 1).applyQuaternion(quaternion)
+      camera.quaternion.copy(quaternion)
+    }
     const mouse = new Vector2()
     mouse.x = 1 // fix initial mouse position issue
     let isDisposed = false
@@ -127,9 +126,7 @@ export default function AxisGizmo() {
       }
 
       isHoverRefreshPausedRef.current = false
-      currentQuaternion.copy(sceneInfra.camControls.camera.quaternion)
-      camera.position.set(0, 0, 1).applyQuaternion(currentQuaternion)
-      camera.quaternion.copy(currentQuaternion)
+      updateCameraOrientation()
       if (isPointerOverRef.current) {
         doRayCast(mouse)
       } else {
@@ -157,28 +154,18 @@ export default function AxisGizmo() {
       wrapperElement
     )
 
-    const animate = () => {
-      const delta = clock.getDelta()
-      updateCameraOrientation(
-        camera,
-        currentQuaternion,
-        sceneInfra.camControls.camera.quaternion,
-        delta,
-        cameraPassiveUpdateTimer
-      )
+    const onCameraChange = () => {
+      updateCameraOrientation()
       if (isPointerOverRef.current && !isHoverRefreshPausedRef.current) {
         doRayCast(mouse)
       } else {
         renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
       }
     }
-    sceneInfra.camControls.cameraChange.add(animate)
+    sceneInfra.camControls.cameraChange.add(onCameraChange)
 
     // Initialize camera orientation/position to match main camera for immediate render
-    const q = sceneInfra.camControls.camera.quaternion
-    camera.position.set(0, 0, 1).applyQuaternion(q)
-    camera.quaternion.copy(q)
-    renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
+    onCameraChange()
 
     return () => {
       isDisposed = true
@@ -187,7 +174,7 @@ export default function AxisGizmo() {
       renderer.forceContextLoss()
       renderer.dispose()
       disposeMouseEvents()
-      sceneInfra.camControls.cameraChange.remove(animate)
+      sceneInfra.camControls.cameraChange.remove(onCameraChange)
     }
   }, [sceneInfra])
 
@@ -428,39 +415,6 @@ const updateAxisPairRenderOrder = (
     axis.renderOrder = renderOrder
     head.renderOrder = renderOrder + 1
   })
-}
-
-const updateCameraOrientation = (
-  camera: OrthographicCamera,
-  currentQuaternion: Quaternion,
-  targetQuaternion: Quaternion,
-  deltaTime: number,
-  cameraPassiveUpdateTimer: MutableRefObject<number>
-) => {
-  cameraPassiveUpdateTimer.current += deltaTime
-  if (
-    !quaternionsEqual(currentQuaternion, targetQuaternion) ||
-    cameraPassiveUpdateTimer.current >= 5
-  ) {
-    const slerpFactor = 1 - Math.exp(-30 * deltaTime)
-    currentQuaternion.slerp(targetQuaternion, slerpFactor).normalize()
-    camera.position.set(0, 0, 1).applyQuaternion(currentQuaternion)
-    camera.quaternion.copy(currentQuaternion)
-    cameraPassiveUpdateTimer.current = 0
-  }
-}
-
-const quaternionsEqual = (
-  q1: Quaternion,
-  q2: Quaternion,
-  tolerance = 0.001
-): boolean => {
-  return (
-    Math.abs(q1.x - q2.x) < tolerance &&
-    Math.abs(q1.y - q2.y) < tolerance &&
-    Math.abs(q1.z - q2.z) < tolerance &&
-    Math.abs(q1.w - q2.w) < tolerance
-  )
 }
 
 const initializeMouseEvents = (
