@@ -1429,7 +1429,13 @@ impl ExecState {
         &self,
         current: crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
     ) -> ProgramLookup {
-        ProgramLookup::new(current, self.global.module_infos.clone())
+        let mut lookup = ProgramLookup::new(current, Default::default());
+        for (id, info) in &self.global.module_infos {
+            if let ModuleRepr::Kcl(program, _) = &info.repr {
+                lookup.programs.entry(*id).or_insert_with(|| program.clone());
+            }
+        }
+        lookup
     }
 
     pub(crate) async fn build_artifact_graph(
@@ -1841,7 +1847,12 @@ impl ModuleArtifactState {
         self.artifacts.extend(other.artifacts);
         self.unprocessed_commands.extend(other.unprocessed_commands);
         self.commands.extend(other.commands);
-        self.operations.extend(other.operations);
+        if self.operations.is_empty() {
+            self.operations = other.operations;
+            self.operations.shrink_to_fit();
+        } else {
+            self.operations.extend(other.operations);
+        }
         if other.scene_objects.len() > self.scene_objects.len() {
             self.scene_objects
                 .extend(other.scene_objects[self.scene_objects.len()..].iter().cloned());
