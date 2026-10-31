@@ -11,6 +11,7 @@ import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
+import { createFileRouteRevalidation } from '@src/lib/fileRouteRevalidation'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
@@ -58,28 +59,10 @@ export const Router = () => {
               loader: fileLoader({
                 app,
               }),
-              // This can be deleted once https://github.com/KittyCAD/modeling-app/pull/13585 lands as that fixes it.
-              shouldRevalidate: ({
-                currentParams,
-                currentUrl,
-                nextParams,
-                nextUrl,
-                formMethod,
-                defaultShouldRevalidate,
-              }) => {
-                if (
-                  formMethod ||
-                  !currentParams.id ||
-                  currentParams.id !== nextParams.id || // if file url changes -> reload project
-                  currentUrl.href === nextUrl.href
-                ) {
-                  return defaultShouldRevalidate
-                }
-
-                // Avoid calling openEditor when opening / closing settings:
-                // Child routes and query changes within the same file reuse the loaded project.
-                return false
-              },
+              shouldRevalidate: createFileRouteRevalidation(
+                PATHS.FILE + '/:id',
+                PATHS.SETTINGS
+              ),
               id: PATHS.FILE,
               path: PATHS.FILE + '/:id',
               errorElement: <ErrorPage />,

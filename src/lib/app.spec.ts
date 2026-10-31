@@ -409,8 +409,12 @@ describe('project system', () => {
 
       const setting = app.settings.get().modeling.highlightEdges
       setting.user = !setting.current
-      expect(edges).toHaveBeenCalledExactlyOnceWith(setting.current)
-      expect(execute).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledExactlyOnceWith(
+        setting.current,
+        expect.any(Function)
+      )
+      expect(edges.mock.calls[0]?.[1]?.()).toBe(true)
+      expect(execute).not.toHaveBeenCalled()
       edges.mockClear()
 
       // A different editor still takes ownership and applies current values.
@@ -419,6 +423,7 @@ describe('project system', () => {
       expect(theme).toHaveBeenCalledTimes(1)
       expect(edges).toHaveBeenCalledTimes(1)
       expect(backface).toHaveBeenCalledTimes(1)
+      expect(execute).not.toHaveBeenCalled()
       project.executingPath = second.path
       expect(theme).toHaveBeenCalledTimes(1)
       expect(edges).toHaveBeenCalledTimes(1)
@@ -456,9 +461,9 @@ describe('project system', () => {
       vi.spyOn(app.engineCommandManager, 'setTheme').mockResolvedValue(
         undefined
       )
-      vi.spyOn(app.engineCommandManager, 'setHighlightEdges').mockResolvedValue(
-        undefined
-      )
+      const edges = vi
+        .spyOn(app.engineCommandManager, 'setHighlightEdges')
+        .mockResolvedValue(undefined)
       vi.spyOn(
         app.engineCommandManager,
         'setDefaultSystemProperties'
@@ -468,20 +473,38 @@ describe('project system', () => {
       } as typeof app.engineCommandManager.connection
       const setting = app.settings.get().modeling.highlightEdges
       setting.user = !setting.current
-      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledExactlyOnceWith(
+        setting.current,
+        expect.any(Function)
+      )
+      const firstIsCurrent = edges.mock.calls[0]?.[1]
+      expect(firstIsCurrent?.()).toBe(true)
+      expect(firstExecute).not.toHaveBeenCalled()
       expect(secondExecute).not.toHaveBeenCalled()
       expect(singletonExecute).not.toHaveBeenCalled()
 
       project.executingPath = second.path
+      expect(firstIsCurrent?.()).toBe(false)
+      edges.mockClear()
       setting.user = !setting.current
-      expect(firstExecute).toHaveBeenCalledTimes(1)
-      expect(secondExecute).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledExactlyOnceWith(
+        setting.current,
+        expect.any(Function)
+      )
+      const secondIsCurrent = edges.mock.calls[0]?.[1]
+      expect(secondIsCurrent?.()).toBe(true)
+      expect(firstExecute).not.toHaveBeenCalled()
+      expect(secondExecute).not.toHaveBeenCalled()
       expect(singletonExecute).not.toHaveBeenCalled()
 
       project.executingPath = null
+      expect(secondIsCurrent?.()).toBe(false)
+      edges.mockClear()
       setting.user = !setting.current
-      expect(firstExecute).toHaveBeenCalledTimes(1)
-      expect(secondExecute).toHaveBeenCalledTimes(1)
+      expect(edges).not.toHaveBeenCalled()
+      expect(firstExecute).not.toHaveBeenCalled()
+      expect(secondExecute).not.toHaveBeenCalled()
+      expect(singletonExecute).not.toHaveBeenCalled()
     } finally {
       app.dispose()
     }
