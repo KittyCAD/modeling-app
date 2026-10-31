@@ -119,8 +119,6 @@ export default function useStateMachineCommands<
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [
-    actor,
-    send,
     shouldDisableEngineCommands,
     showExperimentalCommands,
     commandBarConfig,

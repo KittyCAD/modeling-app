@@ -1,7 +1,7 @@
 // Stator
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 2.0)
+@settings(defaultLengthUnit = in, kclVersion = 3.0)
 
 // Sketch the PCB profile
 sketch001 = sketch(on = offsetPlane(XZ, offset = -.26)) {

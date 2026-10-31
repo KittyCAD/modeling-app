@@ -50,6 +50,8 @@ it('updates only the chosen field and synchronizes the scene only for the active
     const [values, setValues] = useState<Record<string, unknown>>({
       second: faces('other'),
     })
+    // After coercion, the face collector must reject the default plane
+    // without losing the accepted faces when it synchronizes the scene.
     const [scene, setScene] = useState<Selections>({
       ...faces('one', 'two'),
       otherSelections: [{ name: 'XY', id: 'plane' }],

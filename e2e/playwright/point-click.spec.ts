@@ -2106,6 +2106,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     })
 
     await test.step('Edit revolve feature via feature tree selection', async () => {
+      await scene.settled()
       const newAngle = '180deg'
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation(
