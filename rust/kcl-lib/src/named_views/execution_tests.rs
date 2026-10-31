@@ -308,7 +308,7 @@ async fn whole_module_import_preserves_declaring_module_identity() {
         "an imported view's source range must continue to refer to its root import statement"
     );
     assert_eq!(
-        imported_view.code_ref.node_path, *import_node_path,
+        imported_view.code_ref.node_path, **import_node_path,
         "an imported view's node path must continue to refer to its root import statement"
     );
 }
