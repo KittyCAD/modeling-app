@@ -1,24 +1,42 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
+  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
+  createMemberExpression,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
+  insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
+  pathsReferToSamePipe,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { addHideCallsForRegionSketches } from '@src/lang/modifyAst/sweeps'
+import {
+  createEdgeRefObjectExpression,
+  entityReferenceToEdgeRefPayload,
+} from '@src/lang/modifyAst/edges'
 import {
   getVariableExprsFromSelection,
+  stringifyPathToNode,
+  resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
+import { getMergedSweepBodyArtifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import { err } from '@src/lib/trap'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  getEngineTopologyFallbackNormalized,
+  isEngineRegionSelection,
+} from '@src/lib/selections'
+import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 /**
  * Adds a flipSurface call to the AST.
@@ -173,5 +191,217 @@ export function addJoinSurfaces({
   return {
     modifiedAst,
     pathToNode,
+  }
+}
+
+export function addPlanarSurface({
+  ast,
+  artifactGraph,
+  curves,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  curves: Selections
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const { graphSelections, otherSelections } = curves
+  const selectionCount = graphSelections.length + otherSelections.length
+  if (selectionCount === 0) {
+    return new Error('Select sketch regions or swept-body edges.')
+  }
+
+  let modifiedAst = structuredClone(ast)
+  let pathIfPipe: PathToNode | undefined
+  let curvesExpr: Expr
+  const engineRegions = otherSelections.filter(isEngineRegionSelection)
+  const onlyRegions =
+    engineRegions.length === otherSelections.length &&
+    graphSelections.every((selection) => {
+      if (selection.entityRef?.type === 'edge') return false
+      const artifact = resolveToCodeRef(selection, artifactGraph)?.artifact
+      const path =
+        artifact?.type === 'solid2d'
+          ? artifactGraph.get(artifact.pathId)
+          : artifact
+      return path?.type === 'path' && path.subType === 'region'
+    })
+  if (onlyRegions) {
+    const regions = getVariableExprsFromSelection(
+      { graphSelections, otherSelections: [] },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      { preservePathInput: true }
+    )
+    if (isErr(regions)) return regions
+    if (regions.exprs.length !== graphSelections.length) {
+      return new Error('Could not resolve the selected regions in code.')
+    }
+    if (
+      regions.exprs.filter((expr) => expr.type === 'PipeSubstitution').length >
+      1
+    ) {
+      return new Error(
+        'Assign variables to the selected regions before combining them.'
+      )
+    }
+    pathIfPipe = regions.pathIfPipe
+    if (engineRegions.length > 0) {
+      const hidden = addHideCallsForRegionSketches({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (isErr(hidden)) return hidden
+      modifiedAst = hidden
+      const insertedRegions = insertRegionVariablesAndOffsetPathToNode({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (isErr(insertedRegions)) return insertedRegions
+      regions.exprs.push(...insertedRegions)
+    }
+    curvesExpr =
+      regions.exprs.length === 1
+        ? regions.exprs[0]
+        : createArrayExpression(regions.exprs)
+  } else if (
+    otherSelections.length === 0 &&
+    graphSelections[0].entityRef?.type === 'edge'
+  ) {
+    const edges: Expr[] = []
+    for (const selection of graphSelections) {
+      const edge = getPlanarBodyEdgeExpression({
+        selection,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (isErr(edge)) return edge
+      if (edge.pathIfPipe) {
+        if (
+          pathIfPipe &&
+          stringifyPathToNode(pathIfPipe) !==
+            stringifyPathToNode(edge.pathIfPipe) &&
+          !pathsReferToSamePipe(pathIfPipe, edge.pathIfPipe)
+        ) {
+          return new Error(
+            'Assign variables to the selected bodies before combining their edges.'
+          )
+        }
+        pathIfPipe = edge.pathIfPipe
+      }
+      modifiedAst = edge.modifiedAst
+      edges.push(edge.expr)
+    }
+    curvesExpr = createArrayExpression(edges)
+  } else {
+    return new Error(
+      'Select sketch regions or a list of Face API edges from the viewport.'
+    )
+  }
+
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Planar Surface'),
+    curvesExpr,
+    []
+  )
+  const pipeIndex = pathIfPipe?.[1]?.[0]
+  if (
+    typeof pipeIndex === 'number' &&
+    getSafeInsertIndex(call, modifiedAst) > pipeIndex + 1
+  ) {
+    return new Error(
+      'Assign a variable to the anonymous body before using values defined later in the file.'
+    )
+  }
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathIfNewPipe: pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SURFACE,
+    wasmInstance,
+  })
+  if (isErr(pathToNode)) return pathToNode
+  return { modifiedAst, pathToNode }
+}
+
+function getPlanarBodyEdgeExpression({
+  selection,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+}: {
+  selection: Selection
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+}):
+  | Error
+  | { modifiedAst: Node<Program>; expr: Expr; pathIfPipe?: PathToNode } {
+  const reference = selection.entityRef
+  if (reference?.type !== 'edge' || reference.side_faces.length === 0)
+    return new Error(
+      'Select an edge with Face API references from the viewport.'
+    )
+  const topology = getEngineTopologyFallbackNormalized(selection)
+  let bodySelection =
+    (topology &&
+      getBodySelectionFromPrimitiveParentEntityId(
+        topology.parentId,
+        artifactGraph
+      )) ??
+    getBodySelectionFromPrimitiveParentEntityId(
+      reference.side_faces[0],
+      artifactGraph
+    )
+  if (!bodySelection?.artifact || !bodySelection.codeRef)
+    return new Error('Could not resolve the selected edge body in code.')
+  if (bodySelection.artifact?.type === 'sweep') {
+    const canonicalBody = getMergedSweepBodyArtifact(
+      bodySelection.artifact,
+      artifactGraph,
+      false
+    )
+    if (isErr(canonicalBody)) return canonicalBody
+    bodySelection = { artifact: canonicalBody, codeRef: canonicalBody.codeRef }
+  }
+  const body = getVariableExprsFromSelection(
+    { graphSelections: [bodySelection], otherSelections: [] },
+    artifactGraph,
+    modifiedAst,
+    wasmInstance,
+    undefined,
+    {
+      lastChildLookup: false,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
+  )
+  if (isErr(body)) return body
+  if (body.exprs.length !== 1)
+    return new Error('Could not resolve the selected edge body in code.')
+  const bodyExpr = body.exprs[0]
+
+  const tagged = createEdgeRefObjectExpression(
+    entityReferenceToEdgeRefPayload(reference),
+    wasmInstance,
+    modifiedAst,
+    artifactGraph,
+    resolveToCodeRef(selection, artifactGraph) ?? undefined,
+    undefined,
+    createMemberExpression(structuredClone(bodyExpr), 'sketch'),
+    bodyExpr,
+    { requireEveryFace: true, allowTagging: true }
+  )
+  if (isErr(tagged)) return tagged
+  return {
+    modifiedAst: tagged.modifiedAst,
+    expr: tagged.expr,
+    pathIfPipe: body.pathIfPipe,
   }
 }

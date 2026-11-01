@@ -5880,7 +5880,48 @@ hole001 = hole::hole(
 
 test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
   test.use({
-    userFeatures: ['modeling_dialogs'],
+    userFeatures: ['modeling_dialogs', EXPERIMENTAL_POINT_AND_CLICK_FLAG],
+  })
+
+  test('Creates a planar surface from a sketch region', async ({
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const code = `@settings(experimentalFeatures = allow, kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])`
+    const declaration = 'surface001 = planarSurface(region001)'
+
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await toolbar.selectSurface('planar-surface')
+    await expect(modelingDialog.locator).toBeVisible()
+    await editor.selectText('region001 = region(')
+    await expect(modelingDialog.selection('Profiles')).toContainText(
+      /1 region/i
+    )
+    await expect(modelingDialog.input(/^tolerance$/i)).not.toBeAttached()
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: [declaration],
+      highlightedCode: '',
+    })
+    await editor.expectEditor.toContain(declaration)
+    await expect(
+      await toolbar.getFeatureTreeOperation('surface001', 0)
+    ).toBeVisible()
   })
 
   test('Selects objects and annotations from the feature tree for Named View exceptions', async ({

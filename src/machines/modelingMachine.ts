@@ -547,6 +547,7 @@ export type ModelingMachineEvent =
   | { type: 'GDT Annotation'; data: ModelingCommandSchema['GDT Annotation'] }
   | { type: 'GDT Note'; data: ModelingCommandSchema['GDT Note'] }
   | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
+  | { type: 'Planar Surface'; data: ModelingCommandSchema['Planar Surface'] }
   | { type: 'Join Surfaces'; data: ModelingCommandSchema['Join Surfaces'] }
   | {
       type:
@@ -4411,6 +4412,9 @@ export const modelingMachine = setup({
     gdtNoteAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods['GDT Note'])
     ),
+    planarSurfaceAstMod: fromPromise(
+      createModelingCodemodActor(modelingCommandCodemods['Planar Surface'])
+    ),
     flipSurfaceAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods['Flip Surface'])
     ),
@@ -4955,6 +4959,10 @@ export const modelingMachine = setup({
 
         'Pattern Linear 3D': {
           target: 'Pattern Linear 3D',
+        },
+
+        'Planar Surface': {
+          target: 'Applying Planar Surface',
         },
 
         'Flip Surface': {
@@ -7336,6 +7344,27 @@ export const modelingMachine = setup({
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying Planar Surface': {
+      invoke: {
+        src: 'planarSurfaceAstMod',
+        id: 'planarSurfaceAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Planar Surface') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
           }
         },
         onDone: ['idle'],
