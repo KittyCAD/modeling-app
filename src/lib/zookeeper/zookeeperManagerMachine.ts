@@ -32,6 +32,7 @@ import type { ArtifactGraph } from '@src/lang/wasm'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
+import type { ProjectReferenceCommandTransport } from '@src/lib/zookeeper/projectReferenceCommands'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   constructZookeeperUserPromptRequest,
@@ -506,6 +507,7 @@ export const getZookeeperAttachmentKey = (
 
 export interface ZookeeperManagerContext {
   apiToken: string
+  clientCommands?: ProjectReferenceCommandTransport
   ws?: WebSocket
   abruptlyClosed: boolean
   setupFailed: boolean
@@ -535,9 +537,11 @@ export interface ZookeeperManagerContext {
 export const zookeeperDefaultContext = (args: {
   input?: {
     apiToken?: string
+    clientCommands?: ProjectReferenceCommandTransport
   } | null
 }): ZookeeperManagerContext => ({
   apiToken: args.input?.apiToken ?? '',
+  clientCommands: args.input?.clientCommands,
   ws: undefined,
   abruptlyClosed: false,
   setupFailed: false,
@@ -854,7 +858,7 @@ type XSInput<T> = {
 export const zookeeperManagerMachine = setup({
   types: {
     context: {} as ZookeeperManagerContext,
-    input: {} as Pick<ZookeeperManagerContext, 'apiToken'>,
+    input: {} as Pick<ZookeeperManagerContext, 'apiToken' | 'clientCommands'>,
     events: {} as ZookeeperManagerEvents,
   },
   guards: {
@@ -1337,6 +1341,12 @@ export const zookeeperManagerMachine = setup({
               })
             }
 
+            if (
+              args.input.context.clientCommands?.handleRequest(ws, response)
+            ) {
+              return
+            }
+
             const modesResult = parseMlCopilotModesResult(response)
             if (modesResult !== null) {
               maybeModeOptions = modesResult.modeOptions
@@ -1525,6 +1535,7 @@ export const zookeeperManagerMachine = setup({
             type: 'list_modes',
           }
           ws.send(JSON.stringify(listModesRequest))
+          args.input.context.clientCommands?.advertise(ws)
 
           ws.addEventListener('close', function (event: CloseEvent) {
             clearInterval(pingIntervalId)
@@ -2367,10 +2378,11 @@ export const zookeeperManagerMachine = setup({
 export type ZookeeperManagerActor = ActorRefFrom<typeof zookeeperManagerMachine>
 
 export function createZookeeperManagerActor(
-  apiToken: string
+  apiToken: string,
+  clientCommands?: ProjectReferenceCommandTransport
 ): ZookeeperManagerActor {
   return createActor(zookeeperManagerMachine, {
-    input: { apiToken },
+    input: { apiToken, clientCommands },
   }).start()
 }
 
