@@ -224,8 +224,8 @@ impl StdFnProps {
 ///   compatibility exception that warns instead of rejecting the call.
 ///
 /// Region and solid policies are independent, so their modifiers may be chained.
-pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
-    match (path, fn_name) {
+pub(crate) fn std_fn(path: &str, fn_name: &str) -> Result<(crate::std::StdFn, StdFnProps), KclError> {
+    Ok(match (path, fn_name) {
         ("gdt", "datum") => (
             |e, a| Box::pin(crate::std::gdt::datum(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::gdt::datum"),
@@ -921,9 +921,11 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             StdFnProps::default("std::operation::facing"),
         ),
         (module, fn_name) => {
-            panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
+            return Err(KclError::internal(format!(
+                "No implementation found for {module}::{fn_name}, this is not a recognized KCL standard library function"
+            )));
         }
-    }
+    })
 }
 
 pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
