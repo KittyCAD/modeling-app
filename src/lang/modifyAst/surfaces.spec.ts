@@ -371,10 +371,11 @@ sketch001 = sketch(on = XY) {
   circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
 }`
 
-  const twoRegions = `@settings(kclVersion = 3.0)
+  const regionsSketch = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
   circle2 = circle(start = [40mm, 0mm], center = [30mm, 0mm])
+  circle3 = circle(start = [70mm, 0mm], center = [60mm, 0mm])
 }`
 
   async function setup(code = circle) {
@@ -385,52 +386,8 @@ sketch001 = sketch(on = XY) {
     )
   }
 
-  it('creates multiple viewport regions and hides their sketch once', async () => {
-    const { ast, artifactGraph } = await setup(twoRegions)
-    const sketch = [...artifactGraph.values()].find(
-      (artifact) => artifact.type === 'sketchBlock'
-    )
-    if (!sketch) throw new Error('Missing sketch')
-    const result = addPlanarSurface({
-      ast,
-      artifactGraph,
-      curves: {
-        graphSelections: [],
-        otherSelections: [
-          {
-            type: 'engineRegion',
-            id: 'selected-region',
-            sketchId: sketch.id,
-            point: { x: 0, y: 0 },
-          },
-          {
-            type: 'engineRegion',
-            id: 'second-region',
-            sketchId: sketch.id,
-            point: { x: 30, y: 0 },
-          },
-        ],
-      },
-      wasmInstance: instanceInThisFile,
-    })
-    if (err(result)) throw result
-    const code = recast(result.modifiedAst, instanceInThisFile)
-    if (err(code)) throw code
-    expect(code).toContain(`hidden001 = hide(sketch001)
-region001 = region(point = [0mm, 0mm], sketch = sketch001)
-region002 = region(point = [30mm, 0mm], sketch = sketch001)
-surface001 = planarSurface([region001, region002])`)
-    expect(code.match(/hide\(sketch001\)/g)).toHaveLength(1)
-    expect(
-      await mockExecAstAndReportErrors(
-        result.modifiedAst,
-        rustContextInThisFile
-      )
-    ).toBeUndefined()
-  })
-
-  it('combines authored and viewport regions', async () => {
-    const { ast, artifactGraph } = await setup(`${twoRegions}
+  it('combines authored and viewport regions and hides their sketch once', async () => {
+    const { ast, artifactGraph } = await setup(`${regionsSketch}
 region001 = region(segments = [sketch001.circle1])`)
     const sketch = [...artifactGraph.values()].find(
       (artifact) => artifact.type === 'sketchBlock'
@@ -451,14 +408,24 @@ region001 = region(segments = [sketch001.circle1])`)
             sketchId: sketch.id,
             point: { x: 30, y: 0 },
           },
+          {
+            type: 'engineRegion',
+            id: 'second-region',
+            sketchId: sketch.id,
+            point: { x: 60, y: 0 },
+          },
         ],
       },
       wasmInstance: instanceInThisFile,
     })
     if (err(result)) throw result
-    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      'surface001 = planarSurface([region001, region002])'
-    )
+    const code = recast(result.modifiedAst, instanceInThisFile)
+    if (err(code)) throw code
+    expect(code).toContain(`hidden001 = hide(sketch001)
+region002 = region(point = [30mm, 0mm], sketch = sketch001)
+region003 = region(point = [60mm, 0mm], sketch = sketch001)
+surface001 = planarSurface([region001, region002, region003])`)
+    expect(code.match(/hide\(sketch001\)/g)).toHaveLength(1)
     expect(
       await mockExecAstAndReportErrors(
         result.modifiedAst,
@@ -468,7 +435,7 @@ region001 = region(segments = [sketch001.circle1])`)
   })
 
   it('preserves individual regions and surfaces stored in arrays', async () => {
-    const { ast, artifactGraph } = await setup(`${twoRegions}
+    const { ast, artifactGraph } = await setup(`${regionsSketch}
 regions = [
   region(segments = [sketch001.circle1]),
   region(segments = [sketch001.circle2])
