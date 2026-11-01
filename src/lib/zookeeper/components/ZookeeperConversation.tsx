@@ -10,6 +10,8 @@ import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { isImageMimetype } from '@src/lib/mimeTypes'
+import { fileNameHasExtension, getEXTWithPeriod } from '@src/lib/paths'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
@@ -448,7 +450,10 @@ export const ZookeeperConversationInput = (
     try {
       const dataUrl = takeViewportScreenshot()
       if (!dataUrl) return
-      appendDataUrlAttachment(dataUrl, 'viewport-screenshot.png')
+      appendDataUrlAttachment(
+        dataUrl,
+        `viewport-screenshot-${crypto.randomUUID()}.png`
+      )
     } catch (e) {
       console.error('Failed to capture viewport screenshot', e)
     }
@@ -471,7 +476,7 @@ export const ZookeeperConversationInput = (
         onSend: (annotatedDataUrl) => {
           appendDataUrlAttachment(
             annotatedDataUrl,
-            'annotated-viewport-screenshot.png'
+            `annotated-viewport-screenshot-${crypto.randomUUID()}.png`
           )
           stopZoodleRuntimeExtension()
         },
@@ -539,7 +544,18 @@ export const ZookeeperConversationInput = (
     const files = Array.from(e.clipboardData.files)
     if (files.length > 0) {
       e.preventDefault()
-      appendAttachments(files)
+      // Clipboard image names can repeat across prompts.
+      const pastedFiles = files.map((file) => {
+        if (!isImageMimetype(file.type)) return file
+        const extension = fileNameHasExtension(file.name)
+          ? (getEXTWithPeriod(file.name) ?? '')
+          : ''
+        return new File([file], `image-${crypto.randomUUID()}${extension}`, {
+          type: file.type,
+          lastModified: file.lastModified,
+        })
+      })
+      appendAttachments(pastedFiles)
       return
     }
 
@@ -620,7 +636,7 @@ export const ZookeeperConversationInput = (
             {attachments.map(({ file, isPastedText }, index) => (
               <div
                 key={`${file.name}-${file.lastModified}-${file.size}`}
-                className="relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs py-1 pl-2 pr-8"
+                className={`relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs ${isImageMimetype(file.type) ? '' : 'py-1 pl-2 pr-8'}`}
                 title={file.name}
               >
                 <ZookeeperAttachmentPreview
@@ -631,7 +647,11 @@ export const ZookeeperConversationInput = (
                   type="button"
                   onClick={() => onRemoveAttachment(index)}
                   className="group absolute right-0 top-0 m-0 flex h-6 w-6 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
-                  aria-label={`Remove ${file.name}`}
+                  aria-label={
+                    isImageMimetype(file.type)
+                      ? `Remove image ${index + 1}`
+                      : `Remove ${file.name}`
+                  }
                 >
                   <CustomIcon
                     name="close"
