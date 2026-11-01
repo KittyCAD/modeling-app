@@ -536,40 +536,6 @@ mod tests {
     use crate::execution::parse_execute;
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_uses_the_command_id() {
-        let result = parse_execute(
-            r#"
-@settings(kclVersion = 3.0, experimentalFeatures = allow)
-
-profile = sketch(on = XY) {
-  circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
-}
-selected = region(segments = [profile.circle1])
-surface = planarSurface(selected, tolerance = 0.01mm)
-"#,
-        )
-        .await
-        .unwrap();
-
-        let (command_id, command) = result
-            .root_module_artifact_commands()
-            .iter()
-            .find_map(|artifact_command| match &artifact_command.command {
-                ModelingCmd::CreatePlanarSurface(command) => Some((artifact_command.cmd_id, command)),
-                _ => None,
-            })
-            .expect("expected a CreatePlanarSurface command");
-
-        assert!(matches!(command.target, PlanarSurfaceTarget::Region { .. }));
-        assert_eq!(command.tolerance, LengthUnit(0.01));
-        let KclValue::Solid { value: surface } = result.variable("surface") else {
-            panic!("expected a surface body");
-        };
-        assert_eq!(surface.id, command_id);
-        assert_eq!(surface.artifact_id, command_id.into());
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn planar_surface_batches_regions_in_input_order() {
         let result = parse_execute(
             r#"
@@ -580,7 +546,7 @@ profile = sketch(on = XY) {
 }
 leftRegion = region(segments = [profile.left])
 rightRegion = region(segments = [profile.right])
-surfaces = planarSurface([leftRegion, rightRegion])
+surfaces = planarSurface([leftRegion, rightRegion], tolerance = 0.01mm)
 "#,
         )
         .await
@@ -606,6 +572,7 @@ surfaces = planarSurface([leftRegion, rightRegion])
         assert_eq!(commands[1].0, commands[0].0 + 1);
         assert_ne!(commands[0].1, commands[1].1);
         for (index, surface) in surfaces.iter().enumerate() {
+            assert_eq!(commands[index].2.tolerance, LengthUnit(0.01));
             assert_eq!(
                 commands[index].2.target,
                 PlanarSurfaceTarget::Region {
