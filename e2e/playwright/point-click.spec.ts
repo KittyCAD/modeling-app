@@ -1,10 +1,7 @@
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import {
-  doAndWaitForImageDiff,
-  sendSceneCommand,
-} from '@e2e/playwright/test-utils'
+import { doAndWaitForImageDiff } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import {
@@ -13,22 +10,14 @@ import {
   KCL_DEFAULT_LENGTH,
 } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { uuidv4 } from '@src/lib/utils'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
 // Restore the camera used when these files were preloaded.
 async function resetView(scene: SceneFixture) {
   // The camera may already face this way, so no image change is guaranteed.
-  await sendSceneCommand(scene.page, {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      vantage: { x: 0, y: -128, z: 64 },
-      center: { x: 0, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-    },
+  await scene.moveCameraTo({ x: 0, y: -128, z: 64 }, undefined, {
+    waitForImageChange: false,
   })
   await doAndWaitForImageDiff(scene.streamWrapper, async () => {
     await scene.streamWrapper.click({
