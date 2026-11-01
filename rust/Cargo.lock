@@ -3166,8 +3166,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.254"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e3c73911b1c03a6979d48ab10e5460e367ccfec25301f8c0b6c861c24d2a07d"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue5401-face-api-entity-type-queries-fail-to-identify-gd-t-annotations#63d35751cfd0ed0b673dcf22906ff87e8635ed5f"
 dependencies = [
  "anyhow",
  "bon",
@@ -3201,8 +3200,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "50c9f1366e47999291754861f2362774f1c98bf478819d3788e70b978381e230"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue5401-face-api-entity-type-queries-fail-to-identify-gd-t-annotations#63d35751cfd0ed0b673dcf22906ff87e8635ed5f"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -3213,8 +3211,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "101a9b33a3af1c80223b1e34d8d4a28c7e09b61b43fa8ad643efba35bd2cc10e"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue5401-face-api-entity-type-queries-fail-to-identify-gd-t-annotations#63d35751cfd0ed0b673dcf22906ff87e8635ed5f"
 dependencies = [
  "proc-macro2",
  "quote",
