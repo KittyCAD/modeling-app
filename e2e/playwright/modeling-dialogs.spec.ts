@@ -155,10 +155,10 @@ obstruction = extrude(region002, length = 20mm)`
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await toolbar.openFeatureTreePane()
     await toolbar.extrudeButton.click()
-    const length = modelingDialog.input(/^length$/i)
+    const length = modelingDialog.input('length')
     const profiles = modelingDialog.selection('Profiles')
     await expect(length).toHaveText('5')
-    await length.fill('12mm')
+    await modelingDialog.fillInput('length', '12mm')
     await expect(profiles).toHaveText('Select in the scene')
 
     const row = page
