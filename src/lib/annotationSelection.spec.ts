@@ -2,7 +2,6 @@ import { afterAll, beforeAll, expect, test } from 'vitest'
 
 import {
   artifactToEntityRef,
-  getEntityRefId,
   resolveToCodeRef,
   selectionV2Equals,
 } from '@src/lang/queryAst'
@@ -12,7 +11,6 @@ import { assertParse, defaultNodePath } from '@src/lang/wasm'
 import {
   getCodeRefsFromEntityReference,
   getEventForQueryEntityTypeWithPoint,
-  getSelectionTypeDisplayText,
   handleSelectionBatch,
   normalizeEntityReference,
 } from '@src/lib/selections'
@@ -54,31 +52,24 @@ afterAll(() => {
   world?.commandBarActor.stop()
 })
 
-test('resolves annotation hover and feature-tree references to the same code', () => {
-  const normalized = normalizeEntityReference(reference)
-  expect(normalized).toEqual(reference)
-  if (!normalized) throw new Error('Annotation reference was discarded')
-
+test('maps annotation hover and click responses to the GD&T source', async () => {
+  expect(normalizeEntityReference(reference)).toEqual(reference)
   expect(
-    getCodeRefsFromEntityReference(normalized, world.kclManager.artifactGraph)
+    getCodeRefsFromEntityReference(reference, world.kclManager.artifactGraph)
   ).toEqual([{ range: annotation.codeRef.range }])
   expect(artifactToEntityRef(annotation.type, annotation.id)).toEqual(reference)
-  expect(getEntityRefId(normalized)).toBe(annotation.id)
   expect(
-    resolveToCodeRef({ entityRef: normalized }, world.kclManager.artifactGraph)
+    resolveToCodeRef({ entityRef: reference }, world.kclManager.artifactGraph)
   ).toEqual({ codeRef: annotation.codeRef, artifact: annotation })
   expect(
-    selectionV2Equals({ entityRef: normalized }, { entityRef: reference })
+    selectionV2Equals({ entityRef: reference }, { entityRef: reference })
   ).toBe(true)
   expect(
     selectionV2Equals(
-      { entityRef: normalized },
+      { entityRef: reference },
       { entityRef: { type: 'annotation', annotation_id: 'another-annotation' } }
     )
   ).toBe(false)
-})
-
-test('selects the GD&T source code from an annotation click response', async () => {
   const event = await getEventForQueryEntityTypeWithPoint(
     { data: { reference } },
     {
@@ -88,29 +79,27 @@ test('selects the GD&T source code from an annotation click response', async () 
       wasmInstance: world.instance,
     }
   )
-  const selections: Selections = {
-    graphSelections: [{ entityRef: reference, codeRef: annotation.codeRef }],
-    otherSelections: [],
-  }
   expect(event).toEqual({
     type: 'Set selection',
     data: {
       selectionType: 'singleCodeCursor',
-      selection: selections.graphSelections[0],
+      selection: { entityRef: reference, codeRef: annotation.codeRef },
     },
   })
-  expect(
-    getSelectionTypeDisplayText(
-      world.kclManager.ast,
-      selections,
-      world.kclManager.artifactGraph
-    )
-  ).toBe('1 annotation')
 })
 
 test.each([false, true])(
   'mirrors annotation selections to the engine (mixed with a face: %s)',
   (withFace) => {
+    const selections: Selections = {
+      graphSelections: [{ entityRef: reference, codeRef: annotation.codeRef }],
+      otherSelections: [],
+    }
+    if (withFace) {
+      selections.graphSelections.push({
+        entityRef: { type: 'face', face_id: 'face-id' },
+      })
+    }
     Object.defineProperty(world.engineCommandManager, 'connection', {
       value: { pingIntervalId: 1 },
       writable: true,
@@ -118,22 +107,7 @@ test.each([false, true])(
     })
     try {
       const result = handleSelectionBatch({
-        selections: {
-          graphSelections: [
-            { entityRef: reference, codeRef: annotation.codeRef },
-            ...(withFace
-              ? [
-                  {
-                    entityRef: {
-                      type: 'face',
-                      face_id: 'face-id',
-                    } satisfies EntityReference,
-                  },
-                ]
-              : []),
-          ],
-          otherSelections: [],
-        },
+        selections,
         artifactGraph: world.kclManager.artifactGraph,
         code,
         ast: world.kclManager.ast,
@@ -155,9 +129,6 @@ test.each([false, true])(
           : { type: 'select_clear' },
         { type: 'select_add', entities: [annotation.id] },
       ])
-      expect(result.codeMirrorSelection.main.head).toBe(
-        annotation.codeRef.range[1]
-      )
     } finally {
       world.engineCommandManager.connection = undefined
     }

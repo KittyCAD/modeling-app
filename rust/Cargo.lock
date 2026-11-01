@@ -3166,7 +3166,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.254"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue5401-face-api-entity-type-queries-fail-to-identify-gd-t-annotations#086270617ff690c1f06033a09101b12bacf0cd29"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue5401-face-api-entity-type-queries-fail-to-identify-gd-t-annotations#63d35751cfd0ed0b673dcf22906ff87e8635ed5f"
 dependencies = [
  "anyhow",
  "bon",
@@ -3200,7 +3200,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.14"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue5401-face-api-entity-type-queries-fail-to-identify-gd-t-annotations#086270617ff690c1f06033a09101b12bacf0cd29"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue5401-face-api-entity-type-queries-fail-to-identify-gd-t-annotations#63d35751cfd0ed0b673dcf22906ff87e8635ed5f"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -3211,7 +3211,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.15"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue5401-face-api-entity-type-queries-fail-to-identify-gd-t-annotations#086270617ff690c1f06033a09101b12bacf0cd29"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=pierremtb%2Fissue5401-face-api-entity-type-queries-fail-to-identify-gd-t-annotations#63d35751cfd0ed0b673dcf22906ff87e8635ed5f"
 dependencies = [
  "proc-macro2",
  "quote",
