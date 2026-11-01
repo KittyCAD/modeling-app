@@ -333,6 +333,12 @@ impl Stack {
         }
     }
 
+    pub fn push_new_env_for_builtin(&mut self) -> Result<(), KclError> {
+        match &mut self.backend {
+            StackBackend::Arena(stack) => stack.push_new_env_for_builtin(),
+        }
+    }
+
     pub fn push_new_env_for_scope(&mut self) -> Result<(), KclError> {
         match &mut self.backend {
             StackBackend::Arena(stack) => stack.push_new_env_for_scope(),
