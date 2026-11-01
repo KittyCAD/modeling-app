@@ -7534,6 +7534,45 @@ export default {
       }
     ]
   },
+  "planarSurface": {
+    "name": "planarSurface",
+    "preferredName": "planarSurface",
+    "qualName": "std::sketch::planarSurface",
+    "moduleName": "sketch",
+    "returnType": "[Solid; 1+]",
+    "addedIn": null,
+    "summary": "Fills closed regions to make planar surfaces contained by their boundaries.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "curves",
+        "ty": "Sketch | [any; 1+]",
+        "docs": "Regions created with `region(...)`, or Face API edge selectors (`{ sideFaces, endFaces?, index? }`) enclosing one planar surface.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "tolerance",
+        "ty": "number(Length)",
+        "docs": "Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "planeOf": {
     "name": "planeOf",
     "preferredName": "planeOf",

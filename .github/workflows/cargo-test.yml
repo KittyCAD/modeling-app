@@ -17,6 +17,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+env:
+  # Temporary until engine#5402 is deployed with the planar Face API.
+  ZOO_ENGINE_PR: "5402"
+
 jobs:
   build-test-artifacts:
     name: Build test artifacts
