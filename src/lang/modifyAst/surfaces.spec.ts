@@ -487,34 +487,42 @@ regions = [
       if (err(result)) throw result
       const code = recast(result.modifiedAst, instanceInThisFile)
       if (err(code)) throw code
-      expect(code).toContain(
-        selected.length === 1
-          ? 'surface001 = planarSurface(regions[1])'
-          : 'surface001 = planarSurface([regions[1], regions[0]])'
-      )
-      const createdAst = assertParse(code, instanceInThisFile)
-      const created = await enginelessExecutor(
-        createdAst,
-        rustContextInThisFile
-      )
-      const surfaces = [...created.artifactGraph.values()].filter(
-        (artifact) =>
-          artifact.type === 'sweep' && artifact.subType === 'planarSurface'
-      )
-      expect(surfaces).toHaveLength(selected.length)
-      const deleted = addDelete({
-        ast: createdAst,
-        artifactGraph: created.artifactGraph,
-        objects: createSelectionFromArtifacts(
-          [surfaces.at(-1)!],
-          created.artifactGraph
-        ),
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(deleted)) throw deleted
-      expect(recast(deleted.modifiedAst, instanceInThisFile)).toContain(
-        selected.length === 1 ? 'delete(surface001)' : 'delete(surface001[1])'
-      )
+      const input =
+        selected.length === 1 ? 'regions[1]' : '[regions[1], regions[0]]'
+      const call = `planarSurface(${input})`
+      expect(code).toContain(`surface001 = ${call}`)
+      for (const expression of [
+        call,
+        `${input} |> planarSurface(%)`,
+        `${call} |> translate(x = 1mm)`,
+      ]) {
+        const createdAst = assertParse(
+          code.replace(call, expression),
+          instanceInThisFile
+        )
+        const created = await enginelessExecutor(
+          createdAst,
+          rustContextInThisFile
+        )
+        const surfaces = [...created.artifactGraph.values()].filter(
+          (artifact) =>
+            artifact.type === 'sweep' && artifact.subType === 'planarSurface'
+        )
+        expect(surfaces).toHaveLength(selected.length)
+        const deleted = addDelete({
+          ast: createdAst,
+          artifactGraph: created.artifactGraph,
+          objects: createSelectionFromArtifacts(
+            [surfaces.at(-1)!],
+            created.artifactGraph
+          ),
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(deleted)) throw deleted
+        expect(recast(deleted.modifiedAst, instanceInThisFile)).toContain(
+          selected.length === 1 ? 'delete(surface001)' : 'delete(surface001[1])'
+        )
+      }
     }
   })
 

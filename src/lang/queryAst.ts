@@ -1915,21 +1915,17 @@ function getMultiRegionSweepOutputIndex(
   wasmInstance: ModuleType,
   artifactGraph: ArtifactGraph
 ): number | null {
-  const sweepDecl = getNodeFromPath<VariableDeclaration>(
+  const callLookup = getNodeFromPath<CallExpressionKw>(
     ast,
     artifact.codeRef.pathToNode,
     wasmInstance,
-    'VariableDeclaration'
+    'CallExpressionKw'
   )
-  if (
-    err(sweepDecl) ||
-    sweepDecl.node.type !== 'VariableDeclaration' ||
-    sweepDecl.node.declaration.init.type !== 'CallExpressionKw'
-  ) {
+  if (err(callLookup) || callLookup.node.type !== 'CallExpressionKw') {
     return null
   }
 
-  const sweepCall = sweepDecl.node.declaration.init
+  const sweepCall = callLookup.node
   if (
     artifact.subType === 'planarSurface' &&
     sweepCall.callee.type === 'Name' &&
