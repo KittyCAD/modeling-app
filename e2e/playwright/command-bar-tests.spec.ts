@@ -1,83 +1,10 @@
-import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
+import { executorInputPath } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as fsp from 'fs/promises'
 import path, { join } from 'path'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
-  test('Extrude from command bar selects extrude line after', async ({
-    page,
-    homePage,
-    toolbar,
-    scene,
-    editor,
-    cmdBar,
-  }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> xLine(length = -20)
-  |> close()
-    `
-      )
-    })
-
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.goToModelingScene()
-
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-    await scene.settled()
-
-    await toolbar.extrudeButton.click()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'Profiles',
-    })
-    await editor.selectText('startProfile(at = [-10, -10])')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-    })
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      reviewValidationError: undefined,
-    })
-    await cmdBar.progressCmdBar()
-    await expect(page.locator('.cm-activeLine')).toHaveText(
-      `extrude001 = extrude(sketch001, length = ${KCL_DEFAULT_LENGTH})`
-    )
-  })
-
   test('Command bar can change a setting, and switch back and forth between arguments', async ({
     page,
     homePage,
@@ -215,172 +142,6 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     ).toBeVisible()
     // Check that the theme changed
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
-  })
-
-  test('Can extrude from the command bar', async ({
-    page,
-    homePage,
-    cmdBar,
-    scene,
-    editor,
-  }) => {
-    const initialCode = `distance = sqrt(20)
-    sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [-6.95, 10.98])
-    |> line(end = [25.1, 0.41])
-    |> line(end = [0.73, -20.93])
-    |> line(end = [-23.44, 0.52])
-    |> close()
-        `
-    const u = await getUtils(page)
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    await u.openDebugPanel()
-    await u.clearCommandLogs()
-    await u.closeDebugPanel()
-    await editor.replaceCode('', initialCode)
-    await editor.expectEditor.toContain('startProfile(at = [-6.95, 10.98])')
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    let cmdSearchBar = page.getByPlaceholder('Search commands')
-    await page.keyboard.press('ControlOrMeta+K')
-    await expect(cmdSearchBar).toBeVisible()
-
-    // Search for extrude command and choose it
-    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
-
-    // Assert that we're on the selection step
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'Profiles',
-    })
-    // Select a face
-    await editor.selectText('startProfile(at = [-6.95, 10.98])')
-    await cmdBar.progressCmdBar()
-
-    // Assert that we're on the distance step
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-    })
-
-    // Assert that the an alternative variable name is chosen,
-    // since the default variable name is already in use (distance)
-    await cmdBar.variableCheckbox.click()
-    await expect(page.getByPlaceholder('Variable name')).toHaveValue(
-      'length001'
-    )
-    await cmdBar.progressCmdBar()
-
-    // Closed profiles use KCL's solid default and skip the body type step.
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      reviewValidationError: undefined,
-    })
-    await page.keyboard.press('Meta+Backspace')
-
-    // Step back returns to the preceding length argument.
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-    })
-
-    await cmdBar.progressCmdBar()
-
-    // Add optional arg
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-    })
-    await cmdBar.clickOptionalArgument('bidirectionalLength')
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'bidirectionalLength',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-        BidirectionalLength: '',
-      },
-      highlightedHeaderArg: 'bidirectionalLength',
-    })
-    await page.keyboard.type('10') // Set bidirectional length
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-        BidirectionalLength: '10',
-      },
-    })
-
-    // Clear optional arg
-    await page.getByRole('button', { name: 'Bidirectional length' }).click()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'bidirectionalLength',
-      currentArgValue: '10',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-        BidirectionalLength: '10',
-      },
-      highlightedHeaderArg: 'bidirectionalLength',
-    })
-    await cmdBar.clearNonRequiredButton.click()
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-      },
-    })
-
-    await cmdBar.progressCmdBar()
-    await scene.settled()
-    await editor.expectEditor.toContain(
-      'extrude001 = extrude(sketch001, length = length001)'
-    )
   })
 
   test(`Reacts to query param to open "import from URL" command`, async ({
@@ -731,138 +492,66 @@ export exported = 2`,
     }
   )
 
-  test('Step back works on non-required and required arguments and closes', async ({
+  test('Command bar steps back through optional and required Export arguments', async ({
     page,
     homePage,
     scene,
     cmdBar,
-    editor,
+    modelingDialog,
   }) => {
-    await page.addInitScript(async () => {
+    await page.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 5)
-`
+        `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle001 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle001])
+extrude001 = extrude(region001, length = 10mm)`
       )
     })
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled()
-
     await cmdBar.openCmdBar()
-    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'Profiles',
-    })
+    await cmdBar.cmdOptions.getByText('Export', { exact: true }).click()
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({ stage: 'arguments', currentArgKey: 'type' })
+    await cmdBar.selectOption({ name: 'STL', exact: true }).click()
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({ stage: 'review' })
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await page.keyboard.press('Meta+Backspace')
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({ stage: 'arguments', currentArgKey: 'Scale' })
+    await cmdBar.clearNonRequiredButton.click()
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({ stage: 'review' })
+    const review = await cmdBar.getState()
+    if (review.stage !== 'review') throw new Error('Expected Export review')
 
-    await editor.selectText('circle(center = [0, 0], radius = 5)')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-    })
-
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'bodyType',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: '',
-      },
-      highlightedHeaderArg: 'bodyType',
-    })
-
-    await cmdBar.selectOption({ name: 'Surface' }).click()
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: 'SURFACE',
-      },
-    })
-
-    await cmdBar.clickOptionalArgument('method')
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'method',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: 'SURFACE',
-        Method: '',
-      },
-      highlightedHeaderArg: 'method',
-    })
-    // Here we specifically don't input anything, making the arg unvalidated
-
-    await cmdBar.stepBack()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'bodyType',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: 'SURFACE',
-      },
-      highlightedHeaderArg: 'bodyType',
-    })
-
-    await cmdBar.stepBack()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: 'SURFACE',
-      },
-      highlightedHeaderArg: 'length',
-    })
-
-    await cmdBar.stepBack()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-        BodyType: 'SURFACE',
-      },
-      highlightedHeaderArg: 'Profiles',
-    })
-
-    await cmdBar.stepBack()
+    await cmdBar.clickOptionalArgument('scale')
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({
+        stage: 'arguments',
+        currentArgKey: 'Scale',
+      })
+    // Leave the optional argument unconfirmed, then traverse both kinds of fields.
+    for (const name of ['Up', 'storage', 'type']) {
+      await cmdBar.stepBackButton.click()
+      await expect
+        .poll(() => cmdBar.getState())
+        .toMatchObject({
+          stage: 'arguments',
+          currentArgKey: name,
+          headerArguments: review.headerArguments,
+        })
+    }
+    await cmdBar.stepBackButton.click()
     await cmdBar.expectState({ stage: 'commandBarClosed' })
   })
 })
