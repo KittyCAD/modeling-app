@@ -1016,6 +1016,16 @@ export class LocalRenderer {
 
     const { detail } = event as CustomEvent<KclExecutionDoneDetail>
     if (!detail.successful) {
+      if (
+        this.loadedSceneGeneration !==
+        this.kclManager.engineSceneGenerationSignal.peek()
+      ) {
+        // The failed run replaced the scene, so its old geometry is stale.
+        this.clearModel()
+        this.gpu?.planeRenderer.updateOffsetPlanes(
+          this.kclManager.artifactGraph
+        )
+      }
       this.rebuildSelectionTargets()
       this.syncPlaneScale()
       this.onModelLoadSettled?.()
