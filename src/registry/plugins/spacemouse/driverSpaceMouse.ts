@@ -8,7 +8,8 @@ import {
   Quaternion,
   Vector3,
 } from 'three'
-import driverScriptUrl from './3dconnexion.min.js?url'
+// Serve the classic SDK untouched; Vite's JS transforms can inject module imports.
+import driverScriptUrl from '/vendor/3dconnexion.min.js?url'
 
 const DRIVER_SCRIPT_ID = 'spacemouse-3dconnexion-driver-script'
 const CONNECT_ERROR =
