@@ -1438,6 +1438,11 @@ fn artifacts_to_update(
         ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) => {
             let existing_plane = artifacts.get(&ArtifactId::new(*entity_id));
             match existing_plane {
+                Some(Artifact::EdgeCut(_)) => {
+                    // Sketching on a treatment face must preserve its ownership
+                    // and clone provenance for subsequent face selections.
+                    return Ok(Vec::new());
+                }
                 Some(Artifact::Wall(wall)) => {
                     return Ok(vec![Artifact::Wall(Wall {
                         id: entity_id.into(),

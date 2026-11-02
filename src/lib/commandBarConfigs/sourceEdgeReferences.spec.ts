@@ -725,7 +725,11 @@ it.each(['chamfer', 'fillet'])(
   async (treatment) => {
     const code =
       chainedTreatmentCode +
-      'copy = clone(fillet001) |> translate(x = 50mm, global = true)'
+      `copy = clone(fillet001) |> translate(x = 50mm, global = true)
+// Attaching a sketch must preserve the support face's treatment metadata.
+sketch001 = sketch(on = faceOf(chamfer001, face = chamfer001.faces.chamferFace01)) {
+  circle1 = circle(start = [var 5.11mm, var 8.24mm], center = [var 5.35mm, var 8.54mm])
+}`
     const { ast, artifactGraph } = await getAstAndArtifactGraph(
       code,
       world.instance,
@@ -850,16 +854,17 @@ it.each(['chamfer', 'fillet'])(
           'faceOf(copy, face = copy.faces.chamferFace01)'
         )
       }
-      await getAstAndArtifactGraph(
+      const { artifactGraph: graphAfterSketch } = await getAstAndArtifactGraph(
         sketchCode.replace(
-          /(sketch\d+ = sketch\(on = faceOf[^\n]+\) \{)\n/,
+          /(sketch002 = sketch\(on = faceOf[^\n]+\) \{)\n/,
           '$1\n  circle(start = [0.1mm, 0mm], center = [0mm, 0mm])\n'
         ),
         world.instance,
         world.kclManager
       )
       expect(world.kclManager.errors).toEqual([])
-      expect(world.kclManager.variables.sketch001).toMatchObject({
+      expect(graphAfterSketch.get(face.id)?.type).toBe('edgeCut')
+      expect(world.kclManager.variables.sketch002).toMatchObject({
         type: 'Object',
         value: {
           meta: { value: { sketch: { value: { on: { id: face.id } } } } },
