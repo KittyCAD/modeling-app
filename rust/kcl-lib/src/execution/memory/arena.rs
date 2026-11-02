@@ -847,11 +847,19 @@ impl Stack {
     pub fn snapshot(&mut self) -> Result<EnvironmentRef, KclError> {
         self.memory.stats.epoch_count.fetch_add(1, Ordering::Relaxed);
 
-        let env_index = self.current_env.index();
-        let env = self.memory.get_env_checked(env_index, "snapshotting an environment")?;
-        self.memory
-            .write_env(&env, env_index, "snapshotting an environment")?
-            .mark_as_refed();
+        // A permanent capture also needs its lexical ancestors after temporary closures die.
+        let envs = self.memory.read_env_table("snapshotting an environment")?;
+        let mut current = Some(self.current_env);
+        while let Some(reference) = current {
+            let env = envs.get(reference.index()).ok_or_else(|| {
+                arena_env_index_out_of_range("snapshotting an environment", reference.index(), envs.len())
+            })?;
+            let mut env = self
+                .memory
+                .write_env(env, reference.index(), "snapshotting an environment")?;
+            env.mark_as_refed();
+            current = env.parent;
+        }
 
         let prev_epoch = self.memory.epoch.fetch_add(1, Ordering::Relaxed);
         Ok(EnvironmentRef::at_epoch(self.current_env.index(), prev_epoch))
