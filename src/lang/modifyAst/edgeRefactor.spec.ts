@@ -1757,7 +1757,7 @@ part = bracket()
       const { instance, kclManager, engineCommandManager } =
         await buildTheWorldAndConnectToEngine({
           webrtc: false,
-          pool: 'cpu',
+          geometryOnly: true,
         })
       instanceInThisFile = instance
       kclManagerInThisFile = kclManager

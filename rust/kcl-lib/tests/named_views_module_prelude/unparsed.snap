@@ -4,7 +4,7 @@ description: Result of unparsing named_views_module_prelude.kcl
 ---
 // KCL V3 exposes every view enum through the prelude without an explicit
 // import or experimental opt-in.
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 orientation = view::Orientation::Isometric
 baseline = view::Visibility::Hide

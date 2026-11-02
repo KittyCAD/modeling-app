@@ -33,7 +33,6 @@ import {
   keymapService,
   keymapEventOwnersValueSpec,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
   type PersistedKeymap,
   provideKeymapDocument,
   provideKeymapItem,
@@ -212,42 +211,15 @@ describe('keymap extension', () => {
   it('uses Shift+Escape to exit sketch across desktop and web', () => {
     expect(
       defaultKeymap.bindings.find(
-        (binding) => binding.id === 'toolbar.sketch-legacy.exit'
-      )?.keystrokes
-    ).toEqual(['shift+escape'])
-    expect(
-      defaultKeymap.bindings.find(
         (binding) => binding.id === 'toolbar.sketch.exit'
       )?.keystrokes
     ).toEqual(['shift+escape'])
 
     expect(
       defaultKeymap.bindings.filter((binding) =>
-        binding.id.startsWith('toolbar.sketch-legacy.exit')
-      )
-    ).toHaveLength(1)
-    expect(
-      defaultKeymap.bindings.filter((binding) =>
         binding.id.startsWith('toolbar.sketch.exit')
       )
     ).toHaveLength(1)
-  })
-
-  it('hides legacy sketch keybindings and links them to user-facing sketch bindings', () => {
-    expect(
-      defaultKeymap.bindings.find(
-        (binding) => binding.id === 'toolbar.sketch-legacy.line'
-      )
-    ).toMatchObject({
-      hidden: true,
-      command: 'zds.toolbar.sketchLegacy.line',
-      userBindingCommand: 'zds.toolbar.sketch.line',
-    })
-    const sketchLine = defaultKeymap.bindings.find(
-      (binding) => binding.id === 'toolbar.sketch.line'
-    )
-    expect(sketchLine?.command).toBe('zds.toolbar.sketch.line')
-    expect(sketchLine?.hidden).toBeUndefined()
   })
 
   it('uses P for the hovered tool picker while preserving sketch shortcuts', () => {
@@ -519,9 +491,6 @@ describe('keymap extension', () => {
     )
     const registry = createRegistryWithKeymapItems([], {
       commands: [
-        createTestCommand('zds.toolbar.sketchLegacy.line', [
-          MODE_SKETCHING_KEYMAP_SCOPE,
-        ]),
         createTestCommand('zds.toolbar.sketch.line', [
           MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
         ]),
@@ -529,7 +498,7 @@ describe('keymap extension', () => {
     })
 
     const keymap = registry.get(keymapService)
-    keymap.applyScope(MODE_SKETCHING_KEYMAP_SCOPE)
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
 
     const savePromise = keymap.savePersistedKeymap({
       version: KEYMAP_SCHEMA_VERSION,

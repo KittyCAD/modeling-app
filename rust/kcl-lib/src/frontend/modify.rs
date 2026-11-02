@@ -240,7 +240,7 @@ mod tests {
         assert_eq!(next_free_name_using_padding("line", &taken, 2).unwrap(), "line01");
 
         for i in 2..10 {
-            taken.insert(format!("sketch00{i}").to_owned());
+            taken.insert(format!("sketch00{i}"));
         }
         taken.insert("line01".to_owned());
 
@@ -248,7 +248,7 @@ mod tests {
         assert_eq!(next_free_name_using_padding("line", &taken, 2).unwrap(), "line02");
 
         for i in 2..10 {
-            taken.insert(format!("line0{i}").to_owned());
+            taken.insert(format!("line0{i}"));
         }
 
         assert_eq!(next_free_name_using_padding("line", &taken, 2).unwrap(), "line10");

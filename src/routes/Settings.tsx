@@ -62,30 +62,6 @@ export const Settings = () => {
         : defaultTab
   const searchParamTab = requestedSettingsTab
 
-  useEffect(() => {
-    if (requestedTab !== 'project' || hasOpenProject) {
-      return
-    }
-
-    const nextSearchParams = new URLSearchParams(searchParams)
-    nextSearchParams.set('tab', 'user')
-    void navigate(
-      {
-        pathname: location.pathname,
-        search: `?${nextSearchParams.toString()}`,
-        hash: location.hash,
-      },
-      { replace: true }
-    )
-  }, [
-    hasOpenProject,
-    location.hash,
-    location.pathname,
-    navigate,
-    requestedTab,
-    searchParams,
-  ])
-
   const scrollRef = useRef<HTMLDivElement>(null)
   const settingsSearchKeybinding = keymapKeystrokesDisplay(
     keymap

@@ -2187,6 +2187,19 @@ const CustomIconMap = Object.freeze({
     'VerticalDistance',
     'vertical dimension'
   ),
+  viewFrame: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="view frame"
+    >
+      <path
+        d="M6.5 2.5H2.5V6.5M13.5 2.5H17.5V6.5M17.5 13.5V17.5H13.5M6.5 17.5H2.5V13.5"
+        stroke="currentColor"
+      />
+    </svg>
+  ),
   xAbsolute: (
     <svg
       viewBox="0 0 20 20"

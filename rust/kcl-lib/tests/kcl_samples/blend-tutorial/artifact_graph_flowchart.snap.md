@@ -54,7 +54,7 @@ flowchart LR
   18["SweepEdge Opposite"]
   19["SweepEdge Adjacent"]
   20["SweepEdge PreviousAdjacent"]
-  21["Sweep Blend<br>[1110, 1253, 0]<br>Consumed: true"]
+  21["Sweep Blend<br>[1110, 1253, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   22["Plane<br>[1285, 1587, 0]"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]

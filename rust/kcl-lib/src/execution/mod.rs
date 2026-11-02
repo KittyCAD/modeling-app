@@ -3,6 +3,8 @@
 use std::collections::BTreeMap;
 use std::future::Future;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
@@ -178,6 +180,8 @@ pub(crate) mod kcl_value_view;
 pub(crate) mod machine;
 mod memory;
 mod modeling;
+#[cfg(not(target_arch = "wasm32"))]
+mod remote;
 mod sketch_solve;
 mod solver_arc;
 mod state;
@@ -192,7 +196,7 @@ pub(crate) const SKETCH_OBJECT_META_SKETCH: &str = "sketch";
 /// returning early if it is some kind of early return or stripping off the
 /// control flow otherwise. If it's an early return, it's returned as a
 /// `Result::Ok`.
-macro_rules! control_continue {
+macro_rules! control_normal {
     ($control_flow:expr) => {{
         let cf = $control_flow;
         if cf.is_some_return() {
@@ -203,7 +207,7 @@ macro_rules! control_continue {
     }};
 }
 // Expose the macro to other modules.
-pub(crate) use control_continue;
+pub(crate) use control_normal;
 
 /// Convenience macro for handling [`KclValueControlFlow`] in execution by
 /// returning early if it is some kind of early return or stripping off the
@@ -226,7 +230,7 @@ pub(crate) use early_return;
 pub enum ControlFlowKind {
     /// Normal control flow. Continue to the next step.
     #[default]
-    Continue,
+    Normal,
     /// A `return` statement executed under KCL 3.0: unwind to the nearest
     /// function-call boundary, which absorbs it as the function's result. Never
     /// constructed under older entry points, whose `return` uses
@@ -241,7 +245,7 @@ impl ControlFlowKind {
     /// Returns true if this is any kind of early return.
     pub fn is_some_return(&self) -> bool {
         match self {
-            ControlFlowKind::Continue => false,
+            ControlFlowKind::Normal => false,
             ControlFlowKind::Return => true,
             ControlFlowKind::Exit => true,
         }
@@ -251,16 +255,16 @@ impl ControlFlowKind {
 #[must_use = "You should always handle the control flow value when it is returned"]
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct KclValueControlFlow {
-    /// Use [control_continue] or [Self::into_value] to get the value.
+    /// Use [control_normal] or [Self::into_value] to get the value.
     value: Box<KclValue>,
     pub control: ControlFlowKind,
 }
 
 impl KclValue {
-    pub(crate) fn continue_(self) -> KclValueControlFlow {
+    pub(crate) fn normal(self) -> KclValueControlFlow {
         KclValueControlFlow {
             value: Box::new(self),
-            control: ControlFlowKind::Continue,
+            control: ControlFlowKind::Normal,
         }
     }
 
@@ -966,10 +970,6 @@ pub struct ExecutorContext {
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
     pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
-    /// Which executor evaluates KCL. Crate-internal: set before the first
-    /// run and immutable during execution (run methods take &self). Cloned
-    /// contexts (fresh roots, Args) inherit the same executor.
-    pub(crate) executor_kind: machine::ExecutorKind,
     /// Call-depth limit for the machine executor's runaway-recursion guard.
     /// Crate-internal policy, not user configuration.
     pub(crate) machine_call_depth_limit: usize,
@@ -977,6 +977,10 @@ pub struct ExecutorContext {
     /// KCL. This might need to be false if the engine server is disabling
     /// rendering because it's in a headless context.
     pub configure_engine_render: bool,
+    /// If the last execution needed order-independent transparency (OIT).
+    /// In a CPU-only engine, this to see if you should enable OIT in the engine.
+    /// In a GPU-enabled engine, this is done for you by the KCL runtime during the `appearance` function.
+    pub(crate) needs_oit: Arc<AtomicBool>,
 }
 
 impl std::fmt::Debug for ExecutorContext {
@@ -986,8 +990,8 @@ impl std::fmt::Debug for ExecutorContext {
             .field("engine_batch", &self.engine_batch)
             .field("settings", &self.settings)
             .field("context_type", &self.context_type)
+            .field("needs_oit", &self.needs_oit)
             .field("execution_callbacks", &self.execution_callbacks)
-            .field("executor_kind", &self.executor_kind)
             .field("machine_call_depth_limit", &self.machine_call_depth_limit)
             .finish()
     }
@@ -1197,9 +1201,9 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1212,11 +1216,9 @@ impl ExecutorContext {
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
             execution_callbacks: self.execution_callbacks.clone(),
-            // Imported modules execute on this cloned context; keep them on
-            // the executor selected for the run instead of the default.
-            executor_kind: self.executor_kind,
             machine_call_depth_limit: self.machine_call_depth_limit,
             configure_engine_render: true,
+            needs_oit: self.needs_oit.clone(),
         }
     }
 
@@ -1239,6 +1241,17 @@ impl ExecutorContext {
             )
             .await
             .map(|_| ())?;
+
+        if self.needs_oit.load(Ordering::Relaxed) {
+            self.engine
+                .send_modeling_cmd(
+                    &self.engine_batch,
+                    exec_state.next_uuid(),
+                    source_range,
+                    &ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
+                )
+                .await?;
+        }
 
         Ok(())
     }
@@ -1294,11 +1307,7 @@ impl ExecutorContext {
                 },
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },
-                pool: if settings.geometry_only {
-                    Some("cpu".to_string())
-                } else {
-                    settings.pool.clone()
-                },
+                pool: settings.pool.clone(),
                 geometry_only: Some(settings.geometry_only),
                 pr,
                 unlocked_framerate: None,
@@ -1341,9 +1350,9 @@ impl ExecutorContext {
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1357,9 +1366,9 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1380,9 +1389,9 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         })
     }
 
@@ -1396,9 +1405,9 @@ impl ExecutorContext {
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1522,6 +1531,7 @@ impl ExecutorContext {
                 self.settings.geometry_only,
             )
             .await?;
+        self.needs_oit.store(false, Ordering::Relaxed);
         // OIT requires a graphical context with SSAO enabled.
         if !self.settings.geometry_only && self.settings.enable_ssao {
             let cmd_id = exec_state.next_uuid();
@@ -2718,17 +2728,13 @@ pub(crate) async fn parse_execute_with_project_dir(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    // Differential testing: unit tests run under both executors.
-    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::resolve()).await
+    parse_execute_inner(code, project_directory, false).await
 }
 
 /// A mock-engine executor context for tests that need to inspect the context
 /// (e.g. the engine's batch queue) even when execution fails.
 #[cfg(test)]
-pub(crate) fn new_mock_executor_context(
-    project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
-) -> ExecutorContext {
+pub(crate) fn new_mock_executor_context(project_directory: Option<TypedPath>) -> ExecutorContext {
     ExecutorContext {
         engine: Arc::new(EngineManager::new_mock()),
         cache: Cache::default(),
@@ -2740,19 +2746,10 @@ pub(crate) fn new_mock_executor_context(
         },
         context_type: ContextType::Mock,
         execution_callbacks: Default::default(),
-        executor_kind,
         machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         configure_engine_render: true,
+        needs_oit: Default::default(),
     }
-}
-
-#[cfg(test)]
-pub(crate) async fn parse_execute_with_executor_kind(
-    code: &str,
-    project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
-) -> Result<ExecTestResults, KclError> {
-    parse_execute_inner(code, project_directory, executor_kind, false).await
 }
 
 /// Like [`parse_execute_with_project_dir`], but missing names are explained
@@ -2763,19 +2760,18 @@ pub(crate) async fn parse_execute_hinting_all(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    parse_execute_inner(code, project_directory, machine::ExecutorKind::resolve(), true).await
+    parse_execute_inner(code, project_directory, true).await
 }
 
 #[cfg(test)]
 async fn parse_execute_inner(
     code: &str,
     project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
     hint_all_not_yet_added: bool,
 ) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
-    let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
+    let exec_ctxt = new_mock_executor_context(project_directory);
     let mut exec_state = ExecState::new(&exec_ctxt);
     exec_state.global.hint_all_not_yet_added = hint_all_not_yet_added;
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
@@ -3039,15 +3035,62 @@ mod tests {
     }
 
     #[test]
-    fn clone_with_fresh_execution_batch_keeps_executor_selection() {
-        // Imported modules execute on a context created by
-        // clone_with_fresh_execution_batch. They must stay on the executor
-        // selected for the run instead of silently reverting to the default.
-        let mut ctx = new_mock_executor_context(None, machine::ExecutorKind::Machine);
+    fn clone_with_fresh_execution_batch_keeps_call_depth_limit() {
+        let mut ctx = new_mock_executor_context(None);
         ctx.machine_call_depth_limit = 123;
         let cloned = ctx.clone_with_fresh_execution_batch();
-        assert_eq!(cloned.executor_kind, machine::ExecutorKind::Machine);
         assert_eq!(cloned.machine_call_depth_limit, 123);
+    }
+
+    #[tokio::test]
+    async fn appearance_oit_deferral() {
+        for (geometry_only, enable_ssao, opacity) in [
+            (true, true, 60),
+            (false, true, 60),
+            (true, false, 60),
+            (true, true, 100),
+        ] {
+            let ctx = ExecutorContext::new_mock(Some(ExecutorSettings {
+                geometry_only,
+                enable_ssao,
+                ..Default::default()
+            }))
+            .await;
+            let code = format!(
+                r##"@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {{
+  c = circle(center = [var 0mm, var 0mm], start = [var 1mm, var 0mm])
+}}
+body = extrude(region(segments = [profile.c]), length = 2mm)
+appearance(body, color = "#dba09a", opacity = {opacity})
+"##
+            );
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let mut state = ExecState::new(&ctx);
+            ctx.run(&program, &mut state).await.unwrap();
+
+            let needs_oit = enable_ssao && opacity < 100;
+            assert_eq!(ctx.needs_oit.load(Ordering::Relaxed), needs_oit);
+            let sent_oit = state.global.root_module_artifacts.commands.iter().any(|command| {
+                matches!(&command.command, ModelingCmd::SetOrderIndependentTransparency(command) if command.enabled == Some(true))
+            });
+            assert_eq!(sent_oit, needs_oit && !geometry_only);
+
+            let cloned = ctx.clone_with_fresh_execution_batch();
+            assert!(Arc::ptr_eq(&ctx.needs_oit, &cloned.needs_oit));
+            for _ in 0..2 {
+                cloned.enable_engine_graphics(&mut state).await.unwrap();
+                assert_eq!(state.geometry_only(), geometry_only);
+                cloned.disable_engine_graphics(&mut state).await.unwrap();
+                assert_eq!(state.geometry_only(), geometry_only);
+                assert_eq!(cloned.needs_oit.load(Ordering::Relaxed), needs_oit);
+            }
+            ctx.send_clear_scene(Some(program.kcl_version), &mut state, SourceRange::synthetic())
+                .await
+                .unwrap();
+            assert!(!cloned.needs_oit.load(Ordering::Relaxed));
+            ctx.close().await;
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3058,10 +3101,7 @@ mod tests {
             .unwrap();
 
         let program = crate::Program::parse_no_errs("import \"cube.obj\" as cube\n\nmodel = cube\n").unwrap();
-        let ctx = new_mock_executor_context(
-            Some(crate::TypedPath(tmpdir.path().into())),
-            machine::ExecutorKind::resolve(),
-        );
+        let ctx = new_mock_executor_context(Some(crate::TypedPath(tmpdir.path().into())));
         let mut exec_state = ExecState::new(&ctx);
         let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
         let outcome = exec_state
@@ -3343,9 +3383,9 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
@@ -4961,13 +5001,8 @@ forever(1)
 "#;
         let result = parse_execute(ast).await;
         let err = result.unwrap_err();
-        // The recursive executor's native-stack cap and the machine
-        // executor's call-depth guard report differently.
         let msg = err.to_string();
-        assert!(
-            msg.contains("stack size exceeded") || msg.contains("Call depth limit"),
-            "actual: {err:?}"
-        );
+        assert!(msg.contains("Call depth limit"), "actual: {err:?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -6160,9 +6195,9 @@ face = disc()
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -7195,9 +7230,7 @@ assert(total, isEqualTo = 6, error = "reduce total")
 
     /// unwind_return must decrement the machine call depth like a normal
     /// call completion; otherwise sequential early-return calls would
-    /// accumulate depth until the runaway guard trips. The recursive
-    /// executor doesn't use the counter, so the bound is trivially true
-    /// there.
+    /// accumulate depth until the runaway guard trips.
     #[tokio::test(flavor = "multi_thread")]
     async fn early_returns_do_not_leak_machine_call_depth() {
         let code = r#"@settings(kclVersion = "3.0-preview")
@@ -7603,7 +7636,7 @@ x = if false {{
     #[tokio::test(flavor = "multi_thread")]
     async fn error_inside_if_arm_unwinds_balanced_in_v3() {
         // The user's error surfaces (not an internal environment-imbalance
-        // error), on both executors.
+        // error).
         let code = r#"@settings(kclVersion = "3.0-preview")
 fn f() {
   dummy = if true {
@@ -8502,9 +8535,9 @@ type Color { | Red | Green | Red }
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new(&ctx);
         // Close the context even if execution panics, then let the panic
@@ -10018,7 +10051,7 @@ x = [1, 2]: NewT
 
     #[tokio::test(flavor = "multi_thread")]
     async fn not_yet_added_records_whether_the_declaration_is_std() {
-        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let ctx = new_mock_executor_context(None);
         let mut exec_state = ExecState::new(&ctx);
         let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
 
@@ -10102,7 +10135,7 @@ x = [1, 2]: NewT
     /// memory skips the prelude that writes them.
     #[tokio::test(flavor = "multi_thread")]
     async fn std_not_yet_added_records_survive_the_mock_memory_cache() {
-        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let ctx = new_mock_executor_context(None);
         let mut exec_state = ExecState::new(&ctx);
         let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
         let program = crate::Program::parse_no_errs("x = 1").unwrap();
