@@ -1423,8 +1423,20 @@ impl ExecutorContext {
         engine_addr: Option<String>,
         kcl_version: KclVersion,
     ) -> Result<Self> {
+        Self::new_with_client_and_headers(settings, token, engine_addr, kcl_version, None).await
+    }
+
+    /// Create an executor with additional headers on its API requests and WebSocket handshake.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_client_and_headers(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+        kcl_version: KclVersion,
+        headers: Option<std::collections::BTreeMap<String, String>>,
+    ) -> Result<Self> {
         // Create the client.
-        let client = crate::engine::new_zoo_client(token, engine_addr)?;
+        let client = crate::engine::new_zoo_client_with_headers(token, engine_addr, headers)?;
 
         let ctx = Self::new(&client, settings, kcl_version).await?;
         Ok(ctx)

@@ -178,14 +178,31 @@ impl Clone for EngineStats {
 /// Create a new zoo api client.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> anyhow::Result<kittycad::Client> {
+    new_zoo_client_with_headers(token, engine_addr, None)
+}
+
+/// Create an API client with additional default headers for HTTP and WebSocket requests.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn new_zoo_client_with_headers(
+    token: Option<String>,
+    engine_addr: Option<String>,
+    headers: Option<std::collections::BTreeMap<String, String>>,
+) -> anyhow::Result<kittycad::Client> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let mut default_headers = http::HeaderMap::new();
+    default_headers.insert(http::header::USER_AGENT, http::HeaderValue::from_static(user_agent));
+    for (name, value) in headers.unwrap_or_default() {
+        let mut value = http::HeaderValue::try_from(value)?;
+        value.set_sensitive(true);
+        default_headers.insert(http::HeaderName::try_from(name)?, value);
+    }
     let http_client = reqwest::Client::builder()
-        .user_agent(user_agent)
+        .default_headers(default_headers.clone())
         // For file conversions we need this to be long.
         .timeout(std::time::Duration::from_secs(600))
         .connect_timeout(std::time::Duration::from_secs(60));
     let ws_client = reqwest::Client::builder()
-        .user_agent(user_agent)
+        .default_headers(default_headers)
         // For file conversions we need this to be long.
         .timeout(std::time::Duration::from_secs(600))
         .connect_timeout(std::time::Duration::from_secs(60))
