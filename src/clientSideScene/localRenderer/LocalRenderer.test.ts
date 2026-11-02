@@ -1,11 +1,13 @@
+import type { EntityType } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
+import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 import { Themes } from '@src/lib/theme'
 import {
-  type Group,
+  Group,
   Mesh,
   MeshStandardMaterial,
   type OrthographicCamera,
@@ -35,6 +37,7 @@ type RendererInternals = {
   scheduleRender(): void
   gpu: FakeGpu | null
   currentModel: Group | null
+  rebuildSelectionTargets(): void
   previewCamera: PerspectiveCamera | OrthographicCamera | null
   handleLocalSelectionCommand: LocalSelectionCommandHandler
   syncSelectionFromEngine(): Promise<void>
@@ -104,6 +107,7 @@ function fixture(
     artifactGraph: new Map([['triangle', { type: 'sweep' }]]),
     engineSceneGenerationSignal: signal(0),
     isExecutingSignal: signal(false),
+    selectionFilter: signal<EntityType[]>([...defaultSelectionFilter]),
     get isExecuting() {
       return this.isExecutingSignal.value
     },
@@ -223,7 +227,7 @@ describe('local GLB loading', () => {
         type: 'highlight_set_entity',
         data: { entity_id: id },
       })
-      expect(f.highlights.setHover).toHaveBeenLastCalledWith(f.target)
+      expect(f.highlights.setHover).toHaveBeenLastCalledWith([f.target])
       const result = await f.pick(true)
       expect(result?.modelingResponse).toEqual({
         type: 'query_entity_type_with_point',
@@ -286,6 +290,54 @@ describe('local GLB loading', () => {
     })
     f.renderer.dispose()
   })
+
+  function selectionFixture() {
+    const f = planeFixture()
+    const model = new Group()
+    const face = new Mesh()
+    face.userData.faceUuid = 'face'
+    model.add(face)
+    f.state.currentModel = model
+    f.state.rebuildSelectionTargets()
+    f.picker.pick.mockResolvedValue({ target: face, stale: false })
+    return f
+  }
+
+  it.each<EntityType>(['solid3d', 'object'])(
+    'hovers the face without the engine but clicks select its body with the %s filter',
+    async (type) => {
+      const f = selectionFixture()
+      f.manager.selectionFilter.value = [type]
+      expect((await f.pick())?.unreliableModelingResponse?.data.entity_id).toBe(
+        'face'
+      )
+      expect(
+        f.manager.engineCommandManager.sendSceneCommand
+      ).not.toHaveBeenCalled()
+      f.manager.engineCommandManager.sendSceneCommand.mockResolvedValue({
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'query_entity_type',
+              data: {
+                reference: {
+                  type: 'face',
+                  face_id: 'face',
+                  topology_fallback: { parent_id: 'body', primitive_index: 0 },
+                },
+              },
+            },
+          },
+        },
+      })
+      expect((await f.pick(true))?.modelingResponse?.data.reference).toEqual({
+        type: 'solid3d',
+        solid3d_id: 'body',
+      })
+      f.renderer.dispose()
+    }
+  )
 
   it('exports once after successful execution and loads standard geometry/materials', async () => {
     const f = fixture()
