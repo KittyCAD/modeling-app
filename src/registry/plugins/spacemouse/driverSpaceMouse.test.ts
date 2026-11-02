@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { runInNewContext } from 'node:vm'
+import { Signal } from '@src/lib/signal'
 import {
   Box3,
   Euler,
@@ -13,6 +15,7 @@ import {
   type SpaceMouseCameraControls,
 } from './driverSpaceMouse'
 import { SpaceMouseController, spaceMouseState } from './spaceMouseController'
+import vendorSource from './3dconnexion.min.js?raw'
 
 class FakeDriver {
   static instances: FakeDriver[] = []
@@ -21,6 +24,16 @@ class FakeDriver {
   update3dcontroller = vi.fn()
   delete3dmouse = vi.fn()
   close = vi.fn()
+  _3dcontroller = 1
+  session = {
+    call: vi.fn(
+      (
+        _procedure: string,
+        _instance: string,
+        _properties: unknown
+      ): Promise<unknown> => Promise.resolve()
+    ),
+  }
 
   constructor(readonly client: DriverSpaceMouseController) {
     FakeDriver.instances.push(this)
@@ -38,6 +51,7 @@ function setup(
   camera.position.set(0, 0, 100)
   const canvas = document.createElement('canvas')
   document.body.appendChild(canvas)
+  const cameraChange = new Signal()
   const controls: SpaceMouseCameraControls = {
     camera,
     target: new Vector3(),
@@ -48,7 +62,8 @@ function setup(
     enableZoom: true,
     isDragging: false,
     isFovAnimationInProgress: false,
-    onCameraChange: vi.fn(),
+    cameraChange,
+    onCameraChange: vi.fn(() => cameraChange.dispatch()),
   }
   const scene = {
     getBounds: () =>
@@ -174,6 +189,31 @@ describe('SpaceMouse local camera', () => {
     driver.dispose()
   })
 
+  it('leaves the SDK construction-plane reader unsupported in free 3D views', () => {
+    const { driver, scene } = setup(
+      new OrthographicCamera(-50, 50, 50, -50, -1000, 1000)
+    )
+    const sdk: unknown = runInNewContext(
+      `${vendorSource}\nnew _3Dconnexion(client)`,
+      {
+        client: driver,
+        window: {},
+        setTimeout,
+        clearTimeout,
+      }
+    )
+    expect(sdk).toHaveProperty(
+      ['clientFnRead', 'view.constructionPlane'],
+      undefined
+    )
+    expect(driver.getViewRotatable()).toBe(true)
+    scene.canRotate.mockReturnValue(false)
+    expect(driver.getViewRotatable()).toBe(false)
+    scene.canRotate.mockReturnValue(true)
+    expect(driver.getViewRotatable()).toBe(true)
+    driver.dispose()
+  })
+
   it('ignores input after focus loss, in streamed mode and after disposal', () => {
     const { driver, controls, camera, canvas } = setup()
     const move = new Matrix4().makeTranslation(10, 20, 100).toArray()
@@ -266,6 +306,113 @@ describe('SpaceMouse connection lifecycle', () => {
       expect(frames.size).toBe(0)
     }
   )
+
+  it('rebases cached Navlib motion after mouse navigation and ignores old replies', async () => {
+    const frames: FrameRequestCallback[] = []
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      frames.push(callback)
+      return frames.length
+    })
+    const { driver, controls, camera } = setup()
+    const connection = driver.connect()
+    await Promise.resolve()
+    const sdk = FakeDriver.instances[0]
+    sdk.client.onConnect()
+    sdk.client.on3dmouseCreated()
+    await connection
+    // Navlib reads the camera at motion start, then keeps its own cached pose.
+    const cached = new Matrix4().fromArray(driver.getViewMatrix())
+    sdk.update3dcontroller.mockImplementation(
+      (update: { frame?: { time?: number } }) => {
+        if (update.frame?.time === undefined) return
+        const position = new Vector3().setFromMatrixPosition(cached)
+        cached.setPosition(position.add(new Vector3(1, 0, 0)))
+        sdk.client.setViewMatrix(cached.toArray())
+      }
+    )
+    const acknowledgement = Promise.withResolvers<unknown>()
+    sdk.session.call.mockReturnValue(acknowledgement.promise)
+    sdk.client.onStartMotion()
+    frames.shift()?.(16)
+    expect(camera.position.x).toBe(1)
+
+    controls.isDragging = true
+    camera.position.x += 50
+    controls.target.x += 50
+    controls.onCameraChange()
+    const newView = driver.getViewMatrix()
+    sdk.client.setViewMatrix(cached.toArray())
+    expect(camera.position.x).toBe(51)
+    frames.shift()?.(32)
+    controls.isDragging = false
+    frames.shift()?.(48)
+    expect(sdk.session.call).toHaveBeenCalledWith(
+      '3dx_rpc:update',
+      '3dconnexion:3dcontroller/1',
+      {
+        view: {
+          affine: newView,
+          target: [51, 0, 0],
+          perspective: true,
+          rotatable: true,
+          fov: Math.PI / 4,
+          frustum: driver.getViewFrustum(),
+        },
+      }
+    )
+    sdk.client.setViewMatrix(cached.toArray())
+    frames.shift()?.(64)
+    expect(camera.position.x).toBe(51)
+    expect(sdk.session.call).toHaveBeenCalledOnce()
+
+    cached.fromArray(newView)
+    acknowledgement.resolve(undefined)
+    await Promise.resolve()
+    frames.shift()?.(80)
+    expect(camera.position.x).toBe(52)
+    frames.shift()?.(96)
+    expect(camera.position.x).toBe(53)
+    expect(sdk.session.call).toHaveBeenCalledOnce()
+    driver.dispose()
+  })
+
+  it('keeps newer camera changes pending when an older cache update completes', async () => {
+    const frames: FrameRequestCallback[] = []
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      frames.push(callback)
+      return frames.length
+    })
+    const { driver, controls, camera } = setup()
+    const connection = driver.connect()
+    await Promise.resolve()
+    const sdk = FakeDriver.instances[0]
+    sdk.client.on3dmouseCreated()
+    await connection
+    const first = Promise.withResolvers<unknown>()
+    const second = Promise.withResolvers<unknown>()
+    sdk.session.call
+      .mockReturnValueOnce(first.promise)
+      .mockReturnValueOnce(second.promise)
+    driver.onStartMotion()
+    camera.position.x = 10
+    controls.onCameraChange()
+    frames.shift()?.(16)
+    camera.position.x = 20
+    controls.onCameraChange()
+    first.resolve(undefined)
+    await Promise.resolve()
+    driver.setViewMatrix(new Matrix4().makeTranslation(10, 0, 100).toArray())
+    expect(camera.position.x).toBe(20)
+    frames.shift()?.(32)
+    expect(sdk.session.call).toHaveBeenCalledTimes(2)
+    second.resolve(undefined)
+    await Promise.resolve()
+    frames.shift()?.(48)
+    expect(sdk.update3dcontroller).toHaveBeenLastCalledWith({
+      frame: { time: 48 },
+    })
+    driver.dispose()
+  })
 
   it('waits for controller creation rather than only the websocket', async () => {
     const { driver, canvas } = setup()
