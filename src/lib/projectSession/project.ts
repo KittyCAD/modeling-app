@@ -374,7 +374,7 @@ export class ZDSProject {
 
   /** Refresh membership without replacing the project's editors or undo history. */
   refreshFiles(project: Project) {
-    if (this.closed || project.path !== this.path) return
+    if (this.closed) return
     this.files = this.collectProjectFiles(project)
     this.projectIORefSignal.value = {
       ...this.projectIORefSignal.peek(),
