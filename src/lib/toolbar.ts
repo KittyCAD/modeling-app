@@ -608,7 +608,6 @@ export function buildToolbarConfig(
       items: [
         {
           id: 'sketch-exit',
-          command: TOOLBAR_COMMAND_IDS.sketching.exit,
           onClick: ({ modelingSend }) =>
             modelingSend({
               type: 'Cancel',
@@ -980,7 +979,6 @@ export function buildToolbarConfig(
       items: [
         {
           id: 'sketch-exit',
-          command: TOOLBAR_COMMAND_IDS.sketching.exit,
           onClick: ({ modelingSend }) =>
             modelingSend({
               type: 'Cancel',

@@ -20,9 +20,7 @@ import {
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import {
   MODE_MODELING_COMMAND_SCOPE,
-  MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
   MODE_SKETCH_SOLVE_COMMAND_SCOPE,
-  MODE_SKETCHING_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
 import type { StateFrom } from 'xstate'
@@ -249,18 +247,6 @@ export function createToolbarCommands(
     return result
   }
 
-  function exitSketch() {
-    const state = getModelingState()
-
-    if (state?.matches('Sketch') || state?.matches('Sketch no face')) {
-      return sendModelingEvent({ type: 'Cancel' })
-    }
-
-    if (state?.matches('sketchSolveMode')) {
-      return sendModelingEvent({ type: 'Exit sketch' })
-    }
-  }
-
   return [
     createToolbarCommand({
       id: TOOLBAR_COMMAND_IDS.modeling.sketch,
@@ -269,14 +255,6 @@ export function createToolbarCommands(
       icon: 'sketch',
       scopes: [MODE_MODELING_COMMAND_SCOPE],
       onSubmit: enterSketch,
-    }),
-    createToolbarCommand({
-      id: TOOLBAR_COMMAND_IDS.sketching.exit,
-      displayName: 'Exit sketch',
-      description: 'Exit the current sketch.',
-      icon: 'arrowShortLeft',
-      scopes: [MODE_SKETCHING_COMMAND_SCOPE, MODE_SKETCH_NO_FACE_COMMAND_SCOPE],
-      onSubmit: exitSketch,
     }),
     createToolbarCommand({
       id: TOOLBAR_COMMAND_IDS.sketchSolve.exit,
