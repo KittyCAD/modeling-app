@@ -998,7 +998,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               selectedCommand?: { useModelingDialog?: boolean }
             }) =>
               context.selectedCommand?.useModelingDialog === true &&
-              context.argumentsToSubmit.axisOrEdge === 'Edge',
+              context.argumentsToSubmit.axisOrEdge === 'Edge' &&
+              !isEditingNode(context),
             inputType: 'options',
             displayName: 'Sketch Axis',
             options: [

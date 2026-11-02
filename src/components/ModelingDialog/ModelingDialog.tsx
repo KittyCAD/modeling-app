@@ -6,6 +6,7 @@ import decamelize from 'decamelize'
 import {
   CommandKclInput,
   getKclInputValue,
+  type CommandKclArgument,
 } from '@src/components/CommandBar/CommandKclInput'
 import { CommandCameraInput } from '@src/components/CommandBar/CommandCameraInput'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -131,11 +132,27 @@ export default function ModelingDialog({
 
   const checking = state.matches('Checking Arguments for Dialog')
   const invalid = visible.some(({ name, arg, required }) => {
-    if (arg.inputType === 'kcl') return validity[name] === false
-    return (
-      (arg.inputType === 'camera' && validity[name] === false) ||
-      (required && !hasValue(context.argumentsToSubmit[name]))
-    )
+    switch (arg.inputType) {
+      case 'kcl':
+      case 'vector2d':
+      case 'vector3d':
+        return validity[name] === false
+      case 'camera':
+        return (
+          validity[name] === false ||
+          (required && !hasValue(context.argumentsToSubmit[name]))
+        )
+      case 'selection':
+      case 'boolean':
+      case 'options':
+      case 'color':
+      case 'tagDeclarator':
+      case 'string':
+      case 'number':
+      case 'text':
+      case 'path':
+        return required && !hasValue(context.argumentsToSubmit[name])
+    }
   })
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -244,6 +261,39 @@ export default function ModelingDialog({
             onValidationChange={(next) => updateValidation(name, next)}
           />
         )
+      case 'vector2d':
+      case 'vector3d': {
+        const vectorArg: CommandKclArgument = {
+          ...arg,
+          inputType: 'kcl',
+          allowArrays: true,
+          createVariable: 'disallow',
+        }
+        return (
+          <CommandKclInput
+            key={name}
+            kclManager={kclManager}
+            settings={settings}
+            wasmPromise={wasmPromise}
+            commandScopes={commandScopes}
+            name={name}
+            arg={vectorArg}
+            label={label}
+            labelAction={help}
+            description={description}
+            placeholder={required ? undefined : 'Use defaults'}
+            isRequired={required}
+            inline={false}
+            autoFocus={name === firstFieldName}
+            value={getKclInputValue(vectorArg, value)}
+            submittedValue={state.context.argumentsToSubmit[name]}
+            nodeToEdit={state.context.argumentsToSubmit.nodeToEdit}
+            selectionRanges={selection.selectionRanges}
+            onChange={(change) => save(name, change.value)}
+            onValidationChange={(next) => updateValidation(name, next)}
+          />
+        )
+      }
       case 'selection':
         return (
           <div key={name} className="flex flex-col gap-1">
@@ -348,14 +398,53 @@ export default function ModelingDialog({
           </div>
         )
       }
+      case 'color':
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <input
+              {...noAutofillInputProps}
+              id={fieldId}
+              type="color"
+              autoFocus={name === firstFieldName}
+              className="h-8 w-full cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
+              value={fieldText(value)}
+              onChange={(event) => save(name, event.target.value)}
+            />
+            {description}
+          </div>
+        )
+      case 'tagDeclarator':
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <div className="relative">
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-px left-px flex items-center pl-2 text-xs"
+              >
+                $
+              </span>
+              <input
+                {...noAutofillInputProps}
+                id={fieldId}
+                type="text"
+                autoFocus={name === firstFieldName}
+                className="w-full rounded-sm border border-chalkboard-30 bg-transparent py-1 pl-4 pr-2 text-xs dark:border-chalkboard-70"
+                placeholder={required ? undefined : 'None'}
+                value={fieldText(value)}
+                onChange={(event) =>
+                  save(name, event.target.value.replace(/^\$/, ''))
+                }
+              />
+            </div>
+            {description}
+          </div>
+        )
       case 'string':
       case 'number':
       case 'text':
-      case 'vector3d':
-      case 'path':
-      case 'vector2d':
-      case 'color':
-      case 'tagDeclarator': {
+      case 'path': {
         const Input = arg.inputType === 'text' ? 'textarea' : 'input'
         return (
           <div key={name} className="flex flex-col gap-1">
@@ -363,15 +452,9 @@ export default function ModelingDialog({
             <Input
               {...noAutofillInputProps}
               id={fieldId}
-              type={arg.inputType === 'color' ? 'color' : undefined}
               rows={arg.inputType === 'text' ? 3 : undefined}
               autoFocus={name === firstFieldName}
-              className={`rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70 ${arg.inputType === 'color' ? 'h-8 w-full cursor-pointer' : ''}`}
-              placeholder={
-                !required && arg.inputType === 'tagDeclarator'
-                  ? 'None'
-                  : undefined
-              }
+              className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
               value={fieldText(value)}
               onChange={(event) => save(name, event.target.value)}
             />
