@@ -1535,7 +1535,10 @@ export function getVariableExprsFromSelection(
       if (!err(sweep) && sweep.codeRef) {
         pathToNodeForVariable = sweep.codeRef.pathToNode
         const sweepArtifact = artifactGraph.get(sweep.id)
-        if (sweepArtifact?.type === 'sweep') {
+        if (
+          sweepArtifact?.type === 'sweep' ||
+          sweepArtifact?.type === 'compositeSolid'
+        ) {
           artifactForLastChildLookup = sweepArtifact
         }
       }
@@ -2629,6 +2632,7 @@ export function findAllChildrenAndOrderByPlaceInCode(
       pushToSomething(currentId, current.edgeCutId)
       pushToSomething(currentId, current.surfaceId)
     } else if (current?.type === 'edgeCut') {
+      pushToSomething(currentId, current.bodyId)
       pushToSomething(currentId, current.surfaceId)
     } else if (current?.type === 'startSketchOnPlane') {
       pushToSomething(currentId, current.planeId)
