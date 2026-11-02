@@ -5,8 +5,6 @@ import { beforeEach, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   fileSystemWatcher: vi.fn(),
-  lspFileClose: vi.fn(),
-  lspFileOpen: vi.fn(),
   navigate: vi.fn(),
   rejectAllModelingCommands: vi.fn(),
   settingsSend: vi.fn(),
@@ -21,12 +19,6 @@ vi.mock('@src/hooks/useFileSystemWatcher', () => ({
 
 vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
-    registry: {
-      get: () => ({
-        onFileClose: mocks.lspFileClose,
-        onFileOpen: mocks.lspFileOpen,
-      }),
-    },
     settings: {
       useSettings: () => ({
         app: {
@@ -57,10 +49,6 @@ vi.mock('@src/lib/boot', () => ({
 
 vi.mock('@src/lib/projectLibraries', () => ({
   getDefaultDirectoryProjectLibraryPath: () => '/projects',
-}))
-
-vi.mock('@src/lang/lsp/registry/contract', () => ({
-  lspService: {},
 }))
 
 vi.mock('@src/machines/systemIO/hooks', () => ({
@@ -94,5 +82,4 @@ it('ignores late onboarding navigation while Home is loading', () => {
   render(<SystemIOMachineLogicListener />)
 
   expect(mocks.navigate).not.toHaveBeenCalled()
-  expect(mocks.lspFileOpen).not.toHaveBeenCalled()
 })

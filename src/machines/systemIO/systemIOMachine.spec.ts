@@ -765,6 +765,7 @@ describe('systemIOMachine - XState', () => {
         const newPath = '/Test Project/renamed.kcl'
         const executingPathSignal = signal(oldPath)
         const flushWriteToFile = vi.fn().mockResolvedValue(true)
+        const notifyFileRenamed = vi.fn()
         const previousProject = appInstanceInThisFile.project
         const joinSpy = vi
           .spyOn(fsZds, 'join')
@@ -776,6 +777,7 @@ describe('systemIOMachine - XState', () => {
         const renameSpy = vi.spyOn(fsZds, 'rename').mockResolvedValue(undefined)
 
         appInstanceInThisFile.project = {
+          notifyFileRenamed,
           executingPathSignal: { value: executingPathSignal },
           editors: new Map([[executingPathSignal, { flushWriteToFile }]]),
         } as unknown as NonNullable<App['project']>
@@ -799,6 +801,10 @@ describe('systemIOMachine - XState', () => {
           )
           expect(renameSpy).toHaveBeenCalledWith(oldPath, newPath)
           expect(executingPathSignal.value).toBe(newPath)
+          expect(notifyFileRenamed).toHaveBeenCalledExactlyOnceWith(
+            oldPath,
+            newPath
+          )
         } finally {
           appInstanceInThisFile.project = previousProject
           joinSpy.mockRestore()

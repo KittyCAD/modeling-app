@@ -5,28 +5,30 @@ import {
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
 import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
-import { attachKclLspToCodeMirror } from '@src/lang/lsp/codeMirror'
-import type { LspService } from '@src/lang/lsp/registry/contract'
-import type { KclLspEditor } from '@src/lang/lsp/types'
+import { createProjectLspExtension } from '@src/lang/lsp/codeMirror'
+import { signal } from '@preact/signals-core'
+import type {
+  LspService,
+  ProjectLanguageService,
+  LspProject,
+} from '@src/lang/lsp/registry/contract'
 import KclLspWorker from '@src/lang/lsp/worker.ts?worker'
 import type { KclWorkerOptions } from '@src/lang/lsp/workerTypes'
 import { LspWorker } from '@src/lang/lsp/workerTypes'
 import { wasmUrl } from '@src/lang/wasmUtils'
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import {
   kclRuntimeFlagsEqual,
   kclRuntimeFlagsFromUserFeatures,
   waitForSettledKclRuntimeFlags,
 } from '@src/lib/kclRuntimeFlags'
-import type { FileEntry } from '@src/lib/project'
 import { err, reportRejection } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
-import type * as LSP from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
 import type { Subscription } from 'xstate'
 
+/** One authenticated worker, recreated when its construction-time flags change. */
 type LspRuntime = {
   token: string
   worker: globalThis.Worker
@@ -38,15 +40,6 @@ type LspRuntime = {
 type PendingLspStartup = {
   token: string
   abortController: AbortController
-}
-
-type ProjectSnapshot = {
-  project: { name: string | null; path: string | null } | null
-}
-
-type FileSnapshot = {
-  filePath: string | null
-  projectPath: string | null
 }
 
 type CreateLspServiceOptions = {
@@ -61,120 +54,81 @@ export function createLspService({
   service: LspService
   dispose: () => void
 } {
+  const sessions = new Set<ProjectLanguageService>()
+  return {
+    service: {
+      createProjectSession: (project) => {
+        const session = createProjectSession(
+          project,
+          { getAuth, getUserFeatures },
+          () => sessions.delete(session)
+        )
+        sessions.add(session)
+        return session
+      },
+    },
+    dispose: () => {
+      for (const session of sessions) session.dispose()
+    },
+  }
+}
+
+/** A project's worker outlives its editor plugins, and starts on the first mount. */
+function createProjectSession(
+  project: LspProject,
+  { getAuth, getUserFeatures }: CreateLspServiceOptions,
+  onDispose: () => void
+): ProjectLanguageService {
   let auth: AuthRegistryService | null = null
   let authSubscription: Subscription | undefined
   let userFeatures: UserFeaturesRegistryService | null = null
   let userFeaturesSubscription: Subscription | undefined
-  let kclManager: KclLspEditor | null = null
   let runtime: LspRuntime | null = null
   let pendingStartup: PendingLspStartup | undefined
-  let disposeCodeMirrorAttachment: (() => void) | undefined
-  let currentProjectSnapshot: ProjectSnapshot | null = null
-  let currentFileSnapshot: FileSnapshot | null = null
+  const client = signal<LanguageServerClient | null>(null)
+  let started = false
+  let disposed = false
 
-  const service: LspService = {
-    attachKclManager: (manager) => {
-      kclManager = manager
-      ensureAuthSubscription()
-      ensureUserFeaturesSubscription()
-      reconcileRuntime()
-
-      return () => {
-        if (kclManager !== manager) {
-          return
-        }
-
-        detachCodeMirror()
-        kclManager = null
-        reconcileRuntime()
-      }
-    },
-    onProjectClose: (file) => {
-      const documentUri = filePathToUri(file?.path || PROJECT_ENTRYPOINT)
-      forEachClient((client) => {
-        client.textDocumentDidClose({
-          textDocument: {
-            uri: documentUri,
-          },
-        })
-      })
-      kclManager?.clearGlobalHistory()
-      currentProjectSnapshot = null
-      currentFileSnapshot = null
-    },
-    onProjectOpen: (project, file) => {
-      currentProjectSnapshot = { project }
-      currentFileSnapshot = {
-        filePath: file?.path || null,
-        projectPath: project?.path || null,
-      }
-      notifyProjectOpen(project, file)
-      reattachCodeMirror()
-    },
-    onFileOpen: (filePath, projectPath) => {
-      currentFileSnapshot = { filePath, projectPath }
-      const documentUri = filePathToUri(filePath || PROJECT_ENTRYPOINT)
-      forEachClient((client) => {
-        client.textDocumentDidOpen({
-          textDocument: {
-            uri: documentUri,
-            languageId: 'kcl',
-            version: 1,
-            text: '',
-          },
-        })
-      })
-    },
-    onFileClose: (filePath) => {
-      const documentUri = filePathToUri(filePath || PROJECT_ENTRYPOINT)
-      forEachClient((client) => {
-        client.textDocumentDidClose({
-          textDocument: {
-            uri: documentUri,
-          },
-        })
-      })
-      if (currentFileSnapshot?.filePath === filePath) {
-        currentFileSnapshot = null
-      }
-    },
-    onFileCreate: (file) => {
-      const documentUri = filePathToUri(file.path)
-      forEachClient((client) => {
+  const service: ProjectLanguageService = {
+    editorExtension: (documentUri) =>
+      createProjectLspExtension({
+        documentUri,
+        client,
+        start: () => {
+          if (disposed) return
+          started = true
+          ensureAuthSubscription()
+          ensureUserFeaturesSubscription()
+          reconcileRuntime()
+        },
+      }),
+    onFileCreate: (path) =>
+      forEachClient((client) =>
         client.workspaceDidCreateFiles({
-          files: [
-            {
-              uri: documentUri,
-            },
-          ],
+          files: [{ uri: filePathToUri(path) }],
         })
-      })
-    },
-    onFileRename: (oldFile, newFile) => {
-      const oldUri = filePathToUri(oldFile.path)
-      const newUri = filePathToUri(newFile.path)
-      forEachClient((client) => {
+      ),
+    onFileRename: (oldPath, newPath) =>
+      forEachClient((client) =>
         client.workspaceDidRenameFiles({
           files: [
-            {
-              oldUri,
-              newUri,
-            },
+            { oldUri: filePathToUri(oldPath), newUri: filePathToUri(newPath) },
           ],
         })
-      })
-    },
-    onFileDelete: (file) => {
-      const documentUri = filePathToUri(file.path)
-      forEachClient((client) => {
+      ),
+    onFileDelete: (path) =>
+      forEachClient((client) =>
         client.workspaceDidDeleteFiles({
-          files: [
-            {
-              uri: documentUri,
-            },
-          ],
+          files: [{ uri: filePathToUri(path) }],
         })
-      })
+      ),
+    dispose: () => {
+      if (disposed) return
+      disposed = true
+      authSubscription?.unsubscribe()
+      userFeaturesSubscription?.unsubscribe()
+      stopRuntime()
+      onDispose()
     },
   }
 
@@ -204,7 +158,7 @@ export function createLspService({
 
   function reconcileRuntime() {
     const token = getAuthToken()
-    if (!kclManager || !token || !canStartWorkerRuntime()) {
+    if (disposed || !started || !token || !canStartWorkerRuntime()) {
       stopRuntime()
       return
     }
@@ -288,8 +242,11 @@ export function createLspService({
           }
 
           nextRuntime.ready = true
-          replayCurrentProjectState()
-          reattachCodeMirror()
+          nextRuntime.client.workspaceDidChangeWorkspaceFolders(
+            [{ uri: filePathToUri(project.path), name: project.name }],
+            []
+          )
+          client.value = nextRuntime.client
         },
       }),
       ready: false,
@@ -318,71 +275,10 @@ export function createLspService({
   function stopRuntime() {
     pendingStartup?.abortController.abort()
     pendingStartup = undefined
-    detachCodeMirror()
+    client.value = null
     runtime?.client.close()
     runtime?.worker.terminate()
     runtime = null
-  }
-
-  function reattachCodeMirror() {
-    if (!runtime?.ready || !kclManager) {
-      return
-    }
-
-    detachCodeMirror()
-    disposeCodeMirrorAttachment = attachKclLspToCodeMirror(
-      kclManager,
-      runtime.client
-    )
-  }
-
-  function detachCodeMirror() {
-    disposeCodeMirrorAttachment?.()
-    disposeCodeMirrorAttachment = undefined
-  }
-
-  function replayCurrentProjectState() {
-    if (currentProjectSnapshot) {
-      notifyProjectOpen(currentProjectSnapshot.project, null)
-    }
-
-    if (currentFileSnapshot) {
-      service.onFileOpen(
-        currentFileSnapshot.filePath,
-        currentFileSnapshot.projectPath
-      )
-    }
-  }
-
-  function notifyProjectOpen(
-    project: ProjectSnapshot['project'],
-    file: FileEntry | null
-  ) {
-    const projectName = project?.name || 'ProjectRoot'
-    const workspaceFolder: LSP.WorkspaceFolder = {
-      uri: project?.path ? filePathToUri(project.path) : 'file://',
-      name: projectName,
-    }
-
-    forEachClient((client) => {
-      client.workspaceDidChangeWorkspaceFolders([workspaceFolder], [])
-    })
-
-    if (!file) {
-      return
-    }
-
-    const documentUri = filePathToUri(file.path || PROJECT_ENTRYPOINT)
-    forEachClient((client) => {
-      client.textDocumentDidOpen({
-        textDocument: {
-          uri: documentUri,
-          languageId: 'kcl',
-          version: 1,
-          text: '',
-        },
-      })
-    })
   }
 
   function forEachClient(callback: (client: LanguageServerClient) => void) {
@@ -398,19 +294,7 @@ export function createLspService({
     return token && token !== '' ? token : null
   }
 
-  return {
-    service,
-    dispose: () => {
-      authSubscription?.unsubscribe()
-      authSubscription = undefined
-      auth = null
-      userFeaturesSubscription?.unsubscribe()
-      userFeaturesSubscription = undefined
-      userFeatures = null
-      stopRuntime()
-      kclManager = null
-    },
-  }
+  return service
 }
 
 function filePathToUri(filePath: string): string {

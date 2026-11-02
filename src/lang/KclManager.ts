@@ -1,4 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
+import { URI } from 'vscode-uri'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -347,6 +348,36 @@ export interface PendingFeatureTreeSourceSelection {
 }
 
 export class KclManager extends File {
+  private readonly languageServiceCompartment = new Compartment()
+
+  override get path() {
+    return super.path
+  }
+  override set path(path: string) {
+    super.path = path
+    if (this._editorView) this.refreshLanguageService()
+  }
+
+  private setPathForFileSwitch(path: string) {
+    // Rebind after the destination buffer and saved editor state are installed.
+    super.path = path
+  }
+
+  private languageExtension() {
+    return (
+      this.systemDeps.languageService?.editorExtension(
+        URI.file(this.path).toString()
+      ) ?? []
+    )
+  }
+
+  private refreshLanguageService() {
+    this._editorView.dispatch({
+      effects: this.languageServiceCompartment.reconfigure(
+        this.languageExtension()
+      ),
+    })
+  }
   // SYSTEM DEPENDENCIES
 
   private _wasmInstance: ModuleType | null = null
@@ -1735,6 +1766,7 @@ export class KclManager extends File {
 
     return [
       baseEditorExtensions(),
+      this.languageServiceCompartment.of(this.languageExtension()),
       this.systemDeps.keymap
         ? Prec.highest(
             EditorView.domEventHandlers({
@@ -1821,7 +1853,8 @@ export class KclManager extends File {
     )
     if (systemDeps.editorHistory)
       providedEditor.useProjectHistory(systemDeps.editorHistory)
-    providedEditor.path = file.path
+    providedEditor.systemDeps.languageService = systemDeps.languageService
+    providedEditor.setPathForFileSwitch(file.path)
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
     const savedEditorState = providedEditor.closedFileEditorStates.get(
@@ -1833,8 +1866,13 @@ export class KclManager extends File {
     providedEditor.restoredEditorHistoryOnLastFileSwitch = canRestoreEditorState
 
     if (savedEditorState && canRestoreEditorState) {
-      providedEditor.editorView.setState(savedEditorState)
-      providedEditor.updateHistoryDepth(savedEditorState)
+      const state = savedEditorState.update({
+        effects: providedEditor.languageServiceCompartment.reconfigure(
+          providedEditor.languageExtension()
+        ),
+      }).state
+      providedEditor.editorView.setState(state)
+      providedEditor.updateHistoryDepth(state)
       providedEditor.refreshRestoredEditorStateAfterFileSwitch(
         initialCode,
         options
@@ -1852,6 +1890,7 @@ export class KclManager extends File {
         // the file system and not the editor.
         shouldWriteToDisk: false,
       })
+      providedEditor.refreshLanguageService()
     }
     providedEditor.markFileCodeAsSynced(diskCode)
     providedEditor.startWatchingSettings()
@@ -1951,6 +1990,9 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
+    this._editorView.dispatch({
+      effects: this.languageServiceCompartment.reconfigure([]),
+    })
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.sceneSettingsActive.value = false

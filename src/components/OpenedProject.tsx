@@ -19,7 +19,6 @@ import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnection
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
-import { lspService } from '@src/lang/lsp/registry/contract'
 import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
@@ -75,11 +74,9 @@ export function OpenedProject() {
   const autoUpdateReady = autoUpdateReadySignal.value
   const lastOperation = useLastOperation()
   const projects = useFolders()
-  const lsp = registry.get(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
 
-  const projectName = project?.name || null
   const projectPath = project?.path || null
 
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
@@ -160,14 +157,6 @@ export function OpenedProject() {
       reloadBehavior === 'execute-and-reset-camera'
     )
   }, [systemIOState, kclManager, modelingState, modelingSend])
-
-  // Run LSP file open hook when navigating between projects or files
-  useEffect(() => {
-    lsp.onProjectOpen(
-      { name: projectName, path: projectPath },
-      project?.executingPath ? project.executingFileEntry.value : null
-    )
-  }, [lsp, projectName, projectPath, project])
 
   useHotKeyListener(kclManager)
 

@@ -3,7 +3,6 @@ import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
-import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
@@ -36,7 +35,6 @@ export const AppHeader = ({
   const app = useApp()
   const { auth } = app
   const { kclManager } = useSingletons()
-  const lsp = app.registry.get(lspService)
   const navigate = useNavigate()
   const user = auth.useUser()
   const executingPath = app.project?.executingPathSignal.value?.value
@@ -63,8 +61,7 @@ export const AppHeader = ({
         project={project}
         file={file}
         absoluteFilePath={absoluteFilePath}
-        onProjectClose={(closedFile, projectPath, redirect) => {
-          lsp.onProjectClose(closedFile, projectPath, redirect)
+        onProjectClose={(_closedFile, _projectPath, redirect) => {
           if (redirect) {
             void navigate(PATHS.HOME)
           }

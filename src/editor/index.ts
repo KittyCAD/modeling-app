@@ -46,7 +46,6 @@ import { operationsExtension } from '@src/editor/plugins/operations'
 import { sketchSceneGraphCompartment } from '@src/editor/plugins/sketch'
 import { themeCompartment } from '@src/editor/plugins/theme'
 import { writeEffectsExtension } from '@src/editor/plugins/write'
-import { kclLspExtension } from '@src/lang/lsp/codeMirror'
 import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
 
 export const lineWrappingCompartment = new Compartment()
@@ -58,7 +57,6 @@ export function baseEditorExtensions() {
     // Toggled on while in sketch mode
     sketchSceneGraphCompartment.of([]),
     writeEffectsExtension(),
-    kclLspExtension(),
     lineWrappingCompartment.of([]),
     cursorBlinkingCompartment.of(
       drawSelection({

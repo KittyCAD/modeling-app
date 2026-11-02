@@ -1,27 +1,23 @@
 import { defineContract, defineService } from '@kittycad/registry'
-import type { KclLspEditor } from '@src/lang/lsp/types'
-import type { FileEntry } from '@src/lib/project'
+import type { Extension } from '@codemirror/state'
 
-export type LspService = {
-  attachKclManager: (kclManager: KclLspEditor) => () => void
-  onProjectClose: (
-    file: FileEntry | null,
-    projectPath: string | null,
-    redirect: boolean
-  ) => void
-  onProjectOpen: (
-    project: { name: string | null; path: string | null } | null,
-    file: FileEntry | null
-  ) => void
-  onFileOpen: (filePath: string | null, projectPath: string | null) => void
-  onFileClose: (filePath: string | null, projectPath: string | null) => void
-  onFileCreate: (file: FileEntry, projectPath: string | null) => void
-  onFileRename: (
-    oldFile: FileEntry,
-    newFile: FileEntry,
-    projectPath: string | null
-  ) => void
-  onFileDelete: (file: FileEntry, projectPath: string | null) => void
+export interface LspProject {
+  name: string
+  path: string
+}
+
+/** Project-owned connection; editors consume extensions for individual documents. */
+export interface ProjectLanguageService {
+  readonly editorExtension: (documentUri: string) => Extension
+  readonly onFileCreate: (path: string) => void
+  readonly onFileRename: (oldPath: string, newPath: string) => void
+  readonly onFileDelete: (path: string) => void
+  readonly dispose: () => void
+}
+
+/** Registry-owned factory; each project controls the lifetime of its session. */
+export interface LspService {
+  readonly createProjectSession: (project: LspProject) => ProjectLanguageService
 }
 
 export const lspContract = defineContract({
