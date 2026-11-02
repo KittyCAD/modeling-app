@@ -570,9 +570,6 @@ export class CameraControls {
     if (event.pointerType === 'touch') {
       return
     }
-    if (this.hoverPickingDisabled) {
-      return
-    }
 
     if (this.isDragging) {
       this.dragTo(event, this.getInteractionType(event))
