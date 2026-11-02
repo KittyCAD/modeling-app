@@ -24,6 +24,6 @@ description: Physical properties sweep_mirror.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.00076069709501377
+    "value": 0.0007606978883606397
   }
 }

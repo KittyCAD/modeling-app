@@ -58,6 +58,7 @@ import {
 import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { STEP_SCHEMA_LABELS, StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
 import { hasProperty } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
@@ -262,6 +263,7 @@ export type ModelingCommandSchema = {
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
+    schema?: StepSchema
     up?: AxisDirectionPair['axis']
     scale?: UnitLength
   }
@@ -540,6 +542,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             default:
               return []
           }
+        },
+      },
+      schema: {
+        inputType: 'options',
+        displayName: 'Schema',
+        required: false,
+        prepopulate: true,
+        defaultValue: StepSchema.Ap242,
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'step',
+        options: (commandContext) => {
+          const schema =
+            commandContext.argumentsToSubmit.schema ?? StepSchema.Ap242
+          return Object.values(StepSchema).map((value) => ({
+            name: STEP_SCHEMA_LABELS[value],
+            value,
+            isCurrent: schema === value,
+          }))
         },
       },
       up: {
@@ -2288,7 +2308,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Annotation': {
-    forceCommandBar: true,
     icon: 'text',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2316,7 +2335,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Note': {
-    forceCommandBar: true,
     icon: 'note',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(

@@ -1,7 +1,7 @@
 // Impeller
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 3.0)
 
 // Define parameters
 impellerDiameter = 3
