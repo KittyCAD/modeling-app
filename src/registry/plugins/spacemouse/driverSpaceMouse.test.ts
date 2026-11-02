@@ -15,7 +15,11 @@ import {
   type SpaceMouseCameraControls,
 } from './driverSpaceMouse'
 import { SpaceMouseController, spaceMouseState } from './spaceMouseController'
-import vendorSource from './3dconnexion.min.js?raw'
+import vendorSource from '@public/vendor/3dconnexion.min.js?raw'
+
+vi.mock('/vendor/3dconnexion.min.js?url', () => ({
+  default: '/vendor/3dconnexion.min.js',
+}))
 
 class FakeDriver {
   static instances: FakeDriver[] = []
