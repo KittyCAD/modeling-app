@@ -129,7 +129,7 @@ export function createApplicationCommands({
     createProjectLibraryOptions()[0]?.value ?? ''
 
   const addKCLFileToProject: Command = {
-    scopes: GLOBAL_COMMAND_SCOPES,
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     name: 'add-kcl-file-to-project',
     displayName: 'Add file to project',
     description:
@@ -272,7 +272,7 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: true,
-        defaultValue: window.electron ? undefined : 'existingProject',
+        defaultValue: 'existingProject',
         options: window.electron
           ? [
               { name: 'New project', value: 'newProject', isCurrent: true },
@@ -331,7 +331,6 @@ export function createApplicationCommands({
     needsReview: false,
     icon: 'importFile',
     groupId: 'application',
-    hideFromSearch: true,
     onSubmit: (data) => {
       if (data) {
         const kclSample = findKclSample(data.sample)
@@ -387,7 +386,7 @@ export function createApplicationCommands({
       source: {
         inputType: 'string',
         required: true,
-        skip: false,
+        skip: true,
         defaultValue: 'local',
         hidden: true,
       },

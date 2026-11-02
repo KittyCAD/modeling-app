@@ -90,7 +90,7 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
     let (geometry, instances, transform, use_original) = pattern_transform_parse_args(&args, exec_state)?;
 
     match inner_pattern_transform(geometry, instances, transform, use_original, exec_state, &args).await {
-        Ok(geometry) => Ok(KclValue::continue_(geometry)),
+        Ok(geometry) => Ok(KclValue::normal(geometry)),
         // The callback exited, e.g. by calling exit(). Propagate the exit so
         // that it terminates the enclosing module.
         Err(EarlyReturn::Value(cf)) => Ok(cf),
@@ -103,7 +103,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
     let (sketches, instances, transform, use_original) = pattern_transform_2d_parse_args(&args, exec_state)?;
 
     match inner_pattern_transform_2d(sketches, instances, transform, use_original, exec_state, &args).await {
-        Ok(sketches) => Ok(KclValue::continue_(sketches.into())),
+        Ok(sketches) => Ok(KclValue::normal(sketches.into())),
         // The callback exited, e.g. by calling exit(). Propagate the exit so
         // that it terminates the enclosing module.
         Err(EarlyReturn::Value(cf)) => Ok(cf),

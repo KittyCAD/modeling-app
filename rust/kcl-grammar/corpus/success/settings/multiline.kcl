@@ -1,0 +1,5 @@
+@settings(
+    kclVersion = 3.0,
+    defaultLengthUnit = mm,
+    experimentalFeatures = allow,
+)

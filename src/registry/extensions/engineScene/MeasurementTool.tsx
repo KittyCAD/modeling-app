@@ -857,7 +857,7 @@ export function MeasurementStatusBarItem() {
   }, [isOpen])
 
   return (
-    <div className="relative">
+    <div className="relative flex">
       <button
         type="button"
         className={`${defaultStatusBarItemClassNames} max-w-[32vw] gap-1`}

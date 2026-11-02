@@ -493,6 +493,35 @@ test.describe(
     )
 
     test(
+      'Navigating Home while project settings are open lands on Home',
+      { tag: ['@macos', '@windows'] },
+      async ({ page, homePage }) => {
+        await homePage.goToModelingScene()
+
+        await test.step('Open project settings', async () => {
+          // In a file, this link opens settings with ?tab=project
+          await page.getByRole('link', { name: 'settings Settings' }).click()
+          await expect(
+            page.getByRole('radio', { name: 'Project' })
+          ).toBeChecked()
+        })
+
+        await test.step('Navigate Home without closing settings', async () => {
+          // No UI path does this today, but the e2e fixture's reset does the same
+          // hash change. Settings used to cancel it and bounce back to ?tab=user.
+          await page.evaluate(() => {
+            window.location.hash = '#/home'
+          })
+          await expect(page.getByTestId('home-section')).toBeVisible()
+          await expect(
+            page.getByTestId('settings-dialog-panel')
+          ).not.toBeVisible()
+          await expect(page).not.toHaveURL(/\/file\//)
+        })
+      }
+    )
+
+    test(
       'Changing modeling default unit',
       { tag: ['@macos', '@windows'] },
       async ({ page, homePage, scene, folderSetupFn }) => {

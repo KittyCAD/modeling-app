@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.193"
+version = "0.2.194"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -66,13 +66,13 @@ image-compare = "0.5.0"
 imbl = { version = "7.0.1", features = ["serde"] }
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.15.0"
-kcl-api = { version = "=0.2.193", path = "../kcl-api" }
-kcl-engine-codec = { version = "=0.2.193", path = "../kcl-engine-codec" }
-kcl-error = { version = "=0.2.193", path = "../kcl-error" }
-kcl-syntax = { version = "=0.2.193", path = "../kcl-syntax" }
+kcl-api = { version = "=0.2.194", path = "../kcl-api" }
+kcl-engine-codec = { version = "=0.2.194", path = "../kcl-engine-codec" }
+kcl-error = { version = "=0.2.194", path = "../kcl-error" }
+kcl-syntax = { version = "=0.2.194", path = "../kcl-syntax" }
 ezpz = { workspace = true }
 kittycad = { workspace = true }
-kittycad-modeling-cmds = { workspace = true }
+kittycad-modeling-cmds = { workspace = true, features = ["exec-kcl"] }
 lazy_static = { workspace = true }
 libm = "0.2.16"
 miette = { workspace = true }
@@ -102,7 +102,7 @@ sha2 = "0.11.0"
 thiserror = "2.0.18"
 toml = "1.1.0"
 ts-rs = { workspace = true }
-typed-path = "0.12.3"
+typed-path = "0.13.0"
 unicase = "2.9.0"
 url = { version = "2.5.8", features = ["serde"] }
 uuid = { workspace = true, features = ["v4", "v5", "js", "serde"] }
@@ -139,7 +139,7 @@ glb-render = { path = "../glb-render" }
 handlebars = "6.4.1"
 image = { version = "0.25.10", default-features = false, features = ["png"] }
 insta = { version = "1.47.0", features = ["json", "filters", "redactions"] }
-kcl-derive-docs = { version = "=0.2.193", path = "../kcl-derive-docs" }
+kcl-derive-docs = { version = "=0.2.194", path = "../kcl-derive-docs" }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"

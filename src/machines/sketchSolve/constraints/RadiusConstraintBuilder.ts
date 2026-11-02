@@ -50,13 +50,10 @@ export class RadiusConstraintBuilder {
     const arc = objects[obj.kind.constraint.arc]
     if (isArcLikeSegment(arc)) {
       const startObject = objects[arc.kind.segment.start]
-      const center = isArcSegment(arc)
-        ? (() => {
-            const centerObject = objects[arc.kind.segment.center]
-            return isPointSegment(centerObject)
-              ? pointToVec3(centerObject)
-              : null
-          })()
+      // Both circles and arcs must follow the solved center, not the constructor guess.
+      const centerObject = objects[arc.kind.segment.center]
+      const center = isPointSegment(centerObject)
+        ? pointToVec3(centerObject)
         : arc.kind.segment.ctor.type === 'Circle'
           ? (() => {
               const centerX = exprToNumber(arc.kind.segment.ctor.center.x)
