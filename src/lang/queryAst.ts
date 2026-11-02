@@ -1441,7 +1441,22 @@ export function getVariableExprsFromSelection(
           ? resolvedForSegment.artifact
           : null
     const edgeCutCodeRef = s.codeRef ?? resolvedForSegment?.codeRef
-    if (selectedEdgeCut && edgeCutCodeRef) {
+    const edgeCutOwner = selectedEdgeCut?.bodyId
+      ? artifactGraph.get(selectedEdgeCut.bodyId)
+      : undefined
+    const edgeCutBodyWasConsumed =
+      edgeCutOwner?.type === 'path'
+        ? Boolean(edgeCutOwner.compositeSolidId)
+        : (edgeCutOwner?.type === 'sweep' ||
+            edgeCutOwner?.type === 'compositeSolid') &&
+          edgeCutOwner.consumed
+    // A treatment's defining variable can be stale after a Boolean. When
+    // requested, resolve its current body through the normal ownership traversal.
+    if (
+      selectedEdgeCut &&
+      edgeCutCodeRef &&
+      !(lastChildLookup && edgeCutBodyWasConsumed)
+    ) {
       const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
         ast,
         edgeCutCodeRef.pathToNode,

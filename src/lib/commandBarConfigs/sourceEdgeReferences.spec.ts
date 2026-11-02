@@ -754,8 +754,18 @@ it('rejects a copied chamfer face rather than materializing a different face', a
   expect(recast(ast, world.instance)).toBe(original)
 }, 60_000)
 
-it('sketches on the treatment face of the Boolean output body', async () => {
-  const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+it.each([
+  { beforeBoolean: false, tagged: false, secondBoolean: false },
+  { beforeBoolean: true, tagged: true, secondBoolean: false },
+  { beforeBoolean: true, tagged: false, secondBoolean: false },
+  { beforeBoolean: false, tagged: true, secondBoolean: false },
+  { beforeBoolean: false, tagged: true, secondBoolean: true },
+])(
+  'sketches on the Boolean treatment face (treatment before Boolean: $beforeBoolean, tagged: $tagged, second Boolean: $secondBoolean)',
+  async ({ beforeBoolean, tagged, secondBoolean }) => {
+    const booleanCall = `plateWithHole = subtract(${beforeBoolean ? 'chamfer001' : 'plate'}, tools = hole)`
+    const chamferCall = `chamfer001 = chamfer(${beforeBoolean ? 'plate' : 'plateWithHole'}, length = 1mm, edges = [{ sideFaces = [plate.sketch.tags.bottom, plate.faces.plateTop] }]${tagged ? ', tag = $chamferFace' : ''})`
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 plateSketch = sketch(on = XY) {
   bottom = line(start = [0mm, 0mm], end = [20mm, 0mm])
   right = line(start = [20mm, 0mm], end = [20mm, 20mm])
@@ -767,51 +777,65 @@ holeSketch = sketch(on = XY) {
   circle(start = [13mm, 10mm], center = [10mm, 10mm])
 }
 hole = extrude(region(point = [10mm, 10mm], sketch = holeSketch), length = 20mm, symmetric = true)
-plateWithHole = subtract(plate, tools = hole)
-chamfer001 = chamfer(plateWithHole, length = 1mm, edges = [{ sideFaces = [plate.sketch.tags.bottom, plateWithHole.faces.plateTop] }])
+${beforeBoolean ? chamferCall : booleanCall}
+${beforeBoolean ? booleanCall : chamferCall}
+${
+  secondBoolean
+    ? `extraHoleSketch = sketch(on = XY) { circle(start = [6mm, 5mm], center = [5mm, 5mm]) }
+extraHole = extrude(region(point = [5mm, 5mm], sketch = extraHoleSketch), length = 20mm, symmetric = true)
+finalPlate = subtract(chamfer001, tools = extraHole)`
+    : ''
+}
+hide(plateSketch)
+hide(holeSketch)
 `
-  const { ast, artifactGraph } = await getAstAndArtifactGraph(
-    code,
-    world.instance,
-    world.kclManager
-  )
-  expect(world.kclManager.errors).toEqual([])
-  const cut = [...artifactGraph.values()].find((a) => a.type === 'edgeCut')
-  if (cut?.type !== 'edgeCut') throw new Error('Missing Boolean treatment face')
-  const body = getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)
-  if (isErr(body)) throw body
-  expect(body.type).toBe('compositeSolid')
-  expect(cut.bodyId).toBe(body.id)
-  const result = sketchBlockOnExtrudedFace(
-    ast,
-    {
-      artifact: cut,
-      codeRef: cut.codeRef,
-      entityRef: { type: 'face', face_id: cut.id },
-    },
-    cut.codeRef.pathToNode,
-    body.codeRef.pathToNode,
-    artifactGraph,
-    world.instance
-  )
-  if (isErr(result)) throw result
-  const output = recast(result.modifiedAst, world.instance)
-  if (isErr(output)) throw output
-  expect(output).toContain('faceOf(chamfer001, face = ')
-  await getAstAndArtifactGraph(
-    output.replace(
-      /(sketch\d+ = sketch\(on = faceOf[^\n]+\) \{)\n/,
-      '$1\n  circle(start = [0.1mm, 0mm], center = [0mm, 0mm])\n'
-    ),
-    world.instance,
-    world.kclManager
-  )
-  expect(world.kclManager.errors).toEqual([])
-  expect(world.kclManager.variables.sketch001).toMatchObject({
-    type: 'Object',
-    value: { meta: { value: { sketch: { value: { on: { id: cut.id } } } } } },
-  })
-}, 60_000)
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    const cut = [...artifactGraph.values()].find((a) => a.type === 'edgeCut')
+    if (cut?.type !== 'edgeCut')
+      throw new Error('Missing Boolean treatment face')
+    const body = getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)
+    if (isErr(body)) throw body
+    expect(body.type).toBe('compositeSolid')
+    if (!beforeBoolean) expect(cut.bodyId).toBe(body.id)
+    const result = sketchBlockOnExtrudedFace(
+      ast,
+      {
+        artifact: cut,
+        codeRef: cut.codeRef,
+        entityRef: { type: 'face', face_id: cut.id },
+      },
+      cut.codeRef.pathToNode,
+      body.codeRef.pathToNode,
+      artifactGraph,
+      world.instance
+    )
+    if (isErr(result)) throw result
+    const output = recast(result.modifiedAst, world.instance)
+    if (isErr(output)) throw output
+    await getAstAndArtifactGraph(
+      output.replace(
+        /(sketch\d+ = sketch\(on = faceOf[^\n]+\) \{)\n/,
+        '$1\n  circle(start = [0.1mm, 0mm], center = [0mm, 0mm])\n'
+      ),
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    expect(output).toContain(
+      `faceOf(${secondBoolean ? 'finalPlate' : beforeBoolean ? 'plateWithHole' : 'chamfer001'}, face = `
+    )
+    expect(world.kclManager.variables.sketch001).toMatchObject({
+      type: 'Object',
+      value: { meta: { value: { sketch: { value: { on: { id: cut.id } } } } } },
+    })
+  },
+  60_000
+)
 
 it.each([
   { treatment: 'chamfer', beforeBoolean: true },
