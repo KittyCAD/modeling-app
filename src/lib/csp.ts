@@ -97,6 +97,8 @@ const buildCsp = (domain?: string) => {
   const connectSources = uniqueSources([
     "'self'",
     'https://plausible.corp.zoo.dev',
+    'https://127.51.68.120:*',
+    'wss://127.51.68.120:*',
     domain ? `https://api.${domain}` : undefined,
     domain ? `wss://api.${domain}` : undefined,
   ])
