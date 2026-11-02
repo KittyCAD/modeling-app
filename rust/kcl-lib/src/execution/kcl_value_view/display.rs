@@ -15,6 +15,7 @@ use crate::std::args::TyF64;
 pub(crate) struct ConstraintView {
     kind: ConstraintKindView,
 }
+
 struct ConstraintKindView(runtime::SketchConstraintKind);
 impl Serialize for ConstraintKindView {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
@@ -42,6 +43,7 @@ impl Serialize for ConstraintKindView {
         }
     }
 }
+
 impl From<runtime::SketchConstraint> for ConstraintView {
     fn from(value: runtime::SketchConstraint) -> Self {
         Self {
@@ -58,6 +60,7 @@ pub(crate) struct CameraValueView {
     distance: Option<TyF64>,
     projection: values::Projection,
 }
+
 impl From<&values::CameraView> for CameraValueView {
     fn from(value: &values::CameraView) -> Self {
         Self {
@@ -78,6 +81,7 @@ pub(crate) struct NamedValueView {
     baseline: values::Visibility,
     except_ids: Vec<crate::execution::ArtifactId>,
 }
+
 impl From<&values::NamedViewValue> for NamedValueView {
     fn from(value: &values::NamedViewValue) -> Self {
         Self {
@@ -94,11 +98,13 @@ impl From<&values::NamedViewValue> for NamedValueView {
 pub(crate) struct SegmentValueView {
     repr: SegmentReprView,
 }
+
 #[derive(Serialize)]
 enum SegmentReprView {
     Unsolved { segment: UnsolvedSegmentView },
     Solved { segment: SolvedSegmentView },
 }
+
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct UnsolvedSegmentView {
@@ -108,6 +114,7 @@ struct UnsolvedSegmentView {
     #[serde(skip_serializing_if = "Option::is_none")]
     tag: Option<TagIdentifierView>,
 }
+
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct SolvedSegmentView {
@@ -139,6 +146,7 @@ impl Serialize for SurfaceView {
         }
     }
 }
+
 impl From<runtime::AbstractSegment> for SegmentValueView {
     fn from(value: runtime::AbstractSegment) -> Self {
         let repr = match value.repr {
