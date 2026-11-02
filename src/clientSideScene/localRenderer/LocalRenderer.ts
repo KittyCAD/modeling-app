@@ -525,8 +525,11 @@ export class LocalRenderer {
       gpu.selectionHighlightRenderer.dispose()
       gpu.envMapLoader.dispose()
       gpu.renderer.domElement.remove()
-      gpu.renderer.dispose()
-      gpu.device?.destroy()
+      // The renderer frees its resources asynchronously, so the device has to outlive that.
+      gpu.renderer
+        .dispose()
+        .then(() => gpu.device?.destroy())
+        .catch(reportRejection)
     }
     this.previewCamera = null
   }
@@ -928,7 +931,7 @@ export class LocalRenderer {
     })
     await renderer.init()
     if (this.disposed) {
-      renderer.dispose()
+      await renderer.dispose()
       device?.destroy()
       return
     }
@@ -955,7 +958,7 @@ export class LocalRenderer {
     if (this.disposed) {
       envMapLoader.dispose()
       renderer.domElement.remove()
-      renderer.dispose()
+      await renderer.dispose()
       device?.destroy()
       return
     }
