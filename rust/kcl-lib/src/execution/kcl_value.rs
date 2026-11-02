@@ -4,6 +4,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_api::UnitLength;
+use serde::Deserialize;
 use serde::Serialize;
 use serde::Serializer;
 
@@ -60,9 +61,12 @@ use crate::parsing::ast::types::Type;
 use crate::std::StdFnProps;
 use crate::std::args::TyF64;
 
+#[cfg(test)]
+mod roundtrip_tests;
+
 pub type KclObjectFields = HashMap<String, KclValue>;
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub enum KclObjectKind {
     #[default]
     Default,
@@ -91,28 +95,24 @@ impl KclObjectKind {
 }
 
 /// Any KCL value.
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "type")]
 pub enum KclValue {
     Uuid {
         value: ::uuid::Uuid,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Bool {
         value: bool,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Number {
         value: f64,
         ty: NumericType,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     String {
         value: String,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Enum {
@@ -126,14 +126,12 @@ pub enum KclValue {
     },
     Tuple {
         value: Vec<KclValue>,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     // An array where all values have a shared type (not necessarily the same principal type).
     HomArray {
         value: Vec<KclValue>,
         // The type of values, not the array type.
-        #[serde(skip)]
         ty: RuntimeType,
     },
     Object {
@@ -141,7 +139,6 @@ pub enum KclValue {
         constrainable: bool,
         #[serde(default, skip_serializing_if = "KclObjectKind::is_default")]
         object_kind: KclObjectKind,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     TagIdentifier(Box<TagIdentifier>),
@@ -181,24 +178,19 @@ pub enum KclValue {
     Function {
         #[serde(serialize_with = "function_value_stub")]
         value: Box<FunctionSource>,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Module {
         value: ModuleId,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Type {
-        #[serde(skip)]
         value: TypeDef,
         experimental: bool,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     KclNone {
         value: KclNone,
-        #[serde(skip)]
         meta: Vec<Metadata>,
     },
 }
@@ -519,7 +511,7 @@ impl TypeDef {
 /// the declaration site. Importing under an alias renames the binding, not the
 /// type, so it leaves identity untouched. Two enums declaring identical variant
 /// names are still distinct types.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct EnumTypeId {
     module_id: ModuleId,
     declared_name: String,
@@ -545,7 +537,7 @@ impl EnumTypeId {
 }
 
 /// A declared enum: its identity plus its variants in declaration order.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EnumTypeDef {
     id: EnumTypeId,
     variants: Vec<String>,
@@ -625,12 +617,12 @@ impl EnumTypeDef {
 /// can reach a module that never imported the type at all. The declaration is
 /// reachable, not part of the value: identity and equality read the declaration's
 /// id and the variant name, never a representation.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EnumValue {
     /// Serialized as `enum_id` so that the exposed shape stays the nominal
     /// identity plus the variant, and no declaration data leaks into snapshots
     /// or the memory pane.
-    #[serde(rename = "enum_id", serialize_with = "serialize_enum_def_id")]
+    #[serde(rename = "enum_id")]
     def: Arc<EnumTypeDef>,
     variant: String,
     #[serde(skip)]
