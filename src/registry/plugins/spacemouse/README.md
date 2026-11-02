@@ -30,6 +30,10 @@ and no engine camera round trip. Orthographic zoom keeps the camera's base
 frustum intact; perspective vertical FOV is converted between degrees and the
 SDK's radians.
 
+Regular mouse navigation and other view changes refresh Navlib's cached camera
+before SpaceMouse motion resumes. Sketch rotation uses the application's orbit
+lock; free orthographic views do not advertise a construction plane.
+
 Browser connections require the driver's certificate to be trusted. On macOS,
 Electron can also accept the exact, unexpired certificate installed at
 `/Applications/3Dconnexion/3DxNLServer/server.crt`, provided it matches the

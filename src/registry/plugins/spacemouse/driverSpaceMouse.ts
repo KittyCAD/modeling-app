@@ -28,6 +28,7 @@ export type SpaceMouseCameraControls = Pick<
   | 'enableZoom'
   | 'isDragging'
   | 'isFovAnimationInProgress'
+  | 'cameraChange'
   | 'onCameraChange'
 >
 
@@ -38,6 +39,14 @@ export type SpaceMouseScene = {
 }
 
 type ThreeDconnexionInstance = {
+  session: {
+    call: (
+      procedure: string,
+      instance: string,
+      properties: unknown
+    ) => Promise<unknown>
+  } | null
+  _3dcontroller: number | string | null
   connect: () => number
   create3dmouse: (canvas: HTMLElement, name: string) => void
   update3dcontroller: (options: unknown) => void
@@ -100,6 +109,11 @@ export class DriverSpaceMouseController {
   private disposed = false
   private frame: number | undefined
   private finishConnecting: ((result?: Error) => void) | undefined
+  private cameraRevision = 0
+  private syncedCameraRevision = 0
+  private applyingDriverUpdate = false
+  private synchronizingCamera = false
+  private readonly removeCameraChangeListener: () => void
   private readonly previousCanvasId: string
   private readonly previousCanvasTabIndex: string | null
   private readonly previousCanvasOutline: string
@@ -109,6 +123,9 @@ export class DriverSpaceMouseController {
     private readonly scene: SpaceMouseScene,
     private readonly onDisconnected: (reason: string) => void
   ) {
+    this.removeCameraChangeListener = controls.cameraChange.add(() => {
+      if (!this.applyingDriverUpdate) this.cameraRevision += 1
+    })
     const canvas = controls.domElement
     this.previousCanvasId = canvas.id
     this.previousCanvasTabIndex = canvas.getAttribute('tabindex')
@@ -153,6 +170,7 @@ export class DriverSpaceMouseController {
   dispose() {
     if (this.disposed) return
     this.disposed = true
+    this.removeCameraChangeListener()
     this.onStopMotion()
     this.finishConnecting?.(new Error('SpaceMouse connection cancelled.'))
     this.closeDriver()
@@ -193,6 +211,7 @@ export class DriverSpaceMouseController {
   private canNavigate() {
     return (
       this.isViewportActive() &&
+      this.cameraRevision === this.syncedCameraRevision &&
       !this.controls.isDragging &&
       !this.controls.isFovAnimationInProgress
     )
@@ -205,11 +224,55 @@ export class DriverSpaceMouseController {
   private render = (time: number) => {
     this.frame = undefined
     if (!this.isViewportActive()) return
-    if (this.canNavigate()) {
-      this.spaceMouse?.update3dcontroller({ frame: { time } })
+    if (!this.controls.isDragging && !this.controls.isFovAnimationInProgress) {
+      if (this.cameraRevision !== this.syncedCameraRevision) {
+        this.syncCameraToDriver().catch((error: unknown) => {
+          this.onDisconnect(
+            error instanceof Error
+              ? error.message
+              : 'Unable to synchronize the SpaceMouse camera.'
+          )
+        })
+      } else {
+        this.spaceMouse?.update3dcontroller({ frame: { time } })
+      }
     }
     // Keep the clock running during mouse interaction so a held puck resumes.
     this.frame = window.requestAnimationFrame(this.render)
+  }
+
+  private async syncCameraToDriver() {
+    const driver = this.spaceMouse
+    if (
+      !driver?.session ||
+      driver._3dcontroller === null ||
+      this.synchronizingCamera
+    )
+      return
+    const revision = this.cameraRevision
+    this.synchronizingCamera = true
+    try {
+      // The SDK's update helper hides the RPC promise. Wait for the cache update
+      // before accepting any more camera writes from the navigation library.
+      await driver.session.call(
+        '3dx_rpc:update',
+        `3dconnexion:3dcontroller/${driver._3dcontroller}`,
+        {
+          view: {
+            affine: this.getViewMatrix(),
+            target: this.getViewTarget(),
+            perspective: this.getPerspective(),
+            rotatable: this.getViewRotatable(),
+            ...(this.getPerspective()
+              ? { fov: this.getFov(), frustum: this.getViewFrustum() }
+              : { extents: this.getViewExtents() }),
+          },
+        }
+      )
+      if (!this.disposed) this.syncedCameraRevision = revision
+    } finally {
+      this.synchronizingCamera = false
+    }
   }
 
   onStartMotion() {
@@ -327,9 +390,7 @@ export class DriverSpaceMouseController {
     return 1
   }
   getViewRotatable() {
-    return (
-      this.canNavigate() && this.controls.enableRotate && this.scene.canRotate()
-    )
+    return this.controls.enableRotate && this.scene.canRotate()
   }
   getLookAt() {
     return null
@@ -352,9 +413,6 @@ export class DriverSpaceMouseController {
   }
   getSelectionAffine() {
     return new Matrix4().toArray()
-  }
-  getConstructionPlane() {
-    return [0, 0, 1, 0]
   }
   getFloorPlane() {
     return [0, 0, 1, 0]
@@ -440,9 +498,14 @@ export class DriverSpaceMouseController {
   private cameraChanged() {
     const camera = this.controls.camera
     camera.updateProjectionMatrix()
-    this.controls.onCameraChange()
-    // onCameraChange also synchronizes orthographic depth and clipping.
-    camera.updateMatrixWorld(true)
+    this.applyingDriverUpdate = true
+    try {
+      this.controls.onCameraChange()
+      // onCameraChange also synchronizes orthographic depth and clipping.
+      camera.updateMatrixWorld(true)
+    } finally {
+      this.applyingDriverUpdate = false
+    }
   }
 
   // These properties are part of the SDK callback table even when unused.
