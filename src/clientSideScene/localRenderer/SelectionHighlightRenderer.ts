@@ -73,7 +73,7 @@ export class SelectionHighlightRenderer {
   private readonly selectionCompositeMaterial: NodeMaterial
   private readonly hoverLineMaterial: Line2NodeMaterial
   private readonly selectionLineMaterial: Line2NodeMaterial
-  private readonly compositeQuad = new QuadMesh()
+  private readonly compositeQuad: QuadMesh
   private readonly overlayByKey = new Map<string, Mesh>()
   private readonly sourceByOverlay = new Map<Mesh, Mesh>()
   private readonly lineKeys = new Set<string>()
@@ -159,6 +159,7 @@ export class SelectionHighlightRenderer {
       SKETCH_SELECTION_COLOR,
       renderer.outputColorSpace
     )
+    this.compositeQuad = new QuadMesh(this.hoverCompositeMaterial)
     this.hoverLineMaterial = createLineMaterial(
       SKETCH_HIGHLIGHT_COLOR,
       renderer.outputColorSpace
