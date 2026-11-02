@@ -36,7 +36,7 @@ type SweepEdgeLike = { segId: string; sweepId?: string }
  * source-range context initially and defer artifact lookup to the next step.
  */
 export type ResolvedGraphSelection = { codeRef: CodeRef; artifact?: Artifact }
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
@@ -403,11 +403,11 @@ export function getSweepFromSuspectedSweepSurface(
     { key: id, types: ['wall', 'cap', 'edgeCut'] },
     artifactGraph
   )
-  if (!err(direct)) {
+  if (!isErr(direct)) {
     faceArtifact = direct
   } else {
     const capForPath = getCapForPathId(id, artifactGraph)
-    if (!err(capForPath)) {
+    if (!isErr(capForPath)) {
       faceArtifact = capForPath
     } else {
       return direct

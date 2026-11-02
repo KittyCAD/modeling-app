@@ -437,23 +437,25 @@ export class SceneFixture {
 
   moveCameraTo = async (
     pos: { x: number; y: number; z: number },
-    target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 }
+    target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
+    { waitForImageChange = true }: { waitForImageChange?: boolean } = {}
   ) => {
-    await doAndWaitForImageDiff(
-      this.page,
-      () =>
-        sendSceneCommand(this.page, {
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_look_at',
-            vantage: pos,
-            center: target,
-            up: { x: 0, y: 0, z: 1 },
-          },
-        }),
-      300
-    )
+    const moveCamera = () =>
+      sendSceneCommand(this.page, {
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          vantage: pos,
+          center: target,
+          up: { x: 0, y: 0, z: 1 },
+        },
+      })
+    if (waitForImageChange) {
+      await doAndWaitForImageDiff(this.page, moveCamera, 300)
+    } else {
+      await moveCamera()
+    }
   }
   /** Forces a refresh of the camera position and target displayed
    *  in the debug panel and then returns the values of the fields
