@@ -9,10 +9,11 @@ export class ProjectEditorHistory {
     fsHistoryExtension(),
     zookeeperHistoryExtension(),
   ])
-  readonly files = new Map<string, EditorState>()
+  /** Cached on editor close or singleton file switch; never populated by file discovery. */
+  readonly closedFileEditorStates = new Map<string, EditorState>()
 
   dispose() {
-    this.files.clear()
+    this.closedFileEditorStates.clear()
     this.view.destroy()
   }
 }

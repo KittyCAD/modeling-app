@@ -296,7 +296,10 @@ export class ZDSProject {
       this.executingPath = null
     }
     const editor = foundPathSignal[1]
-    this.editorHistory.files.set(path, editor.captureEditorHistoryState())
+    this.editorHistory.closedFileEditorStates.set(
+      path,
+      editor.captureEditorHistoryState()
+    )
     editor.close()
     this.files = this.files.map((file) =>
       file === editor ? new File(path, this.textFileIO, editor.id) : file

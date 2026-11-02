@@ -463,8 +463,8 @@ export class KclManager extends File {
   private get _globalHistoryView() {
     return this.editorHistory.view
   }
-  private get editorStatesByPath() {
-    return this.editorHistory.files
+  private get closedFileEditorStates() {
+    return this.editorHistory.closedFileEditorStates
   }
   private restoredEditorHistoryOnLastFileSwitch = false
   private disposeGlobalHistorySubscription: (() => boolean) | undefined
@@ -1883,7 +1883,7 @@ export class KclManager extends File {
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     await providedEditor.flushWriteToFile({ suppressConflictToast: true })
     providedEditor.flushRecoverySnapshot()
-    providedEditor.editorStatesByPath.set(
+    providedEditor.closedFileEditorStates.set(
       providedEditor.path,
       providedEditor.editorView.state
     )
@@ -1901,7 +1901,9 @@ export class KclManager extends File {
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
-    const savedEditorState = providedEditor.editorStatesByPath.get(file.path)
+    const savedEditorState = providedEditor.closedFileEditorStates.get(
+      file.path
+    )
     const canRestoreEditorState =
       savedEditorState !== undefined &&
       savedEditorState.doc.toString() === initialCode
@@ -1915,7 +1917,7 @@ export class KclManager extends File {
         options
       )
     } else {
-      providedEditor.editorStatesByPath.delete(file.path)
+      providedEditor.closedFileEditorStates.delete(file.path)
       providedEditor.updateCodeEditor(initialCode, {
         shouldExecute:
           options.shouldSyncRustOnOpen &&
@@ -1971,7 +1973,7 @@ export class KclManager extends File {
     this.editorHistory = systemDeps.editorHistory ?? new ProjectEditorHistory()
     this.ownsEditorHistory = systemDeps.editorHistory === undefined
     this._editorView = this.createEditorView(initialCode)
-    const saved = this.editorStatesByPath.get(path)
+    const saved = this.closedFileEditorStates.get(path)
     if (saved?.doc.toString() === initialCode) {
       // Preserve undo fields while binding every editor extension to this owner.
       this._editorView.setState(
@@ -1980,7 +1982,7 @@ export class KclManager extends File {
         }).state
       )
       this.restoredEditorHistoryOnLastFileSwitch = true
-    } else this.editorStatesByPath.delete(path)
+    } else this.closedFileEditorStates.delete(path)
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
@@ -3303,7 +3305,7 @@ export class KclManager extends File {
       return false
     }
 
-    const cachedState = this.editorStatesByPath.get(filePath)
+    const cachedState = this.closedFileEditorStates.get(filePath)
     if (
       !cachedState ||
       !isCodeTheSame(cachedState.doc.toString(), previousContent)
@@ -3326,7 +3328,7 @@ export class KclManager extends File {
       return false
     }
 
-    this.editorStatesByPath.set(filePath, synchronizedState)
+    this.closedFileEditorStates.set(filePath, synchronizedState)
     if (this.pendingRecoverySnapshot?.path === filePath) {
       clearTimeout(this.timeoutRecoverySnapshot)
       this.timeoutRecoverySnapshot = undefined
