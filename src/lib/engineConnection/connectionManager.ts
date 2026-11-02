@@ -80,6 +80,47 @@ import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
 const RECONNECT_CAMERA_CAPTURE_TIMEOUT_MS = 300
 
+/**
+ * Commands the engine can only run in its graphics scene. A geometry-only
+ * session has no graphics, so it fails every one of them with "Graphics have
+ * not been enabled for this geometry context". The local renderer answers
+ * hover and click queries itself, but not while picking is off.
+ * `enable_sketch_mode` needs graphics only to adjust the camera, and
+ * `set_default_system_properties` only for a backface color, so neither is
+ * here.
+ */
+const GRAPHICS_ONLY_COMMANDS: ReadonlySet<ModelingCmdReq['cmd']['type']> =
+  new Set([
+    'camera_drag_start',
+    'camera_drag_move',
+    'camera_drag_end',
+    'default_camera_center_to_scene',
+    'default_camera_center_to_selection',
+    'default_camera_focus_on',
+    'default_camera_get_settings',
+    'default_camera_get_view',
+    'default_camera_look_at',
+    'default_camera_perspective_settings',
+    'default_camera_set_orthographic',
+    'default_camera_set_perspective',
+    'default_camera_set_view',
+    'default_camera_zoom',
+    'edge_lines_visible',
+    'highlight_set_entity',
+    'orient_to_face',
+    'plane_intersect_and_project',
+    'query_entity_type_with_point',
+    'reconfigure_stream',
+    'select_with_point',
+    'set_background_color',
+    'set_grid_auto_scale',
+    'set_grid_scale',
+    'set_order_independent_transparency',
+    'take_snapshot',
+    'view_isometric',
+    'zoom_to_fit',
+  ])
+
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
 }
@@ -877,6 +918,19 @@ export class ConnectionManager extends EventTarget {
         }
         return Promise.resolve(localSelectionResult.websocketResponse ?? null)
       }
+    }
+
+    if (
+      this.geometryOnly &&
+      command.type === 'modeling_cmd_req' &&
+      GRAPHICS_ONLY_COMMANDS.has(command.cmd.type)
+    ) {
+      EngineDebugger.addLog({
+        label: 'sendSceneCommand',
+        message: 'not sent: a geometry-only engine has no graphics for it',
+        metadata: { type: command.cmd.type },
+      })
+      return Promise.resolve(null)
     }
 
     if (

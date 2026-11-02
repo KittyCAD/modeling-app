@@ -4,6 +4,7 @@ import type { ArtifactGraph } from '@src/lang/wasm'
 import { type ResolvedTheme, Themes } from '@src/lib/theme'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import {
+  Box3,
   CanvasTexture,
   Color,
   DoubleSide,
@@ -173,6 +174,32 @@ export class PlaneRenderer {
     for (const { defaultPlane, group } of this.planes.values()) {
       if (defaultPlane) group.visible = visibility[defaultPlane.key]
     }
+  }
+
+  /**
+   * The visible planes' bounds as the engine's Plane::getBoundingBox gives
+   * them: centered on the origin, spanning the plane's size along its X and Y
+   * axes added together. That ignores the scale they are drawn at.
+   */
+  getVisibleBounds() {
+    const bounds = new Box3()
+    const xAxis = new Vector3()
+    const yAxis = new Vector3()
+    const zAxis = new Vector3()
+    for (const { group, transform, size } of this.planes.values()) {
+      if (group.visible) {
+        transform.extractBasis(xAxis, yAxis, zAxis)
+        const halfDimensions = xAxis.add(yAxis).multiplyScalar(size / 2)
+        const origin = new Vector3().setFromMatrixPosition(transform)
+        bounds.union(
+          new Box3(
+            origin.clone().sub(halfDimensions),
+            origin.add(halfDimensions)
+          )
+        )
+      }
+    }
+    return bounds
   }
 
   updateScale(cameraDistanceMm: number, fixedGridScale?: number) {
