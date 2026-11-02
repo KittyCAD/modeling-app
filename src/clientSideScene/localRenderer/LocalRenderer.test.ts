@@ -63,7 +63,7 @@ function fakeGpu() {
   })
   return {
     renderer: {
-      dispose: vi.fn(),
+      dispose: vi.fn(() => Promise.resolve()),
       domElement: document.createElement('canvas'),
     },
     device: null,
