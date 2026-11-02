@@ -180,15 +180,21 @@ export class DriverSpaceMouseController {
   private focusCanvas = () =>
     this.controls.domElement.focus({ preventScroll: true })
 
-  private canNavigate() {
+  private isViewportActive() {
     return (
       !this.disposed &&
       this.controls.localCameraMode &&
-      !this.controls.isDragging &&
-      !this.controls.isFovAnimationInProgress &&
       document.hasFocus() &&
       !document.hidden &&
       document.activeElement === this.controls.domElement
+    )
+  }
+
+  private canNavigate() {
+    return (
+      this.isViewportActive() &&
+      !this.controls.isDragging &&
+      !this.controls.isFovAnimationInProgress
     )
   }
 
@@ -198,13 +204,16 @@ export class DriverSpaceMouseController {
 
   private render = (time: number) => {
     this.frame = undefined
-    if (!this.canNavigate()) return
-    this.spaceMouse?.update3dcontroller({ frame: { time } })
+    if (!this.isViewportActive()) return
+    if (this.canNavigate()) {
+      this.spaceMouse?.update3dcontroller({ frame: { time } })
+    }
+    // Keep the clock running during mouse interaction so a held puck resumes.
     this.frame = window.requestAnimationFrame(this.render)
   }
 
   onStartMotion() {
-    if (this.frame === undefined && this.canNavigate()) {
+    if (this.frame === undefined && this.isViewportActive()) {
       this.frame = window.requestAnimationFrame(this.render)
     }
   }
@@ -245,12 +254,13 @@ export class DriverSpaceMouseController {
   }
 
   getCoordinateSystem() {
-    // Navlib uses Y-up; the shared camera and bounds use Z-up, in millimeters.
-    return [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1]
+    // Transform the client's Z-up world into Navlib's Y-up world.
+    return [1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1]
   }
 
   getFrontView() {
-    return this.getCoordinateSystem()
+    // Camera-to-world pose looking along negative Y, with Z up.
+    return [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1]
   }
 
   getModelExtents(): Extents {
@@ -284,11 +294,7 @@ export class DriverSpaceMouseController {
   getFov() {
     const camera = this.controls.camera
     return camera instanceof PerspectiveCamera
-      ? 2 *
-          Math.atan(
-            Math.tan((camera.fov * Math.PI) / 360) *
-              Math.hypot(1, camera.aspect)
-          )
+      ? (camera.fov * Math.PI) / 180
       : 0
   }
 
@@ -412,9 +418,7 @@ export class DriverSpaceMouseController {
     )
       return
     if (!Number.isFinite(fov) || fov <= 0 || fov >= Math.PI) return
-    camera.fov =
-      (2 * Math.atan(Math.tan(fov / 2) / Math.hypot(1, camera.aspect)) * 180) /
-      Math.PI
+    camera.fov = (fov * 180) / Math.PI
     this.cameraChanged()
   }
 

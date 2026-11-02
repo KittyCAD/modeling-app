@@ -126,15 +126,19 @@ describe('SpaceMouse local camera', () => {
     driver.dispose()
   })
 
-  it('round trips the SDK diagonal field of view', () => {
-    const camera = new PerspectiveCamera(45, 2, 0.1, 1000)
-    const { driver } = setup(camera)
-    const diagonal = 2 * Math.atan(Math.tan(Math.PI / 8) * Math.sqrt(5))
-    expect(driver.getFov()).toBeCloseTo(diagonal)
-    driver.setFov(diagonal)
-    expect(camera.fov).toBeCloseTo(45)
-    driver.dispose()
-  })
+  it.each([0.5, 1, 2])(
+    'uses the SDK vertical field of view at aspect ratio %s',
+    (aspect) => {
+      const camera = new PerspectiveCamera(45, aspect, 0.1, 1000)
+      const { driver } = setup(camera)
+      expect(driver.getFov()).toBeCloseTo(Math.PI / 4)
+      driver.setFov(Math.PI / 3)
+      expect(camera.fov).toBeCloseTo(60)
+      const frustum = driver.getViewFrustum()
+      expect(2 * Math.atan(frustum[3] / frustum[4])).toBeCloseTo(Math.PI / 3)
+      driver.dispose()
+    }
+  )
 
   it('reports Z-up and the front view along negative Y', () => {
     const { driver } = setup()
@@ -142,13 +146,18 @@ describe('SpaceMouse local camera', () => {
       driver.getCoordinateSystem()
     )
     expect(
-      new Vector3(0, 1, 0).transformDirection(coordinateSystem).toArray()
-    ).toEqual([0, 0, 1])
+      new Vector3(0, 0, 1).transformDirection(coordinateSystem).toArray()
+    ).toEqual([0, 1, 0])
     expect(
-      new Vector3(0, 0, 1)
-        .transformDirection(new Matrix4().fromArray(driver.getFrontView()))
-        .toArray()
+      new Vector3(1, 0, 0).transformDirection(coordinateSystem).toArray()
+    ).toEqual([1, 0, 0])
+    const frontView = new Matrix4().fromArray(driver.getFrontView())
+    expect(
+      new Vector3(0, 0, 1).transformDirection(frontView).toArray()
     ).toEqual([0, -1, 0])
+    expect(
+      new Vector3(0, 1, 0).transformDirection(frontView).toArray()
+    ).toEqual([0, 0, 1])
     driver.dispose()
   })
 
@@ -193,6 +202,71 @@ describe('SpaceMouse local camera', () => {
 })
 
 describe('SpaceMouse connection lifecycle', () => {
+  const busyFlags: Array<'isDragging' | 'isFovAnimationInProgress'> = [
+    'isDragging',
+    'isFovAnimationInProgress',
+  ]
+
+  it.each(busyFlags)(
+    'resumes held-puck motion after %s without another motion-start event',
+    async (busyFlag) => {
+      const frames = new Map<number, FrameRequestCallback>()
+      let frameId = 0
+      vi.spyOn(window, 'requestAnimationFrame').mockImplementation(
+        (callback) => {
+          frames.set(++frameId, callback)
+          return frameId
+        }
+      )
+      vi.spyOn(window, 'cancelAnimationFrame').mockImplementation((id) => {
+        frames.delete(id)
+      })
+      const nextFrame = (time: number) => {
+        const scheduled = frames.entries().next().value
+        expect(scheduled).toBeDefined()
+        if (!scheduled) throw new Error('No SpaceMouse frame scheduled')
+        const [id, callback] = scheduled
+        frames.delete(id)
+        callback(time)
+      }
+      const { driver, controls, camera } = setup()
+      const connection = driver.connect()
+      await Promise.resolve()
+      const sdk = FakeDriver.instances[0]
+      sdk.client.onConnect()
+      sdk.client.on3dmouseCreated()
+      await connection
+      sdk.update3dcontroller.mockClear()
+
+      sdk.client.onStartMotion()
+      controls[busyFlag] = true
+      nextFrame(16)
+      driver.setViewMatrix(new Matrix4().makeTranslation(10, 20, 100).toArray())
+      expect(sdk.update3dcontroller).not.toHaveBeenCalled()
+      expect(camera.position.toArray()).toEqual([0, 0, 100])
+      expect(frames.size).toBe(1)
+
+      controls[busyFlag] = false
+      nextFrame(32)
+      expect(sdk.update3dcontroller).toHaveBeenCalledWith({
+        frame: { time: 32 },
+      })
+
+      driver.onStopMotion()
+      expect(frames.size).toBe(0)
+      controls[busyFlag] = true
+      sdk.client.onStartMotion()
+      nextFrame(48)
+      controls[busyFlag] = false
+      nextFrame(64)
+      expect(sdk.update3dcontroller).toHaveBeenLastCalledWith({
+        frame: { time: 64 },
+      })
+      driver.dispose()
+      expect(frames.size).toBe(0)
+    }
+  )
+
   it('waits for controller creation rather than only the websocket', async () => {
     const { driver, canvas } = setup()
     const connected = vi.fn()
