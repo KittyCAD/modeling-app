@@ -150,9 +150,9 @@ export interface ElectronZooLaunchOptions {
   executablePath?: string
 }
 
-/** Tagged renderer coverage must not inherit a previous test's renderer choice. */
+/** Persist the tagged renderer choice; return whether the setting changed. */
 async function applyTestSceneMode(page: Page, localRendererEnabled?: boolean) {
-  if (localRendererEnabled === undefined) return
+  if (localRendererEnabled === undefined) return false
   await page.waitForFunction(() =>
     window.app?.settings.actor.getSnapshot().matches('idle')
   )
@@ -169,7 +169,7 @@ async function applyTestSceneMode(page: Page, localRendererEnabled?: boolean) {
     })
     return true
   }, localRendererEnabled)
-  if (!changed) return
+  if (!changed) return false
   await page.waitForFunction((value) => {
     const snapshot = window.app.settings.actor.getSnapshot()
     return (
@@ -177,8 +177,7 @@ async function applyTestSceneMode(page: Page, localRendererEnabled?: boolean) {
       snapshot.context.modeling.useLocalRenderer.current === value
     )
   }, localRendererEnabled)
-  // Renderer choice is captured when the scene mounts, so reload after saving.
-  await page.reload()
+  return true
 }
 
 export class ElectronZoo {
@@ -465,7 +464,10 @@ export class ElectronZoo {
     await this.page.reload()
     // Reused Electron windows can reload before the settings file is settled.
     // Verify the live setting before the test opens a modeling scene.
-    await applyTestSceneMode(this.page, this.useLocalRenderer)
+    // A reused Electron window may already have mounted the old renderer.
+    if (await applyTestSceneMode(this.page, this.useLocalRenderer)) {
+      await this.page.reload()
+    }
   }
 
   async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
@@ -618,7 +620,8 @@ const fixturesForWeb = {
     await webApp.initialise('', userFeatures)
 
     // Web settings live in OPFS; the localStorage seed alone cannot select
-    // a renderer. Persist the choice before a modeling scene mounts.
+    // a renderer. Persist the choice before a modeling scene mounts; no reload
+    // is needed on the project library, where no scene has mounted yet.
     await applyTestSceneMode(page, geometryOnlyForTestTags(testInfo.tags))
 
     await use(page)

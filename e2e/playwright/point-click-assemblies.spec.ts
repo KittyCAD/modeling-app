@@ -290,6 +290,18 @@ test.describe(
         await scene.settled()
       })
 
+      // The local camera still frames the empty assembly after inserting a part.
+      if (test.info().tags.includes('@localRenderer')) {
+        await expect(page.getByTestId('local-renderer-loading')).toBeHidden({
+          timeout: 30_000,
+        })
+        await page.evaluate(() =>
+          window.app.singletons.kclManager.sceneInfra.camControls.zoomToFit({
+            padding: 0.1,
+          })
+        )
+      }
+
       await test.step('Set translate on module', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.selectTransform('translate')
