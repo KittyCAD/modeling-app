@@ -1,4 +1,3 @@
-import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
@@ -25,7 +24,7 @@ test.describe('Point-and-click tests - sketch v1', { tag: '@desktop' }, () => {
     page,
     scene,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 5)`
@@ -44,75 +43,26 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
       })
       await test.step('Select profile', async () => {
         await editor.selectText('circle')
-        await cmdBar.progressCmdBar()
       })
       await test.step('Set length', async () => {
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'length',
-          currentArgValue: '5',
-          headerArguments: {
-            Profiles: '1 edge',
-            Length: '5',
-          },
-          highlightedHeaderArg: 'length',
-          commandName: 'Extrude',
-        })
-        await page.keyboard.insertText('4')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'bodyType',
-          currentArgValue: '',
-          headerArguments: {
-            Length: '4',
-            Profiles: '1 edge',
-            BodyType: '',
-          },
-          highlightedHeaderArg: 'bodyType',
-          commandName: 'Extrude',
-        })
-        await cmdBar.selectOption({ name: 'Surface' }).click()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Length: '4',
-            Profiles: '1 edge',
-            BodyType: 'SURFACE',
-          },
-          commandName: 'Extrude',
-        })
+        await expect(modelingDialog.input('length')).toHaveText('5')
+        await modelingDialog.input('length').fill('4')
+
+        await expect(modelingDialog.options('body type')).toBeVisible()
+        await modelingDialog
+          .options('body type')
+          .selectOption({ label: 'Surface' })
+        await expect(modelingDialog.submitButton).toBeEnabled()
       })
       await test.step('Set end tag', async () => {
-        await cmdBar.clickOptionalArgument('tagEnd')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'tagEnd$',
-          currentArgValue: '',
-          headerArguments: {
-            Length: '4',
-            Profiles: '1 edge',
-            BodyType: 'SURFACE',
-            TagEnd: '',
-          },
-          highlightedHeaderArg: 'tagEnd',
-          commandName: 'Extrude',
-        })
-        await page.keyboard.insertText('myEndTag')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Length: '4',
-            Profiles: '1 edge',
-            BodyType: 'SURFACE',
-            TagEnd: 'myEndTag',
-          },
-          commandName: 'Extrude',
-        })
+        await modelingDialog.advanced.click()
+        await expect(modelingDialog.input('tag end')).toBeVisible()
+        await modelingDialog.input('tag end').fill('myEndTag')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
       })
       await test.step('Submit and verify', async () => {
-        await cmdBar.submit()
+        await modelingDialog.submit()
         await editor.expectEditor.toContain('extrude(')
         await editor.expectEditor.toContain('profile001')
         await editor.expectEditor.toContain('length = 4')
@@ -126,33 +76,14 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
         await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
       })
       await test.step('Edit length argument', async () => {
-        await cmdBar.clickHeaderArgument('length')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'length',
-          currentArgValue: '4',
-          headerArguments: {
-            Length: '4',
-            BodyType: 'SURFACE',
-            TagEnd: 'myEndTag',
-          },
-          highlightedHeaderArg: 'length',
-          commandName: 'Extrude',
-        })
-        await page.keyboard.insertText('3')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Length: '3',
-            BodyType: 'SURFACE',
-            TagEnd: 'myEndTag',
-          },
-          commandName: 'Extrude',
-        })
+        await expect(modelingDialog.input('length')).toHaveText('4')
+        await modelingDialog.input('length').fill('3')
+        await expect(modelingDialog.input('length')).toHaveText('3')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
       })
       await test.step('Submit and verify', async () => {
-        await cmdBar.submit()
+        await modelingDialog.submit()
         await editor.expectEditor.toContain('extrude(')
         await editor.expectEditor.toContain('profile001')
         await editor.expectEditor.toContain('length = 3')
@@ -255,42 +186,21 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
     await homePage.goToModelingScene()
     await scene.settled()
 
-    await test.step(`Go through the command bar flow`, async () => {
+    await test.step(`Fill the modeling dialog`, async () => {
       await toolbar.offsetPlaneButton.click()
-      await expect
-        .poll(() => page.getByText('Please select one').count())
-        .toBe(1)
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'plane',
-        currentArgValue: '',
-        headerArguments: { Plane: '', Offset: '' },
-        highlightedHeaderArg: 'plane',
-        commandName: 'Offset Plane',
-      })
+      await modelingDialog.selection('Plane').click()
       await toolbar.selectDefaultPlane('Front plane')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'offset',
-        currentArgValue: '5',
-        headerArguments: { Plane: '1 plane', Offset: '' },
-        highlightedHeaderArg: 'offset',
-        commandName: 'Offset Plane',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: { Plane: '1 plane', Offset: '5' },
-        commandName: 'Offset Plane',
-      })
-      await cmdBar.submit()
+
+      await expect(modelingDialog.input('offset')).toHaveText('5')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
@@ -313,20 +223,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     })
   })
 
-  const initialCmdBarStateHelix: CmdBarSerialised = {
-    stage: 'arguments',
-    currentArgKey: 'mode',
-    currentArgValue: '',
-    headerArguments: {
-      Mode: '',
-      AngleStart: '',
-      Revolutions: '',
-      Radius: '',
-    },
-    highlightedHeaderArg: 'mode',
-    commandName: 'Helix',
-  }
-
   test(`Helix point-and-click around sweepEdge with edit and delete flows`, async ({
     context,
     page,
@@ -334,7 +230,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
@@ -345,8 +241,11 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 100)`
 
     // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
-    const testPoint = { x: 564, y: 364 }
-    const [clickOnEdge] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const testPoint = { x: 564, y: 371 }
+    const [clickOnEdge, moveToEdge] = scene.makeMouseHelpers(
+      testPoint.x,
+      testPoint.y
+    )
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -355,50 +254,25 @@ extrude001 = extrude(profile001, length = 100)`
     await homePage.goToModelingScene()
     await scene.settled()
 
-    await test.step(`Go through the command bar flow`, async () => {
+    await test.step(`Fill the modeling dialog`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.helixButton.click()
-      await cmdBar.expectState(initialCmdBarStateHelix)
-      await cmdBar.selectOption({ name: 'Edge' }).click()
-      await expect
-        .poll(() => page.getByText('Please select one').count())
-        .toBe(1)
+      await modelingDialog.options('mode').selectOption({ label: 'Edge' })
+      await modelingDialog.selection('Edge').click()
+      await moveToEdge()
       await clickOnEdge()
-      await toolbar.expectSelection('1 edge')
-      await cmdBar.progressCmdBar()
-      await cmdBar.argumentInput.focus()
-      await page.keyboard.insertText('20')
-      await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('0')
-      await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('1')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Mode: 'Edge',
-          Edge: `1 edge`,
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: '1',
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.clickOptionalArgument('ccw')
-      await cmdBar.selectOption({ name: 'On' }).click()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Mode: 'Edge',
-          Edge: `1 edge`,
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: '1',
-          CounterClockWise: 'true',
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.selection('Edge')).toHaveText('1 edge')
+      await modelingDialog.fillInput('revolutions', '20')
+      await modelingDialog.fillInput('angle start', '0')
+      await modelingDialog.fillInput('radius', '1')
+      await modelingDialog.fillInput('length', '')
+      await expect(modelingDialog.submitButton).toBeEnabled()
+
+      await modelingDialog
+        .options('counterclockwise')
+        .selectOption({ label: 'On' })
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await scene.settled()
     })
 
@@ -426,57 +300,17 @@ extrude001 = extrude(profile001, length = 100)`
       await operationButton.dblclick()
       const initialInput = '1'
       const newInput = '5'
-      await cmdBar.expectState({
-        commandName: 'Helix',
-        stage: 'arguments',
-        currentArgKey: 'radius',
-        currentArgValue: initialInput,
-        headerArguments: {
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: initialInput,
-          CounterClockWise: 'true',
-        },
-        highlightedHeaderArg: 'radius',
-      })
-      await page.keyboard.insertText(newInput)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: newInput,
-          CounterClockWise: 'true',
-        },
-        commandName: 'Helix',
-      })
-      await page.getByRole('button', { name: 'CounterClockWise' }).click()
-      await cmdBar.expectState({
-        commandName: 'Helix',
-        stage: 'arguments',
-        currentArgKey: 'CounterClockWise',
-        currentArgValue: '',
-        headerArguments: {
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: newInput,
-          CounterClockWise: 'true',
-        },
-        highlightedHeaderArg: 'CounterClockWise',
-      })
-      await cmdBar.selectOption({ name: 'Off' }).click()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: newInput,
-          CounterClockWise: 'false',
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.input('radius')).toHaveText(initialInput)
+      await modelingDialog.fillInput('radius', newInput)
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+
+      await expect(modelingDialog.options('counterclockwise')).toBeVisible()
+      await modelingDialog
+        .options('counterclockwise')
+        .selectOption({ label: 'Off' })
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(
@@ -499,6 +333,7 @@ extrude001 = extrude(profile001, length = 100)`
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
       await operationButton.click({ button: 'left' })
+      await toolbar.expectSelection('1 helix')
       await page.keyboard.press('Delete')
       await editor.expectEditor.not.toContain('helix')
       await expect(
@@ -514,7 +349,7 @@ extrude001 = extrude(profile001, length = 100)`
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const circleCode1 = `circle(center = [0, 0], radius = 30)`
     const circleCode2 = `circle(center = [0, 0], radius = 20)`
@@ -545,36 +380,17 @@ sketch002 = startSketchOn(plane001)
       await page.keyboard.up(multiCursorKey)
     }
 
-    await test.step(`Go through the command bar flow without preselected sketches`, async () => {
+    await test.step(`Fill the modeling dialog without preselected sketches`, async () => {
       await toolbar.loftButton.click()
-      await expect
-        .poll(() => page.getByText('Please select one').count())
-        .toBe(1)
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        headerArguments: { Profiles: '' },
-        highlightedHeaderArg: 'Profiles',
-        commandName: 'Loft',
-      })
+      await modelingDialog.selection('Profiles').click()
       await selectSketches()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'bodyType',
-        currentArgValue: '',
-        headerArguments: { Profiles: '2 edges', BodyType: '' },
-        highlightedHeaderArg: 'bodyType',
-        commandName: 'Loft',
-      })
-      await cmdBar.selectOption({ name: 'Surface' }).click()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: { Profiles: '2 edges', BodyType: 'SURFACE' },
-        commandName: 'Loft',
-      })
-      await cmdBar.submit()
+
+      await expect(modelingDialog.options('body type')).toBeVisible()
+      await modelingDialog
+        .options('body type')
+        .selectOption({ label: 'Surface' })
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
@@ -591,36 +407,13 @@ sketch002 = startSketchOn(plane001)
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const op = await toolbar.getFeatureTreeOperation('Loft', 0)
       await op.dblclick()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          BodyType: 'SURFACE',
-        },
-        commandName: 'Loft',
-      })
-      await cmdBar.clickOptionalArgument('vDegree')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'vDegree',
-        currentArgValue: '',
-        headerArguments: {
-          BodyType: 'SURFACE',
-          VDegree: '',
-        },
-        highlightedHeaderArg: 'vDegree',
-        commandName: 'Loft',
-      })
-      await page.keyboard.insertText('3')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          BodyType: 'SURFACE',
-          VDegree: '3',
-        },
-        commandName: 'Loft',
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.advanced.click()
+      await expect(modelingDialog.input('v degree')).toBeVisible()
+      await modelingDialog.input('v degree').fill('3')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await scene.settled()
       await editor.expectEditor.toContain(editedLoftDeclaration)
     })
@@ -644,7 +437,7 @@ sketch002 = startSketchOn(plane001)
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const circleCode = `circle(sketch001, center = [0, -1], radius = .1)`
     const initialCode = `helix001 = helix(
@@ -681,73 +474,24 @@ profile001 = ${circleCode}`
     await homePage.goToModelingScene()
     await scene.settled()
 
-    await test.step(`Add sweep through the command bar flow`, async () => {
+    await test.step(`Add sweep through the modeling dialog`, async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       await toolbar.sweepButton.click()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '',
-          Path: '',
-        },
-        highlightedHeaderArg: 'Profiles',
-        stage: 'arguments',
-      })
+      await modelingDialog.selection('Profiles').click()
       await editor.scrollToText(circleCode)
       await page.getByText(circleCode).click()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        currentArgKey: 'path',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '1 edge',
-          Path: '',
-          BodyType: '',
-        },
-        highlightedHeaderArg: 'path',
-        stage: 'arguments',
-      })
+
+      await modelingDialog.selection('Path').click()
       const helix = await toolbar.getFeatureTreeOperation('Helix', 0)
       await helix.click()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        currentArgKey: 'path',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '1 edge',
-          Path: '',
-          BodyType: '',
-        },
-        highlightedHeaderArg: 'path',
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        currentArgKey: 'bodyType',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '1 edge',
-          Path: '1 helix',
-          BodyType: '',
-        },
-        highlightedHeaderArg: 'bodyType',
-        stage: 'arguments',
-      })
-      await cmdBar.selectOption({ name: 'Surface' }).click()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        headerArguments: {
-          Profiles: '1 edge',
-          Path: '1 helix',
-          BodyType: 'SURFACE',
-        },
-        stage: 'review',
-      })
-      await cmdBar.progressCmdBar(true)
+      await modelingDialog.selection('Path').click()
+
+      await expect(modelingDialog.options('body type')).toBeVisible()
+      await modelingDialog
+        .options('body type')
+        .selectOption({ label: 'Surface' })
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await editor.expectEditor.toContain(sweepDeclaration, {
         shouldNormalise: true,
       })
@@ -758,44 +502,12 @@ profile001 = ${circleCode}`
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await op.dblclick()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          BodyType: 'SURFACE',
-          Version: '2',
-          TranslateProfileToPath: 'false',
-          OrientProfilePerpendicular: 'false',
-        },
-        commandName: 'Sweep',
-      })
-      await cmdBar.clickOptionalArgument('sectional')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'sectional',
-        currentArgValue: '',
-        headerArguments: {
-          BodyType: 'SURFACE',
-          Version: '2',
-          TranslateProfileToPath: 'false',
-          OrientProfilePerpendicular: 'false',
-          Sectional: '',
-        },
-        highlightedHeaderArg: 'sectional',
-        commandName: 'Sweep',
-      })
-      await cmdBar.selectOption({ name: 'On' }).click()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          BodyType: 'SURFACE',
-          Version: '2',
-          TranslateProfileToPath: 'false',
-          OrientProfilePerpendicular: 'false',
-          Sectional: 'true',
-        },
-        commandName: 'Sweep',
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.advanced.click()
+      await expect(modelingDialog.options('sectional')).toBeVisible()
+      await modelingDialog.options('sectional').selectOption({ label: 'On' })
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await editor.expectEditor.toContain(editedSweepDeclaration, {
         shouldNormalise: true,
       })
@@ -819,7 +531,7 @@ profile001 = ${circleCode}`
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     // Code samples
     const initialCode = `sketch001 = startSketchOn(XY)
@@ -843,7 +555,7 @@ extrude001 = extrude(sketch001, length = -12)
       await scene.settled()
     })
 
-    // Test 1: Command bar flow with preselected edges
+    // Test 1: Modeling dialog with preselected edges
     await test.step(`Select first edge`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       // Aim at the original sketch-plane edge: for this negative extrusion,
@@ -859,39 +571,12 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Apply fillet to the preselected edge`, async () => {
       await page.waitForTimeout(100)
       await toolbar.filletButton.click()
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        highlightedHeaderArg: 'selection',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Radius: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        highlightedHeaderArg: 'radius',
-        currentArgKey: 'radius',
-        currentArgValue: '5',
-        headerArguments: {
-          Selection: '1 edge',
-          Radius: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        headerArguments: {
-          Selection: '1 edge',
-          Radius: '5',
-        },
-        stage: 'review',
-      })
-      await cmdBar.progressCmdBar()
+      await modelingDialog.selection('Selection').click()
+
+      await expect(modelingDialog.input('radius')).toHaveText('5')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
@@ -914,26 +599,11 @@ extrude001 = extrude(sketch001, length = -12)
         featureTreeIndex
       )
       await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        currentArgKey: 'radius',
-        currentArgValue: oldValue,
-        headerArguments: {
-          Radius: oldValue,
-        },
-        highlightedHeaderArg: 'radius',
-        stage: 'arguments',
-      })
-      await page.keyboard.insertText(newValue)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Radius: newValue,
-        },
-        commandName: 'Fillet',
-      })
-      await cmdBar.progressCmdBar()
+      await expect(modelingDialog.input('radius')).toHaveText(oldValue)
+      await modelingDialog.input('radius').fill(newValue)
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
     }
 
@@ -961,7 +631,7 @@ extrude001 = extrude(sketch001, length = -12)
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(
@@ -986,26 +656,11 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 0)
       await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        currentArgKey: 'radius',
-        currentArgValue: '5',
-        headerArguments: {
-          Radius: '5',
-        },
-        highlightedHeaderArg: 'radius',
-        stage: 'arguments',
-      })
-      await page.keyboard.insertText('20')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Radius: '20',
-        },
-        commandName: 'Fillet',
-      })
-      await cmdBar.progressCmdBar()
+      await expect(modelingDialog.input('radius')).toHaveText('5')
+      await modelingDialog.input('radius').fill('20')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
     await test.step('Confirm changes', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.Code)
@@ -1021,7 +676,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
@@ -1044,43 +699,18 @@ extrude001 = extrude(sketch001, length = 30)`
     const editedShellDeclaration =
       'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
 
-    await test.step(`Go through the command bar flow without preselected faces`, async () => {
+    await test.step(`Fill the modeling dialog without preselected faces`, async () => {
+      await editor.closePane()
       await toolbar.shellButton.click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'faces',
-        currentArgValue: '',
-        headerArguments: {
-          Faces: '',
-          Thickness: '',
-        },
-        highlightedHeaderArg: 'faces',
-        commandName: 'Shell',
-      })
+      await modelingDialog.selection('Faces').click()
       await clickOnCap()
       await toolbar.expectSelection('1 face')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'thickness',
-        currentArgValue: '5',
-        headerArguments: {
-          Faces: '1 face',
-          Thickness: '',
-        },
-        highlightedHeaderArg: 'thickness',
-        commandName: 'Shell',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Faces: '1 face',
-          Thickness: '5',
-        },
-        commandName: 'Shell',
-      })
-      await cmdBar.submit()
+
+      await expect(modelingDialog.input('thickness')).toHaveText('5')
+      await editor.openPane()
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
@@ -1097,26 +727,11 @@ extrude001 = extrude(sketch001, length = 30)`
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
       await operationButton.dblclick()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'thickness',
-        currentArgValue: '5',
-        headerArguments: {
-          Thickness: '5',
-        },
-        highlightedHeaderArg: 'thickness',
-        commandName: 'Shell',
-      })
-      await page.keyboard.insertText('2')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Thickness: '2',
-        },
-        commandName: 'Shell',
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.input('thickness')).toHaveText('5')
+      await modelingDialog.input('thickness').fill('2')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await scene.settled()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
@@ -1145,7 +760,7 @@ extrude001 = extrude(sketch001, length = 30)`
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
@@ -1162,29 +777,14 @@ extrude001 = extrude(sketch001, length = 30)`
     const testPoint = { x: 575, y: 200 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
 
-    await test.step(`Go through the command bar flow`, async () => {
+    await test.step(`Fill the modeling dialog`, async () => {
       await toolbar.selectSurface('delete-face')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'faces',
-        currentArgValue: '',
-        headerArguments: {
-          Faces: '',
-        },
-        highlightedHeaderArg: 'faces',
-        commandName: 'Delete Face',
-      })
+      await modelingDialog.selection('Faces').click()
       await clickOnCap()
       await toolbar.expectSelection('1 face')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Faces: '1 face',
-        },
-        commandName: 'Delete Face',
-      })
-      await cmdBar.submit()
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
@@ -1212,7 +812,7 @@ extrude001 = extrude(sketch001, length = 30)`
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [-102.57, 101.72])
@@ -1241,92 +841,24 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       await editor.scrollToText(codeToSelection)
       await page.getByText(codeToSelection).click()
       await toolbar.revolveButton.click()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '',
-          AxisOrEdge: '',
-          Angle: '',
-        },
-        highlightedHeaderArg: 'Profiles',
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'axisOrEdge',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '1 edge',
-          AxisOrEdge: '',
-          Angle: '',
-          BodyType: '',
-        },
-        highlightedHeaderArg: 'axisOrEdge',
-        stage: 'arguments',
-      })
-      await cmdBar.selectOption({ name: 'Edge' }).click()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'edge',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '1 edge',
-          Angle: '',
-          AxisOrEdge: 'Edge',
-          Edge: '',
-          BodyType: '',
-        },
-        highlightedHeaderArg: 'edge',
-        stage: 'arguments',
-      })
+      await modelingDialog.selection('Profiles').click()
+
+      await expect(modelingDialog.options('axis or edge')).toBeVisible()
+      await modelingDialog
+        .options('axis or edge')
+        .selectOption({ label: 'Edge' })
+      await modelingDialog.selection('Edge').click()
       const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
       await editor.selectText(lineCodeToSelection)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'angle',
-        currentArgValue: '360deg',
-        headerArguments: {
-          Profiles: '1 edge',
-          Angle: '',
-          AxisOrEdge: 'Edge',
-          Edge: '1 edge',
-          BodyType: '',
-        },
-        highlightedHeaderArg: 'angle',
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'bodyType',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '1 edge',
-          Angle: '360deg',
-          AxisOrEdge: 'Edge',
-          Edge: '1 edge',
-          BodyType: '',
-        },
-        highlightedHeaderArg: 'bodyType',
-        stage: 'arguments',
-      })
-      await cmdBar.selectOption({ name: 'Surface' }).click()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        headerArguments: {
-          Profiles: '1 edge',
-          Angle: '360deg',
-          AxisOrEdge: 'Edge',
-          Edge: '1 edge',
-          BodyType: 'SURFACE',
-        },
-        stage: 'review',
-      })
-      await cmdBar.submit()
+
+      await expect(modelingDialog.input('angle')).toHaveText('360deg')
+
+      await expect(modelingDialog.options('body type')).toBeVisible()
+      await modelingDialog
+        .options('body type')
+        .selectOption({ label: 'Surface' })
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
 
       await editor.expectEditor.toContain(newCodeToFind)
     })
@@ -1340,55 +872,18 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         0
       )
       await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'angle',
-        currentArgValue: '360deg',
-        headerArguments: {
-          Angle: '360deg',
-          BodyType: 'SURFACE',
-        },
-        highlightedHeaderArg: 'angle',
-        stage: 'arguments',
-      })
-      await page.keyboard.insertText(newAngle)
-      await cmdBar.variableCheckbox.click()
+      await expect(modelingDialog.input('angle')).toHaveText('360deg')
+      await modelingDialog.input('angle').fill(newAngle)
+      await modelingDialog.variableCheckbox('angle').check()
       await expect(page.getByPlaceholder('Variable name')).toHaveValue(
         'angle001'
       )
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Angle: newAngle,
-          BodyType: 'SURFACE',
-        },
-        commandName: 'Revolve',
-      })
-      await cmdBar.clickOptionalArgument('axis')
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'Sketch Axis',
-        currentArgValue: '',
-        headerArguments: {
-          'Sketch Axis': '',
-          Angle: newAngle,
-          BodyType: 'SURFACE',
-        },
-        highlightedHeaderArg: 'Sketch Axis',
-        stage: 'arguments',
-      })
-      await cmdBar.selectOption({ name: 'X Axis' }).click()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          'Sketch Axis': 'X',
-          Angle: newAngle,
-          BodyType: 'SURFACE',
-        },
-        commandName: 'Revolve',
-      })
-      await cmdBar.progressCmdBar()
+
+      await modelingDialog
+        .options('sketch axis')
+        .selectOption({ label: 'X Axis' })
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
@@ -1406,7 +901,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [-6.79, 0])
@@ -1426,44 +921,19 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
 
     await test.step('Start Flip Surface and select extrude001 in the feature tree', async () => {
       await toolbar.selectSurface('flip-surface')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'surface',
-        currentArgValue: '',
-        headerArguments: {
-          Surface: '',
-        },
-        highlightedHeaderArg: 'surface',
-        commandName: 'Flip Surface',
-      })
+      await modelingDialog.selection('Surface').click()
 
       const operationButton = await toolbar.getFeatureTreeOperation(
         'extrude001',
         0
       )
       await operationButton.click({ button: 'left' })
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'surface',
-        currentArgValue: '',
-        headerArguments: {
-          Surface: '',
-        },
-        highlightedHeaderArg: 'surface',
-        commandName: 'Flip Surface',
-      })
+      await modelingDialog.selection('Surface').click()
     })
 
     await test.step('Review and submit', async () => {
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Surface: '1 sweep',
-        },
-        commandName: 'Flip Surface',
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await scene.settled()
     })
 
@@ -1491,7 +961,7 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const firstSurface = `extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
     const secondSurface = `extrude002 = extrude(profile002, length = 5, bodyType = SURFACE)`
@@ -1517,30 +987,14 @@ ${secondSurface}`
 
     await test.step('Start Join and select two surfaces', async () => {
       await toolbar.selectSurface('join-surfaces')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-        },
-        highlightedHeaderArg: 'selection',
-        commandName: 'Join Surfaces',
-      })
+      await modelingDialog.selection('Selection').click()
       await page.keyboard.down('Shift')
       await (await toolbar.getFeatureTreeOperation('extrude001', 0)).click()
       await (await toolbar.getFeatureTreeOperation('extrude002', 0)).click()
       await page.keyboard.up('Shift')
 
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Selection: '2 sweeps',
-        },
-        commandName: 'Join Surfaces',
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step('Verify code was added', async () => {
@@ -1568,7 +1022,7 @@ ${secondSurface}`
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
@@ -1590,40 +1044,13 @@ extrude001 = extrude(profile001, length = 1)`
       await operationButton.click({ button: 'right' })
       const menuButton = page.getByTestId('context-menu-set-appearance')
       await menuButton.click()
-      await cmdBar.expectState({
-        commandName: 'Appearance',
-        currentArgKey: 'objects',
-        currentArgValue: '',
-        headerArguments: {
-          Objects: '',
-          Color: '',
-        },
-        highlightedHeaderArg: 'objects',
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Appearance',
-        currentArgKey: 'color',
-        currentArgValue: '',
-        headerArguments: {
-          Objects: '1 sweep',
-          Color: '',
-        },
-        highlightedHeaderArg: 'color',
-        stage: 'arguments',
-      })
-      await cmdBar.currentArgumentInput.fill('#ff0000') // uppercase doesn't work here
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Appearance',
-        headerArguments: {
-          Objects: '1 sweep',
-          Color: '#ff0000',
-        },
-        stage: 'review',
-      })
-      await cmdBar.submit()
+      await modelingDialog.selection('Objects').click()
+
+      await expect(modelingDialog.input('color')).toBeVisible()
+      await modelingDialog.input('color').fill('#ff0000') // uppercase doesn't work here
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await scene.settled()
       await editor.expectEditor.toContain(declaration)
       await editor.expectState({
@@ -1636,26 +1063,11 @@ extrude001 = extrude(profile001, length = 1)`
     await test.step('Edit appearance via feature tree selection works', async () => {
       const op = await toolbar.getFeatureTreeOperation('Appearance', 0)
       await op.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'color',
-        currentArgValue: '',
-        headerArguments: {
-          Color: '#ff0000',
-        },
-        highlightedHeaderArg: 'color',
-        commandName: 'Appearance',
-      })
-      await cmdBar.currentArgumentInput.fill('#00ff00')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Color: '#00ff00',
-        },
-        commandName: 'Appearance',
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.input('color')).toBeVisible()
+      await modelingDialog.input('color').fill('#00ff00')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await scene.settled()
       await editor.expectEditor.toContain(editedDeclaration)
       await editor.expectState({
@@ -1683,7 +1095,7 @@ extrude001 = extrude(profile001, length = 1)`
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
@@ -1701,217 +1113,78 @@ solid001 = extrude(sketch001, length = 5)`
     await test.step('Add Pattern Circular 3D to the scene', async () => {
       await test.step('Open Pattern Circular 3D command from toolbar', async () => {
         await toolbar.patternCircularButton.click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          commandName: 'Pattern Circular 3D',
-          currentArgKey: 'solids',
-          currentArgValue: '',
-          headerArguments: {
-            Solids: '',
-            Instances: '',
-            Axis: '',
-            Center: '',
-          },
-          highlightedHeaderArg: 'solids',
-        })
+        await modelingDialog.selection('Solids').click()
       })
 
       await test.step('Select solid and configure basic parameters', async () => {
         await test.step('Select solid', async () => {
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'solids',
-            currentArgValue: '',
-            headerArguments: {
-              Solids: '',
-              Instances: '',
-              Axis: '',
-              Center: '',
-            },
-            highlightedHeaderArg: 'solids',
-          })
+          await modelingDialog.selection('Solids').click()
           await editor.selectText('extrude(sketch001, length = 5)')
         })
 
         await test.step('Configure instances', async () => {
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'instances',
-            currentArgValue: KCL_DEFAULT_INSTANCES,
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '',
-              Axis: '',
-              Center: '',
-            },
-            highlightedHeaderArg: 'instances',
-          })
+          await expect(modelingDialog.input('instances')).toHaveText(
+            KCL_DEFAULT_INSTANCES
+          )
           // Update instances from DEFAULT to 8
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('8')
+          await modelingDialog.input('instances').fill('8')
         })
 
         await test.step('Configure axis', async () => {
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'axis',
-            currentArgValue: '',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '8',
-              Axis: '',
-              Center: '',
-            },
-            highlightedHeaderArg: 'axis',
-          })
-          // Select Y-axis and auto-progress
-          await cmdBar.selectOption({ name: 'Y-axis' }).click()
+          await expect(modelingDialog.options('axis')).toBeVisible()
+          // Select Y-axis
+          await modelingDialog.options('axis').selectOption({ label: 'Y-axis' })
         })
 
         await test.step('Configure center', async () => {
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'center',
-            currentArgValue: '[0, 0, 0]',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '8',
-              Axis: 'Y',
-              Center: '',
-            },
-            highlightedHeaderArg: 'center',
-          })
+          await expect(modelingDialog.input('center')).toHaveText('[0, 0, 0]')
           // Update center from [0, 0, 0] to [5, 0, 0]
-          await page.getByTestId('vector3d-x-input').fill('5')
+          await modelingDialog.input('center').fill('[5, 0, 0]')
         })
 
         await test.step('Review basic parameters', async () => {
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Circular 3D',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '8',
-              Axis: 'Y',
-              Center: '[5, 0, 0]',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
       })
 
       await test.step('Configure optional parameters', async () => {
         await test.step('Configure arc degrees', async () => {
-          await cmdBar.clickOptionalArgument('arcDegrees')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'arcDegrees',
-            currentArgValue: '360deg',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '8',
-              Axis: 'Y',
-              Center: '[5, 0, 0]',
-              ArcDegrees: '',
-            },
-            highlightedHeaderArg: 'arcDegrees',
-          })
+          await expect(modelingDialog.input('arc degrees')).toHaveAttribute(
+            'aria-placeholder',
+            'Use defaults'
+          )
           // Update arc degrees from 360deg to 180
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('180')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('arc degrees').fill('180')
+
           // Review changes to arc degrees
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Circular 3D',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '8',
-              Axis: 'Y',
-              Center: '[5, 0, 0]',
-              ArcDegrees: '180',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure rotate duplicates', async () => {
-          await cmdBar.clickOptionalArgument('rotateDuplicates')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'rotateDuplicates',
-            currentArgValue: '',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '8',
-              Axis: 'Y',
-              Center: '[5, 0, 0]',
-              ArcDegrees: '180',
-              RotateDuplicates: '',
-            },
-            highlightedHeaderArg: 'rotateDuplicates',
-          })
-          // Select On option and auto-progress
-          await cmdBar.selectOption({ name: 'On' }).click()
+          await expect(
+            modelingDialog.options('rotate duplicates')
+          ).toBeVisible()
+          // Select On option
+          await modelingDialog
+            .options('rotate duplicates')
+            .selectOption({ label: 'On' })
           // Review changes to rotate duplicates
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Circular 3D',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '8',
-              Axis: 'Y',
-              Center: '[5, 0, 0]',
-              ArcDegrees: '180',
-              RotateDuplicates: 'true',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure use original', async () => {
-          await cmdBar.clickOptionalArgument('useOriginal')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'useOriginal',
-            currentArgValue: '',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '8',
-              Axis: 'Y',
-              Center: '[5, 0, 0]',
-              ArcDegrees: '180',
-              RotateDuplicates: 'true',
-              UseOriginal: '',
-            },
-            highlightedHeaderArg: 'useOriginal',
-          })
-          // Select Off option and auto-progress
-          await cmdBar.selectOption({ name: 'Off' }).click()
+          await expect(modelingDialog.options('use original')).toBeVisible()
+          // Select Off option
+          await modelingDialog
+            .options('use original')
+            .selectOption({ label: 'Off' })
           // Review changes to use original
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Circular 3D',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '8',
-              Axis: 'Y',
-              Center: '[5, 0, 0]',
-              ArcDegrees: '180',
-              RotateDuplicates: 'true',
-              UseOriginal: 'false',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
       })
 
       await test.step('Submit and verify all parameters', async () => {
-        await cmdBar.progressCmdBar()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain('patternCircular3d(')
         await editor.expectEditor.toContain('instances = 8')
@@ -1931,235 +1204,75 @@ solid001 = extrude(sketch001, length = 5)`
           0
         )
         await patternOperation.dblclick()
-        // Should open the command bar in edit mode
-        await cmdBar.expectState({
-          stage: 'arguments',
-          commandName: 'Pattern Circular 3D',
-          currentArgKey: 'center',
-          currentArgValue: '[5, 0, 0]',
-          headerArguments: {
-            Instances: '8',
-            Axis: 'Y',
-            Center: '[5, 0, 0]',
-            ArcDegrees: '180',
-            RotateDuplicates: 'true',
-            UseOriginal: 'false',
-          },
-          highlightedHeaderArg: 'center',
-        })
+        // Should open the modeling dialog in edit mode
+        await expect(modelingDialog.input('center')).toHaveText('[5, 0, 0]')
       })
 
       await test.step('Edit parameters', async () => {
         await test.step('Edit center', async () => {
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'center',
-            currentArgValue: '[5, 0, 0]',
-            headerArguments: {
-              Instances: '8',
-              Axis: 'Y',
-              Center: '[5, 0, 0]',
-              ArcDegrees: '180',
-              RotateDuplicates: 'true',
-              UseOriginal: 'false',
-            },
-            highlightedHeaderArg: 'center',
-          })
+          await expect(modelingDialog.input('center')).toHaveText('[5, 0, 0]')
           // Update center from [5, 0, 0] to [5, 3+4, 0]
-          await page.getByTestId('vector3d-y-input').fill('3+4')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('center').fill('[5, 3+4, 0]')
+
           // Review changes to center
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Circular 3D',
-            headerArguments: {
-              Instances: '8',
-              Axis: 'Y',
-              Center: '[5, 7, 0]', // [5, 3+4, 0]
-              ArcDegrees: '180',
-              RotateDuplicates: 'true',
-              UseOriginal: 'false',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit instances', async () => {
-          await page.getByRole('button', { name: 'Instances' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'instances',
-            currentArgValue: '8',
-            headerArguments: {
-              Instances: '8',
-              Axis: 'Y',
-              Center: '[5, 7, 0]',
-              ArcDegrees: '180',
-              RotateDuplicates: 'true',
-              UseOriginal: 'false',
-            },
-            highlightedHeaderArg: 'instances',
-          })
+          await expect(modelingDialog.input('instances')).toHaveText('8')
           // Update instances from 8 to 12
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('12')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('instances').fill('12')
+
           // Review changes to instances
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Circular 3D',
-            headerArguments: {
-              Instances: '12',
-              Axis: 'Y',
-              Center: '[5, 7, 0]',
-              ArcDegrees: '180',
-              RotateDuplicates: 'true',
-              UseOriginal: 'false',
-            },
-            reviewValidationError: undefined,
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit axis', async () => {
-          await page.getByRole('button', { name: 'Axis' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'axis',
-            currentArgValue: '',
-            headerArguments: {
-              Instances: '12',
-              Axis: 'Y',
-              Center: '[5, 7, 0]',
-              ArcDegrees: '180',
-              RotateDuplicates: 'true',
-              UseOriginal: 'false',
-            },
-            highlightedHeaderArg: 'axis',
-          })
-          // Update axis from Y-axis to Z-axis and auto-progress
-          await cmdBar.selectOption({ name: 'Z-axis' }).click()
+          await expect(modelingDialog.selectedOption('axis')).toHaveText(
+            'Y-axis'
+          )
+          // Update axis from Y-axis to Z-axis
+          await modelingDialog.options('axis').selectOption({ label: 'Z-axis' })
           // Review changes to axis
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Circular 3D',
-            headerArguments: {
-              Instances: '12',
-              Axis: 'Z',
-              Center: '[5, 7, 0]',
-              ArcDegrees: '180',
-              RotateDuplicates: 'true',
-              UseOriginal: 'false',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit arc degrees', async () => {
-          await page.getByRole('button', { name: 'Arc degrees' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'arcDegrees',
-            currentArgValue: '180',
-            headerArguments: {
-              Instances: '12',
-              Axis: 'Z',
-              Center: '[5, 7, 0]',
-              ArcDegrees: '180',
-              RotateDuplicates: 'true',
-              UseOriginal: 'false',
-            },
-            highlightedHeaderArg: 'arcDegrees',
-          })
+          await expect(modelingDialog.input('arc degrees')).toHaveText('180')
           // Update arc degrees from 180 to 270
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('270')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('arc degrees').fill('270')
+
           // Review changes to arc degrees
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Circular 3D',
-            headerArguments: {
-              Instances: '12',
-              Axis: 'Z',
-              Center: '[5, 7, 0]',
-              ArcDegrees: '270',
-              RotateDuplicates: 'true',
-              UseOriginal: 'false',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit rotate duplicates', async () => {
-          await page.getByRole('button', { name: 'Rotate duplicates' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'rotateDuplicates',
-            currentArgValue: '',
-            headerArguments: {
-              Instances: '12',
-              Axis: 'Z',
-              Center: '[5, 7, 0]',
-              ArcDegrees: '270',
-              RotateDuplicates: 'true',
-              UseOriginal: 'false',
-            },
-            highlightedHeaderArg: 'rotateDuplicates',
-          })
+          await expect(
+            modelingDialog.selectedOption('rotate duplicates')
+          ).toHaveText('On')
           // Update rotate duplicates from On to Off
-          await cmdBar.selectOption({ name: 'Off' }).click()
+          await modelingDialog
+            .options('rotate duplicates')
+            .selectOption({ label: 'Off' })
           // Review changes to rotate duplicates
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Circular 3D',
-            headerArguments: {
-              Instances: '12',
-              Axis: 'Z',
-              Center: '[5, 7, 0]',
-              ArcDegrees: '270',
-              RotateDuplicates: 'false',
-              UseOriginal: 'false',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit use original', async () => {
-          await page.getByRole('button', { name: 'Use original' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Circular 3D',
-            currentArgKey: 'useOriginal',
-            currentArgValue: '',
-            headerArguments: {
-              Instances: '12',
-              Axis: 'Z',
-              Center: '[5, 7, 0]',
-              ArcDegrees: '270',
-              RotateDuplicates: 'false',
-              UseOriginal: 'false',
-            },
-            highlightedHeaderArg: 'useOriginal',
-          })
+          await expect(
+            modelingDialog.selectedOption('use original')
+          ).toHaveText('Off')
           // Update use original from Off to On
-          await cmdBar.selectOption({ name: 'On' }).click()
+          await modelingDialog
+            .options('use original')
+            .selectOption({ label: 'On' })
           // Review changes to use original
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Circular 3D',
-            headerArguments: {
-              Instances: '12',
-              Axis: 'Z',
-              Center: '[5, 7, 0]',
-              ArcDegrees: '270',
-              RotateDuplicates: 'false',
-              UseOriginal: 'true',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
       })
 
       await test.step('Submit and verify all parameters', async () => {
-        await cmdBar.progressCmdBar()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain('patternCircular3d(')
         await editor.expectEditor.toContain('instances = 12')
@@ -2192,7 +1305,7 @@ solid001 = extrude(sketch001, length = 5)`
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
@@ -2217,145 +1330,54 @@ solid001 = extrude(sketch001, length = 5)`
           page.getByTestId('dropdown-pattern-linear-3d')
         ).toBeVisible()
         await page.getByTestId('dropdown-pattern-linear-3d').click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          commandName: 'Pattern Linear 3D',
-          currentArgKey: 'solids',
-          currentArgValue: '',
-          headerArguments: {
-            Solids: '',
-            Instances: '',
-            Distance: '',
-            Axis: '',
-          },
-          highlightedHeaderArg: 'solids',
-        })
+        await modelingDialog.selection('Solids').click()
       })
 
       await test.step('Select solid and configure parameters', async () => {
         await test.step('Select solid', async () => {
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Linear 3D',
-            currentArgKey: 'solids',
-            currentArgValue: '',
-            headerArguments: {
-              Solids: '',
-              Instances: '',
-              Distance: '',
-              Axis: '',
-            },
-            highlightedHeaderArg: 'solids',
-          })
+          await modelingDialog.selection('Solids').click()
           await editor.selectText('extrude(sketch001, length = 5)')
         })
 
         await test.step('Configure instances', async () => {
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Linear 3D',
-            currentArgKey: 'instances',
-            currentArgValue: KCL_DEFAULT_INSTANCES,
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '',
-              Distance: '',
-              Axis: '',
-            },
-            highlightedHeaderArg: 'instances',
-          })
+          await expect(modelingDialog.input('instances')).toHaveText(
+            KCL_DEFAULT_INSTANCES
+          )
           // Update instances from DEFAULT to 6
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('6')
+          await modelingDialog.input('instances').fill('6')
         })
 
         await test.step('Configure distance', async () => {
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Linear 3D',
-            currentArgKey: 'distance',
-            currentArgValue: KCL_DEFAULT_LENGTH,
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '6',
-              Distance: '',
-              Axis: '',
-            },
-            highlightedHeaderArg: 'distance',
-          })
+          await expect(modelingDialog.input('distance')).toHaveText(
+            KCL_DEFAULT_LENGTH
+          )
           // Update distance from KCL_DEFAULT_LENGTH to 8
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('8')
+          await modelingDialog.input('distance').fill('8')
         })
 
         await test.step('Configure axis', async () => {
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Linear 3D',
-            currentArgKey: 'axis',
-            currentArgValue: '',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '6',
-              Distance: '8',
-              Axis: '',
-            },
-            highlightedHeaderArg: 'axis',
-          })
-          // Select Y-axis and auto-progress
-          await cmdBar.selectOption({ name: 'Y-axis' }).click()
+          await expect(modelingDialog.options('axis')).toBeVisible()
+          // Select Y-axis
+          await modelingDialog.options('axis').selectOption({ label: 'Y-axis' })
         })
 
         await test.step('Configure use original', async () => {
-          await cmdBar.clickOptionalArgument('useOriginal')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Linear 3D',
-            currentArgKey: 'useOriginal',
-            currentArgValue: '',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '6',
-              Distance: '8',
-              Axis: 'Y',
-              UseOriginal: '',
-            },
-            highlightedHeaderArg: 'useOriginal',
-          })
-          // Select On option and auto-progress
-          await cmdBar.selectOption({ name: 'On' }).click()
+          await expect(modelingDialog.options('use original')).toBeVisible()
+          // Select On option
+          await modelingDialog
+            .options('use original')
+            .selectOption({ label: 'On' })
           // Review changes to use original
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Linear 3D',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '6',
-              Distance: '8',
-              Axis: 'Y',
-              UseOriginal: 'true',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Review basic parameters', async () => {
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Linear 3D',
-            headerArguments: {
-              Solids: '1 sweep',
-              Instances: '6',
-              Distance: '8',
-              Axis: 'Y',
-              UseOriginal: 'true',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
       })
 
       await test.step('Submit and verify all parameters', async () => {
-        await cmdBar.progressCmdBar()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain('patternLinear3d(')
         await editor.expectEditor.toContain('instances = 6')
@@ -2374,134 +1396,51 @@ solid001 = extrude(sketch001, length = 5)`
           0
         )
         await patternOperation.dblclick()
-        // Should open the command bar in edit mode
-        await cmdBar.expectState({
-          stage: 'arguments',
-          commandName: 'Pattern Linear 3D',
-          currentArgKey: 'axis',
-          currentArgValue: '',
-          headerArguments: {
-            Instances: '6',
-            Distance: '8',
-            Axis: 'Y',
-            UseOriginal: 'true',
-          },
-          highlightedHeaderArg: 'axis',
-        })
+        // Should open the modeling dialog in edit mode
+        await expect(modelingDialog.selectedOption('axis')).toHaveText('Y-axis')
       })
 
       await test.step('Edit parameters', async () => {
         await test.step('Edit axis parameter', async () => {
-          // Select Z-axis and auto-progress
-          await cmdBar.selectOption({ name: 'Z-axis' }).click()
+          // Select Z-axis
+          await modelingDialog.options('axis').selectOption({ label: 'Z-axis' })
           // Review changes to axis
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Linear 3D',
-            headerArguments: {
-              Instances: '6',
-              Distance: '8',
-              Axis: 'Z',
-              UseOriginal: 'true',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit instances parameter', async () => {
-          await page.getByRole('button', { name: 'Instances' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Linear 3D',
-            currentArgKey: 'instances',
-            currentArgValue: '6',
-            headerArguments: {
-              Instances: '6',
-              Distance: '8',
-              Axis: 'Z',
-              UseOriginal: 'true',
-            },
-            highlightedHeaderArg: 'instances',
-          })
+          await expect(modelingDialog.input('instances')).toHaveText('6')
           // Update instances from 6 to 4
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('4')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('instances').fill('4')
+
           // Review changes to instances
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Linear 3D',
-            headerArguments: {
-              Instances: '4',
-              Distance: '8',
-              Axis: 'Z',
-              UseOriginal: 'true',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit distance parameter', async () => {
-          await page.getByRole('button', { name: 'Distance' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Linear 3D',
-            currentArgKey: 'distance',
-            currentArgValue: '8',
-            headerArguments: {
-              Instances: '4',
-              Distance: '8',
-              Axis: 'Z',
-              UseOriginal: 'true',
-            },
-            highlightedHeaderArg: 'distance',
-          })
+          await expect(modelingDialog.input('distance')).toHaveText('8')
           // Update distance from 8 to 12
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('12')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('distance').fill('12')
+
           // Review changes to distance
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Linear 3D',
-            headerArguments: {
-              Instances: '4',
-              Distance: '12',
-              Axis: 'Z',
-              UseOriginal: 'true',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit use original parameter', async () => {
-          await page.getByRole('button', { name: 'Use original' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'Pattern Linear 3D',
-            currentArgKey: 'useOriginal',
-            currentArgValue: '',
-            headerArguments: {
-              Instances: '4',
-              Distance: '12',
-              Axis: 'Z',
-              UseOriginal: 'true',
-            },
-            highlightedHeaderArg: 'useOriginal',
-          })
+          await expect(
+            modelingDialog.selectedOption('use original')
+          ).toHaveText('On')
           // Update use original from On to Off
-          await cmdBar.selectOption({ name: 'Off' }).click()
+          await modelingDialog
+            .options('use original')
+            .selectOption({ label: 'Off' })
           // Review changes to use original
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'Pattern Linear 3D',
-            headerArguments: {
-              Instances: '4',
-              Distance: '12',
-              Axis: 'Z',
-              UseOriginal: 'false',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
       })
 
       await test.step('Submit and verify edited parameters', async () => {
-        await cmdBar.progressCmdBar()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain('patternLinear3d(')
         await editor.expectEditor.toContain('instances = 4')
@@ -2529,14 +1468,14 @@ solid001 = extrude(sketch001, length = 5)`
     })
   })
 
-  test('GDT Flatness from command bar', async ({
+  test('GDT Flatness from modeling dialog', async ({
     context,
     page,
     homePage,
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
@@ -2562,199 +1501,77 @@ extrude001 = extrude(sketch001, length = 30)
     await test.step('Add GDT Flatness to the scene', async () => {
       await test.step('Open GDT Flatness command from toolbar', async () => {
         await toolbar.selectGdtFlatness()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          commandName: 'GDT Flatness',
-          currentArgKey: 'faces',
-          currentArgValue: '',
-          headerArguments: {
-            Faces: '',
-            Tolerance: '',
-          },
-          highlightedHeaderArg: 'faces',
-        })
+        await modelingDialog.selection('Faces').click()
       })
 
       await test.step('Select face and configure basic parameters', async () => {
         await test.step('Select face', async () => {
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'faces',
-            currentArgValue: '',
-            headerArguments: {
-              Faces: '',
-              Tolerance: '',
-            },
-            highlightedHeaderArg: 'faces',
-          })
+          await modelingDialog.selection('Faces').click()
           await clickOnCap()
           await toolbar.expectSelection('1 face')
         })
 
         await test.step('Configure tolerance', async () => {
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'tolerance',
-            currentArgValue: '0.1in',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '',
-            },
-            highlightedHeaderArg: 'tolerance',
-          })
+          await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
           // Set tolerance to 0.1in
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.1in')
+          await modelingDialog.input('tolerance').fill('0.1in')
         })
 
         await test.step('Review basic parameters', async () => {
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '0.1in',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
       })
 
       await test.step('Configure optional parameters', async () => {
         await test.step('Configure precision', async () => {
-          await cmdBar.clickOptionalArgument('precision')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'precision',
-            currentArgValue: '3',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '0.1in',
-              Precision: '',
-            },
-            highlightedHeaderArg: 'precision',
-          })
+          await expect(modelingDialog.input('precision')).toHaveAttribute(
+            'aria-placeholder',
+            'Use defaults'
+          )
           // Update precision from 3 to 5
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('5')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('precision').fill('5')
+
           // Review changes to precision
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '0.1in',
-              Precision: '5',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure frame position', async () => {
-          await cmdBar.clickOptionalArgument('framePosition')
-
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'framePosition',
-            currentArgValue: '[0, 0]',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '0.1in',
-              Precision: '5',
-              FramePosition: '',
-            },
-            highlightedHeaderArg: 'framePosition',
-          })
+          await expect(modelingDialog.input('frame position')).toHaveAttribute(
+            'aria-placeholder',
+            'Use defaults'
+          )
           // Update frame position from [0, 0] to [10, 10]
-          await page.getByTestId('vector2d-x-input').fill('10')
-          await page.getByTestId('vector2d-y-input').fill('10')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('frame position').fill('[10, 10]')
+
           // Review changes to frame position
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '0.1in',
-              Precision: '5',
-              FramePosition: '[10, 10]',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure frame plane', async () => {
-          await cmdBar.clickOptionalArgument('framePlane')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'framePlane',
-            currentArgValue: '',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '0.1in',
-              Precision: '5',
-              FramePosition: '[10, 10]',
-              FramePlane: '',
-            },
-            highlightedHeaderArg: 'framePlane',
-          })
-          // Select XY plane and auto-progress
-          await cmdBar.selectOption({ name: 'XY' }).click()
+          await expect(modelingDialog.options('frame plane')).toBeVisible()
+          // Select XY plane
+          await modelingDialog
+            .options('frame plane')
+            .selectOption({ label: 'XY Plane' })
           // Review changes to frame plane
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '0.1in',
-              Precision: '5',
-              FramePosition: '[10, 10]',
-              FramePlane: 'XY',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure font size', async () => {
-          await cmdBar.clickOptionalArgument('fontSize')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'fontSize',
-            currentArgValue: '10mm',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '0.1in',
-              Precision: '5',
-              FramePosition: '[10, 10]',
-              FramePlane: 'XY',
-              FontSize: '',
-            },
-            highlightedHeaderArg: 'fontSize',
-          })
+          await expect(modelingDialog.input('font size')).toHaveAttribute(
+            'aria-placeholder',
+            'Use defaults'
+          )
           // Update font size to 12mm
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('12mm')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('font size').fill('12mm')
+
           // Review changes to font size
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '0.1in',
-              Precision: '5',
-              FramePosition: '[10, 10]',
-              FramePlane: 'XY',
-              FontSize: '12mm',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
       })
 
       await test.step('Submit and verify all parameters', async () => {
-        await cmdBar.progressCmdBar()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::flatness(')
@@ -2772,191 +1589,64 @@ extrude001 = extrude(sketch001, length = 30)
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
         await gdtOperation.dblclick()
-        // Should open the command bar in edit mode
-        await cmdBar.expectState({
-          stage: 'arguments',
-          commandName: 'GDT Flatness',
-          currentArgKey: 'tolerance',
-          currentArgValue: '0.1in',
-          headerArguments: {
-            Tolerance: '0.1in',
-            Precision: '5',
-            FramePosition: '[10, 10]',
-            FramePlane: 'XY',
-            FontSize: '12mm',
-          },
-          highlightedHeaderArg: 'tolerance',
-        })
+        // Should open the modeling dialog in edit mode
+        await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
       })
 
       await test.step('Edit parameters', async () => {
         await test.step('Edit tolerance', async () => {
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'tolerance',
-            currentArgValue: '0.1in',
-            headerArguments: {
-              Tolerance: '0.1in',
-              Precision: '5',
-              FramePosition: '[10, 10]',
-              FramePlane: 'XY',
-              FontSize: '12mm',
-            },
-            highlightedHeaderArg: 'tolerance',
-          })
+          await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
           // Update tolerance from 0.1in to 0.2in
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.2in')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('tolerance').fill('0.2in')
+
           // Review changes to tolerance
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Tolerance: '0.2in',
-              Precision: '5',
-              FramePosition: '[10, 10]',
-              FramePlane: 'XY',
-              FontSize: '12mm',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit precision', async () => {
-          await page.getByRole('button', { name: 'Precision' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'precision',
-            currentArgValue: '5',
-            headerArguments: {
-              Tolerance: '0.2in',
-              Precision: '5',
-              FramePosition: '[10, 10]',
-              FramePlane: 'XY',
-              FontSize: '12mm',
-            },
-            highlightedHeaderArg: 'precision',
-          })
+          await expect(modelingDialog.input('precision')).toHaveText('5')
           // Update precision from 5 to 3
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('3')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.fillInput('precision', '3')
+
           // Review changes to precision
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Tolerance: '0.2in',
-              Precision: '3',
-              FramePosition: '[10, 10]',
-              FramePlane: 'XY',
-              FontSize: '12mm',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit frame position', async () => {
-          await page.getByRole('button', { name: 'Frame position' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'framePosition',
-            currentArgValue: '[10, 10]',
-            headerArguments: {
-              Tolerance: '0.2in',
-              Precision: '3',
-              FramePosition: '[10, 10]',
-              FramePlane: 'XY',
-              FontSize: '12mm',
-            },
-            highlightedHeaderArg: 'framePosition',
-          })
+          await expect(modelingDialog.input('frame position')).toHaveText(
+            '[10, 10]'
+          )
           // Update frame position from [10, 10] to [20, 30]
-          await page.getByTestId('vector2d-x-input').fill('20')
-          await page.getByTestId('vector2d-y-input').fill('30')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('frame position').fill('[20, 30]')
+
           // Review changes to frame position
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Tolerance: '0.2in',
-              Precision: '3',
-              FramePosition: '[20, 30]',
-              FramePlane: 'XY',
-              FontSize: '12mm',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit frame plane', async () => {
-          await page.getByRole('button', { name: 'Frame plane' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'framePlane',
-            currentArgValue: '',
-            headerArguments: {
-              Tolerance: '0.2in',
-              Precision: '3',
-              FramePosition: '[20, 30]',
-              FramePlane: 'XY',
-              FontSize: '12mm',
-            },
-            highlightedHeaderArg: 'framePlane',
-          })
+          await expect(modelingDialog.selectedOption('frame plane')).toHaveText(
+            'XY Plane'
+          )
           // Update frame plane from XY to XZ
-          await cmdBar.selectOption({ name: 'XZ' }).click()
+          await modelingDialog
+            .options('frame plane')
+            .selectOption({ label: 'XZ Plane' })
           // Review changes to frame plane
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Tolerance: '0.2in',
-              Precision: '3',
-              FramePosition: '[20, 30]',
-              FramePlane: 'XZ',
-              FontSize: '12mm',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit font size', async () => {
-          await page.getByRole('button', { name: 'Font size' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'fontSize',
-            currentArgValue: '12mm',
-            headerArguments: {
-              Tolerance: '0.2in',
-              Precision: '3',
-              FramePosition: '[20, 30]',
-              FramePlane: 'XZ',
-              FontSize: '12mm',
-            },
-            highlightedHeaderArg: 'fontSize',
-          })
+          await expect(modelingDialog.input('font size')).toHaveText('12mm')
           // Update font size from 48 to 24
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('24')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('font size').fill('24')
+
           // Review changes to font size
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Tolerance: '0.2in',
-              Precision: '3',
-              FramePosition: '[20, 30]',
-              FramePlane: 'XZ',
-              FontSize: '24',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
       })
 
       await test.step('Submit and verify all parameters', async () => {
-        await cmdBar.progressCmdBar()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain('gdt::flatness(')
         await editor.expectEditor.toContain('faces = [capEnd001]')
@@ -2979,14 +1669,14 @@ extrude001 = extrude(sketch001, length = 30)
     })
   })
 
-  test('GDT Datum from command bar', async ({
+  test('GDT Datum from modeling dialog', async ({
     context,
     page,
     homePage,
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
@@ -3016,163 +1706,64 @@ extrude001 = extrude(sketch001, length = 30)
           .click()
         await expect(page.getByTestId('dropdown-gdt-datum')).toBeVisible()
         await page.getByTestId('dropdown-gdt-datum').click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          commandName: 'GDT Datum',
-          currentArgKey: 'faces',
-          currentArgValue: '',
-          headerArguments: {
-            Faces: '',
-            Name: '',
-          },
-          highlightedHeaderArg: 'faces',
-        })
+        await modelingDialog.selection('Faces').click()
       })
 
       await test.step('Select face and configure basic parameters', async () => {
         await test.step('Select face', async () => {
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Datum',
-            currentArgKey: 'faces',
-            currentArgValue: '',
-            headerArguments: {
-              Faces: '',
-              Name: '',
-            },
-            highlightedHeaderArg: 'faces',
-          })
+          await modelingDialog.selection('Faces').click()
           await clickOnCap()
           await toolbar.expectSelection('1 face')
         })
 
         await test.step('Configure name', async () => {
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Datum',
-            currentArgKey: 'name',
-            currentArgValue: '',
-            headerArguments: {
-              Faces: '1 face',
-              Name: '',
-            },
-            highlightedHeaderArg: 'name',
-          })
+          await expect(modelingDialog.input('name')).toBeVisible()
           // Keep default name 'A'
         })
 
         await test.step('Review basic parameters', async () => {
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Datum',
-            headerArguments: {
-              Faces: '1 face',
-              Name: 'A',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
       })
 
       await test.step('Configure optional parameters', async () => {
         await test.step('Configure frame position', async () => {
-          await cmdBar.clickOptionalArgument('framePosition')
-
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Datum',
-            currentArgKey: 'framePosition',
-            currentArgValue: '[0, 0]',
-            headerArguments: {
-              Faces: '1 face',
-              Name: 'A',
-              FramePosition: '',
-            },
-            highlightedHeaderArg: 'framePosition',
-          })
+          await expect(modelingDialog.input('frame position')).toHaveAttribute(
+            'aria-placeholder',
+            'Use defaults'
+          )
           // Update frame position from [0, 0] to [5, 0]
-          await page.getByTestId('vector2d-x-input').fill('5')
-          await page.getByTestId('vector2d-y-input').fill('0')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('frame position').fill('[5, 0]')
+
           // Review changes to frame position
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Datum',
-            headerArguments: {
-              Faces: '1 face',
-              Name: 'A',
-              FramePosition: '[5, 0]',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure frame plane', async () => {
-          await cmdBar.clickOptionalArgument('framePlane')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Datum',
-            currentArgKey: 'framePlane',
-            currentArgValue: '',
-            headerArguments: {
-              Faces: '1 face',
-              Name: 'A',
-              FramePosition: '[5, 0]',
-              FramePlane: '',
-            },
-            highlightedHeaderArg: 'framePlane',
-          })
-          // Select XZ plane and auto-progress
-          await cmdBar.selectOption({ name: 'XZ' }).click()
+          await expect(modelingDialog.options('frame plane')).toBeVisible()
+          // Select XZ plane
+          await modelingDialog
+            .options('frame plane')
+            .selectOption({ label: 'XZ Plane' })
           // Review changes to frame plane
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Datum',
-            headerArguments: {
-              Faces: '1 face',
-              Name: 'A',
-              FramePosition: '[5, 0]',
-              FramePlane: 'XZ',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Configure font size', async () => {
-          await cmdBar.clickOptionalArgument('fontSize')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Datum',
-            currentArgKey: 'fontSize',
-            currentArgValue: '10mm',
-            headerArguments: {
-              Faces: '1 face',
-              Name: 'A',
-              FramePosition: '[5, 0]',
-              FramePlane: 'XZ',
-              FontSize: '',
-            },
-            highlightedHeaderArg: 'fontSize',
-          })
+          await expect(modelingDialog.input('font size')).toHaveAttribute(
+            'aria-placeholder',
+            'Use defaults'
+          )
           // Update font size to 12mm
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('12mm')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('font size').fill('12mm')
+
           // Review changes to font size
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Datum',
-            headerArguments: {
-              Faces: '1 face',
-              Name: 'A',
-              FramePosition: '[5, 0]',
-              FramePlane: 'XZ',
-              FontSize: '12mm',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
       })
 
       await test.step('Submit and verify all parameters', async () => {
-        await cmdBar.progressCmdBar()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::datum(')
@@ -3189,137 +1780,55 @@ extrude001 = extrude(sketch001, length = 30)
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const gdtOperation = await toolbar.getFeatureTreeOperation('Datum', 0)
         await gdtOperation.dblclick()
-        // Should open the command bar in edit mode
+        // Should open the modeling dialog in edit mode
       })
 
       await test.step('Edit parameters', async () => {
         await test.step('Edit name from A to B', async () => {
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Datum',
-            currentArgKey: 'name',
-            currentArgValue: '',
-            headerArguments: {
-              Name: 'A',
-              FramePosition: '[5, 0]',
-              FramePlane: 'XZ',
-              FontSize: '12mm',
-            },
-            highlightedHeaderArg: 'name',
-          })
+          await expect(modelingDialog.input('name')).toBeVisible()
           // Update name from A to B
-          await expect(cmdBar.currentArgumentInput).toBeVisible()
-          await cmdBar.currentArgumentInput.fill('B')
-          await cmdBar.progressCmdBar()
+          await expect(modelingDialog.input('name')).toBeVisible()
+          await modelingDialog.input('name').fill('B')
+
           // Review changes to name
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Datum',
-            headerArguments: {
-              Name: 'B',
-              FramePosition: '[5, 0]',
-              FramePlane: 'XZ',
-              FontSize: '12mm',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit frame position', async () => {
-          await page.getByRole('button', { name: 'Frame position' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Datum',
-            currentArgKey: 'framePosition',
-            currentArgValue: '[5, 0]',
-            headerArguments: {
-              Name: 'B',
-              FramePosition: '[5, 0]',
-              FramePlane: 'XZ',
-              FontSize: '12mm',
-            },
-            highlightedHeaderArg: 'framePosition',
-          })
+          await expect(modelingDialog.input('frame position')).toHaveText(
+            '[5, 0]'
+          )
           // Update frame position from [5, 0] to [10, 5]
-          await page.getByTestId('vector2d-x-input').fill('10')
-          await page.getByTestId('vector2d-y-input').fill('5')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('frame position').fill('[10, 5]')
+
           // Review changes to frame position
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Datum',
-            headerArguments: {
-              Name: 'B',
-              FramePosition: '[10, 5]',
-              FramePlane: 'XZ',
-              FontSize: '12mm',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit frame plane', async () => {
-          await page.getByRole('button', { name: 'Frame plane' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Datum',
-            currentArgKey: 'framePlane',
-            currentArgValue: '',
-            headerArguments: {
-              Name: 'B',
-              FramePosition: '[10, 5]',
-              FramePlane: 'XZ',
-              FontSize: '12mm',
-            },
-            highlightedHeaderArg: 'framePlane',
-          })
+          await expect(modelingDialog.selectedOption('frame plane')).toHaveText(
+            'XZ Plane'
+          )
           // Update frame plane from XZ to YZ
-          await cmdBar.selectOption({ name: 'YZ' }).click()
+          await modelingDialog
+            .options('frame plane')
+            .selectOption({ label: 'YZ Plane' })
           // Review changes to frame plane
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Datum',
-            headerArguments: {
-              Name: 'B',
-              FramePosition: '[10, 5]',
-              FramePlane: 'YZ',
-              FontSize: '12mm',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
 
         await test.step('Edit font size', async () => {
-          await page.getByRole('button', { name: 'Font size' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Datum',
-            currentArgKey: 'fontSize',
-            currentArgValue: '12mm',
-            headerArguments: {
-              Name: 'B',
-              FramePosition: '[10, 5]',
-              FramePlane: 'YZ',
-              FontSize: '12mm',
-            },
-            highlightedHeaderArg: 'fontSize',
-          })
+          await expect(modelingDialog.input('font size')).toHaveText('12mm')
           // Update font size from 48 to 32
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('32')
-          await cmdBar.progressCmdBar()
+          await modelingDialog.input('font size').fill('32')
+
           // Review changes to font size
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Datum',
-            headerArguments: {
-              Name: 'B',
-              FramePosition: '[10, 5]',
-              FramePlane: 'YZ',
-              FontSize: '32',
-            },
-          })
+          await expect(modelingDialog.submitButton).toBeEnabled()
         })
       })
 
       await test.step('Submit and verify all parameters', async () => {
-        await cmdBar.progressCmdBar()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain('gdt::datum(')
         await editor.expectEditor.toContain('face = capEnd001')
@@ -3348,7 +1857,7 @@ extrude001 = extrude(sketch001, length = 30)
     scene,
     editor,
     toolbar,
-    cmdBar,
+    modelingDialog,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [-5, -5])
@@ -3375,135 +1884,28 @@ extrude001 = extrude(profile001, length = 10)`
       await toolbar.holeButton.click()
       const testPoint = { x: 600, y: 250 }
       const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'face',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '',
-          CutAt: '',
-          HoleBody: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'face',
-      })
+      await modelingDialog.selection('Face').click()
       await clickOnCap()
       await toolbar.expectSelection('1 face')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'cutAt',
-        currentArgValue: '[0, 0]',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '',
-          HoleBody: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'cutAt',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeBody',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'holeBody',
-      })
-      await cmdBar.selectOption({ name: 'Blind' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'blindDepth',
-        currentArgValue: '2',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '',
-          BlindDiameter: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'blindDepth',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'blindDiameter',
-        currentArgValue: '1',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'blindDiameter',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeType',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: '',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'holeType',
-      })
-      await cmdBar.selectOption({ name: 'Simple' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeBottom',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: '',
-        },
-        highlightedHeaderArg: 'holeBottom',
-      })
-      await cmdBar.selectOption({ name: 'Flat' }).click()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Hole',
-        headerArguments: {
-          Face: '1 face',
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-      })
-      await cmdBar.submit()
+
+      await expect(modelingDialog.input('cut at')).toHaveText('[0, 0]')
+
+      await expect(modelingDialog.options('hole body')).toBeVisible()
+      await modelingDialog.options('hole body').selectOption({ label: 'Blind' })
+      await expect(modelingDialog.input('blind depth')).toHaveText('2')
+
+      await expect(modelingDialog.input('blind diameter')).toHaveText('1')
+
+      await expect(modelingDialog.options('hole type')).toBeVisible()
+      await modelingDialog
+        .options('hole type')
+        .selectOption({ label: 'Simple' })
+      await expect(modelingDialog.options('hole bottom')).toBeVisible()
+      await modelingDialog
+        .options('hole bottom')
+        .selectOption({ label: 'Flat' })
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step('Expect hole call added to the editor', async () => {
@@ -3535,121 +1937,26 @@ hole001 = hole::hole(
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const holeOperation = await toolbar.getFeatureTreeOperation('Hole', 0)
       await holeOperation.dblclick()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-        commandName: 'Hole',
-      })
-      await page.getByRole('button', { name: 'Cut at' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'cutAt',
-        currentArgValue: '[0, 0]',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[0, 0]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'cutAt',
-      })
+      await expect(modelingDialog.submitButton).toBeEnabled()
+
+      await expect(modelingDialog.input('cut at')).toHaveText('[0, 0]')
       // Update cut at from [0, 0] to [2, 2]
-      await page.getByTestId('vector2d-x-input').fill('2')
-      await page.getByTestId('vector2d-y-input').fill('2')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-      })
-      await page.getByRole('button', { name: 'Hole type' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'holeType',
-        currentArgValue: '',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'simple',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'holeType',
-      })
-      await cmdBar.selectOption({ name: 'Countersink' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'countersinkAngle',
-        currentArgValue: '90deg',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'countersink',
-          CountersinkDiameter: '',
-          CountersinkAngle: '',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'countersinkAngle',
-      })
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('80deg')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'countersinkDiameter',
-        currentArgValue: '2',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'countersink',
-          CountersinkDiameter: '',
-          CountersinkAngle: '80deg',
-          HoleBottom: 'flat',
-        },
-        highlightedHeaderArg: 'countersinkDiameter',
-      })
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('3')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Hole',
-        headerArguments: {
-          CutAt: '[2, 2]',
-          HoleBody: 'blind',
-          BlindDepth: '2',
-          BlindDiameter: '1',
-          HoleType: 'countersink',
-          CountersinkDiameter: '3',
-          CountersinkAngle: '80deg',
-          HoleBottom: 'flat',
-        },
-      })
-      await cmdBar.submit()
+      await modelingDialog.input('cut at').fill('[2, 2]')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+
+      await expect(modelingDialog.options('hole type')).toBeVisible()
+      await modelingDialog
+        .options('hole type')
+        .selectOption({ label: 'Countersink' })
+      await expect(modelingDialog.input('countersink angle')).toBeVisible()
+      await modelingDialog.input('countersink angle').fill('80deg')
+
+      await expect(modelingDialog.input('countersink diameter')).toBeVisible()
+      await modelingDialog.input('countersink diameter').fill('3')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step('Expect hole call updated in the editor', async () => {

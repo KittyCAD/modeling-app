@@ -33,6 +33,7 @@ const createTempDirectoryPath = () =>
 
 describe('createNewProjectDirectory', () => {
   afterEach(async () => {
+    vi.restoreAllMocks()
     await Promise.all(
       createdProjectDirectoryPaths.map((projectDirectoryPath) =>
         fsZds.rm(projectDirectoryPath, { recursive: true, force: true })
@@ -297,6 +298,7 @@ describe('createNewProjectDirectory', () => {
       )
     )
 
+    const writeFile = vi.spyOn(testFileOperations, 'writeFile')
     await overwriteProjectTomlWithNewSettings(
       testFileOperations,
       projectPath,
@@ -314,5 +316,14 @@ describe('createNewProjectDirectory', () => {
     expect(projectToml).toContain('project_id = "project-123"')
     expect(projectToml).toContain('id = "new-settings-id"')
     expect(projectToml).not.toContain('old-settings-id')
+    expect(writeFile).toHaveBeenCalledTimes(1)
+
+    writeFile.mockClear()
+    await overwriteProjectTomlWithNewSettings(
+      testFileOperations,
+      projectPath,
+      '[settings.meta]\nid = "new-settings-id"\n'
+    )
+    expect(writeFile).not.toHaveBeenCalled()
   })
 })
