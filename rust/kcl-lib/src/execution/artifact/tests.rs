@@ -1986,8 +1986,26 @@ fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
 
+    let mut artifacts = IndexMap::default();
+    let body_id = ArtifactId::new(object_id);
+    artifacts.insert(
+        body_id,
+        Artifact::Sweep(Sweep {
+            id: body_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id: None,
+            surface_ids: vec![ArtifactId::new(side_face_a), ArtifactId::new(side_face_b)],
+            edge_ids: Vec::new(),
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            source_sweep_id: None,
+            trajectory_id: None,
+            method: ArtifactSweepMethod::New,
+            consumed: false,
+            pattern_ids: Vec::new(),
+        }),
+    );
     let updated = artifacts_to_update(
-        &IndexMap::default(),
+        &artifacts,
         &artifact_command,
         &AHashMap::default(),
         &AHashMap::default(),
@@ -1999,7 +2017,7 @@ fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
     )
     .unwrap();
 
-    assert_eq!(updated.len(), 2);
+    assert_eq!(updated.len(), 3);
     assert!(matches!(
         &updated[0],
         Artifact::EdgeCut(EdgeCut {
@@ -2020,6 +2038,14 @@ fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
             ..
         }) if *id == ArtifactId::new(extra_face_id)
     ));
+    let Some(Artifact::Sweep(body_update)) = updated.last() else {
+        panic!("Missing treatment body update");
+    };
+    assert_eq!(body_update.id, body_id);
+    assert_eq!(
+        body_update.surface_ids,
+        vec![ArtifactId::new(cmd_id), ArtifactId::new(extra_face_id)]
+    );
 }
 
 #[test]

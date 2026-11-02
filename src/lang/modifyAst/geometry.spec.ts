@@ -384,11 +384,11 @@ profile001 = startProfile(sketch001, at = [0, 0])
     expect(result).toBeInstanceOf(Error)
   })
 
-  it('preserves the edge-cut inference contract for a graph with consumed-edge associations', () => {
+  it('preserves edge-cut inference through its source sketch segment', () => {
     const { ast, graph, wall, cut } = createFaceAxisFixture()
-    // This is a compatibility fixture for the existing inference branch.
-    // Current face-API execution does not produce this consumed-edge association.
-    wall.edgeCutEdgeIds.push(cut.id)
+    const segment = graph.get(wall.segId)
+    if (segment?.type !== 'segment') throw new Error('Missing source segment')
+    segment.edgeCutId = cut.id
     const code = generateAxis(ast, graph, {
       entityRef: { type: 'face', face_id: cut.id },
       codeRef: cut.codeRef,
@@ -475,7 +475,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     expect(code).toContain('axisResult=seg01')
   })
 
-  it('returns the existing resolution error for a fillet face without consumed-edge lineage', async () => {
+  it('returns a resolution error when a fillet face has no body or sketch lineage', async () => {
     const code = faceAxisCode
       .replace('length = 5mm)', 'length = 5mm, tagEnd = $capEnd001)')
       .replace(', END]', ', capEnd001]')
@@ -498,9 +498,12 @@ profile001 = startProfile(sketch001, at = [0, 0])
           artifact.edgeCutEdgeIds.includes(cut.id)
       )
     ).toBe(false)
+    // Simulate missing ownership metadata as well as missing sketch lineage.
+    for (const artifact of artifactGraph.values()) {
+      if (artifact.type === 'sweep')
+        artifact.surfaceIds = artifact.surfaceIds.filter((id) => id !== cut.id)
+    }
     const originalAst = structuredClone(ast)
-    // Both original helpers failed here: segment tagging needs edge-cut
-    // metadata, and the body fallback cannot recover the missing lineage.
     const result = getAxisExpression(
       undefined,
       {

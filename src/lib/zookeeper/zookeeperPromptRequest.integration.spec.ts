@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 
 vi.mock('@src/routes/utils', () => ({
   APP_DOWNLOAD_PATH: 'design-studio/download/staging',
@@ -28,6 +29,7 @@ import {
   ZookeeperManagerStates,
   ZookeeperManagerTransitions,
   zookeeperManagerMachine,
+  isMlCopilotUserRequest,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
@@ -40,13 +42,8 @@ import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 class TestSocket extends EventTarget {
-  sentPayloads: string[] = []
   readyState: number = WebSocket.OPEN
-
-  send(payload: string) {
-    this.sentPayloads.push(payload)
-  }
-
+  send = vi.fn()
   close = vi.fn()
 }
 
@@ -196,7 +193,9 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
 
     actor.stop()
 
-    return ws.sentPayloads.map((payload) => JSON.parse(payload))
+    return ws.send.mock.calls
+      .map(([payload]) => msgpackDecode(payload))
+      .filter(isMlCopilotUserRequest)
   }
 
   function sourceRangeForSnippet(code: string, snippet: string): SourceRange {

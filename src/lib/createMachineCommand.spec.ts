@@ -75,6 +75,28 @@ const commandBarConfig = {
 } satisfies StateMachineCommandSetConfig<typeof testMachine, TestCommandSchema>
 
 describe('createMachineCommand', () => {
+  test('honors command availability using the machine context', () => {
+    const actor = createActor(testMachine).start()
+    const state = actor.getSnapshot()
+    const available = vi.fn(() => false)
+    const createCommand = () =>
+      createMachineCommand<typeof testMachine, TestCommandSchema>({
+        groupId: testMachine.id,
+        type: 'Available',
+        state,
+        send: vi.fn(),
+        actor,
+        commandBarConfig: { Available: { available } },
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
+      })
+
+    expect(createCommand()).toBeNull()
+    available.mockReturnValue(true)
+    expect(createCommand()).toMatchObject({ name: 'Available' })
+    expect(available).toHaveBeenLastCalledWith(state.context)
+    actor.stop()
+  })
+
   test('defaults missing descriptions while preserving overrides, including command arrays', () => {
     const actor = createActor(testMachine).start()
     const configs = {
