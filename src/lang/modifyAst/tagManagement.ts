@@ -721,8 +721,18 @@ function modifyAstWithTagForFaceSelection(
   }
   // CASE 3: Handle an edgeCut face by tagging its operation.
   else if (selection.artifact.type === 'edgeCut') {
-    if (selection.artifact.sourceEdgeCutId) {
-      const source = artifactGraph.get(selection.artifact.sourceEdgeCutId)
+    // A clone can rebind the bare tag. Qualify both the copy and its source
+    // so selecting the original face still refers to the original instance.
+    const selectedFaceId = selection.artifact.id
+    const hasCopiedFace = [...artifactGraph.values()].some(
+      (artifact) =>
+        artifact.type === 'edgeCut' &&
+        artifact.sourceEdgeCutId === selectedFaceId
+    )
+    if (selection.artifact.sourceEdgeCutId || hasCopiedFace) {
+      const source = selection.artifact.sourceEdgeCutId
+        ? artifactGraph.get(selection.artifact.sourceEdgeCutId)
+        : selection.artifact
       if (source?.type !== 'edgeCut')
         return new Error('Source treatment face is unavailable')
       const body = getVariableExprsFromSelection(
@@ -738,7 +748,7 @@ function modifyAstWithTagForFaceSelection(
       )
       if (err(body)) return body
       if (body.exprs.length !== 1)
-        return new Error('Cannot resolve copied treatment body')
+        return new Error('Cannot resolve treatment body')
       const result = modifyAstWithTagForEdgeCutFace(ast, source, wasmInstance)
       if (err(result)) return result
       return {

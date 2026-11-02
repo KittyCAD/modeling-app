@@ -721,7 +721,7 @@ it('translates a treatment body without selecting a nested sketch segment', asyn
 }, 60_000)
 
 it.each(['chamfer', 'fillet'])(
-  'references the exact copied %s face in annotations',
+  'references the original and copied %s faces in annotations',
   async (treatment) => {
     const code =
       chainedTreatmentCode +
@@ -757,10 +757,32 @@ it.each(['chamfer', 'fillet'])(
     const output = recast(result.modifiedAst, world.instance)
     if (isErr(output)) throw output
     expect(output).toContain(`copy.faces.${treatment}Face01`)
+    const original = cut.sourceEdgeCutId
+      ? artifactGraph.get(cut.sourceEdgeCutId)
+      : undefined
+    if (original?.type !== 'edgeCut')
+      throw new Error('Original treatment face not found')
+    const originalSelection: Selection = {
+      artifact: original,
+      codeRef: original.codeRef,
+      entityRef: { type: 'face', face_id: original.id },
+    }
+    const originalNote = await modelingCommandCodemods['GDT Annotation'].run({
+      ast: result.modifiedAst,
+      kclManager: world.kclManager,
+      wasmInstance: world.instance,
+      args: {
+        objects: { graphSelections: [originalSelection], otherSelections: [] },
+        annotation: 'Original after copy',
+        framePlane: 'XZ',
+      },
+    })
+    if (isErr(originalNote)) throw originalNote
+    const originalOutput = recast(originalNote.modifiedAst, world.instance)
+    if (isErr(originalOutput)) throw originalOutput
     const sent = vi.spyOn(world.engineCommandManager, 'sendCommand')
     await getAstAndArtifactGraph(
-      output +
-        `\ngdt::annotation(faces = [fillet001.faces.${treatment}Face01], annotation = "Original after copy", framePlane = XZ)`,
+      originalOutput,
       world.instance,
       world.kclManager
     )
@@ -776,7 +798,10 @@ it.each(['chamfer', 'fillet'])(
       expect.objectContaining({
         type: 'new_annotation',
         options: expect.objectContaining({
-          feature_control: expect.objectContaining({ entity_id: cut.id }),
+          feature_control: expect.objectContaining({
+            entity_id: cut.id,
+            prefix: 'Copied face',
+          }),
         }),
       })
     )
@@ -785,7 +810,8 @@ it.each(['chamfer', 'fillet'])(
         type: 'new_annotation',
         options: expect.objectContaining({
           feature_control: expect.objectContaining({
-            entity_id: cut.sourceEdgeCutId,
+            entity_id: original.id,
+            prefix: 'Original after copy',
           }),
         }),
       })
@@ -805,33 +831,41 @@ it.each(['chamfer', 'fillet'])(
       new Error('Cannot create a sketch on this copied treatment face.')
     )
     if (treatment !== 'chamfer') return
-    const sketch = sketchBlockOnExtrudedFace(
-      ast,
-      selection,
-      cut.codeRef.pathToNode,
-      cut.codeRef.pathToNode,
-      artifactGraph,
-      world.instance
-    )
-    if (isErr(sketch)) throw sketch
-    const sketchCode = recast(sketch.modifiedAst, world.instance)
-    if (isErr(sketchCode)) throw sketchCode
-    expect(sketchCode).toContain(
-      'faceOf(copy, face = copy.faces.chamferFace01)'
-    )
-    await getAstAndArtifactGraph(
-      sketchCode.replace(
-        /(sketch\d+ = sketch\(on = faceOf[^\n]+\) \{)\n/,
-        '$1\n  circle(start = [0.1mm, 0mm], center = [0mm, 0mm])\n'
-      ),
-      world.instance,
-      world.kclManager
-    )
-    expect(world.kclManager.errors).toEqual([])
-    expect(world.kclManager.variables.sketch001).toMatchObject({
-      type: 'Object',
-      value: { meta: { value: { sketch: { value: { on: { id: cut.id } } } } } },
-    })
+    for (const faceSelection of [originalSelection, selection]) {
+      const face = faceSelection.artifact
+      if (face?.type !== 'edgeCut') throw new Error('Missing treatment face')
+      const sketch = sketchBlockOnExtrudedFace(
+        ast,
+        faceSelection,
+        face.codeRef.pathToNode,
+        face.codeRef.pathToNode,
+        artifactGraph,
+        world.instance
+      )
+      if (isErr(sketch)) throw sketch
+      const sketchCode = recast(sketch.modifiedAst, world.instance)
+      if (isErr(sketchCode)) throw sketchCode
+      if (face.id === cut.id) {
+        expect(sketchCode).toContain(
+          'faceOf(copy, face = copy.faces.chamferFace01)'
+        )
+      }
+      await getAstAndArtifactGraph(
+        sketchCode.replace(
+          /(sketch\d+ = sketch\(on = faceOf[^\n]+\) \{)\n/,
+          '$1\n  circle(start = [0.1mm, 0mm], center = [0mm, 0mm])\n'
+        ),
+        world.instance,
+        world.kclManager
+      )
+      expect(world.kclManager.errors).toEqual([])
+      expect(world.kclManager.variables.sketch001).toMatchObject({
+        type: 'Object',
+        value: {
+          meta: { value: { sketch: { value: { on: { id: face.id } } } } },
+        },
+      })
+    }
   },
   60_000
 )
