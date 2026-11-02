@@ -31,7 +31,7 @@ export default mergeConfig(
           extends: true,
           test: {
             name: 'component',
-            include: ['src/**/*.test.tsx'],
+            include: ['src/**/*.test.tsx', 'src/web-components/**/*.test.ts'],
             environment: 'happy-dom',
           },
         },
