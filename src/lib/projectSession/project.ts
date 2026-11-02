@@ -234,8 +234,9 @@ export class ZDSProject {
       newEditor.path = path
     }
 
-    // The singleton can move between files within this retained project.
-    // Drop its old path entry so one editor never aliases multiple buffers.
+    // TODO: Remove this cleanup when each file gets its own editor.
+    // For now, providedEditor is repurposed to represent the requested file,
+    // so remove associations that still point to it under a previous path.
     if (providedEditor) {
       for (const [key, editor] of this.editors) {
         if (editor === providedEditor && key.peek() !== path)
