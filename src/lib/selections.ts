@@ -2630,6 +2630,7 @@ export function getSelectionCountByType(
       return true
     }
     if (
+      artifact.type === 'sketchBlock' ||
       artifact.type === 'gdtAnnotation' ||
       artifact.type === 'importedGeometry'
     ) {
@@ -2709,6 +2710,7 @@ export function getSelectionCountByType(
     } else if (inlineArtifact?.type === 'helix') {
       incrementOrInitializeSelectionType('helix')
     } else if (
+      inlineArtifact?.type === 'sketchBlock' ||
       inlineArtifact?.type === 'gdtAnnotation' ||
       inlineArtifact?.type === 'importedGeometry'
     ) {
@@ -3243,6 +3245,7 @@ const semanticEntityNames: {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
   profile: ['solid2d'],
   region: ['pathRegion', 'engineRegion'],
+  sketch: ['sketchBlock'],
   edge: [
     'segment',
     'sweepEdge',

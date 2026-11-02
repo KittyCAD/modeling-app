@@ -1,6 +1,6 @@
 These are principles we try to follow as a team working on this product. Anyone can suggest additions or edits.
 
-## 0. Application architecture
+## 0. Application Architecture
 
 1. Use React as a thin view layer unless absolutely necessary, presenting state that is defined outside of React.
 
@@ -26,7 +26,7 @@ These are principles we try to follow as a team working on this product. Anyone 
       - WASM instance
       - File system (off disk)
 
-## 1. UX design
+## 1. UX Design
 
 1. Animate sparingly
 2. Keep distractions from the scene at a minimum
@@ -51,6 +51,55 @@ These are principles we try to follow as a team working on this product. Anyone 
 
 <img width="4550" height="3271" alt="image" src="https://github.com/user-attachments/assets/7cbb945d-ca4e-4b13-8be3-51343cb6dcf1" />
 
-## 3. Code style
+## 3. Code Style
 
 1. Never use `any` or `as` in typescript. We do not want leave things untyped or coerce types. You should instead type narrow or use helpers like `hasProperty` and `isRecord` from `@src/lib/utils.ts` where needed.
+
+## 4. Feature Rollout
+
+Several mechanisms are available to gate the availability of functionality to users:
+
+1. Conditionally-available logic using the `IS_STAGING_OR_DEBUG` constant
+2. In-app settings toggles, defaulting to on or off, based on environment
+3. Feature flags fetched live from the API, based on environment
+
+The choice of which to use is based on the need for dynamism and risk level associated with a given feature.
+Most changes can simply be merged and picked up in the next release, but some scenarios warrant a deliberate strategy.
+
+### Scenario: Internal-only Utilities
+
+If a change is only ever intended for internal use, consider gating it behind the `IS_STAGING_OR_DEBUG` constant.
+Ensure any relevant UI makes it obvious that this is a "staging-only" feature so no one has the misconception that it will reach production.
+
+The red edit button to enter the experimental solver-based sketch mode is a good example of this.
+
+### Scenario: Multi-PR Initiatives
+
+If a change is relatively low-risk but will otherwise take multiple PRs and weeks to ship, consider creating a staging-only feature flag.
+This will let the developers working on that feature merge early and toggle the flag for just themselves.
+When work is complete, the gate can be removed in a normal PR and included in the next release.
+
+Face selections, named views, and modeling dialogs are good examples of this.
+
+### Scenario: Swappable Functionality
+
+Some changes introduce a secondary mode or interface for using a particular feature.
+In those cases, users might reasonably prefer one over the other, thus both will be supported for a period of time.
+Consider adding a user and/or project setting that defaults to **off**.
+The default could also be **on** for `IS_STAGING_OR_DEBUG` to encourage more internal testing.
+
+The orientation cube gizmo and sketch grid behaviors are good examples of this.
+
+### Scenario: Experimental Features
+
+This is a variation of swappable functionality but for changes that are too experimental or risky to let any user opt into.
+Consider first gating the availability of the setting behind a feature flag.
+
+The ability to create new projects using the constraints solver is a good example of this.
+
+### Scenario: Infrastructure Impact
+
+If a change will result in a significant cost or load impact on infrastructure, consider using a feature flag and enable it for a small percentage of users (e.g. 1%).
+Assess the impact before increasing the percentage to pull in the next wave (e.g. 10%, 25%, 50%, 100%).
+
+The introduction of cloud-backed projects is a good example of this.

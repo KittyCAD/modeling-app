@@ -6,7 +6,7 @@ KCL Semantic error
 
   × semantic: Mixing KCL versions in a single program is not allowed. The
   │ entry point `tests/import_kcl_version_mismatch_v3/input.kcl` declares
-  │ kclVersion 3.0-preview, but the imported file `tests/
+  │ kclVersion 3.0, but the imported file `tests/
   │ import_kcl_version_mismatch_v3/dep.kcl` declares kclVersion 2.0. Update
   │ the kclVersion setting in one of these files to match the other.
    ╭─[1:11]
@@ -19,7 +19,7 @@ KCL Semantic error
       
         × semantic: Mixing KCL versions in a single program is not allowed.
         │ The entry point `tests/import_kcl_version_mismatch_v3/input.kcl`
-        │ declares kclVersion 3.0-preview, but the imported file `tests/
+        │ declares kclVersion 3.0, but the imported file `tests/
         │ import_kcl_version_mismatch_v3/dep.kcl` declares kclVersion 2.0.
         │ Update the kclVersion setting in one of these files to match the
         │ other.
