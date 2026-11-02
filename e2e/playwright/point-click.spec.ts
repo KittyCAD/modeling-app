@@ -1956,7 +1956,7 @@ extrude001 = extrude(region001, length = -12)`
         await editor.closePane()
         const [clickOnSecondEdge] = await scene.makeSelectionHelpers({
           kind: 'edge',
-          index: 3,
+          index: 2,
           stream: { x: 600, y: 383, format: 'pixels' },
         })
         await clickOnSecondEdge()
