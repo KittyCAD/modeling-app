@@ -22,6 +22,7 @@ use crate::SnapshotOptions;
 use crate::bridge::physical_properties::PhysicalPropertiesRequest;
 use crate::bridge::physical_properties::PhysicalPropertiesResponse;
 use crate::bridge::sketch_constraints::SketchConstraintReport;
+use crate::execute_in_context;
 use crate::into_miette_for_parse;
 use crate::into_rich_error;
 use crate::load_and_parse;
@@ -303,29 +304,20 @@ async fn new_kcl_session_impl(input: KclInput, mut params: crate::ContextParams)
 
     // Failures here should keep the execution outcome, so that users can still
     // call sketch report or sketch debug visualization.
-    let (env_ref, modeling_session_data) = match ctx.run(&program, &mut state).await {
+    let inner = match execute_in_context(&ctx, &mut state, &program).await {
         Ok(result) => result,
         Err(err) => {
             ctx.close().await;
             return Err(into_rich_error(err, &filename, &code));
         }
     };
-    let api_call_id = modeling_session_data.map(|session| session.api_call_id);
+    let api_call_id = ctx.engine.get_session_data().await.map(|session| session.api_call_id);
     let websocket_upgrade_request_id = ctx.engine.websocket_upgrade_request_id().map(str::to_owned);
 
-    let outcome = match state.clone().into_exec_outcome(env_ref, &ctx).await {
-        Ok(inner) => ExecOutcome {
-            inner: Arc::new(inner),
-            code: code.into(),
-            filename: filename.into(),
-        },
-        // This error case only occurs when there's an internal error inside KCL's memory implementation.
-        // Ideally this would still return a rich error, however, ZK is very unlikely to hit this.
-        // If we hit it, we should upgrade this. Or make KCL's memory infallible.
-        Err(err) => {
-            ctx.close().await;
-            return Err(to_py_exception(err));
-        }
+    let outcome = ExecOutcome {
+        inner: Arc::new(inner),
+        code: code.into(),
+        filename: filename.into(),
     };
 
     // Execution succeeded, return the data.

@@ -81,10 +81,10 @@ description: Variables in memory after executing sweep_profile_defaults_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 290,
-            "end": 302,
+            "commentStart": 280,
+            "end": 292,
             "moduleId": 0,
-            "start": 290,
+            "start": 280,
             "type": "TagDeclarator",
             "value": "movedProfile"
           },
@@ -112,10 +112,10 @@ description: Variables in memory after executing sweep_profile_defaults_v3.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 290,
-              "end": 302,
+              "commentStart": 280,
+              "end": 292,
               "moduleId": 0,
-              "start": 290,
+              "start": 280,
               "type": "TagDeclarator",
               "value": "movedProfile"
             },
@@ -217,10 +217,10 @@ description: Variables in memory after executing sweep_profile_defaults_v3.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 290,
-            "end": 302,
+            "commentStart": 280,
+            "end": 292,
             "moduleId": 0,
-            "start": 290,
+            "start": 280,
             "type": "TagDeclarator",
             "value": "movedProfile"
           },
@@ -317,10 +317,10 @@ description: Variables in memory after executing sweep_profile_defaults_v3.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 687,
-                    "end": 696,
+                    "commentStart": 677,
+                    "end": 686,
                     "moduleId": 0,
-                    "start": 687,
+                    "start": 677,
                     "type": "TagDeclarator",
                     "value": "movedPath"
                   },
@@ -358,10 +358,10 @@ description: Variables in memory after executing sweep_profile_defaults_v3.kcl
                     60.0
                   ],
                   "tag": {
-                    "commentStart": 763,
-                    "end": 774,
+                    "commentStart": 753,
+                    "end": 764,
                     "moduleId": 0,
-                    "start": 763,
+                    "start": 753,
                     "type": "TagDeclarator",
                     "value": "stayingPath"
                   },
@@ -726,10 +726,10 @@ description: Variables in memory after executing sweep_profile_defaults_v3.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 290,
-                    "end": 302,
+                    "commentStart": 280,
+                    "end": 292,
                     "moduleId": 0,
-                    "start": 290,
+                    "start": 280,
                     "type": "TagDeclarator",
                     "value": "movedProfile"
                   },
@@ -773,10 +773,10 @@ description: Variables in memory after executing sweep_profile_defaults_v3.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 371,
-                    "end": 385,
+                    "commentStart": 361,
+                    "end": 375,
                     "moduleId": 0,
-                    "start": 371,
+                    "start": 361,
                     "type": "TagDeclarator",
                     "value": "stayingProfile"
                   },
@@ -1127,10 +1127,10 @@ description: Variables in memory after executing sweep_profile_defaults_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 371,
-            "end": 385,
+            "commentStart": 361,
+            "end": 375,
             "moduleId": 0,
-            "start": 371,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "stayingProfile"
           },
@@ -1158,10 +1158,10 @@ description: Variables in memory after executing sweep_profile_defaults_v3.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 371,
-              "end": 385,
+              "commentStart": 361,
+              "end": 375,
               "moduleId": 0,
-              "start": 371,
+              "start": 361,
               "type": "TagDeclarator",
               "value": "stayingProfile"
             },
@@ -1263,10 +1263,10 @@ description: Variables in memory after executing sweep_profile_defaults_v3.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 371,
-            "end": 385,
+            "commentStart": 361,
+            "end": 375,
             "moduleId": 0,
-            "start": 371,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "stayingProfile"
           },
