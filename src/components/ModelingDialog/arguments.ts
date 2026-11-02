@@ -13,6 +13,7 @@ import {
 } from '@src/lib/selections'
 import { isErr } from '@src/lib/trap'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export type DialogField = {
   name: string
@@ -23,6 +24,35 @@ export type SelectionArgument = Extract<
   CommandArgument<unknown>,
   { inputType: 'selection' }
 >
+
+export function filterDialogSelection(
+  selection: Selections,
+  arg: SelectionArgument,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph
+): Selections {
+  // Coerce first so a selected face can still satisfy a body argument.
+  const coerced =
+    coerceSelectionsForBodyOnlySelectionTypes(
+      selection,
+      arg.selectionTypes,
+      artifactGraph
+    ) ?? selection
+  const accepts = (candidate: Selections) =>
+    canSubmitSelectionArg(
+      getSelectionCountByType(ast, candidate, artifactGraph),
+      arg,
+      candidate
+    )
+  return {
+    graphSelections: coerced.graphSelections.filter((selection) =>
+      accepts({ graphSelections: [selection], otherSelections: [] })
+    ),
+    otherSelections: coerced.otherSelections.filter((selection) =>
+      accepts({ graphSelections: [], otherSelections: [selection] })
+    ),
+  }
+}
 
 export function hasValue(value: unknown): boolean {
   return isSelections(value)

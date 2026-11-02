@@ -2,9 +2,6 @@ export const TOOLBAR_COMMAND_IDS = {
   modeling: {
     sketch: 'zds.toolbar.modeling.sketch',
   },
-  sketching: {
-    exit: 'zds.toolbar.sketchLegacy.exit',
-  },
   sketchSolve: {
     exit: 'zds.toolbar.sketch.exit',
     cancel: 'zds.toolbar.sketch.cancel',
