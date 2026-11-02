@@ -2359,7 +2359,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description:
       'Fill sketch regions or a closed loop of swept-body edges with surfaces.',
     icon: 'planarSurface',
-    status: 'experimental',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods['Planar Surface']
