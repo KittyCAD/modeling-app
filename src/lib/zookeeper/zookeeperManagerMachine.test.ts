@@ -5,6 +5,7 @@ import type {
   MlCopilotServerMessage,
 } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
+import * as msgpack from '@msgpack/msgpack'
 import {
   initializeClientErrorReporting,
   resetReportedClientErrorsForTests,
@@ -31,14 +32,17 @@ import {
   ZookeeperManagerTransitions,
   ZookeeperSetupErrors,
   zookeeperManagerMachine,
+  zookeeperDefaultContext,
   stopZookeeperManagerActor,
   ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
+  ZOOKEEPER_MAX_MESSAGE_BYTES,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import * as zookeeperPromptRequest from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { S } from '@src/machines/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createActor, fromPromise, waitFor } from 'xstate'
+import { createActor, fromPromise, toPromise, waitFor } from 'xstate'
+import toast from 'react-hot-toast'
 
 // Prompt construction is stubbed in the race test, so these dependencies are
 // only forwarded by the manager. Avoid loading the editor or Wasm for them.
@@ -92,6 +96,7 @@ class ControllableSetupWebSocket extends EventTarget {
   readonly url: string
   readonly sentPayloads: string[] = []
   binaryType: BinaryType = 'blob'
+  bufferedAmount = 0
   readyState = ControllableSetupWebSocket.CONNECTING
 
   constructor(url: string) {
@@ -1227,6 +1232,99 @@ describe('zookeeperManagerMachine', () => {
       }
     })
 
+    it('allows slow uploads, then detects missing heartbeat replies', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+        })
+        const socket = ControllableSetupWebSocket.instances[0]
+        socket.open()
+        await vi.waitFor(() => {
+          expect(socket.sentPayloads).toContain(
+            JSON.stringify({ type: 'list_modes' })
+          )
+        })
+        socket.receive({
+          conversation_id: { conversation_id: 'conversation-id' },
+        })
+        await waitFor(actor, (state) =>
+          state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+        )
+
+        socket.bufferedAmount = ZOOKEEPER_MAX_MESSAGE_BYTES / 2
+        for (let interval = 0; interval < 12; interval += 1) {
+          await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+          expect(socket.close).not.toHaveBeenCalled()
+          socket.bufferedAmount -= 1024 * 1024
+        }
+        expect(socket.sentPayloads).not.toContain(
+          JSON.stringify({ type: 'ping' })
+        )
+
+        socket.bufferedAmount = 0
+        await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+        expect(socket.sentPayloads).toContain(JSON.stringify({ type: 'ping' }))
+        expect(socket.close).not.toHaveBeenCalled()
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_HEARTBEAT_TIMEOUT_MS + ZOOKEEPER_HEARTBEAT_INTERVAL_MS
+        )
+        expect(actor.getSnapshot().context.closeReason).toBe(
+          'Zookeeper connection timed out.'
+        )
+        expect(socket.close).toHaveBeenCalledOnce()
+      } finally {
+        actor.stop()
+        vi.useRealTimers()
+      }
+    })
+
+    it('times out a large upload when its send buffer stops draining', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+        })
+        const socket = ControllableSetupWebSocket.instances[0]
+        socket.open()
+        await vi.waitFor(() => {
+          expect(socket.sentPayloads).toContain(
+            JSON.stringify({ type: 'list_modes' })
+          )
+        })
+        socket.receive({
+          conversation_id: { conversation_id: 'conversation-id' },
+        })
+        await waitFor(actor, (state) =>
+          state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+        )
+
+        socket.bufferedAmount = ZOOKEEPER_MAX_MESSAGE_BYTES / 2
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_HEARTBEAT_TIMEOUT_MS + 2 * ZOOKEEPER_HEARTBEAT_INTERVAL_MS
+        )
+        expect(actor.getSnapshot().context.closeReason).toBe(
+          'Zookeeper connection timed out.'
+        )
+        expect(socket.close).toHaveBeenCalledOnce()
+      } finally {
+        actor.stop()
+        vi.useRealTimers()
+      }
+    })
+
     it('recovers if a responsive websocket later stops responding', async () => {
       vi.useFakeTimers()
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
@@ -1301,9 +1399,75 @@ describe('zookeeperManagerMachine', () => {
     })
   })
 
+  it('rejects oversized encoded prompts before sending anything', async () => {
+    const encode = vi
+      .spyOn(msgpack, 'encode')
+      .mockReturnValueOnce(new Uint8Array(ZOOKEEPER_MAX_MESSAGE_BYTES + 1))
+    const ws: TestWebSocket = new TestSocket() as TestWebSocket
+    const send = vi.fn()
+    ws.send = send
+    const { kclManager, engineCommandManager, instance } =
+      await buildTheWorldAndNoEngineConnection(true)
+    const event: ZookeeperManagerEvents = {
+      type: ZookeeperManagerTransitions.MessageSend,
+      prompt: 'Inspect the project',
+      projectForPromptOutput: {
+        name: 'demo',
+        path: '/demo',
+        children: [],
+        default_file: '/demo/main.kcl',
+        directory_count: 0,
+        kcl_file_count: 1,
+        metadata: null,
+        readWriteAccess: true,
+      },
+      applicationProjectDirectory: '/',
+      fileSelectedDuringPrompting: {
+        entry: {
+          name: 'main.kcl',
+          path: '/demo/main.kcl',
+          children: null,
+        },
+        content: '',
+      },
+      projectFiles: [],
+      selections: null,
+      artifactGraph: new Map(),
+      kclManager,
+      engineCommandManager,
+      wasmInstance: instance,
+    }
+    const logic =
+      zookeeperManagerMachine.implementations.actors[
+        ZookeeperManagerTransitions.MessageSend
+      ]
+    if (!logic || !('transition' in logic)) {
+      throw new Error('Missing request actor')
+    }
+    const actor = createActor(logic, {
+      input: {
+        context: {
+          ...zookeeperDefaultContext({}),
+          ws,
+          conversation: { exchanges: [] },
+        },
+        event,
+      },
+    })
+    const result = toPromise(actor)
+    actor.start()
+
+    await expect(result).rejects.toThrow('Your project files are too large')
+    expect(encode).toHaveBeenCalledOnce()
+    expect(send).not.toHaveBeenCalled()
+  })
+
   describe('ContinueCheck', () => {
-    it('sends continue requests when the last exchange was interrupted', async () => {
+    it('sends continue requests after rejecting oversized project context', async () => {
+      stubClientErrorFetch()
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const send = vi.fn()
+      ws.send = send
       const interruptedConversation: Conversation = {
         exchanges: [
           {
@@ -1363,15 +1527,35 @@ describe('zookeeperManagerMachine', () => {
         state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
-      expect(ws.sentPayloads).toHaveLength(0)
+      expect(send).not.toHaveBeenCalled()
 
-      actor.send({
+      const event = {
         type: ZookeeperManagerStates.ContinueCheck,
         projectName: 'zoo-project',
         projectFiles,
         activeFile: 'newFile.kcl',
         engineApiCallId: 'engine-api-call-id',
+      } as const
+      const encode = vi
+        .spyOn(msgpack, 'encode')
+        .mockReturnValueOnce(new Uint8Array(ZOOKEEPER_MAX_MESSAGE_BYTES + 1))
+      const showError = vi.spyOn(toast, 'error')
+      actor.send(event)
+      await vi.waitFor(() => {
+        expect(showError).toHaveBeenCalledWith(
+          expect.stringContaining('Your project files are too large')
+        )
       })
+      expect(
+        actor.getSnapshot().matches(ZookeeperManagerStates.WaitForContinueCheck)
+      ).toBe(true)
+      expect(actor.getSnapshot().context.conversation).toBe(
+        interruptedConversation
+      )
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+      expect(send).not.toHaveBeenCalled()
+      encode.mockRestore()
+      actor.send(event)
 
       await waitFor(actor, (state) =>
         state.matches(ZookeeperManagerStates.Ready)
@@ -1381,12 +1565,12 @@ describe('zookeeperManagerMachine', () => {
       expect(actor.getSnapshot().context.projectNameCurrentlyOpened).toBe(
         'zoo-project'
       )
-      expect(ws.sentPayloads).toHaveLength(2)
-      expect(JSON.parse(ws.sentPayloads[0])).toStrictEqual({
+      expect(send).toHaveBeenCalledTimes(2)
+      expect(JSON.parse(send.mock.calls[0][0])).toStrictEqual({
         type: 'system',
         command: 'continue',
       })
-      expect(JSON.parse(ws.sentPayloads[1])).toStrictEqual({
+      expect(msgpack.decode(send.mock.calls[1][0])).toStrictEqual({
         type: 'project_context',
         correlation_id: expect.stringMatching(
           /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/

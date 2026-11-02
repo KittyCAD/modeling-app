@@ -8,6 +8,9 @@ export const FsFixture = (page: Page): PromisifiedZooDesignStudioFS => {
     {
       get(_target, propertyName, _receiver) {
         return async (...args: any[]) => {
+          // A document can finish loading before the deferred app bootstrap
+          // binds its filesystem, including after a test-triggered reload.
+          await page.waitForFunction(() => window.fsZds !== undefined)
           // We need to convert any Buffers to Uint8Array before it reaches
           // the Electron boundary.
           const argsBuffersToUint8Arrays = args.map((a: unknown) => {

@@ -17,10 +17,10 @@ description: Variables in memory after executing if_arm_scoped_geometry.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 394,
-            "end": 399,
+            "commentStart": 384,
+            "end": 389,
             "moduleId": 0,
-            "start": 394,
+            "start": 384,
             "type": "TagDeclarator",
             "value": "edge"
           },
@@ -63,10 +63,10 @@ description: Variables in memory after executing if_arm_scoped_geometry.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 394,
-              "end": 399,
+              "commentStart": 384,
+              "end": 389,
               "moduleId": 0,
-              "start": 394,
+              "start": 384,
               "type": "TagDeclarator",
               "value": "edge"
             },

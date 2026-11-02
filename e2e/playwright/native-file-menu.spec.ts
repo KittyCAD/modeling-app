@@ -36,6 +36,25 @@ test.describe(
   'Native menu window routing',
   { tag: ['@desktop', '@macos', '@windows'] },
   () => {
+    test('View menu opens the code pane without closing it on repeated selection', async ({
+      page,
+      homePage,
+      scene,
+      nativeMenu,
+      editor,
+    }) => {
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.isNativeFileMenuCreated()
+
+      await editor.closePane()
+      await expect(editor.codeContent).not.toBeVisible()
+      await nativeMenu.click('View.Panes.KCL code', page)
+      await expect(editor.codeContent).toBeVisible()
+      await nativeMenu.click('View.Panes.KCL code', page)
+      await expect(editor.codeContent).toBeVisible()
+    })
+
     test('Design menu actions target only the clicked BrowserWindow', async ({
       tronApp,
       homePage,

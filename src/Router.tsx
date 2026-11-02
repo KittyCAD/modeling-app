@@ -58,6 +58,28 @@ export const Router = () => {
               loader: fileLoader({
                 app,
               }),
+              // This can be deleted once https://github.com/KittyCAD/modeling-app/pull/13585 lands as that fixes it.
+              shouldRevalidate: ({
+                currentParams,
+                currentUrl,
+                nextParams,
+                nextUrl,
+                formMethod,
+                defaultShouldRevalidate,
+              }) => {
+                if (
+                  formMethod ||
+                  !currentParams.id ||
+                  currentParams.id !== nextParams.id || // if file url changes -> reload project
+                  currentUrl.href === nextUrl.href
+                ) {
+                  return defaultShouldRevalidate
+                }
+
+                // Avoid calling openEditor when opening / closing settings:
+                // Child routes and query changes within the same file reuse the loaded project.
+                return false
+              },
               id: PATHS.FILE,
               path: PATHS.FILE + '/:id',
               errorElement: <ErrorPage />,

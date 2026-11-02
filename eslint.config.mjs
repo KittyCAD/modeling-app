@@ -1,3 +1,5 @@
+// Must stay first: points typescript-eslint at TS 5 before the parser loads.
+import './scripts/register-typescript-eslint-typescript.cjs'
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
 import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'

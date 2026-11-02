@@ -1,14 +1,21 @@
-import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import { useSignals } from '@preact/signals-react/runtime'
+import type { ArtifactCameraLook } from '@rust/kcl-lib/bindings/Artifact'
+import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import type { ComponentProps, ReactNode } from 'react'
+import { useRef } from 'react'
 
-import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
+import { ActionButton } from '@src/components/ActionButton'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { listNamedViews } from '@src/lang/std/kclNamedViews'
-import { useSingletons } from '@src/lib/boot'
+import { ROOT_MODULE_ID } from '@src/lang/wasm'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { FILE_EXT } from '@src/lib/constants'
+import { sendDeleteCommand } from '@src/lib/featureTree'
 import type {
   ActivationTarget,
   ActiveView,
@@ -19,19 +26,34 @@ import {
   isSameView,
   isSketchSessionOpen,
   moduleKeyOf,
+  resetNamedViewSession,
 } from '@src/lib/kclNamedViewActivation'
+import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { reportRejection } from '@src/lib/trap'
+import { reportRejection, trap } from '@src/lib/trap'
+import { capitaliseFC, roundOff } from '@src/lib/utils'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
+import toast from 'react-hot-toast'
 
 export type ViewRow = {
   /** Unique per row, so React keys stay stable across executions. */
   key: string
   /** What the user reads. */
   label: string
+  details?: string
   /** What `activeViewSignal` holds when this row is active. */
-  identity: ActiveView | null
+  identity: ActiveView
   target: ActivationTarget
+}
+
+export function canManageNamedView(view: KclNamedView): boolean {
+  // One call inside a function can produce several views from the same source.
+  return (
+    view.moduleId === ROOT_MODULE_ID &&
+    !view.artifact.codeRef.pathToNode.some(
+      ([, type]) => type === 'FunctionExpression'
+    )
+  )
 }
 
 function moduleName(path: ModulePath | undefined): string | undefined {
@@ -41,6 +63,15 @@ function moduleName(path: ModulePath | undefined): string | undefined {
 
   const file = path.value.replace(/^.*\//, '')
   return file.endsWith(FILE_EXT) ? file.slice(0, -FILE_EXT.length) : file
+}
+
+function cameraLookLabel(look: ArtifactCameraLook): string {
+  switch (look.type) {
+    case 'oriented':
+      return capitaliseFC(look.orientation)
+    case 'directed':
+      return 'Directed'
+  }
 }
 
 /**
@@ -60,10 +91,19 @@ export function viewRows(views: KclNamedView[]): ViewRow[] {
     const name = view.artifact.name
     const module = moduleName(view.modulePath)
     const collides = (nameCounts.get(name) ?? 0) > 1
+    const { camera } = view.artifact
+    const details = [
+      cameraLookLabel(camera.look),
+      camera.distance === null ? undefined : `${roundOff(camera.distance)}mm`,
+      capitaliseFC(camera.projection),
+    ]
+      .filter(Boolean)
+      .join(' ')
 
     return {
       key: view.artifact.id,
       label: collides && module ? `${module}::${name}` : name,
+      details,
       identity: { name, moduleKey: moduleKeyOf(view.modulePath) },
       target: { kind: 'declared', view },
     }
@@ -73,15 +113,48 @@ export function viewRows(views: KclNamedView[]): ViewRow[] {
     {
       key: 'kcl-default',
       label: getKclDefaultViewName(),
-      identity: null,
+      identity: 'kclDefault',
       target: { kind: 'kclDefault' },
     },
     ...declared,
   ]
 }
 
+function NamedViewRow({
+  children,
+  isActive,
+  menuItems,
+}: {
+  children: ReactNode
+  isActive: boolean
+  menuItems?: ComponentProps<typeof ContextMenu>['items']
+}) {
+  const menuRef = useRef<HTMLLIElement>(null)
+  return (
+    <li
+      ref={menuRef}
+      className="flex h-7 min-w-0 select-none items-center gap-1 px-1 text-sm hover:bg-chalkboard-10 focus-within:bg-chalkboard-20 dark:hover:bg-chalkboard-90 dark:focus-within:bg-chalkboard-80"
+      data-testid="named-view-row"
+      data-active={isActive}
+    >
+      {children}
+      {menuItems && (
+        <ContextMenu menuTargetElement={menuRef} items={menuItems} />
+      )}
+    </li>
+  )
+}
+
 export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   useSignals()
+  const app = useApp()
+  const commandState = app.commands.useState()
+  const isEditingNamedView =
+    commandState.context.selectedCommand?.name === 'Named View' &&
+    Boolean(commandState.context.argumentsToSubmit.nodeToEdit)
+  const canManageViews = commandState.context.commands.some(
+    (command) => command.groupId === 'modeling' && command.name === 'Named View'
+  )
   const { kclManager } = useSingletons()
   const execState = kclManager.execStateSignal.value
   const cannotReachEngine = useReliesOnEngine(
@@ -90,13 +163,62 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   const { state: modelingState } = useModelingContext()
   const inSketchMode = isSketchSessionOpen(modelingState)
 
-  const rows = viewRows(
-    listNamedViews({
-      artifactGraph: execState.artifactGraph,
-      filenames: execState.filenames,
-    })
-  )
+  const views = listNamedViews({
+    artifactGraph: execState.artifactGraph,
+    filenames: execState.filenames,
+  })
+  const rows = viewRows(views)
   const active = activeViewSignal.value
+  const actionsDisabled =
+    cannotReachEngine || inSketchMode || isEditingNamedView
+
+  const editView = (view: KclNamedView) => {
+    prepareNamedViewEditCommand({
+      artifact: view.artifact,
+      ast: kclManager.ast,
+      code: kclManager.code,
+      artifactGraph: execState.artifactGraph,
+      rustContext: kclManager.rustContext,
+    })
+      .then((event) => {
+        if (trap(event)) return
+        if (
+          isSameView(activeViewSignal.peek(), {
+            name: view.artifact.name,
+            moduleKey: moduleKeyOf(view.modulePath),
+          })
+        ) {
+          resetNamedViewSession()
+        }
+        app.commands.actor.send(event)
+      })
+      .catch((reason) => toast.error(String(reason)))
+  }
+
+  const removeView = async (view: KclNamedView) => {
+    const artifact = kclManager.execState.artifactGraph.get(view.artifact.id)
+    if (artifact?.type !== 'namedView') {
+      toast.error(`Could not find “${view.artifact.name}”.`)
+      return
+    }
+    try {
+      await sendDeleteCommand({
+        artifact,
+        targetSourceRange: artifact.codeRef.range,
+        systemDeps: {
+          kclManager,
+          rustContext: kclManager.rustContext,
+          sceneEntitiesManager: kclManager.sceneEntitiesManager,
+        },
+      })
+    } catch (reason) {
+      toast.error(
+        reason instanceof Error
+          ? reason.message
+          : `Could not remove “${view.artifact.name}”.`
+      )
+    }
+  }
 
   return (
     <LayoutPanel
@@ -108,34 +230,144 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
         id={props.layout.id}
         icon="namedView"
         title={props.layout.label}
+        Menu={
+          canManageViews ? (
+            <ActionButton
+              Element="button"
+              aria-label="Create named view"
+              title="Create named view"
+              data-testid="named-view-create"
+              disabled={actionsDisabled}
+              tabIndex={0}
+              iconStart={{
+                icon: 'plus',
+                iconClassName: '!text-current',
+                bgClassName: 'bg-transparent dark:bg-transparent',
+              }}
+              className="h-6 w-6 shrink-0 justify-center !p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none disabled:opacity-40"
+              onClick={() => {
+                app.commands.actor.send({
+                  type: 'Find and select command',
+                  data: { name: 'Named View', groupId: 'modeling' },
+                })
+              }}
+            />
+          ) : undefined
+        }
         onClose={props.onClose}
       />
-      <section className="overflow-auto mr-1 pb-8">
-        <ul>
-          {rows.map((row, index) => (
-            <li key={row.key} className="px-1 py-0.5">
-              <RowItemWithIconMenuAndToggle
-                isSelected={isSameView(row.identity, active)}
-                disabled={cannotReachEngine || inSketchMode}
-                data-testid="named-view-row"
-                data-active={isSameView(row.identity, active)}
-                onClick={() => {
-                  activateNamedView({
-                    target: row.target,
-                    kclManager,
-                  }).catch(reportRejection)
-                }}
+      <section className="overflow-auto pb-8">
+        <ul className="py-0.5" aria-label="Named views">
+          {rows.map((row, index) => {
+            const manageableView =
+              canManageViews &&
+              row.target.kind === 'declared' &&
+              canManageNamedView(row.target.view)
+                ? row.target.view
+                : undefined
+            const isActive = isSameView(row.identity, active)
+
+            return (
+              <NamedViewRow
+                key={row.key}
+                isActive={isActive}
+                menuItems={
+                  manageableView
+                    ? [
+                        <ContextMenuItem
+                          disabled={actionsDisabled}
+                          onClick={() => editView(manageableView)}
+                        >
+                          Edit
+                        </ContextMenuItem>,
+                        <ContextMenuItem
+                          disabled={actionsDisabled}
+                          onClick={() => void removeView(manageableView)}
+                        >
+                          Remove
+                        </ContextMenuItem>,
+                      ]
+                    : undefined
+                }
               >
                 <span
                   data-testid="named-view-number"
-                  className="inline-block w-6 mr-2 text-right tabular-nums text-chalkboard-70 dark:text-chalkboard-40"
+                  className="w-5 shrink-0 text-right text-xs tabular-nums text-chalkboard-60 dark:text-chalkboard-50"
                 >
                   {index + 1}
                 </span>
-                <span data-testid="named-view-label">{row.label}</span>
-              </RowItemWithIconMenuAndToggle>
-            </li>
-          ))}
+                <button
+                  type="button"
+                  className="reset grid h-6 w-6 shrink-0 place-items-center border-none text-chalkboard-70 hover:text-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-default disabled:!bg-transparent disabled:opacity-50 dark:text-chalkboard-30"
+                  aria-label={
+                    isActive ? `${row.label} is active` : `Apply ${row.label}`
+                  }
+                  aria-pressed={isActive}
+                  disabled={actionsDisabled}
+                  onClick={() => {
+                    activateNamedView({
+                      target: row.target,
+                      kclManager,
+                    }).catch(reportRejection)
+                  }}
+                >
+                  <CustomIcon
+                    name="viewFrame"
+                    className="col-start-1 row-start-1 h-5 w-5"
+                    aria-hidden
+                  />
+                  {isActive && (
+                    <CustomIcon
+                      name="eyeOpen"
+                      className="col-start-1 row-start-1 h-4 w-4"
+                      aria-hidden
+                    />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  className="reset flex min-w-0 flex-1 items-center gap-2 self-stretch border-none text-left !text-xs focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-default disabled:!bg-transparent"
+                  aria-label={row.label}
+                  disabled={!manageableView || actionsDisabled}
+                  onDoubleClick={(event) => {
+                    if (!manageableView || actionsDisabled) return
+                    event.preventDefault()
+                    editView(manageableView)
+                  }}
+                >
+                  <span
+                    data-testid="named-view-label"
+                    className="min-w-0 truncate text-chalkboard-100 dark:text-chalkboard-10"
+                  >
+                    {row.label}
+                  </span>
+                  {row.details && (
+                    <>
+                      <span
+                        aria-hidden
+                        className="h-3 shrink-0 border-l border-chalkboard-40 dark:border-chalkboard-60"
+                      />
+                      <span
+                        data-testid="named-view-details"
+                        className="min-w-0 flex-1 truncate text-chalkboard-60 dark:text-chalkboard-50"
+                        title={row.details}
+                      >
+                        {row.details}
+                      </span>
+                    </>
+                  )}
+                </button>
+                {row.target.kind === 'declared' &&
+                !canManageNamedView(row.target.view) ? (
+                  <CustomIcon
+                    name="lockClosed"
+                    className="mx-1 h-4 w-4 shrink-0 text-chalkboard-50"
+                    aria-label="Named view is read only"
+                  />
+                ) : null}
+              </NamedViewRow>
+            )
+          })}
         </ul>
       </section>
     </LayoutPanel>
