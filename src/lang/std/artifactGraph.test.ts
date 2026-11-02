@@ -949,3 +949,36 @@ it('resolves a treatment face to its Boolean output rather than a contributing s
     otherSelections: [],
   })
 })
+
+it('keeps the source sweep distinct from the later Boolean owner of a treatment face', () => {
+  const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+  addMappedRegion(artifactGraph, sourceSegment, 'boolean', true)
+  const sourcePath = artifactGraph.get('region-path-boolean')
+  const sourceSweep = artifactGraph.get('sweep-boolean')
+  if (sourcePath?.type !== 'path' || sourceSweep?.type !== 'sweep')
+    throw new Error('Missing source sweep')
+  const body: Artifact = {
+    type: 'compositeSolid',
+    id: 'boolean-output',
+    subType: 'subtract',
+    consumed: false,
+    solidIds: [sourceSweep.id],
+    toolIds: [],
+    codeRef,
+  }
+  artifactGraph.set(body.id, body)
+  sourcePath.compositeSolidId = body.id
+  const cut: Artifact = {
+    type: 'edgeCut',
+    id: 'retained-chamfer',
+    subType: 'chamfer',
+    bodyId: sourcePath.id,
+    edgeIds: [],
+    codeRef,
+  }
+  artifactGraph.set(cut.id, cut)
+  expect(getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)).toBe(body)
+  expect(
+    getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
+  ).toBe(sourceSweep)
+})

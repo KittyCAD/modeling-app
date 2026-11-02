@@ -634,6 +634,17 @@ export function getSweepArtifactFromSelection(
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
   } else if (selection.artifact?.type === 'edgeCut') {
+    // Sweep-specific callers need the originating sweep, even when its path
+    // now belongs to a Boolean result. Body selection resolves that result separately.
+    const owner = selection.artifact.bodyId
+      ? artifactGraph.get(selection.artifact.bodyId)
+      : undefined
+    if (owner?.type === 'path' && owner.sweepId) {
+      return getArtifactOfTypes(
+        { key: owner.sweepId, types: ['sweep'] },
+        artifactGraph
+      )
+    }
     const sweep = getSweepFromSuspectedSweepSurface(
       selection.artifact.id,
       artifactGraph
