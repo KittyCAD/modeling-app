@@ -6,7 +6,7 @@ description: Result of unparsing member_expression_order_v3.kcl
 // property: in `boxes()[chooseIndex()]`, boxes() runs first. Both functions
 // send engine commands, so the evaluation order is visible in the recorded
 // operations and artifact commands.
-@settings(defaultLengthUnit = mm, kclVersion = "3.0-preview")
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 fn boxes() {
   smallProfile = sketch(on = XY) {

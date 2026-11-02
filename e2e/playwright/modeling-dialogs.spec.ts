@@ -26,12 +26,26 @@ sketch001 = sketch(on = XZ) {
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await scene.moveCameraTo({ x: 0, y: -100, z: 0 })
+    await editor.selectText('sketch(on = XZ)')
     await toolbar.extrudeButton.click()
     await expect(modelingDialog.selection('Profiles')).toBeFocused()
+    await expect(modelingDialog.selection('Profiles')).toHaveText(
+      'Select in the scene'
+    )
+    await expect(modelingDialog.submitButton).toBeDisabled()
+    // Reproduce the reported sticky-Shift flow: clicking a region can retain
+    // the editor's sketch selection, which Extrude Profiles must reject.
+    await editor.selectText('sketch(on = XZ)')
     const [selectProfile] = scene.makeMouseHelpers(0.38, 0.5, {
       format: 'ratio',
     })
-    await selectProfile()
+    await page.keyboard.down('Shift')
+    try {
+      await selectProfile()
+      await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
+    } finally {
+      await page.keyboard.up('Shift')
+    }
     await expect(modelingDialog.submitButton).toBeEnabled()
     await expect(modelingDialog.selection('Profiles')).not.toBeFocused()
     await scene.waitForExecutionDoneAfter(async () => {
@@ -102,7 +116,7 @@ obstruction = extrude(region002, length = 20mm)`
     await editor.expectEditor.toContain('extrude(region001, length = 12mm)')
   })
 
-  test('Uses dialogs for supported commands and the palette for unsupported inputs', async ({
+  test('Uses dialogs for supported modeling commands', async ({
     page,
     homePage,
     scene,
@@ -175,14 +189,6 @@ obstruction = extrude(region002, length = 20mm)`
     await expect(dialog).toBeVisible()
     await page.keyboard.press('Escape')
     await expect(dialog).not.toBeAttached()
-
-    await page
-      .getByRole('button', { name: 'caret down gdt: open menu' })
-      .click()
-    await page.getByTestId('dropdown-gdt-note').click()
-    await expect(page.getByTestId('command-bar')).toBeVisible()
-    await expect(dialog).not.toBeAttached()
-    await page.keyboard.press('Escape')
   })
 
   test('Keeps Boolean target and tool selections when switching collectors', async ({
@@ -228,7 +234,7 @@ body002 = clone(body001)
     toolbar,
     modelingDialog,
   }) => {
-    await page.setBodyDimensions({ width: 1200, height: 600 })
+    await page.setBodyDimensions({ width: 1200, height: 1000 })
     await homePage.goToModelingScene()
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
@@ -307,18 +313,35 @@ body002 = clone(body001)
     await editor.selectText('region(')
     await expect(profiles).toContainText(/1 region/i)
 
-    await length.fill('missingLength')
-    await expect(submit).toBeDisabled()
-    await length.fill('12mm')
+    const initialHeight = await dialog.evaluate(
+      (element) => element.getBoundingClientRect().height
+    )
+    await length.fill('1deg')
     await expect(submit).toBeEnabled()
+    await submit.click()
+    await expect(dialog.getByRole('alert')).toContainText(
+      'Check these arguments'
+    )
+    await dialog.locator('header').scrollIntoViewIfNeeded()
     const initialPosition = await dialog.boundingBox()
     if (!initialPosition) throw new Error('Modeling dialog is not visible')
+    expect(initialPosition.height).toBeGreaterThan(initialHeight)
     await page.mouse.move(initialPosition.x + 20, initialPosition.y + 15)
     await page.mouse.down()
     await page.mouse.move(initialPosition.x - 140, initialPosition.y + 15)
     await page.mouse.up()
     await expect(dialog).toHaveCSS('position', 'fixed')
     expect((await dialog.boundingBox())?.x).toBeCloseTo(initialPosition.x - 160)
+    await length.fill('missingLength')
+    await expect(dialog.getByRole('alert')).not.toBeAttached()
+    await expect(submit).toBeDisabled()
+    await length.fill('12mm')
+    await expect(submit).toBeEnabled()
+    await expect
+      .poll(() =>
+        dialog.evaluate((element) => element.getBoundingClientRect().height)
+      )
+      .toBeCloseTo(initialHeight)
     const more = modelingDialog.advanced
     await more.click()
     await expect(submit).toBeInViewport()
@@ -344,12 +367,12 @@ body002 = clone(body001)
       .toBe(true)
     await expect(submit).toBeInViewport()
     await expect(dialog.locator('header')).toBeInViewport()
-    await page.setBodyDimensions({ width: 1200, height: 600 })
+    await page.setBodyDimensions({ width: 1200, height: 1000 })
     await expect
       .poll(() => dialog.boundingBox())
       .toMatchObject({
         width: initialPosition.width,
-        height: initialPosition.height,
+        height: initialHeight,
       })
     await submit.click()
     await expect(dialog).not.toBeAttached()
