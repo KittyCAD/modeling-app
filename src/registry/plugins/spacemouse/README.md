@@ -27,7 +27,8 @@ not prove that a physical SpaceMouse is plugged in.
 The driver reads and updates the shared local camera, its target, projection,
 and actual model/selection bounds in millimeters. There is no second camera
 and no engine camera round trip. Orthographic zoom keeps the camera's base
-frustum intact; perspective FOV is converted to/from the SDK's diagonal FOV.
+frustum intact; perspective vertical FOV is converted between degrees and the
+SDK's radians.
 
 Browser connections require the driver's certificate to be trusted. On macOS,
 Electron can also accept the exact, unexpired certificate installed at
