@@ -222,11 +222,7 @@ export function useEngineConnectionSubscriptions() {
                   : undefined
             if (!planeId) return
 
-            await selectSketchPlane(
-              planeId,
-              context.store.useSketchSolveMode?.current,
-              kclManager
-            )
+            selectSketchPlane(planeId, kclManager)
           })().catch(reportRejection)
           return
         }
@@ -254,11 +250,7 @@ export function useEngineConnectionSubscriptions() {
               }
             ).entity_id
             if (entityId) {
-              await selectSketchPlane(
-                entityId,
-                context.store.useSketchSolveMode?.current,
-                kclManager
-              )
+              selectSketchPlane(entityId, kclManager)
             }
           }
         })().catch(reportRejection)
@@ -271,7 +263,6 @@ export function useEngineConnectionSubscriptions() {
     }
   }, [
     context?.sketchEnginePathId,
-    context.store.useSketchSolveMode,
     kclManager,
     send,
     engineCommandManager,

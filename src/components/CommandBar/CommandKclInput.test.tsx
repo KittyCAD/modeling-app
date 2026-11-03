@@ -135,6 +135,7 @@ describe('CommandKclInput', () => {
             {...dependencies}
             name="length"
             label="Length"
+            labelAction={<button type="button">Help for Length</button>}
             arg={{ inputType: 'kcl', required: true }}
             value="5"
             selectionRanges={{ graphSelections: [], otherSelections: [] }}
@@ -157,6 +158,9 @@ describe('CommandKclInput', () => {
     onLengthChange.mockClear()
     onAngleChange.mockClear()
     const length = screen.getByRole('textbox', { name: 'Length' })
+    expect(
+      screen.getByRole('button', { name: 'Help for Length' }).closest('label')
+    ).toBeNull()
     const angle = screen.getByRole('textbox', { name: 'Angle' })
     await act(async () => {
       EditorView.findFromDOM(length)?.dispatch({

@@ -57,6 +57,7 @@ extrude001 = extrude(sketch001, length = 5)`
     page,
     homePage,
     context,
+    editor,
   }) => {
     // Load the app with the working starter code
     await context.addInitScript((code) => {
@@ -71,6 +72,7 @@ extrude001 = extrude(sketch001, length = 5)`
     await expect(codePaneButtonHolder).toContainText('notification', {
       timeout: 20_000,
     })
+    await expect(editor.codeContent).toBeVisible()
 
     // Ensure we have no errors in the gutter, since error out of view.
     await expect(page.locator('.cm-lint-marker-error')).not.toBeInViewport()
@@ -81,6 +83,19 @@ extrude001 = extrude(sketch001, length = 5)`
     await badge.click()
 
     // Ensure we have an error diagnostic.
+    await expect(editor.codeContent).toBeVisible()
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeInViewport()
+
+    // Repeated navigation to an error must keep the code pane open.
+    await badge.click()
+    await expect(editor.codeContent).toBeVisible()
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeInViewport()
+
+    // The same notification must also open a closed code pane.
+    await editor.closePane()
+    await expect(editor.codeContent).not.toBeVisible()
+    await badge.click()
+    await expect(editor.codeContent).toBeVisible()
     await expect(page.locator('.cm-lint-marker-error').first()).toBeInViewport()
 
     // Hover over the error to see the error message

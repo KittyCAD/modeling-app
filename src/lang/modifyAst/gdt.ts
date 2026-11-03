@@ -57,6 +57,7 @@ const GDT_LABELED_SELECTION_ARG_NAMES = [
 function setCallInAst(args: Parameters<typeof setBaseCallInAst>[0]) {
   return setBaseCallInAst({
     ...args,
+    variableIfNewDecl: 'note',
     labeledSelectionArgNames: GDT_LABELED_SELECTION_ARG_NAMES,
   })
 }
@@ -503,14 +504,11 @@ export function addFlatnessGdt({
     )
 
     // Insert the function call into the AST at the appropriate location
-    // Using undefined for variableIfNewDecl so it creates an expression statement
-    // This ensures GDT annotations are always added at the end
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call,
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined, // GDT annotations don't pipe
-      variableIfNewDecl: undefined, // Creates expression statement at the end
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -630,7 +628,6 @@ export function addStraightnessGdt({
       call: createStraightnessCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -645,7 +642,6 @@ export function addStraightnessGdt({
       call: createStraightnessCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -764,7 +760,6 @@ export function addCircularityGdt({
       call: createCircularityCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -779,7 +774,6 @@ export function addCircularityGdt({
       call: createCircularityCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -898,7 +892,6 @@ export function addCylindricityGdt({
       call: createCylindricityCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -913,7 +906,6 @@ export function addCylindricityGdt({
       call: createCylindricityCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -1035,7 +1027,6 @@ export function addPositionGdt({
       call: createPositionCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -1050,7 +1041,6 @@ export function addPositionGdt({
       call: createPositionCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -1243,7 +1233,6 @@ export function addProfileGdt({
       call: createProfileCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -1258,7 +1247,6 @@ export function addProfileGdt({
       call: createProfileCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -1539,7 +1527,6 @@ export function addDistanceGdt({
     call,
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: undefined,
-    variableIfNewDecl: undefined,
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -1656,7 +1643,6 @@ export function addPerpendicularityGdt({
       call: createPerpendicularityCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -1671,7 +1657,6 @@ export function addPerpendicularityGdt({
       call: createPerpendicularityCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -1794,7 +1779,6 @@ export function addAngularityGdt({
       call: createAngularityCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -1809,7 +1793,6 @@ export function addAngularityGdt({
       call: createAngularityCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -1928,7 +1911,6 @@ export function addConcentricityGdt({
       call: createConcentricityCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -1943,7 +1925,6 @@ export function addConcentricityGdt({
       call: createConcentricityCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -2062,7 +2043,6 @@ export function addSymmetryGdt({
       call: createSymmetryCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -2077,7 +2057,6 @@ export function addSymmetryGdt({
       call: createSymmetryCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -2196,7 +2175,6 @@ export function addRunoutGdt({
       call: createRunoutCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -2211,7 +2189,6 @@ export function addRunoutGdt({
       call: createRunoutCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -2334,7 +2311,6 @@ export function addParallelismGdt({
       call: createParallelismCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -2349,7 +2325,6 @@ export function addParallelismGdt({
       call: createParallelismCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -2443,7 +2418,6 @@ export function addAnnotationGdt({
       call: createAnnotationCall('faces', faceExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -2458,7 +2432,6 @@ export function addAnnotationGdt({
       call: createAnnotationCall('edges', edgeExpr),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
       wasmInstance,
     })
     if (err(pathToNode)) {
@@ -2540,7 +2513,6 @@ export function addNoteGdt({
     call,
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: undefined,
-    variableIfNewDecl: undefined,
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -2681,7 +2653,6 @@ export function addDatumGdt({
     call,
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: undefined, // GDT annotations don't pipe
-    variableIfNewDecl: undefined, // Creates expression statement at the end
     wasmInstance,
   })
   if (err(pathToNode)) {

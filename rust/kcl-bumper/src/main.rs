@@ -9,6 +9,7 @@ use toml_edit::value;
 
 /// Deps that need to be updated in lock-step.
 const KCL_API_DEPS: [&str; 1] = ["kcl-error"];
+const KCL_GRAMMAR_DEPS: [&str; 1] = ["kcl-syntax"];
 const KCL_LANGUAGE_SERVER_DEPS: [&str; 1] = ["kcl-lib"];
 const KCL_LANGUAGE_SERVER_DEV_DEPS: [&str; 1] = ["kcl-lib"];
 const KCL_LIB_DEPS: [&str; 5] = [
@@ -58,6 +59,9 @@ fn run_on_manifest(manifest_path: std::path::PathBuf, args: &Args) -> Result<()>
         match crate_name.as_ref() {
             "kcl-api" => {
                 update_dependency_versions(&crate_name, &KCL_API_DEPS, &[], &mut doc, next_version);
+            }
+            "kcl-grammar" => {
+                update_dependency_versions(&crate_name, &KCL_GRAMMAR_DEPS, &[], &mut doc, next_version);
             }
             "kcl-lib" => {
                 update_dependency_versions(&crate_name, &KCL_LIB_DEPS, &KCL_LIB_DEV_DEPS, &mut doc, next_version);

@@ -28,6 +28,7 @@ import {
 export default function AxisGizmo() {
   const { settings } = useApp()
   const { kclManager } = useSingletons()
+  const { sceneInfra } = kclManager
   const { state: modelingState } = useModelingContext()
   const settingsValues = settings.useSettings()
   const wrapperRef = useRef<HTMLDivElement | null>(null)
@@ -115,7 +116,7 @@ export default function AxisGizmo() {
     }
 
     const clock = new Clock()
-    const clientCamera = kclManager.sceneInfra.camControls.camera
+    const clientCamera = sceneInfra.camControls.camera
     const currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
     const mouse = new Vector2()
     mouse.x = 1 // fix initial mouse position issue
@@ -126,9 +127,7 @@ export default function AxisGizmo() {
       }
 
       isHoverRefreshPausedRef.current = false
-      currentQuaternion.copy(
-        kclManager.sceneInfra.camControls.camera.quaternion
-      )
+      currentQuaternion.copy(sceneInfra.camControls.camera.quaternion)
       camera.position.set(0, 0, 1).applyQuaternion(currentQuaternion)
       camera.quaternion.copy(currentQuaternion)
       if (isPointerOverRef.current) {
@@ -140,7 +139,7 @@ export default function AxisGizmo() {
     const onAxisClick = (axisName: AxisNames) => {
       isHoverRefreshPausedRef.current = true
       resetRayCast()
-      void kclManager.sceneInfra.camControls
+      void sceneInfra.camControls
         .updateCameraToAxis(axisName)
         .catch(reportRejection)
         .finally(refreshHoverAfterCameraUpdate)
@@ -163,7 +162,7 @@ export default function AxisGizmo() {
       updateCameraOrientation(
         camera,
         currentQuaternion,
-        kclManager.sceneInfra.camControls.camera.quaternion,
+        sceneInfra.camControls.camera.quaternion,
         delta,
         cameraPassiveUpdateTimer
       )
@@ -173,10 +172,10 @@ export default function AxisGizmo() {
         renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
       }
     }
-    kclManager.sceneInfra.camControls.cameraChange.add(animate)
+    sceneInfra.camControls.cameraChange.add(animate)
 
     // Initialize camera orientation/position to match main camera for immediate render
-    const q = kclManager.sceneInfra.camControls.camera.quaternion
+    const q = sceneInfra.camControls.camera.quaternion
     camera.position.set(0, 0, 1).applyQuaternion(q)
     camera.quaternion.copy(q)
     renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
@@ -188,9 +187,9 @@ export default function AxisGizmo() {
       renderer.forceContextLoss()
       renderer.dispose()
       disposeMouseEvents()
-      kclManager.sceneInfra.camControls.cameraChange.remove(animate)
+      sceneInfra.camControls.cameraChange.remove(animate)
     }
-  }, [kclManager.sceneInfra])
+  }, [sceneInfra])
 
   return (
     <div

@@ -15,6 +15,8 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
+  /** Arguments contributed by nested stdlib calls, such as a named view's camera. */
+  additionalStdLibNames?: readonly StdLibCommandName[]
   /**
    * Additional command-bar arguments that are not KCL stdlib arguments. These
    * usually split one KCL value into easier UI inputs.
@@ -53,6 +55,7 @@ type StdLibCommandArgOverride = Partial<
   Record<string, unknown>
 
 type StdLibCommandArgsOptions = {
+  additionalStdLibNames?: readonly StdLibCommandName[]
   omitted?: readonly string[]
   includeDeprecated?: readonly string[]
   argAliases?: Readonly<Record<string, string>>
@@ -182,29 +185,40 @@ function orderCommandArgs(
   return orderedArgs
 }
 
+export function stdLibCommandSources(
+  config: Pick<StdLibCommandDriftConfig, 'stdLibName' | 'additionalStdLibNames'>
+) {
+  return [config.stdLibName, ...(config.additionalStdLibNames ?? [])].map(
+    (name) => STD_LIB_COMMANDS[name]
+  )
+}
+
 export function stdLibCommandArgs<CommandArgs extends object>(
   stdLibName: StdLibCommandName,
   options: StdLibCommandArgsOptions = {}
 ): CommandArgConfigs<CommandArgs> {
   const omitted = new Set(options.omitted ?? [])
   const includeDeprecated = new Set(options.includeDeprecated ?? [])
-  const args: Record<string, Record<string, unknown>> = Object.fromEntries(
-    STD_LIB_COMMANDS[stdLibName].args
-      .filter(
-        (arg) => !isDeprecatedStdLibArg(arg) || includeDeprecated.has(arg.name)
-      )
-      .filter((arg) => !omitted.has(arg.name))
-      .map((arg) => {
-        const commandArgName = options.argAliases?.[arg.name] ?? arg.name
-        return [
-          commandArgName,
-          {
-            ...stdLibArgBaseConfig(arg, commandArgName),
-            ...(options.overrides?.[commandArgName] ?? {}),
-          },
-        ]
-      })
-  )
+  const args: Record<string, Record<string, unknown>> = {}
+  for (const arg of stdLibCommandSources({
+    stdLibName,
+    additionalStdLibNames: options.additionalStdLibNames,
+  })
+    .flatMap<StdLibCommandArg>((command) => command.args)
+    .filter(
+      (arg) => !isDeprecatedStdLibArg(arg) || includeDeprecated.has(arg.name)
+    )
+    .filter((arg) => !omitted.has(arg.name))) {
+    const commandArgName = options.argAliases?.[arg.name] ?? arg.name
+    args[commandArgName] = {
+      ...stdLibArgBaseConfig(arg, commandArgName),
+      // Merged fields don't represent a single stdlib argument.
+      documentation: Object.hasOwn(args, commandArgName)
+        ? undefined
+        : arg.docs?.trim() || undefined,
+      ...(options.overrides?.[commandArgName] ?? {}),
+    }
+  }
 
   for (const [argName, override] of Object.entries(options.overrides ?? {})) {
     args[argName] ??= override
@@ -246,6 +260,20 @@ export function stdLibDocsLink(
 }
 
 export const modelingCommandStdLibDriftConfig = {
+  'Named View': {
+    stdLibName: 'view::named',
+    additionalStdLibNames: ['view::oriented'],
+    uiOnlyArgs: ['cameraMode'],
+    editFlow: true,
+    flowArgOrder: [
+      'name',
+      'cameraMode',
+      'camera',
+      'orientation',
+      'projection',
+      'baseline',
+    ],
+  },
   Extrude: {
     stdLibName: 'extrude',
     editFlow: true,
@@ -668,6 +696,17 @@ export function modelingStdLibCall(
   return { name, path: parts }
 }
 
+export function modelingStdLibCommandAvailable(
+  commandName: ModelingStdLibCommandName,
+  context: ModelingMachineContext
+) {
+  return isKclVersionAvailable(
+    context.kclManager.kclProgramVersionSignal.peek(),
+    STD_LIB_COMMANDS[modelingStdLibCommandName(commandName)],
+    context.wasmInstance
+  )
+}
+
 export function modelingStdLibCommandArgs<CommandArgs extends object>(
   commandName: keyof typeof modelingCommandStdLibDriftConfig,
   options: Pick<StdLibCommandArgsOptions, 'overrides'> = {}
@@ -677,6 +716,7 @@ export function modelingStdLibCommandArgs<CommandArgs extends object>(
   ] as StdLibCommandDriftConfig
 
   return stdLibCommandArgs<CommandArgs>(driftConfig.stdLibName, {
+    additionalStdLibNames: driftConfig.additionalStdLibNames,
     omitted: driftConfig.omittedStdLibArgs,
     includeDeprecated: driftConfig.deprecatedStdLibArgs,
     argAliases: driftConfig.argAliases,
@@ -715,19 +755,21 @@ export function modelingStdLibCommandUsesExperimentalFeatures(
   const driftConfig = modelingCommandStdLibDriftConfig[
     commandName
   ] as StdLibCommandDriftConfig
-  const stdLibCommand = STD_LIB_COMMANDS[driftConfig.stdLibName]
+  const sources = stdLibCommandSources(driftConfig)
 
-  if (stdLibCommand.experimental) {
+  if (sources.some((command) => command.experimental)) {
     return true
   }
 
   const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
-  return stdLibCommand.args.some((arg) => {
-    if (!arg.experimental || omittedStdLibArgs.has(arg.name)) {
-      return false
-    }
+  return sources
+    .flatMap<StdLibCommandArg>((command) => command.args)
+    .some((arg) => {
+      if (!arg.experimental || omittedStdLibArgs.has(arg.name)) {
+        return false
+      }
 
-    const commandArgName = driftConfig.argAliases?.[arg.name] ?? arg.name
-    return commandArgs[commandArgName] !== undefined
-  })
+      const commandArgName = driftConfig.argAliases?.[arg.name] ?? arg.name
+      return commandArgs[commandArgName] !== undefined
+    })
 }

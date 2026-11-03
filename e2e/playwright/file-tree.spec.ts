@@ -22,6 +22,67 @@ const exists = async (
   }
 }
 
+test(
+  'opens and saves text files from the project explorer',
+  { tag: ['@desktop', '@windows'] },
+  async ({ folderSetupFn, fs, homePage, toolbar, page }) => {
+    const projectName = 'text-files'
+    const encoder = new TextEncoder()
+    const { dir } = await folderSetupFn(async (dir) => {
+      const projectPath = await fs.join(dir, projectName)
+      await fs.mkdir(projectPath, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectPath, 'main.kcl'),
+        encoder.encode('@settings(kclVersion = 3.0)\n')
+      )
+      await fs.writeFile(
+        await fs.join(projectPath, 'config.toml'),
+        encoder.encode('\ufefftitle = "Example"\r\n')
+      )
+      await fs.writeFile(
+        await fs.join(projectPath, 'config'),
+        encoder.encode('No extension')
+      )
+    })
+    await homePage.openProject(projectName)
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
+
+    const textEditor = page.locator('#code-pane').getByRole('textbox')
+    await toolbar.openFile('config.toml')
+    await expect(textEditor).toContainText('title = "Example"')
+    await textEditor.press('ControlOrMeta+End')
+    await textEditor.pressSequentially('enabled = true')
+    await textEditor.press('Enter')
+    await page.evaluate(() => navigator.clipboard.writeText('count = 2\n'))
+    await textEditor.press('ControlOrMeta+KeyV')
+    const textFilePath = await fs.join(dir, projectName, 'config.toml')
+    await expect
+      .poll(async () => Array.from(await fs.readFile(textFilePath)))
+      .toEqual(
+        Array.from(
+          encoder.encode(
+            '\ufefftitle = "Example"\r\nenabled = true\r\ncount = 2\r\n'
+          )
+        )
+      )
+
+    await toolbar.openFile('config')
+    await expect(textEditor).toHaveText('No extension')
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
+    const tree = page.getByRole('tree', { name: 'Files Explorer' })
+    await tree.press('ArrowDown')
+    await expect(
+      page.getByRole('treeitem', { name: 'config', exact: true })
+    ).toHaveAttribute('aria-selected', 'true')
+    await tree.press('Enter')
+    await expect(textEditor).toHaveText('No extension')
+
+    await toolbar.openFile('main.kcl')
+    await expect(page.locator('.cm-content[data-language="kcl"]')).toBeVisible()
+  }
+)
+
 test.describe('desktop fixture isolation', { tag: ['@desktop'] }, () => {
   test('does not run init scripts outside the test that registered them', async ({
     page,

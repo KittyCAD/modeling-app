@@ -24,20 +24,12 @@ import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { billingService } from '@src/registry/contracts/billing'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-
-// Modeling imports UI factories, but these headless tests must never bootstrap
-// the global browser App or replace their configured filesystem.
-vi.mock('@src/lib/boot', () => ({
-  useApp: vi.fn(),
-  useSingletons: vi.fn(),
-}))
 
 const mockProject: Project = {
   name: 'test',
@@ -306,6 +298,71 @@ describe('project system', () => {
     }
   })
 
+  it('follows the executing project editor and releases it on close', async () => {
+    const app = createAppForTest()
+    try {
+      await waitForSettingsIdle(app)
+      const execution = app.registry.get(projectSession).executingEditor
+      expect(execution.value).toBeUndefined()
+      const project = await app.openProject(mockProject)
+      expect(execution.value).toBeUndefined()
+      const first = await project.openEditor(
+        '/some-dir/test/main.kcl',
+        undefined,
+        ''
+      )
+      const second = await project.openEditor(
+        '/some-dir/test/other.kcl',
+        undefined,
+        '',
+        false
+      )
+      const firstExecute = vi
+        .spyOn(first, 'executeCode')
+        .mockResolvedValue(undefined)
+      const secondExecute = vi
+        .spyOn(second, 'executeCode')
+        .mockResolvedValue(undefined)
+      const firstUpdate = vi.spyOn(first, 'updateCodeEditor')
+      const secondUpdate = vi.spyOn(second, 'updateCodeEditor')
+      const firstHandle = execution.value!
+      expect(firstHandle.code).toBe(first.codeSignal)
+      await firstHandle.executeCode()
+      expect(firstExecute).toHaveBeenCalledTimes(1)
+
+      project.executingPath = second.path
+      const secondHandle = execution.value!
+      expect(secondHandle.code).toBe(second.codeSignal)
+      await firstHandle.executeCode()
+      firstHandle.updateCode('stale')
+      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(firstUpdate).not.toHaveBeenCalled()
+      secondHandle.updateCode('current')
+      await secondHandle.executeCode()
+      expect(secondUpdate).toHaveBeenCalledWith('current', undefined)
+      expect(secondExecute).toHaveBeenCalledTimes(1)
+
+      project.closeEditor(second.path)
+      expect(execution.value).toBeUndefined()
+      await secondHandle.executeCode()
+      secondHandle.updateCode('closed')
+      expect(secondExecute).toHaveBeenCalledTimes(1)
+      expect(secondUpdate).toHaveBeenCalledTimes(1)
+      project.executingPath = first.path
+      expect(execution.value?.code).toBe(first.codeSignal)
+      project.closeAllEditors()
+      expect(execution.value).toBeUndefined()
+      await app.openProject({
+        ...mockProject,
+        name: 'other',
+        path: '/some-dir/other',
+      })
+      expect(execution.value).toBeUndefined()
+    } finally {
+      app.dispose()
+    }
+  })
+
   it('does not replay scene settings when selecting the executing editor again', async () => {
     const app = createAppForTest()
     try {
@@ -419,86 +476,6 @@ describe('project system', () => {
       expect(firstExecute).toHaveBeenCalledTimes(1)
       expect(secondExecute).toHaveBeenCalledTimes(1)
     } finally {
-      app.dispose()
-    }
-  })
-
-  it('resolves editor metadata from the open project signal without consulting SystemIO', async () => {
-    const app = createAppForTest()
-    const read = vi
-      .spyOn(app.registry.get(projectSession).textFileIO, 'read')
-      .mockResolvedValue('')
-    let restoreSnapshot = () => {}
-    try {
-      expect(
-        app.singletons.kclManager.modelingProjectRef.current
-      ).toBeUndefined()
-      const project = await app.openProject(mockProject)
-      const editor = await project.openEditor(
-        fsZds.join(project.path, 'main.kcl'),
-        undefined,
-        '',
-        false
-      )
-      const getSnapshot = vi.spyOn(app.systemIOActor, 'getSnapshot')
-      restoreSnapshot = () => getSnapshot.mockRestore()
-      for (const title of ['Opened project', 'Updated project']) {
-        project.projectIORefSignal.value = {
-          ...project.projectIORefSignal.value,
-          title,
-        }
-        getSnapshot.mockClear()
-        expect(app.singletons.kclManager.modelingProjectRef.current).toBe(
-          project.projectIORefSignal.value
-        )
-        expect(editor.modelingProjectRef.current).toBe(
-          project.projectIORefSignal.value
-        )
-        expect(getSnapshot).not.toHaveBeenCalled()
-      }
-    } finally {
-      restoreSnapshot()
-      read.mockRestore()
-      app.dispose()
-    }
-  })
-
-  it('rebinds the legacy editor to the next owning project signal', async () => {
-    const app = createAppForTest()
-    const read = vi
-      .spyOn(app.registry.get(projectSession).textFileIO, 'read')
-      .mockResolvedValue('')
-    const editor = app.singletons.kclManager
-    try {
-      const first = await app.openProject(mockProject)
-      await first.openEditor(
-        fsZds.join(first.path, 'main.kcl'),
-        editor,
-        '',
-        false
-      )
-      expect(editor.systemDeps.project === first.projectIORefSignal).toBe(true)
-      const next = await app.openProject({
-        ...mockProject,
-        name: 'next',
-        path: '/some-dir/next',
-      })
-      await next.openEditor(
-        fsZds.join(next.path, 'main.kcl'),
-        editor,
-        '',
-        false
-      )
-      expect(editor.systemDeps.project === next.projectIORefSignal).toBe(true)
-      first.projectIORefSignal.value = {
-        ...first.projectIORefSignal.value,
-        title: 'Old project',
-      }
-      expect(editor.modelingProjectRef.current).toBe(
-        next.projectIORefSignal.value
-      )
-    } finally {
-      read.mockRestore()
       app.dispose()
     }
   })
@@ -886,10 +863,8 @@ describe('project system', () => {
         ])
       )
       expect(
-        app.registry.get(executingEditorService).hasEditsSinceLastExecution
-          .value
-      ).toBe(false)
-      expect(app.registry.get(executingEditorService).code.value).toBe('')
+        app.registry.get(projectSession).executingEditor.value
+      ).toBeUndefined()
 
       const textEditorSettings = app.settings.get().textEditor as Record<
         string,

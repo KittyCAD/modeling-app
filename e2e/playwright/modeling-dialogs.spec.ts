@@ -8,7 +8,129 @@ sketch001 = sketch(on = XY) {
 region001 = region(segments = [sketch001.circle1])`
 
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
-  test.use({ userFeatures: ['modeling_dialogs'] })
+  test('Submits with Enter after scene selection', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const code = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XZ) {
+  circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
+}`
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await scene.moveCameraTo({ x: 0, y: -100, z: 0 })
+    await editor.selectText('sketch(on = XZ)')
+    await toolbar.extrudeButton.click()
+    await expect(modelingDialog.selection('Profiles')).toBeFocused()
+    await expect(modelingDialog.selection('Profiles')).toHaveText(
+      'Select in the scene'
+    )
+    await expect(modelingDialog.submitButton).toBeDisabled()
+    // Reproduce the reported sticky-Shift flow: clicking a region can retain
+    // the editor's sketch selection, which Extrude Profiles must reject.
+    await editor.selectText('sketch(on = XZ)')
+    const [selectProfile] = scene.makeMouseHelpers(0.38, 0.5, {
+      format: 'ratio',
+    })
+    await page.keyboard.down('Shift')
+    try {
+      await selectProfile()
+      await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
+    } finally {
+      await page.keyboard.up('Shift')
+    }
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await expect(modelingDialog.selection('Profiles')).not.toBeFocused()
+    await scene.waitForExecutionDoneAfter(async () => {
+      await page.keyboard.press('Enter')
+      await expect(modelingDialog.locator).not.toBeAttached()
+    })
+    await editor.expectEditor.toContain('extrude(region001, length = 5)')
+    await expect(editor.activeLine).toHaveText(
+      'extrude001 = extrude(region001, length = 5)'
+    )
+  })
+
+  test('Command palette opens Extrude dialog with variable and optional inputs', async ({
+    homePage,
+    scene,
+    editor,
+    cmdBar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', `${profileCode}\nlength = 10mm`)
+    )
+    // Close the editor so the palette offers modeling commands.
+    await editor.closePane()
+    await cmdBar.openCmdBar()
+    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
+    await expect(modelingDialog.locator).toHaveAttribute(
+      'aria-label',
+      'Extrude'
+    )
+    await expect(modelingDialog.submitButton).toBeDisabled()
+    await editor.selectText('region001 = region')
+    await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
+    await expect(modelingDialog.input('length')).toHaveText('5')
+    await modelingDialog.variableCheckbox('length').check()
+    await expect(
+      modelingDialog.locator.getByRole('textbox', {
+        name: 'Variable name',
+        exact: true,
+      })
+    ).toHaveValue('length001')
+
+    const bidirectionalLength = modelingDialog.input('bidirectional length')
+    await bidirectionalLength.fill('10')
+    await expect(bidirectionalLength).toHaveText('10')
+    await bidirectionalLength.fill('')
+    await expect(bidirectionalLength).toHaveAttribute(
+      'aria-placeholder',
+      'Use defaults'
+    )
+    await modelingDialog.submit()
+    await scene.settled()
+    await editor.expectEditor.toContain('length001 = 5')
+    await editor.expectEditor.toContain(
+      'extrude001 = extrude(region001, length = length001)'
+    )
+  })
+
+  test('Can cancel a modeling dialog with an unfinished optional input', async ({
+    homePage,
+    scene,
+    editor,
+    cmdBar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', profileCode)
+    )
+    await editor.closePane()
+    await cmdBar.openCmdBar()
+    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
+    await expect(modelingDialog.locator).toHaveAttribute(
+      'aria-label',
+      'Extrude'
+    )
+    await editor.selectText('region001 = region')
+    await modelingDialog.options('body type').selectOption({ label: 'Surface' })
+    await modelingDialog.input('bidirectional length').fill('1 +')
+    await expect(modelingDialog.submitButton).toBeDisabled()
+    await modelingDialog.cancelButton.click()
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await editor.expectEditor.not.toContain('extrude(')
+  })
 
   test('Preserves an Extrude draft while hiding an obstruction', async ({
     page,
@@ -33,10 +155,10 @@ obstruction = extrude(region002, length = 20mm)`
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await toolbar.openFeatureTreePane()
     await toolbar.extrudeButton.click()
-    const length = modelingDialog.input(/^length$/i)
+    const length = modelingDialog.input('length')
     const profiles = modelingDialog.selection('Profiles')
     await expect(length).toHaveText('5')
-    await length.fill('12mm')
+    await modelingDialog.fillInput('length', '12mm')
     await expect(profiles).toHaveText('Select in the scene')
 
     const row = page
@@ -71,7 +193,7 @@ obstruction = extrude(region002, length = 20mm)`
     await editor.expectEditor.toContain('extrude(region001, length = 12mm)')
   })
 
-  test('Uses dialogs for supported commands and the palette for mixed selections', async ({
+  test('Uses dialogs for supported modeling commands', async ({
     page,
     homePage,
     scene,
@@ -140,10 +262,57 @@ obstruction = extrude(region002, length = 20mm)`
     })
     await scene.settled()
 
+    await editor.selectText('revolve(')
     await toolbar.translateButton.click()
-    await expect(page.getByTestId('command-bar')).toBeVisible()
+    await expect(dialog).toBeVisible()
+    const xyz = modelingDialog.input(/^xyz$/i)
+    await modelingDialog.input(/^x$/i).fill('')
+    await xyz.fill('missingVector')
+    await expect(submit).toBeDisabled()
+    await xyz.fill('[1mm, 2mm, 3mm]')
+    await expect(submit).toBeEnabled()
+    await submit.click()
     await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('xyz = [1mm, 2mm, 3mm]')
+    await scene.settled()
+    await (await toolbar.getFeatureTreeOperation('Translate', 0)).dblclick()
+    await expect(xyz).toHaveText('[1mm, 2mm, 3mm]')
     await page.keyboard.press('Escape')
+  })
+
+  test('Keeps Boolean target and tool selections when switching collectors', async ({
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const bodiesCode = `${profileCode}
+body001 = extrude(region001, length = 10mm)
+body002 = clone(body001)
+  |> translate(x = 2mm)`
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', bodiesCode)
+    )
+    await editor.selectText('extrude(')
+    await toolbar.selectBoolean('subtract')
+    const solids = modelingDialog.selection('Solids')
+    const tools = modelingDialog.selection('Tools')
+    await expect(solids).toContainText(/1 sweep/i)
+    await tools.click()
+    await expect(tools).toHaveText('Select in the scene')
+    await editor.selectText('clone(')
+    await expect(tools).toContainText(/1 sweep/i)
+    await solids.click()
+    await expect(solids).toContainText(/1 sweep/i)
+    await tools.click()
+    await expect(tools).toContainText(/1 sweep/i)
+    await tools.press('Enter')
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await editor.expectEditor.toContain('subtract(body001, tools = body002)')
+    await scene.settled()
   })
 
   test('Creates and edits Extrude without losing collapsed fields or selection drafts', async ({
@@ -154,7 +323,7 @@ obstruction = extrude(region002, length = 20mm)`
     toolbar,
     modelingDialog,
   }) => {
-    await page.setBodyDimensions({ width: 1200, height: 600 })
+    await page.setBodyDimensions({ width: 1200, height: 1000 })
     await homePage.goToModelingScene()
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
@@ -168,14 +337,39 @@ obstruction = extrude(region002, length = 20mm)`
     const { locator: dialog, submitButton: submit } = modelingDialog
     const length = modelingDialog.input(/^length$/i)
     const profiles = modelingDialog.selection('Profiles')
+    const profileReferences = dialog.getByRole('group', {
+      name: 'Profiles selections',
+    })
+    const profileReference = profileReferences.getByText('region001', {
+      exact: true,
+    })
+    const removeProfile = profileReferences.getByRole('button', {
+      name: 'Remove Region from selection',
+    })
     const tagStart = modelingDialog.input(/^tag start$/i)
+    await expect(
+      dialog.getByText('Only parallel faces are supported for now.', {
+        exact: true,
+      })
+    ).toBeVisible()
     await expect(length).toHaveText('5')
     await expect(tagStart).toBeHidden()
     await expect(modelingDialog.options(/^symmetric$/i)).toBeVisible()
     await expect(profiles).toContainText(/1 region/i)
     await expect(profiles).toBeFocused()
     await page.keyboard.press('Tab')
+    await expect(removeProfile).toBeFocused()
+    await page.keyboard.press('Tab')
+    const lengthHelp = dialog.getByRole('button', {
+      name: 'Help for Length',
+      exact: true,
+    })
+    await expect(lengthHelp).toBeFocused()
+    await page.keyboard.press('Tab')
     await expect(length).toBeFocused()
+    await page.keyboard.press('Shift+Tab')
+    await expect(lengthHelp).toBeFocused()
+    await page.keyboard.press('Shift+Tab')
     await page.keyboard.press('Shift+Tab')
     await expect(profiles).not.toHaveCSS('box-shadow', 'none')
 
@@ -189,30 +383,54 @@ obstruction = extrude(region002, length = 20mm)`
     await expect(docs).not.toBeVisible()
     await expect(dialog).toBeVisible()
 
-    await page.getByRole('button', { name: 'Clear Profiles selection' }).click()
+    await modelingDialog.selection('To').click()
+    await expect(profiles).toContainText(/1 region/i)
+    await expect(profileReference).toBeHidden()
+    await profileReferences.getByText('Region', { exact: true }).hover()
+    await expect(profileReference).toBeVisible()
+    await profiles.hover()
+    await expect(profileReference).toBeHidden()
+    await profiles.click()
+    await removeProfile.press('Enter')
     await expect(profiles).toHaveText('Select in the scene')
-    await expect(profiles).toBeFocused()
     await expect(submit).toBeDisabled()
+    await expect(profiles).toBeFocused()
+    await expect(page.getByTestId('selection-status')).toContainText(
+      'No selection'
+    )
+    await editor.selectText('line(')
     await editor.selectText('region(')
     await expect(profiles).toContainText(/1 region/i)
 
-    await modelingDialog.selection('To').click()
-    await expect(profiles).toContainText(/1 region/i)
-    await profiles.click()
-    await expect(profiles).toContainText(/1 region/i)
-
-    await length.fill('missingLength')
-    await expect(submit).toBeDisabled()
-    await length.fill('12mm')
+    const initialHeight = await dialog.evaluate(
+      (element) => element.getBoundingClientRect().height
+    )
+    await length.fill('1deg')
     await expect(submit).toBeEnabled()
+    await submit.click()
+    await expect(dialog.getByRole('alert')).toContainText(
+      'Check these arguments'
+    )
+    await dialog.locator('header').scrollIntoViewIfNeeded()
     const initialPosition = await dialog.boundingBox()
     if (!initialPosition) throw new Error('Modeling dialog is not visible')
+    expect(initialPosition.height).toBeGreaterThan(initialHeight)
     await page.mouse.move(initialPosition.x + 20, initialPosition.y + 15)
     await page.mouse.down()
     await page.mouse.move(initialPosition.x - 140, initialPosition.y + 15)
     await page.mouse.up()
     await expect(dialog).toHaveCSS('position', 'fixed')
     expect((await dialog.boundingBox())?.x).toBeCloseTo(initialPosition.x - 160)
+    await length.fill('missingLength')
+    await expect(dialog.getByRole('alert')).not.toBeAttached()
+    await expect(submit).toBeDisabled()
+    await length.fill('12mm')
+    await expect(submit).toBeEnabled()
+    await expect
+      .poll(() =>
+        dialog.evaluate((element) => element.getBoundingClientRect().height)
+      )
+      .toBeCloseTo(initialHeight)
     const more = modelingDialog.advanced
     await more.click()
     await expect(submit).toBeInViewport()
@@ -238,12 +456,12 @@ obstruction = extrude(region002, length = 20mm)`
       .toBe(true)
     await expect(submit).toBeInViewport()
     await expect(dialog.locator('header')).toBeInViewport()
-    await page.setBodyDimensions({ width: 1200, height: 600 })
+    await page.setBodyDimensions({ width: 1200, height: 1000 })
     await expect
       .poll(() => dialog.boundingBox())
       .toMatchObject({
         width: initialPosition.width,
-        height: initialPosition.height,
+        height: initialHeight,
       })
     await submit.click()
     await expect(dialog).not.toBeAttached()

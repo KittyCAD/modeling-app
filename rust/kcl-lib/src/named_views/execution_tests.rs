@@ -6,6 +6,7 @@ use uuid::Uuid;
 
 use crate::ExecOutcome;
 use crate::Program;
+use crate::csg_test_fixtures::CsgFixture;
 use crate::errors::KclErrorWithOutputs;
 use crate::execution::KclValue;
 use crate::execution::SKETCH_OBJECT_META;
@@ -803,4 +804,95 @@ copyOnly = view::named(
             (sketch_id(&outcome, "anchorSketch"), true),
         ],
     );
+}
+
+async fn execute_csg_fixture(fixture: CsgFixture) -> ExecOutcome {
+    execute(fixture.source(), None).await
+}
+
+fn csg_outputs(outcome: &ExecOutcome) -> Vec<&Solid> {
+    match variable(outcome, "result") {
+        KclValue::Solid { value } => vec![value],
+        KclValue::HomArray { value, .. } => value
+            .iter()
+            .map(|value| value.as_solid().expect("every CSG result must be a solid"))
+            .collect(),
+        other => panic!("the CSG fixture must return solid bodies, received {other:?}"),
+    }
+}
+
+fn assert_csg_visibility(outcome: &ExecOutcome, sketches: &[&str], retained_tool: Option<&str>) {
+    let outputs = csg_outputs(outcome);
+    assert!(!outputs.is_empty(), "the CSG fixture must return at least one output");
+    for (target, baseline_hidden) in [
+        (ViewTarget::Default, false),
+        (named_target("Show except selected bodies", ModuleId::default()), false),
+        (named_target("Hide except selected bodies", ModuleId::default()), true),
+    ] {
+        let mut decisions = outputs
+            .iter()
+            .enumerate()
+            .map(|(index, output)| {
+                let hidden = if index == 0 { !baseline_hidden } else { baseline_hidden };
+                (output.id, hidden)
+            })
+            .collect::<Vec<_>>();
+        if let Some(name) = retained_tool {
+            decisions.push((solid(outcome, name).id, !baseline_hidden));
+        }
+        decisions.extend(sketches.iter().map(|name| (sketch_id(outcome, name), baseline_hidden)));
+        assert_visibility(outcome, target, &decisions);
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn csg_subtract_reused_outputs_have_complete_visibility() {
+    let outcome = execute_csg_fixture(CsgFixture::SubtractReusedOutputs).await;
+    let outputs = csg_outputs(&outcome);
+    assert_eq!(outputs.len(), 2, "the subtraction fixture must return two outputs");
+    assert!(
+        outputs.iter().any(|output| {
+            ["leftBody", "rightBody"]
+                .iter()
+                .any(|name| output.artifact_id == ArtifactId::from(solid(&outcome, name).id))
+        }),
+        "the subtraction must reuse a target's engine UUID as an output artifact ID"
+    );
+    assert_csg_visibility(&outcome, &["leftSketch", "rightSketch", "toolSketch"], None);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn csg_split_keep_tools_true_preserves_tool_visibility() {
+    let outcome = execute_csg_fixture(CsgFixture::SplitKeepToolsTrue).await;
+    assert_csg_visibility(&outcome, &["targetSketch", "cutterSketch"], Some("cutter"));
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn csg_split_keep_tools_false_excludes_tool_visibility() {
+    let outcome = execute_csg_fixture(CsgFixture::SplitKeepToolsFalse).await;
+    assert_csg_visibility(&outcome, &["targetSketch", "cutterSketch"], None);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn csg_split_keep_tools_omitted_excludes_tool_visibility() {
+    let outcome = execute_csg_fixture(CsgFixture::SplitKeepToolsDefault).await;
+    assert_csg_visibility(&outcome, &["targetSketch", "cutterSketch"], None);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn csg_split_keep_tools_true_preserves_composite_tool_visibility() {
+    let outcome = execute_csg_fixture(CsgFixture::SplitCompositeToolKeepToolsTrue).await;
+    assert_csg_visibility(&outcome, &["targetSketch", "cutterSketch"], Some("compositeCutter"));
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn csg_split_keep_tools_false_excludes_composite_tool_visibility() {
+    let outcome = execute_csg_fixture(CsgFixture::SplitCompositeToolKeepToolsFalse).await;
+    assert_csg_visibility(&outcome, &["targetSketch", "cutterSketch"], None);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn csg_split_keep_tools_true_merge_preserves_tool_visibility() {
+    let outcome = execute_csg_fixture(CsgFixture::SplitKeepToolsTrueMerge).await;
+    assert_csg_visibility(&outcome, &["targetSketch", "cutterSketch"], Some("cutter"));
 }

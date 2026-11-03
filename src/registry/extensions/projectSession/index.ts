@@ -3,7 +3,7 @@ import {
   defineRegistryItemFactory,
   provideService,
 } from '@kittycad/registry'
-import { signal } from '@preact/signals-core'
+import { computed, signal } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lib/projectSession'
 import {
   createTextFileIO,
@@ -17,6 +17,23 @@ import {
 
 export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const project = signal<ZDSProject | undefined>(undefined)
+  const executingEditor = computed(() => {
+    const currentProject = project.value
+    const editor = currentProject?.executingEditor.value
+    if (!currentProject || !editor) return undefined
+    const execution = editor.execution
+    const isCurrent = () =>
+      project.peek() === currentProject &&
+      currentProject.executingEditor.peek() === editor
+    return {
+      ...execution,
+      executeCode: (code?: string) =>
+        isCurrent() ? execution.executeCode(code) : Promise.resolve(),
+      updateCode: (...args: Parameters<typeof execution.updateCode>) => {
+        if (isCurrent()) execution.updateCode(...args)
+      },
+    }
+  })
   const currentProjectLibraryId = signal<string | undefined>(undefined)
   let textFileIO: TextFileIO | undefined
   const electron = window.electron
@@ -33,6 +50,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       ))
     },
     project,
+    executingEditor,
     currentProjectLibraryId,
     getProject: () => project.value,
     setProject: (nextProject) => {

@@ -23,10 +23,10 @@ description: Variables in memory after executing member_expression_order_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 831,
-            "end": 837,
+            "commentStart": 821,
+            "end": 827,
             "moduleId": 0,
-            "start": 831,
+            "start": 821,
             "type": "TagDeclarator",
             "value": "bottom"
           },
@@ -37,10 +37,10 @@ description: Variables in memory after executing member_expression_order_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 905,
-            "end": 910,
+            "commentStart": 895,
+            "end": 900,
             "moduleId": 0,
-            "start": 905,
+            "start": 895,
             "type": "TagDeclarator",
             "value": "right"
           },
@@ -51,10 +51,10 @@ description: Variables in memory after executing member_expression_order_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 979,
-            "end": 982,
+            "commentStart": 969,
+            "end": 972,
             "moduleId": 0,
-            "start": 979,
+            "start": 969,
             "type": "TagDeclarator",
             "value": "top"
           },
@@ -65,10 +65,10 @@ description: Variables in memory after executing member_expression_order_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1052,
-            "end": 1056,
+            "commentStart": 1042,
+            "end": 1046,
             "moduleId": 0,
-            "start": 1052,
+            "start": 1042,
             "type": "TagDeclarator",
             "value": "left"
           },
@@ -90,10 +90,10 @@ description: Variables in memory after executing member_expression_order_v3.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 831,
-              "end": 837,
+              "commentStart": 821,
+              "end": 827,
               "moduleId": 0,
-              "start": 831,
+              "start": 821,
               "type": "TagDeclarator",
               "value": "bottom"
             },
@@ -114,10 +114,10 @@ description: Variables in memory after executing member_expression_order_v3.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 905,
-              "end": 910,
+              "commentStart": 895,
+              "end": 900,
               "moduleId": 0,
-              "start": 905,
+              "start": 895,
               "type": "TagDeclarator",
               "value": "right"
             },
@@ -138,10 +138,10 @@ description: Variables in memory after executing member_expression_order_v3.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 979,
-              "end": 982,
+              "commentStart": 969,
+              "end": 972,
               "moduleId": 0,
-              "start": 979,
+              "start": 969,
               "type": "TagDeclarator",
               "value": "top"
             },
@@ -162,10 +162,10 @@ description: Variables in memory after executing member_expression_order_v3.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 1052,
-              "end": 1056,
+              "commentStart": 1042,
+              "end": 1046,
               "moduleId": 0,
-              "start": 1052,
+              "start": 1042,
               "type": "TagDeclarator",
               "value": "left"
             },

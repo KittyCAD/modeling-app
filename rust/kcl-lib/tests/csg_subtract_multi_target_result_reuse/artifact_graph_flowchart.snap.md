@@ -37,8 +37,6 @@ flowchart LR
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   subgraph path33 [Path]
-    33["Path Region<br>[971, 1015, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
     34["Segment<br>[971, 1015, 0]"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
     35["Segment<br>[971, 1015, 0]"]
@@ -98,6 +96,8 @@ flowchart LR
   26["SweepEdge Adjacent"]
   27["Plane<br>[532, 949, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  33["CompositeSolid Subtract<br>[1574, 1621, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   38["Sweep Extrusion<br>[963, 1028, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   39[Wall]
@@ -194,7 +194,7 @@ flowchart LR
   7 --- 10
   7 --- 11
   7 ---- 12
-  7 x--> 33
+  7 --- 33
   7 <--x 79
   8 --- 13
   8 x--> 17
@@ -243,24 +243,22 @@ flowchart LR
   23 <--x 18
   25 <--x 18
   27 --- 28
-  27 <--x 33
   27 <--x 85
   28 --- 29
   28 --- 30
   28 --- 31
   28 --- 32
-  28 <--x 33
   85 --- 28
   29 <--x 34
   30 <--x 35
   31 <--x 36
   32 <--x 37
-  33 --- 34
-  33 --- 35
-  33 --- 36
-  33 --- 37
-  33 ---- 38
-  59 <--x 33
+  33 <--x 34
+  33 <--x 35
+  33 <--x 36
+  33 <--x 37
+  33 <--x 38
+  59 --- 33
   33 <--x 79
   34 --- 39
   34 x--> 43

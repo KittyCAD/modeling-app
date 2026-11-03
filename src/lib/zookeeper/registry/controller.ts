@@ -29,6 +29,7 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom, Subscription } from 'xstate'
 
@@ -116,6 +117,9 @@ class SessionController implements ZookeeperSessionController {
   private readonly savingConversationIds = new Set<string>()
   private steeredId: string | null = null
   private stopProjectEffect: (() => void) | undefined
+  private stopFileWriteProgressEffect: (() => void) | undefined
+  private readonly fileWriteToastId =
+    `zookeeper-file-write:${crypto.randomUUID()}`
   private wasPromptRunning = false
 
   private readonly history: ZookeeperEditPatchHistory
@@ -143,12 +147,31 @@ class SessionController implements ZookeeperSessionController {
       isSessionCurrent: () => this.active && this.getZdsProject() !== undefined,
       kclManager: deps.kclManager,
       systemIOActor: deps.systemIO.actor,
+      onQueueIdle: () => {
+        const snapshot = this.actor.getSnapshot()
+        this.continueCheck(snapshot, this.resumeInterruptedTurnPending)
+        this.flushQueue(snapshot)
+      },
       onEditApplied: (response) => {
         this.actor.send({
           type: ZookeeperManagerTransitions.EditApplied,
           response,
         })
       },
+    })
+
+    this.stopFileWriteProgressEffect = effect(() => {
+      const progress = this.fileRequestProcessor.fileWriteProgress.value
+      if (!progress) {
+        toast.dismiss(this.fileWriteToastId)
+        return
+      }
+      toast.loading(
+        progress.total > 0
+          ? `${progress.written} of ${progress.total} files written`
+          : 'Updating project files...',
+        { id: this.fileWriteToastId, position: 'bottom-center' }
+      )
     })
 
     this.actorSubscription = this.actor.subscribe((snapshot) => {
@@ -407,6 +430,8 @@ class SessionController implements ZookeeperSessionController {
     this.clearSubscription?.unsubscribe()
     this.actorSubscription?.unsubscribe()
     this.stopProjectEffect?.()
+    this.stopFileWriteProgressEffect?.()
+    toast.dismiss(this.fileWriteToastId)
     this.resumeInterruptedTurnPending = false
     this.isResumingInterruptedTurnSignal.value = false
     if (typeof window !== 'undefined') {
@@ -707,7 +732,10 @@ class SessionController implements ZookeeperSessionController {
       this.isResumingInterruptedTurnSignal.value = false
       return
     }
-    if (this.continueCheckInFlight) {
+    if (
+      this.continueCheckInFlight ||
+      this.fileRequestProcessor.hasPendingRequests
+    ) {
       return
     }
 
@@ -813,11 +841,13 @@ class SessionController implements ZookeeperSessionController {
 
   private isReadyForPrompt(snapshot: ZookeeperSnapshot) {
     return (
+      !this.fileRequestProcessor.hasPendingRequests &&
       snapshot.matches({
         [ZookeeperManagerStates.Ready]: {
           [ZookeeperManagerStates.Request]: S.Await,
         },
-      }) && !snapshot.context.awaitingResponse
+      }) &&
+      !snapshot.context.awaitingResponse
     )
   }
 

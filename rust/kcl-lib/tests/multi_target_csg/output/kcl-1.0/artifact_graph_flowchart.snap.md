@@ -48,8 +48,6 @@ flowchart LR
     54[Solid2d]
   end
   subgraph path55 [Path]
-    55["Path<br>[1075, 1118, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     56["Segment<br>[1124, 1148, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     57["Segment<br>[1154, 1187, 0]"]
@@ -129,6 +127,8 @@ flowchart LR
   45["SweepEdge Adjacent"]
   46["Plane<br>[770, 787, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  55["CompositeSolid Subtract<br>[1634, 1677, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   63["Sweep Extrusion<br>[1324, 1416, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   64[Wall]
@@ -344,7 +344,7 @@ flowchart LR
   42 <--x 27
   44 <--x 27
   46 --- 47
-  46 --- 55
+  46 x--> 55
   47 --- 48
   47 --- 49
   47 --- 50
@@ -352,7 +352,7 @@ flowchart LR
   47 --- 52
   47 --- 53
   47 --- 54
-  47 x--> 55
+  47 --- 55
   47 ---- 63
   47 <--x 115
   48 --- 64
@@ -379,15 +379,15 @@ flowchart LR
   53 x--> 70
   53 --- 82
   53 --- 83
-  55 --- 56
-  55 --- 57
-  55 --- 58
-  55 --- 59
-  55 --- 60
-  55 --- 61
-  55 --- 62
-  55 ---- 84
-  106 <--x 55
+  55 <--x 56
+  55 <--x 57
+  55 <--x 58
+  55 <--x 59
+  55 <--x 60
+  55 <--x 61
+  55 <--x 62
+  55 <--x 84
+  106 --- 55
   55 <--x 115
   56 --- 90
   56 x--> 91

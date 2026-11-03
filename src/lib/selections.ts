@@ -71,6 +71,7 @@ import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
   getOriginalSegmentArtifact,
+  getSegmentArtifactForEdgeCut,
   getPatternArtifactForCopyId,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
@@ -132,6 +133,7 @@ import type {
 import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import type {
   EngineTopologyFallback,
+  NonCodeSelection,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
@@ -602,14 +604,7 @@ function getTaggableEdgeArtifact(
     return null
   }
 
-  const consumedEdge = getArtifactOfTypes(
-    {
-      key: selection.artifact.consumedEdgeId ?? '',
-      types: ['segment', 'sweepEdge'],
-    },
-    artifactGraph
-  )
-  return err(consumedEdge) ? null : consumedEdge
+  return getSegmentArtifactForEdgeCut(selection.artifact, artifactGraph)
 }
 
 function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {
@@ -1293,6 +1288,30 @@ export async function getSelectionReferences({
     }
 
     if (!isPrimitiveReferenceArtifact(selection.artifact)) {
+      const artifact = resolveToCodeRef(selection, artifactGraph)?.artifact
+      const label =
+        artifact?.type === 'sketchBlock'
+          ? 'Sketch'
+          : artifact?.type === 'solid2d'
+            ? 'Profile'
+            : artifact?.type === 'path'
+              ? artifact.subType === 'region'
+                ? 'Region'
+                : 'Profile'
+              : artifact?.type === 'gdtAnnotation'
+                ? 'Annotation'
+                : undefined
+      if (label) {
+        references.push(
+          ...createExpressionReferences({
+            label,
+            selection,
+            artifactGraph,
+            kclManager,
+            wasmInstance,
+          })
+        )
+      }
       continue
     }
 
@@ -1441,43 +1460,49 @@ export function removeEnginePrimitiveSelectionFromSelections(
   }
 }
 
+export function selectionMatchesReference(
+  selection: Selection | NonCodeSelection,
+  reference: SelectionReference
+): boolean {
+  if (typeof selection === 'string') return false
+
+  if ('name' in selection) {
+    return Boolean(
+      reference.defaultPlaneSelection &&
+        isSameDefaultPlaneSelection(selection, reference.defaultPlaneSelection)
+    )
+  }
+
+  if ('type' in selection) {
+    return Boolean(
+      reference.enginePrimitiveSelection &&
+        isEnginePrimitiveSelection(selection) &&
+        isSameEnginePrimitiveSelection(
+          selection,
+          reference.enginePrimitiveSelection
+        )
+    )
+  }
+
+  return Boolean(
+    reference.graphSelection &&
+      isSameGraphSelection(selection, reference.graphSelection)
+  )
+}
+
 export function removeReferenceFromSelections(
   selections: Selections,
   reference: SelectionReference
 ): Selections {
-  const graphSelectionToRemove = reference.graphSelection
-  const defaultPlaneSelectionToRemove = reference.defaultPlaneSelection
-  const enginePrimitiveSelectionToRemove = reference.enginePrimitiveSelection
-
   return {
-    graphSelections: graphSelectionToRemove
+    graphSelections: reference.graphSelection
       ? selections.graphSelections.filter(
-          (selection) =>
-            !isSameGraphSelection(selection, graphSelectionToRemove)
+          (selection) => !selectionMatchesReference(selection, reference)
         )
       : selections.graphSelections,
-    otherSelections: selections.otherSelections.filter((selection) => {
-      if (
-        defaultPlaneSelectionToRemove &&
-        isDefaultPlaneSelection(selection) &&
-        isSameDefaultPlaneSelection(selection, defaultPlaneSelectionToRemove)
-      ) {
-        return false
-      }
-
-      if (
-        enginePrimitiveSelectionToRemove &&
-        isEnginePrimitiveSelection(selection) &&
-        isSameEnginePrimitiveSelection(
-          selection,
-          enginePrimitiveSelectionToRemove
-        )
-      ) {
-        return false
-      }
-
-      return true
-    }),
+    otherSelections: selections.otherSelections.filter(
+      (selection) => !selectionMatchesReference(selection, reference)
+    ),
   }
 }
 
@@ -2604,6 +2629,14 @@ export function getSelectionCountByType(
       incrementOrInitializeSelectionType('helix')
       return true
     }
+    if (
+      artifact.type === 'sketchBlock' ||
+      artifact.type === 'gdtAnnotation' ||
+      artifact.type === 'importedGeometry'
+    ) {
+      incrementOrInitializeSelectionType(artifact.type)
+      return true
+    }
     if (artifact.type === 'path' && artifact.subType === 'region') {
       incrementOrInitializeSelectionType('pathRegion')
       return true
@@ -2677,6 +2710,12 @@ export function getSelectionCountByType(
     } else if (inlineArtifact?.type === 'helix') {
       incrementOrInitializeSelectionType('helix')
     } else if (
+      inlineArtifact?.type === 'sketchBlock' ||
+      inlineArtifact?.type === 'gdtAnnotation' ||
+      inlineArtifact?.type === 'importedGeometry'
+    ) {
+      incrementOrInitializeSelectionType(inlineArtifact.type)
+    } else if (
       inlineArtifact?.type === 'path' &&
       inlineArtifact.subType === 'region'
     ) {
@@ -2741,9 +2780,19 @@ export function getSelectionTypeDisplayText(
 export function canSubmitSelectionArg(
   selectionsByType: 'none' | Map<ResolvedSelectionType, number>,
   argument: CommandArgument<unknown> & {
-    inputType: 'selection' | 'selectionMixed'
-  }
+    inputType: 'selection'
+  },
+  selection?: Selections
 ) {
+  // Preserve the former mixed input's acceptance of non-empty code selections.
+  if (
+    argument.allowCodeReferences &&
+    selection?.graphSelections.some(
+      ({ codeRef }) => codeRef && codeRef.range[0] !== codeRef.range[1]
+    )
+  )
+    return true
+
   return (
     selectionsByType !== 'none' &&
     [...selectionsByType.entries()].every(([type, count]) => {
@@ -3196,6 +3245,7 @@ const semanticEntityNames: {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
   profile: ['solid2d'],
   region: ['pathRegion', 'engineRegion'],
+  sketch: ['sketchBlock'],
   edge: [
     'segment',
     'sweepEdge',
@@ -3205,6 +3255,8 @@ const semanticEntityNames: {
   ],
   point: [],
   plane: ['defaultPlane'],
+  annotation: ['gdtAnnotation'],
+  object: ['importedGeometry'],
 }
 
 function getSemanticEntityForSelectionType(
@@ -3548,7 +3600,7 @@ function getSweepForFace(
 ) {
   const artifact = artifactGraph.get(faceId)
   let sweep = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
-  if (err(sweep) && artifact?.type === 'edgeCut') {
+  if (isErr(sweep) && artifact?.type === 'edgeCut') {
     sweep = getOwningSweepForEdgeCut(artifact, artifactGraph, ast, wasmInstance)
   }
   return sweep
@@ -3570,7 +3622,7 @@ export function showSketchOnImportForFace(
     ['ImportStatement']
   )
   if (
-    err(maybeImportNode) ||
+    isErr(maybeImportNode) ||
     maybeImportNode.node?.type !== 'ImportStatement'
   ) {
     return false
@@ -3797,6 +3849,10 @@ export function getCodeRefsFromEntityReference(
     const faceArtifact = artifactGraph.get(entityRef.face_id)
     if (!faceArtifact) {
       return null
+    }
+
+    if (faceArtifact.type === 'edgeCut') {
+      return getCodeRefsByArtifactId(faceArtifact.id, artifactGraph)
     }
 
     // Wall artifacts have segId pointing to the segment

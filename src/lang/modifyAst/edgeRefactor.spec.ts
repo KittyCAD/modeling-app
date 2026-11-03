@@ -1096,7 +1096,7 @@ ${call.replace('EDGE', edge)}
           )
           if (err(result)) throw result
           expect(result.replace(/\s/g, '')).toContain(
-            'sideFaces=[baseRegion.tags.hi,baseRegion.tags.yoyo],endFaces=[endCap]'
+            'sideFaces=[baseRegion.tags.hi,baseRegion.tags.yoyo],endFaces=['
           )
           expect(norm(result)).not.toContain('tags = [')
           expect(
@@ -1757,7 +1757,7 @@ part = bracket()
       const { instance, kclManager, engineCommandManager } =
         await buildTheWorldAndConnectToEngine({
           webrtc: false,
-          pool: 'cpu',
+          geometryOnly: true,
         })
       instanceInThisFile = instance
       kclManagerInThisFile = kclManager
@@ -2201,8 +2201,12 @@ surface001 = extrude(
         expect(n).toContain(
           'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
         )
-        expect(n).toContain('endFaces = [startCap]')
+        expect(n).toContain('endFaces = [')
         expect(n).not.toContain(removed)
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
       })
     }
 

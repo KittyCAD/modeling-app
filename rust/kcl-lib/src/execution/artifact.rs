@@ -40,6 +40,8 @@ use crate::parsing::ast::types::Program;
 use crate::std::sketch::build_reverse_region_mapping;
 
 #[cfg(test)]
+mod engine_tests;
+#[cfg(test)]
 pub(crate) mod mermaid_tests;
 #[cfg(test)]
 mod tests;
@@ -689,12 +691,12 @@ fn build_entity_clone_id_maps(
                     if pending_map.old_child_ids.is_none() && *entity_id == pending_map.old_entity_id {
                         pending_map.old_child_ids = Some(child_ids.clone());
                         if pending_map.source_topology_id == pending_map.old_entity_id {
-                            pending_map.source_topology_child_ids = Some(child_ids.clone());
+                            pending_map.source_topology_child_ids = Some(child_ids);
                         }
                         break;
                     }
                     if pending_map.source_topology_child_ids.is_none() && *entity_id == pending_map.source_topology_id {
-                        pending_map.source_topology_child_ids = Some(child_ids.clone());
+                        pending_map.source_topology_child_ids = Some(child_ids);
                         break;
                     }
                 }
@@ -1344,6 +1346,28 @@ fn mirror_3d_artifact_updates(
     }
 
     Ok(return_arr)
+}
+
+// Cutting an edge adds faces to an existing body. Record those faces directly so
+// body lookup does not need the consumed 3D edge or its adjacency records.
+fn edge_cut_body_update(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    body_id: Uuid,
+    face_ids: Vec<ArtifactId>,
+) -> Option<Artifact> {
+    let sweep = match artifacts.get(&ArtifactId::new(body_id))? {
+        Artifact::Sweep(sweep) => sweep,
+        Artifact::Path(path) => {
+            let Artifact::Sweep(sweep) = artifacts.get(&path.sweep_id?)? else {
+                return None;
+            };
+            sweep
+        }
+        _ => return None,
+    };
+    let mut sweep = sweep.clone();
+    sweep.surface_ids = face_ids;
+    Some(Artifact::Sweep(sweep))
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -2439,6 +2463,9 @@ fn artifacts_to_update(
                 surface_id: None,
                 code_ref,
             }));
+            if let Some(body) = edge_cut_body_update(artifacts, cmd.object_id, vec![id]) {
+                return_arr.push(body);
+            }
             let consumed_edge = artifacts.get(&edge_id);
             if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
                 let mut new_segment = consumed_edge.clone();
@@ -2465,6 +2492,9 @@ fn artifacts_to_update(
                 surface_id: None,
                 code_ref,
             }));
+            if let Some(body) = edge_cut_body_update(artifacts, cmd.object_id, vec![id]) {
+                return_arr.push(body);
+            }
             let consumed_edge = artifacts.get(&edge_id);
             if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
                 let mut new_segment = consumed_edge.clone();
@@ -2477,7 +2507,7 @@ fn artifacts_to_update(
         }
         ModelingCmd::Solid3dCutEdgeReferences(cmd) => {
             let face_ids = std::iter::once(id).chain(cmd.extra_face_ids.iter().copied().map(ArtifactId::new));
-            return Ok(face_ids
+            let mut updates: Vec<_> = face_ids
                 .take(cmd.edges_references.len())
                 .enumerate()
                 .map(|(source_selector_index, face_id)| {
@@ -2491,7 +2521,12 @@ fn artifacts_to_update(
                         code_ref: code_ref.clone(),
                     })
                 })
-                .collect());
+                .collect();
+            let cut_face_ids = updates.iter().map(Artifact::id).collect();
+            if let Some(body) = edge_cut_body_update(artifacts, cmd.object_id, cut_face_ids) {
+                updates.push(body);
+            }
+            return Ok(updates);
         }
         ModelingCmd::EntityMakeHelix(cmd) => {
             let cylinder_id = ArtifactId::new(cmd.cylinder_id);
@@ -2625,9 +2660,19 @@ fn artifacts_to_update(
                 update_csg_input_artifacts(&mut return_arr, artifacts, &input_ids, None, &mut consumed_sweep_ids);
             }
 
-            // Create the new composite solids and update their linked artifacts
+            // A returned solid can reuse an input's artifact graph key.
+            // Apply all input updates first so they cannot overwrite a live output.
             for solid_id in &new_solid_ids {
-                // Create the composite solid
+                update_csg_input_artifacts(
+                    &mut return_arr,
+                    artifacts,
+                    &input_ids,
+                    Some(*solid_id),
+                    &mut consumed_sweep_ids,
+                );
+            }
+
+            for solid_id in &new_solid_ids {
                 return_arr.push(Artifact::CompositeSolid(CompositeSolid {
                     id: *solid_id,
                     consumed: false,
@@ -2639,14 +2684,6 @@ fn artifacts_to_update(
                     composite_solid_id: None,
                     pattern_ids: Vec::new(),
                 }));
-
-                update_csg_input_artifacts(
-                    &mut return_arr,
-                    artifacts,
-                    &input_ids,
-                    Some(*solid_id),
-                    &mut consumed_sweep_ids,
-                );
             }
 
             return Ok(return_arr);
@@ -2663,6 +2700,10 @@ fn artifacts_to_update(
                 .as_ref()
                 .map(|ids| ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>())
                 .unwrap_or_default();
+            let mut consumed_input_ids = solid_ids.clone();
+            if !imprint.keep_tools {
+                consumed_input_ids.extend_from_slice(&tool_ids);
+            }
 
             let mut new_solid_ids = vec![id];
             let not_cmd_id = move |solid_id: &ArtifactId| *solid_id != id;
@@ -2679,7 +2720,7 @@ fn artifacts_to_update(
             let mut return_arr = Vec::new();
             let mut consumed_sweep_ids = AHashSet::default();
 
-            for input_id in solid_ids.iter().chain(tool_ids.iter()) {
+            for input_id in &consumed_input_ids {
                 let sweep_id = match artifacts.get(input_id) {
                     Some(Artifact::Sweep(sweep)) => Some(sweep.id),
                     Some(Artifact::Path(path)) => path.sweep_id,
@@ -2709,7 +2750,7 @@ fn artifacts_to_update(
                     pattern_ids: Vec::new(),
                 }));
 
-                for input_id in solid_ids.iter().chain(tool_ids.iter()) {
+                for input_id in &consumed_input_ids {
                     if let Some(artifact) = artifacts.get(input_id) {
                         match artifact {
                             Artifact::CompositeSolid(comp) => {

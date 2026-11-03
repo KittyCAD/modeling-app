@@ -8,13 +8,20 @@ import type {
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
+import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
+  modelingStdLibCommandAvailable,
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import {
+  STD_LIB_COMMANDS,
+  STD_LIB_ENUMS,
+  stdLibEnumOptions,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -51,7 +58,10 @@ import {
 import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { STEP_SCHEMA_LABELS, StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
+import { hasProperty } from '@src/lib/utils'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
@@ -61,7 +71,7 @@ import type {
 
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { capitaliseFC } from '@src/lib/utils'
+import { capitaliseFC, isRecord } from '@src/lib/utils'
 import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
@@ -107,12 +117,16 @@ const FRAME_PLANE_OPTIONS = Object.freeze([
 ] as const)
 
 // For all transforms and boolean commands
-const objectsTypesAndFilters: {
+const objectSelection: {
+  inputType: 'selection'
   selectionTypes: Artifact['type'][]
   selectionFilter: EntityType[]
+  allowCodeReferences: boolean
 } = {
+  inputType: 'selection',
   selectionTypes: ['path', 'sweep', 'compositeSolid'],
   selectionFilter: ['object'],
+  allowCodeReferences: true,
 }
 
 // For all surface modeling commands
@@ -195,6 +209,32 @@ export function extrudeSelectionRequiresMethod({
   )
 }
 
+const validateSolidEdgeSelectionArg =
+  (selectionKey: 'selection' | 'objects') =>
+  async ({
+    data,
+    context,
+    machineContext,
+  }: {
+    data: unknown
+    context: CommandBarContext
+    machineContext?: ModelingMachineContext
+  }): Promise<boolean | string> => {
+    // Editing preserves the original selection expression; recovered selections
+    // are display-only and must not prevent parameter edits on legacy calls.
+    if (context.argumentsToSubmit.nodeToEdit) return true
+    // The command bar submits { [argumentName]: value }; dialogs validate value.
+    const selections = hasProperty(data, selectionKey)
+      ? data[selectionKey]
+      : data
+    if (!isSelections(selections) || !machineContext) return false
+    const error = validateSolidEdgeSelections(
+      selections,
+      machineContext.kclManager.artifactGraph
+    )
+    return error ? error.message : true
+  }
+
 // Edit flows pass this as hidden command-bar metadata, not as a KCL stdlib arg.
 type CommandBarEditFlowArgs = {
   nodeToEdit?: PathToNode
@@ -208,6 +248,10 @@ const isEditingNode = (context: {
   argumentsToSubmit: Record<string, unknown>
 }) => Boolean(context.argumentsToSubmit.nodeToEdit)
 
+const isDirectedNamedViewCamera = (context: {
+  argumentsToSubmit: Record<string, unknown>
+}) => context.argumentsToSubmit.cameraMode === 'directed'
+
 const isEditingNodeSelection = (context: {
   argumentsToSubmit: Record<string, unknown>
   selectedCommand?: { useModelingDialog?: boolean }
@@ -219,6 +263,7 @@ export type ModelingCommandSchema = {
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
+    schema?: StepSchema
     up?: AxisDirectionPair['axis']
     scale?: UnitLength
   }
@@ -499,6 +544,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           }
         },
       },
+      schema: {
+        inputType: 'options',
+        displayName: 'Schema',
+        required: false,
+        prepopulate: true,
+        defaultValue: StepSchema.Ap242,
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'step',
+        options: (commandContext) => {
+          const schema =
+            commandContext.argumentsToSubmit.schema ?? StepSchema.Ap242
+          return Object.values(StepSchema).map((value) => ({
+            name: STEP_SCHEMA_LABELS[value],
+            value,
+            isCurrent: schema === value,
+          }))
+        },
+      },
       up: {
         inputType: 'options',
         displayName: 'Up',
@@ -621,6 +684,102 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
       },
     },
+  },
+  'Named View': {
+    icon: 'namedView',
+    available: (context) =>
+      modelingStdLibCommandAvailable('Named View', context),
+    needsReview: true,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Named View']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Named View']>(
+      'Named View',
+      {
+        overrides: {
+          cameraMode: {
+            inputType: 'options',
+            required: true,
+            defaultValue: 'oriented',
+            options: [
+              STD_LIB_COMMANDS['view::oriented'],
+              STD_LIB_COMMANDS['view::directed'],
+            ].map(({ name }) => ({
+              name: capitaliseFC(name),
+              value: name,
+            })),
+          },
+          camera: {
+            inputType: 'camera',
+            required: isDirectedNamedViewCamera,
+            hidden: (context) => !isDirectedNamedViewCamera(context),
+            valueSummary: (value) =>
+              isRecord(value) && 'type' in value
+                ? 'Saved camera'
+                : 'Captured camera',
+          },
+          orientation: {
+            inputType: 'options',
+            required: (context) => !isDirectedNamedViewCamera(context),
+            hidden: isDirectedNamedViewCamera,
+            prepopulate: true,
+            defaultValue: 'Isometric',
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Orientation'],
+              'Isometric'
+            ),
+          },
+          projection: {
+            inputType: 'options',
+            required: (context) => !isDirectedNamedViewCamera(context),
+            hidden: isDirectedNamedViewCamera,
+            prepopulate: true,
+            defaultValue: 'Orthographic',
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Projection'],
+              'Orthographic'
+            ),
+          },
+          baseline: {
+            inputType: 'options',
+            defaultValue: 'Show',
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Visibility'],
+              'Show',
+              {
+                Show: 'Show all',
+                Hide: 'Hide all',
+              }
+            ),
+          },
+          except: {
+            inputType: 'selection',
+            displayName: 'Exceptions',
+            selectionFilter: ['object'],
+            selectionTypes: [
+              'path',
+              'pathRegion',
+              'sketchBlock',
+              'sweep',
+              'compositeSolid',
+              'gdtAnnotation',
+              'helix',
+              'plane',
+              'importedGeometry',
+            ],
+            multiple: true,
+          },
+          target: {
+            hidden: isDirectedNamedViewCamera,
+            dialog: { advanced: true },
+          },
+          distance: {
+            hidden: isDirectedNamedViewCamera,
+            dialog: { advanced: true },
+          },
+        },
+      }
+    ),
   },
   Extrude: {
     icon: 'extrude',
@@ -839,7 +998,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               selectedCommand?: { useModelingDialog?: boolean }
             }) =>
               context.selectedCommand?.useModelingDialog === true &&
-              context.argumentsToSubmit.axisOrEdge === 'Edge',
+              context.argumentsToSubmit.axisOrEdge === 'Edge' &&
+              !isEditingNode(context),
             inputType: 'options',
             displayName: 'Sketch Axis',
             options: [
@@ -1019,7 +1179,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Boolean Subtract': {
-    forceCommandBar: true,
     icon: 'booleanSubtract',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1030,14 +1189,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
           tools: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             clearSelectionFirst: true,
             multiple: true,
             hidden: isEditingNodeSelection,
@@ -1047,7 +1204,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Union': {
-    forceCommandBar: true,
     icon: 'booleanUnion',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1058,8 +1214,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             skip: false,
             hidden: isEditingNodeSelection,
@@ -1069,7 +1224,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Intersect': {
-    forceCommandBar: true,
     icon: 'booleanIntersect',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1080,8 +1234,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             skip: false,
             hidden: isEditingNodeSelection,
@@ -1091,7 +1244,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Split': {
-    forceCommandBar: true,
     icon: 'split',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1102,14 +1254,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           targets: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
           tools: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             clearSelectionFirst: true,
             multiple: true,
             hidden: isEditingNodeSelection,
@@ -1192,11 +1342,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             !['Edge'].includes(context.argumentsToSubmit.mode as string),
         },
         cylinder: {
-          ...objectsTypesAndFilters,
-          selectionTypes: [
-            ...objectsTypesAndFilters.selectionTypes,
-            'pathRegion',
-          ],
+          selectionTypes: ['path', 'sweep', 'compositeSolid', 'pathRegion'],
+          selectionFilter: ['object'],
           inputType: 'selection',
           multiple: false,
           required: (context) =>
@@ -1357,6 +1504,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         selection: {
           inputType: 'selection',
+          validation: validateSolidEdgeSelectionArg('selection'),
           selectionTypes: [
             'segment',
             'sweepEdge',
@@ -1391,6 +1539,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           selection: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('selection'),
             selectionTypes: [
               'segment',
               'sweepEdge',
@@ -1509,7 +1658,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   Appearance: {
-    forceCommandBar: true,
     icon: 'extrude',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1520,10 +1668,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           objects: {
-            // selectionMixed allows for feature tree selection of module imports
-            inputType: 'selectionMixed',
-            selectionTypes: ['path', 'sweep', 'compositeSolid'],
-            selectionFilter: ['object'],
+            ...objectSelection,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1535,7 +1680,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Delete: {
-    forceCommandBar: true,
     icon: 'trash',
     needsReview: true,
     status: modelingStdLibCommandStatus('Delete'),
@@ -1545,15 +1689,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Delete']>('Delete', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          inputType: 'selectionMixed',
+          ...objectSelection,
           multiple: true,
         },
       },
     }),
   },
   Translate: {
-    forceCommandBar: true,
     icon: 'move',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1564,9 +1706,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           objects: {
-            ...objectsTypesAndFilters,
-            selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
-            inputType: 'selectionMixed',
+            ...objectSelection,
+            selectionTypes: [...objectSelection.selectionTypes, 'helix'],
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1589,7 +1730,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Rotate: {
-    forceCommandBar: true,
     icon: 'rotate',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1598,9 +1738,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Rotate']>('Rotate', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
-          inputType: 'selectionMixed',
+          ...objectSelection,
+          selectionTypes: [...objectSelection.selectionTypes, 'helix'],
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1631,7 +1770,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Scale: {
-    forceCommandBar: true,
     icon: 'scale',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1640,9 +1778,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Scale']>('Scale', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
-          inputType: 'selectionMixed',
+          ...objectSelection,
+          selectionTypes: [...objectSelection.selectionTypes, 'helix'],
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1663,7 +1800,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Clone: {
-    forceCommandBar: true,
     icon: 'clone',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1672,8 +1808,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Clone']>('Clone', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          inputType: 'selectionMixed',
+          ...objectSelection,
           multiple: false, // only one object can be cloned at this time
           hidden: isEditingNodeSelection,
         },
@@ -1712,7 +1847,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Mirror 3D': {
-    forceCommandBar: true,
     icon: 'mirror3d',
     displayName: 'Mirror',
     needsReview: true,
@@ -1724,8 +1858,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           bodies: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
           },
           across: {
@@ -1748,7 +1881,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Pattern Circular 3D': {
-    forceCommandBar: true,
     icon: 'patternCircular3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1759,8 +1891,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     >('Pattern Circular 3D', {
       overrides: {
         solids: {
-          ...objectsTypesAndFilters,
-          inputType: 'selectionMixed',
+          ...objectSelection,
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1787,7 +1918,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Pattern Linear 3D': {
-    forceCommandBar: true,
     icon: 'patternLinear3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1798,8 +1928,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1856,6 +1985,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -1879,6 +2009,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -1902,6 +2033,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -1952,6 +2084,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -1980,6 +2113,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2004,6 +2138,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: [
               'cap',
               'wall',
@@ -2039,6 +2174,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           inputType: 'selection',
+          validation: validateSolidEdgeSelectionArg('objects'),
           selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
           multiple: true,
           required: true,
@@ -2062,6 +2198,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2086,6 +2223,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2113,6 +2251,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2140,6 +2279,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2167,6 +2307,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2180,7 +2321,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Annotation': {
-    forceCommandBar: true,
     icon: 'text',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2192,6 +2332,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg('objects'),
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2207,7 +2348,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Note': {
-    forceCommandBar: true,
     icon: 'note',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2229,7 +2369,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Flip Surface': {
-    forceCommandBar: true,
     icon: 'flipSurface',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2240,8 +2379,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           surface: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
           },
         },
@@ -2249,7 +2387,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Join Surfaces': {
-    forceCommandBar: true,
     icon: 'joinSurfaces',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2260,8 +2397,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           selection: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
           },
         },

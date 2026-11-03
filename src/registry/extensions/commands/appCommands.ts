@@ -1,3 +1,4 @@
+import type { KclManager } from '@src/lang/KclManager'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import type { Command } from '@src/lib/commandTypes'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -7,7 +8,6 @@ import {
 } from '@src/lib/searchFocusRequests'
 import { selectAllInCurrentSketch } from '@src/lib/selections'
 import { reportRejection } from '@src/lib/trap'
-import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import {
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
@@ -43,258 +43,245 @@ export const APP_COMMAND_IDS = Object.freeze({
   },
 } as const)
 
-type CommandSubmitInput = {
-  context?: CommandBarContext
-}
+/** Resolve the executing editor when invoked, rather than capturing an editor. */
+export function createAppCommands(
+  getExecutingEditor: () => KclManager | undefined
+): readonly Command[] {
+  function sendModelingEvent(event: ModelingMachineEvent): true | Error {
+    const kclManager = getExecutingEditor()
+    if (!kclManager?.modelingState) {
+      return new Error('No active modeling context')
+    }
 
-function getCommandBarContext(input: unknown): CommandBarContext | undefined {
-  return input &&
-    typeof input === 'object' &&
-    'context' in input &&
-    input.context &&
-    typeof input.context === 'object'
-    ? (input as CommandSubmitInput).context
-    : undefined
-}
-
-function getKclManager(input: unknown) {
-  return getCommandBarContext(input)?.kclManager
-}
-
-function sendModelingEvent(
-  input: unknown,
-  event: ModelingMachineEvent
-): true | Error {
-  const kclManager = getKclManager(input)
-  if (!kclManager?.modelingState) {
-    return new Error('No active modeling context')
+    kclManager.sendModelingEvent(event)
+    return true
   }
 
-  kclManager.sendModelingEvent(event)
-  return true
-}
-
-function createAppCommand({
-  id,
-  displayName,
-  description,
-  icon,
-  hideFromSearch = true,
-  scopes,
-  onSubmit,
-}: {
-  id: string
-  displayName: string
-  description?: Command['description']
-  icon?: Command['icon']
-  hideFromSearch?: boolean
-  scopes: Command['scopes']
-  onSubmit: Command['onSubmit']
-}): Command {
-  return {
+  function createAppCommand({
     id,
-    name: id,
-    groupId: APP_COMMAND_GROUP_ID,
     displayName,
     description,
     icon,
-    hideFromSearch,
+    hideFromSearch = true,
     scopes,
-    needsReview: false,
     onSubmit,
+  }: {
+    id: string
+    displayName: string
+    description?: Command['description']
+    icon?: Command['icon']
+    hideFromSearch?: boolean
+    scopes: Command['scopes']
+    onSubmit: Command['onSubmit']
+  }): Command {
+    return {
+      id,
+      name: id,
+      groupId: APP_COMMAND_GROUP_ID,
+      displayName,
+      description,
+      icon,
+      hideFromSearch,
+      scopes,
+      needsReview: false,
+      onSubmit,
+    }
   }
+
+  function deleteSelection() {
+    const kclManager = getExecutingEditor()
+    const state = kclManager?.modelingState
+    if (!kclManager || !state) {
+      return new Error('No active modeling context')
+    }
+
+    if (state.matches('sketchSolveMode')) {
+      kclManager.sendModelingEvent({ type: 'delete selected' })
+      return
+    }
+
+    const segmentNodePaths = Object.keys(state.context.segmentOverlays)
+    const selections = state.context.selectionRanges.graphSelections.filter(
+      (selection) =>
+        selection.codeRef &&
+        segmentNodePaths.includes(JSON.stringify(selection.codeRef.pathToNode))
+    )
+    const orderedSelections = selections.slice().sort((a, b) => {
+      const aStart = a.codeRef?.range?.[0] ?? 0
+      const bStart = b.codeRef?.range?.[0] ?? 0
+      return bStart - aStart
+    })
+
+    kclManager.sendModelingEvent({
+      type: 'Delete segments',
+      data: orderedSelections.flatMap((selection) =>
+        selection.codeRef ? [selection.codeRef.pathToNode] : []
+      ),
+    })
+
+    if (
+      state.context.selectionRanges.graphSelections.length > selections.length
+    ) {
+      kclManager.sendModelingEvent({ type: 'Delete selection' })
+    }
+  }
+
+  function resetView() {
+    const kclManager = getExecutingEditor()
+    if (!kclManager) {
+      return new Error('No active modeling context')
+    }
+
+    return resetCameraPosition({
+      sceneInfra: kclManager.sceneInfra,
+      engineCommandManager: kclManager.engineCommandManager,
+      settingsActor: kclManager.systemDeps.settings,
+    })
+  }
+
+  function toggleSnapToGrid() {
+    const kclManager = getExecutingEditor()
+    const settingsActor = kclManager?.systemDeps.settings
+    if (!settingsActor) {
+      return new Error('No active settings context')
+    }
+
+    settingsActor.send({
+      type: 'set.modeling.snapToGrid',
+      data: {
+        level: 'project',
+        value: !settingsActor.getSnapshot().context.modeling.snapToGrid.current,
+      },
+    })
+  }
+
+  function selectAllInCurrentSketchCommand() {
+    const kclManager = getExecutingEditor()
+    if (!kclManager) {
+      return
+    }
+
+    const selection = selectAllInCurrentSketch(
+      kclManager.artifactGraph,
+      kclManager.sceneEntitiesManager
+    )
+    return sendModelingEvent({
+      type: 'Set selection',
+      data: { selectionType: 'completeSelection', selection },
+    })
+  }
+
+  function reexecuteOrToastAutosaveBehavior() {
+    const kclManager = getExecutingEditor()
+    if (!kclManager) {
+      return new Error('No active editor context')
+    }
+
+    const automaticallyRenderEnabled =
+      getAutomaticallyRenderEnabledFromSettings(
+        kclManager.systemDeps.settings.getSnapshot().context
+      )
+    if (
+      !automaticallyRenderEnabled &&
+      kclManager.hasEditsSinceLastExecutionSignal.value
+    ) {
+      return kclManager.executeCode()
+    }
+
+    toast.success('Your work is auto-saved in real-time.')
+  }
+
+  return [
+    createAppCommand({
+      id: APP_COMMAND_IDS.editor.undo,
+      displayName: 'Undo',
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
+      onSubmit: () => getExecutingEditor()?.undo(),
+    }),
+    createAppCommand({
+      id: APP_COMMAND_IDS.editor.redo,
+      displayName: 'Redo',
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
+      onSubmit: () => getExecutingEditor()?.redo(),
+    }),
+    createAppCommand({
+      id: APP_COMMAND_IDS.editor.format,
+      displayName: 'Format code',
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
+      onSubmit: () => {
+        const kclManager = getExecutingEditor()
+        return kclManager
+          ?.format()
+          .then(() => {
+            if (getExecutingEditor() === kclManager)
+              kclManager.editorView.focus()
+          })
+          .catch(reportRejection)
+      },
+    }),
+    createAppCommand({
+      id: APP_COMMAND_IDS.editor.convertToVariable,
+      displayName: 'Convert to variable',
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
+      onSubmit: () => getExecutingEditor()?.convertToVariable(),
+    }),
+    createAppCommand({
+      id: APP_COMMAND_IDS.editor.render,
+      displayName: 'Render code',
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
+      onSubmit: reexecuteOrToastAutosaveBehavior,
+    }),
+    createAppCommand({
+      id: APP_COMMAND_IDS.modeling.deleteSelection,
+      displayName: 'Delete selection',
+      scopes: FILE_COMMAND_SCOPES,
+      onSubmit: deleteSelection,
+    }),
+    createAppCommand({
+      id: APP_COMMAND_IDS.modeling.centerCameraOnSelection,
+      displayName: 'Center camera on selection',
+      description: 'Center the camera on the current selection.',
+      icon: 'camera',
+      hideFromSearch: false,
+      scopes: FILE_COMMAND_SCOPES,
+      onSubmit: () => sendModelingEvent({ type: 'Center camera on selection' }),
+    }),
+    createAppCommand({
+      id: APP_COMMAND_IDS.modeling.selectAllInCurrentSketch,
+      displayName: 'Select all in current sketch',
+      scopes: SKETCH_COMMAND_SCOPES,
+      onSubmit: selectAllInCurrentSketchCommand,
+    }),
+    createAppCommand({
+      id: APP_COMMAND_IDS.modeling.toggleSnapToGrid,
+      displayName: 'Toggle snap to grid',
+      scopes: FILE_COMMAND_SCOPES,
+      onSubmit: toggleSnapToGrid,
+    }),
+    createAppCommand({
+      id: APP_COMMAND_IDS.view.reset,
+      displayName: 'Reset view',
+      description: 'Restore the default camera position and view.',
+      icon: 'refresh',
+      hideFromSearch: false,
+      scopes: FILE_COMMAND_SCOPES,
+      onSubmit: resetView,
+    }),
+    createAppCommand({
+      id: APP_COMMAND_IDS.search.focusProjects,
+      displayName: 'Focus project search',
+      scopes: [HOME_COMMAND_SCOPE],
+      onSubmit: () => {
+        projectSearchFocusRequest.value += 1
+      },
+    }),
+    createAppCommand({
+      id: APP_COMMAND_IDS.search.focusSettings,
+      displayName: 'Focus settings search',
+      scopes: [SETTINGS_COMMAND_SCOPE],
+      onSubmit: () => {
+        settingsSearchFocusRequest.value += 1
+      },
+    }),
+  ]
 }
-
-function deleteSelection(input: unknown) {
-  const kclManager = getKclManager(input)
-  const state = kclManager?.modelingState
-  if (!kclManager || !state) {
-    return new Error('No active modeling context')
-  }
-
-  if (state.matches('sketchSolveMode')) {
-    kclManager.sendModelingEvent({ type: 'delete selected' })
-    return
-  }
-
-  const segmentNodePaths = Object.keys(state.context.segmentOverlays)
-  const selections = state.context.selectionRanges.graphSelections.filter(
-    (selection) =>
-      selection.codeRef &&
-      segmentNodePaths.includes(JSON.stringify(selection.codeRef.pathToNode))
-  )
-  const orderedSelections = selections.slice().sort((a, b) => {
-    const aStart = a.codeRef?.range?.[0] ?? 0
-    const bStart = b.codeRef?.range?.[0] ?? 0
-    return bStart - aStart
-  })
-
-  kclManager.sendModelingEvent({
-    type: 'Delete segments',
-    data: orderedSelections.flatMap((selection) =>
-      selection.codeRef ? [selection.codeRef.pathToNode] : []
-    ),
-  })
-
-  if (
-    state.context.selectionRanges.graphSelections.length > selections.length
-  ) {
-    kclManager.sendModelingEvent({ type: 'Delete selection' })
-  }
-}
-
-function resetView(input: unknown) {
-  const kclManager = getKclManager(input)
-  if (!kclManager) {
-    return new Error('No active modeling context')
-  }
-
-  return resetCameraPosition({
-    sceneInfra: kclManager.sceneInfra,
-    engineCommandManager: kclManager.engineCommandManager,
-    settingsActor: kclManager.systemDeps.settings,
-  })
-}
-
-function toggleSnapToGrid(input: unknown) {
-  const kclManager = getKclManager(input)
-  const settingsActor = kclManager?.systemDeps.settings
-  if (!settingsActor) {
-    return new Error('No active settings context')
-  }
-
-  settingsActor.send({
-    type: 'set.modeling.snapToGrid',
-    data: {
-      level: 'project',
-      value: !settingsActor.getSnapshot().context.modeling.snapToGrid.current,
-    },
-  })
-}
-
-function selectAllInCurrentSketchCommand(input: unknown) {
-  const kclManager = getKclManager(input)
-  if (!kclManager) {
-    return
-  }
-
-  const selection = selectAllInCurrentSketch(
-    kclManager.artifactGraph,
-    kclManager.sceneEntitiesManager
-  )
-  return sendModelingEvent(input, {
-    type: 'Set selection',
-    data: { selectionType: 'completeSelection', selection },
-  })
-}
-
-function reexecuteOrToastAutosaveBehavior(input: unknown) {
-  const kclManager = getKclManager(input)
-  if (!kclManager) {
-    return new Error('No active editor context')
-  }
-
-  const automaticallyRenderEnabled = getAutomaticallyRenderEnabledFromSettings(
-    kclManager.systemDeps.settings.getSnapshot().context
-  )
-  if (
-    !automaticallyRenderEnabled &&
-    kclManager.hasEditsSinceLastExecutionSignal.value
-  ) {
-    return kclManager.executeCode()
-  }
-
-  toast.success('Your work is auto-saved in real-time.')
-}
-
-export const appCommands: readonly Command[] = [
-  createAppCommand({
-    id: APP_COMMAND_IDS.editor.undo,
-    displayName: 'Undo',
-    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
-    onSubmit: (input) => getKclManager(input)?.undo(),
-  }),
-  createAppCommand({
-    id: APP_COMMAND_IDS.editor.redo,
-    displayName: 'Redo',
-    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
-    onSubmit: (input) => getKclManager(input)?.redo(),
-  }),
-  createAppCommand({
-    id: APP_COMMAND_IDS.editor.format,
-    displayName: 'Format code',
-    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
-    onSubmit: (input) => {
-      const kclManager = getKclManager(input)
-      return kclManager
-        ?.format()
-        .then(() => kclManager.editorView.focus())
-        .catch(reportRejection)
-    },
-  }),
-  createAppCommand({
-    id: APP_COMMAND_IDS.editor.convertToVariable,
-    displayName: 'Convert to variable',
-    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
-    onSubmit: (input) => getKclManager(input)?.convertToVariable(),
-  }),
-  createAppCommand({
-    id: APP_COMMAND_IDS.editor.render,
-    displayName: 'Render code',
-    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
-    onSubmit: reexecuteOrToastAutosaveBehavior,
-  }),
-  createAppCommand({
-    id: APP_COMMAND_IDS.modeling.deleteSelection,
-    displayName: 'Delete selection',
-    scopes: FILE_COMMAND_SCOPES,
-    onSubmit: deleteSelection,
-  }),
-  createAppCommand({
-    id: APP_COMMAND_IDS.modeling.centerCameraOnSelection,
-    displayName: 'Center camera on selection',
-    description: 'Center the camera on the current selection.',
-    icon: 'camera',
-    hideFromSearch: false,
-    scopes: FILE_COMMAND_SCOPES,
-    onSubmit: (input) =>
-      sendModelingEvent(input, { type: 'Center camera on selection' }),
-  }),
-  createAppCommand({
-    id: APP_COMMAND_IDS.modeling.selectAllInCurrentSketch,
-    displayName: 'Select all in current sketch',
-    scopes: SKETCH_COMMAND_SCOPES,
-    onSubmit: selectAllInCurrentSketchCommand,
-  }),
-  createAppCommand({
-    id: APP_COMMAND_IDS.modeling.toggleSnapToGrid,
-    displayName: 'Toggle snap to grid',
-    scopes: FILE_COMMAND_SCOPES,
-    onSubmit: toggleSnapToGrid,
-  }),
-  createAppCommand({
-    id: APP_COMMAND_IDS.view.reset,
-    displayName: 'Reset view',
-    description: 'Restore the default camera position and view.',
-    icon: 'refresh',
-    hideFromSearch: false,
-    scopes: FILE_COMMAND_SCOPES,
-    onSubmit: resetView,
-  }),
-  createAppCommand({
-    id: APP_COMMAND_IDS.search.focusProjects,
-    displayName: 'Focus project search',
-    scopes: [HOME_COMMAND_SCOPE],
-    onSubmit: () => {
-      projectSearchFocusRequest.value += 1
-    },
-  }),
-  createAppCommand({
-    id: APP_COMMAND_IDS.search.focusSettings,
-    displayName: 'Focus settings search',
-    scopes: [SETTINGS_COMMAND_SCOPE],
-    onSubmit: () => {
-      settingsSearchFocusRequest.value += 1
-    },
-  }),
-]

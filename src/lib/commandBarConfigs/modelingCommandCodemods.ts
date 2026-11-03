@@ -1,6 +1,8 @@
 import { resolveDistanceSelections } from '@src/lib/gdtDistanceSelections'
 import { isErr } from '@src/lib/trap'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import {
   addIntersect,
@@ -45,6 +47,7 @@ import {
   type ModelingCodemod,
   type ModelingCodemodResult,
 } from '@src/lang/modifyAst/modelingCodemod'
+import { addNamedView } from '@src/lang/modifyAst/namedViews'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
@@ -204,6 +207,31 @@ const withArtifactGraph = <
       ),
   })
 
+// A sketch segment does not identify which solid edge the user intends.
+const withSolidEdgeSelections = <
+  Args extends {
+    selection?: Selections
+    objects?: Selections
+    nodeToEdit?: PathToNode
+  },
+>(
+  codemod: ModelingCodemod<Args>,
+  selectionKey: 'selection' | 'objects' = 'selection'
+): ModelingCodemod<Args> => ({
+  ...codemod,
+  run: (context) => {
+    const selections = context.args[selectionKey]
+    if (selections && !context.args.nodeToEdit) {
+      const error = validateSolidEdgeSelections(
+        selections,
+        context.kclManager.artifactGraph
+      )
+      if (error) return error
+    }
+    return codemod.run(context)
+  },
+})
+
 const withArtifactGraphAndVariables = <
   Name extends CommandName,
   Add extends AddFunction<
@@ -263,6 +291,9 @@ const withGdtDefaults = <
   })
 
 export const modelingCommandCodemods = {
+  'Named View': withArtifactGraph('Named View', addNamedView, {
+    focusPath: false,
+  }),
   Extrude: withArtifactGraph('Extrude', addExtrude),
   Sweep: withArtifactGraph('Sweep', addSweep),
   Loft: withArtifactGraph('Loft', addLoft),
@@ -279,8 +310,8 @@ export const modelingCommandCodemods = {
   'Herringbone Gear': withAst('Herringbone Gear', addHerringboneGear),
   'Spur Gear': withAst('Spur Gear', addSpurGear),
   'Ring Gear': withAst('Ring Gear', addRingGear),
-  Fillet: withArtifactGraph('Fillet', addFillet),
-  Chamfer: withArtifactGraph('Chamfer', addChamfer),
+  Fillet: withSolidEdgeSelections(withArtifactGraph('Fillet', addFillet)),
+  Chamfer: withSolidEdgeSelections(withArtifactGraph('Chamfer', addChamfer)),
   Appearance: withArtifactGraph('Appearance', addAppearance),
   Delete: withArtifactGraph('Delete', addDelete, {
     focusPath: false,
@@ -299,60 +330,93 @@ export const modelingCommandCodemods = {
     addPatternLinear3D
   ),
   'GDT Flatness': withGdtDefaults('GDT Flatness', addFlatnessGdt),
-  'GDT Straightness': withGdtDefaults('GDT Straightness', addStraightnessGdt),
-  'GDT Circularity': withGdtDefaults('GDT Circularity', addCircularityGdt),
-  'GDT Cylindricity': withGdtDefaults('GDT Cylindricity', addCylindricityGdt),
-  'GDT Position': withGdtDefaults('GDT Position', addPositionGdt),
-  'GDT Profile': withGdtDefaults('GDT Profile', addProfileGdt),
-  'GDT Distance': defineModelingCodemod<CommandArgsByName['GDT Distance']>({
-    ...withStdLibExperimentalFeatures('GDT Distance'),
-    run: async ({ args, ast, kclManager, wasmInstance }) => {
-      const resolved = args.nodeToEdit
-        ? {
-            selections: args.objects ?? {
-              graphSelections: [],
-              otherSelections: [],
-            },
-            faces: new Map(),
-          }
-        : await resolveDistanceSelections(
-            args.objects ?? { graphSelections: [], otherSelections: [] },
-            kclManager.artifactGraph,
-            kclManager.engineCommandManager
-          )
-      if (isErr(resolved)) return resolved
-      const data = await withDefaultGdtFrameDefaults({
-        data: { ...args, objects: resolved.selections },
-        ast,
-        artifactGraph: kclManager.artifactGraph,
-        engineCommandManager: kclManager.engineCommandManager,
-        sourceCode: kclManager.code,
-        outputUnit: kclManager.fileSettings.defaultLengthUnit,
-        wasmInstance,
-        distance: true,
-      })
-      return addDistanceGdt({
-        ...data,
-        ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance,
-        edgeFaceSelections: resolved.faces,
-      })
-    },
-  }),
-  'GDT Perpendicularity': withGdtDefaults(
-    'GDT Perpendicularity',
-    addPerpendicularityGdt
+  'GDT Straightness': withSolidEdgeSelections(
+    withGdtDefaults('GDT Straightness', addStraightnessGdt),
+    'objects'
   ),
-  'GDT Angularity': withGdtDefaults('GDT Angularity', addAngularityGdt),
-  'GDT Concentricity': withGdtDefaults(
-    'GDT Concentricity',
-    addConcentricityGdt
+  'GDT Circularity': withSolidEdgeSelections(
+    withGdtDefaults('GDT Circularity', addCircularityGdt),
+    'objects'
   ),
-  'GDT Symmetry': withGdtDefaults('GDT Symmetry', addSymmetryGdt),
-  'GDT Runout': withGdtDefaults('GDT Runout', addRunoutGdt),
-  'GDT Parallelism': withGdtDefaults('GDT Parallelism', addParallelismGdt),
-  'GDT Annotation': withGdtDefaults('GDT Annotation', addAnnotationGdt),
+  'GDT Cylindricity': withSolidEdgeSelections(
+    withGdtDefaults('GDT Cylindricity', addCylindricityGdt),
+    'objects'
+  ),
+  'GDT Position': withSolidEdgeSelections(
+    withGdtDefaults('GDT Position', addPositionGdt),
+    'objects'
+  ),
+  'GDT Profile': withSolidEdgeSelections(
+    withGdtDefaults('GDT Profile', addProfileGdt),
+    'objects'
+  ),
+  'GDT Distance': withSolidEdgeSelections(
+    defineModelingCodemod<CommandArgsByName['GDT Distance']>({
+      ...withStdLibExperimentalFeatures('GDT Distance'),
+      run: async ({ args, ast, kclManager, wasmInstance }) => {
+        const resolved = args.nodeToEdit
+          ? {
+              selections: args.objects ?? {
+                graphSelections: [],
+                otherSelections: [],
+              },
+              faces: new Map(),
+            }
+          : await resolveDistanceSelections(
+              args.objects ?? { graphSelections: [], otherSelections: [] },
+              kclManager.artifactGraph,
+              kclManager.engineCommandManager
+            )
+        if (isErr(resolved)) return resolved
+        const data = await withDefaultGdtFrameDefaults({
+          data: { ...args, objects: resolved.selections },
+          ast,
+          artifactGraph: kclManager.artifactGraph,
+          engineCommandManager: kclManager.engineCommandManager,
+          sourceCode: kclManager.code,
+          outputUnit: kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+          distance: true,
+        })
+        return addDistanceGdt({
+          ...data,
+          ast,
+          artifactGraph: kclManager.artifactGraph,
+          wasmInstance,
+          edgeFaceSelections: resolved.faces,
+        })
+      },
+    }),
+    'objects'
+  ),
+  'GDT Perpendicularity': withSolidEdgeSelections(
+    withGdtDefaults('GDT Perpendicularity', addPerpendicularityGdt),
+    'objects'
+  ),
+  'GDT Angularity': withSolidEdgeSelections(
+    withGdtDefaults('GDT Angularity', addAngularityGdt),
+    'objects'
+  ),
+  'GDT Concentricity': withSolidEdgeSelections(
+    withGdtDefaults('GDT Concentricity', addConcentricityGdt),
+    'objects'
+  ),
+  'GDT Symmetry': withSolidEdgeSelections(
+    withGdtDefaults('GDT Symmetry', addSymmetryGdt),
+    'objects'
+  ),
+  'GDT Runout': withSolidEdgeSelections(
+    withGdtDefaults('GDT Runout', addRunoutGdt),
+    'objects'
+  ),
+  'GDT Parallelism': withSolidEdgeSelections(
+    withGdtDefaults('GDT Parallelism', addParallelismGdt),
+    'objects'
+  ),
+  'GDT Annotation': withSolidEdgeSelections(
+    withGdtDefaults('GDT Annotation', addAnnotationGdt),
+    'objects'
+  ),
   'GDT Note': withAst('GDT Note', addNoteGdt),
   'GDT Datum': withGdtDefaults('GDT Datum', addDatumGdt),
   'Flip Surface': withArtifactGraph('Flip Surface', addFlipSurface),
