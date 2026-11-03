@@ -6,7 +6,7 @@ import {
   type ZooFeatureTree,
   type ZooFeatureTreeRow,
 } from '@kittycad/ui-components/web-components'
-import { FEATURE_TREE_EDIT_EVENT } from '@src/lib/featureTree/registry/contract'
+import { FEATURE_TREE_EDIT_EVENT } from '@src/lib/featureTree/registry/commands'
 import type { ContextMenuProps } from '@src/components/ContextMenu'
 import { ContextMenu } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'

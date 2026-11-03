@@ -6,7 +6,7 @@ import {
 import {
   FEATURE_TREE_COMMANDS,
   FEATURE_TREE_FOCUSED_SCOPE,
-} from '@src/lib/featureTree/registry/contract'
+} from '@src/lib/featureTree/registry/commands'
 import {
   featureTreeExtension,
   ownsFeatureTreeKey,

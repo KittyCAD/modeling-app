@@ -5,7 +5,7 @@ import {
   FEATURE_TREE_COMMANDS,
   FEATURE_TREE_EDIT_EVENT,
   FEATURE_TREE_FOCUSED_SCOPE,
-} from '@src/lib/featureTree/registry/contract'
+} from '@src/lib/featureTree/registry/commands'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { computed } from '@preact/signals-core'
 import { SCENE_BROWSER_FEATURE } from '@src/lib/sceneBrowser/featureFlag'

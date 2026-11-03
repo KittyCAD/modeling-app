@@ -14,7 +14,7 @@ import type {
   ZooFeatureTree,
   ZooFeatureTreeRow,
 } from '@kittycad/ui-components/web-components'
-import { FEATURE_TREE_EDIT_EVENT } from '@src/lib/featureTree/registry/contract'
+import { FEATURE_TREE_EDIT_EVENT } from '@src/lib/featureTree/registry/commands'
 import {
   FeatureTree,
   FeatureTreeRow,
