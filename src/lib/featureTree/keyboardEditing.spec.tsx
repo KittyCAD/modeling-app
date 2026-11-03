@@ -82,11 +82,14 @@ it.each(['Enter', ' '])(
     function Tree() {
       const [selected, setSelected] = useState(false)
       return (
-        <FeatureTree onMount={browser.setTree}>
+        <FeatureTree
+          onMount={browser.setTree}
+          nodes={[{ id: 'sketch', label: 'Sketch' }]}
+          selectedIds={selected ? ['sketch'] : []}
+        >
           <FeatureTreeRow
             nodeId="sketch"
             label="Sketch"
-            selected={selected}
             onSelect={() => {
               select()
               flushSync(() => setSelected(true))

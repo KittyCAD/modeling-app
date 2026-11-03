@@ -1,3 +1,4 @@
+import { bodyNodes } from '@src/lib/featureTree/browserNodes'
 import {
   cleanup,
   fireEvent,
@@ -95,13 +96,25 @@ describe('Bodies scene tree', () => {
     }
     state.graph.set(pattern.id, pattern)
     const view = render(
-      <FeatureTree label="Bodies">
-        <BodiesSection />
+      <FeatureTree
+        label="Bodies"
+        nodes={bodyNodes(
+          buildFeatureTreeState(
+            { ...emptyFeatureTreeExecution(), artifactGraph: state.graph },
+            '',
+            false,
+            false
+          )
+        )}
+      >
+        <BodiesSection sectionId="bodies" />
       </FeatureTree>
     )
     const tree = view.container.querySelector('zoo-feature-tree')!
     expect(tree.getAttribute('aria-label')).toBe('Bodies')
-    const row = view.container.querySelector<HTMLElement>('[node-id="copy-2"]')!
+    const row = view.container.querySelector<HTMLElement>(
+      '[node-id="body:copy-2"]'
+    )!
     expect(within(row).getByText('Body 2')).toBeTruthy()
     await waitFor(() => expect(row.getAttribute('role')).toBe('treeitem'))
     row.focus()
@@ -146,8 +159,18 @@ describe('Bodies scene tree', () => {
   })
   it('shows an empty state with no bodies', () => {
     const view = render(
-      <FeatureTree label="Bodies">
-        <BodiesSection />
+      <FeatureTree
+        label="Bodies"
+        nodes={bodyNodes(
+          buildFeatureTreeState(
+            { ...emptyFeatureTreeExecution(), artifactGraph: state.graph },
+            '',
+            false,
+            false
+          )
+        )}
+      >
+        <BodiesSection sectionId="bodies" />
       </FeatureTree>
     )
     expect(view.getByText('No bodies')).toBeTruthy()

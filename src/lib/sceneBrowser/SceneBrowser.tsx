@@ -27,7 +27,14 @@ import {
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { Resizable } from 're-resizable'
-import { useCallback, useId, useLayoutEffect, useRef, useState } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import '@src/lib/featureTree/FeatureTree.css'
 import './SceneBrowser.css'
 
@@ -55,6 +62,19 @@ export function SceneBrowser() {
     platform
   )
   const sections = registry.signal(sceneBrowserSections).value
+  const nodes = sections.flatMap((section) => {
+    const parentId = `${SECTION_PREFIX}${section.id}`
+    return [
+      { id: parentId, label: section.title },
+      ...section.nodes.value.map((node) => ({
+        ...node,
+        parentId: node.parentId ?? parentId,
+      })),
+    ]
+  })
+  const selectedIds = sections.flatMap(
+    (section) => section.selectedIds?.value ?? []
+  )
   const service = registry.get(sceneBrowserService)
   const scopes = registry.optional(commandScopeService)
   const [collapsedSections, setCollapsedSections] = useState<
@@ -190,25 +210,36 @@ export function SceneBrowser() {
                 : undefined,
             }}
           >
-            <FeatureTree label="Scene browser" onMount={mount}>
+            <FeatureTree
+              label="Scene browser"
+              onMount={mount}
+              nodes={nodes}
+              selectedIds={selectedIds}
+              defaultExpandedIds={sections.flatMap((section) => [
+                ...(!collapsedSections.has(section.id)
+                  ? [`${SECTION_PREFIX}${section.id}`]
+                  : []),
+                ...(section.defaultExpandedIds?.value ?? []),
+              ])}
+            >
               {sections.map(({ id, title, Component, Menu }) => (
-                <FeatureTreeRow
-                  key={id}
-                  nodeId={`${SECTION_PREFIX}${id}`}
-                  label={title}
-                  defaultOpen={!collapsedSections.has(id)}
-                  actions={Menu && <Menu />}
-                  onSelect={() =>
-                    setCollapsedSections((previous) => {
-                      const next = new Set(previous)
-                      if (next.has(id)) next.delete(id)
-                      else next.add(id)
-                      return next
-                    })
-                  }
-                >
-                  <Component />
-                </FeatureTreeRow>
+                <Fragment key={id}>
+                  <FeatureTreeRow
+                    key={id}
+                    nodeId={`${SECTION_PREFIX}${id}`}
+                    label={title}
+                    actions={Menu && <Menu />}
+                    onSelect={() =>
+                      setCollapsedSections((previous) => {
+                        const next = new Set(previous)
+                        if (next.has(id)) next.delete(id)
+                        else next.add(id)
+                        return next
+                      })
+                    }
+                  ></FeatureTreeRow>
+                  <Component sectionId={`${SECTION_PREFIX}${id}`} />
+                </Fragment>
               ))}
             </FeatureTree>
           </div>

@@ -1,39 +1,20 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react'
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  waitFor,
+} from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/components/ContextMenu', () => ({ ContextMenu: () => null }))
 
 import { memo, StrictMode, useState } from 'react'
-import { flushSync } from 'react-dom'
-import {
-  Registry,
-  defineRegistryItem,
-  provideService,
-} from '@kittycad/registry'
-import { signal } from '@preact/signals-core'
-import { featureTreeExtension } from '@src/lib/featureTree/registry/extension'
-import { FEATURE_TREE_COMMANDS } from '@src/lib/featureTree/registry/contract'
-import { sceneBrowserExtension } from '@src/lib/sceneBrowser/registry/extension'
-import {
-  sceneBrowserService,
-  SCENE_BROWSER_FOCUSED_SCOPE,
-} from '@src/lib/sceneBrowser/registry/contract'
-import { SCENE_BROWSER_FEATURE } from '@src/lib/sceneBrowser/featureFlag'
-import {
-  userFeaturesService,
-  type UserFeaturesRegistryService,
-} from '@src/registry/contracts/userFeatures'
-import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
-import { commandsValueSpec } from '@src/registry/contracts/commands'
-import {
-  createKeymapTree,
-  KEYMAP_SCHEMA_VERSION,
-  keymapValueSpec,
-  matchKeymapKeystrokes,
-  resolveKeymapItems,
-} from '@src/registry/contracts/keymap'
-
-import type { ZooFeatureTree } from '@kittycad/ui-components/web-components'
+import type {
+  ZooFeatureTree,
+  ZooFeatureTreeRow,
+} from '@kittycad/ui-components/web-components'
+import { FEATURE_TREE_EDIT_EVENT } from '@src/lib/featureTree/registry/contract'
 import {
   FeatureTree,
   FeatureTreeRow,
@@ -41,367 +22,212 @@ import {
   FeatureTreeNotice,
 } from '@src/lib/featureTree/FeatureTreeView'
 
+const nodes = [
+  { id: 'parent', label: 'Parent' },
+  { id: 'child', parentId: 'parent', label: 'Child' },
+  { id: 'sibling', label: 'Sibling' },
+]
+function elements(container: HTMLElement) {
+  return {
+    tree: container.querySelector<ZooFeatureTree>('zoo-feature-tree')!,
+    row: (id: string) =>
+      container.querySelector<ZooFeatureTreeRow>(`[node-id="${id}"]`)!,
+  }
+}
 afterEach(cleanup)
-describe('ZDS feature tree adapter', () => {
-  it('publishes explicit hierarchy while rows and decorations render as flat siblings', async () => {
-    function ChildContents() {
-      return (
-        <>
-          <FeatureTreeRow nodeId="branch" label="Branch" defaultOpen>
-            <FeatureTreeRow nodeId="child" label="Child" disabled />
-            <FeatureTreeNotice>Branch notice</FeatureTreeNotice>
-            <FeatureTreeDivider />
-          </FeatureTreeRow>
-        </>
-      )
-    }
+describe('explicit feature tree view', () => {
+  it('has its hierarchy before rows mount and hides branch decorations without making them nodes', async () => {
     const view = render(
-      <FeatureTree>
-        <FeatureTreeRow nodeId="parent" label="Parent" defaultOpen>
-          <ChildContents />
-        </FeatureTreeRow>
+      <FeatureTree nodes={nodes} defaultExpandedIds={['parent']}>
+        <FeatureTreeNotice parentId="parent">Notice</FeatureTreeNotice>
+      </FeatureTree>
+    )
+    const { tree } = elements(view.container)
+    expect(tree.nodes).toEqual(nodes)
+    view.rerender(
+      <FeatureTree nodes={nodes} defaultExpandedIds={['parent']}>
+        <FeatureTreeRow nodeId="parent" label="Parent" />
+        <FeatureTreeRow nodeId="child" label="Child" />
+        <FeatureTreeNotice parentId="parent">Notice</FeatureTreeNotice>
+        <FeatureTreeDivider parentId="parent" />
         <FeatureTreeRow nodeId="sibling" label="Sibling" />
       </FeatureTree>
     )
-    const tree =
-      view.container.querySelector<ZooFeatureTree>('zoo-feature-tree')!
+    const { row } = elements(view.container)
     await waitFor(() =>
-      expect(tree.nodes).toEqual([
-        { id: 'parent', parentId: undefined, label: 'Parent', disabled: false },
-        { id: 'branch', parentId: 'parent', label: 'Branch', disabled: false },
-        { id: 'child', parentId: 'branch', label: 'Child', disabled: true },
-        {
-          id: 'sibling',
-          parentId: undefined,
-          label: 'Sibling',
-          disabled: false,
-        },
-      ])
+      expect(row('child').getAttribute('aria-level')).toBe('2')
     )
-    expect(
-      [...tree.querySelectorAll('zoo-feature-tree-row')].every(
-        (row) => row.parentElement === tree
-      )
-    ).toBe(true)
-    const notice = view.getByText('Branch notice')
-    const divider = view.container.querySelector<HTMLHRElement>(
-      '.feature-tree-divider'
-    )!
-    expect(notice.parentElement).toBe(tree)
-    expect(divider.parentElement).toBe(tree)
-    expect(notice.hidden).toBe(false)
-    expect(divider.hidden).toBe(false)
-    const expand = (nodeId: string, expanded: boolean) =>
+    expect(row('child').parentElement).toBe(tree)
+    expect(view.getByText('Notice').hidden).toBe(false)
+    await act(() =>
       tree.dispatchEvent(
-        new CustomEvent('zoo-expand', { detail: { nodeId, expanded } })
+        new CustomEvent('zoo-expand', {
+          detail: { nodeId: 'parent', expanded: false },
+        })
       )
-    expand('parent', false)
-    expect(notice.hidden).toBe(true)
-    expect(divider.hidden).toBe(true)
-    expand('parent', true)
-    expect(notice.hidden).toBe(false)
-    expect(divider.hidden).toBe(false)
-    expand('branch', false)
-    expect(notice.hidden).toBe(true)
-    expect(divider.hidden).toBe(true)
-    expand('branch', true)
-    expect(notice.hidden).toBe(false)
-    expect(divider.hidden).toBe(false)
-    expect(tree.nodes.map(({ id }) => id)).toEqual([
-      'parent',
-      'branch',
-      'child',
-      'sibling',
-    ])
+    )
+    await waitFor(() => expect(row('child').hidden).toBe(true))
+    expect(view.getByText('Notice').hidden).toBe(true)
+    expect(view.container.querySelector('hr')!.hidden).toBe(true)
+    expect(tree.nodes).toHaveLength(3)
   })
 
-  it('updates model order after keyed memoized rows move without losing focus', async () => {
-    const MemoRow = memo(({ id }: { id: string }) => (
+  it('uses data order when memoized rows move and keeps focus on the same identity', async () => {
+    const Row = memo(({ id }: { id: string }) => (
       <FeatureTreeRow nodeId={id} label={id} />
     ))
-    const content = (ids: string[]) => (
-      <FeatureTree>
-        {ids.map((id) => (
-          <MemoRow key={id} id={id} />
+    const first = [
+      { id: 'a', label: 'A' },
+      { id: 'b', label: 'B' },
+    ]
+    const renderTree = (reversed: boolean) => (
+      <FeatureTree nodes={reversed ? first.toReversed() : first}>
+        {(reversed ? ['b', 'a'] : ['a', 'b']).map((id) => (
+          <Row key={id} id={id} />
         ))}
       </FeatureTree>
     )
-    const view = render(content(['a', 'b']))
-    const tree =
-      view.container.querySelector<ZooFeatureTree>('zoo-feature-tree')!
-    const b = view.container.querySelector<HTMLElement>('[node-id="b"]')!
-    await waitFor(() => expect(b.getAttribute('role')).toBe('treeitem'))
-    b.focus()
-    view.rerender(content(['b', 'a']))
+    const view = render(renderTree(false))
+    const { tree, row } = elements(view.container)
+    await waitFor(() => expect(row('a').getAttribute('role')).toBe('treeitem'))
+    row('a').focus()
+    view.rerender(renderTree(true))
     await waitFor(() =>
       expect(tree.nodes.map(({ id }) => id)).toEqual(['b', 'a'])
     )
+    expect(tree.focusedNodeId).toBe('a')
+    fireEvent.keyDown(row('a'), { key: 'ArrowUp' })
     expect(tree.focusedNodeId).toBe('b')
-    expect(document.activeElement).toBe(b)
-    fireEvent.keyDown(b, { key: 'End' })
-    expect(document.activeElement?.getAttribute('node-id')).toBe('a')
-    fireEvent.keyDown(document.activeElement!, { key: 'Home' })
-    expect(document.activeElement).toBe(b)
   })
 
-  it('cleans removed branches and registers remounted branches once in StrictMode', async () => {
-    const content = (show: boolean) => (
+  it('keeps user expansion through selection updates, but follows changed live defaults and prunes removed nodes', async () => {
+    const content = (open: boolean, present = true, selected = false) => (
       <StrictMode>
-        <FeatureTree>
-          {show && (
-            <FeatureTreeRow nodeId="parent" label="Parent" defaultOpen>
+        <FeatureTree
+          nodes={present ? nodes : [nodes[2]]}
+          defaultExpandedIds={open ? ['parent'] : []}
+          selectedIds={selected ? ['child'] : []}
+        >
+          {present && (
+            <>
+              <FeatureTreeRow nodeId="parent" label="Parent" />
               <FeatureTreeRow nodeId="child" label="Child" />
-              <FeatureTreeNotice>Notice</FeatureTreeNotice>
-            </FeatureTreeRow>
+            </>
           )}
           <FeatureTreeRow nodeId="sibling" label="Sibling" />
         </FeatureTree>
       </StrictMode>
     )
     const view = render(content(true))
-    const tree =
-      view.container.querySelector<ZooFeatureTree>('zoo-feature-tree')!
-    await waitFor(() =>
-      expect(tree.nodes.map(({ id }) => id)).toEqual([
-        'parent',
-        'child',
-        'sibling',
-      ])
+    const { tree, row } = elements(view.container)
+    await waitFor(() => expect(row('child').hidden).toBe(false))
+    await act(() =>
+      tree.dispatchEvent(
+        new CustomEvent('zoo-expand', {
+          detail: { nodeId: 'parent', expanded: false },
+        })
+      )
     )
+    view.rerender(content(true, true, true))
+    await waitFor(() => expect(row('child').hidden).toBe(true))
     view.rerender(content(false))
-    await waitFor(() =>
-      expect(tree.nodes.map(({ id }) => id)).toEqual(['sibling'])
-    )
-    expect(tree.expandedIds).toEqual([])
-    expect(view.queryByText('Notice')).toBeNull()
     view.rerender(content(true))
-    await waitFor(() =>
-      expect(tree.nodes.map(({ id }) => id)).toEqual([
-        'parent',
-        'child',
-        'sibling',
-      ])
-    )
-    expect(tree.expandedIds).toEqual(['parent'])
+    await waitFor(() => expect(row('child').hidden).toBe(false))
+    view.rerender(content(true, false))
+    expect(tree.nodes.map(({ id }) => id)).toEqual(['sibling'])
+    expect(tree.expandedIds).toEqual([])
   })
 
-  it('selects focused rows with Space or Enter without editing', async () => {
-    const parentSelect = vi.fn()
-    const select = vi.fn()
-    const edit = vi.fn()
-    function ControlledTree() {
-      const [selected, setSelected] = useState(false)
-      return (
-        <FeatureTree>
-          <FeatureTreeRow
-            nodeId="parent"
-            label="Parent"
-            defaultOpen
-            onSelect={parentSelect}
+  it.each(['Enter', ' '])(
+    'selects with %s and routes explicit editing once',
+    async (key) => {
+      const select = vi.fn(),
+        edit = vi.fn()
+      function Controlled() {
+        const [selected, setSelected] = useState(false)
+        return (
+          <FeatureTree
+            nodes={nodes}
+            defaultExpandedIds={['parent']}
+            selectedIds={selected ? ['child'] : []}
           >
+            <FeatureTreeRow nodeId="parent" label="Parent" />
             <FeatureTreeRow
               nodeId="child"
               label="Child"
-              selected={selected}
               onSelect={() => {
                 select()
                 setSelected(true)
               }}
               onDoubleClick={edit}
-              visibility={{ visible: true, onVisibilityChange: vi.fn() }}
             />
-          </FeatureTreeRow>
-        </FeatureTree>
-      )
-    }
-    const view = render(<ControlledTree />)
-    const tree =
-      view.container.querySelector<ZooFeatureTree>('zoo-feature-tree')!
-    const child =
-      view.container.querySelector<HTMLElement>('[node-id="child"]')!
-    await waitFor(() => expect(child.getAttribute('role')).toBe('treeitem'))
-    child.focus()
-    fireEvent.keyDown(child, { key: ' ' })
-    await waitFor(() => expect(tree.selectedIds).toEqual(['child']))
-    expect(select).toHaveBeenCalledOnce()
-    expect(edit).not.toHaveBeenCalled()
-    expect(parentSelect).not.toHaveBeenCalled()
-
-    fireEvent.keyDown(child, { key: 'Enter' })
-    expect(select).toHaveBeenCalledTimes(2)
-    expect(edit).not.toHaveBeenCalled()
-
-    fireEvent.keyDown(view.getByRole('button', { name: 'Hide Child' }), {
-      key: 'Enter',
-    })
-    expect(select).toHaveBeenCalledTimes(2)
-    expect(edit).not.toHaveBeenCalled()
-    expect(parentSelect).not.toHaveBeenCalled()
-  })
-  it.each(['shift+enter', 'shift+space', 'f3'])(
-    'routes %s through the edit command to the focused row',
-    async (chord) => {
-      const registry = new Registry()
-      registry.configure([
-        sceneBrowserExtension,
-        featureTreeExtension,
-        defineRegistryItem({
-          providesServices: [
-            provideService(userFeaturesService, {
-              context: signal({
-                featureIds: new Set([SCENE_BROWSER_FEATURE]),
-              } as UserFeaturesContext),
-            } as unknown as UserFeaturesRegistryService),
-          ],
-        }),
-      ])
-      const browser = registry.get(sceneBrowserService)
-      const edit = vi.fn()
-      const parentEdit = vi.fn()
-      const select = vi.fn()
-      function ControlledTree() {
-        const [selected, setSelected] = useState(false)
-        return (
-          <FeatureTree onMount={browser.setTree}>
-            <FeatureTreeRow
-              nodeId="parent"
-              label="Parent"
-              defaultOpen
-              onDoubleClick={parentEdit}
-            >
-              <FeatureTreeRow
-                nodeId="child"
-                label="Child"
-                selected={selected}
-                onDoubleClick={edit}
-                onSelect={() => {
-                  select()
-                  flushSync(() => setSelected(true))
-                }}
-              />
-            </FeatureTreeRow>
+            <FeatureTreeRow nodeId="sibling" label="Sibling" />
           </FeatureTree>
         )
       }
-      const view = render(<ControlledTree />)
-      try {
-        const child =
-          view.container.querySelector<HTMLElement>('[node-id="child"]')!
-        await waitFor(() => expect(child.getAttribute('role')).toBe('treeitem'))
-        child.focus()
-        const keymap = createKeymapTree(
-          resolveKeymapItems(registry.get(keymapValueSpec).items, {
-            version: KEYMAP_SCHEMA_VERSION,
-            bindings:
-              chord === 'f3'
-                ? [
-                    {
-                      command: FEATURE_TREE_COMMANDS.edit,
-                      keystrokes: ['f3'],
-                      when: [SCENE_BROWSER_FOCUSED_SCOPE],
-                    },
-                  ]
-                : [],
+      const view = render(<Controlled />),
+        { tree, row } = elements(view.container)
+      await waitFor(() =>
+        expect(row('child').getAttribute('role')).toBe('treeitem')
+      )
+      row('child').focus()
+      fireEvent.keyDown(row('child'), { key })
+      expect(select).toHaveBeenCalledOnce()
+      expect(edit).not.toHaveBeenCalled()
+      expect(tree.selectedIds).toEqual(['child'])
+      await act(() =>
+        tree.dispatchEvent(
+          new CustomEvent(FEATURE_TREE_EDIT_EVENT, {
+            detail: { nodeId: 'child' },
           })
         )
-        const match = matchKeymapKeystrokes(
-          keymap,
-          [SCENE_BROWSER_FOCUSED_SCOPE],
-          [chord]
-        )
-        expect(match.type).toBe('full')
-        if (match.type !== 'full') return
-        expect(match.item.command).toBe(FEATURE_TREE_COMMANDS.edit)
-        const command = registry
-          .get(commandsValueSpec)
-          .find(({ id }) => id === match.item.command)!
-        await command.onSubmit({} as never)
-        expect(select).toHaveBeenCalledOnce()
-        expect(edit).toHaveBeenCalledOnce()
-        expect(select.mock.invocationCallOrder[0]).toBeLessThan(
-          edit.mock.invocationCallOrder[0]
-        )
-        expect(parentEdit).not.toHaveBeenCalled()
-        expect(browser.tree.value?.selectedIds).toEqual(['child'])
-      } finally {
-        view.unmount()
-        registry[Symbol.dispose]()
-      }
+      )
+      expect(select).toHaveBeenCalledTimes(2)
+      expect(edit).toHaveBeenCalledOnce()
     }
   )
-  it('keeps the clicked representation selected when a feature and body share a source selection', async () => {
+
+  it('keeps the focused representation selected when an operation and a body share source selection', async () => {
+    const candidates = ['feature', 'body']
     const view = render(
-      <FeatureTree>
-        <FeatureTreeRow nodeId="feature" label="Extrude" selected />
-        <FeatureTreeRow nodeId="body" label="Body 1" selected />
+      <FeatureTree
+        nodes={candidates.map((id) => ({ id, label: id }))}
+        selectedIds={candidates}
+      >
+        <FeatureTreeRow nodeId="feature" label="feature" />
+        <FeatureTreeRow nodeId="body" label="body" />
       </FeatureTree>
     )
-    const tree =
-      view.container.querySelector<ZooFeatureTree>('zoo-feature-tree')!
-    const body = view.container.querySelector('[node-id="body"]')!
-    await waitFor(() => expect(body.getAttribute('role')).toBe('treeitem'))
-    body.dispatchEvent(
-      new CustomEvent('zoo-select', {
-        bubbles: true,
-        composed: true,
-        detail: { nodeId: 'body' },
-      })
+    const { tree, row } = elements(view.container)
+    await waitFor(() =>
+      expect(row('body').getAttribute('role')).toBe('treeitem')
     )
+    row('body').focus()
+    fireEvent.keyDown(row('body'), { key: ' ' })
     expect(tree.selectedIds).toEqual(['body'])
+    await waitFor(() =>
+      expect(row('body').getAttribute('aria-selected')).toBe('true')
+    )
   })
-  it('preserves branch expansion across selection updates and routes one row action', async () => {
-    let tree: ZooFeatureTree | null = null
-    const mount = (element: ZooFeatureTree | null) => {
-      tree = element
-    }
-    const parent = vi.fn(),
-      child = vi.fn()
-    const hide = vi.fn()
-    const view = (selected: boolean) => (
-      <FeatureTree onMount={mount}>
+
+  it('routes visibility actions once without selecting or editing the row', async () => {
+    const select = vi.fn(),
+      edit = vi.fn(),
+      toggle = vi.fn()
+    const view = render(
+      <FeatureTree nodes={[{ id: 'body', label: 'Body' }]}>
         <FeatureTreeRow
-          nodeId="parent"
-          label="Parent"
-          defaultOpen
-          onSelect={parent}
-        >
-          <FeatureTreeRow
-            nodeId="child"
-            label="Child"
-            selected={selected}
-            onSelect={child}
-            visibility={{ visible: true, onVisibilityChange: hide }}
-          />
-        </FeatureTreeRow>
+          nodeId="body"
+          label="Body"
+          onSelect={select}
+          onDoubleClick={edit}
+          visibility={{ visible: true, onVisibilityChange: toggle }}
+        />
       </FeatureTree>
     )
-    const rendered = render(view(false))
-    await waitFor(() => expect(tree?.expandedIds).toEqual(['parent']))
-    const row = rendered.container.querySelector('[node-id="child"]')!
-    expect(row.parentElement).toBe(tree)
-    expect(row.hasAttribute('slot')).toBe(false)
-    row.dispatchEvent(
-      new CustomEvent('zoo-select', {
-        bubbles: true,
-        composed: true,
-        detail: { nodeId: 'child' },
-      })
-    )
-    expect(child).toHaveBeenCalledOnce()
-    expect(parent).not.toHaveBeenCalled()
-    fireEvent.click(rendered.getByRole('button', { name: 'Hide Child' }))
-    expect(hide).toHaveBeenCalledOnce()
-    expect(child).toHaveBeenCalledOnce()
-    tree!.dispatchEvent(
-      new CustomEvent('zoo-expand', {
-        detail: { nodeId: 'parent', expanded: false },
-      })
-    )
-    rendered.rerender(view(true))
-    await waitFor(() => expect(tree?.selectedIds).toEqual(['child']))
-    expect(tree!.expandedIds).toEqual([])
-    expect(tree!.shortcuts).toBe(false)
-    rendered.unmount()
-    expect(tree).toBeNull()
+    fireEvent.click(view.getByRole('button', { name: 'Hide Body' }))
+    expect(toggle).toHaveBeenCalledOnce()
+    expect(select).not.toHaveBeenCalled()
+    expect(edit).not.toHaveBeenCalled()
   })
 })

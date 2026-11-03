@@ -1,3 +1,5 @@
+import { signal } from '@preact/signals-core'
+import { createFeatureTreeService } from '@src/lib/featureTree/registry/service'
 import type { Diagnostic } from '@codemirror/lint'
 import { EditorView } from '@codemirror/view'
 import type {
@@ -2100,5 +2102,34 @@ describe('reconnect execution queue', () => {
     expect(execute).not.toHaveBeenCalled()
     expect(kclManager.executeIsStale).toBeNull()
     expect(kclManager.isExecuting).toBe(false)
+  })
+})
+
+describe('KclManager executing-editor tree capability', () => {
+  it('publishes parse recovery and last-successful state without mounting a pane', async () => {
+    const { kclManager } = createKclManagerTestHarness('x = 1')
+    await kclManager.safeParse('x = 1')
+    await flushPromises(10)
+    const source = kclManager.execution.featureTree
+    const service = createFeatureTreeService(
+      signal(kclManager.execution),
+      () => false
+    )
+    expect(source.value.hasParseErrors).toBe(false)
+    const successful = { map: { 0: [createLiveOperation('lastGood', 0)] } }
+    kclManager.lastSuccessfulOperations = successful
+    kclManager.lastSuccessfulCode = 'last good code'
+    expect(source.value.lastSuccessfulOperations).toBe(successful)
+    expect(source.value.lastSuccessfulCode).toBe('last good code')
+    await kclManager.safeParse('x = ]')
+    expect(source.value.hasParseErrors).toBe(true)
+    expect(service.model.value).toMatchObject({
+      readOnly: true,
+      showingStaleTree: true,
+      code: 'last good code',
+    })
+    await kclManager.safeParse('x = 1')
+    expect(source.value.hasParseErrors).toBe(false)
+    expect(service.model.value.readOnly).toBe(false)
   })
 })

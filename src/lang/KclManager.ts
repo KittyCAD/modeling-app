@@ -1,3 +1,8 @@
+import { getAllOperations } from '@src/lang/wasm'
+import {
+  getOperationLabel,
+  getOperationVariableName,
+} from '@src/lib/operations'
 import type { EntityType } from '@kittycad/lib'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -354,16 +359,20 @@ export interface PendingFeatureTreeSourceSelection {
 export class KclManager extends File {
   // SYSTEM DEPENDENCIES
 
-  private _wasmInstance: ModuleType | null = null
+  private _wasmInstance = signal<ModuleType | null>(null)
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
   get wasmInstancePromise() {
     return this.systemDeps.wasmInstancePromise
   }
   set wasmInstancePromise(newInstancePromise: Promise<ModuleType>) {
     this.systemDeps.wasmInstancePromise = newInstancePromise
-    void this.systemDeps.wasmInstancePromise.then((instance) => {
-      this._wasmInstance = instance
-    })
+    this._wasmInstance.value = null
+    void newInstancePromise
+      .then((instance) => {
+        if (this.systemDeps.wasmInstancePromise === newInstancePromise)
+          this._wasmInstance.value = instance
+      })
+      .catch(reportRejection)
   }
   /**
    * You probably should use `wasmInstancePromise` instead.
@@ -373,11 +382,11 @@ export class KclManager extends File {
    * and for some reason you can absolutely guarantee WASM will be done initializing.
    */
   get wasmInstance(): ModuleType {
-    if (this._wasmInstance === null) {
+    if (this._wasmInstance.value === null) {
       // eslint-disable-next-line  suggest-no-throw/suggest-no-throw
       throw new Error('Attempted to get wasmInstance before initialization')
     }
-    return this._wasmInstance
+    return this._wasmInstance.value
   }
   readonly systemDeps: ProjectSystemDeps
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
@@ -465,8 +474,35 @@ export class KclManager extends File {
   get hasEditsSinceLastExecutionSignal() {
     return this._hasEditsSinceLastExecution
   }
+  private readonly _featureTreeDescriptions = computed(
+    () =>
+      new Map(
+        [
+          ...getAllOperations(this.operationsByModule),
+          ...getAllOperations(this.lastSuccessfulOperations),
+          ...this.errors.flatMap((error) => getAllOperations(error.operations)),
+        ].map((operation) => {
+          const wasm = this._wasmInstance.value
+          const ast = this.hasParseErrors() ? this.lastGoodAst : this.ast
+          const variableName =
+            wasm && 'sourceRange' in operation && operation.sourceRange[2] === 0
+              ? getOperationVariableName(operation, ast, wasm)
+              : undefined
+          return [
+            getOperationKey(operation),
+            { name: getOperationLabel(operation), variableName },
+          ]
+        })
+      )
+  )
+
   private readonly _featureTreeExecution = computed<FeatureTreeExecution>(
     () => ({
+      operationDescriptions: this._featureTreeDescriptions.value,
+      defaultPlanes: this.defaultPlanes,
+      isSketching: this.modelingState?.matches('Sketch') ?? false,
+      sketchNoFace: this.modelingState?.matches('Sketch no face') ?? false,
+      selections: this._selectionRangesSignal.value,
       operations: this.operationsByModule,
       completedOperations: this.execState.operations,
       artifactGraph: this.execState.artifactGraph,
@@ -1935,8 +1971,11 @@ export class KclManager extends File {
 
     this.startWatchingSettings()
 
-    this.systemDeps.wasmInstancePromise
+    const initialWasmPromise = this.systemDeps.wasmInstancePromise
+    initialWasmPromise
       .then(async (wasmInstance) => {
+        if (this.systemDeps.wasmInstancePromise === initialWasmPromise)
+          this._wasmInstance.value = wasmInstance
         this._kclVersion = getKclVersion(wasmInstance)
         if (typeof wasmInstance === 'string') {
           this.wasmInitFailed = true

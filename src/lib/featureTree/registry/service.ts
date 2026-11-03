@@ -1,3 +1,8 @@
+import {
+  featureNodes,
+  bodyNodes,
+  selectedNodes,
+} from '@src/lib/featureTree/browserNodes'
 import type { ExecutingEditor } from '@src/registry/contracts/projectSession'
 import type { FeatureTreeService } from '@src/lib/featureTree/registry/contract'
 import { featureTree } from '@src/lib/featureTree/registry/contract'
@@ -21,7 +26,21 @@ export function createFeatureTreeService(
       disabledForUnrenderedChanges()
     )
   })
-  return { model }
+  const nodes = computed(() => featureNodes(model.value))
+  return {
+    model,
+    featureNodes: nodes,
+    featureNodesById: computed(
+      () => new Map(nodes.value.map((node) => [node.id, node]))
+    ),
+    bodyNodes: computed(() => bodyNodes(model.value)),
+    selectedIds: computed(() => selectedNodes(model.value)),
+    defaultExpandedIds: computed(() =>
+      model.value.operationRows
+        .filter((row) => row.defaultOpen)
+        .map((row) => row.id)
+    ),
+  }
 }
 
 export const featureTreeServiceExtension = defineRegistryItemFactory((ctx) => {

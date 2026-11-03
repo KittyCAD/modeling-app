@@ -1,3 +1,10 @@
+import {
+  buildOperationRows,
+  buildPlaneRows,
+  type OperationRow,
+  type PlaneRow,
+} from '@src/lib/featureTree/navigation'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { Diagnostic } from '@codemirror/lint'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -33,7 +40,13 @@ export interface FeatureTreeBody {
 /** One derived snapshot shared by the layout panes and the Scene browser. */
 export interface FeatureTreeModel {
   operations: OperationTreeNode[]
+  operationDescriptions: FeatureTreeExecution['operationDescriptions']
+  operationRows: readonly OperationRow[]
+  planes: readonly PlaneRow[]
+  selections: Selections
+  sketchNoFace: boolean
   code: string
+  currentCode: string
   visibilityOperations: Operation[]
   bodies: readonly FeatureTreeBody[]
   diagnostics: readonly Diagnostic[]
@@ -103,6 +116,18 @@ export function buildFeatureTreeState(
     }
   return {
     operations,
+    currentCode: code,
+    operationDescriptions: source?.operationDescriptions ?? new Map(),
+    operationRows: buildOperationRows(
+      operations,
+      source?.liveActiveModuleId ?? null
+    ),
+    planes: buildPlaneRows(source),
+    selections: source?.selections ?? {
+      graphSelections: [],
+      otherSelections: [],
+    },
+    sketchNoFace: source?.sketchNoFace ?? false,
     code:
       hasParseErrors || disabledForUnrenderedChanges
         ? source?.lastSuccessfulCode || code

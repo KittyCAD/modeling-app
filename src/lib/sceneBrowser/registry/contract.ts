@@ -3,16 +3,22 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
-import type { ZooFeatureTree } from '@kittycad/ui-components/web-components'
+import type {
+  FeatureTreeNode,
+  ZooFeatureTree,
+} from '@kittycad/ui-components/web-components'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { ComponentType } from 'react'
 
-/** Sections contribute row fragments; one Browser tree owns hierarchy and navigation. */
+/** Sections contribute explicit data and render flat row hosts for that data. */
 export interface SceneBrowserSection {
   id: string
   title: string
   order?: number
-  Component: ComponentType
+  nodes: ReadonlySignal<readonly FeatureTreeNode[]>
+  selectedIds?: ReadonlySignal<readonly string[]>
+  defaultExpandedIds?: ReadonlySignal<readonly string[]>
+  Component: ComponentType<{ sectionId: string }>
   Menu?: ComponentType
 }
 

@@ -99,18 +99,23 @@ describe('docked Browser tree', () => {
         provides: [
           provide(sceneBrowserSections, {
             id: 'history',
+            nodes: signal([
+              { id: 'plane', label: 'Top plane' },
+              { id: 'operation', label: 'Extrude' },
+            ]),
             title: 'Feature tree',
             order: 0,
-            Component: () => (
+            Component: ({ sectionId }) => (
               <>
                 <FeatureTreeRow nodeId="plane" label="Top plane" />
-                <FeatureTreeDivider />
+                <FeatureTreeDivider parentId={sectionId} />
                 <FeatureTreeRow nodeId="operation" label="Extrude" />
               </>
             ),
           }),
           provide(sceneBrowserSections, {
             id: 'bodies',
+            nodes: signal([{ id: 'body', label: 'Body 1' }]),
             title: 'Bodies',
             order: 1,
             Component: () => <FeatureTreeRow nodeId="body" label="Body 1" />,

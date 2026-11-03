@@ -1,3 +1,4 @@
+import { featureTree } from '@src/lib/featureTree/registry/contract'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import type { Command, CommandScopes } from '@src/lib/commandTypes'
 import {
@@ -75,6 +76,7 @@ export function ownsFeatureTreeKey(event: KeyboardEvent) {
 
 export const featureTreeExtension = defineRegistryItemFactory((ctx) => {
   const browser = ctx.services.signal(sceneBrowserService)
+  const data = ctx.services.signal(featureTree)
   const userFeatures = ctx.services.signal(userFeaturesService)
   const enabled = () => {
     const context = userFeatures.value?.context.value
@@ -178,11 +180,16 @@ export const featureTreeExtension = defineRegistryItemFactory((ctx) => {
         id: 'feature-tree',
         title: 'Feature tree',
         order: 0,
-        Component: () =>
+        nodes: computed(() => data.value?.featureNodes.value ?? []),
+        selectedIds: computed(() => data.value?.selectedIds.value ?? []),
+        defaultExpandedIds: computed(
+          () => data.value?.defaultExpandedIds.value ?? []
+        ),
+        Component: (props) =>
           createElement(
             Suspense,
             { fallback: null },
-            createElement(FeatureTreeSection)
+            createElement(FeatureTreeSection, props)
           ),
         Menu: () =>
           createElement(
@@ -195,11 +202,12 @@ export const featureTreeExtension = defineRegistryItemFactory((ctx) => {
         id: 'bodies',
         title: 'Bodies',
         order: 1,
-        Component: () =>
+        nodes: computed(() => data.value?.bodyNodes.value ?? []),
+        Component: (props) =>
           createElement(
             Suspense,
             { fallback: null },
-            createElement(BodiesSection)
+            createElement(BodiesSection, props)
           ),
       }),
     ],

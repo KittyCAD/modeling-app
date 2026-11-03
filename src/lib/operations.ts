@@ -1,5 +1,13 @@
-import { getHideOpByArtifactId, getHideOperationArtifactIds, type HideOperation } from '@src/lib/operationVisibility'
-export { getHideOpByArtifactId, hiddenArtifactIdsFromOperations, type HideOperation } from '@src/lib/operationVisibility'
+import {
+  getHideOpByArtifactId,
+  getHideOperationArtifactIds,
+  type HideOperation,
+} from '@src/lib/operationVisibility'
+export {
+  getHideOpByArtifactId,
+  hiddenArtifactIdsFromOperations,
+  type HideOperation,
+} from '@src/lib/operationVisibility'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {

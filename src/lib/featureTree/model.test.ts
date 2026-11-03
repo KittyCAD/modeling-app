@@ -1,3 +1,4 @@
+import type { Artifact } from '@src/lang/wasm'
 import { signal } from '@preact/signals-core'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import {
@@ -8,7 +9,9 @@ import { createFeatureTreeService } from '@src/lib/featureTree/registry/service'
 import type { ExecutingEditor } from '@src/registry/contracts/projectSession'
 import { describe, expect, it, vi } from 'vitest'
 
-function parameter(name: string): Operation {
+function parameter(
+  name: string
+): Extract<Operation, { type: 'VariableDeclaration' }> {
   return {
     type: 'VariableDeclaration',
     name,
@@ -115,4 +118,129 @@ describe('feature tree data service', () => {
     disabled.value = false
     expect(service.model.value.readOnly).toBe(false)
   })
+})
+
+it('derives hierarchy and live expansion without any mounted rows', () => {
+  const current = editor()
+  const moduleOperation: Operation = {
+    type: 'ModuleInstance',
+    name: 'part',
+    moduleId: 1,
+    nodePath: { steps: [] },
+    sourceRange: [0, 10, 0],
+  }
+  const child: Operation = { ...parameter('width'), sourceRange: [0, 10, 1] }
+  current.featureTree.value = {
+    ...current.featureTree.value,
+    operations: { map: { 0: [moduleOperation], 1: [child] } },
+  }
+  const service = createFeatureTreeService(signal(current), () => false)
+  const rows = service.model.value.operationRows
+  const branch = rows.find(
+    (row) => row.kind === 'operation' && row.operation === moduleOperation
+  )!
+  const leaf = rows.find(
+    (row) => row.kind === 'operation' && row.operation === child
+  )!
+  expect(leaf.parentId).toBe(branch.id)
+  expect(
+    service.featureNodes.value.find((node) => node.id === leaf.id)?.parentId
+  ).toBe(branch.id)
+  expect(service.defaultExpandedIds.value).toContain(branch.id)
+  current.featureTree.value = {
+    ...current.featureTree.value,
+    liveActiveModuleId: 2,
+  }
+  expect(service.defaultExpandedIds.value).not.toContain(branch.id)
+  current.featureTree.value = {
+    ...current.featureTree.value,
+    liveActiveModuleId: 1,
+  }
+  expect(service.defaultExpandedIds.value).toContain(branch.id)
+})
+
+it('keeps pattern-copy identity, hide state and selection separate from a shared artifact', () => {
+  const current = editor()
+  const pattern: Artifact = {
+    type: 'pattern',
+    id: 'pattern',
+    subType: 'linear',
+    sourceId: 'source',
+    copyIds: ['copy-1', 'copy-2'],
+    copyFaceIds: [],
+    copyEdgeIds: [],
+    codeRef: { range: [0, 10, 0], pathToNode: [], nodePath: { steps: [] } },
+  }
+  const hide: Operation = {
+    type: 'StdLibCall',
+    name: 'hide',
+    unlabeledArg: {
+      value: { type: 'ImportedGeometry', artifact_id: 'copy-2' },
+      sourceRange: [0, 10, 0],
+    },
+    labeledArgs: {},
+    nodePath: { steps: [] },
+    sourceRange: [0, 10, 0],
+    isError: false,
+  }
+  current.featureTree.value = {
+    ...current.featureTree.value,
+    artifactGraph: new Map([[pattern.id, pattern]]),
+    completedOperations: { map: { 0: [hide] } },
+    selections: {
+      graphSelections: [{ engineEntityId: 'copy-2' }],
+      otherSelections: [],
+    },
+  }
+  const service = createFeatureTreeService(signal(current), () => false)
+  expect(
+    service.model.value.bodies.map((body) => [
+      body.id,
+      body.patternIndex,
+      body.hideOperation,
+    ])
+  ).toEqual([
+    ['copy-1', 1, undefined],
+    ['copy-2', 2, hide],
+  ])
+  expect(service.selectedIds.value).toEqual(['body:copy-2'])
+  current.featureTree.value = {
+    ...current.featureTree.value,
+    artifactGraph: new Map(),
+  }
+  expect(service.bodyNodes.value).toEqual([])
+  expect(service.selectedIds.value).toEqual([])
+})
+
+it('uses the same variable and value-detail label rules as the pane presentation', () => {
+  const current = editor()
+  const dimension = parameter('width')
+  const extrude: Operation = {
+    type: 'StdLibCall',
+    name: 'extrude',
+    unlabeledArg: null,
+    labeledArgs: {},
+    nodePath: { steps: [] },
+    sourceRange: [11, 20, 0],
+    isError: false,
+  }
+  current.featureTree.value = {
+    ...current.featureTree.value,
+    operations: { map: { 0: [dimension, extrude] } },
+    operationDescriptions: new Map([
+      [
+        'VariableDeclaration-width-0-10-0',
+        { name: 'Parameter', variableName: 'width' },
+      ],
+      [
+        'StdLibCall-extrude-11-20-0',
+        { name: 'Extrude', variableName: 'extrude001' },
+      ],
+    ]),
+  }
+  const service = createFeatureTreeService(signal(current), () => false)
+  expect(service.featureNodes.value.map((node) => node.label)).toEqual([
+    'Parameter',
+    'extrude001',
+  ])
 })
