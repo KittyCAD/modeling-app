@@ -18,6 +18,8 @@ import {
   type ResolvedGraphSelection,
   codeRefFromRange,
   getArtifactFromRange,
+  getFaceBodyId,
+  getBodySelectionForFace,
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
@@ -1404,7 +1406,12 @@ export function getVariableExprsFromSelection(
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     const resolvedForSegment = resolveToCodeRef(s, artifactGraph)
-    const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
+    const patternExpr = getPatternExprFromSelection(
+      s,
+      ast,
+      wasmInstance,
+      artifactGraph
+    )
     if (patternExpr) {
       const key = splitOutputExprKey(patternExpr)
       if (pushedNames[key]) {
@@ -1431,6 +1438,29 @@ export function getVariableExprsFromSelection(
       }
       exprs.push(splitOutputExpr)
       pushedNames[key] = true
+      continue
+    }
+
+    const selectedFace = resolvedForSegment?.artifact
+    if (selectedFace?.type === 'primitiveFace' && selectedFace.sourceFaceId) {
+      const body = getBodySelectionForFace(selectedFace, artifactGraph)
+      if (err(body)) return body
+      const result = getVariableExprsFromSelection(
+        { graphSelections: [body], otherSelections: [] },
+        artifactGraph,
+        ast,
+        wasmInstance,
+        nodeToEdit,
+        options
+      )
+      if (err(result)) return result
+      for (const expr of result.exprs) {
+        const key = splitOutputExprKey(expr)
+        if (!pushedNames[key]) {
+          exprs.push(expr)
+          pushedNames[key] = true
+        }
+      }
       continue
     }
 
@@ -1722,14 +1752,29 @@ export function artifactToEntityRef(
 function getPatternExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  artifactGraph: ArtifactGraph
 ): Expr | null {
-  const artifact = selection.artifact
+  const selected =
+    selection.artifact ??
+    (selection.entityRef
+      ? artifactGraph.get(getEntityRefId(selection.entityRef) ?? '')
+      : undefined)
+  // A newly defined face uses the operation that introduced its tag. Only
+  // inherited faces can use the pattern instance's existing tag container.
+  if (selected?.type === 'edgeCut' && !selected.sourceEdgeCutId) return null
+  const ownerId = selected ? getFaceBodyId(selected) : undefined
+  const artifact = ownerId
+    ? [...artifactGraph.values()].find(
+        (a) => a.type === 'pattern' && a.copyIds.includes(ownerId)
+      )
+    : selected
   if (artifact?.type !== 'pattern') {
     return null
   }
 
   const patternIndex =
+    (ownerId ? artifact.copyIds.indexOf(ownerId) + 1 : undefined) ??
     selection.patternIndex ??
     (selection.engineEntityId
       ? artifact.copyIds.indexOf(selection.engineEntityId) + 1

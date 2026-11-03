@@ -1168,7 +1168,8 @@ export function isFaceArtifact(artifact: Artifact | undefined): boolean {
     artifact !== undefined &&
     (artifact.type === 'cap' ||
       artifact.type === 'wall' ||
-      artifact.type === 'edgeCut')
+      artifact.type === 'edgeCut' ||
+      (artifact.type === 'primitiveFace' && Boolean(artifact.sourceFaceId)))
   )
 }
 

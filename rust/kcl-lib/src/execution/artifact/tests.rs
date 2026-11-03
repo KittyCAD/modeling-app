@@ -1065,7 +1065,7 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
 }
 
 #[test]
-fn build_entity_clone_id_maps_from_child_queries() {
+fn build_entity_copy_id_maps_from_child_queries() {
     let source_id = Uuid::new_v4();
     let clone_cmd_id = Uuid::new_v4();
     let old_children_cmd_id = Uuid::new_v4();
@@ -1079,7 +1079,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
     let new_child_a = Uuid::new_v4();
     let new_child_b = Uuid::new_v4();
 
-    let artifact_commands = vec![
+    let mut artifact_commands = vec![
         ArtifactCommand {
             cmd_id: clone_cmd_id,
             range: SourceRange::synthetic(),
@@ -1146,32 +1146,59 @@ fn build_entity_clone_id_maps_from_child_queries() {
         OkModelingCmdResponse::EntityGetAllChildUuids(new_children_response),
     );
 
-    let clone_id_maps = build_entity_clone_id_maps(&artifact_commands, &responses);
-    let id_map = clone_id_maps
-        .get(&clone_cmd_id)
-        .expect("Expected clone ID map for clone command");
+    let later_query_id = Uuid::new_v4();
+    artifact_commands.push(ArtifactCommand {
+        cmd_id: later_query_id,
+        range: SourceRange::synthetic(),
+        command: ModelingCmd::from(
+            kcmc::each_cmd::EntityGetAllChildUuids::builder()
+                .entity_id(clone_cmd_id)
+                .build(),
+        ),
+        entity_clone_info: None,
+        omit_from_graph: false,
+    });
+    responses.insert(
+        later_query_id,
+        OkModelingCmdResponse::EntityGetAllChildUuids(
+            serde_json::from_value(serde_json::json!({ "entity_ids": [new_child_b, new_child_a] })).unwrap(),
+        ),
+    );
+    let pattern_command = ModelingCmd::from(
+        kcmc::each_cmd::EntityLinearPatternTransform::builder()
+            .entity_id(source_id)
+            .transform(Default::default())
+            .transforms(vec![Default::default()])
+            .build(),
+    );
+    responses.insert(clone_cmd_id, OkModelingCmdResponse::EntityLinearPatternTransform(
+        serde_json::from_value(serde_json::json!({ "entity_face_edge_ids": [{ "object_id": clone_cmd_id, "faces": [new_child_a], "edges": [new_child_b] }] })).unwrap()
+    ));
+    for command in [artifact_commands[0].command.clone(), pattern_command] {
+        artifact_commands[0].command = command;
+        let clone_id_maps = build_entity_copy_id_maps(&artifact_commands, &responses);
+        let id_map = clone_id_maps
+            .get(&clone_cmd_id)
+            .expect("Expected clone ID map for clone command");
 
-    assert_eq!(
-        id_map.get(&ArtifactId::new(source_id)),
-        Some(&ArtifactId::new(clone_cmd_id))
-    );
-    assert_eq!(
-        id_map.get(&ArtifactId::new(old_child_a)),
-        Some(&ArtifactId::new(new_child_a))
-    );
-    assert_eq!(
-        id_map.get(&ArtifactId::new(old_child_b)),
-        Some(&ArtifactId::new(new_child_b))
-    );
-    assert_eq!(
-        id_map.get(&ArtifactId::new(source_child_a)),
-        Some(&ArtifactId::new(new_child_a))
-    );
-    assert_eq!(
-        id_map.get(&ArtifactId::new(source_child_b)),
-        Some(&ArtifactId::new(new_child_b))
-    );
-    assert!(!id_map.contains_key(&ArtifactId::new(source_topology_id)));
+        assert_eq!(
+            id_map.get(&ArtifactId::new(source_id)),
+            Some(&ArtifactId::new(clone_cmd_id))
+        );
+        assert_eq!(
+            id_map.get(&ArtifactId::new(old_child_a)),
+            Some(&ArtifactId::new(new_child_a))
+        );
+        assert_eq!(
+            id_map.get(&ArtifactId::new(old_child_b)),
+            Some(&ArtifactId::new(new_child_b))
+        );
+        // A prototype's shape may differ from the live instance. These aliases
+        // require semantic provenance, not matching positions in two ID lists.
+        assert!(!id_map.contains_key(&ArtifactId::new(source_child_a)));
+        assert!(!id_map.contains_key(&ArtifactId::new(source_child_b)));
+        assert!(!id_map.contains_key(&ArtifactId::new(source_topology_id)));
+    }
 }
 
 #[test]
@@ -1481,6 +1508,7 @@ fn pattern_artifact_links_to_source_geometry() {
         path_id,
         &face_edge_infos,
         code_ref,
+        &AHashMap::default(),
     );
 
     assert!(matches!(
@@ -1549,6 +1577,7 @@ fn pattern_artifact_does_not_materialize_composite_solid_copies() {
         source_id,
         &face_edge_infos,
         CodeRef::placeholder(SourceRange::synthetic()),
+        &AHashMap::default(),
     );
 
     assert!(!updated.iter().any(|artifact| artifact.id() == ArtifactId::new(copy_id)));
@@ -1667,6 +1696,7 @@ fn entity_clone_resolves_pattern_copy_lazily() {
         source_sweep_id,
         &face_edge_infos,
         code_ref,
+        &AHashMap::default(),
     ) {
         merge_artifact_into_map(&mut artifacts, update);
     }
@@ -1894,6 +1924,7 @@ fn primitive_face_does_not_replace_existing_cap_artifact() {
         Artifact::PrimitiveFace(PrimitiveFace {
             id: shared_id,
             solid_id,
+            source_face_id: None,
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
         }),
     );
@@ -2128,7 +2159,7 @@ fn edge_specifier_surface_extrude_child_query_registers_generated_topology() {
     assert!(updated.iter().any(|artifact| {
         matches!(
             artifact,
-            Artifact::PrimitiveFace(PrimitiveFace { id, solid_id, code_ref: primitive_code_ref })
+            Artifact::PrimitiveFace(PrimitiveFace { id, solid_id, code_ref: primitive_code_ref, .. })
                 if *id == ArtifactId::new(face_id)
                     && *solid_id == body_id
                     && primitive_code_ref == &code_ref
@@ -2137,7 +2168,7 @@ fn edge_specifier_surface_extrude_child_query_registers_generated_topology() {
     assert!(updated.iter().any(|artifact| {
         matches!(
             artifact,
-            Artifact::PrimitiveEdge(PrimitiveEdge { id, solid_id, code_ref: primitive_code_ref })
+            Artifact::PrimitiveEdge(PrimitiveEdge { id, solid_id, code_ref: primitive_code_ref, .. })
                 if *id == ArtifactId::new(edge_id)
                     && *solid_id == body_id
                     && primitive_code_ref == &code_ref

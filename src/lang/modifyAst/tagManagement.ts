@@ -37,6 +37,8 @@ import type {
 } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
+  getSourceFaceArtifact,
+  hasFaceCopies,
   getCommonFacesForEdge,
   getSourceSegmentArtifact,
   getSweepArtifactFromSelection,
@@ -133,7 +135,9 @@ export function modifyAstWithTagsForSelection(
   if (
     selection.artifact.type === 'wall' ||
     selection.artifact.type === 'cap' ||
-    selection.artifact.type === 'edgeCut'
+    selection.artifact.type === 'edgeCut' ||
+    (selection.artifact.type === 'primitiveFace' &&
+      Boolean(selection.artifact.sourceFaceId))
   ) {
     const result = modifyAstWithTagForFaceSelection(
       ast,
@@ -145,7 +149,7 @@ export function modifyAstWithTagsForSelection(
       return result
     }
 
-    const qualifiedExpr = qualifyClonedFaceTag(
+    const qualifiedExpr = qualifyFaceTag(
       ast,
       selection,
       result.expr,
@@ -382,7 +386,7 @@ function getExprName(expr: Expr): string | null {
   return null
 }
 
-function qualifyClonedFaceTag(
+function qualifyFaceTag(
   ast: Node<Program>,
   selection: ResolvedGraphSelection,
   expr: Expr,
@@ -396,9 +400,21 @@ function qualifyClonedFaceTag(
   }
 
   const selectedSweep = artifactGraph.get(face.sweepId)
-  if (selectedSweep?.type !== 'sweep' || !selectedSweep.sourceSweepId) {
+  if (selectedSweep?.type !== 'sweep') {
     return expr
   }
+
+  if (!selectedSweep.sourceSweepId && !hasFaceCopies(face, artifactGraph))
+    return expr
+
+  // A region-qualified wall tag already identifies the source instance.
+  // Bare tags and cap tags must be qualified even on the original body.
+  if (
+    face.type === 'wall' &&
+    !selectedSweep.sourceSweepId &&
+    expr.type !== 'Name'
+  )
+    return expr
 
   const context = resolveSweepSelectionContext(
     ast,
@@ -689,6 +705,53 @@ function modifyAstWithTagForFaceSelection(
     return new Error('Selection does not have an artifact')
   }
 
+  // Resolve every copied face through its source feature, then qualify the
+  // resulting tag by the selected instance rather than the source body.
+  if (
+    (selection.artifact.type === 'primitiveFace' &&
+      selection.artifact.sourceFaceId) ||
+    (selection.artifact.type === 'edgeCut' &&
+      selection.artifact.sourceEdgeCutId)
+  ) {
+    const source = getSourceFaceArtifact(selection.artifact, artifactGraph)
+    if (err(source)) return source
+    const body = getVariableExprsFromSelection(
+      { graphSelections: [selection], otherSelections: [] },
+      artifactGraph,
+      ast,
+      wasmInstance,
+      undefined,
+      { lastChildLookup: true, artifactTypeFilter: ['sweep', 'compositeSolid'] }
+    )
+    if (err(body)) return body
+    if (body.exprs.length !== 1)
+      return new Error('Could not resolve the selected face instance body')
+    // Finding the defining tag must not require a live source body: a copy
+    // remains usable after its prototype has been consumed.
+    const result =
+      source.type === 'edgeCut'
+        ? modifyAstWithTagForEdgeCutFace(ast, source, wasmInstance)
+        : modifyAstWithTagForFaceSelection(
+            ast,
+            { artifact: source, codeRef: source.faceCodeRef },
+            artifactGraph,
+            wasmInstance
+          )
+    if (err(result)) return result
+    const tag = 'tag' in result ? result.tag : getExprName(result.expr)
+    if (!tag) return new Error('Could not resolve the source face tag')
+    return {
+      modifiedAst: result.modifiedAst,
+      expr:
+        source.type === 'wall'
+          ? createSketchTagMemberExpression(body.exprs[0], tag)
+          : createMemberExpression(
+              createMemberExpression(body.exprs[0], 'faces'),
+              tag
+            ),
+    }
+  }
+
   // CASE 1: Handle wall face - tag the sketch segment
   if (selection.artifact.type === 'wall') {
     // Each handler function creates its own clone and returns a new AST
@@ -721,6 +784,35 @@ function modifyAstWithTagForFaceSelection(
   }
   // CASE 3: Handle an edgeCut face by tagging its operation.
   else if (selection.artifact.type === 'edgeCut') {
+    // A clone can rebind the bare tag. Qualify both the copy and its source
+    // so selecting the original face still refers to the original instance.
+    const hasCopiedFace = hasFaceCopies(selection.artifact, artifactGraph)
+    if (hasCopiedFace) {
+      const source = selection.artifact
+      const body = getVariableExprsFromSelection(
+        { graphSelections: [selection], otherSelections: [] },
+        artifactGraph,
+        ast,
+        wasmInstance,
+        undefined,
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['sweep', 'compositeSolid'],
+        }
+      )
+      if (err(body)) return body
+      if (body.exprs.length !== 1)
+        return new Error('Cannot resolve treatment body')
+      const result = modifyAstWithTagForEdgeCutFace(ast, source, wasmInstance)
+      if (err(result)) return result
+      return {
+        modifiedAst: result.modifiedAst,
+        expr: createMemberExpression(
+          createMemberExpression(body.exprs[0], 'faces'),
+          result.tag
+        ),
+      }
+    }
     // Each handler function creates its own clone and returns a new AST
     const result = modifyAstWithTagForEdgeCutFace(
       ast,

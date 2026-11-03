@@ -353,6 +353,9 @@ pub struct Solid2d {
 pub struct PrimitiveFace {
     pub id: ArtifactId,
     pub solid_id: ArtifactId,
+    /// Semantic source of an instance face. Absent for index-only lookups.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_face_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
 }
 
@@ -524,6 +527,9 @@ pub struct EdgeCut {
     /// Body instance on which this treatment face was created.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub body_id: Option<ArtifactId>,
+    /// Original treatment operation used to tag a copied face.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_edge_cut_id: Option<ArtifactId>,
     pub sub_type: EdgeCutSubType,
     /// Index of the source selector in an `edges` argument, when this edge cut
     /// was created from an edge-reference command.

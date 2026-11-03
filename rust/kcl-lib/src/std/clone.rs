@@ -156,8 +156,13 @@ pub(super) async fn fix_tags_and_references(
     args: &Args,
 ) -> Result<()> {
     let new_geometry_id = new_geometry.id(&args.ctx).await?;
-    let entity_id_map =
+    let mut entity_id_map =
         get_old_new_child_map(new_geometry_id, old_geometry_id, source_topology_id, exec_state, args).await?;
+    // Lazy instances retain source surfaces for legacy declaration bindings.
+    // Their qualified tags identify the live instance, even after it changes.
+    if let GeometryWithImportedGeometry::Solid(solid) = new_geometry {
+        add_qualified_surface_mappings(solid, &mut entity_id_map);
+    }
 
     // Fix the path references in the new geometry.
     match new_geometry {
@@ -283,6 +288,63 @@ pub(super) async fn fix_tags_and_references(
     Ok(())
 }
 
+/// Remap instance-qualified face and sketch tags. Declaration bindings are
+/// updated separately from the retained source surfaces for compatibility.
+pub(super) async fn fix_pattern_face_tags(
+    solid: &mut Solid,
+    source_id: uuid::Uuid,
+    source_topology_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<()> {
+    if args.ctx.no_engine_commands().await {
+        return Ok(());
+    }
+    let names = solid.faces.keys().cloned().collect::<Vec<_>>();
+    let mut map = get_old_new_child_map(solid.id, source_id, source_topology_id, exec_state, args).await?;
+    add_qualified_surface_mappings(solid, &mut map);
+    // Keep declaration bindings separate from instance-qualified references.
+    // The source surfaces retain legacy bare-tag behavior, while both face
+    // tags and sketch tags below refer to this instance.
+    let mut remapped = solid.clone();
+    remap_sketchless_solid(&mut remapped, &map);
+    remap_edge_cuts(&mut remapped, &map);
+    remapped.faces.clear();
+    restore_face_tags(&mut remapped, &names, exec_state);
+    solid.faces = remapped.faces;
+    let source_surfaces = solid.value.clone();
+    let face_tags = solid.faces.values().cloned().collect::<Vec<_>>();
+    let copy_id = solid.id;
+    if let Some(sketch) = solid.sketch_mut() {
+        sketch.original_id = copy_id;
+        fix_sketch_tags_and_references(sketch, &map, exec_state, Some(source_surfaces)).await?;
+        sketch.merge_tags(face_tags.iter());
+    }
+    Ok(())
+}
+
+fn add_qualified_surface_mappings(solid: &Solid, map: &mut HashMap<uuid::Uuid, uuid::Uuid>) {
+    for surface in &solid.value {
+        let Some(tag) = surface.get_tag() else {
+            continue;
+        };
+        let info = solid
+            .faces
+            .get(&tag.name)
+            .or_else(|| solid.sketch().and_then(|sketch| sketch.tags.get(&tag.name)))
+            .and_then(TagIdentifier::get_cur_info);
+        let Some(info) = info else {
+            continue;
+        };
+        if let Some(id) = map.get(&info.id).copied() {
+            map.insert(surface.get_id(), id);
+        }
+        if let Some(id) = info.surface.as_ref().and_then(|s| map.get(&s.face_id())).copied() {
+            map.insert(surface.face_id(), id);
+        }
+    }
+}
+
 fn remap_id(id: uuid::Uuid, entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>) -> uuid::Uuid {
     entity_id_map.get(&id).copied().unwrap_or(id)
 }
@@ -398,18 +460,16 @@ async fn get_old_new_child_map(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<HashMap<uuid::Uuid, uuid::Uuid>> {
-    // Artifact graph ID management expects the cloned entity's own children
-    // to be queried first. Pattern copies retain the source topology in KCL,
-    // though, so use that topology for the runtime old-to-new ID map.
-    if old_geometry_id != source_topology_id {
-        get_all_child_uuids(old_geometry_id, exec_state, args).await?;
-    }
-
-    // Get the old geometries entity ids.
-    let old_entity_ids = get_all_child_uuids(source_topology_id, exec_state, args).await?;
+    let old_entity_ids = get_all_child_uuids(old_geometry_id, exec_state, args).await?;
 
     // Get the new geometries entity ids.
     let new_entity_ids = get_all_child_uuids(new_geometry_id, exec_state, args).await?;
+    if old_entity_ids.len() != new_entity_ids.len() {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            "Copied topology does not match its live source".to_owned(),
+            vec![args.source_range],
+        )));
+    }
 
     // Create a map of old entity ids to new entity ids.
     let mut entity_id_map = HashMap::from_iter(

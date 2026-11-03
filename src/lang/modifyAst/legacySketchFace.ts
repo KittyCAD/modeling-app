@@ -16,12 +16,9 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 
 /**
- * Temporary legacy-compat helper for sketch solve.
- *
- * This creates a new sketch block directly in source for a legacy
- * `startSketchOn(...)` / `extrude(...)` flow instead of asking the Rust
- * frontend to derive it from a selected wall. Once sketch V1 is removed, this
- * helper and its call sites should be deleted.
+ * Materialize a concrete face reference before creating a sketch block.
+ * Treatments, inherited faces and legacy sketch walls use this path when
+ * the Rust frontend cannot derive the reference from the selected entity.
  */
 export function sketchBlockOnExtrudedFace(
   node: Node<Program>,
@@ -32,7 +29,10 @@ export function sketchBlockOnExtrudedFace(
   wasmInstance: ModuleType
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   const resolved = resolveToCodeRef(faceSelection, artifactGraph)
-  if (resolved?.artifact?.type === 'edgeCut') {
+  if (
+    resolved?.artifact?.type === 'edgeCut' &&
+    !resolved.artifact.sourceEdgeCutId
+  ) {
     const sourceCall = getNodeFromPath<CallExpressionKw>(
       node,
       resolved.artifact.codeRef.pathToNode,
