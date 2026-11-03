@@ -1185,7 +1185,7 @@ export class LocalRenderer {
           type: 'gltf',
           storage: 'binary',
           presentation: 'compact',
-          include_uuids: true,
+          extras: ['sketches', 'regions'],
         },
         jsAppSettings(this.kclManager.systemDeps.settings)
       )
