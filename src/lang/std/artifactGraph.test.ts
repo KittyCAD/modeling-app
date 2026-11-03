@@ -18,7 +18,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 const codeRef = {
   range: [0, 0, 0] as [number, number, number],
@@ -1041,4 +1041,33 @@ it('keeps face definition and instance ownership independent through nested copi
       expect(getSourceFaceArtifact(face, artifactGraph)).toBeInstanceOf(Error)
     })
   )
+})
+
+describe('getSweepFromSuspectedSweepSurface', () => {
+  it('resolves path fallback and direct faces without logging failed probes', () => {
+    const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+    addMappedRegion(artifactGraph, sourceSegment, 'fallback', true)
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      const sweep = artifactGraph.get('sweep-fallback')
+      expect(
+        getSweepFromSuspectedSweepSurface('region-path-fallback', artifactGraph)
+      ).toBe(sweep)
+      expect(
+        getSweepFromSuspectedSweepSurface('cap-fallback', artifactGraph)
+      ).toBe(sweep)
+      expect(
+        getSweepFromSuspectedSweepSurface('wall-fallback', artifactGraph)
+      ).toBe(sweep)
+      expect(consoleError).not.toHaveBeenCalled()
+    } finally {
+      consoleError.mockRestore()
+    }
+  })
+
+  it('returns a meaningful error when neither lookup resolves a face', () => {
+    expect(getSweepFromSuspectedSweepSurface('missing', new Map())).toEqual(
+      new Error('No artifact found with key missing')
+    )
+  })
 })
