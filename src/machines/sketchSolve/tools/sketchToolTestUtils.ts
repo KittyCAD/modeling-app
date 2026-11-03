@@ -1,4 +1,5 @@
 import type {
+  ApiConstraint,
   ApiObject,
   SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -8,6 +9,23 @@ import { emptyOperationsByModule } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { Themes } from '@src/lib/theme'
 import { vi } from 'vitest'
+
+export function createConstraintApiObject({
+  id,
+  constraint,
+}: {
+  id: number
+  constraint: ApiConstraint
+}): ApiObject {
+  return {
+    id,
+    kind: { type: 'Constraint', constraint },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  }
+}
 
 /**
  * Helper to create a minimal valid SceneGraphDelta for testing
