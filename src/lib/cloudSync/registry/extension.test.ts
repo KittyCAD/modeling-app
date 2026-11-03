@@ -65,9 +65,11 @@ describe('cloud sync extension', () => {
     registry = undefined
     cloudSyncMocks.configureCloudSync.mockClear()
     cloudSyncPathMocks.getCloudProjectLibraryMaterializationDirectoryPath.mockClear()
+    vi.useRealTimers()
   })
 
   it('uses cloud project library materialization directories for runtime policy', async () => {
+    vi.useFakeTimers()
     const settings = signal(
       createSettingsSnapshot({
         cloudSyncEnabled: true,
@@ -141,6 +143,20 @@ describe('cloud sync extension', () => {
       })
     )
     expect(resolvedCloudLibrary?.source).toBeUndefined()
+
+    const appliedPolicies = cloudSyncMocks.configureCloudSync.mock.calls.length
+    // Persistence and idle snapshots can recreate settings without changing
+    // cloud configuration, including when directory-library settings change.
+    for (let index = 0; index < 2; index += 1) {
+      settings.value = createSettingsSnapshot({
+        cloudSyncEnabled: true,
+        projectDirectoryPath: '/other-local-projects',
+      })
+      await vi.advanceTimersByTimeAsync(0)
+      expect(cloudSyncMocks.configureCloudSync).toHaveBeenCalledTimes(
+        appliedPolicies
+      )
+    }
 
     settings.value = createSettingsSnapshot({
       cloudSyncEnabled: true,
@@ -261,6 +277,14 @@ describe('cloud sync extension', () => {
         environmentName: 'dev.zoo.dev',
         cloudProjectDirectoryPaths: ['/cloud-personal'],
       })
+    })
+
+    token.value = 'refreshed-token'
+
+    await vi.waitFor(() => {
+      expect(cloudSyncMocks.configureCloudSync).toHaveBeenLastCalledWith(
+        expect.objectContaining({ enabled: true, token: 'refreshed-token' })
+      )
     })
 
     token.value = ''

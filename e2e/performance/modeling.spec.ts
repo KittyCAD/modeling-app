@@ -52,7 +52,8 @@ test('harness waits for usable modeling content', async ({
     },
     {
       definition: interactions.extrudeOpen,
-      selector: '#arg-form label',
+      selector:
+        '#arg-form label, [data-testid="modeling-dialog"] button[aria-label="Select Profiles"]',
       control: page.getByTestId(interactions.extrudeOpen.testId),
     },
   ]
