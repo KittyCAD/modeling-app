@@ -56,7 +56,7 @@ vi.mock('@src/components/ContextMenu', () => ({
 
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { FeatureTree } from '@src/lib/featureTree/FeatureTreeView'
-import { BodiesPaneContents } from '@src/lib/featureTree/BodiesPane'
+import { BodiesSection } from '@src/lib/featureTree/BodiesSection'
 
 afterEach(() => {
   cleanup()
@@ -78,7 +78,7 @@ describe('Bodies scene tree', () => {
     state.graph.set(pattern.id, pattern)
     const view = render(
       <FeatureTree label="Bodies">
-        <BodiesPaneContents />
+        <BodiesSection />
       </FeatureTree>
     )
     const tree = view.container.querySelector('zoo-feature-tree')!
@@ -129,7 +129,7 @@ describe('Bodies scene tree', () => {
   it('shows an empty state with no bodies', () => {
     const view = render(
       <FeatureTree label="Bodies">
-        <BodiesPaneContents />
+        <BodiesSection />
       </FeatureTree>
     )
     expect(view.getByText('No bodies')).toBeTruthy()

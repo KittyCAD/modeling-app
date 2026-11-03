@@ -1,12 +1,8 @@
 import type { PropsOf } from '@headlessui/react/dist/types'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ContextMenuItem } from '@src/components/ContextMenu'
-import { CustomIcon } from '@src/components/CustomIcon'
-import {
-  FeatureTree,
-  FeatureTreeRow,
-  FeatureTreeNotice,
-} from '@src/lib/featureTree/FeatureTreeView'
+import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
+import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { toUtf16 } from '@src/lang/errors'
@@ -34,36 +30,13 @@ import toast from 'react-hot-toast'
 type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' | 'pattern' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
-  return (
-    <LayoutPanel
-      title={props.layout.label}
-      id={`${props.layout.id}-pane`}
-      className="border-none"
-    >
-      <LayoutPanelHeader
-        id={props.layout.id}
-        icon="model"
-        title={props.layout.label}
-      />
-      <FeatureTree label="Bodies">
-        <BodiesPaneContents />
-      </FeatureTree>
-    </LayoutPanel>
-  )
-}
-
-/** Body identity and actions stay in ZDS; the shared tree handles row interaction. */
-export function BodiesPaneContents() {
   useSignals()
   const { kclManager } = useSingletons()
   const execState = kclManager.execStateSignal.value
   const artifactGraph = execState.artifactGraph
   const operations = getAllOperations(execState.operations)
   const bodies = getBodiesFromArtifactGraph(artifactGraph)
-  const bodiesWithProps: Map<
-    string,
-    Omit<PropsOf<typeof BodyItem>, 'nodeId'>
-  > = new Map()
+  const bodiesWithProps: Map<string, PropsOf<typeof BodyItem>> = new Map()
 
   if (operations) {
     let i = 0
@@ -90,22 +63,38 @@ export function BodiesPaneContents() {
   }
 
   return (
-    <>
-      {Array.from(bodiesWithProps.entries()).map(([id, props]) => (
-        <BodyItem key={id} nodeId={id} {...props} />
-      ))}
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={props.layout.id}
+        icon="model"
+        title={props.layout.label}
+      />
+      {bodies && <BodiesList bodies={bodiesWithProps} />}
+    </LayoutPanel>
+  )
+}
 
-      {!bodiesWithProps.size && (
-        <FeatureTreeNotice>
-          <p className="feature-tree-empty">No bodies</p>
-        </FeatureTreeNotice>
-      )}
-    </>
+function BodiesList({
+  bodies,
+}: {
+  bodies: Map<string, PropsOf<typeof BodyItem>>
+}) {
+  return (
+    <section className="overflow-auto mr-1 pb-8">
+      <ul>
+        {Array.from(bodies.entries()).map(([id, props], i) => (
+          <BodyItem key={id || i} {...props} />
+        ))}
+      </ul>
+    </section>
   )
 }
 
 function BodyItem({
-  nodeId,
   label,
   artifact,
   artifactGraph,
@@ -113,7 +102,6 @@ function BodyItem({
   engineEntityId,
   patternIndex,
 }: {
-  nodeId: string
   label: string
   artifact: SolidArtifact
   artifactGraph: ArtifactGraph
@@ -179,49 +167,52 @@ function BodyItem({
   }
 
   return (
-    <FeatureTreeRow
-      nodeId={nodeId}
-      label={label}
-      icon={<CustomIcon name="body" className="w-5 h-5" />}
-      onSelect={onSelect}
-      onContextMenu={() => onSelect()}
-      selected={isSelected}
-      menuItems={[
-        <ContextMenuItem
-          key="delete"
-          onClick={handleDelete}
-          data-testid="context-menu-delete"
-        >
-          Delete
-        </ContextMenuItem>,
-      ]}
-      visibility={{
-        visible: hideOperation === undefined,
-        onVisibilityChange: () => {
-          if (hideOperation === undefined) {
-            onHide({
-              ast: kclManager.ast,
-              artifactGraph: kclManager.artifactGraph,
-              modelingActor,
-              objects: selections,
-            })
-          } else {
-            onUnhide({
-              hideOperation,
-              targetArtifact: artifact,
-              kclManager,
-            })
-              .then((result) => {
-                if (err(result)) {
-                  toast.error(result.message || 'Error while unhiding.')
-                }
-              })
-              .catch((e) => {
-                toast.error(e.message || 'Error while unhiding.')
-              })
-          }
-        },
-      }}
-    />
+    <li className="px-1 py-0.5 group/visibilityToggle">
+      <RowItemWithIconMenuAndToggle
+        icon="body"
+        onClick={onSelect}
+        onContextMenu={() => onSelect()}
+        isSelected={isSelected}
+        menuItems={[
+          <ContextMenuItem
+            onClick={handleDelete}
+            data-testid="context-menu-delete"
+          >
+            Delete
+          </ContextMenuItem>,
+        ]}
+        Toggle={
+          <VisibilityToggle
+            visible={hideOperation === undefined}
+            onVisibilityChange={() => {
+              if (hideOperation === undefined) {
+                onHide({
+                  ast: kclManager.ast,
+                  artifactGraph: kclManager.artifactGraph,
+                  modelingActor,
+                  objects: selections,
+                })
+              } else {
+                onUnhide({
+                  hideOperation,
+                  targetArtifact: artifact,
+                  kclManager,
+                })
+                  .then((result) => {
+                    if (err(result)) {
+                      toast.error(result.message || 'Error while unhiding.')
+                    }
+                  })
+                  .catch((e) => {
+                    toast.error(e.message || 'Error while unhiding.')
+                  })
+              }
+            }}
+          />
+        }
+      >
+        {label}
+      </RowItemWithIconMenuAndToggle>
+    </li>
   )
 }

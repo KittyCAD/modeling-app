@@ -22,13 +22,13 @@ import {
 import { createElement, lazy, Suspense } from 'react'
 
 const FeatureTreeSection = lazy(() =>
-  import('@src/lib/featureTree/BrowserSections').then((module) => ({
-    default: module.FeatureTreeBrowserSection,
+  import('@src/lib/featureTree/FeatureTreeSection').then((module) => ({
+    default: module.FeatureTreeSection,
   }))
 )
 const BodiesSection = lazy(() =>
-  import('@src/lib/featureTree/BrowserSections').then((module) => ({
-    default: module.BodiesBrowserSection,
+  import('@src/lib/featureTree/BodiesSection').then((module) => ({
+    default: module.BodiesSection,
   }))
 )
 const FeatureTreeMenu = lazy(() =>
