@@ -260,16 +260,25 @@ class SessionController implements ZookeeperSessionController {
     if (!this.active) {
       return
     }
-    this.userStoppedTurn = true
+    this.stopPendingResume()
     this.steeredId = id
     this.actor.send({ type: ZookeeperManagerTransitions.Interrupt })
   }
 
   cancel() {
     if (this.active) {
-      this.userStoppedTurn = true
+      this.stopPendingResume()
       this.actor.send({ type: ZookeeperManagerTransitions.Cancel })
     }
+  }
+
+  private stopPendingResume() {
+    this.userStoppedTurn = true
+    this.autoResumeAfterDisconnect = false
+    this.resumeInterruptedTurnPending = false
+    this.isResumingInterruptedTurnSignal.value = false
+    this.continueCheckGeneration += 1
+    this.continueCheckInFlight = false
   }
 
   checkBillingAccess() {
@@ -755,7 +764,11 @@ class SessionController implements ZookeeperSessionController {
     const interrupted = hasBeenInterruptedOnLast(
       snapshot.context.conversation?.exchanges ?? []
     )
-    if (interrupted && this.autoResumeAfterDisconnect) {
+    if (
+      interrupted &&
+      this.autoResumeAfterDisconnect &&
+      !this.userStoppedTurn
+    ) {
       this.autoResumeAfterDisconnect = false
       this.autoResumeAttemptedForTurn = true
       this.resumeInterruptedTurnPending = true

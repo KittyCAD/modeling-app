@@ -1141,6 +1141,55 @@ describe('Zookeeper session controller', () => {
     expect(projectFilesMocks.collect).not.toHaveBeenCalled()
   })
 
+  it('does not resume a turn the user stopped while disconnected', () => {
+    const { actor, controller } = createHarness()
+
+    actor.emit('ready', {
+      awaitingResponse: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('await', {
+      abruptlyClosed: true,
+      conversation: interruptedConversation,
+    })
+    controller.cancel()
+    actor.emit('wait-for-continue-check', {
+      conversation: interruptedConversation,
+    })
+
+    expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+    expect(
+      sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
+    ).toHaveLength(0)
+  })
+
+  it('drops an automatic resume when the user stops during file collection', async () => {
+    const collectedFiles = deferred<[]>()
+    projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
+    const { actor, controller } = createHarness()
+
+    actor.emit('ready', {
+      awaitingResponse: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('await', {
+      abruptlyClosed: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('wait-for-continue-check', {
+      conversation: interruptedConversation,
+    })
+    expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+
+    controller.cancel()
+    collectedFiles.resolve([])
+    await flushPromises()
+
+    expect(
+      sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
+    ).toHaveLength(0)
+  })
+
   it('waits for pending file writes before automatically resuming', async () => {
     const { actor } = createHarness()
     const processor = workerMocks.processors.at(-1)
