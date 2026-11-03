@@ -160,6 +160,55 @@ appearance(body, color = "#2266FF")
     );
 }
 
+#[tokio::test]
+async fn plane_visibility_hides_plane_from_nested_import() {
+    let project = tempfile::TempDir::with_prefix("kcl-plane-visibility-import").unwrap();
+    tokio::fs::write(
+        project.path().join("plane.kcl"),
+        r#"@settings(kclVersion = 3.0)
+export p = offsetPlane(XY, offset = 20mm)
+"#,
+    )
+    .await
+    .unwrap();
+    tokio::fs::write(
+        project.path().join("hidden.kcl"),
+        r#"@settings(kclVersion = 3.0)
+import p from "plane.kcl"
+export hiddenPlane = hide(p)
+"#,
+    )
+    .await
+    .unwrap();
+
+    let result = crate::execution::parse_execute_with_project_dir(
+        r#"@settings(kclVersion = 3.0)
+import hiddenPlane from "hidden.kcl"
+"#,
+        Some(crate::TypedPath(project.path().into())),
+    )
+    .await
+    .unwrap();
+    let outcome = result
+        .exec_state
+        .into_exec_outcome(result.mem_env, &result.exec_ctxt)
+        .await
+        .unwrap();
+    let planes: Vec<_> = outcome
+        .artifact_graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::Plane(plane) => Some(plane),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(planes.len(), 1);
+    assert!(
+        planes[0].hidden,
+        "hide() in an importing module must update the plane's artifact visibility"
+    );
+}
+
 #[test]
 fn plane_visibility_commands_update_cached_planes() {
     let plane_id = ArtifactId::new(Uuid::new_v4());
