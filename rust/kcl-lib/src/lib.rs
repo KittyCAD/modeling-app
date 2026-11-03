@@ -186,6 +186,8 @@ pub use execution::ExecOutcome;
 pub use execution::ExecState;
 pub use execution::ExecutionCallbacks;
 pub use execution::ExecutorContext;
+#[cfg(not(target_arch = "wasm32"))]
+pub use execution::ExecutorContextBuilder;
 pub use execution::ExecutorSettings;
 pub use execution::KclValueView;
 pub use execution::KclVersion;
