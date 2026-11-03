@@ -1179,6 +1179,7 @@ struct CachedExecution {
     preserve_mem: PreserveMem,
 }
 
+#[cfg_attr(not(target_arch = "wasm32"), bon::bon)]
 impl ExecutorContext {
     /// Use an existing cache for another handle to the same session, or for
     /// associated mock execution. Independent sessions must use independent caches.
@@ -1423,20 +1424,32 @@ impl ExecutorContext {
         engine_addr: Option<String>,
         kcl_version: KclVersion,
     ) -> Result<Self> {
-        Self::new_with_client_and_headers(settings, token, engine_addr, kcl_version, None).await
+        Self::builder()
+            .settings(settings)
+            .maybe_token(token)
+            .maybe_engine_addr(engine_addr)
+            .kcl_version(kcl_version)
+            .build()
+            .await
     }
 
-    /// Create an executor with additional headers on its API requests and WebSocket handshake.
+    /// Build a native executor with optional client credentials and HTTP/WebSocket headers.
+    /// Resolve `kcl_version` from the entrypoint with `Program::language_version()`.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_with_client_and_headers(
-        settings: ExecutorSettings,
+    #[builder(finish_fn = build, builder_type = ExecutorContextBuilder)]
+    pub async fn builder(
+        #[builder(default)] settings: ExecutorSettings,
         token: Option<String>,
         engine_addr: Option<String>,
         kcl_version: KclVersion,
-        headers: Option<std::collections::BTreeMap<String, String>>,
+        headers: Option<BTreeMap<String, String>>,
     ) -> Result<Self> {
         // Create the client.
-        let client = crate::engine::new_zoo_client_with_headers(token, engine_addr, headers)?;
+        let client = crate::engine::zoo_client()
+            .maybe_token(token)
+            .maybe_engine_addr(engine_addr)
+            .maybe_headers(headers)
+            .build()?;
 
         let ctx = Self::new(&client, settings, kcl_version).await?;
         Ok(ctx)

@@ -364,7 +364,14 @@ async fn new_context_state(
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
-        ExecutorContext::new_with_client_and_headers(settings, token, base_url, kcl_version, headers).await?
+        ExecutorContext::builder()
+            .settings(settings)
+            .kcl_version(kcl_version)
+            .maybe_token(token)
+            .maybe_engine_addr(base_url)
+            .maybe_headers(headers)
+            .build()
+            .await?
     };
     let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))

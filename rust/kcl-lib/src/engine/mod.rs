@@ -178,12 +178,13 @@ impl Clone for EngineStats {
 /// Create a new zoo api client.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> anyhow::Result<kittycad::Client> {
-    new_zoo_client_with_headers(token, engine_addr, None)
+    zoo_client().maybe_token(token).maybe_engine_addr(engine_addr).build()
 }
 
 /// Create an API client with additional default headers for HTTP and WebSocket requests.
 #[cfg(not(target_arch = "wasm32"))]
-pub fn new_zoo_client_with_headers(
+#[bon::builder(finish_fn = build)]
+pub fn zoo_client(
     token: Option<String>,
     engine_addr: Option<String>,
     headers: Option<std::collections::BTreeMap<String, String>>,
