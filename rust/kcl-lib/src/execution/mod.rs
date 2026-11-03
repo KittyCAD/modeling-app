@@ -1438,7 +1438,7 @@ impl ExecutorContext {
     #[cfg(not(target_arch = "wasm32"))]
     #[builder(finish_fn = build, builder_type = ExecutorContextBuilder)]
     pub async fn builder(
-        #[builder(default)] settings: ExecutorSettings,
+        settings: ExecutorSettings,
         token: Option<String>,
         engine_addr: Option<String>,
         kcl_version: KclVersion,
