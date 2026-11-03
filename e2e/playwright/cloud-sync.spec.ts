@@ -113,19 +113,27 @@ test(
     expect(new URL(uploaded.url()).searchParams.get('expected_revision')).toBe(
       created.revision
     )
-    const updated = await uploaded.json()
-    await expect
-      .poll(() => readCloudSyncProjectMetadata(page, projectPath), {
-        timeout: CLOUD_SYNC_E2E_TIMEOUT,
-      })
-      .toMatchObject({
+    // Project setup can upload more files after the queued edit (e.g. .gitignore).
+    // Compare against the current server revision, not an intermediate upload.
+    await expect(async () => {
+      const remote = await request.get(
+        `${apiUrl}/user/projects/${created.id}`,
+        { headers }
+      )
+      await expect(remote).toBeOK()
+      const current: CreatedRemoteProject = await remote.json()
+      expect(current.revision).toBeTruthy()
+      expect(
+        await readCloudSyncProjectMetadata(page, projectPath)
+      ).toMatchObject({
         remoteProjectId: created.id,
-        remoteRevision: updated.revision,
+        remoteRevision: current.revision,
         lastSyncedAt: expect.any(String),
         pendingCount: 0,
         conflict: undefined,
         lastFailure: undefined,
       })
+    }).toPass({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
     const files = await readOpfsTextFiles(page, {
       projectToml: `${projectPath}/project.toml`,
     })
