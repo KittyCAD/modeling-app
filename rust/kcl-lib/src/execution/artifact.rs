@@ -711,6 +711,70 @@ fn build_entity_clone_id_maps(
         }
     }
 
+    // Patterns and mirrors query the same ordered child IDs as clone(). Keep
+    // those mappings too so their treatment faces have selectable provenance.
+    let child_ids_by_entity = artifact_commands
+        .iter()
+        .filter_map(|command| {
+            let ModelingCmd::EntityGetAllChildUuids(query) = &command.command else {
+                return None;
+            };
+            let Some(OkModelingCmdResponse::EntityGetAllChildUuids(response)) = responses.get(&command.cmd_id) else {
+                return None;
+            };
+            Some((query.entity_id, &response.entity_ids))
+        })
+        .collect::<AHashMap<_, _>>();
+    for command in artifact_commands {
+        let pairs = match (&command.command, responses.get(&command.cmd_id)) {
+            (ModelingCmd::EntityLinearPattern(cmd), Some(OkModelingCmdResponse::EntityLinearPattern(response))) => {
+                response
+                    .entity_face_edge_ids
+                    .iter()
+                    .map(|info| (cmd.entity_id, info.object_id))
+                    .collect::<Vec<_>>()
+            }
+            (ModelingCmd::EntityCircularPattern(cmd), Some(OkModelingCmdResponse::EntityCircularPattern(response))) => {
+                response
+                    .entity_face_edge_ids
+                    .iter()
+                    .map(|info| (cmd.entity_id, info.object_id))
+                    .collect()
+            }
+            (
+                ModelingCmd::EntityLinearPatternTransform(cmd),
+                Some(OkModelingCmdResponse::EntityLinearPatternTransform(response)),
+            ) => response
+                .entity_face_edge_ids
+                .iter()
+                .map(|info| (cmd.entity_id, info.object_id))
+                .collect(),
+            (ModelingCmd::EntityMirrorAcross(cmd), Some(OkModelingCmdResponse::EntityMirrorAcross(response))) => cmd
+                .ids
+                .iter()
+                .zip(&response.entity_face_edge_ids)
+                .map(|(source, info)| (*source, info.object_id))
+                .collect(),
+            _ => continue,
+        };
+        for (source_id, copy_id) in pairs {
+            let (Some(source_children), Some(copy_children)) =
+                (child_ids_by_entity.get(&source_id), child_ids_by_entity.get(&copy_id))
+            else {
+                continue;
+            };
+            if source_children.len() != copy_children.len() {
+                continue;
+            }
+            let mut mapping = source_children
+                .iter()
+                .zip(copy_children.iter())
+                .map(|(source, copy)| (ArtifactId::new(*source), ArtifactId::new(*copy)))
+                .collect::<AHashMap<_, _>>();
+            mapping.insert(ArtifactId::new(source_id), ArtifactId::new(copy_id));
+            clone_id_maps.insert(copy_id, mapping);
+        }
+    }
     clone_id_maps
 }
 
@@ -972,7 +1036,12 @@ fn remap_artifact_for_clone(
         }),
         Artifact::EdgeCut(source) => Artifact::EdgeCut(EdgeCut {
             id: remap_id_for_clone(source.id, entity_id_map),
-            body_id: remap_opt_id_for_clone(source.body_id, entity_id_map),
+            // Historical ownership may predate a Boolean. Every mapped face
+            // belongs to the newly copied root, not that consumed source body.
+            body_id: entity_id_map
+                .get(&source_root_id)
+                .copied()
+                .or_else(|| remap_opt_id_for_clone(source.body_id, entity_id_map)),
             source_edge_cut_id: source.source_edge_cut_id.or(Some(source.id)),
             sub_type: source.sub_type,
             source_selector_index: source.source_selector_index,
@@ -1083,6 +1152,23 @@ fn pattern_source_body_id_for_copy(
     })
 }
 
+fn copied_treatment_faces(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    source_id: ArtifactId,
+    copy_id: Uuid,
+    code_ref: &CodeRef,
+    copy_id_maps: &AHashMap<Uuid, AHashMap<ArtifactId, ArtifactId>>,
+) -> Vec<Artifact> {
+    let Some(mapping) = copy_id_maps.get(&copy_id) else {
+        return Vec::new();
+    };
+    artifacts
+        .values()
+        .filter(|artifact| matches!(artifact, Artifact::EdgeCut(_)) && mapping.contains_key(&artifact.id()))
+        .map(|artifact| remap_artifact_for_clone(artifact, mapping, code_ref, copy_id, source_id))
+        .collect()
+}
+
 fn pattern_artifact_updates(
     artifacts: &IndexMap<ArtifactId, Artifact>,
     pattern_id: ArtifactId,
@@ -1090,6 +1176,7 @@ fn pattern_artifact_updates(
     source_id: ArtifactId,
     face_edge_infos: &[kcmc::output::FaceEdgeInfo],
     code_ref: CodeRef,
+    copy_id_maps: &AHashMap<Uuid, AHashMap<ArtifactId, ArtifactId>>,
 ) -> Vec<Artifact> {
     let copy_ids = face_edge_infos
         .iter()
@@ -1112,8 +1199,17 @@ fn pattern_artifact_updates(
         copy_ids,
         copy_face_ids,
         copy_edge_ids,
-        code_ref,
+        code_ref: code_ref.clone(),
     })];
+    for info in face_edge_infos {
+        return_arr.extend(copied_treatment_faces(
+            artifacts,
+            source_id,
+            info.object_id,
+            &code_ref,
+            copy_id_maps,
+        ));
+    }
 
     for source_id in source_ids {
         let Some(artifact) = artifacts.get(&source_id) else {
@@ -1306,6 +1402,7 @@ fn mirror_3d_artifact_updates(
     code_ref: CodeRef,
     range: SourceRange,
     cmd: &ModelingCmd,
+    copy_id_maps: &AHashMap<Uuid, AHashMap<ArtifactId, ArtifactId>>,
 ) -> Result<Vec<Artifact>, KclError> {
     if original_solid_ids.len() != face_edge_infos.len() {
         internal_error!(
@@ -1318,6 +1415,13 @@ fn mirror_3d_artifact_updates(
     for (face_edge_info, original_solid_id) in face_edge_infos.iter().zip(original_solid_ids) {
         let original_solid_id = ArtifactId::new(*original_solid_id);
         let mirrored_solid_id = ArtifactId::new(face_edge_info.object_id);
+        return_arr.extend(copied_treatment_faces(
+            artifacts,
+            original_solid_id,
+            face_edge_info.object_id,
+            &code_ref,
+            copy_id_maps,
+        ));
         let source_solid = match artifacts.get(&original_solid_id) {
             Some(Artifact::Path(path)) => path.sweep_id.and_then(|sweep_id| artifacts.get(&sweep_id)).or_else(|| {
                 path.composite_solid_id
@@ -1748,6 +1852,7 @@ fn artifacts_to_update(
                 ArtifactId::new(pattern_cmd.entity_id),
                 face_edge_infos,
                 code_ref,
+                entity_clone_id_maps,
             ));
         }
         ModelingCmd::EntityLinearPattern(pattern_cmd) => {
@@ -1762,6 +1867,7 @@ fn artifacts_to_update(
                 ArtifactId::new(pattern_cmd.entity_id),
                 face_edge_infos,
                 code_ref,
+                entity_clone_id_maps,
             ));
         }
         ModelingCmd::EntityCircularPattern(pattern_cmd) => {
@@ -1776,6 +1882,7 @@ fn artifacts_to_update(
                 ArtifactId::new(pattern_cmd.entity_id),
                 face_edge_infos,
                 code_ref,
+                entity_clone_id_maps,
             ));
         }
         ModelingCmd::EntityMirrorAcross(kcmc::EntityMirrorAcross {
@@ -1792,7 +1899,15 @@ fn artifacts_to_update(
                     "EntityMirrorAcross response variant not handled: id={id:?}, cmd={cmd:?}, response={response:?}"
                 ),
             };
-            return mirror_3d_artifact_updates(artifacts, original_solid_ids, face_edge_infos, code_ref, range, cmd);
+            return mirror_3d_artifact_updates(
+                artifacts,
+                original_solid_ids,
+                face_edge_infos,
+                code_ref,
+                range,
+                cmd,
+                entity_clone_id_maps,
+            );
         }
         ModelingCmd::EntityMirror(kcmc::EntityMirror {
             ids: original_path_ids, ..

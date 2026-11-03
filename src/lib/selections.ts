@@ -3592,13 +3592,17 @@ export async function selectOffsetSketchPlane(
   return true
 }
 
-function getSweepForFace(
+function getBodyForFace(
   faceId: ArtifactId,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   wasmInstance: ModuleType
 ) {
   const artifact = artifactGraph.get(faceId)
+  if (artifact?.type === 'edgeCut' && artifact.bodyId) {
+    const pattern = getPatternArtifactForCopyId(artifact.bodyId, artifactGraph)
+    if (pattern) return pattern
+  }
   let sweep = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
   if (err(sweep) && artifact?.type === 'edgeCut') {
     sweep = getOwningSweepForEdgeCut(artifact, artifactGraph, ast, wasmInstance)
@@ -3612,7 +3616,7 @@ export function showSketchOnImportForFace(
   ast: Node<Program>,
   wasmInstance: ModuleType
 ): boolean {
-  const sweep = getSweepForFace(faceId, artifactGraph, ast, wasmInstance)
+  const sweep = getBodyForFace(faceId, artifactGraph, ast, wasmInstance)
   if (err(sweep)) return false
 
   const maybeImportNode = getNodeFromPath<ImportStatement>(
@@ -3701,7 +3705,7 @@ export async function selectionBodyFace(
   if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
   const { z_axis, y_axis, origin } = faceInfo
   const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
-  const extrusion = getSweepForFace(
+  const extrusion = getBodyForFace(
     faceId,
     artifactGraph,
     ast,
@@ -3742,7 +3746,9 @@ export async function selectionBodyFace(
   const extrudePathToNode =
     lastChildVariable && !err(lastChildVariable)
       ? lastChildVariable.pathToNode
-      : []
+      : extrusion.type === 'pattern'
+        ? extrusion.codeRef.pathToNode
+        : []
 
   return {
     type: 'extrudeFace',

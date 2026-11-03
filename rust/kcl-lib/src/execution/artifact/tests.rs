@@ -1481,6 +1481,7 @@ fn pattern_artifact_links_to_source_geometry() {
         path_id,
         &face_edge_infos,
         code_ref,
+        &AHashMap::default(),
     );
 
     assert!(matches!(
@@ -1549,6 +1550,7 @@ fn pattern_artifact_does_not_materialize_composite_solid_copies() {
         source_id,
         &face_edge_infos,
         CodeRef::placeholder(SourceRange::synthetic()),
+        &AHashMap::default(),
     );
 
     assert!(!updated.iter().any(|artifact| artifact.id() == ArtifactId::new(copy_id)));
@@ -1667,6 +1669,7 @@ fn entity_clone_resolves_pattern_copy_lazily() {
         source_sweep_id,
         &face_edge_infos,
         code_ref,
+        &AHashMap::default(),
     ) {
         merge_artifact_into_map(&mut artifacts, update);
     }

@@ -17,7 +17,10 @@ import {
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import { getSweepFromSuspectedSweepSurface } from '@src/lang/std/artifactGraph'
-import { getCodeRefsFromEntityReference } from '@src/lib/selections'
+import {
+  getCodeRefsFromEntityReference,
+  selectionBodyFace,
+} from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
@@ -876,14 +879,15 @@ sketch001 = sketch(on = faceOf(chamfer001, face = chamfer001.faces.chamferFace01
 )
 
 it.each([
+  { beforeBoolean: true, tagged: true, secondBoolean: false, copied: true },
   { beforeBoolean: false, tagged: false, secondBoolean: false },
   { beforeBoolean: true, tagged: true, secondBoolean: false },
   { beforeBoolean: true, tagged: false, secondBoolean: false },
   { beforeBoolean: false, tagged: true, secondBoolean: false },
   { beforeBoolean: false, tagged: true, secondBoolean: true },
 ])(
-  'sketches on the Boolean treatment face (treatment before Boolean: $beforeBoolean, tagged: $tagged, second Boolean: $secondBoolean)',
-  async ({ beforeBoolean, tagged, secondBoolean }) => {
+  'sketches on the Boolean treatment face (treatment before Boolean: $beforeBoolean, tagged: $tagged, second Boolean: $secondBoolean, copied: $copied)',
+  async ({ beforeBoolean, tagged, secondBoolean, copied = false }) => {
     const booleanCall = `plateWithHole = subtract(${beforeBoolean ? 'chamfer001' : 'plate'}, tools = hole)`
     const chamferCall = `chamfer001 = chamfer(${beforeBoolean ? 'plate' : 'plateWithHole'}, length = 1mm, edges = [{ sideFaces = [plate.sketch.tags.bottom, plate.faces.plateTop] }]${tagged ? ', tag = $chamferFace' : ''})`
     const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
@@ -909,6 +913,7 @@ finalPlate = subtract(chamfer001, tools = extraHole)`
 }
 hide(plateSketch)
 hide(holeSketch)
+${copied ? 'copy = clone(plateWithHole) |> translate(x = 30mm, y = 10mm, global = true)' : ''}
 `
     const { ast, artifactGraph } = await getAstAndArtifactGraph(
       code,
@@ -916,7 +921,9 @@ hide(holeSketch)
       world.kclManager
     )
     expect(world.kclManager.errors).toEqual([])
-    const cut = [...artifactGraph.values()].find((a) => a.type === 'edgeCut')
+    const cut = [...artifactGraph.values()].find(
+      (a) => a.type === 'edgeCut' && Boolean(a.sourceEdgeCutId) === copied
+    )
     if (cut?.type !== 'edgeCut')
       throw new Error('Missing Boolean treatment face')
     const body = getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)
@@ -948,7 +955,7 @@ hide(holeSketch)
     )
     expect(world.kclManager.errors).toEqual([])
     expect(output).toContain(
-      `faceOf(${secondBoolean ? 'finalPlate' : beforeBoolean ? 'plateWithHole' : 'chamfer001'}, face = `
+      `faceOf(${copied ? 'copy' : secondBoolean ? 'finalPlate' : beforeBoolean ? 'plateWithHole' : 'chamfer001'}, face = `
     )
     expect(world.kclManager.variables.sketch001).toMatchObject({
       type: 'Object',
@@ -976,15 +983,16 @@ it.each([
     const code =
       chainedTreatmentCode +
       `copy = ${operation}
-sketchOnCopy = sketch(on = faceOf(${body}, face = ${body}.faces.chamferFace01)) {
+existingCopySketch = sketch(on = faceOf(${body}, face = ${body}.faces.chamferFace01)) {
   circle(start = [0.1mm, 0mm], center = [0mm, 0mm])
 }
-gdt::annotation(faces = [${body}.faces.chamferFace01], annotation = "Copied chamfer", framePlane = XZ)
-gdt::annotation(faces = [${body}.faces.filletFace01], annotation = "Copied fillet", framePlane = XZ)
+existingOriginalSketch = sketch(on = faceOf(chamfer001, face = fillet001.faces.chamferFace01)) {
+  circle(start = [0.1mm, 0mm], center = [0mm, 0mm])
+}
 gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", framePlane = XZ)
 `
     const sent = vi.spyOn(world.engineCommandManager, 'sendCommand')
-    const { artifactGraph } = await getAstAndArtifactGraph(
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
       code,
       world.instance,
       world.kclManager
@@ -1003,6 +1011,102 @@ gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", fra
       (a) => a.type === 'edgeCut' && a.subType === 'chamfer'
     )
     if (!original) throw new Error('Missing original chamfer')
+    const bodyId = owner.type === 'sweep' ? owner.id : owner.copyIds[0]
+    let modifiedAst = ast
+    const treatmentFaceIds = new Map<string, string>()
+    for (const treatment of ['chamfer', 'fillet']) {
+      const face = [...artifactGraph.values()].find(
+        (a) =>
+          a.type === 'edgeCut' && a.subType === treatment && a.bodyId === bodyId
+      )
+      if (face?.type !== 'edgeCut')
+        throw new Error('Missing copied treatment face')
+      treatmentFaceIds.set(`Copied ${treatment}`, face.id)
+      const note = await modelingCommandCodemods['GDT Annotation'].run({
+        ast: modifiedAst,
+        kclManager: world.kclManager,
+        wasmInstance: world.instance,
+        args: {
+          objects: {
+            graphSelections: [
+              { entityRef: { type: 'face', face_id: face.id } },
+            ],
+            otherSelections: [],
+          },
+          annotation: `Copied ${treatment}`,
+          framePlane: 'XZ',
+        },
+      })
+      if (isErr(note)) throw note
+      modifiedAst = note.modifiedAst
+      const originalFace = face.sourceEdgeCutId
+        ? artifactGraph.get(face.sourceEdgeCutId)
+        : undefined
+      if (originalFace?.type !== 'edgeCut')
+        throw new Error('Missing original treatment face')
+      treatmentFaceIds.set(`Original ${treatment}`, originalFace.id)
+      const originalNote = await modelingCommandCodemods['GDT Annotation'].run({
+        ast: modifiedAst,
+        kclManager: world.kclManager,
+        wasmInstance: world.instance,
+        args: {
+          objects: {
+            graphSelections: [
+              { entityRef: { type: 'face', face_id: originalFace.id } },
+            ],
+            otherSelections: [],
+          },
+          annotation: `Original ${treatment}`,
+          framePlane: 'XZ',
+        },
+      })
+      if (isErr(originalNote)) throw originalNote
+      modifiedAst = originalNote.modifiedAst
+    }
+    const copiedChamfer = [...artifactGraph.values()].find(
+      (a) =>
+        a.type === 'edgeCut' && a.subType === 'chamfer' && a.bodyId === bodyId
+    )
+    if (copiedChamfer?.type !== 'edgeCut')
+      throw new Error('Missing copied chamfer')
+    const sketchPlane = await selectionBodyFace(
+      copiedChamfer.id,
+      artifactGraph,
+      ast,
+      world.kclManager.execState,
+      {
+        sceneInfra: world.kclManager.sceneInfra,
+        rustContext: world.rustContext,
+        sceneEntitiesManager: world.kclManager.sceneEntitiesManager,
+        wasmInstance: world.instance,
+      }
+    )
+    expect(sketchPlane?.faceId).toBe(copiedChamfer.id)
+    if (!sketchPlane) throw new Error('Missing copied sketch plane')
+    const sketch = sketchBlockOnExtrudedFace(
+      modifiedAst,
+      { entityRef: { type: 'face', face_id: copiedChamfer.id } },
+      sketchPlane.sketchPathToNode,
+      sketchPlane.extrudePathToNode,
+      artifactGraph,
+      world.instance
+    )
+    if (isErr(sketch)) throw sketch
+    const output = recast(sketch.modifiedAst, world.instance)
+    if (isErr(output)) throw output
+    expect(output).toContain(
+      `faceOf(${body}, face = ${body}.faces.chamferFace01)`
+    )
+    expect(output).not.toContain('faceId(')
+    await getAstAndArtifactGraph(
+      output.replace(
+        /(sketch001 = sketch\(on = faceOf[^\n]+\) \{)\n/,
+        '$1\n  circle(start = [0.1mm, 0mm], center = [0mm, 0mm])\n'
+      ),
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
     const commands = sent.mock.calls.flatMap(([, message]) =>
       message.command.type === 'modeling_cmd_req'
         ? [message.command.cmd]
@@ -1024,16 +1128,13 @@ gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", fra
         }),
       })
     )
-    const bodyId = owner.type === 'sweep' ? owner.id : owner.copyIds[0]
-    const faceIds =
-      owner.type === 'sweep' ? owner.surfaceIds : owner.copyFaceIds
-    for (const prefix of ['Copied chamfer', 'Copied fillet']) {
+    for (const [prefix, faceId] of treatmentFaceIds) {
       expect(commands).toContainEqual(
         expect.objectContaining({
           type: 'new_annotation',
           options: expect.objectContaining({
             feature_control: expect.objectContaining({
-              entity_id: expect.toBeOneOf(faceIds),
+              entity_id: faceId,
               prefix,
             }),
           }),
@@ -1041,7 +1142,7 @@ gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", fra
       )
     }
 
-    expect(world.kclManager.variables.sketchOnCopy).toMatchObject({
+    expect(world.kclManager.variables.sketch001).toMatchObject({
       type: 'Object',
       value: {
         meta: {
@@ -1050,7 +1151,7 @@ gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", fra
               value: {
                 on: {
                   type: 'face',
-                  id: expect.toBeOneOf(faceIds),
+                  id: copiedChamfer.id,
                   value: 'chamferFace01',
                   parentSolid: { solidId: bodyId },
                 },

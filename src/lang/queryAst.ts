@@ -1404,7 +1404,12 @@ export function getVariableExprsFromSelection(
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     const resolvedForSegment = resolveToCodeRef(s, artifactGraph)
-    const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
+    const patternExpr = getPatternExprFromSelection(
+      s,
+      ast,
+      wasmInstance,
+      artifactGraph
+    )
     if (patternExpr) {
       const key = splitOutputExprKey(patternExpr)
       if (pushedNames[key]) {
@@ -1722,14 +1727,26 @@ export function artifactToEntityRef(
 function getPatternExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  artifactGraph: ArtifactGraph
 ): Expr | null {
-  const artifact = selection.artifact
+  const selected =
+    selection.artifact ??
+    (selection.entityRef
+      ? artifactGraph.get(getEntityRefId(selection.entityRef) ?? '')
+      : undefined)
+  const ownerId = selected?.type === 'edgeCut' ? selected.bodyId : undefined
+  const artifact = ownerId
+    ? [...artifactGraph.values()].find(
+        (a) => a.type === 'pattern' && a.copyIds.includes(ownerId)
+      )
+    : selected
   if (artifact?.type !== 'pattern') {
     return null
   }
 
   const patternIndex =
+    (ownerId ? artifact.copyIds.indexOf(ownerId) + 1 : undefined) ??
     selection.patternIndex ??
     (selection.engineEntityId
       ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
