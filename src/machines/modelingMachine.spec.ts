@@ -80,7 +80,12 @@ function setTestWorld(world: TestWorld) {
  */
 function useEngineWorld() {
   beforeAll(async () => {
-    setTestWorld(await buildTheWorldAndConnectToEngine({ webrtc: false }))
+    setTestWorld(
+      await buildTheWorldAndConnectToEngine({
+        webrtc: false,
+        geometryOnly: true,
+      })
+    )
   })
 
   afterAll(() => {
