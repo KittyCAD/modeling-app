@@ -962,6 +962,9 @@ export class CameraControls {
       this.rotateCamera(this.pendingRotation.x, this.pendingRotation.y)
       if (this.effectiveCameraMode === 'local') {
         this.safeLookAtTarget()
+        // Update camera.up from the quaternion, which safeLookAtTarget just changed:
+        // LocalRenderer aims its camera with up and lookAt.
+        this.camera.up.set(0, 1, 0).applyQuaternion(this.camera.quaternion)
       }
       this.pendingRotation = null // Clear the pending rotation after applying it
       didChange = true
