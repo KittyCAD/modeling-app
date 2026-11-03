@@ -225,7 +225,7 @@ def modeling_api():
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
-            requests.append((self.path, self.headers.get("Authorization")))
+            requests.append((self.path, self.headers))
             # Capture the real native client's handshake without needing an engine.
             self.send_response(401)
             self.send_header("Content-Length", "0")
@@ -293,7 +293,7 @@ async def test_kcl_session_explicit_credentials(
     )
     assert len(requests) == 2
     assert all(path.startswith("/ws/modeling/commands?") for path, _ in requests)
-    assert {authorization for _, authorization in requests} == {
+    assert {headers["Authorization"] for _, headers in requests} == {
         "Bearer first-session-token",
         "Bearer second-session-token",
     }
@@ -320,9 +320,9 @@ async def test_kcl_session_credentials_environment_fallback(
         with pytest.raises(Exception, match="401"):
             await constructor(source, **kwargs)
     assert len(requests) == 1
-    path, authorization = requests[0]
+    path, headers = requests[0]
     assert path.startswith("/ws/modeling/commands?")
-    assert authorization == "Bearer environment-token"
+    assert headers["Authorization"] == "Bearer environment-token"
     query = parse_qs(urlsplit(path).query)
     assert query["geometry_only"] == ["false"]
     assert "pool" not in query
@@ -338,6 +338,105 @@ async def test_kcl_session_mock_with_explicit_credentials(
         source, mock=True, token="mock-token", base_url=base_url
     ) as session:
         assert session.outcome.issues() == []
+    assert requests == []
+
+
+@pytest.fixture(
+    params=[
+        "new_kcl_session",
+        "new_kcl_session_code",
+        "execute",
+        "execute_code",
+        "execute_and_export",
+        "execute_and_measure",
+        "execute_and_bounding_box",
+        "execute_and_snapshot",
+        "execute_and_snapshot_views",
+        "get_sketch_constraint_status",
+        "get_sketch_constraint_status_code",
+        "import_and_snapshot",
+        "import_and_snapshot_views",
+    ]
+)
+def network_call(request, tmp_path):
+    code = "@settings(kclVersion = 3.0)\nvalue = 1\n"
+    source = tmp_path / "main.kcl"
+    source.write_text(code)
+    name = request.param
+    args = [code if name.endswith("_code") else str(source)]
+    if name.startswith("import_and_snapshot"):
+        args = [[], kcl.InputFormat3d.Step(kcl.StepImportOptions())]
+    if "snapshot" in name:
+        args.append(kcl.ImageFormat.Png)
+        if name.endswith("_views"):
+            args.append([])
+    elif name == "execute_and_measure":
+        args.append(kcl.PhysicalPropertiesRequest())
+    elif name == "execute_and_export":
+        args.append(kcl.FileExportFormat.Step)
+    return getattr(kcl, name), args
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("user_agent_header", ["User-Agent", "user-agent"])
+async def test_network_custom_headers(
+    network_call, modeling_api, monkeypatch, user_agent_header
+):
+    base_url, requests = modeling_api
+    monkeypatch.delenv("KITTYCAD_API_TOKEN", raising=False)
+    monkeypatch.delenv("KITTYCAD_HOST", raising=False)
+    monkeypatch.setenv("ZOO_API_TOKEN", "test-token")
+    monkeypatch.setenv("ZOO_HOST", base_url)
+    function, args = network_call
+    headers = {user_agent_header: "MyApp/1.0", "X-Custom-Header": "example-value"}
+    async with asyncio.timeout(10):
+        with pytest.raises(Exception, match="401"):
+            await function(*args, headers=headers)
+    assert len(requests) == 1
+    path, received = requests[0]
+    assert path.startswith("/ws/modeling/commands?")
+    assert received["Upgrade"].lower() == "websocket"
+    assert received["Sec-WebSocket-Version"] == "13"
+    assert received.get_all("User-Agent") == ["MyApp/1.0"]
+    assert received.get_all("X-Custom-Header") == ["example-value"]
+    assert received["Authorization"] == "Bearer test-token"
+    assert headers == {
+        user_agent_header: "MyApp/1.0",
+        "X-Custom-Header": "example-value",
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("headers", [None, {}])
+async def test_kcl_session_default_headers(session_constructor, modeling_api, headers):
+    constructor, source = session_constructor
+    base_url, requests = modeling_api
+    async with asyncio.timeout(10):
+        with pytest.raises(Exception, match="401"):
+            await constructor(
+                source, token="test-token", base_url=base_url, headers=headers
+            )
+    assert len(requests) == 1
+    values = requests[0][1].get_all("User-Agent")
+    assert len(values) == 1
+    assert values[0].startswith("kcl-lib.rs/")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "headers",
+    [{"Bad Name": "value"}, {"X-Custom-Header": "bad\r\nvalue"}],
+)
+async def test_kcl_session_rejects_invalid_headers(
+    session_constructor, modeling_api, headers
+):
+    constructor, source = session_constructor
+    base_url, requests = modeling_api
+    async with asyncio.timeout(10):
+        with pytest.raises(Exception, match="header"):
+            await constructor(
+                source, token="test-token", base_url=base_url, headers=headers
+            )
     assert requests == []
 
 

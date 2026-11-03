@@ -1179,6 +1179,7 @@ struct CachedExecution {
     preserve_mem: PreserveMem,
 }
 
+#[cfg_attr(not(target_arch = "wasm32"), bon::bon)]
 impl ExecutorContext {
     /// Use an existing cache for another handle to the same session, or for
     /// associated mock execution. Independent sessions must use independent caches.
@@ -1423,8 +1424,32 @@ impl ExecutorContext {
         engine_addr: Option<String>,
         kcl_version: KclVersion,
     ) -> Result<Self> {
+        Self::builder()
+            .settings(settings)
+            .maybe_token(token)
+            .maybe_engine_addr(engine_addr)
+            .kcl_version(kcl_version)
+            .build()
+            .await
+    }
+
+    /// Build a native executor with optional client credentials and HTTP/WebSocket headers.
+    /// Resolve `kcl_version` from the entrypoint with `Program::language_version()`.
+    #[cfg(not(target_arch = "wasm32"))]
+    #[builder(finish_fn = build, builder_type = ExecutorContextBuilder)]
+    pub async fn builder(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+        kcl_version: KclVersion,
+        headers: Option<BTreeMap<String, String>>,
+    ) -> Result<Self> {
         // Create the client.
-        let client = crate::engine::new_zoo_client(token, engine_addr)?;
+        let client = crate::engine::zoo_client()
+            .maybe_token(token)
+            .maybe_engine_addr(engine_addr)
+            .maybe_headers(headers)
+            .build()?;
 
         let ctx = Self::new(&client, settings, kcl_version).await?;
         Ok(ctx)
