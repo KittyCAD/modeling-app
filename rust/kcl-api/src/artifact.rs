@@ -353,6 +353,9 @@ pub struct Solid2d {
 pub struct PrimitiveFace {
     pub id: ArtifactId,
     pub solid_id: ArtifactId,
+    /// Semantic source of an instance face. Absent for index-only lookups.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_face_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
 }
 

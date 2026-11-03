@@ -18,6 +18,8 @@ import {
   type ResolvedGraphSelection,
   codeRefFromRange,
   getArtifactFromRange,
+  getFaceBodyId,
+  getBodySelectionForFace,
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
@@ -1439,6 +1441,29 @@ export function getVariableExprsFromSelection(
       continue
     }
 
+    const selectedFace = resolvedForSegment?.artifact
+    if (selectedFace?.type === 'primitiveFace' && selectedFace.sourceFaceId) {
+      const body = getBodySelectionForFace(selectedFace, artifactGraph)
+      if (err(body)) return body
+      const result = getVariableExprsFromSelection(
+        { graphSelections: [body], otherSelections: [] },
+        artifactGraph,
+        ast,
+        wasmInstance,
+        nodeToEdit,
+        options
+      )
+      if (err(result)) return result
+      for (const expr of result.exprs) {
+        const key = splitOutputExprKey(expr)
+        if (!pushedNames[key]) {
+          exprs.push(expr)
+          pushedNames[key] = true
+        }
+      }
+      continue
+    }
+
     const selectedEdgeCut =
       s.artifact?.type === 'edgeCut'
         ? s.artifact
@@ -1735,7 +1760,10 @@ function getPatternExprFromSelection(
     (selection.entityRef
       ? artifactGraph.get(getEntityRefId(selection.entityRef) ?? '')
       : undefined)
-  const ownerId = selected?.type === 'edgeCut' ? selected.bodyId : undefined
+  // A newly defined face uses the operation that introduced its tag. Only
+  // inherited faces can use the pattern instance's existing tag container.
+  if (selected?.type === 'edgeCut' && !selected.sourceEdgeCutId) return null
+  const ownerId = selected ? getFaceBodyId(selected) : undefined
   const artifact = ownerId
     ? [...artifactGraph.values()].find(
         (a) => a.type === 'pattern' && a.copyIds.includes(ownerId)

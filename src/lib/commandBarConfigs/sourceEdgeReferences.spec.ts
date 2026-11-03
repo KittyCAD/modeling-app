@@ -966,23 +966,51 @@ ${copied ? 'copy = clone(plateWithHole) |> translate(x = 30mm, y = 10mm, global 
 )
 
 it.each([
+  { operation: 'clone(fillet001) |> translate(x = 50mm)', body: 'copy' },
+  {
+    operation:
+      'clone(patternLinear3d(fillet001, instances = 3, distance = 50mm, axis = X)[1]) |> translate(y = 30mm)',
+    body: 'copy',
+  },
   { operation: 'mirror3d(fillet001, across = YZ)', body: 'copy' },
   {
     operation:
       'patternLinear3d(fillet001, instances = 3, distance = 50mm, axis = X)',
-    body: 'copy[1]',
+    body: 'copy[2]',
+    copyIndex: 2,
   },
   {
     operation:
       'patternCircular3d(fillet001, instances = 3, axis = Z, center = [0mm, 0mm, 0mm], arcDegrees = 360deg)',
     body: 'copy[1]',
   },
+  {
+    operation:
+      'patternLinear3d(seedChamfer, instances = 3, distance = 50mm, axis = X)',
+    body: 'copy[1]',
+    setup: `seed = clone(fillet001) |> translate(y = 40mm)
+seedChamfer = chamfer(seed, length = 0.5mm, edges = [{ sideFaces = [seed.sketch.tags.bottom, seed.sketch.tags.left] }], tag = $seedSideChamfer)
+supportA = sketch(on = faceOf(seedChamfer, face = seedChamfer.faces.seedSideChamfer)) { circle(start = [0.1mm, 0mm], center = [0mm, 0mm]) }
+supportB = sketch(on = faceOf(seedChamfer, face = seedChamfer.faces.seedSideChamfer)) { circle(start = [0.2mm, 0mm], center = [0mm, 0mm]) }
+supportC = sketch(on = faceOf(seedChamfer, face = seedChamfer.faces.seedSideChamfer)) { circle(start = [0.3mm, 0mm], center = [0mm, 0mm]) }`,
+  },
+  {
+    operation: 'clone(seedChamfer) |> translate(y = 30mm)',
+    body: 'copy',
+    setup: `seedPattern = patternLinear3d(fillet001, instances = 2, distance = 50mm, axis = X)
+seedChamfer = chamfer(seedPattern[1], length = 0.5mm, edges = [{ sideFaces = [seedPattern[1].sketch.tags.bottom, seedPattern[1].sketch.tags.left] }], tag = $seedSideChamfer)
+supportA = sketch(on = faceOf(seedChamfer, face = seedChamfer.faces.seedSideChamfer)) { circle(start = [0.1mm, 0mm], center = [0mm, 0mm]) }
+supportB = sketch(on = faceOf(seedChamfer, face = seedChamfer.faces.seedSideChamfer)) { circle(start = [0.2mm, 0mm], center = [0mm, 0mm]) }
+supportC = sketch(on = faceOf(seedChamfer, face = seedChamfer.faces.seedSideChamfer)) { circle(start = [0.3mm, 0mm], center = [0mm, 0mm]) }`,
+  },
 ])(
-  'preserves treatment instance identity for $operation',
-  async ({ operation, body }) => {
+  'preserves face instance identity for $operation',
+  async ({ operation, body, setup = '', copyIndex = 1 }) => {
     const code =
       chainedTreatmentCode +
-      `copy = ${operation}
+      `${setup}
+gdt::annotation(faces = [chamferFace01], annotation = "Bare tag before copy", framePlane = XZ)
+copy = ${operation}
 existingCopySketch = sketch(on = faceOf(${body}, face = ${body}.faces.chamferFace01)) {
   circle(start = [0.1mm, 0mm], center = [0mm, 0mm])
 }
@@ -990,8 +1018,20 @@ existingOriginalSketch = sketch(on = faceOf(chamfer001, face = fillet001.faces.c
   circle(start = [0.1mm, 0mm], center = [0mm, 0mm])
 }
 gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", framePlane = XZ)
+gdt::annotation(faces = [region001.tags.bottom], annotation = "Wall source identity", framePlane = XZ)
+gdt::annotation(faces = [${body}.sketch.tags.bottom], annotation = "Qualified wall identity", framePlane = XZ)
+gdt::annotation(faces = [${body}.faces.topCap], annotation = "Qualified cap identity", framePlane = XZ)
+${setup ? `gdt::annotation(faces = [${body}.faces.seedSideChamfer], annotation = "Qualified added face identity", framePlane = XZ)` : ''}
 `
     const sent = vi.spyOn(world.engineCommandManager, 'sendCommand')
+    const getCommands = () =>
+      sent.mock.calls.flatMap(([, message]) =>
+        message.command.type === 'modeling_cmd_req'
+          ? [message.command.cmd]
+          : message.command.type === 'modeling_cmd_batch_req'
+            ? message.command.requests.map((request) => request.cmd)
+            : []
+      )
     const { ast, artifactGraph } = await getAstAndArtifactGraph(
       code,
       world.instance,
@@ -1007,20 +1047,92 @@ gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", fra
     )
     if (owner?.type !== 'sweep' && owner?.type !== 'pattern')
       throw new Error('Missing copied body')
-    const original = [...artifactGraph.values()].find(
-      (a) => a.type === 'edgeCut' && a.subType === 'chamfer'
+    const bodyId =
+      owner.type === 'sweep' ? owner.id : owner.copyIds[copyIndex - 1]
+    const wallCommand = getCommands().find(
+      (command) =>
+        command.type === 'new_annotation' &&
+        command.options.feature_control?.prefix === 'Qualified wall identity'
     )
-    if (!original) throw new Error('Missing original chamfer')
-    const bodyId = owner.type === 'sweep' ? owner.id : owner.copyIds[0]
+    const capCommand = getCommands().find(
+      (command) =>
+        command.type === 'new_annotation' &&
+        command.options.feature_control?.prefix === 'Qualified cap identity'
+    )
+    if (
+      wallCommand?.type !== 'new_annotation' ||
+      capCommand?.type !== 'new_annotation'
+    )
+      throw new Error('Missing qualified face annotations')
+    const wallId = wallCommand.options.feature_control?.entity_id
+    const capId = capCommand.options.feature_control?.entity_id
+    if (!wallId || !capId) throw new Error('Missing qualified face targets')
+    const addedFaceCommand = getCommands().find(
+      (command) =>
+        command.type === 'new_annotation' &&
+        command.options.feature_control?.prefix ===
+          'Qualified added face identity'
+    )
+    const addedFaceId =
+      addedFaceCommand?.type === 'new_annotation'
+        ? addedFaceCommand.options.feature_control?.entity_id
+        : undefined
+    if (setup && !addedFaceId)
+      throw new Error('Missing newly created face on copy')
     let modifiedAst = ast
     const treatmentFaceIds = new Map<string, string>()
-    for (const treatment of ['chamfer', 'fillet']) {
-      const face = [...artifactGraph.values()].find(
-        (a) =>
-          a.type === 'edgeCut' && a.subType === treatment && a.bodyId === bodyId
+    for (const treatment of [
+      'chamfer',
+      'fillet',
+      'wall',
+      'cap',
+      ...(addedFaceId ? ['added'] : []),
+    ]) {
+      const face =
+        treatment === 'added' && addedFaceId
+          ? artifactGraph.get(addedFaceId)
+          : treatment === 'wall'
+            ? artifactGraph.get(wallId)
+            : treatment === 'cap'
+              ? artifactGraph.get(capId)
+              : [...artifactGraph.values()].find(
+                  (a) =>
+                    a.type === 'edgeCut' &&
+                    a.subType === treatment &&
+                    a.bodyId === bodyId
+                )
+      if (
+        !face ||
+        !['wall', 'cap', 'edgeCut', 'primitiveFace'].includes(face.type)
       )
-      if (face?.type !== 'edgeCut')
-        throw new Error('Missing copied treatment face')
+        throw new Error('Missing copied face')
+      const owningBodyId =
+        face.type === 'wall' || face.type === 'cap'
+          ? face.sweepId
+          : face.type === 'edgeCut'
+            ? face.bodyId
+            : face.type === 'primitiveFace'
+              ? face.solidId
+              : undefined
+      expect(owningBodyId).toBe(bodyId)
+      const picked: Selection = {
+        entityRef: { type: 'face', face_id: face.id },
+      }
+      expect(
+        await validateGdtObjects({
+          graphSelections: [picked],
+          otherSelections: [],
+        })
+      ).toBe(true)
+      const bodies = coerceSelectionsForBodyOnlySelectionTypes(
+        { graphSelections: [picked], otherSelections: [] },
+        ['path', 'sweep', 'compositeSolid'],
+        artifactGraph
+      )
+      expect(bodies?.graphSelections[0].entityRef).toEqual({
+        type: 'solid3d',
+        solid3d_id: bodyId,
+      })
       treatmentFaceIds.set(`Copied ${treatment}`, face.id)
       const note = await modelingCommandCodemods['GDT Annotation'].run({
         ast: modifiedAst,
@@ -1039,11 +1151,16 @@ gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", fra
       })
       if (isErr(note)) throw note
       modifiedAst = note.modifiedAst
-      const originalFace = face.sourceEdgeCutId
-        ? artifactGraph.get(face.sourceEdgeCutId)
-        : undefined
-      if (originalFace?.type !== 'edgeCut')
-        throw new Error('Missing original treatment face')
+      const source =
+        face.type === 'edgeCut' && face.sourceEdgeCutId
+          ? artifactGraph.get(face.sourceEdgeCutId)
+          : face.type === 'primitiveFace' && face.sourceFaceId
+            ? artifactGraph.get(face.sourceFaceId)
+            : undefined
+      // Rich clone walls/caps already carry source-sweep provenance; the
+      // named source expressions below verify originals independently.
+      const originalFace = source
+      if (!originalFace) continue
       treatmentFaceIds.set(`Original ${treatment}`, originalFace.id)
       const originalNote = await modelingCommandCodemods['GDT Annotation'].run({
         ast: modifiedAst,
@@ -1069,30 +1186,39 @@ gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", fra
     )
     if (copiedChamfer?.type !== 'edgeCut')
       throw new Error('Missing copied chamfer')
-    const sketchPlane = await selectionBodyFace(
+    const sketchTargets = [
       copiedChamfer.id,
-      artifactGraph,
-      ast,
-      world.kclManager.execState,
-      {
-        sceneInfra: world.kclManager.sceneInfra,
-        rustContext: world.rustContext,
-        sceneEntitiesManager: world.kclManager.sceneEntitiesManager,
-        wasmInstance: world.instance,
-      }
-    )
-    expect(sketchPlane?.faceId).toBe(copiedChamfer.id)
-    if (!sketchPlane) throw new Error('Missing copied sketch plane')
-    const sketch = sketchBlockOnExtrudedFace(
-      modifiedAst,
-      { entityRef: { type: 'face', face_id: copiedChamfer.id } },
-      sketchPlane.sketchPathToNode,
-      sketchPlane.extrudePathToNode,
-      artifactGraph,
-      world.instance
-    )
-    if (isErr(sketch)) throw sketch
-    const output = recast(sketch.modifiedAst, world.instance)
+      wallId,
+      capId,
+      ...(addedFaceId ? [addedFaceId] : []),
+    ]
+    for (const faceId of sketchTargets) {
+      const sketchPlane = await selectionBodyFace(
+        faceId,
+        artifactGraph,
+        ast,
+        world.kclManager.execState,
+        {
+          sceneInfra: world.kclManager.sceneInfra,
+          rustContext: world.rustContext,
+          sceneEntitiesManager: world.kclManager.sceneEntitiesManager,
+          wasmInstance: world.instance,
+        }
+      )
+      expect(sketchPlane?.faceId).toBe(faceId)
+      if (!sketchPlane) throw new Error('Missing copied sketch plane')
+      const sketch = sketchBlockOnExtrudedFace(
+        modifiedAst,
+        { entityRef: { type: 'face', face_id: faceId } },
+        sketchPlane.sketchPathToNode,
+        sketchPlane.extrudePathToNode,
+        artifactGraph,
+        world.instance
+      )
+      if (isErr(sketch)) throw sketch
+      modifiedAst = sketch.modifiedAst
+    }
+    const output = recast(modifiedAst, world.instance)
     if (isErr(output)) throw output
     expect(output).toContain(
       `faceOf(${body}, face = ${body}.faces.chamferFace01)`
@@ -1100,21 +1226,22 @@ gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", fra
     expect(output).not.toContain('faceId(')
     await getAstAndArtifactGraph(
       output.replace(
-        /(sketch001 = sketch\(on = faceOf[^\n]+\) \{)\n/,
+        /(sketch\d+ = sketch\(on = faceOf[^\n]+\) \{)\n/g,
         '$1\n  circle(start = [0.1mm, 0mm], center = [0mm, 0mm])\n'
       ),
       world.instance,
       world.kclManager
     )
     expect(world.kclManager.errors).toEqual([])
-    const commands = sent.mock.calls.flatMap(([, message]) =>
-      message.command.type === 'modeling_cmd_req'
-        ? [message.command.cmd]
-        : message.command.type === 'modeling_cmd_batch_req'
-          ? message.command.requests.map((request) => request.cmd)
-          : []
+
+    const beforeCopy = getCommands().find(
+      (command) =>
+        command.type === 'new_annotation' &&
+        command.options.feature_control?.prefix === 'Bare tag before copy'
     )
-    expect(commands).toContainEqual(
+    if (beforeCopy?.type !== 'new_annotation')
+      throw new Error('Missing source binding annotation')
+    expect(getCommands()).toContainEqual(
       expect.objectContaining({
         type: 'new_annotation',
         options: expect.objectContaining({
@@ -1122,14 +1249,19 @@ gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", fra
             entity_id:
               owner.type === 'sweep'
                 ? expect.toBeOneOf(owner.surfaceIds)
-                : original.id,
+                : beforeCopy.options.feature_control?.entity_id,
             prefix: 'Bare tag after copy',
           }),
         }),
       })
     )
+    const copiedFaceIds =
+      owner.type === 'pattern' ? owner.copyFaceIds : owner.surfaceIds
+    expect(copiedFaceIds).toContain(wallId)
+    expect(copiedFaceIds).toContain(capId)
+    if (addedFaceId) expect(copiedFaceIds).toContain(addedFaceId)
     for (const [prefix, faceId] of treatmentFaceIds) {
-      expect(commands).toContainEqual(
+      expect(getCommands()).toContainEqual(
         expect.objectContaining({
           type: 'new_annotation',
           options: expect.objectContaining({
@@ -1142,25 +1274,32 @@ gdt::annotation(faces = [chamferFace01], annotation = "Bare tag after copy", fra
       )
     }
 
-    expect(world.kclManager.variables.sketch001).toMatchObject({
-      type: 'Object',
-      value: {
-        meta: {
-          value: {
-            sketch: {
-              value: {
-                on: {
-                  type: 'face',
-                  id: copiedChamfer.id,
-                  value: 'chamferFace01',
-                  parentSolid: { solidId: bodyId },
+    const copies = world.kclManager.variables.copy
+    if (!copies) throw new Error('Missing copied value')
+    const instance =
+      copies.type === 'HomArray' ? copies.value[copyIndex] : copies
+    if (instance?.type !== 'Solid')
+      throw new Error('Missing copied solid value')
+    for (const [index, faceId] of sketchTargets.entries()) {
+      expect(world.kclManager.variables[`sketch00${index + 1}`]).toMatchObject({
+        type: 'Object',
+        value: {
+          meta: {
+            value: {
+              sketch: {
+                value: {
+                  on: {
+                    type: 'face',
+                    id: faceId,
+                    parentSolid: { solidId: instance.value.id },
+                  },
                 },
               },
             },
           },
         },
-      },
-    })
+      })
+    }
   },
   60_000
 )

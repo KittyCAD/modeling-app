@@ -1,9 +1,9 @@
 import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
 import {
   getArtifactFromRange,
+  getBodySelectionForFace,
   getArtifactOfTypes,
   getSweepArtifactFromSelection,
-  getSweepFromSuspectedSweepSurface,
   getMergedSweepBodyArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
@@ -144,16 +144,31 @@ export function coerceSelectionsToBody(
       continue
     }
 
-    if (selection.artifact.type === 'edgeCut') {
-      const owner = getSweepFromSuspectedSweepSurface(
-        selection.artifact.id,
-        artifactGraph
-      )
+    if (
+      selection.artifact.type === 'edgeCut' ||
+      (selection.artifact.type === 'primitiveFace' &&
+        selection.artifact.sourceFaceId)
+    ) {
+      const owner = getBodySelectionForFace(selection.artifact, artifactGraph)
       if (err(owner)) return owner
+      const id = owner.engineEntityId ?? owner.artifact?.id
+      if (owner.artifact?.type === 'pattern') {
+        if (id && !seenBodyIds.has(id)) {
+          seenBodyIds.add(id)
+          passthroughSelections.push(owner)
+        }
+        continue
+      }
+      if (
+        owner.artifact?.type !== 'sweep' &&
+        owner.artifact?.type !== 'compositeSolid'
+      ) {
+        return new Error('Could not resolve the selected face instance body')
+      }
       const body =
-        owner.type === 'sweep'
-          ? getMergedSweepBodyArtifact(owner, artifactGraph)
-          : owner
+        owner.artifact.type === 'sweep'
+          ? getMergedSweepBodyArtifact(owner.artifact, artifactGraph)
+          : owner.artifact
       if (err(body)) return body
       if (!seenBodyIds.has(body.id)) {
         seenBodyIds.add(body.id)

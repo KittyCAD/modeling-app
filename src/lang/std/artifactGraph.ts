@@ -392,6 +392,99 @@ export function getCapForPathId(
   return new Error(`No cap found for path ${pathId}`)
 }
 
+/** Keep an instance face's identity separate from the feature that defined it. */
+export function getSourceFaceArtifact(
+  face: Artifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'wall' | 'cap' | 'edgeCut' }> | Error {
+  const visited = new Set<string>()
+  let current: Artifact | undefined = face
+  while (current && !visited.has(current.id)) {
+    visited.add(current.id)
+    const sourceId =
+      current.type === 'primitiveFace'
+        ? current.sourceFaceId
+        : current.type === 'edgeCut'
+          ? current.sourceEdgeCutId
+          : undefined
+    if (sourceId) {
+      current = artifactGraph.get(sourceId)
+      continue
+    }
+    if (
+      current.type === 'wall' ||
+      current.type === 'cap' ||
+      current.type === 'edgeCut'
+    )
+      return current
+    break
+  }
+  return new Error('Source face is unavailable')
+}
+
+export function getFaceBodyId(face: Artifact): string | undefined {
+  if (face.type === 'primitiveFace') return face.solidId
+  if (face.type === 'edgeCut') return face.bodyId ?? undefined
+  if (face.type === 'wall' || face.type === 'cap') return face.sweepId
+  return undefined
+}
+
+export function hasFaceCopies(
+  face: Artifact,
+  artifactGraph: ArtifactGraph
+): boolean {
+  const sweepId =
+    face.type === 'wall' || face.type === 'cap' ? face.sweepId : undefined
+  return [...artifactGraph.values()].some(
+    (other) =>
+      (other.type === 'primitiveFace' && other.sourceFaceId === face.id) ||
+      (other.type === 'edgeCut' && other.sourceEdgeCutId === face.id) ||
+      Boolean(
+        sweepId && other.type === 'sweep' && other.sourceSweepId === sweepId
+      )
+  )
+}
+
+/** Resolve the selected instance, independently of where its face was defined. */
+export function getBodySelectionForFace(
+  face: Artifact,
+  artifactGraph: ArtifactGraph
+): Selection | Error {
+  const id = getFaceBodyId(face)
+  if (!id) {
+    const body = getSweepFromSuspectedSweepSurface(face.id, artifactGraph)
+    if (err(body)) return body
+    return {
+      artifact: body,
+      codeRef: body.codeRef,
+      entityRef: { type: 'solid3d', solid3d_id: body.id },
+    }
+  }
+  let body = artifactGraph.get(id)
+  if (body?.type === 'path') {
+    const currentId = body.compositeSolidId ?? body.sweepId
+    body = currentId ? artifactGraph.get(currentId) : undefined
+  }
+  if (body?.type === 'sweep' || body?.type === 'compositeSolid') {
+    return {
+      artifact: body,
+      codeRef: body.codeRef,
+      entityRef: { type: 'solid3d', solid3d_id: body.id },
+    }
+  }
+  const pattern = getPatternArtifactForCopyId(id, artifactGraph)
+  const index = pattern?.copyIds.indexOf(id) ?? -1
+  if (pattern && index >= 0)
+    return {
+      artifact: pattern,
+      codeRef: pattern.codeRef,
+      entityRef: { type: 'solid3d', solid3d_id: id },
+      engineEntityId: id,
+      patternIndex: index + 1,
+    }
+  return new Error('Could not resolve the selected face instance body')
+}
+
 export function getSweepFromSuspectedSweepSurface(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
@@ -1225,6 +1318,19 @@ export function coerceSelectionsToBody(
       return new Error(
         `Unable to find source range for selected artifact: ${selection.artifact.type}`
       )
+    }
+    if (
+      selection.artifact.type === 'primitiveFace' &&
+      selection.artifact.sourceFaceId
+    ) {
+      const body = getBodySelectionForFace(selection.artifact, artifactGraph)
+      if (err(body)) return body
+      const id = body.engineEntityId ?? body.artifact?.id
+      if (id && !seenBodyIds.has(id)) {
+        seenBodyIds.add(id)
+        bodySelections.push(body)
+      }
+      continue
     }
     if (selection.artifact.type === 'edgeCut') {
       const body = getSweepFromSuspectedSweepSurface(

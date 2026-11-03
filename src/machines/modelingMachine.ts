@@ -3266,14 +3266,16 @@ export const modelingMachine = setup({
         const faceRequiringSourceMaterialization: ExtrudeFacePlane | null =
           result.type === 'extrudeFace' &&
           (selectedFaceArtifact?.type === 'edgeCut' ||
+            (selectedFaceArtifact?.type === 'primitiveFace' &&
+              Boolean(selectedFaceArtifact.sourceFaceId)) ||
             (result.faceInfo.type === 'wall' &&
               isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)))
             ? result
             : null
 
         if (faceRequiringSourceMaterialization) {
-          // Edge-cut faces and legacy sketch V1 walls need a concrete Face
-          // expression before the Rust frontend can create a sketch on them.
+          // Treatments, inherited faces and legacy walls need a concrete
+          // Face expression before the Rust frontend can create a sketch.
           const legacyFaceArtifact = kclManager.artifactGraph.get(
             faceRequiringSourceMaterialization.faceId
           )
@@ -3281,9 +3283,7 @@ export const modelingMachine = setup({
             ? getFaceCodeRef(legacyFaceArtifact)
             : null
           if (!legacyFaceArtifact || !legacyFaceCodeRef) {
-            return reject(
-              new Error('Could not resolve the selected legacy face.')
-            )
+            return reject(new Error('Could not resolve the selected face.'))
           }
 
           const legacySketchBlock = sketchBlockOnExtrudedFace(

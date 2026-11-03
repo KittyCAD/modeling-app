@@ -292,7 +292,11 @@ export type PlaneOfFace = { id: ArtifactId, faceId: ArtifactId, codeRef: CodeRef
 
 export type PrimitiveEdge = { id: ArtifactId, solidId: ArtifactId, codeRef: CodeRef, };
 
-export type PrimitiveFace = { id: ArtifactId, solidId: ArtifactId, codeRef: CodeRef, };
+export type PrimitiveFace = { id: ArtifactId, solidId: ArtifactId, 
+/**
+ * Semantic source of an instance face. Absent for index-only lookups.
+ */
+sourceFaceId?: ArtifactId | null, codeRef: CodeRef, };
 
 export type Segment = { id: ArtifactId, pathId: ArtifactId, 
 /**
