@@ -36,7 +36,7 @@ test.describe(
       test(`Create boolean operation -- ${operationName}`, async ({
         context,
         homePage,
-        cmdBar,
+        modelingDialog,
         editor,
         toolbar,
         scene,
@@ -81,11 +81,10 @@ test.describe(
             await toolbar.selectBoolean(operationName)
           }
 
-          // Verify command bar is showing the right command
-          await expect(cmdBar.page.getByTestId('command-name')).toContainText(
+          await expect(modelingDialog.locator).toHaveAttribute(
+            'aria-label',
             commandName
           )
-
           // Select first object in the scene, expect there to be a pixel diff from the selection color change
           await clickFirstObject({ pixelDiff: 50 })
           await page.waitForTimeout(1000)
@@ -95,7 +94,7 @@ test.describe(
             // should down shift key to select multiple objects
             await page.keyboard.down('Shift')
           } else {
-            await cmdBar.progressCmdBar()
+            await modelingDialog.selection('Tools').click()
           }
 
           // Select second object
@@ -104,37 +103,21 @@ test.describe(
 
           await page.waitForTimeout(1000)
 
-          // Confirm the operation in the command bar
-          await cmdBar.progressCmdBar()
-
-          if (operationName === 'union' || operationName === 'intersect') {
-            await cmdBar.expectState({
-              stage: 'review',
-              headerArguments: {
-                Solids: '2 sweeps',
-              },
-              commandName,
-            })
-          } else if (operationName === 'subtract') {
-            await cmdBar.expectState({
-              stage: 'review',
-              headerArguments: {
-                Solids: '1 sweep',
-                Tools: '1 sweep',
-              },
-              commandName,
-            })
-          } else if (operationName === 'split') {
-            await cmdBar.expectState({
-              stage: 'review',
-              headerArguments: {
-                Targets: '2 sweeps',
-              },
-              commandName,
-            })
+          if (operationName === 'subtract') {
+            await expect(modelingDialog.selection('Solids')).toHaveText(
+              '1 sweep'
+            )
+            await expect(modelingDialog.selection('Tools')).toHaveText(
+              '1 sweep'
+            )
+          } else {
+            await expect(
+              modelingDialog.selection(
+                operationName === 'split' ? 'Targets' : 'Solids'
+              )
+            ).toHaveText('2 sweeps')
           }
-
-          await cmdBar.submit()
+          await modelingDialog.submit()
           await scene.settled()
           await editor.openPane()
           await editor.expectEditor.toContain(operation.code)
