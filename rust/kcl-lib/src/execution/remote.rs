@@ -55,10 +55,11 @@ impl ExecutorContext {
             .inner_send_modeling_cmd(
                 id,
                 range,
-                WebSocketRequest::ExecKclProject {
-                    request_id: id,
-                    project: request,
-                },
+                WebSocketRequest::exec_kcl_project(
+                    id,
+                    request,
+                    kittycad_modeling_cmds::exec_kcl::ExecKclParams::default(),
+                ),
                 Default::default(),
             )
             .await
