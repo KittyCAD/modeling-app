@@ -68,19 +68,15 @@ helix001 = helix(
 
 test.describe('Face API selection regressions', { tag: '@web' }, () => {
   test('2.9 fillets a generated Chamfer boundary edge', async ({
-    context,
     page,
     scene,
-    cmdBar,
+    modelingDialog,
     editor,
     toolbar,
     tronApp,
     homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, edgeTreatmentCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
@@ -99,10 +95,10 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await clickChamferBoundaryEdge()
     await expect(toolbar.selectionStatus).toContainText('1 edge')
     await toolbar.filletButton.click()
-    await cmdBar.progressCmdBar()
-    await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.3')
-    await cmdBar.progressCmdBar()
-    await cmdBar.submit()
+
+    await modelingDialog.input('radius').fill('0.3')
+
+    await modelingDialog.submit()
     await scene.settled()
 
     await editor.expectEditor.toContain('tag = $')
@@ -112,19 +108,15 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
   })
 
   test('2.10 fillets an outer Shell rim edge', async ({
-    context,
     page,
     scene,
-    cmdBar,
+    modelingDialog,
     editor,
     toolbar,
     tronApp,
     homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, shellCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
@@ -140,31 +132,12 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await clickShellRimEdge()
     await expect(toolbar.selectionStatus).toContainText('1 edge')
     await toolbar.filletButton.click()
-    await cmdBar.progressCmdBar()
 
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Fillet',
-      currentArgKey: 'radius',
-      currentArgValue: '5',
-      headerArguments: {
-        Selection: '1 edge',
-        Radius: '',
-      },
-      highlightedHeaderArg: 'radius',
-    })
-    await cmdBar.currentArgumentInput.locator('.cm-content').fill('1')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Fillet',
-      headerArguments: {
-        Selection: '1 edge',
-        Radius: '1',
-      },
-      reviewValidationError: undefined,
-    })
-    await cmdBar.submit()
+    await expect(modelingDialog.input('radius')).toHaveText('5')
+    await modelingDialog.input('radius').fill('1')
+
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await modelingDialog.submit()
     await scene.settled()
 
     await editor.expectEditor.toContain('edgeId(body001')
@@ -172,19 +145,15 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
   })
 
   test('2.12 surface-extrudes an untouched outer CSG edge', async ({
-    context,
     page,
     scene,
-    cmdBar,
+    modelingDialog,
     editor,
     toolbar,
     tronApp,
     homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, csgSurfaceExtrudeCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
@@ -199,34 +168,14 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     })
     await clickOuterCsgEdge()
     await toolbar.extrudeButton.click()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'Profiles',
-    })
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-      },
-      highlightedHeaderArg: 'length',
-    })
-    await cmdBar.currentArgumentInput.locator('.cm-content').fill('6')
-    await cmdBar.progressCmdBar()
-    await cmdBar.selectOption({ name: 'Surface' }).click()
-    await cmdBar.selectOption({ name: 'New' }).click()
-    await cmdBar.submit()
+    await modelingDialog.selection('Profiles').click()
+
+    await expect(modelingDialog.input('length')).toHaveText('5')
+    await modelingDialog.input('length').fill('6')
+
+    await modelingDialog.options('body type').selectOption({ label: 'Surface' })
+    await modelingDialog.options('method').selectOption({ label: 'New' })
+    await modelingDialog.submit()
     await scene.settled()
 
     await editor.expectEditor.toContain('sideFaces = [')
@@ -234,7 +183,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
   })
 
   test('selects a standalone helix from the viewport', async ({
-    context,
     page,
     scene,
     cmdBar,
@@ -243,9 +191,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, standaloneHelixCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()

@@ -387,6 +387,13 @@ export const systemIOMachine = setup({
           ? context.hasListedProjects
           : false
       },
+      deferredSystemIOEvent: ({ context, event }) => {
+        assertEvent(event, SystemIOMachineEvents.setProjectDirectoryPath)
+        return context.projectDirectoryPath ===
+          event.data.requestedProjectDirectoryPath
+          ? context.deferredSystemIOEvent
+          : undefined
+      },
     }),
     [SystemIOMachineActions.setRequestedProjectName]: assign({
       requestedProjectName: ({ event }) => {
@@ -1400,9 +1407,9 @@ export const systemIOMachine = setup({
     },
     [SystemIOMachineStates.checkingReadWrite]: {
       on: {
-        [SystemIOMachineEvents.readFoldersFromProjectDirectory]: {
-          actions: [SystemIOMachineActions.deferSystemIOEvent],
-        },
+        // Both check outcomes already refresh folders. Watcher refreshes must
+        // not replace a deferred user operation while this directory is checked.
+        [SystemIOMachineEvents.readFoldersFromProjectDirectory]: {},
         [SystemIOMachineEvents.navigateToProject]: {
           actions: [SystemIOMachineActions.setRequestedProjectName],
         },
