@@ -1,0 +1,109 @@
+/* These rules deliberately include the app's editor wrapper: the generic
+   CodeMirror and global button defaults otherwise win over extension themes. */
+.feature-code-pane {
+  --model-editor-bg: var(--chalkboard-10);
+  --model-editor-muted: var(--chalkboard-60);
+  --model-editor-text: var(--chalkboard-90);
+  --model-editor-comment: var(--chalkboard-70);
+  --model-editor-value: var(--liquid-80);
+  --model-editor-string: var(--fern-80);
+  --model-editor-keyword: var(--primary);
+  min-height: 0;
+  background: var(--model-editor-bg);
+}
+.dark .feature-code-pane {
+  --model-editor-bg: var(--chalkboard-100);
+  --model-editor-muted: var(--chalkboard-60);
+  --model-editor-text: var(--chalkboard-20);
+  --model-editor-comment: var(--chalkboard-60);
+  --model-editor-value: var(--liquid-40);
+  --model-editor-string: var(--fern-40);
+  --model-editor-keyword: color-mix(
+    in oklch,
+    var(--primary) 70%,
+    var(--chalkboard-10)
+  );
+}
+.feature-code-pane > div:first-child {
+  min-height: 34px;
+  padding-inline: 12px;
+  background: var(--model-editor-bg);
+  border-bottom-color: color-mix(
+    in oklch,
+    var(--model-editor-muted) 20%,
+    transparent
+  );
+}
+#code-mirror-override .cm-editor[data-inline-features] {
+  background: var(--model-editor-bg, var(--chalkboard-10));
+  font-size: 12px;
+}
+#code-mirror-override .cm-editor[data-inline-features] .cm-scroller {
+  font-family: "Source Code VF", Menlo, Monaco, Consolas, monospace;
+  line-height: 20px;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+#code-mirror-override .cm-editor[data-inline-features] .cm-content {
+  padding-block: 10px 40px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--model-editor-text);
+}
+#code-mirror-override .cm-editor[data-inline-features] .cm-line {
+  padding-inline: 8px 12px;
+  line-height: 20px;
+}
+#code-mirror-override .cm-editor[data-inline-features] .cm-line span {
+  font-weight: 400;
+  font-style: normal;
+}
+#code-mirror-override .cm-editor[data-inline-features] .tok-variableName,
+#code-mirror-override .cm-editor[data-inline-features] .tok-variableName2 {
+  color: var(--model-editor-text);
+}
+#code-mirror-override .cm-editor[data-inline-features] .tok-keyword {
+  color: var(--model-editor-keyword);
+}
+#code-mirror-override .cm-editor[data-inline-features] .tok-number,
+#code-mirror-override .cm-editor[data-inline-features] .tok-bool,
+#code-mirror-override .cm-editor[data-inline-features] .tok-atom {
+  color: var(--model-editor-value);
+}
+#code-mirror-override .cm-editor[data-inline-features] .tok-string {
+  color: var(--model-editor-string);
+}
+#code-mirror-override .cm-editor[data-inline-features] .tok-comment,
+#code-mirror-override .cm-editor[data-inline-features] .tok-operator,
+#code-mirror-override .cm-editor[data-inline-features] .tok-punctuation {
+  color: var(--model-editor-comment);
+}
+#code-mirror-override .cm-editor[data-inline-features] .cm-gutters {
+  background: transparent;
+  border: 0;
+  color: var(--model-editor-muted, var(--chalkboard-60));
+  font-size: 10px;
+}
+#code-mirror-override .cm-editor[data-inline-features] .cm-gutterElement {
+  padding-inline: 8px 4px;
+}
+#code-mirror-override .cm-editor[data-inline-features] .cm-inline-feature,
+#code-mirror-override .cm-editor[data-inline-features] .cm-inline-planes {
+  margin-inline: 4px 8px;
+}
+#code-mirror-override .cm-editor[data-inline-features] .cm-inline-planes {
+  margin-block: 0 16px;
+}
+#code-mirror-override .cm-editor[data-inline-features] .cm-inline-feature {
+  margin-block: 2px;
+}
+#code-mirror-override .cm-editor[data-inline-features] .cm-activeLine,
+#code-mirror-override .cm-editor[data-inline-features] .cm-activeLineGutter {
+  background: transparent;
+  mix-blend-mode: normal;
+}
+#code-mirror-override
+  .cm-editor[data-inline-features].cm-focused
+  .cm-activeLine {
+  background: color-mix(in oklch, var(--model-editor-muted) 8%, transparent);
+}

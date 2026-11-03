@@ -5,6 +5,12 @@ import {
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+import { applyFeatureCodeLayout } from '@src/lib/layout/featureCodeLayout'
+import {
+  layoutContributionsValueSpec,
+  layoutService,
+  layoutUserFeatureTransformationsValueSpec,
+} from '@src/lib/layout/registry/contract'
 import type { Layout, LayoutService } from '@src/lib/layout/types'
 import {
   applyLayoutContribution,
@@ -16,11 +22,6 @@ import {
   setLayoutSaveHandler,
   togglePaneLayoutNode,
 } from '@src/lib/layout/utils'
-import {
-  layoutContributionsValueSpec,
-  layoutService,
-  layoutUserFeatureTransformationsValueSpec,
-} from '@src/lib/layout/registry/contract'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import { runtimeService } from '@src/registry/contracts/runtime'
@@ -81,6 +82,12 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     }
 
     function openPane(paneId: string) {
+      if (
+        paneId === 'feature-tree' &&
+        !settings.get().textEditor.featureTreeAboveCode.current
+      ) {
+        paneId = 'code'
+      }
       return set(
         togglePaneLayoutNode({
           rootLayout: structuredClone(get()),
@@ -92,6 +99,12 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     }
 
     function togglePane(paneId: string) {
+      if (
+        paneId === 'feature-tree' &&
+        !settings.get().textEditor.featureTreeAboveCode.current
+      ) {
+        paneId = 'code'
+      }
       const rootLayout = structuredClone(get())
       const paneOpenBehavior = settings.get().layout.paneOpenBehavior.current
       return set(
@@ -108,7 +121,10 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       get,
       set,
       reset: () => {
-        layoutSignal.value = structuredClone(runtimeDefaultLayout)
+        layoutSignal.value = applyFeatureCodeLayout(
+          runtimeDefaultLayout,
+          settings.get().textEditor.featureTreeAboveCode.current
+        )
         lastUserFeatureValues.clear()
         syncUserFeatureLayout()
       },
@@ -205,6 +221,10 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       hasHydratedLayout = true
       applyRegistryLayoutContributions()
       syncUserFeatureLayout()
+      layoutSignal.value = applyFeatureCodeLayout(
+        layoutSignal.peek(),
+        settings.get().textEditor.featureTreeAboveCode.current
+      )
     }
 
     const settingsSubscription = settingsActor.subscribe(
@@ -228,6 +248,12 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         settings.current.value.layout.paneOpenBehavior.currentSignal.value
       layoutSignal.value = applyPaneOpenBehavior(layoutSignal.peek(), behavior)
     })
+    const stopFeatureCodePreferenceEffect = effect(() => {
+      const separate =
+        settings.current.value.textEditor.featureTreeAboveCode.currentSignal
+          .value
+      layoutSignal.value = applyFeatureCodeLayout(layoutSignal.peek(), separate)
+    })
     const saveEffectUnsubscribeFn = effect(() =>
       saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
     )
@@ -236,6 +262,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     disposeLayout = () => {
       settingsSubscription.unsubscribe()
       stopPanePreferenceEffect()
+      stopFeatureCodePreferenceEffect()
       stopUserFeatureLayoutEffect()
       stopLayoutContributionsEffect()
       saveEffectUnsubscribeFn()
