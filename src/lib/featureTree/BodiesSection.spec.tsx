@@ -14,6 +14,22 @@ const state = vi.hoisted(() => ({
   delete: vi.fn(),
 }))
 vi.mock('@src/lib/boot', () => ({
+  useApp: () => ({
+    registry: {
+      get: () => ({
+        model: {
+          get value() {
+            return buildFeatureTreeState(
+              { ...emptyFeatureTreeExecution(), artifactGraph: state.graph },
+              '',
+              false,
+              false
+            )
+          },
+        },
+      }),
+    },
+  }),
   useSingletons: () => ({
     kclManager: {
       execStateSignal: {
@@ -54,6 +70,8 @@ vi.mock('@src/components/ContextMenu', () => ({
   ),
 }))
 
+import { buildFeatureTreeState } from '@src/lib/featureTree/model'
+import { emptyFeatureTreeExecution } from '@src/lib/featureTree/execution'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { FeatureTree } from '@src/lib/featureTree/FeatureTreeView'
 import { BodiesSection } from '@src/lib/featureTree/BodiesSection'

@@ -1,3 +1,4 @@
+import { featureTree } from '@src/lib/featureTree/registry/contract'
 import type { PropsOf } from '@headlessui/react/dist/types'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ContextMenuItem } from '@src/components/ContextMenu'
@@ -15,7 +16,7 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import { type ArtifactGraph, getAllOperations } from '@src/lang/wasm'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { sendSelectionEvent } from '@src/lib/featureTree'
 import {
   type HideOperation,
@@ -33,39 +34,8 @@ type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' | 'pattern' }
 /** Body identity and actions stay in ZDS; the shared tree handles row interaction. */
 export function BodiesSection() {
   useSignals()
-  const { kclManager } = useSingletons()
-  const execState = kclManager.execStateSignal.value
-  const artifactGraph = execState.artifactGraph
-  const operations = getAllOperations(execState.operations)
-  const bodies = getBodiesFromArtifactGraph(artifactGraph)
-  const bodiesWithProps: Map<
-    string,
-    Omit<PropsOf<typeof BodyItem>, 'nodeId'>
-  > = new Map()
-
-  if (operations) {
-    let i = 0
-    for (let [id, artifact] of bodies || new Map()) {
-      const patternIndex =
-        artifact.type === 'pattern'
-          ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
-          : undefined
-      const hideOperation =
-        getHideOpByArtifactId(operations, id) ??
-        (artifact.type === 'pattern' && patternIndex === 0
-          ? getHideOpByArtifactId(operations, artifact.sourceId)
-          : undefined)
-      bodiesWithProps.set(id, {
-        artifact,
-        artifactGraph,
-        label: `Body ${i + 1}`,
-        hideOperation,
-        engineEntityId: artifact.type === 'pattern' ? id : undefined,
-        patternIndex,
-      })
-      i++
-    }
-  }
+  const bodies = useApp().registry.get(featureTree).model.value.bodies
+  const bodiesWithProps = new Map(bodies.map(({ id, ...body }) => [id, body]))
 
   return (
     <>

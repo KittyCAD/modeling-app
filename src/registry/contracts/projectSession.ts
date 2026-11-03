@@ -1,5 +1,6 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal, Signal } from '@preact/signals-core'
+import type { FeatureTreeExecution } from '@src/lib/featureTree/execution'
 import type { ZDSProject } from '@src/lib/projectSession'
 import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
 
@@ -13,6 +14,7 @@ export interface ExecutingEditorUpdateOptions {
 
 /** Narrow execution and status capabilities of the session's current editor. */
 export interface ExecutingEditor {
+  readonly featureTree: ReadonlySignal<FeatureTreeExecution>
   readonly code: ReadonlySignal<string>
   readonly hasEditsSinceLastExecution: ReadonlySignal<boolean>
   readonly isExecuting: ReadonlySignal<boolean>

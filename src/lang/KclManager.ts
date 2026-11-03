@@ -181,6 +181,7 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
+import type { FeatureTreeExecution } from '@src/lib/featureTree/execution'
 import type { ExecutingEditor } from '@src/registry/contracts/projectSession'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
@@ -427,7 +428,13 @@ export class KclManager extends File {
   private lastSketchCheckpointRestoreRequestId = 0
   private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
   private lastExecutedCode: string = ''
-  lastSuccessfulCode: string = ''
+  private _lastSuccessfulCode = signal('')
+  get lastSuccessfulCode() {
+    return this._lastSuccessfulCode.value
+  }
+  set lastSuccessfulCode(code: string) {
+    this._lastSuccessfulCode.value = code
+  }
   get code(): string {
     return this.editorView.state.doc.toString()
   }
@@ -458,8 +465,24 @@ export class KclManager extends File {
   get hasEditsSinceLastExecutionSignal() {
     return this._hasEditsSinceLastExecution
   }
+  private readonly _featureTreeExecution = computed<FeatureTreeExecution>(
+    () => ({
+      operations: this.operationsByModule,
+      completedOperations: this.execState.operations,
+      artifactGraph: this.execState.artifactGraph,
+      failedOperations: this.errors.map((error) => error.operations),
+      diagnostics: this.diagnosticsSignal.value,
+      hasParseErrors: this.hasParseErrors(),
+      lastSuccessfulOperations: this.lastSuccessfulOperations,
+      lastSuccessfulCode: this.lastSuccessfulCode,
+      liveActiveModuleId: this.liveActiveModuleId,
+      liveLatestOperationKey: this.liveLatestOperationKey,
+    })
+  )
+
   get execution(): ExecutingEditor {
     return {
+      featureTree: this._featureTreeExecution,
       code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
       isExecuting: this._isExecuting,
@@ -544,7 +567,15 @@ export class KclManager extends File {
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
-  lastSuccessfulOperations: OperationsByModule = emptyOperationsByModule()
+  private _lastSuccessfulOperations = signal<OperationsByModule>(
+    emptyOperationsByModule()
+  )
+  get lastSuccessfulOperations() {
+    return this._lastSuccessfulOperations.value
+  }
+  set lastSuccessfulOperations(operations: OperationsByModule) {
+    this._lastSuccessfulOperations.value = operations
+  }
   private _pendingFeatureTreeSourceSelection =
     signal<PendingFeatureTreeSourceSelection | null>(null)
   private _logs = signal<string[]>([])
@@ -695,7 +726,13 @@ export class KclManager extends File {
       .catch(reportRejection)
   }
   private _wasmInitFailed = signal<boolean | undefined>(undefined)
-  private _astParseFailed = false
+  private _parseFailed = signal(false)
+  private get _astParseFailed() {
+    return this._parseFailed.value
+  }
+  private set _astParseFailed(failed: boolean) {
+    this._parseFailed.value = failed
+  }
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
   private _fileSettingsSignal = signal<KclSettingsAnnotation>(

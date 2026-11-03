@@ -1,3 +1,4 @@
+import { featureTree } from '@src/lib/featureTree/registry/contract'
 import type { Diagnostic } from '@codemirror/lint'
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
@@ -177,7 +178,6 @@ export const FeatureTreePaneContents = memo(() => {
   useSignals()
   const app = useApp()
   const { layout, commands, settings } = app
-  const settingsValues = settings.useSettings()
   const platform = usePlatform()
   const keymap = app.registry.optional(keymapService)
   const unrenderedExecuteHotkeyLabel = keymapKeystrokesDisplay(
@@ -223,60 +223,24 @@ export const FeatureTreePaneContents = memo(() => {
   )
 
   const sketchNoFace = modelingState.matches('Sketch no face')
-  const hasParseErrors = kclManager.hasParseErrors()
-  const disableModelingForUnrenderedChanges =
-    shouldDisableModelingForUnrenderedChanges({
-      settings: settingsValues,
-      hasEditsSinceLastExecution:
-        kclManager.hasEditsSinceLastExecutionSignal.value,
-    })
-  const diagnostics = kclManager.diagnosticsSignal.value
-  const parseDiagnostics = hasParseErrors
-    ? diagnostics.filter((diagnostic) => diagnostic.severity === 'error')
-    : []
-  const firstParseDiagnostic = parseDiagnostics[0]
+  const treeModel = app.registry.get(featureTree).model.value
+  const {
+    operations: operationList,
+    code: operationsCode,
+    visibilityOperations,
+    hasParseErrors,
+    disabledForUnrenderedChanges: disableModelingForUnrenderedChanges,
+    readOnly: isReadOnlyFeatureTree,
+    showingStaleTree: isShowingStaleFeatureTree,
+    liveActiveModuleId,
+    liveLatestOperationKey,
+  } = treeModel
+  const firstParseDiagnostic = hasParseErrors
+    ? treeModel.diagnostics.find(
+        (diagnostic) => diagnostic.severity === 'error'
+      )
+    : undefined
   const firstParseAction = firstParseDiagnostic?.actions?.[0]
-
-  // If there are engine errors we show the successful operations
-  // Errors return an operation list, so use the longest one if there are multiple
-  const longestErrorOperationsByModule = kclManager.errors.reduce(
-    (acc, error) => {
-      return countOperations(error.operations) > countOperations(acc)
-        ? error.operations
-        : acc
-    },
-    emptyOperationsByModule()
-  )
-
-  const unfilteredOperationsByModule = kclManager.isExecuting
-    ? kclManager.operationsByModule
-    : !hasParseErrors
-      ? !kclManager.errors.length
-        ? kclManager.operationsByModule
-        : longestErrorOperationsByModule
-      : kclManager.lastSuccessfulOperations
-  // We use the code that corresponds to the operations. In case this is an
-  // error on the first run, fall back to whatever is currently in the code
-  // editor.
-  const operationsCode = hasParseErrors
-    ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
-    : disableModelingForUnrenderedChanges
-      ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
-      : kclManager.codeSignal.value
-  const isReadOnlyFeatureTree =
-    hasParseErrors || disableModelingForUnrenderedChanges
-
-  // We filter out operations that are not useful to show in the feature tree
-  const operationList = buildOperationTree(
-    unfilteredOperationsByModule,
-    ROOT_MODULE_ID
-  )
-  const visibilityOperations = getAllOperations(kclManager.operationsByModule)
-  const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
-
-  // Live execution tracking: expand only the active module branch.
-  const liveActiveModuleId = kclManager.liveActiveModuleId
-  const liveLatestOperationKey = kclManager.liveLatestOperationKey
 
   function goToError() {
     layout.openPane(DefaultLayoutPaneID.Code)
@@ -299,7 +263,7 @@ export const FeatureTreePaneContents = memo(() => {
         className="absolute inset-0 p-1 box-border overflow-auto mr-1"
       >
         <>
-          {kclManager.isExecuting && (
+          {treeModel.isExecuting && (
             <div className="text-xs bg-primary/10 text-primary py-2 px-2 rounded flex-none mb-2 border border-primary/20">
               Updating feature tree...
             </div>

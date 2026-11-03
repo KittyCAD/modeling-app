@@ -1,3 +1,4 @@
+import { emptyFeatureTreeExecution } from '@src/lib/featureTree/execution'
 import {
   Registry,
   defineRegistryItem,
@@ -42,6 +43,7 @@ function createProjectSession(
       libraryId.value = next
     },
     executingEditor: signal({
+      featureTree: signal(emptyFeatureTreeExecution()),
       code: signal(''),
       hasEditsSinceLastExecution: signal(false),
       isExecuting,
