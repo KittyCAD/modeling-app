@@ -18,6 +18,7 @@ import {
   type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { createSettings } from '@src/lib/settings/initialSettings'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 class ReconnectTestWebSocket extends EventTarget {
@@ -45,7 +46,7 @@ class ReconnectTestWebSocket extends EventTarget {
 function createConnectionManager() {
   return new ConnectionManager({
     settingsActor: {
-      getSnapshot: () => ({ context: {} }),
+      getSnapshot: () => ({ context: createSettings() }),
     } as unknown as SettingsActorType,
   })
 }
@@ -68,6 +69,7 @@ function addConnectedState(manager: ConnectionManager) {
     disconnectAll: vi.fn(),
   } as unknown as Connection
   manager.started = true
+  return manager.connection
 }
 
 function startConnectionManager(
