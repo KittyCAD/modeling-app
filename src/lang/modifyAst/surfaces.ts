@@ -375,12 +375,7 @@ function getPlanarBodyEdgeExpression({
     { graphSelections: [bodySelection], otherSelections: [] },
     artifactGraph,
     modifiedAst,
-    wasmInstance,
-    undefined,
-    {
-      lastChildLookup: false,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
-    }
+    wasmInstance
   )
   if (isErr(body)) return body
   if (body.exprs.length !== 1)
