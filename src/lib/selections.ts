@@ -2630,6 +2630,7 @@ export function getSelectionCountByType(
       return true
     }
     if (
+      artifact.type === 'sketchBlock' ||
       artifact.type === 'gdtAnnotation' ||
       artifact.type === 'importedGeometry'
     ) {
@@ -2709,6 +2710,7 @@ export function getSelectionCountByType(
     } else if (inlineArtifact?.type === 'helix') {
       incrementOrInitializeSelectionType('helix')
     } else if (
+      inlineArtifact?.type === 'sketchBlock' ||
       inlineArtifact?.type === 'gdtAnnotation' ||
       inlineArtifact?.type === 'importedGeometry'
     ) {
@@ -3243,6 +3245,7 @@ const semanticEntityNames: {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
   profile: ['solid2d'],
   region: ['pathRegion', 'engineRegion'],
+  sketch: ['sketchBlock'],
   edge: [
     'segment',
     'sweepEdge',
@@ -3597,7 +3600,7 @@ function getSweepForFace(
 ) {
   const artifact = artifactGraph.get(faceId)
   let sweep = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
-  if (err(sweep) && artifact?.type === 'edgeCut') {
+  if (isErr(sweep) && artifact?.type === 'edgeCut') {
     sweep = getOwningSweepForEdgeCut(artifact, artifactGraph, ast, wasmInstance)
   }
   return sweep
@@ -3619,7 +3622,7 @@ export function showSketchOnImportForFace(
     ['ImportStatement']
   )
   if (
-    err(maybeImportNode) ||
+    isErr(maybeImportNode) ||
     maybeImportNode.node?.type !== 'ImportStatement'
   ) {
     return false

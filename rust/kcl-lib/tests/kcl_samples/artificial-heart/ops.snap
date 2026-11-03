@@ -22254,19 +22254,6 @@ description: Operations executed artificial-heart.kcl
             }
           },
           "sourceRange": []
-        },
-        "version": {
-          "value": {
-            "type": "Number",
-            "value": 2.0,
-            "ty": {
-              "type": "Known",
-              "value": {
-                "type": "Count"
-              }
-            }
-          },
-          "sourceRange": []
         }
       },
       "nodePath": {
@@ -23030,19 +23017,6 @@ description: Operations executed artificial-heart.kcl
             "type": "Sketch",
             "value": {
               "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "version": {
-          "value": {
-            "type": "Number",
-            "value": 2.0,
-            "ty": {
-              "type": "Known",
-              "value": {
-                "type": "Count"
-              }
             }
           },
           "sourceRange": []

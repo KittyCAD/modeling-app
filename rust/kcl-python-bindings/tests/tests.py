@@ -1378,7 +1378,7 @@ async def test_sketch_constraint_status_parse_error_returns_report():
     assert report.kcl_error is not None
     assert report.kcl_error.phase == "parse"
     assert "KCL Syntax error" in report.kcl_error.text
-    assert "Unexpected token" in report.kcl_error.text
+    assert "Unexpected end of file. The compiler expected }" in report.kcl_error.text
 
 
 @requires_engine

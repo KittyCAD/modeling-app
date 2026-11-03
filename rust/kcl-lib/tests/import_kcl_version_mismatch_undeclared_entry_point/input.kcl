@@ -1,4 +1,4 @@
-// KCL 3.0: a file that declares kclVersion 3.0-preview can only be imported
+// KCL 3.0: a file that declares kclVersion 3.0 can only be imported
 // when the entry point declares it too. This entry point declares no
 // kclVersion.
 import width from "dep.kcl"
