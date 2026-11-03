@@ -357,7 +357,7 @@ describe('local GLB loading', () => {
         type: 'gltf',
         storage: 'binary',
         presentation: 'compact',
-        include_uuids: true,
+        extras: ['sketches', 'regions'],
       },
       { settings: { modeling: { base_unit: 'mm' } } }
     )
