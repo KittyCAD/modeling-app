@@ -663,12 +663,12 @@ export const settingsMachine = setup({
           ],
         },
         input: ({ context, event }) => {
-          const level =
-            'data' in event
-              ? event.data.level
-              : 'level' in event
-                ? event.level
-                : undefined
+          let level: SettingsLevel | undefined
+          if (event.type === 'Reset settings') {
+            level = event.level
+          } else if ('data' in event && 'level' in event.data) {
+            level = event.data.level
+          }
           if (
             event.type === 'set.app.namedViews' &&
             'toastCallback' in event.data

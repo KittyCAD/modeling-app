@@ -136,8 +136,6 @@ export async function buildTheWorldAndConnectToEngine({
     geometryOnly
   )
   const kclManager = new KclManager('some-file', '', {
-    machineManager,
-    project: signal(createProjectForTest()),
     fileOperations: testFileOperations,
     textFileIO: createTextFileIO(testFileOperations, {
       watch: () => {},
@@ -149,6 +147,8 @@ export async function buildTheWorldAndConnectToEngine({
     engineCommandManager,
     rustContext,
     userFeatures: createSettledUserFeaturesForTest(),
+    project: signal(createProjectForTest()),
+    projectPath: signal('some-project'),
   })
 
   await new Promise((resolve, reject) => {
@@ -256,8 +256,6 @@ export async function buildTheWorldAndNoEngineConnection(
     settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
-    machineManager,
-    project: signal(createProjectForTest()),
     fileOperations: testFileOperations,
     textFileIO: createTextFileIO(testFileOperations, {
       watch: () => {},
@@ -269,6 +267,8 @@ export async function buildTheWorldAndNoEngineConnection(
     engineCommandManager,
     rustContext,
     userFeatures,
+    project: signal(createProjectForTest()),
+    projectPath: signal('some-project'),
   })
 
   settingsActor.start()

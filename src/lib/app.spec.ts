@@ -26,13 +26,6 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
-// Modeling imports UI factories, but these headless tests must never bootstrap
-// the global browser App or replace their configured filesystem.
-vi.mock('@src/lib/boot', () => ({
-  useApp: vi.fn(),
-  useSingletons: vi.fn(),
-}))
-
 const mockProject: Project = {
   name: 'test',
   default_file: 'main.kcl',
@@ -504,7 +497,6 @@ describe('project system', () => {
     } finally {
       gate.resolve(undefined)
       await app.project?.modelingReady
-      await app.project?.executingEditor.peek()?.modelingActorPromise
       read.mockRestore()
       app.dispose()
     }
@@ -516,9 +508,7 @@ describe('project system', () => {
       .spyOn(app.registry.get(projectSession).textFileIO, 'read')
       .mockResolvedValue('')
     try {
-      expect(
-        app.singletons.kclManager.modelingProjectRef.current
-      ).toBeUndefined()
+      expect(app.singletons.kclManager.systemDeps.project.value).toBeUndefined()
       const project = await app.openProject(mockProject)
       const editor = await project.openEditor(
         fsZds.join(project.path, 'main.kcl'),
@@ -533,10 +523,10 @@ describe('project system', () => {
           title,
         }
 
-        expect(app.singletons.kclManager.modelingProjectRef.current).toBe(
+        expect(app.singletons.kclManager.systemDeps.project.value).toBe(
           project.projectIORefSignal.value
         )
-        expect(editor.modelingProjectRef.current).toBe(
+        expect(editor.systemDeps.project.value).toBe(
           project.projectIORefSignal.value
         )
       }
@@ -577,7 +567,7 @@ describe('project system', () => {
         ...first.projectIORefSignal.value,
         title: 'Old project',
       }
-      expect(editor.modelingProjectRef.current).toBe(
+      expect(editor.systemDeps.project.value).toBe(
         next.projectIORefSignal.value
       )
     } finally {

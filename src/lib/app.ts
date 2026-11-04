@@ -743,7 +743,6 @@ export class App implements AppSubsystems {
     // TODO: Remove this and make the app handle no executing editor,
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
-      machineManager: this.machineManager,
       project: computed(() => this.project?.projectIORefSignal.value),
       fileOperations: this.fileOperations,
       textFileIO: this.projectSession.textFileIO,
@@ -752,6 +751,7 @@ export class App implements AppSubsystems {
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
+      projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
       userFeatures: this.userFeatures,

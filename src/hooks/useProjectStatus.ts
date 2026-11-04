@@ -1,5 +1,4 @@
-import { useApp } from '@src/lib/boot'
-import { cloudStorageService } from '@src/registry/contracts/fileOperations'
+import type { CloudStorageService } from '@src/registry/extensions/fileOperations'
 import type {
   KclProjectPublicationStatus,
   ProjectSummaryResponse,
@@ -19,10 +18,10 @@ type RemoteProjectReference = {
  * Fetches publication status for a single cloud-linked project by its ID.
  */
 export function useProjectStatus(
+  cloud: Pick<CloudStorageService, 'getProjectStatus'>,
   cloudProjectId: string | undefined,
   token?: string
 ): ProjectStatus | null {
-  const { registry } = useApp()
   const [status, setStatus] = useState<ProjectStatus | null>(null)
 
   useEffect(() => {
@@ -36,9 +35,7 @@ export function useProjectStatus(
 
     async function fetchStatus() {
       try {
-        const result = await registry
-          .get(cloudStorageService)
-          .getProjectStatus(projectId)
+        const result = await cloud.getProjectStatus(projectId)
         if (!cancelled) {
           setStatus(result)
         }
@@ -52,7 +49,7 @@ export function useProjectStatus(
     return () => {
       cancelled = true
     }
-  }, [token, cloudProjectId, registry])
+  }, [token, cloudProjectId, cloud])
 
   return status
 }
@@ -62,10 +59,10 @@ export function useProjectStatus(
  * Loads the complete project index instead of fetching each project individually.
  */
 export function useProjectStatuses(
+  cloud: Pick<CloudStorageService, 'getProjectStatuses'>,
   homeProjects: readonly RemoteProjectReference[] | undefined,
   token?: string
 ): Map<string, ProjectStatus> {
-  const { registry } = useApp()
   const [remoteProjects, setRemoteProjects] = useState<
     ProjectSummaryResponse[]
   >([])
@@ -90,9 +87,7 @@ export function useProjectStatuses(
 
     async function fetchStatuses() {
       try {
-        const result = await registry
-          .get(cloudStorageService)
-          .getProjectStatuses()
+        const result = await cloud.getProjectStatuses()
         if (!cancelled) {
           setRemoteProjects(result)
         }
@@ -106,7 +101,7 @@ export function useProjectStatuses(
     return () => {
       cancelled = true
     }
-  }, [token, remoteProjectIdsKey, registry])
+  }, [token, remoteProjectIdsKey, cloud])
 
   return useMemo(() => {
     const map = new Map<string, ProjectStatus>()

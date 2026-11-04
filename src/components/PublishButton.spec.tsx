@@ -218,6 +218,9 @@ describe('PublishButton', () => {
       )
       expect(publishButton).not.toHaveClass('bg-warn-10/60')
       expect(mockState.useProjectStatus).toHaveBeenCalledWith(
+        expect.objectContaining({
+          publishCurrentProject: mockState.publishCurrentProject,
+        }),
         'remote-123',
         'token-123'
       )

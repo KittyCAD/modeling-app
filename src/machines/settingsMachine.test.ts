@@ -1,7 +1,8 @@
 import type { MachineManager } from '@src/lib/MachineManager'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import type { BaseUnit, SettingsLevel } from '@src/lib/settings/settingsTypes'
+import type { BaseUnit } from '@src/lib/settings/settingsTypes'
+import * as settingsUtils from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import {
@@ -9,7 +10,7 @@ import {
   settingsMachine,
   type SettingsMachineContext,
 } from '@src/machines/settingsMachine'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromCallback, fromPromise, waitFor } from 'xstate'
 
 const { mockToast } = vi.hoisted(() => ({
@@ -17,6 +18,8 @@ const { mockToast } = vi.hoisted(() => ({
 }))
 
 vi.mock('react-hot-toast', () => ({ default: mockToast }))
+
+afterEach(() => vi.restoreAllMocks())
 
 describe('settingsMachine', () => {
   it('keeps service dependencies out of settings values', () => {
@@ -48,7 +51,8 @@ describe('settingsMachine', () => {
   it('serializes settings events received while persistence is pending', async () => {
     mockToast.success.mockClear()
     const persistedUnits: Array<BaseUnit | undefined> = []
-    const persistedLevels: Array<SettingsLevel | undefined> = []
+    const persistedProjectPaths: Array<string | undefined> = []
+    const projectPath = '/projects/bracket'
     const finishPersisting: Array<() => void> = []
     let activeWrites = 0
     let maximumActiveWrites = 0
@@ -62,23 +66,30 @@ describe('settingsMachine', () => {
         machineManager: {} as MachineManager,
       },
     }).start()
+    vi.spyOn(settingsUtils, 'saveSettings').mockImplementation(
+      async (
+        _fileOperations,
+        _wasmInstancePromise,
+        settings,
+        _extensions,
+        path
+      ) => {
+        persistedUnits.push(settings.modeling.defaultUnit.project)
+        persistedProjectPaths.push(path)
+        activeWrites += 1
+        maximumActiveWrites = Math.max(maximumActiveWrites, activeWrites)
+        await new Promise<void>((resolve) => {
+          finishPersisting.push(() => {
+            activeWrites -= 1
+            resolve()
+          })
+        })
+      }
+    )
     const actor = createActor(
       settingsMachine.provide({
         actors: {
           loadUserSettings: fromPromise(async () => initialSettings),
-          persistSettings: fromPromise(async ({ input }) => {
-            persistedUnits.push(input.context.modeling.defaultUnit.project)
-            persistedLevels.push(input.level)
-            activeWrites += 1
-            maximumActiveWrites = Math.max(maximumActiveWrites, activeWrites)
-            await new Promise<void>((resolve) => {
-              finishPersisting.push(() => {
-                activeWrites -= 1
-                resolve()
-              })
-            })
-            return undefined
-          }),
           registerCommands: fromCallback(() => () => {}),
           watchSystemTheme: fromCallback(() => () => {}),
         },
@@ -86,6 +97,16 @@ describe('settingsMachine', () => {
       {
         input: {
           commandBarActor,
+          currentProject: {
+            path: projectPath,
+            name: 'bracket',
+            metadata: null,
+            children: [],
+            kcl_file_count: 1,
+            directory_count: 0,
+            default_file: `${projectPath}/main.kcl`,
+            readWriteAccess: true,
+          },
           defaultProjectLibraries: [],
           projectLibrarySettingDefaultPolicies: [],
           extensionSettings: {},
@@ -152,8 +173,13 @@ describe('settingsMachine', () => {
 
     expect(actor.getSnapshot().context.deferredEvents).toEqual([])
     expect(actor.getSnapshot().context.modeling.defaultUnit.project).toBe('cm')
+    expect(persistedProjectPaths).toEqual([
+      projectPath,
+      projectPath,
+      projectPath,
+      undefined,
+    ])
     expect(maximumActiveWrites).toBe(1)
-    expect(persistedLevels).toEqual(['project', 'project', 'project', 'user'])
 
     actor.stop()
     commandBarActor.stop()

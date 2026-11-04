@@ -97,7 +97,11 @@ function PublishPopoverContent({
   const authState = auth.useAuthState()
   const token = auth.useToken()
   const user = auth.useUser()
-  const fetchedProjectStatus = useProjectStatus(project?.cloudProjectId, token)
+  const fetchedProjectStatus = useProjectStatus(
+    app.registry.get(cloudStorageService),
+    project?.cloudProjectId,
+    token
+  )
   const [submittedProjectStatus, setSubmittedProjectStatus] = useState<{
     projectId: string | undefined
     status: ProjectStatus

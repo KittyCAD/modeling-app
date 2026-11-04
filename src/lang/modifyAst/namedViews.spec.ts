@@ -1,4 +1,9 @@
-import { addNamedView } from '@src/lang/modifyAst/namedViews'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { addNoteGdt } from '@src/lang/modifyAst/gdt'
+import {
+  addNamedView,
+  type NamedViewCameraSnapshot,
+} from '@src/lang/modifyAst/namedViews'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -76,12 +81,22 @@ sketch001 = sketch(on = XY) {
 }
 region001 = region(segments = [sketch001.line1])
 extrude001 = extrude(region001, length = 5mm)`
-    const ast = assertParse(code, instance)
+    const note = addNoteGdt({
+      ast: assertParse(code, instance),
+      note: 'INSPECT',
+      wasmInstance: instance,
+    })
+    if (err(note)) throw note
+    const ast = note.modifiedAst
     const execState = await enginelessExecutor(ast, rustContext)
     const sweep = [...execState.artifactGraph.values()].find(
       (artifact) => artifact.type === 'sweep'
     )
     if (!sweep) throw new Error('Expected a sweep artifact')
+    const annotation = [...execState.artifactGraph.values()].find(
+      (artifact) => artifact.type === 'gdtAnnotation'
+    )
+    if (!annotation) throw new Error('Expected an annotation artifact')
 
     const result = addNamedView({
       ast,
@@ -91,7 +106,10 @@ extrude001 = extrude(region001, length = 5mm)`
       projection: 'Orthographic',
       baseline: 'Hide',
       except: {
-        graphSelections: [{ artifact: sweep, codeRef: sweep.codeRef }],
+        graphSelections: [
+          { artifact: sweep, codeRef: sweep.codeRef },
+          { artifact: annotation, codeRef: annotation.codeRef },
+        ],
         otherSelections: [],
       },
       wasmInstance: instance,
@@ -108,8 +126,11 @@ extrude001 = extrude(region001, length = 5mm)`
   "Isolate body",
   camera = view::oriented(view::Orientation::Isometric, projection = view::Projection::Orthographic),
   baseline = view::Visibility::Hide,
-  except = [extrude001],
+  except = [extrude001, note001],
 )`)
+    expect(recast(result.modifiedAst, instance)).toContain(
+      'note001 = gdt::note(note = "INSPECT")'
+    )
     expect(
       [...nextExecState.artifactGraph.values()].some(
         (artifact) => artifact.type === 'namedView'
@@ -190,7 +211,7 @@ view001 = view::named(
     await enginelessExecutor(result.modifiedAst, rustContext)
   })
 
-  it('rejects editing a custom camera helper', async () => {
+  it('keeps a custom camera helper when editing a view', async () => {
     const code = `${settings}
 fn oriented(@orientation: view::Orientation) {
   return view::oriented(orientation, distance = 123mm)
@@ -212,8 +233,78 @@ view001 = view::named("Inspection view", camera = oriented(view::Orientation::Fr
       code,
       rustContext,
     })
-    expect(event).toEqual(
-      new Error('Editing custom cameras is not supported yet.')
+    if (err(event)) throw event
+    expect(event.data.argDefaultValues).toMatchObject({
+      orientation: undefined,
+      projection: undefined,
+    })
+
+    const result = addNamedView({
+      ast,
+      artifactGraph: execState.artifactGraph,
+      ...event.data.argDefaultValues,
+      name: 'Renamed view',
+      baseline: 'Hide',
+      wasmInstance: instance,
+    })
+    if (err(result)) throw result
+    const updatedCode = recast(result.modifiedAst, instance)
+    expect(updatedCode).toContain('camera = oriented(view::Orientation::Front)')
+    expect(updatedCode).toContain('"Renamed view"')
+    expect(updatedCode).toContain('view::Visibility::Hide')
+    const updated = await enginelessExecutor(result.modifiedAst, rustContext)
+    const updatedView = [...updated.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
     )
+    expect(updatedView?.camera.distance).toBe(123)
+  })
+
+  it('adds a captured camera and can switch back to an oriented camera', async () => {
+    const camera: NamedViewCameraSnapshot = {
+      look: {
+        type: 'directed',
+        direction: { x: 0.25, y: -0.5, z: -0.75, units: null },
+        up: { x: 0, y: 0, z: 1, units: null },
+      },
+      target: { x: 10, y: 20, z: 30, units: 'mm' },
+      distance: 125.5,
+      projection: 'orthographic',
+    }
+    const result = addNamedView({
+      ast: assertParse(settings, instance),
+      artifactGraph: new Map(),
+      name: 'Inspection view',
+      cameraMode: 'directed',
+      camera,
+      baseline: 'Show',
+      wasmInstance: instance,
+    })
+    if (err(result)) throw result
+    const ast = result.modifiedAst
+    await enginelessExecutor(ast, rustContext)
+    expect(recast(ast, instance)).toContain(`camera = view::directed(
+    [0.25, -0.5, -0.75],
+    up = [0, 0, 1],
+    target = [10mm, 20mm, 30mm],
+    distance = 125.5mm,
+    projection = view::Projection::Orthographic,
+  )`)
+
+    const orientedResult = addNamedView({
+      ast,
+      artifactGraph: new Map(),
+      nodeToEdit: createPathToNodeForLastVariable(ast, false),
+      name: 'Inspection view',
+      cameraMode: 'oriented',
+      camera,
+      orientation: 'Top',
+      projection: 'Perspective',
+      baseline: 'Show',
+      wasmInstance: instance,
+    })
+    if (err(orientedResult)) throw orientedResult
+    const orientedCode = recast(orientedResult.modifiedAst, instance)
+    expect(orientedCode).toContain('view::oriented(view::Orientation::Top')
+    expect(orientedCode).not.toContain('view::directed(')
   })
 })

@@ -788,7 +788,9 @@ export async function overwriteProjectTomlWithNewSettings(
       existingProjectToml,
       tomlStr
     )
-    if (projectToml === existingProjectToml) return
+    if (projectToml === existingProjectToml) {
+      return
+    }
   } catch (error) {
     if (!isPathNotFoundError(error)) {
       return Promise.reject(error)
