@@ -1,9 +1,8 @@
 // Gallows Bracket
 // A gallows bracket is a metal bracket that is used to support a chimney breast after it has been removed. The bracket is typically made of steel or cast iron, and it is attached to the remaining chimney stack. The bracket provides support for the chimney breast, preventing it from collapsing.
 // Categories: Architecture & Construction
-// Sketch-solve reconstruction with matching feature order.
 
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
 
 depth = 450
 height = 1250
@@ -29,49 +28,11 @@ strutSectionWidth = ironWidth - ironThickness
 
 // Solver top support angle iron
 beamProfileSketch = sketch(on = -XZ) {
-  beamBottomOuter = line(start = [var 0mm, var 0mm], end = [var 75mm, var 0mm])
-  beamOuterLip = line(start = [var 75mm, var 0mm], end = [var 75mm, var -6mm])
-  beamInnerTop = line(start = [var 75mm, var -6mm], end = [var 6mm, var -6mm])
-  beamInnerWeb = line(start = [var 6mm, var -6mm], end = [var 6mm, var -75mm])
-  beamOuterWeb = line(start = [var 6mm, var -75mm], end = [var 0mm, var -75mm])
-  beamCloseEdge = line(start = [var 0mm, var -75mm], end = [var 0mm, var 0mm])
-
-  coincident([
-    beamBottomOuter.end,
-    beamOuterLip.start
-  ])
-  coincident([beamOuterLip.end, beamInnerTop.start])
-  coincident([beamInnerTop.end, beamInnerWeb.start])
-  coincident([beamInnerWeb.end, beamOuterWeb.start])
-  coincident([beamOuterWeb.end, beamCloseEdge.start])
-  coincident([
-    beamCloseEdge.end,
-    beamBottomOuter.start
-  ])
-
-  horizontal(beamBottomOuter)
-  vertical(beamOuterLip)
-  horizontal(beamInnerTop)
-  vertical(beamInnerWeb)
-  horizontal(beamOuterWeb)
-  vertical(beamCloseEdge)
-
-  coincident([beamBottomOuter.start, ORIGIN])
-
-  horizontalDistance([
-    beamBottomOuter.start,
-    beamBottomOuter.end
-  ]) == ironWidth
-  verticalDistance([beamOuterLip.start, beamOuterLip.end]) == -ironThickness
-  horizontalDistance([beamCloseEdge.end, beamInnerTop.end]) == ironThickness
-  verticalDistance([beamCloseEdge.end, beamOuterWeb.start]) == -ironWidth
+  web = line(start = [0mm, -ironWidth], end = [0mm, 0mm])
+  flange = line(start = [0mm, 0mm], end = [ironWidth, 0mm])
 }
-
-beamRegion = region(segments = [
-  beamProfileSketch.beamBottomOuter,
-  beamProfileSketch.beamOuterLip
-])
-beamBlank = extrude(beamRegion, length = width + csgFriendlyOffset * 2)
+beamSurface = extrude([beamProfileSketch.web, beamProfileSketch.flange], length = width + csgFriendlyOffset * 2, bodyType = SURFACE)
+beamBlank = thicken(beamSurface, thickness = ironThickness, flip = false)
 hide(beamProfileSketch)
 
 beam = beamBlank
@@ -85,70 +46,11 @@ beam = beamBlank
 
 // Solver vertical bracket angle
 verticalProfileSketch = sketch(on = -XZ) {
-  verticalBottomOuter = line(start = [var 0mm, var 0mm], end = [var 75mm, var 0mm])
-  verticalOuterLip = line(start = [var 75mm, var 0mm], end = [var 75mm, var -6mm])
-  verticalInnerTop = line(start = [var 75mm, var -6mm], end = [var 6mm, var -6mm])
-  verticalInnerWeb = line(start = [var 6mm, var -6mm], end = [var 6mm, var -75mm])
-  verticalOuterWeb = line(start = [var 6mm, var -75mm], end = [var 0mm, var -75mm])
-  verticalCloseEdge = line(start = [var 0mm, var -75mm], end = [var 0mm, var 0mm])
-
-  coincident([
-    verticalBottomOuter.end,
-    verticalOuterLip.start
-  ])
-  coincident([
-    verticalOuterLip.end,
-    verticalInnerTop.start
-  ])
-  coincident([
-    verticalInnerTop.end,
-    verticalInnerWeb.start
-  ])
-  coincident([
-    verticalInnerWeb.end,
-    verticalOuterWeb.start
-  ])
-  coincident([
-    verticalOuterWeb.end,
-    verticalCloseEdge.start
-  ])
-  coincident([
-    verticalCloseEdge.end,
-    verticalBottomOuter.start
-  ])
-
-  horizontal(verticalBottomOuter)
-  vertical(verticalOuterLip)
-  horizontal(verticalInnerTop)
-  vertical(verticalInnerWeb)
-  horizontal(verticalOuterWeb)
-  vertical(verticalCloseEdge)
-
-  coincident([verticalBottomOuter.start, ORIGIN])
-
-  horizontalDistance([
-    verticalBottomOuter.start,
-    verticalBottomOuter.end
-  ]) == ironWidth
-  verticalDistance([
-    verticalOuterLip.start,
-    verticalOuterLip.end
-  ]) == -ironThickness
-  horizontalDistance([
-    verticalCloseEdge.end,
-    verticalInnerTop.end
-  ]) == ironThickness
-  verticalDistance([
-    verticalCloseEdge.end,
-    verticalOuterWeb.start
-  ]) == -ironWidth
+  web = line(start = [0mm, -ironWidth], end = [0mm, 0mm])
+  flange = line(start = [0mm, 0mm], end = [ironWidth, 0mm])
 }
-
-verticalRegion = region(segments = [
-  verticalProfileSketch.verticalBottomOuter,
-  verticalProfileSketch.verticalOuterLip
-])
-verticalBlank = extrude(verticalRegion, length = height + csgFriendlyOffset * 2)
+verticalSurface = extrude([verticalProfileSketch.web, verticalProfileSketch.flange], length = height + csgFriendlyOffset * 2, bodyType = SURFACE)
+verticalBlank = thicken(verticalSurface, thickness = ironThickness, flip = false)
 hide(verticalProfileSketch)
 
 verticalEndMiterRun = ironWidth + csgFriendlyOffset
@@ -280,70 +182,11 @@ verticalWithHoles = subtract(vertical, tools = verticalHoleCutters)
 
 // Solver horizontal bracket angle
 horizontalProfileSketch = sketch(on = -XZ) {
-  horizontalBottomOuter = line(start = [var 0mm, var 0mm], end = [var 75mm, var 0mm])
-  horizontalOuterLip = line(start = [var 75mm, var 0mm], end = [var 75mm, var -6mm])
-  horizontalInnerTop = line(start = [var 75mm, var -6mm], end = [var 6mm, var -6mm])
-  horizontalInnerWeb = line(start = [var 6mm, var -6mm], end = [var 6mm, var -75mm])
-  horizontalOuterWeb = line(start = [var 6mm, var -75mm], end = [var 0mm, var -75mm])
-  horizontalCloseEdge = line(start = [var 0mm, var -75mm], end = [var 0mm, var 0mm])
-
-  coincident([
-    horizontalBottomOuter.end,
-    horizontalOuterLip.start
-  ])
-  coincident([
-    horizontalOuterLip.end,
-    horizontalInnerTop.start
-  ])
-  coincident([
-    horizontalInnerTop.end,
-    horizontalInnerWeb.start
-  ])
-  coincident([
-    horizontalInnerWeb.end,
-    horizontalOuterWeb.start
-  ])
-  coincident([
-    horizontalOuterWeb.end,
-    horizontalCloseEdge.start
-  ])
-  coincident([
-    horizontalCloseEdge.end,
-    horizontalBottomOuter.start
-  ])
-
-  horizontal(horizontalBottomOuter)
-  vertical(horizontalOuterLip)
-  horizontal(horizontalInnerTop)
-  vertical(horizontalInnerWeb)
-  horizontal(horizontalOuterWeb)
-  vertical(horizontalCloseEdge)
-
-  coincident([horizontalBottomOuter.start, ORIGIN])
-
-  horizontalDistance([
-    horizontalBottomOuter.start,
-    horizontalBottomOuter.end
-  ]) == ironWidth
-  verticalDistance([
-    horizontalOuterLip.start,
-    horizontalOuterLip.end
-  ]) == -ironThickness
-  horizontalDistance([
-    horizontalCloseEdge.end,
-    horizontalInnerTop.end
-  ]) == ironThickness
-  verticalDistance([
-    horizontalCloseEdge.end,
-    horizontalOuterWeb.start
-  ]) == -ironWidth
+  web = line(start = [0mm, -ironWidth], end = [0mm, 0mm])
+  flange = line(start = [0mm, 0mm], end = [ironWidth, 0mm])
 }
-
-horizontalRegion = region(segments = [
-  horizontalProfileSketch.horizontalBottomOuter,
-  horizontalProfileSketch.horizontalOuterLip
-])
-horizontalBlank = extrude(horizontalRegion, length = depth + csgFriendlyOffset * 2)
+horizontalSurface = extrude([horizontalProfileSketch.web, horizontalProfileSketch.flange], length = depth + csgFriendlyOffset * 2, bodyType = SURFACE)
+horizontalBlank = thicken(horizontalSurface, thickness = ironThickness, flip = false)
 hide(horizontalProfileSketch)
 
 horizontalStartMiterRun = ironWidth + csgFriendlyOffset
@@ -474,55 +317,11 @@ horizontalWithHoles = subtract(horizontal, tools = horizontalHoleSeed)
 
 // Solver diagonal strut
 strutProfileSketch = sketch(on = -XZ) {
-  strutBottomOuter = line(start = [var 0mm, var 0mm], end = [var 69mm, var 0mm])
-  strutOuterLip = line(start = [var 69mm, var 0mm], end = [var 69mm, var -6mm])
-  strutInnerTop = line(start = [var 69mm, var -6mm], end = [var 6mm, var -6mm])
-  strutInnerWeb = line(start = [var 6mm, var -6mm], end = [var 6mm, var -69mm])
-  strutOuterWeb = line(start = [var 6mm, var -69mm], end = [var 0mm, var -69mm])
-  strutCloseEdge = line(start = [var 0mm, var -69mm], end = [var 0mm, var 0mm])
-
-  coincident([
-    strutBottomOuter.end,
-    strutOuterLip.start
-  ])
-  coincident([strutOuterLip.end, strutInnerTop.start])
-  coincident([strutInnerTop.end, strutInnerWeb.start])
-  coincident([strutInnerWeb.end, strutOuterWeb.start])
-  coincident([
-    strutOuterWeb.end,
-    strutCloseEdge.start
-  ])
-  coincident([
-    strutCloseEdge.end,
-    strutBottomOuter.start
-  ])
-
-  horizontal(strutBottomOuter)
-  vertical(strutOuterLip)
-  horizontal(strutInnerTop)
-  vertical(strutInnerWeb)
-  horizontal(strutOuterWeb)
-  vertical(strutCloseEdge)
-
-  coincident([strutBottomOuter.start, ORIGIN])
-
-  horizontalDistance([
-    strutBottomOuter.start,
-    strutBottomOuter.end
-  ]) == strutSectionWidth
-  verticalDistance([strutOuterLip.start, strutOuterLip.end]) == -ironThickness
-  horizontalDistance([strutCloseEdge.end, strutInnerTop.end]) == ironThickness
-  verticalDistance([
-    strutCloseEdge.end,
-    strutOuterWeb.start
-  ]) == -strutSectionWidth
+  web = line(start = [0mm, -strutSectionWidth], end = [0mm, 0mm])
+  flange = line(start = [0mm, 0mm], end = [strutSectionWidth, 0mm])
 }
-
-strutRegion = region(segments = [
-  strutProfileSketch.strutBottomOuter,
-  strutProfileSketch.strutOuterLip
-])
-strutBlank = extrude(strutRegion, length = strutLength + csgFriendlyOffset * 2)
+strutSurface = extrude([strutProfileSketch.web, strutProfileSketch.flange], length = strutLength + csgFriendlyOffset * 2, bodyType = SURFACE)
+strutBlank = thicken(strutSurface, thickness = ironThickness, flip = false)
 hide(strutProfileSketch)
 
 strutStartMiterRun = strutSectionWidth + csgFriendlyOffset

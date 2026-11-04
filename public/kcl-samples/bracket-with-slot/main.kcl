@@ -2,300 +2,87 @@
 // Sketch-solve reconstruction with matching feature order
 // Categories: Mechanical Components; Parametric
 
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
 
-// model parameters
-halfBracketWidth = 20
-fastenerHoleDiameter = 12
-countersinkOuterDiameter = 22
-
-uprightTabHoleCenterOffsetFromBend = 50
-slotCenterOffsetFromBend = 150
-
-sheetMetalThickness = 4
-insideBendRadius = 8
+halfBracketWidth = 20mm
+fastenerHoleDiameter = 12mm
+countersinkOuterDiameter = 22mm
+uprightTabHoleCenterOffsetFromBend = 50mm
+slotCenterOffsetFromBend = 150mm
+sheetMetalThickness = 4mm
+insideBendRadius = 8mm
 outsideBendRadius = insideBendRadius + sheetMetalThickness
-overallBracketWidth = halfBracketWidth * 2
+overallBracketWidth = 2 * halfBracketWidth
+uprightEnd = uprightTabHoleCenterOffsetFromBend + halfBracketWidth
+baseEnd = slotCenterOffsetFromBend + halfBracketWidth
 
-slotWidth = fastenerHoleDiameter
-slotOverallLength = fastenerHoleDiameter * 3
-countersinkDepth = (countersinkOuterDiameter - fastenerHoleDiameter) / 2
-csgOverlap = 0.2
-
-// Step 1: Solver outline profile
-outlineProfile = sketch(on = XZ) {
-  line1 = line(start = [var -8mm, var -6mm], end = [var 9mm, var 66mm])
-  line2 = line(start = [var 6mm, var 65mm], end = [var 6mm, var 73mm])
-  coincident([line1.end, line2.start])
-
-  line3 = line(start = [var 5mm, var 74mm], end = [var 5mm, var 1mm])
-  coincident([line2.end, line3.start])
-
-  line4 = line(start = [var 3mm, var 6mm], end = [var 164mm, var 4mm])
-  coincident([line3.end, line4.start])
-
-  line5 = line(start = [var 168mm, var 7mm], end = [var 168mm, var -8mm])
-  coincident([line4.end, line5.start])
-
-  line6 = line(start = [var 172mm, var -2mm], end = [var -6mm, var 2mm])
-  coincident([line5.end, line6.start])
-  coincident([line6.end, line1.start])
-
-  vertical(line1)
-  horizontal(line2)
-  vertical(line3)
-  horizontal(line4)
-  vertical(line5)
-  horizontal(line6)
-
-  coincident([line1.start, ORIGIN])
-  verticalDistance([line1.start, line1.end]) == uprightTabHoleCenterOffsetFromBend + halfBracketWidth
-  horizontalDistance([line2.start, line2.end]) == sheetMetalThickness
-  verticalDistance([line3.end, line3.start]) == uprightTabHoleCenterOffsetFromBend + halfBracketWidth - sheetMetalThickness
-  horizontalDistance([line4.start, line4.end]) == slotCenterOffsetFromBend + halfBracketWidth - sheetMetalThickness
-  verticalDistance([line5.end, line5.start]) == sheetMetalThickness
+// Cutting tools are separate solids; their construction sketches are hidden immediately.
+fn drill(@plane, at, radius, depth) {
+  boreRadius = radius
+  profile = sketch(on = plane) {
+    bore = circle(start = [at[0] + boreRadius, at[1]], center = at)
+  }
+  tool = extrude(region(segments = [profile.bore]), length = depth)
+  hide(profile)
+  return tool
+}
+fn cornerCut(@plane, at, xSign, ySign, radius, depth) {
+  a = [at[0] - xSign * radius, at[1]]
+  c = [at[0], at[1] - ySign * radius]
+  center = [at[0] - xSign * radius, at[1] - ySign * radius]
+  profile = sketch(on = plane) {
+    outerA = line(start = a, end = at)
+    outerB = line(start = at, end = c)
+    round = arc(start = c, end = a, center = center, direction = if xSign * ySign > 0 { CCW } else { CW })
+  }
+  tool = extrude(region(segments = [profile.outerA, profile.outerB, profile.round]), length = depth)
+  hide(profile)
+  return tool
 }
 
-// Step 2: Extrude body
-outlineRegion = region(segments = [
-  outlineProfile.line1,
-  outlineProfile.line2
-])
-hiddenOutlineProfile = hide(outlineProfile)
-bracketBodySolid = extrude(
-  outlineRegion,
-  length = overallBracketWidth,
-  symmetric = true,
-  tagEnd = $capEnd,
-  tagStart = $capStart,
-)
-
-// Step 3: Add fillets
-insideBendFillet = fillet(
-  bracketBodySolid,
-  radius = insideBendRadius,
-  edges = [
-    {
-      sideFaces = [
-        outlineRegion.tags.line4,
-        outlineRegion.tags.line3
-      ]
-    }
-  ],
-)
-
-outsideBendFillet = fillet(
-  insideBendFillet,
-  radius = insideBendRadius + sheetMetalThickness,
-  edges = [
-    {
-      sideFaces = [
-        outlineRegion.tags.line1,
-        outlineRegion.tags.line6
-      ]
-    }
-  ],
-)
-
-freeEndCornerFillets = fillet(
-  outsideBendFillet,
-  radius = halfBracketWidth,
-  edges = [
-    {
-      sideFaces = [
-        outlineRegion.tags.line2,
-        outsideBendFillet.faces.capStart
-      ]
-    },
-    {
-      sideFaces = [
-        outlineRegion.tags.line2,
-        outsideBendFillet.faces.capEnd
-      ]
-    },
-    {
-      sideFaces = [
-        outlineRegion.tags.line5,
-        outsideBendFillet.faces.capStart
-      ]
-    },
-    {
-      sideFaces = [
-        outlineRegion.tags.line5,
-        outsideBendFillet.faces.capEnd
-      ]
-    }
-  ],
-)
-
-// Step 4: Countersunk tab hole via subtractive feature
-tabHolePlane = {
-  origin = [sheetMetalThickness, 0mm, 0mm],
-  xAxis = [0, 0, 1],
-  yAxis = [0, 1, 0]
+section = sketch(on = XZ) {
+  upright = line(start = [0mm, uprightEnd], end = [0mm, outsideBendRadius])
+  bend = arc(start = [0mm, outsideBendRadius], end = [outsideBendRadius, 0mm], center = [outsideBendRadius, outsideBendRadius])
+  base = line(start = [outsideBendRadius, 0mm], end = [baseEnd, 0mm])
 }
-tabHoleSketch = sketch(on = tabHolePlane) {
-  fastenerCircle = circle(start = [var 57mm, var 3mm], center = [var 48mm, var -2mm])
-  countersinkCircle = circle(start = [var 60mm, var -4mm], center = [var 51mm, var 1mm])
+surface = extrude([section.upright, section.bend, section.base], length = overallBracketWidth, symmetric = true, bodyType = SURFACE)
+hide(section)
+formedBlank = thicken(surface, thickness = sheetMetalThickness, flip = true)
+footPlane = offsetPlane(XY, offset = -sheetMetalThickness)
+wallPlane = offsetPlane(YZ, offset = -sheetMetalThickness)
+footRoundA = cornerCut(footPlane, at = [baseEnd, halfBracketWidth], xSign = 1, ySign = 1, radius = halfBracketWidth, depth = 3 * sheetMetalThickness)
+footRoundB = cornerCut(footPlane, at = [baseEnd, -halfBracketWidth], xSign = 1, ySign = -1, radius = halfBracketWidth, depth = 3 * sheetMetalThickness)
+wallRoundA = cornerCut(wallPlane, at = [halfBracketWidth, uprightEnd], xSign = 1, ySign = 1, radius = halfBracketWidth, depth = 3 * sheetMetalThickness)
+wallRoundB = cornerCut(wallPlane, at = [-halfBracketWidth, uprightEnd], xSign = -1, ySign = 1, radius = halfBracketWidth, depth = 3 * sheetMetalThickness)
 
-  fastenerGuide = line(start = [var 47mm, var -1mm], end = [var 54mm, var 1mm], construction = true)
-  coincident([
-    fastenerGuide.start,
-    fastenerCircle.center
-  ])
-  coincident([
-    fastenerGuide.end,
-    fastenerCircle.start
-  ])
-  horizontal(fastenerGuide)
-  horizontalDistance([fastenerGuide.start, fastenerGuide.end]) == fastenerHoleDiameter / 2
-
-  countersinkGuide = line(start = [var 46mm, var 2mm], end = [var 58mm, var -3mm], construction = true)
-  coincident([
-    countersinkGuide.start,
-    countersinkCircle.center
-  ])
-  coincident([
-    countersinkGuide.end,
-    countersinkCircle.start
-  ])
-  horizontal(countersinkGuide)
-  horizontalDistance([
-    countersinkGuide.start,
-    countersinkGuide.end
-  ]) == countersinkOuterDiameter / 2
-
-  coincident([
-    fastenerCircle.center,
-    countersinkCircle.center
-  ])
-  coincident([
-    fastenerCircle.center,
-    [uprightTabHoleCenterOffsetFromBend, 0]
-  ])
+// Original slot: 36 mm between semicircle centers, plus 6 mm end radii.
+slotRadius = fastenerHoleDiameter / 2
+slotA = slotCenterOffsetFromBend - 3 * fastenerHoleDiameter
+slotB = slotCenterOffsetFromBend
+slotSketch = sketch(on = footPlane) {
+  bottom = line(start = [slotA, -slotRadius], end = [slotB, -slotRadius])
+  right = arc(start = [slotB, -slotRadius], end = [slotB, slotRadius], center = [slotB, 0mm])
+  top = line(start = [slotB, slotRadius], end = [slotA, slotRadius])
+  left = arc(start = [slotA, slotRadius], end = [slotA, -slotRadius], center = [slotA, 0mm])
 }
+slotTool = extrude(region(segments = [slotSketch.bottom, slotSketch.right, slotSketch.top, slotSketch.left]), length = 3 * sheetMetalThickness)
+hide(slotSketch)
 
-countersinkOuterRadius = countersinkOuterDiameter / 2
-countersinkExitRadius = countersinkOuterRadius - sheetMetalThickness
-
-countersinkTopPlane = {
-  origin = [
-    sheetMetalThickness + csgOverlap,
-    0mm,
-    uprightTabHoleCenterOffsetFromBend
-  ],
-  xAxis = [0, 0, 1],
-  yAxis = [0, 1, 0]
+// 90-degree countersink. Extend its conical tool beyond both wall faces.
+sinkDepth = (countersinkOuterDiameter - fastenerHoleDiameter) / 2
+sinkSmallX = sheetMetalThickness - sinkDepth - 1mm
+sinkLargeX = sheetMetalThickness + 1mm
+sinkSmallRadius = fastenerHoleDiameter / 2 - 1mm
+sinkLargeRadius = countersinkOuterDiameter / 2 + 1mm
+sinkSmall = sketch(on = offsetPlane(YZ, offset = sinkSmallX)) {
+  rim = circle(start = [sinkSmallRadius, uprightTabHoleCenterOffsetFromBend], center = [0mm, uprightTabHoleCenterOffsetFromBend])
 }
-countersinkBottomPlane = {
-  origin = [
-    -csgOverlap,
-    0mm,
-    uprightTabHoleCenterOffsetFromBend
-  ],
-  xAxis = [0, 0, 1],
-  yAxis = [0, 1, 0]
+sinkLarge = sketch(on = offsetPlane(YZ, offset = sinkLargeX)) {
+  rim = circle(start = [sinkLargeRadius, uprightTabHoleCenterOffsetFromBend], center = [0mm, uprightTabHoleCenterOffsetFromBend])
 }
-
-countersinkTopSketch = sketch(on = countersinkTopPlane) {
-  topGuide = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm], construction = true)
-  topCircle = circle(start = [var 11mm, var 0mm], center = [var 0mm, var 0mm])
-
-  coincident([topGuide.start, ORIGIN])
-  horizontal(topGuide)
-  horizontalDistance([topGuide.start, topGuide.end]) == countersinkOuterRadius + csgOverlap
-
-  coincident([topCircle.center, topGuide.start])
-  coincident([topCircle.start, topGuide.end])
-}
-countersinkBottomSketch = sketch(on = countersinkBottomPlane) {
-  bottomGuide = line(start = [var 0mm, var 0mm], end = [var 7mm, var 0mm], construction = true)
-  bottomCircle = circle(start = [var 7mm, var 0mm], center = [var 0mm, var 0mm])
-
-  coincident([bottomGuide.start, ORIGIN])
-  horizontal(bottomGuide)
-  horizontalDistance([bottomGuide.start, bottomGuide.end]) == countersinkExitRadius - csgOverlap
-
-  coincident([bottomCircle.center, bottomGuide.start])
-  coincident([bottomCircle.start, bottomGuide.end])
-}
-
-countersinkTopRegion = region(segments = [countersinkTopSketch.topCircle])
-countersinkBottomRegion = region(segments = [countersinkBottomSketch.bottomCircle])
-countersinkCutter = loft([
-  countersinkTopRegion,
-  countersinkBottomRegion
-])
-
-bracketWithCountersunkHole = subtract([freeEndCornerFillets], tools = [countersinkCutter])
-hiddenTabHoleSketch = hide(tabHoleSketch)
-hiddenCountersinkTopSketch = hide(countersinkTopSketch)
-hiddenCountersinkBottomSketch = hide(countersinkBottomSketch)
-
-// Step 5: Slot profile
-slotProfile = sketch(on = XY) {
-  line1 = line(start = [var 149mm, var -7mm], end = [var 112mm, var -6mm])
-  arc2 = arc(start = [var 112mm, var 7mm], end = [var 112mm, var -5mm], center = [var 111mm, var 1mm])
-  coincident([line1.end, arc2.end])
-
-  line3 = line(start = [var 111mm, var 7mm], end = [var 149mm, var 6mm])
-  coincident([arc2.start, line3.start])
-
-  arc4 = arc(start = [var 149mm, var -6mm], end = [var 149mm, var 6mm], center = [var 149mm, var 0mm])
-  coincident([line3.end, arc4.end])
-  coincident([arc4.start, line1.start])
-
-  horizontal(line1)
-  horizontal(line3)
-
-  slotCenterline = line(start = [var 115mm, var 1mm], end = [var 149mm, var -1mm], construction = true)
-  coincident([slotCenterline.start, arc2.center])
-  coincident([slotCenterline.end, arc4.center])
-  horizontal(slotCenterline)
-
-  leftTopGuide = line(start = [var 110mm, var 1mm], end = [var 110mm, var 8mm], construction = true)
-  coincident([leftTopGuide.start, arc2.center])
-  coincident([leftTopGuide.end, arc2.start])
-  vertical(leftTopGuide)
-
-  leftBottomGuide = line(start = [var 112mm, var 0mm], end = [var 112mm, var -8mm], construction = true)
-  coincident([leftBottomGuide.start, arc2.center])
-  coincident([leftBottomGuide.end, arc2.end])
-  vertical(leftBottomGuide)
-
-  rightTopGuide = line(start = [var 149mm, var 0mm], end = [var 149mm, var 8mm], construction = true)
-  coincident([rightTopGuide.start, arc4.center])
-  coincident([rightTopGuide.end, arc4.end])
-  vertical(rightTopGuide)
-
-  rightBottomGuide = line(start = [var 149mm, var -1mm], end = [var 149mm, var -8mm], construction = true)
-  coincident([rightBottomGuide.start, arc4.center])
-  coincident([rightBottomGuide.end, arc4.start])
-  vertical(rightBottomGuide)
-
-  horizontalDistance([
-    slotCenterline.start,
-    slotCenterline.end
-  ]) == slotOverallLength
-  radius(arc2) == slotWidth / 2
-  radius(arc4) == slotWidth / 2
-  coincident([
-    arc4.center,
-    [slotCenterOffsetFromBend, 0]
-  ])
-}
-// Step 6: Slot cutter extrusion
-slotRegion = region(segments = [slotProfile.line1, slotProfile.arc2])
-slotCutSolid = extrude(slotRegion, length = sheetMetalThickness, method = NEW)
-hiddenSlotProfile = hide(slotProfile)
-
-// Step 7: Slot subtraction
-bracketFinished = subtract([bracketWithCountersunkHole], tools = [slotCutSolid])
-
-// Step 8: Material appearance
-appearance(
-  [bracketFinished],
-  color = "#c8ff00",
-  roughness = 50,
-  metalness = 0,
-)
+sinkTool = loft([region(segments = [sinkSmall.rim]), region(segments = [sinkLarge.rim])])
+hide(sinkSmall)
+hide(sinkLarge)
+pilotTool = drill(wallPlane, at = [0mm, uprightTabHoleCenterOffsetFromBend], radius = fastenerHoleDiameter / 2, depth = 3 * sheetMetalThickness)
+finishedBracket = subtract(formedBlank, tools = [footRoundA, footRoundB, wallRoundA, wallRoundB, slotTool, sinkTool, pilotTool])
+  |> appearance(color = "#c8ff00", roughness = 50, metalness = 0)

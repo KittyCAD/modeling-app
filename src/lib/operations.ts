@@ -3384,6 +3384,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  thicken: {
+    label: 'Thicken',
+    icon: 'shell',
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
   import: {
     label: 'Import',
     icon: 'import',
