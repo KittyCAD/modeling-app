@@ -67,14 +67,16 @@ function moduleName(path: ModulePath | undefined): string | undefined {
 /** Uses the same module-qualified labels in the views pane and exports. */
 export function namedViewDisplayNames(views: KclNamedView[]): string[] {
   const nameCounts = new Map<string, number>()
-  for (const { artifact } of views) {
-    nameCounts.set(artifact.name, (nameCounts.get(artifact.name) ?? 0) + 1)
+  for (const view of views) {
+    const name = view.artifact.name
+    nameCounts.set(name, (nameCounts.get(name) ?? 0) + 1)
   }
 
-  return views.map(({ artifact, modulePath }) => {
-    const module = moduleName(modulePath)
-    const collides = (nameCounts.get(artifact.name) ?? 0) > 1
-    return collides && module ? `${module}::${artifact.name}` : artifact.name
+  return views.map((view) => {
+    const name = view.artifact.name
+    const module = moduleName(view.modulePath)
+    const collides = (nameCounts.get(name) ?? 0) > 1
+    return collides && module ? `${module}::${name}` : name
   })
 }
 
@@ -91,6 +93,7 @@ export function namedViewsForExport({
   const namedViews = listNamedViews({ artifactGraph, filenames })
   const names = namedViewDisplayNames(namedViews)
   const universe = getViewUniverse(artifactGraph)
+  // Use a JSON object: Map entries are lost by JSON.stringify in export.
   const views: Record<string, NamedView> = Object.create(null)
 
   for (const [index, view] of namedViews.entries()) {
@@ -129,6 +132,7 @@ export function namedViewsForExport({
             ? new Vector3(0, -1, 0)
             : new Vector3(0, 0, 1)
     }
+    // Remove any component along the viewing direction to get camera up.
     viewUp.projectOnPlane(direction).normalize()
     const vantage = target.clone().addScaledVector(direction, -distance)
     const visibility = engineIdsForVisibility({

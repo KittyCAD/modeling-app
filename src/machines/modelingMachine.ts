@@ -134,8 +134,8 @@ import {
   getSketchBlockForArtifact,
   isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
-import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { namedViewsForExport } from '@src/lang/std/kclNamedViews'
+import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import {
   crossProduct,
   isCursorInSketchCommandRange,
