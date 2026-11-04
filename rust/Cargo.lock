@@ -7324,3 +7324,8 @@ dependencies = [
  "cc",
  "pkg-config",
 ]
+
+[[patch.unused]]
+name = "kittycad-modeling-cmds"
+version = "0.2.257"
+source = "git+https://github.com/KittyCAD/modeling-api.git?rev=e09257550fda483362fb57a2d2740ed18c598bfd#e09257550fda483362fb57a2d2740ed18c598bfd"
