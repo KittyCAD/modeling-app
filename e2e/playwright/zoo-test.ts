@@ -34,10 +34,12 @@ let isFirstRun = true
 const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
   tronApp?: ElectronZoo
   userFeatures: Feature[]
+  mockApiRoutes: boolean
 }>({
   userFeatures: [[], { option: true }],
+  mockApiRoutes: [true, { option: true }],
   tronApp: [
-    async ({ userFeatures }, use, testInfo) => {
+    async ({ userFeatures, mockApiRoutes }, use, testInfo) => {
       if (process.env.TARGET === 'web') {
         await use(undefined)
         return
@@ -55,7 +57,8 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
           electronZooInstance.createInstanceIfMissing(
             testInfo,
             userFeatures,
-            setupTimeout
+            setupTimeout,
+            mockApiRoutes
           ),
           new Promise<never>((_, reject) => {
             timeoutId = setTimeout(() => {

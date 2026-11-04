@@ -1,5 +1,6 @@
 //! Offers methods to execute KCL, then keep the connection alive so you can
 //! execute follow-up methods, like exporting or snapshotting, without re-executing the KCL.
+use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use kittycad_modeling_cmds::ImageFormat;
@@ -202,9 +203,10 @@ impl KclSession {
 /// `geometry_only` uses the CPU engine pool without initializing rendering.
 /// `token` and `base_url` override the client environment settings for this session.
 /// Omitted values retain the client's existing environment defaults.
+/// `headers` adds HTTP and WebSocket handshake headers. A supplied User-Agent replaces the default.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[gen_stub(override_return_type(type_repr = "KclSession"))]
-#[pyfunction(signature = (path, *, mock=false, geometry_only=false, highlight_edges=None, video_res_width=None, video_res_height=None, token=None, base_url=None))]
+#[pyfunction(signature = (path, *, mock=false, geometry_only=false, highlight_edges=None, video_res_width=None, video_res_height=None, token=None, base_url=None, headers=None))]
 #[allow(clippy::too_many_arguments)] // Independent Python keyword options.
 pub async fn new_kcl_session(
     path: String,
@@ -215,6 +217,7 @@ pub async fn new_kcl_session(
     video_res_height: Option<u32>,
     token: Option<String>,
     base_url: Option<String>,
+    headers: Option<BTreeMap<String, String>>,
 ) -> PyResult<KclSession> {
     let input = KclInput::Path(path);
     spawn_py(async move {
@@ -228,6 +231,7 @@ pub async fn new_kcl_session(
                 video_res_height,
                 token,
                 base_url,
+                headers,
                 ..Default::default()
             },
         )
@@ -242,9 +246,10 @@ pub async fn new_kcl_session(
 /// `geometry_only` uses the CPU engine pool without initializing rendering.
 /// `token` and `base_url` override the client environment settings for this session.
 /// Omitted values retain the client's existing environment defaults.
+/// `headers` adds HTTP and WebSocket handshake headers. A supplied User-Agent replaces the default.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[gen_stub(override_return_type(type_repr = "KclSession"))]
-#[pyfunction(signature = (code, *, mock=false, geometry_only=false, highlight_edges=None, video_res_width=None, video_res_height=None, token=None, base_url=None))]
+#[pyfunction(signature = (code, *, mock=false, geometry_only=false, highlight_edges=None, video_res_width=None, video_res_height=None, token=None, base_url=None, headers=None))]
 #[allow(clippy::too_many_arguments)] // Independent Python keyword options.
 pub async fn new_kcl_session_code(
     code: String,
@@ -255,6 +260,7 @@ pub async fn new_kcl_session_code(
     video_res_height: Option<u32>,
     token: Option<String>,
     base_url: Option<String>,
+    headers: Option<BTreeMap<String, String>>,
 ) -> PyResult<KclSession> {
     let input = KclInput::Code(code);
     spawn_py(async move {
@@ -268,6 +274,7 @@ pub async fn new_kcl_session_code(
                 video_res_height,
                 token,
                 base_url,
+                headers,
                 ..Default::default()
             },
         )

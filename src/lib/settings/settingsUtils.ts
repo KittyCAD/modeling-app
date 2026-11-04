@@ -59,6 +59,7 @@ import { NIL as uuidNIL, v4 } from 'uuid'
 const INITIALISM_MAPPING: Record<string, string> = {
   api: 'API',
   id: 'ID',
+  ssao: 'SSAO',
   ui: 'UI',
   url: 'URL',
 }

@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSelectionLifecycle } from '@src/hooks/useSelectionLifecycle'
 import type { KclManager } from '@src/lang/KclManager'
-import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import { isSelections } from '@src/lib/selections'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 import {
+  filterDialogSelection,
   hasValue,
   type DialogField,
   type SelectionArgument,
@@ -41,13 +41,14 @@ export function useDialogSelection({
   const selection = useMemo(
     () =>
       activeArg?.inputType === 'selection'
-        ? (coerceSelectionsForBodyOnlySelectionTypes(
+        ? filterDialogSelection(
             selectionRanges,
-            activeArg.selectionTypes,
+            activeArg,
+            kclManager.ast,
             kclManager.artifactGraph
-          ) ?? selectionRanges)
+          )
         : selectionRanges,
-    [selectionRanges, activeArg, kclManager.artifactGraph]
+    [selectionRanges, activeArg, kclManager.ast, kclManager.artifactGraph]
   )
 
   useSelectionLifecycle({
@@ -73,12 +74,12 @@ export function useDialogSelection({
       type: 'Set selection',
       data: {
         selectionType: 'completeSelection',
-        selection:
-          coerceSelectionsForBodyOnlySelectionTypes(
-            next,
-            arg.selectionTypes,
-            kclManager.artifactGraph
-          ) ?? next,
+        selection: filterDialogSelection(
+          next,
+          arg,
+          kclManager.ast,
+          kclManager.artifactGraph
+        ),
       },
     })
     setActiveName(name)
@@ -102,11 +103,15 @@ export function useDialogSelection({
     if (field?.arg.inputType === 'selection') select(field.name, field.arg)
   })
 
-  const draft = activeName
-    ? {
-        ...values,
-        [activeName]: hasValue(selection) ? selection : undefined,
-      }
-    : values
+  const draft = useMemo(
+    () =>
+      activeName
+        ? {
+            ...values,
+            [activeName]: hasValue(selection) ? selection : undefined,
+          }
+        : values,
+    [activeName, selection, values]
+  )
   return { activeName, selectionRanges: selection, draft, select, update }
 }

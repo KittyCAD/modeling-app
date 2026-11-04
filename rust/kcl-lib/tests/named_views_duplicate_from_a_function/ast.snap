@@ -383,11 +383,14 @@ description: Result of parsing named_views_duplicate_from_a_function.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "\"3.0-preview\"",
+              "raw": "3.0",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
-              "value": "3.0-preview"
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
             }
           }
         ],

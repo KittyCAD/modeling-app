@@ -318,7 +318,7 @@ export type AnnotationMbdLeaderPosition = { "normalized_pos": {
 /**
  * The position
  */
-pos: Point2d<number>, } } | { "centroid": Record<symbol, never> };
+pos: Point2d<number>, } } | { "centroid": Record<symbol, never> } | { "step_from": Record<symbol, never> } | { "auto": Record<symbol, never> };
 
 /**
  * Options for annotations
