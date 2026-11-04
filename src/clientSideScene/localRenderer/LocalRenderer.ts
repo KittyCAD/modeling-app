@@ -938,23 +938,53 @@ export class LocalRenderer {
       const point = getEntityPoint(object.geometry, kind)
       if (!point) continue
       point.applyMatrix4(object.matrixWorld)
-      const projected = projectEntityPoint(point, camera, rect)
+      const pointOnScreen = projectEntityPoint(point, camera, rect)
+      if (!pointOnScreen) continue
+      // The test mouse helpers use integer CSS pixels. Try the coordinates
+      // surrounding the projected center so rasterization does not hide a thin edge.
+      const xs = [
+        ...new Set([Math.floor(pointOnScreen.x), Math.ceil(pointOnScreen.x)]),
+      ]
+      const ys = [
+        ...new Set([Math.floor(pointOnScreen.y), Math.ceil(pointOnScreen.y)]),
+      ]
+      const candidates = xs
+        .flatMap((x) => ys.map((y) => ({ x, y })))
+        .filter(
+          ({ x, y }) =>
+            x >= rect.left && x < rect.right && y >= rect.top && y < rect.bottom
+        )
+        .sort(
+          (a, b) =>
+            (a.x - pointOnScreen.x) ** 2 +
+            (a.y - pointOnScreen.y) ** 2 -
+            ((b.x - pointOnScreen.x) ** 2 + (b.y - pointOnScreen.y) ** 2)
+        )
+      let projected = candidates[0]
       if (!projected) continue
-      const result = await this.gpu?.integerIdPicker.pick({
-        x: projected.x - rect.left,
-        y: projected.y - rect.top,
-        streamWidth: rect.width,
-        streamHeight: rect.height,
-        camera,
-      })
-      if (this.disposed || version !== this.executionVersion || result?.stale)
-        return []
+      let visible = false
+      for (const candidate of candidates) {
+        const result = await this.gpu?.integerIdPicker.pick({
+          x: candidate.x - rect.left,
+          y: candidate.y - rect.top,
+          streamWidth: rect.width,
+          streamHeight: rect.height,
+          camera,
+        })
+        if (this.disposed || version !== this.executionVersion || result?.stale)
+          return []
+        if (result?.target === object) {
+          projected = candidate
+          visible = true
+          break
+        }
+      }
       entities.push({
         id,
         kind,
         ...projected,
         // This means the real picker would select this entity at its representative point.
-        visible: result?.target === object,
+        visible,
       })
     }
     return entities
