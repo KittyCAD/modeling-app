@@ -38,7 +38,17 @@ import {
 
 // A/B probe: false = original constant IDs; true = shared shader with uniform IDs.
 // Reload the app after changing this so both runs start with a fresh picker.
-const USE_UNIFORM_FACE_IDS = false
+const USE_UNIFORM_FACE_IDS = true
+
+// Change the emitted shader source on every page load, equally in both modes.
+// This avoids identical-source browser cache hits; driver optimizers may still
+// reuse compiled work, so this is not a guarantee of a completely cold GPU.
+const PICKER_SHADER_VARIANT = `pickerRun_${crypto.randomUUID().replaceAll('-', '')}`
+
+type PipelineProbe = {
+  programs: { vertex: Map<unknown, unknown>; fragment: Map<unknown, unknown> }
+  caches: Map<unknown, unknown>
+}
 
 const SELECTION_LINE_WIDTH_AT_REFERENCE_PX = 24
 const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
@@ -63,6 +73,21 @@ export class IntegerIdPicker {
   private edgesVisible = true
   private dirty = true
   private version = 0
+  private timingSample = 0
+
+  // Diagnostic access to Three.js internals, deliberately limited to this probe.
+  private getPipelineCounts() {
+    const pipelines = (
+      this.renderer as unknown as { _pipelines?: PipelineProbe }
+    )._pipelines
+    return pipelines
+      ? {
+          vertexPrograms: pipelines.programs.vertex.size,
+          fragmentPrograms: pipelines.programs.fragment.size,
+          pipelines: pipelines.caches.size,
+        }
+      : null
+  }
 
   constructor(renderer: WebGPURenderer) {
     this.renderer = renderer
@@ -76,6 +101,7 @@ export class IntegerIdPicker {
   }
 
   private idOutput(id: Node<'uint'>) {
+    id = id.toVar(PICKER_SHADER_VARIANT)
     if (!this.packsIdsIntoColor) {
       // Preserve integer output instead of NodeMaterial's default vec4 conversion.
       return outputStruct(id)
@@ -258,9 +284,13 @@ export class IntegerIdPicker {
     const loadingAtStart = !!document.querySelector(
       '[data-testid="local-renderer-loading"]'
     )
+    const sample = redraw ? ++this.timingSample : null
+    const countsBefore = redraw ? this.getPipelineCounts() : null
     if (redraw) {
       this.renderIdBuffer(target, camera, streamWidth)
     }
+    // Capture before awaiting readback: unrelated renders could run during it.
+    const countsAfter = redraw ? this.getPipelineCounts() : null
     const submittedAt = performance.now()
 
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
@@ -284,6 +314,20 @@ export class IntegerIdPicker {
     if (redraw) {
       console.log('[Picker timing]', {
         mode: USE_UNIFORM_FACE_IDS ? 'uniform' : 'constant',
+        shaderVariant: PICKER_SHADER_VARIANT,
+        sample,
+        newVertexPrograms:
+          countsBefore && countsAfter
+            ? countsAfter.vertexPrograms - countsBefore.vertexPrograms
+            : null,
+        newFragmentPrograms:
+          countsBefore && countsAfter
+            ? countsAfter.fragmentPrograms - countsBefore.fragmentPrograms
+            : null,
+        newPipelines:
+          countsBefore && countsAfter
+            ? countsAfter.pipelines - countsBefore.pipelines
+            : null,
         backend: this.packsIdsIntoColor ? 'WebGL' : 'WebGPU',
         targets: targetById.length - 1,
         loadingAtStart,
