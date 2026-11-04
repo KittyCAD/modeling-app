@@ -1,11 +1,16 @@
+import { queryModelingCommand } from '@src/lib/engineConnection/utils'
 import type { BoundingBox, FaceIsPlanar, Point3d } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { createArrayExpression, createLiteral } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
+import { getSketchBlockForArtifact } from '@src/lang/std/artifactGraph'
+import { isEnginePrimitiveSelection } from '@src/lang/queryAst'
+import { defaultPlaneNameToKcl } from '@src/lib/planes'
 import type {
   ArtifactId,
+  ArtifactGraph,
   CallExpressionKw,
   Expr,
   Program,
@@ -19,8 +24,7 @@ import {
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
 } from '@src/lib/constants'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { isArray, roundOff, uuidv4 } from '@src/lib/utils'
+import { baseUnitToMm, isArray, roundOff } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -195,6 +199,9 @@ export function getEngineEntityIdsForGdtSelections(
     if (selection.engineEntityId) {
       return [selection.engineEntityId]
     }
+    if (selection.entityRef?.type === 'face') {
+      return [selection.entityRef.face_id]
+    }
 
     const artifact = selection.artifact
     if (!artifact?.id) {
@@ -212,7 +219,15 @@ export function getEngineEntityIdsForGdtSelections(
     ]
   })
 
-  return deduplicateArtifactIds(entityIds)
+  const primitiveIds = selections.otherSelections.flatMap((selection) =>
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'enginePrimitive' &&
+    (selection.primitiveType === 'edge' || selection.primitiveType === 'face')
+      ? [selection.entityId]
+      : []
+  )
+  return deduplicateArtifactIds([...entityIds, ...primitiveIds])
 }
 
 export function getPlanarFaceEntityIdsForGdtSelections(
@@ -443,32 +458,16 @@ function getNormalFromPlanarFace(face: FaceIsPlanar): Point3d | undefined {
 }
 
 async function getPlanarFaceNormal(
-  engineCommandManager: ConnectionManager,
+  engine: ConnectionManager,
   entityId: ArtifactId
 ): Promise<Point3d | undefined> {
-  try {
-    const response = await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'face_is_planar',
-        object_id: entityId,
-      },
-    })
-
-    if (!isModelingResponse(response)) {
-      return undefined
-    }
-
-    const modelingResponse = response.resp.data.modeling_response
-    if (modelingResponse.type !== 'face_is_planar') {
-      return undefined
-    }
-
-    return getNormalFromPlanarFace(modelingResponse.data)
-  } catch {
-    return undefined
-  }
+  const response = await queryModelingCommand(engine, {
+    type: 'face_is_planar',
+    object_id: entityId,
+  })
+  return response?.type === 'face_is_planar'
+    ? getNormalFromPlanarFace(response.data)
+    : undefined
 }
 
 async function getDefaultGdtFrameDefaultsFromSelectionNormals({
@@ -510,30 +509,12 @@ async function getBoundingBoxForGdtEntities({
     return undefined
   }
 
-  try {
-    const response = await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'bounding_box',
-        entity_ids: entityIds,
-        output_unit: outputUnit,
-      },
-    })
-
-    if (!isModelingResponse(response)) {
-      return undefined
-    }
-
-    const modelingResponse = response.resp.data.modeling_response
-    if (modelingResponse.type !== 'bounding_box') {
-      return undefined
-    }
-
-    return modelingResponse.data
-  } catch {
-    return undefined
-  }
+  const response = await queryModelingCommand(engineCommandManager, {
+    type: 'bounding_box',
+    entity_ids: entityIds,
+    output_unit: outputUnit,
+  })
+  return response?.type === 'bounding_box' ? response.data : undefined
 }
 
 export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
@@ -543,9 +524,13 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   sourceCode,
   outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
   wasmInstance,
+  distance = false,
+  artifactGraph,
 }: {
   data: T
   engineCommandManager: ConnectionManager
+  distance?: boolean
+  artifactGraph?: ArtifactGraph
   ast?: Node<Program>
   sourceCode?: string
   outputUnit?: UnitLength
@@ -563,6 +548,14 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
           ...data,
           fontSize: existingFontSize,
         }
+  if (distance)
+    return withDistanceFrameDefaults(
+      nextData,
+      engineCommandManager,
+      artifactGraph,
+      outputUnit,
+      wasmInstance
+    )
   let hasResolvedFramePlane = Boolean(nextData.framePlane)
   let framePositionSigns: GdtFramePositionSigns | undefined
   const shouldQueryNormalDefaults =
@@ -664,4 +657,523 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
 
   return nextData
+}
+
+function getDistanceFramePlaneFromDirection(
+  direction: Point3d
+): GdtFramePlane | undefined {
+  const values = [direction.x, direction.y, direction.z]
+  if (!values.every(Number.isFinite) || Math.hypot(...values) === 0) {
+    return undefined
+  }
+  // Choose the standard plane that retains the most of the measurement.
+  // Prefer XY for horizontal distances, then XZ when the distance is vertical.
+  const normalAxis = (['z', 'y', 'x'] as const).reduce((best, axis) =>
+    Math.abs(direction[axis]) < Math.abs(direction[best]) ? axis : best
+  )
+  return getFeaturePlaneForNormalAxis(normalAxis)
+}
+
+function planeContainsDirection(
+  plane: GdtFramePlane,
+  direction: Point3d
+): boolean {
+  const normal =
+    plane === KCL_PLANE_XY
+      ? direction.z
+      : plane === KCL_PLANE_XZ
+        ? direction.y
+        : direction.x
+  return (
+    Math.hypot(direction.x, direction.y, direction.z) > 0 &&
+    Math.abs(normal) <=
+      Math.hypot(direction.x, direction.y, direction.z) *
+        AXIS_INFERENCE_TOLERANCE
+  )
+}
+
+function createDistanceFramePositionCommandValue(
+  setback: number | undefined,
+  outputUnit: UnitLength,
+  wasmInstance: ModuleType
+): KclCommandValue {
+  // Add a little extra clearance in either setback direction.
+  const offset = createLiteral(
+    roundOff((setback ?? 20) * 1.1, 4),
+    wasmInstance,
+    setback === undefined ? 'Mm' : baseUnitToNumericSuffix(outputUnit),
+    4
+  )
+  const zero = createLiteral(
+    0,
+    wasmInstance,
+    baseUnitToNumericSuffix(outputUnit),
+    4
+  )
+  const valueText = `[${zero.raw}, ${offset.raw}]`
+  return {
+    valueAst: createArrayExpression([zero, offset]),
+    valueText,
+    valueCalculated: valueText,
+  }
+}
+
+function distanceSetback(bounds: BoundingBox | undefined): number | undefined {
+  if (!bounds) return undefined
+  return getAverageBoundingBoxDimension(bounds.dimensions)
+}
+
+/** All points and bounds must use the same length unit. */
+export function getOutsideDistanceSetback(
+  from: Point3d,
+  to: Point3d,
+  plane: string,
+  bounds: BoundingBox,
+  minimumMargin = 0
+): number | undefined {
+  const axes: [Axis, Axis] | undefined =
+    plane === KCL_PLANE_XY
+      ? ['x', 'y']
+      : plane === KCL_PLANE_XZ
+        ? ['x', 'z']
+        : plane === KCL_PLANE_YZ
+          ? ['y', 'z']
+          : undefined
+  if (!axes || !bounds.center) return undefined
+  const [x, y] = axes
+  const dx = to[x] - from[x],
+    dy = to[y] - from[y]
+  const length = Math.hypot(dx, dy)
+  if (!Number.isFinite(length) || length === 0) return undefined
+  // Match the engine's plane-local perpendicular, oriented toward local +Y.
+  const flip = dx < 0 ? -1 : 1
+  const px = (-dy / length) * flip,
+    py = (dx / length) * flip
+  const project = (point: Point3d) =>
+    px * (point[x] - bounds.center[x]) + py * (point[y] - bounds.center[y])
+  const a = project(from),
+    b = project(to)
+  const extent =
+    (Math.abs(px) * bounds.dimensions[x] +
+      Math.abs(py) * bounds.dimensions[y]) /
+    2
+  const margin = distanceSetback(bounds)
+  if (
+    ![a, b, extent].every(Number.isFinite) ||
+    extent < 0 ||
+    margin === undefined
+  )
+    return undefined
+  const sign = a + b < 0 ? -1 : 1
+  const clearance =
+    Math.max(0, extent - Math.min(sign * a, sign * b)) +
+    Math.max(
+      margin * GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
+      minimumMargin
+    )
+  // The engine renders the dimension line at 0.8 * offset.y. Leaders use 1.0.
+  return (sign * Math.ceil((clearance / 0.8) * 10000)) / 10000
+}
+
+function getGdtFontHeight(
+  fontSize: KclCommandValue | undefined,
+  outputUnit: UnitLength
+): number | undefined {
+  const value = fontSize?.valueAst
+  if (
+    value?.type !== 'Literal' ||
+    typeof value.value !== 'object' ||
+    value.value === null ||
+    typeof value.value.value !== 'number'
+  )
+    return undefined
+  const units: Partial<Record<typeof value.value.suffix, UnitLength>> = {
+    Mm: 'mm',
+    Cm: 'cm',
+    M: 'm',
+    Inch: 'in',
+    Ft: 'ft',
+    Yd: 'yd',
+    None: outputUnit,
+  }
+  const unit = units[value.value.suffix]
+  return unit && Number.isFinite(value.value.value) && value.value.value > 0
+    ? (value.value.value * baseUnitToMm(unit)) / baseUnitToMm(outputUnit)
+    : undefined
+}
+
+// Plane aliases and offsets have already been evaluated in the artifact graph.
+function distanceSourcePlane(
+  selections: Selections | undefined,
+  graph: ArtifactGraph | undefined
+): GdtFramePlane | undefined {
+  if (!selections || !graph) return undefined
+  const artifacts = selections.graphSelections.flatMap((selection) => {
+    if (selection.entityRef?.type === 'edge')
+      return selection.entityRef.side_faces.map((id) => graph.get(id))
+    return [
+      selection.artifact ??
+        (selection.entityRef?.type === 'face'
+          ? graph.get(selection.entityRef.face_id)
+          : undefined),
+    ]
+  })
+  const parents = selections.graphSelections.map((s) =>
+    graph.get(s.engineTopologyFallback?.parentId ?? '')
+  )
+  const sketches = [...artifacts, ...parents]
+    .map((a) => getSketchBlockForArtifact(a, graph, true))
+    .filter((s) => s !== undefined)
+  const planes = sketches.map((sketch) => {
+    if (sketch.standardPlane)
+      return defaultPlaneNameToKcl(sketch.standardPlane).replace('-', '')
+    const axis =
+      sketch.planeInfo && getDominantNormalAxis(sketch.planeInfo.zAxis)
+    return axis ? getFeaturePlaneForNormalAxis(axis) : undefined
+  })
+  const plane = planes[0]
+  if (plane !== 'XY' && plane !== 'XZ' && plane !== 'YZ') return undefined
+  if (planes.some((p) => p !== plane)) return undefined
+  const caps = artifacts.filter((a) => a?.type === 'cap')
+  const single = selections.graphSelections.length === 1
+  if (
+    (single &&
+      !caps.length &&
+      !artifacts.some(
+        (a) =>
+          a?.type === 'segment' ||
+          (a?.type === 'sweepEdge' && a.subType === 'opposite')
+      )) ||
+    (caps.length >= 2 && caps.some((a) => a?.id !== caps[0]?.id))
+  )
+    return getFramePlaneForFeaturePlane(plane)
+  return plane
+}
+
+/** A closed circle's bounds may contain only its seam vertex. */
+async function distanceCircleCenter(
+  engine: ConnectionManager,
+  id: string,
+  scale: number
+): Promise<Point3d | undefined> {
+  const type = await queryModelingCommand(engine, {
+    type: 'curve_get_type',
+    curve_id: id,
+  })
+  if (
+    type?.type !== 'curve_get_type' ||
+    !['arc', 'nurbs'].includes(type.data.curve_type)
+  )
+    return undefined
+  const response = await queryModelingCommand(engine, {
+    type: 'curve_get_control_points',
+    curve_id: id,
+  })
+  if (response?.type !== 'curve_get_control_points') return undefined
+  const points = response.data.control_points.map((p) => ({
+    x: p.x / scale,
+    y: p.y / scale,
+    z: p.z / scale,
+  }))
+  if (
+    points.length < 4 ||
+    points.some((p) => AXES.some((axis) => !Number.isFinite(p[axis])))
+  )
+    return undefined
+  const midpoint = (axis: Axis) =>
+    (Math.min(...points.map((p) => p[axis])) +
+      Math.max(...points.map((p) => p[axis]))) /
+    2
+  const center = { x: midpoint('x'), y: midpoint('y'), z: midpoint('z') }
+  if (type.data.curve_type === 'nurbs') {
+    if (points.length !== 9) return undefined
+    const radii = [0, 2, 4, 6].map((i) => ({
+      x: points[i].x - center.x,
+      y: points[i].y - center.y,
+      z: points[i].z - center.z,
+    }))
+    const radius = Math.hypot(radii[0].x, radii[0].y, radii[0].z)
+    if (!radius) return undefined
+    const tolerance = radius * 1e-6
+    for (let i = 0; i < 4; i++) {
+      const a = radii[i],
+        b = radii[(i + 1) % 4]
+      if (
+        Math.abs(Math.hypot(a.x, a.y, a.z) - radius) > tolerance ||
+        Math.abs(a.x * b.x + a.y * b.y + a.z * b.z) > radius * tolerance ||
+        AXES.some(
+          (axis) =>
+            Math.abs(
+              points[2 * i + 1][axis] - center[axis] - a[axis] - b[axis]
+            ) > tolerance
+        )
+      )
+        return undefined
+    }
+  }
+  return center
+}
+
+async function withDistanceFrameDefaults<T extends GdtCommandData>(
+  data: T,
+  engine: ConnectionManager,
+  graph: ArtifactGraph | undefined,
+  outputUnit: UnitLength,
+  wasmInstance: ModuleType
+): Promise<T> {
+  const selections = getSelectionsFromGdtData(data)
+  const ids = getEngineEntityIdsForGdtSelections(selections)
+  const scale = baseUnitToMm(outputUnit)
+  const point = (p: Point3d): Point3d => ({
+    x: p.x / scale,
+    y: p.y / scale,
+    z: p.z / scale,
+  })
+  const direction = (a: Point3d, b: Point3d): Point3d => ({
+    x: b.x - a.x,
+    y: b.y - a.y,
+    z: b.z - a.z,
+  })
+  const boundingBox = (entityIds: string[]) =>
+    getBoundingBoxForGdtEntities({
+      engineCommandManager: engine,
+      entityIds,
+      outputUnit,
+      includeEntireScene: true,
+    })
+  const modelBounds = !data.fontSize ? await boundingBox([]) : undefined
+  const average = modelBounds && distanceSetback(modelBounds)
+  const fontSize =
+    data.fontSize ??
+    (average !== undefined
+      ? createFontSizeCommandValue(average, outputUnit, wasmInstance)
+      : undefined)
+  if (data.framePlane && data.framePosition) return { ...data, fontSize }
+  const inputs = [
+    ...(selections?.graphSelections ?? []).map((selection) => ({
+      selection,
+      primitive: undefined,
+    })),
+    ...(
+      selections?.otherSelections.filter(isEnginePrimitiveSelection) ?? []
+    ).map((primitive) => ({ selection: undefined, primitive })),
+  ]
+  const targets = await Promise.all(
+    inputs.map(async ({ selection, primitive }) => {
+      const id =
+        primitive?.entityId ??
+        (selection &&
+          getEngineEntityIdsForGdtSelections({
+            graphSelections: [selection],
+            otherSelections: [],
+          })[0])
+      const isEdge =
+        selection?.entityRef?.type === 'edge' ||
+        selection?.artifact?.type === 'segment' ||
+        selection?.artifact?.type === 'sweepEdge' ||
+        primitive?.primitiveType === 'edge'
+      const sides =
+        selection?.entityRef?.type === 'edge'
+          ? selection.entityRef.side_faces
+          : selection?.artifact?.type === 'segment' ||
+              selection?.artifact?.type === 'sweepEdge'
+            ? (selection.artifact.commonSurfaceIds ?? [])
+            : []
+      const bounds = id ? await boundingBox([id]) : undefined
+      const endpoints =
+        isEdge && id
+          ? await queryModelingCommand(engine, {
+              type: 'curve_get_end_points',
+              curve_id: id,
+            })
+          : undefined
+      const start =
+        endpoints?.type === 'curve_get_end_points'
+          ? point(endpoints.data.start)
+          : undefined
+      const end =
+        endpoints?.type === 'curve_get_end_points'
+          ? point(endpoints.data.end)
+          : undefined
+      let center = bounds?.center
+      if (
+        isEdge &&
+        id &&
+        start &&
+        end &&
+        Math.hypot(...Object.values(direction(start, end))) <= 1e-6 / scale
+      )
+        center = (await distanceCircleCenter(engine, id, scale)) ?? center
+      if (!isEdge && id) {
+        const face = await queryModelingCommand(engine, {
+          type: 'face_get_center',
+          object_id: id,
+        })
+        if (
+          face?.type === 'face_get_center' &&
+          AXES.every((axis) => Number.isFinite(face.data.pos[axis]))
+        )
+          center = point(face.data.pos)
+      }
+      return {
+        id,
+        selection,
+        primitive,
+        isEdge,
+        sides,
+        bounds,
+        start,
+        end,
+        center,
+      }
+    })
+  )
+  const faceQueries = new Map<string, Promise<FaceIsPlanar | undefined>>()
+  const planarFace = (id: string) => {
+    const existing = faceQueries.get(id)
+    if (existing) return existing
+    const query = queryModelingCommand(engine, {
+      type: 'face_is_planar',
+      object_id: id,
+    }).then((r) => (r?.type === 'face_is_planar' ? r.data : undefined))
+    faceQueries.set(id, query)
+    return query
+  }
+  const featurePlane = (bounds: BoundingBox | undefined) => {
+    if (!bounds) return undefined
+    const axis = getDecisiveAxis(bounds.dimensions, (a, b) => a - b)
+    return axis &&
+      bounds.dimensions[axis] <=
+        Math.max(...Object.values(bounds.dimensions)) * AXIS_INFERENCE_TOLERANCE
+      ? getFeaturePlaneForNormalAxis(axis)
+      : undefined
+  }
+  const firstPlane = featurePlane(targets[0]?.bounds)
+  const preferred =
+    distanceSourcePlane(selections, graph) ??
+    (firstPlane === featurePlane(targets[1]?.bounds) ? firstPlane : undefined)
+  const choosePlane = (d: Point3d) =>
+    preferred && planeContainsDirection(preferred, d)
+      ? preferred
+      : getDistanceFramePlaneFromDirection(d)
+  let plane = data.framePlane
+  if (!plane && targets.length >= 2 && targets.every((t) => t.isEdge)) {
+    for (const id of targets[0].sides.filter((id) =>
+      targets.every((t) => t.sides.includes(id))
+    )) {
+      const face = await planarFace(id)
+      const normal = face && getNormalFromPlanarFace(face)
+      const axis = normal && getDominantNormalAxis(normal)
+      if (axis) {
+        plane = getFeaturePlaneForNormalAxis(axis)
+        break
+      }
+    }
+  }
+  const [a, b] = targets
+  if (!plane && a && targets.length === 1 && a.isEdge && a.start && a.end)
+    plane = choosePlane(direction(a.start, a.end))
+  if (!plane && a?.center && b?.center)
+    plane = choosePlane(direction(a.center, b.center))
+  if (!plane && a && targets.every((t) => t.isEdge)) {
+    const faces = await Promise.all(
+      targets.map(async (t) => {
+        for (const id of t.sides) {
+          const face = await planarFace(id)
+          if (face?.origin && getNormalFromPlanarFace(face)) return face
+        }
+      })
+    )
+    if (faces[0]?.origin && faces[1]?.origin)
+      plane = choosePlane(direction(faces[0].origin, faces[1].origin))
+    if (targets.length === 1) {
+      const normals = (await Promise.all(a.sides.map(planarFace))).flatMap(
+        (face) => {
+          const normal = face && getNormalFromPlanarFace(face)
+          return normal ? [normal] : []
+        }
+      )
+      for (let i = 0; !plane && i < normals.length; i++)
+        for (let j = i + 1; !plane && j < normals.length; j++) {
+          const u = normals[i],
+            v = normals[j]
+          plane = choosePlane({
+            x: u.y * v.z - u.z * v.y,
+            y: u.z * v.x - u.x * v.z,
+            z: u.x * v.y - u.y * v.x,
+          })
+        }
+    }
+  }
+  const selectedBounds =
+    ids.length === 1
+      ? a?.bounds
+      : ids.length
+        ? await boundingBox(ids)
+        : undefined
+  plane ??=
+    preferred ??
+    (selectedBounds &&
+      getDistanceFramePlaneFromDirection(selectedBounds.dimensions)) ??
+    KCL_PLANE_XY
+  let framePosition = data.framePosition
+  if (!framePosition) {
+    const from = targets.length === 1 ? a?.start : a?.center
+    const to = targets.length === 1 ? a?.end : b?.center
+    let bounds = modelBounds
+    if (from && to) {
+      const parents = await Promise.all(
+        targets.map(async (t) => {
+          if (!t.id) return undefined
+          const parent = await queryModelingCommand(engine, {
+            type: 'entity_get_parent_id',
+            entity_id: t.id,
+          })
+          if (parent?.type === 'entity_get_parent_id')
+            return parent.data.entity_id
+          const face =
+            t.sides
+              .map((id) => graph?.get(id))
+              .find((f) => f?.type === 'cap' || f?.type === 'wall') ??
+            t.selection?.artifact
+          const artifactId =
+            t.selection?.engineTopologyFallback?.parentId ??
+            t.primitive?.parentEntityId ??
+            (face?.type === 'cap' || face?.type === 'wall'
+              ? face.sweepId
+              : undefined)
+          const body = graph?.get(artifactId ?? '')
+          return body?.type === 'sweep'
+            ? (body.pathId ?? undefined)
+            : artifactId
+        })
+      )
+      const bodyBounds =
+        parents.length && parents.every((id) => id !== undefined)
+          ? await boundingBox([...new Set(parents)])
+          : undefined
+      bounds = bodyBounds ?? modelBounds ?? (await boundingBox([]))
+    }
+    if (!bounds && distanceSetback(selectedBounds) === undefined)
+      bounds = await boundingBox([])
+    const margin =
+      targets.length === 1
+        ? 2 *
+          Math.max(
+            (distanceSetback(bounds) ?? 0) *
+              GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
+            getGdtFontHeight(fontSize, outputUnit) ?? 0
+          )
+        : 0
+    const outside =
+      from && to && bounds
+        ? getOutsideDistanceSetback(from, to, plane, bounds, margin)
+        : undefined
+    framePosition = createDistanceFramePositionCommandValue(
+      outside ?? distanceSetback(selectedBounds) ?? distanceSetback(bounds),
+      outputUnit,
+      wasmInstance
+    )
+  }
+  return { ...data, framePlane: plane, framePosition, fontSize }
 }

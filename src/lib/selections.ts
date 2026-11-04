@@ -6,6 +6,7 @@ import type {
   RegionGetResolvableIntersectionInfo,
   WebSocketRequest,
 } from '@kittycad/lib'
+import { queryModelingCommand } from '@src/lib/engineConnection/utils'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D } from 'three'
 import { Mesh } from 'three'
@@ -175,18 +176,13 @@ async function getParentEntityIdForEntity(
   entityId: string,
   engineCommandManager: ConnectionManager
 ): Promise<string | undefined> {
-  const parentResponse = await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'entity_get_parent_id',
-      entity_id: entityId,
-    },
+  const response = await queryModelingCommand(engineCommandManager, {
+    type: 'entity_get_parent_id',
+    entity_id: entityId,
   })
-  if (!isModelingResponse(parentResponse)) return undefined
-  const parentIdResponse = parentResponse.resp.data.modeling_response
-  if (parentIdResponse.type !== 'entity_get_parent_id') return undefined
-  return parentIdResponse.data.entity_id
+  return response?.type === 'entity_get_parent_id'
+    ? response.data.entity_id
+    : undefined
 }
 
 /**
@@ -404,21 +400,12 @@ export async function getPrimitiveSelectionForEntity(
   engineCommandManager: ConnectionManager,
   artifactGraph: ArtifactGraph
 ): Promise<EnginePrimitiveSelection | null> {
-  const websocketResponse = await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'entity_get_primitive_index',
-      entity_id: entityId,
-    },
+  const response = await queryModelingCommand(engineCommandManager, {
+    type: 'entity_get_primitive_index',
+    entity_id: entityId,
   })
-
-  if (!isModelingResponse(websocketResponse)) return null
-
-  const primitiveIndexResponse = websocketResponse.resp.data.modeling_response
-  if (primitiveIndexResponse?.type !== 'entity_get_primitive_index') return null
-
-  const entityGetPrimitiveIndex = primitiveIndexResponse.data
+  if (response?.type !== 'entity_get_primitive_index') return null
+  const entityGetPrimitiveIndex = response.data
 
   const parentEntityId = await resolveSweepParentEntityIdForEdge(
     entityId,

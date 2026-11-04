@@ -78,6 +78,11 @@ import {
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
+import {
+  resolveDistanceSelections,
+  type DistanceFaceSelections,
+} from '@src/lib/gdtDistanceSelections'
+import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type CommandArgsByName = {
@@ -267,13 +272,32 @@ const withGdtDefaults = <
   defineModelingCodemod<CommandArgsByName[Name]>({
     ...withStdLibExperimentalFeatures(commandName, options),
     run: async ({ args, ast, kclManager, wasmInstance }) => {
+      let commandArgs = args
+      let edgeFaceSelections: DistanceFaceSelections | undefined
+      if (
+        commandName === 'GDT Distance' &&
+        !args.nodeToEdit &&
+        'objects' in args &&
+        args.objects
+      ) {
+        const resolved = await resolveDistanceSelections(
+          args.objects,
+          kclManager.artifactGraph,
+          kclManager.engineCommandManager
+        )
+        if (isErr(resolved)) return resolved
+        commandArgs = { ...args, objects: resolved.selections }
+        edgeFaceSelections = resolved.faces
+      }
       const data = await withDefaultGdtFrameDefaults({
-        data: args as GdtCommandData,
+        data: commandArgs as GdtCommandData,
         engineCommandManager: kclManager.engineCommandManager,
         ast,
         sourceCode: kclManager.code,
         outputUnit: kclManager.fileSettings.defaultLengthUnit,
         wasmInstance,
+        distance: commandName === 'GDT Distance',
+        artifactGraph: kclManager.artifactGraph,
       })
 
       return add(
@@ -281,6 +305,7 @@ const withGdtDefaults = <
           ast,
           artifactGraph: kclManager.artifactGraph,
           wasmInstance,
+          edgeFaceSelections,
         })
       )
     },

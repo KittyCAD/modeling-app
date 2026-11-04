@@ -148,6 +148,20 @@ gdt::datum(face = capEnd001, name = "A")`
 })
 
 describe('GDT tolerance defaults', () => {
+  it('keeps distance tolerance optional and infers the frame for viewport edges', () => {
+    const command = modelingMachineCommandConfig['GDT Distance']
+    if (!command || isArray(command))
+      throw new Error('Expected distance command')
+    expect(command.args?.tolerance?.required).toBe(false)
+    expect(command.args?.tolerance?.prepopulate).toBeFalsy()
+    expect(command.args?.framePosition).toMatchObject({
+      defaultValue: undefined,
+    })
+    expect(command.args?.framePlane).toMatchObject({ defaultValue: undefined })
+    expect(command.args?.objects).toMatchObject({
+      selectionTypes: expect.arrayContaining(['enginePrimitiveEdge']),
+    })
+  })
   it('uses the current file unit for the tolerance input default', () => {
     const modelingContext = {
       kclManager: {
