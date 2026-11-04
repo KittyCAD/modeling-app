@@ -475,6 +475,9 @@ export class LocalRenderer {
       if (
         !this.settings.pickingEnabled ||
         this.kclManager.isExecuting ||
+        // The old model stays on screen until the new one has loaded,
+        // but don't allow hover/picking if the new model is already downloading.
+        (this.currentModel !== null && !this.isLoadedSceneCurrent()) ||
         controls.isDragging ||
         (isHover &&
           (!this.pointerOverCanvas || controls.hoverPickingDisabled)) ||
@@ -569,6 +572,19 @@ export class LocalRenderer {
 
   private get backgroundColor() {
     return getThemeBackgroundColor(this.settings.theme)
+  }
+
+  /**
+   * Whether the loaded model is the scene of the last finished execution.
+   * execState has its generation ready before the signal, which only updates after
+   * the artifact graph, so prefer using that.
+   */
+  private isLoadedSceneCurrent() {
+    const { execState, engineSceneGenerationSignal } = this.kclManager
+    return (
+      this.loadedSceneGeneration ===
+      (execState.engineSceneGeneration ?? engineSceneGenerationSignal.peek())
+    )
   }
 
   setTheme(theme: ResolvedTheme) {
@@ -875,8 +891,7 @@ export class LocalRenderer {
       !camera ||
       !canvas ||
       !this.currentModel ||
-      this.loadedSceneGeneration !==
-        this.kclManager.engineSceneGenerationSignal.peek() ||
+      !this.isLoadedSceneCurrent() ||
       this.kclManager.isExecuting
     )
       return []
@@ -1201,10 +1216,7 @@ export class LocalRenderer {
 
     const { detail } = event as CustomEvent<KclExecutionDoneDetail>
     if (!detail.successful) {
-      if (
-        this.loadedSceneGeneration !==
-        this.kclManager.engineSceneGenerationSignal.peek()
-      ) {
+      if (!this.isLoadedSceneCurrent()) {
         // The failed run replaced the scene, so its old geometry is stale.
         this.clearModel()
         this.gpu?.planeRenderer.updateOffsetPlanes(
@@ -1218,10 +1230,7 @@ export class LocalRenderer {
     }
 
     // A cache hit leaves the engine scene as it was, so keep the loaded model.
-    if (
-      this.kclManager.engineSceneGenerationSignal.peek() ===
-      this.loadedSceneGeneration
-    ) {
+    if (this.isLoadedSceneCurrent()) {
       this.onModelLoadSettled?.()
       return
     }
@@ -1236,7 +1245,11 @@ export class LocalRenderer {
     // Loads only start between executions, so two loads never overlap without
     // an execution starting in between.
     const version = this.executionVersion
+
+    // Read the signal instead of execState, because the signal updates
+    // together with the artifact graph this load reads.
     const sceneGeneration = this.kclManager.engineSceneGenerationSignal.peek()
+
     const isCurrent = () => !this.disposed && version === this.executionVersion
     // Reference planes do not depend on a successful GLB export.
     this.gpu?.planeRenderer.updateOffsetPlanes(this.kclManager.artifactGraph)
@@ -1324,10 +1337,7 @@ export class LocalRenderer {
    * execution loads no model, so its reset waits for the next one.
    */
   resetCameraAfterModelLoad() {
-    if (
-      this.loadedSceneGeneration ===
-      this.kclManager.engineSceneGenerationSignal.peek()
-    ) {
+    if (this.isLoadedSceneCurrent()) {
       this.resetCamera()
     } else {
       this.cameraResetPending = true

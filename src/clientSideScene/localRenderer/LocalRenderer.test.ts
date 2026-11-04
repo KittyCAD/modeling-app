@@ -41,6 +41,7 @@ type RendererInternals = {
   scheduleRender(): void
   gpu: FakeGpu | null
   currentModel: Group | null
+  loadedSceneGeneration: number | null
   rebuildSelectionTargets(): void
   previewCamera: PerspectiveCamera | OrthographicCamera | null
   handleLocalSelectionCommand: LocalSelectionCommandHandler
@@ -110,6 +111,7 @@ function fixture(
   const manager = Object.assign(new EventTarget(), {
     artifactGraph: new Map([['triangle', { type: 'sweep' }]]),
     engineSceneGenerationSignal: signal(0),
+    execState: { engineSceneGeneration: null },
     isExecutingSignal: signal(false),
     selectionFilter: signal<EntityType[]>([...defaultSelectionFilter]),
     get isExecuting() {
@@ -305,6 +307,7 @@ describe('local GLB loading', () => {
     face.userData.faceUuid = 'face'
     model.add(face)
     f.state.currentModel = model
+    f.state.loadedSceneGeneration = f.manager.engineSceneGenerationSignal.value
     f.state.rebuildSelectionTargets()
     f.picker.pick.mockResolvedValue({ target: face, stale: false })
     return f
