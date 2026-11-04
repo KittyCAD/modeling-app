@@ -25,14 +25,16 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
  * Collects the files from `projectRoot` that cloud sync would include in an
  * upload archive. The walk uses coordinated reads, skips cloud-sync internal
  * paths, respects `.gitignore` rules, and returns normalized files in stable
- * relative-path order.
+ * relative-path order. Project copies can include ignored attachments too.
  */
 export async function collectLocalProjectFilesForCloudSync({
   fileOperations,
   projectRoot,
+  includeIgnored = false,
 }: {
   fileOperations: FileOperationsRegistryService
   projectRoot: string
+  includeIgnored?: boolean
 }) {
   const files: ProjectArchiveFile[] = []
   const gitignoreFs = fileOperationsGitignoreFs(fileOperations)
@@ -53,7 +55,10 @@ export async function collectLocalProjectFilesForCloudSync({
       )
       const isDirectory =
         (await fileOperations.stat(absolutePath)).kind === 'directory'
-      if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)) {
+      if (
+        !includeIgnored &&
+        isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)
+      ) {
         continue
       }
 

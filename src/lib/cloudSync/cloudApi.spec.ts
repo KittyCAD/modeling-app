@@ -2,8 +2,8 @@ import {
   type CloudApiError,
   createRemoteProject,
   getRemoteProjectThumbnailUrl,
-  listRemoteProjects,
   listRemoteProjectLibraries,
+  listRemoteProjects,
   normalizeRemoteProjectThumbnailUrl,
   remoteProjectThumbnailTargetPathFromUrl,
   thumbnailUrlFromRemoteProjectPayload,
@@ -145,6 +145,28 @@ describe('remote project uploads', () => {
       entrypoint_path: 'main.kcl',
       project_toml_path: 'project.toml',
     })
+  })
+
+  test('rejects updates to known read-only projects before sending an upload', async () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(
+      updateRemoteProject({
+        config: { enabled: true, baseUrl: 'https://api.test' },
+        projectPath: '/projects/readonly',
+        project: {
+          id: 'readonly',
+          access: {
+            can_edit: false,
+            can_delete: false,
+            can_manage_organization: false,
+            scope: 'organization',
+          },
+        },
+        files: projectFiles(),
+      })
+    ).rejects.toMatchObject({ status: 403 })
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   test('preserves existing publication metadata when updating cloud projects', async () => {

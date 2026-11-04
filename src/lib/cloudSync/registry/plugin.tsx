@@ -46,9 +46,9 @@ import {
   getCloudProjectLibraryMaterializationDirectoryPath,
   normalizePathForSync,
 } from '@src/lib/cloudSync/paths'
+import { isApiProjectLibrary } from '@src/lib/cloudSync/registry/apiProjectLibraries'
 import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
 import { personalCloudProjectRelationshipMembershipPolicy } from '@src/lib/cloudSync/registry/personalCloudLibrary'
-import { isApiProjectLibrary } from '@src/lib/cloudSync/registry/apiProjectLibraries'
 import {
   type CloudProjectLocalManifestComparison,
   classifyCloudProjectDuplicateRisk,
@@ -110,7 +110,7 @@ import {
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const CLOUD_SYNC_STALLED_AFTER_MS = 5 * 60_000
 
@@ -261,6 +261,7 @@ type CloudSyncLibraryProjectIssue = {
   projectName: string
   message?: string
   occurredAt?: string
+  kind?: string
 }
 
 type CloudSyncConflictMetadata = Pick<
@@ -370,6 +371,7 @@ function getCloudSyncLibraryFailureIssues(
       projectName: getHomeProjectDisplayName(project),
       message: project.syncFailure.message,
       occurredAt: project.syncFailure.at,
+      kind: project.syncFailure.kind,
     })
   }
 
@@ -385,6 +387,7 @@ function getCloudSyncLibraryFailureIssues(
       projectName: getHomeProjectDisplayName(activeProject),
       message: status.lastFailure,
       occurredAt: status.lastFailureAt,
+      kind: status.lastFailureKind,
     })
   }
 
@@ -563,6 +566,8 @@ function CloudSyncLibraryHomeSummary({
                         'Cloud sync failed without a reported error message.',
                       projectName: issue.projectName,
                       occurredAt: issue.occurredAt,
+                      projectPath: issue.projectPath,
+                      kind: issue.kind,
                     })
                   }
                 >
@@ -580,6 +585,8 @@ function CloudSyncLibraryHomeSummary({
                       status.lastFailure ||
                       'Cloud sync failed without a reported error message.',
                     occurredAt: status.lastFailureAt,
+                    projectPath: status.activeProjectPath,
+                    kind: status.lastFailureKind,
                   })
                 }
               >
@@ -740,6 +747,8 @@ function CloudSyncProjectMenuItem({
               title: label,
               message: errorMessage,
               projectName,
+              projectPath: context.projectPath,
+              kind: durableFailure?.kind ?? status.lastFailureKind,
               occurredAt:
                 durableFailure?.at ||
                 status.lastFailureAt ||
@@ -830,6 +839,30 @@ function CloudSyncDialogAppHeaderItem({ app, className }: AppHeaderItemProps) {
     status.state === 'failed' &&
     !status.activeProjectPath &&
     !status.scopedProjectPath
+  const projectPath = app.project?.path
+  const metadata = useCloudSyncProjectMetadata(projectPath)
+  const promptedProjects = useRef(new Set<string>())
+  useEffect(() => {
+    if (
+      !projectPath ||
+      !metadata ||
+      normalizePathForSync(metadata.localProjectPath) !==
+        normalizePathForSync(projectPath) ||
+      !metadata.hasPendingChanges ||
+      metadata.lastFailure?.kind !== 'remote-upload-forbidden'
+    )
+      return
+    const key = `${projectPath}:${metadata.remoteProjectId}`
+    if (promptedProjects.current.has(key)) return
+    promptedProjects.current.add(key)
+    openCloudSyncErrorDialog({
+      title: 'Create an editable copy',
+      message: metadata.lastFailure.message,
+      projectPath,
+      projectName: metadata.projectName,
+      kind: metadata.lastFailure.kind,
+    })
+  }, [projectPath, metadata])
 
   return (
     <>
@@ -855,7 +888,18 @@ function CloudSyncDialogAppHeaderItem({ app, className }: AppHeaderItemProps) {
       <CloudConflictDialogHost
         resolvedTheme={getResolvedTheme(settingsValues.app.theme.current)}
       />
-      <CloudSyncErrorDialogHost />
+      <CloudSyncErrorDialogHost
+        onCreateCopy={(sourcePath) => {
+          app.commands.send({
+            type: 'Find and select command',
+            data: {
+              groupId: 'projects',
+              name: 'Copy project',
+              argDefaultValues: { project: sourcePath },
+            },
+          })
+        }}
+      />
     </>
   )
 }
