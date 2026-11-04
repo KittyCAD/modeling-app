@@ -1,23 +1,26 @@
 ---
 title: "segLen"
 subtitle: "Function in std::sketch"
-excerpt: "Compute the length of the provided line segment."
+excerpt: "Compute the length of the provided segment."
 layout: manual
 ---
 
-Compute the length of the provided line segment.
+Compute the length of the provided segment.
 
 ```kcl
 segLen(@tag: TaggedEdge): number(Length)
 ```
 
-
+For a straight line, this is the distance between its two ends. For a
+circular arc, it is the length along the curve, not the straight-line
+distance between its ends. For a circle, it is the circumference.
+Ellipses, conics and Bezier curves are not supported.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The line segment being queried by its tag. | Yes |
+| `tag` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The segment being queried by its tag. | Yes |
 
 ### Returns
 
