@@ -18,9 +18,17 @@ import {
   createEdgeRefObjectExpression,
   entityReferenceToEdgeRefPayload,
 } from '@src/lang/modifyAst/edges'
-import { isFaceArtifact } from '@src/lang/modifyAst/faces'
+import {
+  isFaceArtifact,
+  insertFacePrimitiveVariablesAndOffsetPathToNode,
+} from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { resolveToCodeRef, traverse, valueOrVariable } from '@src/lang/queryAst'
+import {
+  getVariableExprsFromSelection,
+  resolveToCodeRef,
+  traverse,
+  valueOrVariable,
+} from '@src/lang/queryAst'
 import {
   type ResolvedGraphSelection,
   getArtifactOfTypes,
@@ -30,6 +38,7 @@ import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
+import type { DistanceFaceSelections } from '@src/lib/gdtDistanceSelections'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
@@ -1266,6 +1275,7 @@ export function addDistanceGdt({
   leaderScale,
   fontSize,
   nodeToEdit,
+  edgeFaceSelections,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
@@ -1279,6 +1289,7 @@ export function addDistanceGdt({
   leaderScale?: KclCommandValue
   fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
+  edgeFaceSelections?: DistanceFaceSelections
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
@@ -1307,7 +1318,58 @@ export function addDistanceGdt({
   const targets: Array<{ kind: 'face' | 'edge'; expr: Expr }> = mNodeToEdit
     ? [{ kind: 'edge', expr: createLocalName('selection') }]
     : []
+  const faceExpressions = new Map<string, Expr>()
+  for (const [id, primitive] of edgeFaceSelections ?? []) {
+    const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+      enginePrimitives: [primitive],
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(result)) return result
+    if (result.faceExprs[0]) faceExpressions.set(id, result.faceExprs[0])
+  }
   for (const selection of targetSelections) {
+    const payload = getEdgeRefPayloadFromSelection(selection)
+    if (payload) {
+      const cap = [...payload.side_faces, ...(payload.end_faces ?? [])]
+        .map((id) => artifactGraph.get(id))
+        .find((face) => face?.type === 'cap')
+      const sweep =
+        cap?.type === 'cap' ? artifactGraph.get(cap.sweepId) : undefined
+      const owner =
+        sweep?.type === 'sweep'
+          ? getVariableExprsFromSelection(
+              {
+                graphSelections: [{ artifact: sweep, codeRef: sweep.codeRef }],
+                otherSelections: [],
+              },
+              artifactGraph,
+              modifiedAst,
+              wasmInstance,
+              undefined,
+              { artifactTypeFilter: ['sweep'], lastChildLookup: false }
+            )
+          : undefined
+      if (err(owner)) return owner
+      if (owner && owner.exprs.length !== 1)
+        return new Error('Could not resolve the distance cap owner.')
+      const result = createEdgeRefObjectExpression(
+        payload,
+        wasmInstance,
+        modifiedAst,
+        artifactGraph,
+        undefined,
+        selection.codeRef,
+        undefined,
+        owner?.exprs[0],
+        { faceExpressions, requireAllFaces: true }
+      )
+      if (err(result)) return result
+      modifiedAst = result.modifiedAst
+      targets.push({ kind: 'edge', expr: result.expr })
+      continue
+    }
     const expressions = buildGdtFaceAndEdgeExpressions({
       selections: { graphSelections: [selection], otherSelections: [] },
       artifactGraph,
