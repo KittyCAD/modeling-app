@@ -63,6 +63,7 @@ import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
   TEST_SETTINGS,
   TEST_SETTINGS_KEY,
+  geometryOnlyForTestTags,
   playwrightPluginSettings,
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
@@ -1090,6 +1091,7 @@ export async function setup(
     mockApiRoutes = true,
   }: { cloudSyncEnabled?: boolean; mockApiRoutes?: boolean } = {}
 ) {
+  const localRendererEnabled = geometryOnlyForTestTags(testInfo?.tags)
   if (!mockApiRoutes && userFeatures.length > 0)
     throw new Error('userFeatures requires mockApiRoutes to be enabled')
 
@@ -1158,6 +1160,14 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...(localRendererEnabled === undefined
+            ? {}
+            : {
+                modeling: {
+                  ...TEST_SETTINGS.modeling,
+                  use_local_renderer: localRendererEnabled,
+                },
+              }),
           plugins: playwrightPluginSettings({
             cloudSyncEnabled,
             zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),
