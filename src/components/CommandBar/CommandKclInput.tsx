@@ -128,22 +128,6 @@ export function CommandKclInput({
       : undefined
   }, [nodeToEdit, kclManager.ast, wasmInstance])
 
-  const completionSourceRange = useMemo<SourceRange>(
-    () =>
-      sourceRangeForPrevVariables ||
-      selectionRanges.graphSelections[0]?.codeRef?.range || [
-        kclManager.codeSignal.value.length,
-        kclManager.codeSignal.value.length,
-        kclManager.ast.moduleId,
-      ],
-    [
-      kclManager.ast.moduleId,
-      kclManager.codeSignal.value.length,
-      selectionRanges.graphSelections,
-      sourceRangeForPrevVariables,
-    ]
-  )
-
   const initialVariableName = useMemo(() => {
     if (variableName !== undefined) {
       return variableName
@@ -208,7 +192,7 @@ export function CommandKclInput({
   } = useCalculateKclExpression({
     value: kclValue,
     initialVariableName,
-    sourceRange: completionSourceRange,
+    sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
     rustContext: kclManager.rustContext,
     code: kclManager.codeSignal.value,
@@ -233,7 +217,9 @@ export function CommandKclInput({
       detail: roundedWithUnits ?? String(roundOff(Number(v.value))),
     }
   })
-  const varMentionsExtension = varMentions(varMentionData)
+  const varMentionsExtension = varMentions(varMentionData, {
+    interactionDelay: 0,
+  })
   const initialEditorProps = useRef({
     value,
     labelId,
@@ -255,7 +241,9 @@ export function CommandKclInput({
         doc: initial.value,
         extensions: [
           compartments.theme.of(editorTheme[getResolvedTheme(initial.theme)]),
-          compartments.varMentions.of(varMentions(initial.varMentionData)),
+          compartments.varMentions.of(
+            varMentions(initial.varMentionData, { interactionDelay: 0 })
+          ),
           compartments.contentAttributes.of(
             getKclEditorContentAttributes(initial.labelId)
           ),
@@ -276,8 +264,9 @@ export function CommandKclInput({
             {
               key: 'Enter',
               run: (editor) => {
-                // Only submit if there is no completion active
-                if (completionStatus(editor.state) !== null) return false
+                // Let the completion keymap accept suggestions; consume Enter
+                // while it is pending so it cannot insert a newline.
+                if (completionStatus(editor.state) !== null) return true
                 editor.dom.closest('form')?.requestSubmit()
                 return true
               },
