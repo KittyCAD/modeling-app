@@ -33,7 +33,6 @@ import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 
 import {
   TEST_SETTINGS,
-  geometryOnlyForTestTags,
   playwrightPluginSettings,
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
@@ -159,36 +158,6 @@ export interface ElectronZooLaunchOptions {
   executablePath?: string
 }
 
-/** Persist the tagged renderer choice; return whether the setting changed. */
-async function applyTestSceneMode(page: Page, localRendererEnabled?: boolean) {
-  if (localRendererEnabled === undefined) return false
-  await page.waitForFunction(() =>
-    window.app?.settings.actor.getSnapshot().matches('idle')
-  )
-  const changed = await page.evaluate((value) => {
-    const actor = window.app.settings.actor
-    if (
-      actor.getSnapshot().context.modeling.useLocalRenderer.current === value
-    ) {
-      return false
-    }
-    actor.send({
-      type: 'set.modeling.useLocalRenderer',
-      data: { level: 'user', value },
-    })
-    return true
-  }, localRendererEnabled)
-  if (!changed) return false
-  await page.waitForFunction((value) => {
-    const snapshot = window.app.settings.actor.getSnapshot()
-    return (
-      snapshot.matches('idle') &&
-      snapshot.context.modeling.useLocalRenderer.current === value
-    )
-  }, localRendererEnabled)
-  return true
-}
-
 export class ElectronZoo {
   private disposed = false
   private disposal: Promise<void> | undefined
@@ -203,7 +172,6 @@ export class ElectronZoo {
   public page!: Page
   public context!: BrowserContext
   private tracingEnabled = false
-  private useLocalRenderer: boolean | undefined
 
   constructor(private readonly launchOptions: ElectronZooLaunchOptions = {}) {}
 
@@ -296,8 +264,6 @@ export class ElectronZoo {
     if (this.disposed) {
       throw new Error('Electron fixture has been disposed')
     }
-    this.useLocalRenderer = geometryOnlyForTestTags(testInfo.tags)
-
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
 
@@ -481,14 +447,6 @@ export class ElectronZoo {
     await this.page.reload()
     await waitForAppLoad(this.page)
     if (!mockApiRoutes) await waitForAuthentication(this.page)
-    // Reused Electron windows can reload before the settings file is settled.
-    // Verify the live setting before the test opens a modeling scene.
-    // A reused Electron window may already have mounted the old renderer.
-    if (await applyTestSceneMode(this.page, this.useLocalRenderer)) {
-      await this.page.reload()
-      await waitForAppLoad(this.page)
-      if (!mockApiRoutes) await waitForAuthentication(this.page)
-    }
   }
 
   async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
@@ -529,14 +487,6 @@ export class ElectronZoo {
       settings: {
         ...TEST_SETTINGS,
         ...appSettings,
-        ...(this.useLocalRenderer === undefined
-          ? {}
-          : {
-              modeling: {
-                ...(appSettings?.modeling ?? TEST_SETTINGS.modeling),
-                use_local_renderer: this.useLocalRenderer,
-              },
-            }),
         plugins: {
           ...playwrightPluginSettings(),
           ...appSettingsPlugins,
@@ -643,11 +593,6 @@ const fixturesForWeb = {
     const webApp = new AuthenticatedApp(context, page, testInfo)
     await webApp.initialise('', userFeatures, mockApiRoutes)
 
-    // Web settings live in OPFS; the localStorage seed alone cannot select
-    // a renderer. Persist the choice before a modeling scene mounts; no reload
-    // is needed on the project library, where no scene has mounted yet.
-    await applyTestSceneMode(page, geometryOnlyForTestTags(testInfo.tags))
-
     await use(page)
   },
 }
@@ -673,8 +618,8 @@ const fixturesBasedOnProcessEnvPlatform = {
   toolbar: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new ToolbarFixture(page))
   },
-  scene: async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
-    await use(new SceneFixture(page, geometryOnlyForTestTags(testInfo.tags)))
+  scene: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(new SceneFixture(page))
   },
   homePage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new HomePageFixture(page))

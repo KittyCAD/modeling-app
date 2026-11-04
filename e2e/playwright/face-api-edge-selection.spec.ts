@@ -172,59 +172,55 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     })
   })
 
-  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
-    test(`Can select split edges for fillet ${rendererTag}`, async ({
-      context,
-      scene,
-      modelingDialog,
-      page,
-      toolbar,
-      editor,
-      homePage,
-    }) => {
-      await context.addInitScript((code) => {
-        localStorage.setItem('persistCode', code)
-      }, testCode)
-
-      await homePage.goToModelingScene()
-      await scene.settled()
-      if ((await editor.getCurrentCode()).trim() !== testCode.trim()) {
-        await scene.waitForExecutionDoneAfter(() =>
-          editor.replaceCode('', testCode)
-        )
-      }
-      await editor.expectEditor.toContain('solid001 = subtract')
-
-      // Set camera position for optimal edge viewing
-      await scene.moveCameraTo(
-        { x: 5.06, y: 25.19, z: 21.78 },
-        { x: 7.72, y: 11.81, z: 8.2 }
-      )
-
-      // Click on the split edge using ratio clicks to select it first
-      const [clickEdge] = await scene.makeSelectionHelpers({
-        kind: 'edge',
-        index: 3,
-        stream: { x: 0.1709, y: 0.4864, format: 'ratio' },
-      })
-      await clickEdge()
-
-      // Click fillet tool - the edge should already be selected
-      await toolbar.filletButton.click()
-
-      // Set radius to 0.75mm
-      await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
-      await modelingDialog.input('radius').fill('0.75')
-
-      await modelingDialog.submit()
-
-      // Assert code contains fillet
-      await editor.expectEditor.toContain('fillet')
-
-      // Final sanity check: assert no errors in code pane
-      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+  test('Can select split edges for fillet', async ({
+    context,
+    scene,
+    modelingDialog,
+    page,
+    toolbar,
+    editor,
+    homePage,
+  }) => {
+    const [clickEdge] = scene.makeMouseHelpers(0.1709, 0.4864, {
+      format: 'ratio',
     })
-  }
+    await context.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, testCode)
+
+    await homePage.goToModelingScene()
+    await scene.settled()
+    if ((await editor.getCurrentCode()).trim() !== testCode.trim()) {
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', testCode)
+      )
+    }
+    await editor.expectEditor.toContain('solid001 = subtract')
+
+    // Set camera position for optimal edge viewing
+    await scene.moveCameraTo(
+      { x: 5.06, y: 25.19, z: 21.78 },
+      { x: 7.72, y: 11.81, z: 8.2 }
+    )
+
+    // Click on the split edge using ratio clicks to select it first
+    await clickEdge()
+
+    // Click fillet tool - the edge should already be selected
+    await toolbar.filletButton.click()
+
+    // Set radius to 0.75mm
+    await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
+    await modelingDialog.input('radius').fill('0.75')
+
+    await modelingDialog.submit()
+
+    // Assert code contains fillet
+    await editor.expectEditor.toContain('fillet')
+
+    // Final sanity check: assert no errors in code pane
+    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+  })
 
   test('Can use an edge-extruded surface boundary as a Helix axis', async ({
     context,

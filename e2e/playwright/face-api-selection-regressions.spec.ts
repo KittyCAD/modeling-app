@@ -67,134 +67,120 @@ helix001 = helix(
 )`
 
 test.describe('Face API selection regressions', { tag: '@web' }, () => {
-  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
-    test(`2.9 fillets a generated Chamfer boundary edge ${rendererTag}`, async ({
-      page,
-      scene,
-      modelingDialog,
-      editor,
-      toolbar,
-      tronApp,
-      homePage,
-    }) => {
-      if (tronApp) await tronApp.cleanProjectDir()
-      await page.setBodyDimensions({ width: 1200, height: 800 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', edgeTreatmentCode)
-      )
-      await editor.closePane()
-      await scene.moveCameraTo(
-        { x: -3.14, y: -11, z: 16.25 },
-        { x: 15, y: 10, z: 6 }
-      )
+  test('2.9 fillets a generated Chamfer boundary edge', async ({
+    page,
+    scene,
+    modelingDialog,
+    editor,
+    toolbar,
+    tronApp,
+    homePage,
+  }) => {
+    if (tronApp) await tronApp.cleanProjectDir()
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', edgeTreatmentCode)
+    )
+    await editor.closePane()
+    await scene.moveCameraTo(
+      { x: -3.14, y: -11, z: 16.25 },
+      { x: 15, y: 10, z: 6 }
+    )
 
-      const [clickChamferBoundaryEdge] = await scene.makeSelectionHelpers({
-        kind: 'edge',
-        index: 10,
-        stream: { x: 0.4091, y: 0.5557, format: 'ratio' },
-      })
-      await clickChamferBoundaryEdge()
-      await expect(toolbar.selectionStatus).toContainText('1 edge')
-      await toolbar.filletButton.click()
-
-      await modelingDialog.input('radius').fill('0.3')
-
-      await modelingDialog.submit()
-      await scene.settled()
-
-      await editor.expectEditor.toContain('tag = $')
-      await editor.expectEditor.toContain('fillet001 = fillet(')
-      await editor.expectEditor.toContain('edges = [')
-      await editor.expectEditor.not.toContain('edgeId(')
+    const [clickChamferBoundaryEdge] = scene.makeMouseHelpers(0.4091, 0.5557, {
+      format: 'ratio',
     })
-  }
+    await clickChamferBoundaryEdge()
+    await expect(toolbar.selectionStatus).toContainText('1 edge')
+    await toolbar.filletButton.click()
 
-  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
-    test(`2.10 fillets an outer Shell rim edge ${rendererTag}`, async ({
-      page,
-      scene,
-      modelingDialog,
-      editor,
-      toolbar,
-      tronApp,
-      homePage,
-    }) => {
-      if (tronApp) await tronApp.cleanProjectDir()
-      await page.setBodyDimensions({ width: 1200, height: 800 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', shellCode)
-      )
-      await editor.closePane()
-      await scene.moveCameraTo({ x: 48, y: -38, z: 34 }, { x: 15, y: 11, z: 7 })
+    await modelingDialog.input('radius').fill('0.3')
 
-      const [clickShellRimEdge] = await scene.makeSelectionHelpers({
-        kind: 'edge',
-        index: 9,
-        stream: { x: 0.3679, y: 0.3356, format: 'ratio' },
-      })
-      await clickShellRimEdge()
-      await expect(toolbar.selectionStatus).toContainText('1 edge')
-      await toolbar.filletButton.click()
+    await modelingDialog.submit()
+    await scene.settled()
 
-      await expect(modelingDialog.input('radius')).toHaveText('5')
-      await modelingDialog.input('radius').fill('1')
+    await editor.expectEditor.toContain('tag = $')
+    await editor.expectEditor.toContain('fillet001 = fillet(')
+    await editor.expectEditor.toContain('edges = [')
+    await editor.expectEditor.not.toContain('edgeId(')
+  })
 
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-      await scene.settled()
+  test('2.10 fillets an outer Shell rim edge', async ({
+    page,
+    scene,
+    modelingDialog,
+    editor,
+    toolbar,
+    tronApp,
+    homePage,
+  }) => {
+    if (tronApp) await tronApp.cleanProjectDir()
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', shellCode)
+    )
+    await editor.closePane()
+    await scene.moveCameraTo({ x: 48, y: -38, z: 34 }, { x: 15, y: 11, z: 7 })
 
-      await editor.expectEditor.toContain('edgeId(body001')
-      await editor.expectEditor.toContain('fillet001 = fillet(body001')
+    const [clickShellRimEdge] = scene.makeMouseHelpers(0.3679, 0.3356, {
+      format: 'ratio',
     })
-  }
+    await clickShellRimEdge()
+    await expect(toolbar.selectionStatus).toContainText('1 edge')
+    await toolbar.filletButton.click()
 
-  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
-    test(`2.12 surface-extrudes an untouched outer CSG edge ${rendererTag}`, async ({
-      page,
-      scene,
-      modelingDialog,
-      editor,
-      toolbar,
-      tronApp,
-      homePage,
-    }) => {
-      if (tronApp) await tronApp.cleanProjectDir()
-      await page.setBodyDimensions({ width: 1200, height: 800 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', csgSurfaceExtrudeCode)
-      )
-      await editor.closePane()
-      await scene.moveCameraTo({ x: 48, y: -42, z: 34 }, { x: 13, y: 9, z: 5 })
+    await expect(modelingDialog.input('radius')).toHaveText('5')
+    await modelingDialog.input('radius').fill('1')
 
-      const [clickOuterCsgEdge] = await scene.makeSelectionHelpers({
-        kind: 'edge',
-        index: 2,
-        stream: { x: 0.6081, y: 0.4918, format: 'ratio' },
-      })
-      await clickOuterCsgEdge()
-      await toolbar.extrudeButton.click()
-      await modelingDialog.selection('Profiles').click()
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await modelingDialog.submit()
+    await scene.settled()
 
-      await expect(modelingDialog.input('length')).toHaveText('5')
-      await modelingDialog.input('length').fill('6')
+    await editor.expectEditor.toContain('edgeId(body001')
+    await editor.expectEditor.toContain('fillet001 = fillet(body001')
+  })
 
-      await modelingDialog
-        .options('body type')
-        .selectOption({ label: 'Surface' })
-      await modelingDialog.options('method').selectOption({ label: 'New' })
-      await modelingDialog.submit()
-      await scene.settled()
+  test('2.12 surface-extrudes an untouched outer CSG edge', async ({
+    page,
+    scene,
+    modelingDialog,
+    editor,
+    toolbar,
+    tronApp,
+    homePage,
+  }) => {
+    if (tronApp) await tronApp.cleanProjectDir()
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', csgSurfaceExtrudeCode)
+    )
+    await editor.closePane()
+    await scene.moveCameraTo({ x: 48, y: -42, z: 34 }, { x: 13, y: 9, z: 5 })
 
-      await editor.expectEditor.toContain('sideFaces = [')
-      await editor.expectEditor.toContain('method = NEW')
+    const [clickOuterCsgEdge] = scene.makeMouseHelpers(0.6081, 0.4918, {
+      format: 'ratio',
     })
-  }
+    await clickOuterCsgEdge()
+    await toolbar.extrudeButton.click()
+    await modelingDialog.selection('Profiles').click()
+
+    await expect(modelingDialog.input('length')).toHaveText('5')
+    await modelingDialog.input('length').fill('6')
+
+    await modelingDialog.options('body type').selectOption({ label: 'Surface' })
+    await modelingDialog.options('method').selectOption({ label: 'New' })
+    await modelingDialog.submit()
+    await scene.settled()
+
+    await editor.expectEditor.toContain('sideFaces = [')
+    await editor.expectEditor.toContain('method = NEW')
+  })
 
   test('selects a standalone helix from the viewport', async ({
     page,

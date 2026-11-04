@@ -173,11 +173,3 @@ sketch001 = startSketchOn(XZ)
 `
 
 export const TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR = `thing = 1`
-
-/** Explicit renderer coverage must not follow the rollout setting's default. */
-export function geometryOnlyForTestTags(tags: readonly string[] = []) {
-  const local = tags.includes('@localRenderer')
-  const stream = tags.includes('@streamRenderer')
-  if (local && stream) throw new Error('A test cannot select both renderers')
-  return local ? true : stream ? false : undefined
-}
