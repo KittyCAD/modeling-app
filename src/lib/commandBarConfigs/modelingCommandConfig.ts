@@ -467,7 +467,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   ],
   Export: {
     displayName: EXPORT_MODEL_LABEL,
-    forceCommandBar: true,
     description: 'Export the current model.',
     icon: EXPORT_MODEL_ICON,
     needsReview: true,

@@ -38,7 +38,7 @@ test(
 test(
   'Successful export shows a success toast',
   { tag: ['@desktop', '@skipLocalEngine', '@localRenderer'] },
-  async ({ page, homePage, cmdBar, tronApp }, testInfo) => {
+  async ({ page, homePage, modelingDialog, tronApp }, testInfo) => {
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -98,7 +98,7 @@ part001 = startSketchOn(-XZ)
       },
       tronApp?.projectDirName,
       page,
-      cmdBar,
+      modelingDialog,
       testInfo
     )
   }

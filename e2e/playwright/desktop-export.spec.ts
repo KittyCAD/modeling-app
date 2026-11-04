@@ -21,7 +21,7 @@ test(
     ],
   },
   async (
-    { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
+    { page, scene, tronApp, modelingDialog, toolbar, folderSetupFn },
     testInfo
   ) => {
     if (!tronApp) throwTronAppMissing()
@@ -57,14 +57,9 @@ test(
       await expect(exportButton).toBeVisible()
       await exportButton.click()
 
-      // Select the first format option
-      const gltfOption = cmdBar.selectOption({ name: 'glTF' })
       const exportFileName = `bracket.glb` // project is named `bracket`
-      await expect(gltfOption).toBeVisible()
-      await page.keyboard.press('Enter')
-
-      // Click the checkbox
-      await cmdBar.submit()
+      await expect(modelingDialog.selectedOption('type')).toHaveText('glTF')
+      await modelingDialog.submit()
 
       // Expect it to succeed
       const errorToastMessage = page.getByText(`Error while exporting`)
@@ -123,14 +118,9 @@ test(
       await expect(exportButton).toBeEnabled()
       await exportButton.click()
 
-      // Select the first format option
-      const gltfOption = cmdBar.selectOption({ name: 'glTF' })
       const exportFileName = `other.glb` // source file is named `other.kcl`
-      await expect(gltfOption).toBeVisible()
-      await page.keyboard.press('Enter')
-
-      // Click the checkbox
-      await cmdBar.submit()
+      await expect(modelingDialog.selectedOption('type')).toHaveText('glTF')
+      await modelingDialog.submit()
 
       // Look out for the toast message
       const exportingToastMessage = page.getByText(`Exporting...`)
