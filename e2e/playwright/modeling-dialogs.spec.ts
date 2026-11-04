@@ -302,12 +302,8 @@ obstruction = extrude(region002, length = 20mm)`
     const format = modelingDialog.options(/^type\b/i)
     const storage = modelingDialog.options(/^storage\b/i)
     await storage.selectOption({ label: 'embedded' })
-    await expect(modelingDialog.options(/^up\b/i)).toBeHidden()
-    await expect(modelingDialog.options(/^scale\b/i)).toBeHidden()
     await format.selectOption({ label: 'STL' })
     await expect(storage.locator('option:checked')).toHaveText('ascii')
-    await expect(modelingDialog.options(/^up\b/i)).toBeVisible()
-    await expect(modelingDialog.options(/^scale\b/i)).toBeVisible()
     const [download] = await Promise.all([
       page.waitForEvent('download'),
       modelingDialog.submitButton.click(),

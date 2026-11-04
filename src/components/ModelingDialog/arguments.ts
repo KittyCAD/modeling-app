@@ -78,27 +78,19 @@ export function resolveOptionArguments(
   draft: Record<string, unknown>
 ): Record<string, unknown> {
   const values = { ...context.argumentsToSubmit, ...draft }
-  for (const [name, arg] of Object.entries(
-    context.selectedCommand?.args ?? {}
-  )) {
-    if (arg.inputType !== 'options') continue
-    const current = { ...context, argumentsToSubmit: values }
-    const { isHidden, isRequired } = evaluateCommandArgumentFlags(arg, current)
+  const current = { ...context, argumentsToSubmit: values }
+  for (const { name, arg } of getDialogFields(current)) {
+    if (arg.inputType !== 'options' || typeof arg.options !== 'function')
+      continue
     const value = values[name]
-    if (isHidden || (!isRequired && !hasValue(value))) continue
     // Object-valued choices can contain authored AST nodes or device targets.
-    if (value !== null && typeof value === 'object') continue
-    const machineContext = arg.machineActor?.getSnapshot().context
-    const options = (
-      typeof arg.options === 'function'
-        ? arg.options(current, machineContext)
-        : arg.options
-    ).filter((option) => !option.disabled)
+    if (!hasValue(value) || typeof value === 'object') continue
+    const options = arg
+      .options(current, arg.machineActor?.getSnapshot().context)
+      .filter((option) => !option.disabled)
     if (options.some((option) => option.value === value)) continue
     values[name] = (
-      options.find((option) => option.value === arg.defaultValue) ??
-      options.find((option) => option.isCurrent) ??
-      options[0]
+      options.find((option) => option.isCurrent) ?? options[0]
     )?.value
   }
   return values
