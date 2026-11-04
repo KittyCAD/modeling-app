@@ -36,6 +36,10 @@ import {
   type WebGPURenderer,
 } from 'three/webgpu'
 
+// A/B probe: false = original constant IDs; true = shared shader with uniform IDs.
+// Reload the app after changing this so both runs start with a fresh picker.
+const USE_UNIFORM_FACE_IDS = false
+
 const SELECTION_LINE_WIDTH_AT_REFERENCE_PX = 24
 const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
 
@@ -94,7 +98,9 @@ export class IntegerIdPicker {
     this.clearModel()
     const createMaterial = (id: number, isSketchRegion = false) => {
       const material = new NodeMaterial()
-      material.fragmentNode = this.idOutput(uint(id))
+      material.fragmentNode = this.idOutput(
+        USE_UNIFORM_FACE_IDS ? uniform(id, 'uint') : uint(id)
+      )
       material.side = DoubleSide
       material.blending = NoBlending
       material.toneMapped = false
@@ -247,9 +253,15 @@ export class IntegerIdPicker {
     const version = this.version
     const targetById = this.targetById
 
-    if (this.dirty) {
+    const redraw = this.dirty
+    const startedAt = performance.now()
+    const loadingAtStart = !!document.querySelector(
+      '[data-testid="local-renderer-loading"]'
+    )
+    if (redraw) {
       this.renderIdBuffer(target, camera, streamWidth)
     }
+    const submittedAt = performance.now()
 
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
       target,
@@ -265,6 +277,22 @@ export class IntegerIdPicker {
       ? pixels[0] | (pixels[1] << 8) | (pixels[2] << 16)
       : Number(pixels[0] ?? 0)
     const stale = version !== this.version
+    const finishedAt = performance.now()
+    // Only log buffer rebuilds, avoiding console noise on cached hover reads.
+    // renderSubmitMs includes CPU shader setup/submission; readbackWaitMs can
+    // include deferred GPU compilation and execution, not just the pixel copy.
+    if (redraw) {
+      console.log('[Picker timing]', {
+        mode: USE_UNIFORM_FACE_IDS ? 'uniform' : 'constant',
+        backend: this.packsIdsIntoColor ? 'WebGL' : 'WebGPU',
+        targets: targetById.length - 1,
+        loadingAtStart,
+        renderSubmitMs: +(submittedAt - startedAt).toFixed(2),
+        readbackWaitMs: +(finishedAt - submittedAt).toFixed(2),
+        totalMs: +(finishedAt - startedAt).toFixed(2),
+        stale,
+      })
+    }
 
     return {
       target: stale ? null : (targetById[selectionId] ?? null),
