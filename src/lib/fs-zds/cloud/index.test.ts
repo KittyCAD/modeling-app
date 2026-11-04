@@ -2,6 +2,7 @@ import { CLOUD_DIRECTORIES_FILE } from '@src/lib/fs-zds/cloud/directories'
 import { posix, win32 } from '@chainner/node-path'
 import * as api from '@src/lib/fs-zds/cloud/api'
 import { parseProjectArchive } from '@src/lib/fs-zds/cloud/archive'
+import { signal } from '@preact/signals-core'
 import { createCloudFileSystem } from '@src/lib/fs-zds/cloud'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import noopfs from '@src/lib/fs-zds/noopfs'
@@ -833,6 +834,54 @@ describe.each([
     gate.resolve(new ArrayBuffer(0))
     await rejected
     expect(reconciled).not.toHaveBeenCalled()
+  })
+
+  it('hides the previous account catalog while a new list is pending and rejects late results', async () => {
+    const account = signal('first')
+    const { fs } = setup(() => account.value)
+    vi.mocked(api.listRemoteProjects).mockResolvedValueOnce([remote])
+    await fs.listProjects()
+    const old = Promise.withResolvers<(typeof remote)[]>()
+    vi.mocked(api.listRemoteProjects).mockReturnValueOnce(old.promise)
+    const oldRequest = fs.listProjects()
+    account.value = 'second'
+    expect(fs.projects.value).toEqual([])
+    expect(fs.projectsLoading.value).toBe(false)
+    vi.mocked(api.listRemoteProjects).mockResolvedValueOnce([
+      { ...remote, id: 'second-project' },
+    ])
+    await fs.listProjects()
+    expect(vi.mocked(api.listRemoteProjects).mock.calls[1][2]?.aborted).toBe(
+      true
+    )
+    old.resolve([remote])
+    await oldRequest
+    expect(fs.projects.value.map((project) => project.id)).toEqual([
+      'second-project',
+    ])
+  })
+
+  it('rejects read-only edits before changing files and leaves snapshots available for cloning', async () => {
+    const { fs } = setup()
+    vi.mocked(api.getRemoteProject).mockResolvedValue({
+      ...remote,
+      access: {
+        can_edit: false,
+        can_delete: false,
+        can_manage_organization: false,
+        scope: 'organization',
+      },
+    })
+    const root = await fs.openProject('one')
+    await fs.refreshProject('one')
+    const before = await fs.snapshot('one')
+    await expect(
+      fs.writeFile(paths.join(root, 'main.kcl'), encoder.encode('unsaved'))
+    ).rejects.toThrow('read-only')
+    expect(await fs.snapshot('one')).toEqual(before)
+    expect(fs.isReadOnlyProject('one')).toBe(true)
+    expect(fs.saves.value.get('one')?.state).toBe('failed')
+    expect(api.updateRemoteProject).not.toHaveBeenCalled()
   })
 
   it('rejects stale-account reads, mutations, and deletion', async () => {

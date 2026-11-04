@@ -1,4 +1,5 @@
 import { posix } from '@chainner/node-path'
+import { collectProjectFilesForClone } from '@src/lib/projectSession/projectFiles'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
@@ -45,6 +46,54 @@ async function setup() {
 }
 
 describe('independent project clones', () => {
+  it('copies ignored attachments and unsaved buffers without including outside files or changing the source', async () => {
+    const { memory, runtime } = await setup()
+    try {
+      await memory.writeFile(
+        '/source/original/.gitignore',
+        encoder.encode('attachment.bin')
+      )
+      await memory.writeFile(
+        '/source/original/attachment.bin',
+        new Uint8Array([0, 255, 4])
+      )
+      const files = await collectProjectFilesForClone({
+        fileOperations: runtime.operations,
+        projectRoot: '/source/original',
+        editorFiles: [
+          { path: '/source/original/main.kcl', contents: 'unsaved edit' },
+          { path: '/other/main.kcl', contents: 'outside' },
+          { path: 'D:/other/main.kcl', contents: 'other drive' },
+        ],
+      })
+      const result = await cloneProjectIntoLocalDirectory({
+        fileOperations: runtime.operations,
+        projectDirectoryPath: '/destination',
+        sourceProjectPath: '/source/original',
+        sourceProjectName: 'original',
+        wasmInstancePromise: {} as ModuleType,
+        files,
+      })
+      expect(
+        await memory.readFile(`${result.localProjectPath}/main.kcl`, 'utf8')
+      ).toBe('unsaved edit')
+      expect(
+        await memory.readFile(`${result.localProjectPath}/attachment.bin`)
+      ).toEqual(new Uint8Array([0, 255, 4]))
+      expect(await memory.readFile('/source/original/main.kcl', 'utf8')).toBe(
+        'captured'
+      )
+      expect(files.map((file) => file.relativePath)).toEqual([
+        '.gitignore',
+        'attachment.bin',
+        'main.kcl',
+        'project.toml',
+      ])
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
   it('preserves generated file bytes, never overwrites a collision, and resets only destination identity', async () => {
     await fc.assert(
       fc.asyncProperty(

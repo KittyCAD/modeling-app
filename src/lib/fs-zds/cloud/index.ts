@@ -59,9 +59,20 @@ export function createCloudFileSystem(
   const memory = createMemoryFileSystem(paths)
   let pendingRequests = 0
   const saves = signal<ReadonlyMap<string, CloudSaveState>>(new Map())
-  const projects = signal<readonly RemoteProjectSummary[]>([])
+  const projectIndex = signal<{
+    owner?: string
+    items: readonly RemoteProjectSummary[]
+  }>({ items: [] })
+  const projects = computed(() =>
+    projectIndex.value.owner === config().accountId
+      ? projectIndex.value.items
+      : []
+  )
   let listGeneration = 0
-  const pendingProjectLists = signal(0)
+  const pendingProjectLists = signal<ReadonlyMap<string | undefined, number>>(
+    new Map()
+  )
+  const projectListRequests = new Map<AbortController, string | undefined>()
   const opened = new Map<string, OpenCloudProject>()
   // Update checks capture these per-project counters and discard downloaded
   // snapshots if edits or acknowledged revision changes advance them.
@@ -197,10 +208,10 @@ export function createCloudFileSystem(
       observedRevision: remote.revision,
     })
     listGeneration += 1
-    projects.value = [
-      ...projects.peek().filter((item) => item.id !== id),
-      remote,
-    ]
+    projectIndex.value = {
+      owner: config().accountId,
+      items: [...projects.peek().filter((item) => item.id !== id), remote],
+    }
     state(id, { state: 'saved' })
     if (project?.remote.revision !== remote.revision) recordProjectChange(id)
   }
@@ -306,6 +317,16 @@ export function createCloudFileSystem(
       return Promise.reject(
         new Error('Cloud snapshot needs reconciliation. Retry before editing.')
       )
+    if (
+      project.remote.access?.can_edit === false &&
+      (persist || reportSaveFailure)
+    ) {
+      const error = new Error(
+        'This project is read-only. Create an editable copy in another library.'
+      )
+      state(id, { state: 'failed', error })
+      return Promise.reject(error)
+    }
     const generation = project.generation
     pendingRequests += 1
     const result = project.queue
@@ -469,6 +490,7 @@ export function createCloudFileSystem(
       await ready
     },
     detach: async () => {
+      for (const request of projectListRequests.keys()) request.abort()
       await Promise.allSettled([...polling.values()])
       await Promise.all(
         [...pendingThumbnails.keys()].map((id) => {
@@ -541,7 +563,10 @@ export function createCloudFileSystem(
     remainingSaves.delete(id)
     saves.value = remainingSaves
     listGeneration += 1
-    projects.value = projects.peek().filter((project) => project.id !== id)
+    projectIndex.value = {
+      owner: requestConfig.accountId,
+      items: projects.peek().filter((project) => project.id !== id),
+    }
     notify([{ path: pathFor(id), eventType: 'unlinkDir' }])
   }
   const createProject = async (
@@ -549,13 +574,15 @@ export function createCloudFileSystem(
     archive: readonly ProjectArchiveFile[]
   ) => {
     if (isOffline()) return Promise.reject(offlineError())
+    const requestConfig = config()
     await ready
     const filesWithTitle = withUpdatedProjectTomlInArchiveFiles(
       [...archive],
       (contents) => prepareProjectTomlForDuplication(contents, title, v4())
     )
     if (filesWithTitle instanceof Error) return Promise.reject(filesWithTitle)
-    const requestConfig = config()
+    if (config().accountId !== requestConfig.accountId)
+      return Promise.reject(new Error('Cloud account changed before creation.'))
     if (isOffline()) return Promise.reject(offlineError())
     const remote = await api.createRemoteProject(
       requestConfig,
@@ -572,21 +599,39 @@ export function createCloudFileSystem(
     ...fs,
     root,
     projects,
-    projectsLoading: computed(() => pendingProjectLists.value > 0),
+    projectsLoading: computed(
+      () => (pendingProjectLists.value.get(config().accountId) ?? 0) > 0
+    ),
     listProjects: async () => {
       const generation = ++listGeneration
       const requestConfig = config()
-      pendingProjectLists.value = pendingProjectLists.peek() + 1
+      const controller = new AbortController()
+      for (const [request, owner] of projectListRequests)
+        if (owner !== requestConfig.accountId) request.abort()
+      projectListRequests.set(controller, requestConfig.accountId)
+      const pending = (delta: number) => {
+        const counts = new Map(pendingProjectLists.peek())
+        const count = (counts.get(requestConfig.accountId) ?? 0) + delta
+        if (count) counts.set(requestConfig.accountId, count)
+        else counts.delete(requestConfig.accountId)
+        pendingProjectLists.value = counts
+      }
+      pending(1)
       try {
-        const result = await api.listRemoteProjects(requestConfig)
+        const result = await api.listRemoteProjects(
+          requestConfig,
+          undefined,
+          controller.signal
+        )
         if (
           generation === listGeneration &&
           requestConfig.accountId === config().accountId
         )
-          projects.value = result
+          projectIndex.value = { owner: requestConfig.accountId, items: result }
         return result
       } finally {
-        pendingProjectLists.value = pendingProjectLists.peek() - 1
+        projectListRequests.delete(controller)
+        pending(-1)
       }
     },
     exists: async (id: string) => {
@@ -623,7 +668,16 @@ export function createCloudFileSystem(
             ? new Error('Cloud snapshot changed; queued operation canceled.')
             : undefined
     },
-    saves,
+    saves: computed(
+      () =>
+        new Map(
+          [...saves.value].filter(
+            ([id]) => opened.get(id)?.owner === config().accountId
+          )
+        )
+    ),
+    isReadOnlyProject: (id: string) =>
+      opened.get(id)?.remote.access?.can_edit === false,
     stageThumbnail: async (path: string, bytes: Uint8Array) => {
       if (isOffline()) return
       const id = idFor(path)
@@ -632,6 +686,7 @@ export function createCloudFileSystem(
         return Promise.reject(
           new Error('Cloud project is not open for this account.')
         )
+      if (project.remote.access?.can_edit === false) return
       if (project.needsReconciliation)
         return Promise.reject(new Error('Cloud snapshot is being reconciled.'))
       clearThumbnail(id)

@@ -133,7 +133,7 @@ describe('HomeHeader', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('shows details copy with the linked library path', () => {
+  it('shows cloud library details without the technical source', () => {
     renderHomeHeader({
       showFreeCloudProjectTrainingDisclosure: false,
     })
@@ -146,10 +146,10 @@ describe('HomeHeader', () => {
         /Storage type and model-training controls depend on your plan/
       )
     ).toBeInTheDocument()
-    expect(screen.getByText(/Technical source:/)).toBeInTheDocument()
+    expect(screen.queryByText(/Technical source:/)).not.toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: 'zoo://personal' })
-    ).toHaveAttribute('href', '/home/settings?tab=user#libraries')
+      screen.queryByRole('link', { name: 'zoo://personal' })
+    ).not.toBeInTheDocument()
   })
 
   it('shows the selected library type icon and caret back link', () => {

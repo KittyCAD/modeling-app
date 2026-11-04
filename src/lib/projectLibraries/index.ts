@@ -97,6 +97,7 @@ export interface ProjectLibrary extends ProjectLibrarySetting {
   id: string
   icon?: string
   order?: number
+  hiddenByDefault?: boolean
 }
 
 export interface ProjectLibraryInitialProject {
@@ -452,7 +453,8 @@ export function projectLibraryFromSetting(
 }
 
 export function projectLibrariesFromSettings(
-  libraries: readonly ProjectLibrarySetting[]
+  libraries: readonly ProjectLibrarySetting[],
+  libraryTypes?: ReadonlyMap<string, { libraries?: readonly ProjectLibrary[] }>
 ): ProjectLibrary[] {
   const defaultProjectDirectory =
     getDefaultDirectoryProjectLibraryPath(libraries)
@@ -461,11 +463,14 @@ export function projectLibrariesFromSettings(
   )
     ? libraries
     : [...libraries, getDefaultCloudProjectLibrarySetting()]
-  return configured.map((library, index) =>
-    projectLibraryFromSetting(library, index, {
-      defaultProjectDirectory,
-    })
+  const result = configured.map((library, index) =>
+    projectLibraryFromSetting(library, index, { defaultProjectDirectory })
   )
+  const byId = new Map(result.map((library) => [library.id, library]))
+  for (const type of libraryTypes?.values() ?? [])
+    for (const library of type.libraries ?? [])
+      if (!byId.has(library.id)) byId.set(library.id, library)
+  return [...byId.values()]
 }
 
 export function updateDefaultDirectoryProjectLibrarySetting(
