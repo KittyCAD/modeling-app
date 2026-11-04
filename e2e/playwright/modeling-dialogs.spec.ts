@@ -281,6 +281,45 @@ obstruction = extrude(region002, length = 20mm)`
     await page.keyboard.press('Escape')
   })
 
+  test('Keeps export storage choices when switching formats', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    cmdBar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(
+        '',
+        `${profileCode}\nbody001 = extrude(region001, length = 10mm)`
+      )
+    )
+    await editor.closePane()
+    await cmdBar.openCmdBar()
+    await cmdBar.cmdOptions.getByText('Export', { exact: true }).click()
+    const format = modelingDialog.options('type')
+    const storage = modelingDialog.options('storage')
+    await storage.selectOption({ label: 'embedded' })
+    await format.selectOption({ label: 'STL' })
+    await expect(modelingDialog.selectedOption('storage')).toHaveText('ascii')
+    await storage.selectOption({ label: 'binary' })
+    await format.selectOption({ label: 'glTF' })
+    await expect(modelingDialog.selectedOption('storage')).toHaveText(
+      'embedded'
+    )
+    await format.selectOption({ label: 'STL' })
+    await expect(modelingDialog.selectedOption('storage')).toHaveText('binary')
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      modelingDialog.submit(),
+    ])
+    expect(download.suggestedFilename()).toMatch(/\.stl$/i)
+    expect(await download.failure()).toBeNull()
+  })
+
   test('Keeps Boolean target and tool selections when switching collectors', async ({
     homePage,
     scene,
