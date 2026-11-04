@@ -55,80 +55,86 @@ describe('project library realizations registry service', () => {
     vi.useRealTimers()
   })
 
-  it('drops the previous account realizations and rejects a late scan after account changes', async () => {
-    const account = signal('first-account')
-    let finishOld!: (projects: []) => void
-    let oldSignal!: AbortSignal
-    const readRealizations = vi.fn(
-      ({
-        library,
-        signal,
-      }: Parameters<
-        NonNullable<ProjectLibraryTypeContribution['readRealizations']>
-      >[0]) => {
-        if (library.cacheScope === 'first-account') {
-          oldSignal = signal
-          return new Promise<[]>((resolve) => {
-            finishOld = resolve
-          })
+  it.each(['configured', 'discovered'] as const)(
+    'drops previous account realizations and rejects late scans for %s libraries',
+    async (source) => {
+      const account = signal('first-account')
+      const library = { type: 'scoped-cloud', title: 'Cloud', path: '/cloud' }
+      let finishOld!: (projects: []) => void
+      let oldSignal!: AbortSignal
+      const readRealizations = vi.fn(
+        ({
+          library,
+          signal,
+        }: Parameters<
+          NonNullable<ProjectLibraryTypeContribution['readRealizations']>
+        >[0]) => {
+          if (library.cacheScope === 'first-account') {
+            oldSignal = signal
+            return new Promise<[]>((resolve) => {
+              finishOld = resolve
+            })
+          }
+          return Promise.resolve([
+            {
+              library,
+              localProjectPath: '/second/project',
+              localProjectName: 'project',
+              name: 'Second account project',
+              readWriteAccess: true,
+            },
+          ])
         }
-        return Promise.resolve([
-          {
-            library,
-            localProjectPath: '/second/project',
-            localProjectName: 'project',
-            name: 'Second account project',
-            readWriteAccess: true,
-          },
-        ])
-      }
-    )
-    registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test.scoped-libraries',
-        providesServices: [
-          provideService(
-            settingsService,
-            createSettingsService([
-              { type: 'scoped-cloud', title: 'Cloud', path: '/cloud' },
-            ])
-          ),
-        ],
-        provides: [
-          provide(
-            projectLibraryTypesValueSpec,
-            computed(() => ({
-              type: 'scoped-cloud',
-              title: 'Cloud',
-              cacheScope: account.value,
-              readRealizations,
-            }))
-          ),
-        ],
-      }),
-      projectLibrariesExtension,
-    ])
-    registry.get(projectLibraryRealizationsValueSpec)
-    await waitFor(() => expect(readRealizations).toHaveBeenCalledTimes(1))
-    account.value = 'second-account'
-    expect(oldSignal.aborted).toBe(true)
-    expect(registry.get(projectLibraryRealizationsValueSpec)).toEqual([])
-    await waitFor(() =>
+      )
+      registry = new Registry()
+      registry.configure([
+        defineRegistryItem({
+          id: 'test.scoped-libraries',
+          providesServices: [
+            provideService(
+              settingsService,
+              createSettingsService(source === 'configured' ? [library] : [])
+            ),
+          ],
+          provides: [
+            provide(
+              projectLibraryTypesValueSpec,
+              computed(() => ({
+                type: 'scoped-cloud',
+                title: 'Cloud',
+                cacheScope: account.value,
+                libraries:
+                  source === 'discovered'
+                    ? [{ ...library, id: 'api-library' }]
+                    : undefined,
+                readRealizations,
+              }))
+            ),
+          ],
+        }),
+        projectLibrariesExtension,
+      ])
+      registry.get(projectLibraryRealizationsValueSpec)
+      await waitFor(() => expect(readRealizations).toHaveBeenCalledTimes(1))
+      account.value = 'second-account'
+      expect(oldSignal.aborted).toBe(true)
+      expect(registry.get(projectLibraryRealizationsValueSpec)).toEqual([])
+      await waitFor(() =>
+        expect(
+          registry!
+            .get(projectLibraryRealizationsValueSpec)
+            .map((project) => project.name)
+        ).toEqual(['Second account project'])
+      )
+      finishOld([])
+      await Promise.resolve()
       expect(
-        registry!
+        registry
           .get(projectLibraryRealizationsValueSpec)
           .map((project) => project.name)
       ).toEqual(['Second account project'])
-    )
-    finishOld([])
-    await Promise.resolve()
-    expect(
-      registry
-        .get(projectLibraryRealizationsValueSpec)
-        .map((project) => project.name)
-    ).toEqual(['Second account project'])
-  })
+    }
+  )
 
   it('refreshes watched libraries and invalidates only the library that changes', async () => {
     const librarySettings = [

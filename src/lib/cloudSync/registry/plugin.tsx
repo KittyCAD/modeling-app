@@ -48,6 +48,7 @@ import {
 } from '@src/lib/cloudSync/paths'
 import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
 import { personalCloudProjectRelationshipMembershipPolicy } from '@src/lib/cloudSync/registry/personalCloudLibrary'
+import { isApiProjectLibrary } from '@src/lib/cloudSync/registry/apiProjectLibraries'
 import {
   type CloudProjectLocalManifestComparison,
   classifyCloudProjectDuplicateRisk,
@@ -1408,6 +1409,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
     ],
     operations: {
       createProject: {
+        isAvailable: ({ library }) => !isApiProjectLibrary(library),
         // Creating a project only needs the local library folder, so it stays
         // available whether or not cloud sync is currently enabled. When sync
         // is on we also enroll the new project; otherwise it is picked up the
@@ -1461,6 +1463,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         },
       },
       duplicateProject: {
+        isAvailable: ({ library }) => !isApiProjectLibrary(library),
         run: async ({ library, project }) => {
           if (project.localProjectName && project.localProjectPath) {
             const wasmInstancePromise = getWasmPromise()
@@ -1579,6 +1582,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         },
       },
       moveProjectFrom: {
+        isAvailable: ({ library }) => !isApiProjectLibrary(library),
         canMoveProject: ({ project }) =>
           Boolean(project.localProjectPath && project.readWriteAccess),
         run: async ({ project, targetLibrary }) => {
@@ -1605,6 +1609,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         },
       },
       moveProjectTo: {
+        isAvailable: ({ library }) => !isApiProjectLibrary(library),
         run: async ({ library, source }) => {
           const projectToml = await fileOperations()
             .readFile(

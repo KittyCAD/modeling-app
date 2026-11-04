@@ -9,6 +9,7 @@ The cloud sync subsystem has both always-on infrastructure and toggleable runtim
 - `registry/contract.ts` defines the service shape other app code can depend on.
 - `registry/extension.ts` provides the always-on cloud sync service to the app registry.
 - `registry/plugin.tsx` defines the user-toggleable plugin UI and status-bar contribution.
+- `registry/apiProjectLibraries.ts` discovers named libraries from `/user/project-libraries` and contributes them through the existing cloud library type.
 
 The files under `src/registry/extensions/cloudSync`, `src/registry/plugins/cloudSync`, and `src/registry/contracts/cloudSync.ts` are intentionally thin shims for registry discovery and compatibility with existing import paths.
 
@@ -23,6 +24,10 @@ The cloud sync system supports syncing on a per-project basis. However, cloud sy
 These are cache roots. Runtime cloud libraries materialize files under `.accounts/<scope>` inside their root. The scope contains the API base URL and stable user ID, so account and environment changes select different folders while token refresh keeps the same folder. Sync metadata and queued writes use the same scope in separate IndexedDB databases. Account changes abort old network requests and drain active operations before installing the next account's credentials and database. Old account cache routes are rejected before loading files.
 
 The previous unscoped cache has no reliable account owner. It is left untouched for recovery and is neither adopted nor automatically uploaded by an authenticated account. Local directory libraries keep their existing paths.
+
+API libraries are runtime contributions rather than saved settings. Their stable API IDs determine library identity and local cache paths, so renaming a library preserves its cached projects. Project membership follows `library_id`; Personal Cloud contains unassigned personal projects. Dataset conversions (`org_dataset`), ordinary (`zds`), and unknown future sources appear by default. Factory jobs (`factory_portal`) appear when Home's "Show hidden libraries" control is enabled, or through a direct library link.
+
+Named libraries reuse project discovery and opening. Creation, duplication, and moving are unavailable for these libraries until those operations can preserve remote library membership. Existing project permissions still govern rename and delete.
 
 ## Project identity terms
 
@@ -44,7 +49,7 @@ Cloud sync is technically keyed by per-project `project.toml` IDs, but the user-
 
 ### Personal Cloud ownership
 
-The API's `/user/projects` index includes personal projects and projects shared with the active organization. The `cloud-personal` library definition owns a relationship-membership policy that excludes projects whose `access.scope` is `organization`, even when `access.can_edit` is true. A future organization library can attach the inverse policy without adding organization-specific behavior to Home. Explicit copies in other libraries remain available at their own paths; this does not delete local files or change sync enrollment. Personal projects and projects without known access metadata keep their existing behavior, including local copies before the remote index loads or while cloud sync is disabled.
+The API's `/user/projects` index includes personal projects and projects shared with the active organization. The `cloud-personal` library definition owns a relationship-membership policy that excludes organization projects and projects assigned to a named library. Each API library contributes a policy matching its own `library_id`. Explicit copies in other libraries remain available at their own paths; this does not delete local files or change sync enrollment. Unassigned personal projects and projects without known access metadata keep their existing behavior, including local copies before the remote index loads or while cloud sync is disabled.
 
 Apply this policy to Home's library projection, not the sync engine's remote index. The engine must retain all accessible projects because an absent remote ID can trigger missing-project reconciliation. Organization libraries, read-only/fork UX, and permission enforcement are separate concerns.
 

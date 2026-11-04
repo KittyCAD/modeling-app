@@ -1,4 +1,5 @@
 import env from '@src/env'
+import { collectApiList } from '@src/lib/apiPagination'
 import {
   CloudSyncError,
   withCloudSyncFailureContext,
@@ -153,6 +154,39 @@ function isRemoteProjectSummary(value: unknown): value is RemoteProjectSummary {
     'id' in value &&
     typeof value.id === 'string' &&
     value.id.trim().length > 0
+  )
+}
+
+/** Named libraries belonging to the current user and active organization. */
+export type RemoteProjectLibrary = {
+  id: string
+  name: string
+  source?: string
+}
+
+export async function listRemoteProjectLibraries(
+  config: CloudSyncConfig,
+  signal?: AbortSignal
+): Promise<RemoteProjectLibrary[]> {
+  const libraries = await collectApiList<RemoteProjectLibrary>(
+    '/user/project-libraries',
+    (path) => cloudJson(config, path, { signal })
+  )
+  if (
+    !libraries.every(
+      (library) =>
+        library !== null &&
+        typeof library === 'object' &&
+        typeof library.id === 'string' &&
+        library.id.trim().length > 0 &&
+        typeof library.name === 'string' &&
+        (library.source === undefined || typeof library.source === 'string')
+    )
+  ) {
+    return Promise.reject(new Error('Invalid remote project library list.'))
+  }
+  return Array.from(
+    new Map(libraries.map((library) => [library.id, library])).values()
   )
 }
 

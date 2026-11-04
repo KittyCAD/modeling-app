@@ -64,6 +64,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   getHomeProjectEntriesForLibrary,
+  getProjectLibraryCreateProjectOperation,
   type ProjectLibraryTypeContribution,
   projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
@@ -323,6 +324,9 @@ const Home = () => {
   const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
   const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
   const settingsValues = settings.useSettings()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const showHiddenLibraries =
+    searchParams.get('show_hidden_libraries') === 'true'
   const projectLibraryTypes = registry.signal(
     projectLibraryTypesValueSpec
   ).value
@@ -348,27 +352,41 @@ const Home = () => {
     )
     .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)
+  const visibleProjectLibraries = projectLibraries.filter(
+    (library) => showHiddenLibraries || !library.hiddenByDefault
+  )
   const session = registry.get(projectSession)
   const { libraryId } = useParams()
   const routeSelectedProjectLibrary = libraryId
     ? projectLibraries.find((library) => library.id === libraryId)
     : undefined
   const singleProjectLibrary =
-    !libraryId && projectLibraries.length === 1
-      ? projectLibraries[0]
+    !libraryId && visibleProjectLibraries.length === 1
+      ? visibleProjectLibraries[0]
       : undefined
   const selectedProjectLibrary =
     routeSelectedProjectLibrary ?? singleProjectLibrary
   const selectedProjectLibraryId = selectedProjectLibrary?.id
-  const scopedHomeProjectEntries = routeSelectedProjectLibrary
+  const createProjectLibraryId =
+    selectedProjectLibrary &&
+    getProjectLibraryCreateProjectOperation(
+      projectLibraryTypes.get(selectedProjectLibrary.type),
+      selectedProjectLibrary
+    )
+      ? selectedProjectLibrary.id
+      : undefined
+  const scopedHomeProjectEntries = selectedProjectLibrary
     ? getHomeProjectEntriesForLibrary(
         homeProjectEntries,
-        routeSelectedProjectLibrary.id
+        selectedProjectLibrary.id
       )
     : libraryId
       ? []
-      : homeProjectEntries
-  const [searchParams, setSearchParams] = useSearchParams()
+      : homeProjectEntries.filter((project) =>
+          visibleProjectLibraries.some((library) =>
+            project.libraryIds?.includes(library.id)
+          )
+        )
   const { searchResults, query, setQuery } = useProjectSearch(
     scopedHomeProjectEntries
   )
@@ -589,6 +607,28 @@ const Home = () => {
           }
           library={selectedProjectLibrary}
           showLibraryBackLink={Boolean(routeSelectedProjectLibrary)}
+          libraryVisibilityControl={
+            !libraryId &&
+            projectLibraries.some((library) => library.hiddenByDefault) ? (
+              <label className="mt-2 inline-flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={showHiddenLibraries}
+                  data-testid="show-hidden-project-libraries"
+                  onChange={(event) => {
+                    const checked = event.target.checked
+                    setSearchParams((previous) => {
+                      const next = new URLSearchParams(previous)
+                      if (checked) next.set('show_hidden_libraries', 'true')
+                      else next.delete('show_hidden_libraries')
+                      return next
+                    })
+                  }}
+                />
+                Show hidden libraries
+              </label>
+            ) : undefined
+          }
           libraryHomeSummary={
             selectedProjectLibrary ? (
               <ProjectLibraryHomeSummarySlot
@@ -600,7 +640,15 @@ const Home = () => {
           }
           setQuery={setQuery}
           sort={sort}
-          setSearchParams={setSearchParams}
+          setSearchParams={(params) =>
+            setSearchParams((previous) => {
+              const next = new URLSearchParams(previous)
+              for (const [key, value] of Object.entries(params)) {
+                next.set(key, value)
+              }
+              return next
+            })
+          }
           readWriteProjectDir={readWriteProjectDir}
           projectSearchKeybinding={projectSearchKeybinding}
           showFreeCloudProjectTrainingDisclosure={shouldShowFreeCloudProjectTrainingDisclosure(
@@ -660,9 +708,9 @@ const Home = () => {
                     data: {
                       groupId: 'projects',
                       name: 'Create project',
-                      argDefaultValues: selectedProjectLibrary
+                      argDefaultValues: createProjectLibraryId
                         ? {
-                            libraryId: selectedProjectLibrary.id,
+                            libraryId: createProjectLibraryId,
                           }
                         : undefined,
                     },
@@ -689,8 +737,8 @@ const Home = () => {
                       name: 'create-a-sample',
                       argDefaultValues: {
                         source: 'kcl-samples',
-                        ...(selectedProjectLibrary
-                          ? { libraryId: selectedProjectLibrary.id }
+                        ...(createProjectLibraryId
+                          ? { libraryId: createProjectLibraryId }
                           : {}),
                       },
                     },
@@ -770,7 +818,7 @@ const Home = () => {
           />
         ) : (
           <ProjectLibraryOverview
-            libraries={projectLibraries}
+            libraries={visibleProjectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
             localProjectsLoaded={projects !== undefined}
