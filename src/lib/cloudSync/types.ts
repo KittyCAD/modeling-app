@@ -137,6 +137,8 @@ export type ProjectUploadPublicationMetadata = {
 /** Runtime configuration for enabling and targeting cloud sync replication. */
 export type CloudSyncConfig = {
   enabled: boolean
+  cacheScope?: string
+  signal?: AbortSignal
   token?: string
   baseUrl?: string
   environmentName?: string

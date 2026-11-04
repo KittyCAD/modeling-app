@@ -79,11 +79,15 @@ async function cloudFetchUncategorized(
     headers.set('Authorization', `Bearer ${config.token}`)
   }
 
+  const signal = init.signal ?? config.signal
+  signal?.throwIfAborted()
   const response = await fetchWithSessionExpiration(`${baseUrl}${targetPath}`, {
     ...init,
     headers,
+    signal,
     credentials: 'include',
   })
+  signal?.throwIfAborted()
 
   if (!response.ok) {
     let message = response.statusText || `HTTP ${response.status}`

@@ -97,6 +97,8 @@ export interface ProjectLibrary extends ProjectLibrarySetting {
   id: string
   icon?: string
   order?: number
+  /** Runtime cache ownership; never persisted as a user library setting. */
+  cacheScope?: string
 }
 
 export interface ProjectLibraryInitialProject {
@@ -452,15 +454,18 @@ export function projectLibraryFromSetting(
 }
 
 export function projectLibrariesFromSettings(
-  libraries: readonly ProjectLibrarySetting[]
+  libraries: readonly ProjectLibrarySetting[],
+  libraryTypes?: ReadonlyMap<string, { cacheScope?: string }>
 ): ProjectLibrary[] {
   const defaultProjectDirectory =
     getDefaultDirectoryProjectLibraryPath(libraries)
-  return libraries.map((library, index) =>
-    projectLibraryFromSetting(library, index, {
+  return libraries.map((setting, index) => {
+    const library = projectLibraryFromSetting(setting, index, {
       defaultProjectDirectory,
     })
-  )
+    const cacheScope = libraryTypes?.get(library.type)?.cacheScope
+    return cacheScope ? { ...library, cacheScope } : library
+  })
 }
 
 export function updateDefaultDirectoryProjectLibrarySetting(

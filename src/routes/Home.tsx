@@ -327,7 +327,8 @@ const Home = () => {
     projectLibraryTypesValueSpec
   ).value
   const projectLibraries = projectLibrariesFromSettings(
-    settingsValues.app.libraries.current
+    settingsValues.app.libraries.current,
+    projectLibraryTypes
   ).map((library) => ({
     ...library,
     icon: projectLibraryTypes.get(library.type)?.icon ?? library.icon,
@@ -337,7 +338,13 @@ const Home = () => {
   )
   const projectLibraryWatchKey = projectLibraries
     .map((library) =>
-      [library.id, library.type, library.path, library.source ?? ''].join(':')
+      [
+        library.id,
+        library.type,
+        library.path,
+        library.source ?? '',
+        library.cacheScope ?? '',
+      ].join(':')
     )
     .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)

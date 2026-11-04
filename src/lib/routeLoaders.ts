@@ -1,4 +1,5 @@
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import { getCloudSyncCacheScopeFromPath } from '@src/lib/cloudSync/account'
 import type { App } from '@src/lib/app'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
@@ -10,6 +11,7 @@ import {
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
+import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import {
   getOnboardingChildRoute,
@@ -25,6 +27,7 @@ import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
+  projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
@@ -90,6 +93,15 @@ export const fileLoader =
       return redirect(PATHS.HOME)
     }
 
+    const requestedCacheScope = getCloudSyncCacheScopeFromPath(params.id ?? '')
+    if (
+      requestedCacheScope &&
+      requestedCacheScope !==
+        app.registry.get(projectLibraryTypesValueSpec).get('cloud')?.cacheScope
+    ) {
+      return redirect(PATHS.HOME)
+    }
+
     const wasmInstance = await kclManager.wasmInstancePromise
     assertCurrent()
 
@@ -99,14 +111,23 @@ export const fileLoader =
     const appSettings = await loadRouteSettings(app, wasmInstance)
     assertCurrent()
     const currentProjectPath = app.project?.projectIORefSignal.value.path
-    const targetLibraryPath = params.id
-      ? (
-          await getProjectLibraryOwnership(
-            appSettings.settings.app.libraries?.current ?? [],
-            params.id
-          )
-        )?.libraryPath
+    const libraries = projectLibrariesFromSettings(
+      appSettings.settings.app.libraries?.current ?? [],
+      app.registry.get(projectLibraryTypesValueSpec)
+    )
+    const ownership = params.id
+      ? await getProjectLibraryOwnership(libraries, params.id)
       : undefined
+    if (params.id && !ownership) {
+      const legacyCloudOwnership = await getProjectLibraryOwnership(
+        libraries
+          .filter((library) => library.type === 'cloud')
+          .map(({ cacheScope: _cacheScope, ...library }) => library),
+        params.id
+      )
+      if (legacyCloudOwnership) return redirect(PATHS.HOME)
+    }
+    const targetLibraryPath = ownership?.libraryPath
     const projectPathData = params.id
       ? parseProjectRoute(appSettings.configuration, params.id, {
           activeProjectPath: currentProjectPath,

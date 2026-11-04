@@ -1,15 +1,67 @@
 import {
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
-  notifyCloudSyncRemoveMutation,
-  notifyCloudSyncRenameMutation,
-  notifyCloudSyncWriteLikeMutation,
 } from '@src/lib/cloudSync/engine'
+import * as cloudSyncEngine from '@src/lib/cloudSync/engine'
 import type { CloudSyncConfig } from '@src/lib/cloudSync/types'
 import fsZds from '@src/lib/fs-zds'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
 export * from '@src/lib/cloudSync/engine'
+export const ensureCloudProjectLocallySynced =
+  cloudSyncEngine.withCloudSyncAccount(
+    cloudSyncEngine.ensureCloudProjectLocallySynced
+  )
+export const startCloudSyncProject = cloudSyncEngine.withCloudSyncAccount(
+  cloudSyncEngine.startCloudSyncProject
+)
+export const syncCloudSyncProjectNow = cloudSyncEngine.withCloudSyncAccount(
+  cloudSyncEngine.syncCloudSyncProjectNow
+)
+export const disconnectCloudSyncProject = cloudSyncEngine.withCloudSyncAccount(
+  cloudSyncEngine.disconnectCloudSyncProject
+)
+export const deleteCloudSyncLocalProjectRealizations =
+  cloudSyncEngine.withCloudSyncAccount(
+    cloudSyncEngine.deleteCloudSyncLocalProjectRealizations
+  )
+export const deleteCloudSyncDuplicateProjectRealizations =
+  cloudSyncEngine.withCloudSyncAccount(
+    cloudSyncEngine.deleteCloudSyncDuplicateProjectRealizations
+  )
+export const renameRemoteCloudProject = cloudSyncEngine.withCloudSyncAccount(
+  cloudSyncEngine.renameRemoteCloudProject
+)
+export const duplicateRemoteCloudProject = cloudSyncEngine.withCloudSyncAccount(
+  cloudSyncEngine.duplicateRemoteCloudProject
+)
+export const deleteRemoteCloudProject = cloudSyncEngine.withCloudSyncAccount(
+  cloudSyncEngine.deleteRemoteCloudProject
+)
+export const getCloudSyncRemoteProjectThumbnailUrl =
+  cloudSyncEngine.withCloudSyncAccount(
+    cloudSyncEngine.getCloudSyncRemoteProjectThumbnailUrl
+  )
+export const loadCloudSyncProjectConflictInspection =
+  cloudSyncEngine.withCloudSyncAccount(
+    cloudSyncEngine.loadCloudSyncProjectConflictInspection
+  )
+export const resolveCloudSyncProjectConflict =
+  cloudSyncEngine.withCloudSyncAccount(
+    cloudSyncEngine.resolveCloudSyncProjectConflict
+  )
+export const notifyCloudSyncWriteLikeMutation =
+  cloudSyncEngine.withCloudSyncAccount(
+    cloudSyncEngine.notifyCloudSyncWriteLikeMutation
+  )
+export const notifyCloudSyncRemoveMutation =
+  cloudSyncEngine.withCloudSyncAccount(
+    cloudSyncEngine.notifyCloudSyncRemoveMutation
+  )
+export const notifyCloudSyncRenameMutation =
+  cloudSyncEngine.withCloudSyncAccount(
+    cloudSyncEngine.notifyCloudSyncRenameMutation
+  )
 export { retryCloudSyncEngine as retryCloudSync } from '@src/lib/cloudSync/engine'
 export type {
   CloudSyncConfig,
@@ -80,13 +132,17 @@ export function installCloudSyncFileSystemObserver(
     data,
     options
   ) => {
+    const account = cloudSyncEngine.getCloudSyncAccountScope()
     const result = await localFs.writeFile(targetPath, data, options)
-    await notifyCloudSyncWriteLikeMutation(targetPath)
+    if (cloudSyncEngine.isCloudSyncAccountScopeCurrent(account))
+      await notifyCloudSyncWriteLikeMutation(targetPath)
     return result
   }
   const mkdir: IZooDesignStudioFS['mkdir'] = async (targetPath, options) => {
+    const account = cloudSyncEngine.getCloudSyncAccountScope()
     const result = await localFs.mkdir(targetPath, options)
-    await notifyCloudSyncWriteLikeMutation(targetPath)
+    if (cloudSyncEngine.isCloudSyncAccountScopeCurrent(account))
+      await notifyCloudSyncWriteLikeMutation(targetPath)
     return result
   }
   const cp: IZooDesignStudioFS['cp'] = async (
@@ -94,13 +150,17 @@ export function installCloudSyncFileSystemObserver(
     targetPath,
     options
   ) => {
+    const account = cloudSyncEngine.getCloudSyncAccountScope()
     const result = await localFs.cp(sourcePath, targetPath, options)
-    await notifyCloudSyncWriteLikeMutation(targetPath)
+    if (cloudSyncEngine.isCloudSyncAccountScopeCurrent(account))
+      await notifyCloudSyncWriteLikeMutation(targetPath)
     return result
   }
   const rm: IZooDesignStudioFS['rm'] = async (targetPath, options) => {
+    const account = cloudSyncEngine.getCloudSyncAccountScope()
     const result = await localFs.rm(targetPath, options)
-    await notifyCloudSyncRemoveMutation(targetPath)
+    if (cloudSyncEngine.isCloudSyncAccountScopeCurrent(account))
+      await notifyCloudSyncRemoveMutation(targetPath)
     return result
   }
   const rename: IZooDesignStudioFS['rename'] = async (
@@ -108,8 +168,10 @@ export function installCloudSyncFileSystemObserver(
     targetPath,
     options
   ) => {
+    const account = cloudSyncEngine.getCloudSyncAccountScope()
     const result = await localFs.rename(sourcePath, targetPath, options)
-    await notifyCloudSyncRenameMutation(sourcePath, targetPath)
+    if (cloudSyncEngine.isCloudSyncAccountScopeCurrent(account))
+      await notifyCloudSyncRenameMutation(sourcePath, targetPath)
     return result
   }
 

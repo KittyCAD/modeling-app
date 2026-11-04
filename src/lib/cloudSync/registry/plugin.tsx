@@ -12,6 +12,9 @@ import {
   untracked,
 } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
+import { getCloudSyncCacheScope } from '@src/lib/cloudSync/account'
+import { authService } from '@src/registry/contracts/auth'
+import { runtimeService } from '@src/registry/contracts/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import {
@@ -303,7 +306,9 @@ function cloudSyncStatusAppliesToLibrary(
     status.activeProjectPath ?? status.scopedProjectPath
   )
 
-  return !statusProjectPath || libraryProjectPaths.has(statusProjectPath)
+  return Boolean(
+    statusProjectPath && libraryProjectPaths.has(statusProjectPath)
+  )
 }
 
 function getCloudSyncLibraryConflictIssues(
@@ -814,11 +819,38 @@ function CloudSyncProjectBreadcrumbBadge({
   )
 }
 
-function CloudSyncDialogAppHeaderItem({ app }: AppHeaderItemProps) {
+function CloudSyncDialogAppHeaderItem({ app, className }: AppHeaderItemProps) {
+  useSignals()
   const settingsValues = app.settings.useSettings()
+  const status = cloudSyncStatus.value
+  const indexFailed =
+    !app.project &&
+    status.enabled &&
+    status.state === 'failed' &&
+    !status.activeProjectPath &&
+    !status.scopedProjectPath
 
   return (
     <>
+      {indexFailed && (
+        <ActionButton
+          Element="button"
+          aria-label="Cloud sync failed"
+          tabIndex={0}
+          className={className}
+          iconStart={{ icon: 'triangleExclamation' }}
+          onClick={() =>
+            openCloudSyncErrorDialog({
+              title: 'Cloud sync failed',
+              message:
+                status.lastFailure || 'Could not refresh cloud projects.',
+              occurredAt: status.lastFailureAt,
+            })
+          }
+        >
+          Cloud sync failed
+        </ActionButton>
+      )}
       <CloudConflictDialogHost
         resolvedTheme={getResolvedTheme(settingsValues.app.theme.current)}
       />
@@ -1336,6 +1368,15 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
  * sync-only surface (remote entries, status bar, project-menu sync actions).
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
+  const auth = ctx.services.signal(authService)
+  const runtime = ctx.services.signal(runtimeService)
+  const getCacheScope = () =>
+    auth.value
+      ? (getCloudSyncCacheScope(
+          auth.value.user?.value?.id,
+          runtime.value?.current.value.apiBaseUrl
+        ) ?? 'signed-out')
+      : undefined
   const fileOperations = () => ctx.services.get(fileOperationsService)
   const systemIO = ctx.services.signal(systemIOService)
   const getWasmPromise = () =>
@@ -1378,6 +1419,14 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           initialKclFile,
           initialProject,
         }) => {
+          const cacheScope = getCacheScope()
+          if (library.cacheScope !== cacheScope) {
+            return Promise.reject(
+              new Error(
+                'The cloud account changed. Please create the project again.'
+              )
+            )
+          }
           const wasmInstancePromise = getWasmPromise()
           if (wasmInstancePromise instanceof Error) {
             return Promise.reject(wasmInstancePromise)
@@ -1393,6 +1442,13 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
             initialKclFile,
             initialProject,
           })
+          if (cacheScope !== getCacheScope()) {
+            return Promise.reject(
+              new Error(
+                'The cloud account changed. Sign back into the original account to open the saved project.'
+              )
+            )
+          }
           refreshLocalCloudProjectEntries()
 
           if (cloudSyncStatus.value.enabled) {
@@ -1619,9 +1675,16 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         getDefaultLibraries: ({ isDesktop }) =>
           !isDesktop ? [getDefaultCloudProjectLibrarySetting()] : undefined,
       }),
-      provide(projectLibraryTypesValueSpec, cloudLibraryType, {
-        key: 'cloud-sync.project-library-type',
-      }),
+      provide(
+        projectLibraryTypesValueSpec,
+        computed(() => ({
+          ...cloudLibraryType,
+          cacheScope: getCacheScope(),
+        })),
+        {
+          key: 'cloud-sync.project-library-type',
+        }
+      ),
     ],
   }
 }, 'cloud-sync.project-library-type')

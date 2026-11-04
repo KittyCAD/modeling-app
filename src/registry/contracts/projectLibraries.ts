@@ -264,6 +264,7 @@ export interface ProjectLibraryRelationshipMembershipPolicy {
 export interface ProjectLibraryTypeContribution {
   type: ProjectLibraryType
   title: string
+  cacheScope?: string
   icon?: string
   order?: number
   /** Initial value used when settings are seeded or migrated for this type. */

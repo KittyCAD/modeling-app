@@ -9,6 +9,17 @@ import {
 import { signal } from '@preact/signals-core'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
+import * as projectLibraryOperations from '@src/lib/projectLibraries/operations'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import {
+  authService,
+  type AuthRegistryService,
+} from '@src/registry/contracts/auth'
+import {
+  runtimeService,
+  type RuntimeInfo,
+} from '@src/registry/contracts/runtime'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { cloudSyncRemoteProjects, cloudSyncStatus } from '@src/lib/cloudSync'
 import { localProjectManifestMatchesBase } from '@src/lib/cloudSync/localManifest'
 import {
@@ -477,6 +488,34 @@ describe('cloud sync status presentation', () => {
 })
 
 describe('cloud sync library home summary', () => {
+  test('shows a global refresh failure on Home and opens its retry dialog', async () => {
+    const { app, dispose } = createProjectMenuApp(createCloudSyncService())
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'failed',
+      pendingCount: 0,
+      lastFailure: 'Project index unavailable',
+    }
+    try {
+      render(<CloudSyncDialogHostContribution app={app} />)
+      fireEvent.click(screen.getByRole('button', { name: 'Cloud sync failed' }))
+      expect(screen.getByTestId('cloud-sync-error-dialog')).toHaveTextContent(
+        'Project index unavailable'
+      )
+      cloudSyncStatus.value = {
+        ...cloudSyncStatus.value,
+        activeProjectPath: projectWellFormed.path,
+      }
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', { name: 'Cloud sync failed' })
+        ).not.toBeInTheDocument()
+      )
+    } finally {
+      dispose()
+    }
+  })
+
   test('does not contribute the aggregate cloud sync status bar item', () => {
     cloudSyncStatus.value = {
       enabled: true,
@@ -599,6 +638,33 @@ describe('cloud sync library home summary', () => {
       registry[Symbol.dispose]()
     }
   })
+
+  test.each(['failed', 'syncing'] as const)(
+    'keeps a global %s status off an empty library',
+    (state) => {
+      cloudSyncStatus.value = {
+        enabled: true,
+        state,
+        pendingCount: 4,
+        lastFailure: 'Forbidden',
+      }
+      using registry = new Registry()
+      registry.configure([cloudSyncProjectLibraryType])
+      const HomeSummary = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)!.homeSummary!
+      const library = {
+        ...getDefaultCloudProjectLibrarySetting(),
+        id: 'cloud-library-empty',
+      }
+      renderWithRouter(<HomeSummary library={library} projects={[]} />)
+      expect(screen.getByTestId('cloud-library-sync-status')).toHaveTextContent(
+        'Cloud synced'
+      )
+      fireEvent.click(screen.getByTestId('cloud-library-sync-status'))
+      expect(screen.queryByText('Forbidden')).not.toBeInTheDocument()
+    }
+  )
 
   test('keeps the project title when conflict metadata uses the directory name', async () => {
     const projectPath = projectWellFormed.path
@@ -960,6 +1026,62 @@ describe('cloud sync project menu item', () => {
 })
 
 describe('cloud sync project library', () => {
+  test('does not enroll a project when the account changes during creation', async () => {
+    const user = signal({ id: 'original-account' })
+    const runtime = signal({ apiBaseUrl: 'https://api.test' } as RuntimeInfo)
+    const cloudSync = createCloudSyncService()
+    let finishCreation!: (project: Project) => void
+    const create = vi
+      .spyOn(projectLibraryOperations, 'createProjectInLocalDirectory')
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            finishCreation = resolve
+          })
+      )
+    using registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.creation-account',
+        providesServices: [
+          provideService(authService, {
+            user,
+          } as unknown as AuthRegistryService),
+          provideService(runtimeService, {
+            current: runtime,
+            get: () => runtime.value,
+            refresh: () => runtime.value,
+          }),
+          provideService(cloudSyncService, cloudSync),
+          provideService(fileOperationsService, testFileOperations),
+        ],
+        provides: [
+          provide(wasmPromiseValueSpec, Promise.resolve({} as ModuleType)),
+        ],
+      }),
+      cloudSyncProjectLibraryType,
+    ])
+    cloudSyncStatus.value = { enabled: true, state: 'idle', pendingCount: 0 }
+    const type = registry
+      .get(projectLibraryTypesValueSpec)
+      .get(CLOUD_PROJECT_LIBRARY_TYPE)!
+    const creation = type.operations!.createProject!.run({
+      library: {
+        ...getDefaultCloudProjectLibrarySetting(),
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        cacheScope: type.cacheScope,
+      },
+      requestedProjectName: 'copy',
+      requestedProjectTitle: 'Copy',
+    })
+    const rejected = expect(creation).rejects.toThrow('cloud account changed')
+    await vi.waitFor(() => expect(create).toHaveBeenCalledTimes(1))
+    user.value = { id: 'next-account' }
+    finishCreation(projectWellFormed)
+    await rejected
+    expect(cloudSync.startProjectSync).not.toHaveBeenCalled()
+  })
+
   test('registers the cloud project library type as always-on infrastructure', () => {
     const registry = new Registry()
     // The type handler is registered independently of the toggle-able plugin.

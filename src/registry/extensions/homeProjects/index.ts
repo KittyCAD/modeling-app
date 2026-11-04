@@ -454,7 +454,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const getConfiguredProjectLibraries = () => {
     const currentSettings = settings.value?.current.value
     return currentSettings
-      ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+      ? projectLibrariesFromSettings(
+          currentSettings.app.libraries.current,
+          ctx.valueSpecs.get(projectLibraryTypesValueSpec)
+        )
       : []
   }
 

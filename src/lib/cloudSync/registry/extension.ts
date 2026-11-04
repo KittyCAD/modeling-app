@@ -4,6 +4,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { effect, signal, untracked } from '@preact/signals-core'
+import { getCloudSyncCacheScope } from '@src/lib/cloudSync/account'
 import {
   type CloudSyncConfig,
   cloudSyncStatus,
@@ -39,9 +40,11 @@ import {
   isLegacyPersonalCloudProjectLibraryPathSetting,
   isPersonalCloudProjectLibrarySetting,
   mergeProjectLibrarySettings,
+  projectLibrariesFromSettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import { authService } from '@src/registry/contracts/auth'
+import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import {
   type SettingsRegistryService,
@@ -147,6 +150,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   })
   const runtime = ctx.services.signal(runtimeService)
   const auth = ctx.services.signal(authService)
+  const libraryTypes = ctx.valueSpecs.signal(projectLibraryTypesValueSpec)
   const plugins = ctx.valueSpecs.signal(pluginsValueSpec)
   const settingsSnapshot = signal<SettingsSnapshot | undefined>(undefined)
   let settingsRegistry: SettingsRegistryService | undefined
@@ -176,14 +180,22 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
       : runtimeConfig.value.token
     const cloudSyncPluginEnabled =
       currentSettings?.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current === true
-    const cloudProjectLibraries =
-      currentSettings?.app.libraries.current.filter(
-        (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
-      ) ?? []
+    const cacheScope = getCloudSyncCacheScope(
+      auth.value?.user?.value?.id,
+      currentRuntime?.apiBaseUrl ?? runtimeConfig.value.baseUrl
+    )
+    const cloudProjectLibraries = projectLibrariesFromSettings(
+      currentSettings?.app.libraries.current ?? [],
+      libraryTypes.value
+    ).filter((library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE)
     const runtimePolicy = {
       ...runtimeConfig.value,
-      enabled: Boolean(token) && cloudSyncPluginEnabled,
+      enabled:
+        Boolean(token) &&
+        cloudSyncPluginEnabled &&
+        (!auth.value || Boolean(cacheScope)),
       token,
+      cacheScope: auth.value ? (cacheScope ?? 'signed-out') : undefined,
       baseUrl: currentRuntime?.apiBaseUrl ?? runtimeConfig.value.baseUrl,
       environmentName:
         currentRuntime?.environmentName ?? runtimeConfig.value.environmentName,
@@ -192,6 +204,11 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     if (!runtimePolicy.enabled) {
       configureRuntimePolicy(runtimePolicy)
       return
+    }
+
+    // Stop the old account before resolving the new account's folders.
+    if (appliedRuntimePolicy?.cacheScope !== runtimePolicy.cacheScope) {
+      configureRuntimePolicy({ ...runtimePolicy, enabled: false })
     }
 
     const cloudProjectDirectoryPathsPromise = Promise.all(

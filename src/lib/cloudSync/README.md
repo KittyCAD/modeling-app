@@ -20,6 +20,10 @@ The cloud sync system supports syncing on a per-project basis. However, cloud sy
 - Windows: `%USERPROFILE%\Zoo\personal`
 - macOS: `~/Library/CloudStorage/Zoo/personal`, by macOS convention
 
+These are cache roots. Runtime cloud libraries materialize files under `.accounts/<scope>` inside their root. The scope contains the API base URL and stable user ID, so account and environment changes select different folders while token refresh keeps the same folder. Sync metadata and queued writes use the same scope in separate IndexedDB databases. Account changes abort old network requests and drain active operations before installing the next account's credentials and database. Old account cache routes are rejected before loading files.
+
+The previous unscoped cache has no reliable account owner. It is left untouched for recovery and is neither adopted nor automatically uploaded by an authenticated account. Local directory libraries keep their existing paths.
+
 ## Project identity terms
 
 - Project library: a configured source that can discover and operate on project storage.
