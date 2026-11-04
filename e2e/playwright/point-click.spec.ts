@@ -852,7 +852,7 @@ extrude001 = extrude(region001, length = -12)`
         )
         await operationButton.dblclick({ button: 'left' })
         await expect(modelingDialog.input('radius')).toHaveText(oldValue)
-        await modelingDialog.input('radius').fill(newValue)
+        await modelingDialog.fillInput('radius', newValue)
 
         // await page.pause()
         await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1344,7 +1344,7 @@ extrude001 = extrude(region001, length = 5)`
 
           await expect(modelingDialog.input('radius')).toHaveText('5')
           // Set a large radius (1000)
-          await modelingDialog.input('radius').fill('1000')
+          await modelingDialog.fillInput('radius', '1000')
 
           await expect(modelingDialog.submitButton).toBeEnabled()
           // Apply fillet with large radius
@@ -1460,7 +1460,7 @@ extrude001 = extrude(region001, length = -12)`
         )
         await operationButton.dblclick({ button: 'left' })
         await expect(modelingDialog.input('length')).toHaveText(oldValue)
-        await modelingDialog.input('length').fill(newValue)
+        await modelingDialog.fillInput('length', newValue)
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -1795,7 +1795,7 @@ extrude001 = extrude(profile001, length = 500)`
         await modelingDialog.selection('Faces').click()
         const [clickOnCap] = await scene.makeSelectionHelpers({
           kind: 'face',
-          index: 1,
+          index: 0,
           stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
         })
         await clickOnCap()
@@ -1825,7 +1825,7 @@ extrude001 = extrude(profile001, length = 500)`
         )
         await operationButton.dblclick()
         await expect(modelingDialog.input('thickness')).toHaveText('5')
-        await modelingDialog.input('thickness').fill('2')
+        await modelingDialog.fillInput('thickness', '2')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -1928,7 +1928,7 @@ extrude001 = extrude(region001, length = 30)`
         await modelingDialog.selection('Faces').click()
         const [clickOnCap] = await scene.makeSelectionHelpers({
           kind: 'face',
-          index: 1,
+          index: 0,
           stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
         })
         await clickOnCap()
@@ -3421,7 +3421,7 @@ hole001 = hole::hole(
 
         await expect(modelingDialog.input('cut at')).toHaveText('[0, 0]')
         // Update cut at from [0, 0] to [2, 2]
-        await modelingDialog.input('cut at').fill('[2, 2]')
+        await modelingDialog.fillInput('cut at', '[2, 2]')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
 
@@ -3430,10 +3430,10 @@ hole001 = hole::hole(
           .options('hole type')
           .selectOption({ label: 'Countersink' })
         await expect(modelingDialog.input('countersink angle')).toBeVisible()
-        await modelingDialog.input('countersink angle').fill('80deg')
+        await modelingDialog.fillInput('countersink angle', '80deg')
 
         await expect(modelingDialog.input('countersink diameter')).toBeVisible()
-        await modelingDialog.input('countersink diameter').fill('3')
+        await modelingDialog.fillInput('countersink diameter', '3')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()

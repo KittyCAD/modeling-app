@@ -214,7 +214,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
       // Set radius to 0.75mm
       await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
-      await modelingDialog.input('radius').fill('0.75')
+      await modelingDialog.fillInput('radius', '0.75')
 
       await modelingDialog.submit()
 

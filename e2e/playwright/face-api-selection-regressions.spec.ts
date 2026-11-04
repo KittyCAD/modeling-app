@@ -99,7 +99,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       await expect(toolbar.selectionStatus).toContainText('1 edge')
       await toolbar.filletButton.click()
 
-      await modelingDialog.input('radius').fill('0.3')
+      await modelingDialog.fillInput('radius', '0.3')
 
       await modelingDialog.submit()
       await scene.settled()
@@ -141,7 +141,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       await toolbar.filletButton.click()
 
       await expect(modelingDialog.input('radius')).toHaveText('5')
-      await modelingDialog.input('radius').fill('1')
+      await modelingDialog.fillInput('radius', '1')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -182,7 +182,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       await modelingDialog.selection('Profiles').click()
 
       await expect(modelingDialog.input('length')).toHaveText('5')
-      await modelingDialog.input('length').fill('6')
+      await modelingDialog.fillInput('length', '6')
 
       await modelingDialog
         .options('body type')

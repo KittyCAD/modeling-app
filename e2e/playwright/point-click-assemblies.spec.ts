@@ -239,13 +239,19 @@ test.describe(
       const selectedObjects = selectionType === 'scene' ? '1 path' : '1 other'
       async function selectBracket() {
         if (selectionType === 'scene') {
+          if (test.info().tags.includes('@localRenderer')) {
+            // Give the dialog room to move away from the projected face.
+            await toolbar.closePane(DefaultLayoutPaneID.Code)
+            await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+          }
           // The bracket is only visible in the lower-right of the default view
           if (await modelingDialog.locator.isVisible()) {
             await modelingDialog.moveTo({ x: 0, y: 80 })
           }
           const [clickBracketInScene] = await scene.makeSelectionHelpers({
             kind: 'face',
-            index: 4,
+            // The end cap stays visible when the bracket rotates.
+            index: 2,
             stream: { x: 0.75, y: 0.92, format: 'ratio' },
           })
           await clickBracketInScene()
@@ -318,7 +324,7 @@ test.describe(
         )
 
         await expect(modelingDialog.input('x')).toHaveText('5')
-        await modelingDialog.input('x').fill('1')
+        await modelingDialog.fillInput('x', '1')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -335,7 +341,7 @@ test.describe(
         await op.dblclick()
         await expect(modelingDialog.submitButton).toBeEnabled()
 
-        await modelingDialog.input('y').fill('2')
+        await modelingDialog.fillInput('y', '2')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -378,7 +384,7 @@ test.describe(
         await expect(modelingDialog.submitButton).toBeEnabled()
 
         await expect(modelingDialog.input('factor')).toHaveText('1.1')
-        await modelingDialog.input('factor').fill('1.2')
+        await modelingDialog.fillInput('factor', '1.2')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
