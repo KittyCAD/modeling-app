@@ -1151,7 +1151,7 @@ solid001 = extrude(sketch001, length = 5)`
         await test.step('Configure arc degrees', async () => {
           await expect(modelingDialog.input('arc degrees')).toHaveAttribute(
             'aria-placeholder',
-            'Use defaults'
+            '360deg'
           )
           // Update arc degrees from 360deg to 180
           await modelingDialog.input('arc degrees').fill('180')
@@ -1191,8 +1191,8 @@ solid001 = extrude(sketch001, length = 5)`
         await editor.expectEditor.toContain('axis = Y')
         await editor.expectEditor.toContain('center = [5, 0, 0]')
         await editor.expectEditor.toContain('arcDegrees = 180')
-        await editor.expectEditor.toContain('rotateDuplicates = true')
-        await editor.expectEditor.toContain('useOriginal = false')
+        await editor.expectEditor.not.toContain('rotateDuplicates =')
+        await editor.expectEditor.not.toContain('useOriginal =')
       })
     })
 
@@ -1446,7 +1446,7 @@ solid001 = extrude(sketch001, length = 5)`
         await editor.expectEditor.toContain('instances = 4')
         await editor.expectEditor.toContain('distance = 12')
         await editor.expectEditor.toContain('axis = Z')
-        await editor.expectEditor.toContain('useOriginal = false')
+        await editor.expectEditor.not.toContain('useOriginal =')
       })
     })
 

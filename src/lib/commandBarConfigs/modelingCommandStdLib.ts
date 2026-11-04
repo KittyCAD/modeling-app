@@ -216,6 +216,10 @@ export function stdLibCommandArgs<CommandArgs extends object>(
       documentation: Object.hasOwn(args, commandArgName)
         ? undefined
         : arg.docs?.trim() || undefined,
+      kclDefault:
+        !Object.hasOwn(args, commandArgName) && 'defaultValue' in arg
+          ? arg.defaultValue
+          : undefined,
       ...(options.overrides?.[commandArgName] ?? {}),
     }
   }

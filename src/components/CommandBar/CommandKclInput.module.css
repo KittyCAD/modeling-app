@@ -36,6 +36,9 @@
 .compactEditor :global(.cm-line) {
   padding: 0;
 }
+.withInputAction :global(.cm-content) {
+  padding-right: 3rem;
+}
 .compactEditor :global(.cm-scroller) {
   font-family:
     "Source Code VF", Menlo, Monaco, Consolas, "Courier New", monospace;

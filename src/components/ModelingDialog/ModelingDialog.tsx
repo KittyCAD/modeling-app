@@ -10,6 +10,13 @@ import {
 } from '@src/components/CommandBar/CommandKclInput'
 import { CommandCameraInput } from '@src/components/CommandBar/CommandCameraInput'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { DefaultIndicator } from '@src/components/DefaultIndicator'
+import {
+  getArgumentChoices,
+  getDefaultInputText,
+  getDefaultOptionIndex,
+  isArgumentDefault,
+} from '@src/components/ModelingDialog/defaults'
 import { ErrorBanner } from '@src/components/ErrorBanner'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
@@ -68,12 +75,15 @@ export default function ModelingDialog({
   // Restore focus to the corresponding field after removing a selection.
   const selectionInputs = useRef(new Map<string, HTMLButtonElement>())
   const initialContext = useRef(state.context)
+  const editedArguments = useRef(new Set<string>())
   const fields = getDialogFields({
     ...state.context,
     argumentsToSubmit: { ...state.context.argumentsToSubmit, ...values },
   })
-  const save = (name: string, value: unknown) =>
+  const save = (name: string, value: unknown, edited = true) => {
+    if (edited) editedArguments.current.add(name)
     setValues((previous) => ({ ...previous, [name]: value }))
+  }
   const updateValidation = (name: string, next: CommandInputValidationState) =>
     setValidity((previous) => {
       const canSubmit = next.canSubmit && !next.isChecking
@@ -173,7 +183,8 @@ export default function ModelingDialog({
         selection.draft,
         kclManager.rustContext,
         kclManager.astSignal.value,
-        kclManager.artifactGraph
+        kclManager.artifactGraph,
+        editedArguments.current
       )
       if (!isCurrent()) return
       if (isErr(resolved)) {
@@ -196,6 +207,13 @@ export default function ModelingDialog({
     const label =
       arg.displayName || capitaliseFC(decamelize(name, { separator: ' ' }))
     const value = context.argumentsToSubmit[name]
+    const choices = getArgumentChoices(arg, context)
+    const isDefault = !required && isArgumentDefault(arg, value, choices)
+    const defaultText = required ? undefined : getDefaultInputText(arg)
+    const defaultDescriptionId = isDefault ? `${fieldId}-default` : undefined
+    const defaultIndicator = isDefault && (
+      <DefaultIndicator id={`${fieldId}-default`} />
+    )
     const description = arg.description && (
       <MarkdownText
         text={arg.description}
@@ -243,8 +261,10 @@ export default function ModelingDialog({
             arg={arg}
             label={label}
             labelAction={help}
+            inputAction={defaultIndicator}
+            inputDescriptionId={defaultDescriptionId}
             description={description}
-            placeholder={required ? undefined : 'Use defaults'}
+            placeholder={required ? undefined : (defaultText ?? 'Use defaults')}
             isRequired={required}
             inline={false}
             autoFocus={name === firstFieldName}
@@ -257,7 +277,9 @@ export default function ModelingDialog({
                 : arg.variableName
             }
             selectionRanges={selection.selectionRanges}
-            onChange={(change) => save(name, change.value)}
+            onChange={(change) =>
+              save(name, change.value, change.source === 'edit')
+            }
             onValidationChange={(next) => updateValidation(name, next)}
           />
         )
@@ -280,8 +302,10 @@ export default function ModelingDialog({
             arg={vectorArg}
             label={label}
             labelAction={help}
+            inputAction={defaultIndicator}
+            inputDescriptionId={defaultDescriptionId}
             description={description}
-            placeholder={required ? undefined : 'Use defaults'}
+            placeholder={required ? undefined : (defaultText ?? 'Use defaults')}
             isRequired={required}
             inline={false}
             autoFocus={name === firstFieldName}
@@ -289,7 +313,9 @@ export default function ModelingDialog({
             submittedValue={state.context.argumentsToSubmit[name]}
             nodeToEdit={state.context.argumentsToSubmit.nodeToEdit}
             selectionRanges={selection.selectionRanges}
-            onChange={(change) => save(name, change.value)}
+            onChange={(change) =>
+              save(name, change.value, change.source === 'edit')
+            }
             onValidationChange={(next) => updateValidation(name, next)}
           />
         )
@@ -354,46 +380,49 @@ export default function ModelingDialog({
         )
       case 'boolean':
       case 'options': {
-        const choices =
-          arg.inputType === 'boolean'
-            ? [
-                { name: 'On', value: true },
-                { name: 'Off', value: false },
-              ]
-            : typeof arg.options === 'function'
-              ? arg.options(context, machineContext)
-              : arg.options
-        const index = choices.findIndex((choice) => choice.value === value)
+        const defaultIndex = required ? -1 : getDefaultOptionIndex(arg, choices)
+        const index =
+          value === undefined
+            ? defaultIndex
+            : choices.findIndex((choice) => choice.value === value)
         return (
           <div key={name} className="flex flex-col gap-1">
             {fieldLabel}
-            <select
-              id={fieldId}
-              autoFocus={name === firstFieldName}
-              className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
-              value={index < 0 ? '' : String(index)}
-              onChange={(event) =>
-                save(
-                  name,
-                  event.target.value === ''
-                    ? undefined
-                    : choices[Number(event.target.value)]?.value
-                )
-              }
-            >
-              <option value="" disabled={required}>
-                {required ? 'Select an option' : 'Optional'}
-              </option>
-              {choices.map((choice, index) => (
-                <option
-                  key={choice.name}
-                  value={index}
-                  disabled={'disabled' in choice && choice.disabled}
-                >
-                  {choice.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                id={fieldId}
+                aria-describedby={defaultDescriptionId}
+                autoFocus={name === firstFieldName}
+                className={`w-full rounded-sm border border-chalkboard-30 bg-transparent pl-2 py-1 text-xs dark:border-chalkboard-70 ${isDefault ? 'pr-20' : 'pr-2'} ${value === undefined ? 'text-chalkboard-70 dark:text-chalkboard-40' : ''}`}
+                value={index < 0 ? '' : String(index)}
+                onChange={(event) =>
+                  save(
+                    name,
+                    event.target.value === ''
+                      ? undefined
+                      : choices[Number(event.target.value)]?.value
+                  )
+                }
+              >
+                {defaultIndex < 0 && (
+                  <option value="" disabled={required}>
+                    {required ? 'Select an option' : 'Use default'}
+                  </option>
+                )}
+                {choices.map((choice, index) => (
+                  <option
+                    key={choice.name}
+                    value={index}
+                    disabled={choice.disabled}
+                  >
+                    {choice.name}
+                  </option>
+                ))}
+              </select>
+              {isDefault && (
+                <DefaultIndicator id={`${fieldId}-default`} select />
+              )}
+            </div>
             {description}
           </div>
         )
@@ -402,15 +431,19 @@ export default function ModelingDialog({
         return (
           <div key={name} className="flex flex-col gap-1">
             {fieldLabel}
-            <input
-              {...noAutofillInputProps}
-              id={fieldId}
-              type="color"
-              autoFocus={name === firstFieldName}
-              className="h-8 w-full cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
-              value={fieldText(value)}
-              onChange={(event) => save(name, event.target.value)}
-            />
+            <div className="relative">
+              <input
+                {...noAutofillInputProps}
+                id={fieldId}
+                aria-describedby={defaultDescriptionId}
+                type="color"
+                autoFocus={name === firstFieldName}
+                className="h-8 w-full cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
+                value={fieldText(value) || defaultText || ''}
+                onChange={(event) => save(name, event.target.value)}
+              />
+              {defaultIndicator}
+            </div>
             {description}
           </div>
         )
@@ -449,15 +482,20 @@ export default function ModelingDialog({
         return (
           <div key={name} className="flex flex-col gap-1">
             {fieldLabel}
-            <Input
-              {...noAutofillInputProps}
-              id={fieldId}
-              rows={arg.inputType === 'text' ? 3 : undefined}
-              autoFocus={name === firstFieldName}
-              className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
-              value={fieldText(value)}
-              onChange={(event) => save(name, event.target.value)}
-            />
+            <div className="relative">
+              <Input
+                {...noAutofillInputProps}
+                id={fieldId}
+                aria-describedby={defaultDescriptionId}
+                rows={arg.inputType === 'text' ? 3 : undefined}
+                autoFocus={name === firstFieldName}
+                className={`w-full rounded-sm border border-chalkboard-30 bg-transparent pl-2 py-1 text-xs dark:border-chalkboard-70 ${isDefault ? 'pr-12' : 'pr-2'}`}
+                placeholder={defaultText}
+                value={fieldText(value)}
+                onChange={(event) => save(name, event.target.value)}
+              />
+              {defaultIndicator}
+            </div>
             {description}
           </div>
         )

@@ -8,6 +8,64 @@ sketch001 = sketch(on = XY) {
 region001 = region(segments = [sketch001.circle1])`
 
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
+  test('Shows KCL defaults and omits a selected default when creating and editing', async ({
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', profileCode)
+    )
+    await editor.selectText('region(')
+    await toolbar.extrudeButton.click()
+    const bodyType = modelingDialog.options('body type')
+    await expect(bodyType.locator('option:checked')).toHaveText('Solid')
+    await expect(bodyType).toHaveAccessibleDescription('default')
+    await expect(
+      modelingDialog.options('method').locator('option:checked')
+    ).toHaveText('Use default')
+    await bodyType.selectOption({ label: 'Surface' })
+    await expect(bodyType).toHaveAccessibleDescription('')
+    await bodyType.selectOption({ label: 'Solid' })
+    await modelingDialog.submit()
+    await scene.settled()
+    await editor.expectEditor.toContain('extrude(region001, length = 5)')
+
+    await toolbar.openFeatureTreePane()
+    const operation = await toolbar.getFeatureTreeOperation('Extrude', 0)
+    await operation.dblclick()
+    await expect(bodyType.locator('option:checked')).toHaveText('Solid')
+    await bodyType.selectOption({ label: 'Surface' })
+    await modelingDialog.submit()
+    await scene.settled()
+    await editor.expectEditor.toContain('bodyType = SURFACE')
+
+    await operation.dblclick()
+    await bodyType.selectOption({ label: 'Solid' })
+    await modelingDialog.submit()
+    await scene.settled()
+    await editor.expectEditor.toContain('extrude(region001, length = 5)')
+    await editor.expectEditor.not.toContain('bodyType =')
+
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(
+        'extrude(region001, length = 5)',
+        'extrude(region001, length = 5, bodyType = SOLID)'
+      )
+    )
+    await operation.dblclick()
+    await modelingDialog.input(/^length$/i).fill('6')
+    await modelingDialog.submit()
+    await scene.settled()
+    await editor.expectEditor.toContain(
+      'extrude(region001, length = 6, bodyType = SOLID)'
+    )
+  })
+
   test('Submits with Enter after scene selection', async ({
     page,
     homePage,

@@ -14,6 +14,10 @@ import {
 import { isErr } from '@src/lib/trap'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import {
+  getArgumentChoices,
+  isArgumentDefault,
+} from '@src/components/ModelingDialog/defaults'
 
 export type DialogField = {
   name: string
@@ -115,7 +119,8 @@ export async function resolveArguments(
   values: Record<string, unknown>,
   rustContext: RustContext,
   ast: Node<Program>,
-  artifactGraph?: ArtifactGraph
+  artifactGraph?: ArtifactGraph,
+  editedArguments?: ReadonlySet<string>
 ): Promise<Record<string, unknown> | Error> {
   const resolved = { ...context.argumentsToSubmit, ...values }
   // Creation dialogs retain inactive drafts. Keep those out of the payload,
@@ -194,7 +199,19 @@ export async function resolveArguments(
       return new Error(`Enter ${arg.displayName || name}.`)
     resolved[name] = value
   }
-  return resolved
+  // Normalize after validation so dependent requirements see the complete draft.
+  const current = { ...context, argumentsToSubmit: resolved }
+  const normalized = { ...resolved }
+  for (const { name, arg, required } of getDialogFields(current)) {
+    if (
+      !required &&
+      (!resolved.nodeToEdit || editedArguments?.has(name)) &&
+      isArgumentDefault(arg, resolved[name], getArgumentChoices(arg, current))
+    ) {
+      normalized[name] = undefined
+    }
+  }
+  return normalized
 }
 
 export function fieldText(value: unknown): string {
