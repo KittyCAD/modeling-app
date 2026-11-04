@@ -4449,10 +4449,8 @@ export const modelingMachine = setup({
           return new Error(errorMessage)
         }
 
-        const { up, scale, schema, ...formatData } = data
-        const format = {
-          ...formatData,
-        } as Partial<OutputFormat3d>
+        const { up, scale, schema } = data
+        const format: Partial<OutputFormat3d> = { type: data.type }
         const exportScale =
           scale ??
           defaultUnit?.current ??
@@ -4470,9 +4468,18 @@ export const modelingMachine = setup({
           })
         }
 
-        // Set all the un-configurable defaults here.
+        // Apply the options for the selected format.
         if (format.type === 'gltf') {
+          format.storage = data.gltfStorage
           format.presentation = 'pretty'
+        }
+
+        if (format.type === 'stl') {
+          format.storage = data.stlStorage
+        }
+
+        if (format.type === 'ply') {
+          format.storage = data.plyStorage
         }
 
         if (format.type === 'step') {
@@ -7429,7 +7436,7 @@ export const modelingMachine = setup({
           fileName = fileName.replace(/\.kcl$/i, '') // remove trailing .kcl
           fileName = sanitizeProjectName(fileName, 'output') // remove slash, backslash
           const extension =
-            event.data.type === 'gltf' && event.data.storage === 'binary'
+            event.data.type === 'gltf' && event.data.gltfStorage === 'binary'
               ? 'glb'
               : event.data.type
           fileName += `.${extension}` // add file extension

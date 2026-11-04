@@ -541,7 +541,7 @@ extrude001 = extrude(region001, length = 10mm)`
         currentArgKey: 'Scale',
       })
     // Leave the optional argument unconfirmed, then traverse both kinds of fields.
-    for (const name of ['Up', 'storage', 'type']) {
+    for (const name of ['Up', 'Storage', 'type']) {
       await cmdBar.stepBackButton.click()
       await expect
         .poll(() => cmdBar.getState())
