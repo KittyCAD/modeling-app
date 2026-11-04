@@ -1,4 +1,8 @@
-import type { EntityReference, OkModelingCmdResponse } from '@kittycad/lib'
+import type {
+  EntityReference,
+  EntityType,
+  OkModelingCmdResponse,
+} from '@kittycad/lib'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import {
   LOCAL_WEBGPU_GTAO_SAMPLES,
@@ -30,7 +34,7 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { reportRejection } from '@src/lib/trap'
+import { reportRejection, trap } from '@src/lib/trap'
 import { isArray, isNonNullable, uuidv4 } from '@src/lib/utils'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import {
@@ -68,6 +72,25 @@ import type {
 } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
+
+// If the filter selects whole bodies, returns which kind: 'solid3d' (the "Bodies"
+// filter) or 'object' (set by commands, also allows planes and regions).
+// With any other type alongside it, e.g. ['face', 'object'], returns undefined.
+function getBodySelectionType(filter: readonly EntityType[]) {
+  const [type] = filter
+  return filter.length === 1 && (type === 'object' || type === 'solid3d')
+    ? type
+    : undefined
+}
+
+function addToGroup<K>(groups: Map<K, Mesh[]>, key: K, mesh: Mesh) {
+  const group = groups.get(key)
+  if (group) {
+    group.push(mesh)
+  } else {
+    groups.set(key, [mesh])
+  }
+}
 
 /** glTF is Y-up in meters; the shared navigation camera is Z-up in mm. */
 function gltfToEngineBounds({ min, max }: Box3) {
@@ -154,7 +177,14 @@ export class LocalRenderer {
   private selectedEntityIds: string[] = []
   private selectionRequestVersion = 0
   private readonly engineEntityReferences = new Map<string, EntityReference>()
-  private readonly targetByEntityId = new Map<string, Mesh>()
+  // Several meshes, since periodic surfaces can be split with one face ID.
+  private readonly targetsByEntityId = new Map<string, Mesh[]>()
+  private readonly facesByBodyMesh = new Map<number, Mesh[]>()
+  // Filled in by clicks, since the GLB doesn't have the solids' UUIDs: the engine
+  // writes them, but the format crate loses them when it tessellates through
+  // HOOPS (map_topology_uuids only restores edges and faces). Once the GLB has
+  // them, this can go and faces can be matched to their body by that UUID.
+  private readonly bodyFacesById = new Map<string, Mesh[]>()
   private hoveredTarget: Mesh | null = null
   private hoverRequestVersion = 0
   private pointerOverCanvas = false
@@ -196,6 +226,9 @@ export class LocalRenderer {
           this.clearHover()
         }
       }),
+      kclManager.selectionFilter.subscribe(() =>
+        this.rebuildSelectionTargets()
+      ),
       kclManager.sceneInfra.baseUnitChange.add(this.syncPlaneScale),
       () => dprDetector.dispose()
     )
@@ -231,8 +264,18 @@ export class LocalRenderer {
 
   private getSelectedTargets() {
     return this.selectedEntityIds
-      .map((id) => this.getPlaneTarget(id) ?? this.targetByEntityId.get(id))
+      .flatMap(
+        (id) =>
+          this.bodyFacesById.get(id) ??
+          this.getPlaneTarget(id) ??
+          this.targetsByEntityId.get(id)
+      )
       .filter(isNonNullable)
+  }
+
+  // All the meshes of the target's body, or just the target if it isn't on a body.
+  private getBodyFaces(target: Mesh) {
+    return this.facesByBodyMesh.get(target.userData.bodyMeshIndex) ?? [target]
   }
 
   private updateSelection() {
@@ -243,10 +286,23 @@ export class LocalRenderer {
   private readonly clearHover = () => {
     this.hoverRequestVersion++
     this.hoveredTarget = null
-    this.gpu?.selectionHighlightRenderer.setHover(null)
+    this.gpu?.selectionHighlightRenderer.setHover([])
     this.scheduleRender()
   }
 
+  // What hovering the target highlights: its whole body with a body filter,
+  // otherwise all the meshes of its face, or just the target for edges and planes.
+  private getHoverTargets(target: Mesh | null, filter: readonly EntityType[]) {
+    if (!target) {
+      return []
+    }
+    if (getBodySelectionType(filter)) {
+      return this.getBodyFaces(target)
+    }
+    return this.targetsByEntityId.get(target.userData.faceUuid) ?? [target]
+  }
+
+  // Refresh everything that depends on what's pickable when the model or filter changes.
   private rebuildSelectionTargets() {
     const { gpu } = this
     if (!gpu) return
@@ -257,28 +313,43 @@ export class LocalRenderer {
       planeRenderer.planes.values(),
       ({ mesh }) => mesh
     )
-    this.targetByEntityId.clear()
+
+    // Rebuild lookups
+    this.targetsByEntityId.clear()
+    this.facesByBodyMesh.clear()
     this.currentModel?.traverse((object) => {
       if (
         (object as Mesh).isMesh &&
         typeof object.userData.faceUuid === 'string'
       ) {
-        targets.push(object as Mesh)
-        this.targetByEntityId.set(object.userData.faceUuid, object as Mesh)
+        const mesh = object as Mesh
+        targets.push(mesh)
+        addToGroup(this.targetsByEntityId, object.userData.faceUuid, mesh)
+        if (object.userData.bodyMeshIndex !== undefined) {
+          addToGroup(this.facesByBodyMesh, object.userData.bodyMeshIndex, mesh)
+        }
       }
     })
     const edgeTargets = edgeRenderer.getSelectionTargets()
     const sketchLineTargets = sketchLineRenderer.getSelectionTargets()
     for (const { object } of [...edgeTargets, ...sketchLineTargets]) {
-      this.targetByEntityId.set(object.userData.edgeUuid, object)
+      addToGroup(this.targetsByEntityId, object.userData.edgeUuid, object)
     }
 
+    // Pass filtered targets to picker
+    const filter = this.kclManager.selectionFilter.peek()
     gpu.integerIdPicker.setTargets(
-      targets,
+      targets.filter((target) => this.isSelectable(target, filter)),
       this.currentModel,
-      { source: edgeRenderer.lines, targets: edgeTargets },
-      { source: sketchLineRenderer.lines, targets: sketchLineTargets }
+      filter.includes('edge')
+        ? { source: edgeRenderer.lines, targets: edgeTargets }
+        : undefined,
+      filter.includes('curve')
+        ? { source: sketchLineRenderer.lines, targets: sketchLineTargets }
+        : undefined
     )
+
+    // All targets, so what's already selected stays highlighted when the filter changes
     gpu.selectionHighlightRenderer.setTargets([
       ...targets,
       ...edgeTargets.map(({ object }) => object),
@@ -286,6 +357,21 @@ export class LocalRenderer {
     ])
     this.clearHover()
     this.updateSelection()
+  }
+
+  // Decides if the target can be selected by the currently set filter.
+  // Edges and sketch lines are handled in rebuildSelectionTargets.
+  private isSelectable(target: Mesh, filter: readonly EntityType[]) {
+    if (this.gpu?.planeRenderer.planes.has(target.name)) {
+      // Only "object" filter allows planes ("All", "Faces" and ['object'] but not "Edges" or "Bodies")
+      return filter.includes('object')
+    }
+    const bodyType = getBodySelectionType(filter)
+    if (target.userData.isSketchRegion) {
+      // A region filter, or object on its own
+      return filter.includes('region') || bodyType === 'object'
+    }
+    return filter.includes('face') || bodyType !== undefined
   }
 
   private getLocalEntityReference(entityId: string) {
@@ -400,6 +486,7 @@ export class LocalRenderer {
         ? ++this.hoverRequestVersion
         : this.hoverRequestVersion
       const executionVersion = this.executionVersion
+      const filter = this.kclManager.selectionFilter.peek()
       const result = await this.gpu?.integerIdPicker.pick({
         ...cmd.selected_at_window,
         streamWidth: streamDimensions.width,
@@ -428,7 +515,9 @@ export class LocalRenderer {
       if (isHover) {
         if (this.hoveredTarget !== target) {
           this.hoveredTarget = target
-          this.gpu?.selectionHighlightRenderer.setHover(target)
+          this.gpu?.selectionHighlightRenderer.setHover(
+            this.getHoverTargets(target, filter)
+          )
           this.scheduleRender()
         }
         return {
@@ -438,11 +527,29 @@ export class LocalRenderer {
           },
         }
       }
-      const reference = entityId
+      let reference: EntityReference | undefined = entityId
         ? ((await this.getEngineEntityReference(entityId)) ??
           this.getLocalEntityReference(entityId))
         : undefined
-      if (executionVersion !== this.executionVersion) return {}
+      if (
+        executionVersion !== this.executionVersion ||
+        filter !== this.kclManager.selectionFilter.peek()
+      ) {
+        return {}
+      }
+      // With a body filter, a picked face stands for its whole body.
+      if (reference?.type === 'face' && getBodySelectionType(filter)) {
+        const bodyId = reference.topology_fallback?.parent_id
+        if (bodyId) {
+          reference = { type: 'solid3d', solid3d_id: bodyId }
+          if (target) {
+            this.bodyFacesById.set(bodyId, this.getBodyFaces(target))
+          }
+        } else {
+          reference = undefined
+          trap(new Error('Could not find the body of the selected face'))
+        }
+      }
       const response = {
         type: 'query_entity_type_with_point',
         data: { reference },
@@ -525,8 +632,11 @@ export class LocalRenderer {
       gpu.selectionHighlightRenderer.dispose()
       gpu.envMapLoader.dispose()
       gpu.renderer.domElement.remove()
-      gpu.renderer.dispose()
-      gpu.device?.destroy()
+      // The renderer frees its resources asynchronously, so the device has to outlive that.
+      gpu.renderer
+        .dispose()
+        .then(() => gpu.device?.destroy())
+        .catch(reportRejection)
     }
     this.previewCamera = null
   }
@@ -775,7 +885,7 @@ export class LocalRenderer {
     this.currentModel.updateWorldMatrix(true, true)
     camera.updateMatrixWorld(true)
     const entities = []
-    for (const [id, object] of this.targetByEntityId) {
+    for (const [id, [object]] of this.targetsByEntityId) {
       const kind =
         typeof object.userData.edgeUuid === 'string' ? 'edge' : 'face'
       object.updateWorldMatrix(true, false)
@@ -877,6 +987,7 @@ export class LocalRenderer {
     const { gpu } = this
     this.loadedSceneGeneration = null
     this.engineEntityReferences.clear()
+    this.bodyFacesById.clear()
     gpu?.integerIdPicker.clearModel()
     gpu?.selectionHighlightRenderer.clearModel()
     if (this.currentModel) {
@@ -928,7 +1039,7 @@ export class LocalRenderer {
     })
     await renderer.init()
     if (this.disposed) {
-      renderer.dispose()
+      await renderer.dispose()
       device?.destroy()
       return
     }
@@ -955,7 +1066,7 @@ export class LocalRenderer {
     if (this.disposed) {
       envMapLoader.dispose()
       renderer.domElement.remove()
-      renderer.dispose()
+      await renderer.dispose()
       device?.destroy()
       return
     }
@@ -1060,6 +1171,16 @@ export class LocalRenderer {
 
     const { detail } = event as CustomEvent<KclExecutionDoneDetail>
     if (!detail.successful) {
+      if (
+        this.loadedSceneGeneration !==
+        this.kclManager.engineSceneGenerationSignal.peek()
+      ) {
+        // The failed run replaced the scene, so its old geometry is stale.
+        this.clearModel()
+        this.gpu?.planeRenderer.updateOffsetPlanes(
+          this.kclManager.artifactGraph
+        )
+      }
       this.rebuildSelectionTargets()
       this.syncPlaneScale()
       this.onModelLoadSettled?.()
@@ -1293,6 +1414,8 @@ export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
     const primitiveIndex = association?.primitives
     if (meshIndex === undefined || primitiveIndex === undefined) return
 
+    // Each solid has its own glTF mesh, so this groups the faces by body.
+    object.userData.bodyMeshIndex = meshIndex
     const faceIndex = faceIdsBySolidMesh.get(meshIndex)?.[primitiveIndex]
     const face = faceIndex === undefined ? undefined : brep.faces[faceIndex]
     const uuid = face?.extras?.KITTYCAD?.uuid

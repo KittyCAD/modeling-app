@@ -1,4 +1,3 @@
-import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import fs from 'fs'
@@ -260,6 +259,7 @@ part001 = startSketchOn(XZ)
       scene,
     }) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
+
       const [clickEmptyScene] = scene.makeMouseHelpers(0.5, 0.9, {
         format: 'ratio',
       })
@@ -288,14 +288,23 @@ part001 = startSketchOn(XZ)
 
       await test.step('Right click on bracket navigates to its source', async () => {
         await expect(laterCode).not.toBeInViewport()
-        const [clickBracket] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 1,
-          stream: { x: 0.45, y: 0.45, format: 'ratio' },
-        })
-        await clickBracket()
+        {
+          const [clickBracket] = await scene.makeSelectionHelpers({
+            kind: 'face',
+            index: 1,
+            stream: { x: 0.45, y: 0.45, format: 'ratio' },
+          })
+          await clickBracket()
+        }
         await expect(page.getByText('1 face')).toBeVisible()
-        await clickBracket({ shouldRightClick: true })
+        {
+          const [clickBracket] = await scene.makeSelectionHelpers({
+            kind: 'face',
+            index: 1,
+            stream: { x: 0.45, y: 0.45, format: 'ratio' },
+          })
+          await clickBracket({ shouldRightClick: true })
+        }
         await expect(viewKclSourceCodeOption).toBeVisible()
         await expect(viewKclSourceCodeOption).toBeEnabled()
         await viewKclSourceCodeOption.click()
@@ -335,16 +344,18 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
       await homePage.goToModelingScene()
       await scene.settled()
 
-      const [clickOnFace] = await scene.makeSelectionHelpers({
-        kind: 'face',
-        index: 0,
-        stream: { x: 0.6, y: 0.6, format: 'ratio' },
-      })
+      // Two dumb hardcoded screen ratio values
+
       const [clearSelection] = scene.makeMouseHelpers(0.8, 0.8, {
         format: 'ratio',
       })
 
       await test.step(`Click a primitive face and expect the selection to be set to it`, async () => {
+        const [clickOnFace] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 0,
+          stream: { x: 0.6, y: 0.6, format: 'ratio' },
+        })
         await clickOnFace()
         await expect(toolbar.selectionStatus).toContainText('1 face')
       })
@@ -436,7 +447,7 @@ sketch001 = sketch(on = face001) {
     homePage,
     scene,
     toolbar,
-    cmdBar,
+    modelingDialog,
     editor,
   }) => {
     await context.addInitScript((initialCode) => {
@@ -472,39 +483,10 @@ sketch001 = sketch(on = face001) {
       await page.waitForTimeout(100)
       await toolbar.filletButton.click()
 
-      const state: CmdBarSerialised = {
-        commandName: 'Fillet',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Radius: '',
-        },
-        highlightedHeaderArg: 'selection',
-        stage: 'arguments',
-      }
-      await cmdBar.expectState(state)
+      await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
+      await modelingDialog.input('radius').fill('1')
 
-      // Scene selection should carry into the fillet command (same pattern as split-edge fillet e2e)
-      state.currentArgKey = 'radius'
-      state.currentArgValue = '5'
-      state.headerArguments.Selection = '1 edge'
-      state.highlightedHeaderArg = 'radius'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state)
-
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('1')
-      state.currentArgValue = '1'
-      state.headerArguments.Radius = '1'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        headerArguments: state.headerArguments,
-        stage: 'review',
-        reviewValidationError: undefined,
-      })
-
-      await cmdBar.submit()
+      await modelingDialog.submit()
       await scene.settled()
       await editor.expectEditor.toContain('fillet')
       await editor.expectEditor.toContain('radius')

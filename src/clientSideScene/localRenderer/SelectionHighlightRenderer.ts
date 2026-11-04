@@ -73,7 +73,7 @@ export class SelectionHighlightRenderer {
   private readonly selectionCompositeMaterial: NodeMaterial
   private readonly hoverLineMaterial: Line2NodeMaterial
   private readonly selectionLineMaterial: Line2NodeMaterial
-  private readonly compositeQuad = new QuadMesh()
+  private readonly compositeQuad: QuadMesh
   private readonly overlayByKey = new Map<string, Mesh>()
   private readonly sourceByOverlay = new Map<Mesh, Mesh>()
   private readonly lineKeys = new Set<string>()
@@ -159,6 +159,7 @@ export class SelectionHighlightRenderer {
       SKETCH_SELECTION_COLOR,
       renderer.outputColorSpace
     )
+    this.compositeQuad = new QuadMesh(this.hoverCompositeMaterial)
     this.hoverLineMaterial = createLineMaterial(
       SKETCH_HIGHLIGHT_COLOR,
       renderer.outputColorSpace
@@ -199,24 +200,12 @@ export class SelectionHighlightRenderer {
     this.backgroundColorNode.value.set(backgroundColor)
   }
 
-  setHover(target: Mesh | null) {
-    this.hoveredKeys.clear()
-    if (target) {
-      const faceUuid = target.userData.faceUuid
-      if (typeof faceUuid === 'string') {
-        // Periodic surfaces can be split into several meshes with one face ID.
-        for (const source of this.sourceByOverlay.values()) {
-          if (source.userData.faceUuid === faceUuid) {
-            this.hoveredKeys.add(source.uuid)
-          }
-        }
-      } else {
-        this.hoveredKeys.add(target.uuid)
-      }
-    }
+  setHover(targets: Mesh[]) {
+    this.hoveredKeys = new Set(targets.map((target) => target.uuid))
     this.updateSceneMembership()
   }
 
+  // Prepares highlights, creates one overlay for each target: sharing geometry.
   setTargets(targets: Mesh[]) {
     this.clearModel()
     for (const mesh of targets) {

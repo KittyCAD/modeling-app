@@ -536,26 +536,28 @@ export class SceneFixture {
   /** Camera poses use the shared camera's engine-world coordinates (millimeters). */
   moveCameraTo = async (
     pos: { x: number; y: number; z: number },
-    target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 }
+    target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
+    { waitForImageChange = true }: { waitForImageChange?: boolean } = {}
   ) => {
     // Streaming still owns its camera on the engine and needs the rendered
     // frame to arrive. Local rendering updates the frontend camera directly.
     if (!(await this.usesLocalRenderer())) {
-      await doAndWaitForImageDiff(
-        this.page,
-        () =>
-          sendSceneCommand(this.page, {
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'default_camera_look_at',
-              vantage: pos,
-              center: target,
-              up: { x: 0, y: 0, z: 1 },
-            },
-          }),
-        300
-      )
+      const moveCamera = () =>
+        sendSceneCommand(this.page, {
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_look_at',
+            vantage: pos,
+            center: target,
+            up: { x: 0, y: 0, z: 1 },
+          },
+        })
+      if (waitForImageChange) {
+        await doAndWaitForImageDiff(this.page, moveCamera, 300)
+      } else {
+        await moveCamera()
+      }
       return
     }
     // Initial model loading fits the local camera; let it finish before

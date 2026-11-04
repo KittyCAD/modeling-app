@@ -8,7 +8,7 @@
 // registration reading the wrong module id fails here rather than reaching an
 // author. Importing the view value also has to leave the imported view
 // registered to its own module, not re-registered to this one.
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 import panelFront from "panel.kcl"
 

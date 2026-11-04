@@ -81,6 +81,9 @@ export class IntegerIdPicker {
     return vec4(byte(0), byte(8), byte(16), 1)
   }
 
+  // Each allowed target gets a copy of its mesh with its own material, which draws that target's unique ID.
+  // Other model meshes all share ID = 0, they block picks behind them but can't be picked themselves. Excluded regions are skipped, because they're invisible.
+  // Edges and sketch lines are added only if they were passed in depending on the filter
   // Share geometry; only the small ID materials and scene nodes are owned here.
   setTargets(
     targets: Mesh[],
@@ -114,10 +117,17 @@ export class IntegerIdPicker {
     }
     const occluderMaterial = createMaterial(0)
     const targetSet = new Set(targets)
+    // Add "hit blockers" which have ID = 0, they cannot be selected but
+    // block objects behind them from being selected.
     occluder?.traverseVisible((object) => {
       if (
         object instanceof Mesh &&
+        // Lines sit on the faces, so as blockers they'd make clicks near a face's edge miss.
+        // Pickable lines are added by addLines: same geometry, drawn wide with their IDs.
         !(object instanceof LineSegments2) &&
+        // Regions aren't drawn, so they mustn't block what's visible behind them
+        !object.userData.isSketchRegion &&
+        // already pickable, the next loop will add it, no need to add it twice.
         !targetSet.has(object)
       ) {
         addMesh(object, occluderMaterial)
