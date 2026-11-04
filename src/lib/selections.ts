@@ -2698,34 +2698,44 @@ export function getSelectionCountByType(
     ).artifact
 
     if (v2Selection.entityRef) {
-      if (v2Selection.entityRef.type === 'annotation') {
-        incrementOrInitializeSelectionType('gdtAnnotation')
-      } else if (v2Selection.entityRef.type === 'helix') {
-        incrementOrInitializeSelectionType('helix')
-      } else if (v2Selection.entityRef.type === 'solid2d_edge') {
-        incrementOrInitializeSelectionType('segment')
-      } else if (
-        v2Selection.entityRef.type === 'edge' ||
-        v2Selection.entityRef.type === 'segment'
-      ) {
-        // All other edge-like refs: show as "edges"
-        incrementOrInitializeSelectionType('segment')
-      } else if (v2Selection.entityRef.type === 'vertex') {
-        incrementOrInitializeSelectionType('other')
-      } else if (v2Selection.entityRef.type === 'face') {
-        incrementOrInitializeSelectionType('wall')
-      } else if (v2Selection.entityRef.type === 'plane') {
-        incrementOrInitializeSelectionType('plane')
-      } else if (v2Selection.entityRef.type === 'solid2d') {
-        const artifact = getArtifactById(v2Selection.entityRef.solid2d_id)
-        if (!artifact || !incrementArtifactSelectionType(artifact)) {
-          incrementOrInitializeSelectionType('solid2d')
+      switch (v2Selection.entityRef.type) {
+        case 'annotation':
+          incrementOrInitializeSelectionType('gdtAnnotation')
+          break
+        case 'helix':
+          incrementOrInitializeSelectionType('helix')
+          break
+        case 'solid2d_edge':
+        case 'edge':
+        case 'segment':
+          // Edge-like refs: show as "edges"
+          incrementOrInitializeSelectionType('segment')
+          break
+        case 'vertex':
+          incrementOrInitializeSelectionType('other')
+          break
+        case 'face':
+          incrementOrInitializeSelectionType('wall')
+          break
+        case 'plane':
+          incrementOrInitializeSelectionType('plane')
+          break
+        case 'solid2d': {
+          const artifact = getArtifactById(v2Selection.entityRef.solid2d_id)
+          if (!artifact || !incrementArtifactSelectionType(artifact)) {
+            incrementOrInitializeSelectionType('solid2d')
+          }
+          break
         }
-      } else if (v2Selection.entityRef.type === 'solid3d') {
-        const artifact = getArtifactById(v2Selection.entityRef.solid3d_id)
-        if (!artifact || !incrementArtifactSelectionType(artifact)) {
-          incrementOrInitializeSelectionType('path')
+        case 'solid3d': {
+          const artifact = getArtifactById(v2Selection.entityRef.solid3d_id)
+          if (!artifact || !incrementArtifactSelectionType(artifact)) {
+            incrementOrInitializeSelectionType('path')
+          }
+          break
         }
+        case 'region':
+          break
       }
     } else if (inlineArtifact?.type === 'helix') {
       incrementOrInitializeSelectionType('helix')
