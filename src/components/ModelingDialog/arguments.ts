@@ -205,6 +205,7 @@ export async function resolveArguments(
   for (const { name, arg, required } of getDialogFields(current)) {
     if (
       !required &&
+      !context.selectedCommand?.preserveDefaultArguments?.includes(name) &&
       (!resolved.nodeToEdit || editedArguments?.has(name)) &&
       isArgumentDefault(arg, resolved[name], getArgumentChoices(arg, current))
     ) {

@@ -122,6 +122,7 @@ export function createMachineCommand<
     },
     disabled: forceDisable,
     forceCommandBar: commandConfig.forceCommandBar,
+    preserveDefaultArguments: commandConfig.preserveDefaultArguments,
   }
 
   if (commandConfig.args) {

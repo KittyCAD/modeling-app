@@ -147,6 +147,8 @@ export type Command<
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>
   }
+  /** Arguments whose presence carries meaning even when their value matches the default. */
+  preserveDefaultArguments?: readonly string[]
   displayName?: string
   description?: string
   icon?: Icon

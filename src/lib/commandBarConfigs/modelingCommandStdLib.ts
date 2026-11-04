@@ -217,7 +217,10 @@ export function stdLibCommandArgs<CommandArgs extends object>(
         ? undefined
         : arg.docs?.trim() || undefined,
       kclDefault:
-        !Object.hasOwn(args, commandArgName) && 'defaultValue' in arg
+        // Legacy implementations can select different defaults from context.
+        !isDeprecatedStdLibArg(arg) &&
+        !Object.hasOwn(args, commandArgName) &&
+        'defaultValue' in arg
           ? arg.defaultValue
           : undefined,
       ...(options.overrides?.[commandArgName] ?? {}),

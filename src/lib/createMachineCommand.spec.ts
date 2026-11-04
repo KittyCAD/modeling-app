@@ -54,6 +54,7 @@ const commandBarConfig = {
   ],
   WithArguments: {
     description: 'Command with arguments',
+    preserveDefaultArguments: ['availableArg'],
     args: {
       availableArg: {
         inputType: 'string',
@@ -247,6 +248,7 @@ describe('createMachineCommand', () => {
     actor.stop()
 
     expect(command).toMatchObject({
+      preserveDefaultArguments: ['availableArg'],
       args: {
         availableArg: {
           hidden: undefined,
