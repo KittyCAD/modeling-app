@@ -3375,7 +3375,11 @@ mod tests {
 
     use crate::errors::KclError;
     use crate::errors::KclErrorDetails;
+    use crate::execution::ExecTestResults;
+    use crate::execution::KclValue;
+    use crate::execution::Path;
     use crate::execution::TagIdentifier;
+    use crate::execution::parse_execute;
     use crate::std::sketch::PlaneData;
     use crate::std::sketch::REGION_DOCS_URL;
     use crate::std::sketch::REGION_FROM_POINT_ENGINE_HELP;
@@ -3512,5 +3516,164 @@ mod tests {
         let actual = calculate_circle_center([0.0, 0.0], [5.0, 5.0], [10.0, 0.0]);
         assert_eq!(actual[0], 5.0);
         assert_eq!(actual[1], 0.0);
+    }
+
+    fn number(result: &ExecTestResults, name: &str) -> f64 {
+        let KclValue::Number { value, .. } = result.variable(name) else {
+            panic!("expected `{name}` to be a number");
+        };
+        value
+    }
+
+    fn point(result: &ExecTestResults, name: &str) -> [f64; 2] {
+        let KclValue::HomArray { value, .. } = result.variable(name) else {
+            panic!("expected `{name}` to be a point");
+        };
+        let [x, y] = value.as_slice() else {
+            panic!("expected `{name}` to have two coordinates");
+        };
+        let (Some(x), Some(y)) = (x.as_f64(), y.as_f64()) else {
+            panic!("expected `{name}` to be made of numbers");
+        };
+        [x, y]
+    }
+
+    fn assert_angle_close(actual: f64, expected: f64, code: &str) {
+        let diff = (actual - expected).rem_euclid(360.0);
+        assert!(
+            diff < 1e-6 || diff > 360.0 - 1e-6,
+            "expected {expected} degrees, got {actual} degrees for:\n{code}"
+        );
+    }
+
+    fn assert_point_close(actual: [f64; 2], expected: [f64; 2], code: &str) {
+        assert!(
+            (actual[0] - expected[0]).abs() < 1e-6 && (actual[1] - expected[1]).abs() < 1e-6,
+            "expected {expected:?}, got {actual:?} for:\n{code}"
+        );
+    }
+
+    /// Runs `code` and checks that the only issues are the usual warnings that
+    /// the legacy sketch API is deprecated.
+    async fn run_without_new_issues(code: &str) -> ExecTestResults {
+        let result = parse_execute(code).await.unwrap();
+        let issues: Vec<_> = result
+            .issues()
+            .iter()
+            .filter(|issue| !issue.message.contains("part of the legacy sketch API"))
+            .collect();
+        assert!(issues.is_empty(), "unexpected issues {issues:?} for:\n{code}");
+        result
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tangent_to_end_after_elliptic_follows_the_end_of_the_arc() {
+        // The ellipse is center + R(majorAxis) * (a cos t, b sin t), so the
+        // tangent direction at the end is R(majorAxis) * (-a sin t, b cos t)
+        // for a counterclockwise arc, and the reverse for a clockwise one.
+        // Each profile starts where the arc starts, at t = angleStart.
+        let s = std::f64::consts::FRAC_1_SQRT_2;
+        let cases = [
+            // ccw, major axis along x: a = 2, b = 1.
+            ([2.0, 0.0], "angleStart = 0, angleEnd = 90deg, majorRadius = 2", 180.0),
+            ([2.0, 0.0], "angleStart = 0, angleEnd = 180deg, majorRadius = 2", -90.0),
+            ([2.0, 0.0], "angleStart = 0, angleEnd = 270deg, majorRadius = 2", 0.0),
+            // (-2 sin 45, cos 45) points 180 - atan(1/2) degrees.
+            (
+                [2.0, 0.0],
+                "angleStart = 0, angleEnd = 45deg, majorRadius = 2",
+                153.43494882292202,
+            ),
+            // cw (angleEnd < angleStart) runs the same tangents backwards.
+            ([0.0, 1.0], "angleStart = 90deg, angleEnd = 0, majorRadius = 2", -90.0),
+            (
+                [-2.0, 0.0],
+                "angleStart = 180deg, angleEnd = 90deg, majorRadius = 2",
+                0.0,
+            ),
+            (
+                [0.0, 1.0],
+                "angleStart = 90deg, angleEnd = 45deg, majorRadius = 2",
+                -26.56505117707799,
+            ),
+            // Major axis rotated by 90 degrees.
+            (
+                [0.0, 2.0],
+                "angleStart = 0, angleEnd = 90deg, majorAxis = [0, 2]",
+                -90.0,
+            ),
+            ([-1.0, 0.0], "angleStart = 90deg, angleEnd = 0, majorAxis = [0, 2]", 0.0),
+            // Major axis rotated by 45 degrees.
+            (
+                [2.0 * s, 2.0 * s],
+                "angleStart = 0, angleEnd = 90deg, majorAxis = [1.4142135623730951, 1.4142135623730951]",
+                -135.0,
+            ),
+        ];
+        for (start, elliptic_args, expected) in cases {
+            for version in ["2.0", "3.0"] {
+                for unit in ["mm", "in"] {
+                    let code = format!(
+                        "@settings(kclVersion = {version}, experimentalFeatures = allow, defaultLengthUnit = {unit})
+s = startSketchOn(XY)
+  |> startProfile(at = [{}, {}])
+  |> elliptic(center = [0, 0], {elliptic_args}, minorRadius = 1, tag = $e)
+t = tangentToEnd(e)",
+                        start[0], start[1]
+                    );
+                    let result = run_without_new_issues(&code).await;
+                    assert_angle_close(number(&result, "t"), expected, &code);
+                }
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tangential_arc_after_elliptic_starts_along_the_end_tangent() {
+        // The elliptic arc ends at (0, 1) heading in the -x direction, so a
+        // tangential quarter turn of radius 1 is centred on the origin and
+        // ends at (-1, 0), where it heads in the -y direction.
+        for version in ["2.0", "3.0"] {
+            let code = format!(
+                "@settings(kclVersion = {version}, experimentalFeatures = allow)
+s = startSketchOn(XY)
+  |> startProfile(at = [2, 0])
+  |> elliptic(center = [0, 0], angleStart = 0, angleEnd = 90deg, majorRadius = 2, minorRadius = 1, tag = $e)
+  |> tangentialArc(angle = 90deg, radius = 1, tag = $a)
+arcEnd = segEnd(a)
+t = tangentToEnd(a)"
+            );
+            let result = run_without_new_issues(&code).await;
+            let KclValue::Sketch { value: sketch } = result.variable("s") else {
+                panic!("expected `s` to be a sketch");
+            };
+            let Some(Path::TangentialArc { center, ccw, .. }) = sketch.paths.back() else {
+                panic!("expected the sketch to end with a tangential arc");
+            };
+            assert_point_close(*center, [0.0, 0.0], &code);
+            assert!(*ccw, "expected a counterclockwise arc for:\n{code}");
+            assert_point_close(point(&result, "arcEnd"), [-1.0, 0.0], &code);
+            assert_angle_close(number(&result, "t"), -90.0, &code);
+
+            // The same arc given by its end point.
+            let code = format!(
+                "@settings(kclVersion = {version}, experimentalFeatures = allow)
+s = startSketchOn(XY)
+  |> startProfile(at = [2, 0])
+  |> elliptic(center = [0, 0], angleStart = 0, angleEnd = 90deg, majorRadius = 2, minorRadius = 1, tag = $e)
+  |> tangentialArc(endAbsolute = [-1, 0], tag = $a)
+t = tangentToEnd(a)"
+            );
+            let result = run_without_new_issues(&code).await;
+            let KclValue::Sketch { value: sketch } = result.variable("s") else {
+                panic!("expected `s` to be a sketch");
+            };
+            let Some(Path::TangentialArcTo { center, ccw, .. }) = sketch.paths.back() else {
+                panic!("expected the sketch to end with a tangential arc");
+            };
+            assert_point_close(*center, [0.0, 0.0], &code);
+            assert!(*ccw, "expected a counterclockwise arc for:\n{code}");
+            assert_angle_close(number(&result, "t"), -90.0, &code);
+        }
     }
 }
