@@ -193,7 +193,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             }
             const selectedEntityRef = normalizeEntityReference(result.reference)
             let entityId: string | undefined
-            if (selectedEntityRef?.type === 'plane')
+            if (selectedEntityRef?.type === 'annotation')
+              entityId = selectedEntityRef.annotation_id
+            else if (selectedEntityRef?.type === 'plane')
               entityId = selectedEntityRef.plane_id
             else if (selectedEntityRef?.type === 'face')
               entityId = selectedEntityRef.face_id
