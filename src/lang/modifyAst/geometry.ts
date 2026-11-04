@@ -21,6 +21,8 @@ import {
 } from '@src/lang/modifyAst/edges'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
+  getSketchSegmentName,
+  getSketchVariableNameForSegment,
   getVariableExprsFromSelection,
   resolveToCodeRef,
   valueOrVariable,
@@ -307,6 +309,29 @@ export function getAxisExpression(
     }
     if (!axisSelection) {
       return new Error('Generated axis selection is missing.')
+    }
+
+    if (axisSelection.type === 'segment') {
+      const segmentId = axisSelection.originalSegId ?? axisSelection.id
+      const sketchName = getSketchVariableNameForSegment(
+        modifiedAst,
+        segmentId,
+        artifactGraph,
+        wasmInstance
+      )
+      if (
+        sketchName &&
+        !getSketchSegmentName(
+          modifiedAst,
+          segmentId,
+          artifactGraph,
+          wasmInstance
+        )
+      ) {
+        return new Error(
+          'The selected sketch segment has no variable name. Assign it a name before using it as an axis.'
+        )
+      }
     }
 
     let pathToAxisSelection: PathToNode

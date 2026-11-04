@@ -237,6 +237,36 @@ function generateAxis(
 }
 
 describe('getAxisExpression', () => {
+  it('returns an error for an unnamed sketch-block axis', async () => {
+    const ast = assertParse(
+      `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  line(start = [0mm, 0mm], end = [5mm, 0mm])
+}`,
+      instanceInThisFile
+    )
+    const { artifactGraph } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const segment = [...artifactGraph.values()].find(
+      (a) => a.type === 'segment'
+    )
+    if (!segment) throw new Error('Missing sketch segment')
+    const result = getAxisExpression(
+      undefined,
+      createSelectionFromArtifacts([segment], artifactGraph),
+      ast,
+      instanceInThisFile,
+      artifactGraph
+    )
+    expect(result).toEqual(
+      new Error(
+        'The selected sketch segment has no variable name. Assign it a name before using it as an axis.'
+      )
+    )
+  })
+
   it.each(['extrude', 'revolve'] as const)(
     'preserves a face API edge selector when generating %s',
     async (command) => {
