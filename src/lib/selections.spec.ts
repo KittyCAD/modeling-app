@@ -3276,6 +3276,58 @@ describe('default plane selection synchronization', () => {
 })
 
 describe('mixed entity-reference selection highlighting', () => {
+  test.each([false, true])(
+    'selects annotations by UUID (mixed with a face: %s)',
+    async (withFace) => {
+      const world = await buildTheWorldAndNoEngineConnection()
+      const graphSelections: Selection[] = [
+        {
+          entityRef: { type: 'annotation', annotation_id: 'annotation-id' },
+        },
+      ]
+      if (withFace) {
+        graphSelections.push({
+          entityRef: { type: 'face', face_id: 'face-id' },
+        })
+      }
+      Object.defineProperty(world.engineCommandManager, 'connection', {
+        value: { pingIntervalId: 1 },
+        writable: true,
+        configurable: true,
+      })
+      try {
+        const { engineEvents } = handleSelectionBatch({
+          selections: { graphSelections, otherSelections: [] },
+          artifactGraph: new Map(),
+          code: '',
+          ast: world.kclManager.ast,
+          systemDeps: {
+            engineCommandManager: world.engineCommandManager,
+            sceneEntitiesManager: world.sceneEntitiesManager,
+            wasmInstance: world.instance,
+          },
+        })
+        expect(
+          engineEvents.flatMap((event) =>
+            event.type === 'modeling_cmd_req' ? [event.cmd] : []
+          )
+        ).toEqual([
+          withFace
+            ? {
+                type: 'select_entity',
+                entities: [{ type: 'face', face_id: 'face-id' }],
+              }
+            : { type: 'select_clear' },
+          { type: 'select_add', entities: ['annotation-id'] },
+        ])
+      } finally {
+        world.engineCommandManager.connection = undefined
+        world.settingsActor.stop()
+        world.commandBarActor.stop()
+      }
+    }
+  )
+
   test('keeps engine primitive selections when graph selections use entity references', () => {
     const graphFaceId = 'graph-face-id'
     const primitiveFaceId = 'primitive-face-id'
