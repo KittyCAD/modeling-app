@@ -42,7 +42,7 @@ export const baseUnitLabels = {
   mm: 'Millimeters',
   cm: 'Centimeters',
   m: 'Meters',
-} as const
+} as const satisfies Record<UnitLength, string>
 export const warningLevels: WarningLevel[] = [
   {
     type: 'Allow',

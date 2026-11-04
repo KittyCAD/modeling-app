@@ -11,6 +11,7 @@ import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/model
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
+import { exportOptions } from '@src/lib/commandBarConfigs/exportOptions'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
@@ -20,14 +21,13 @@ import {
 import {
   STD_LIB_COMMANDS,
   STD_LIB_ENUMS,
-  stdLibEnumOptions,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
-import { isKclCommandValue } from '@src/lib/commandUtils'
+import { enumOptions, isKclCommandValue } from '@src/lib/commandUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXPORT_MODEL_ICON,
@@ -59,10 +59,10 @@ import {
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
-import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { baseUnitLabels } from '@src/lib/settings/settingsTypes'
 import { STEP_SCHEMA_LABELS, StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
-import { hasProperty } from '@src/lib/utils'
+import { hasProperty, unsafeTypedKeys } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -475,14 +475,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         defaultValue: 'gltf',
         required: true,
-        options: [
-          { name: 'glTF', isCurrent: true, value: 'gltf' },
-          { name: 'OBJ', isCurrent: false, value: 'obj' },
-          { name: 'STL', isCurrent: false, value: 'stl' },
-          { name: 'STEP', isCurrent: false, value: 'step' },
-          { name: 'PLY', isCurrent: false, value: 'ply' },
-          { name: '3DM', isCurrent: false, value: 'rhino' },
-        ],
+        options: unsafeTypedKeys(exportOptions.type).flatMap((value) => {
+          const name = exportOptions.type[value]
+          return name === null
+            ? []
+            : [{ name, value, isCurrent: value === 'gltf' }]
+        }),
       },
       gltfStorage: {
         displayName: 'Storage',
@@ -493,11 +491,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           commandContext.argumentsToSubmit.type === 'gltf',
         hidden: (commandContext) =>
           commandContext.argumentsToSubmit.type !== 'gltf',
-        options: [
-          { name: 'binary', isCurrent: true, value: 'binary' },
-          { name: 'embedded', value: 'embedded' },
-          { name: 'standard', value: 'standard' },
-        ],
+        options: enumOptions(
+          unsafeTypedKeys(exportOptions.gltfStorage),
+          'binary',
+          exportOptions.gltfStorage
+        ),
       },
       stlStorage: {
         displayName: 'Storage',
@@ -508,10 +506,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           commandContext.argumentsToSubmit.type === 'stl',
         hidden: (commandContext) =>
           commandContext.argumentsToSubmit.type !== 'stl',
-        options: [
-          { name: 'binary', value: 'binary' },
-          { name: 'ascii', isCurrent: true, value: 'ascii' },
-        ],
+        options: enumOptions(
+          unsafeTypedKeys(exportOptions.stlStorage),
+          'ascii',
+          exportOptions.stlStorage
+        ),
       },
       plyStorage: {
         displayName: 'Storage',
@@ -522,11 +521,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           commandContext.argumentsToSubmit.type === 'ply',
         hidden: (commandContext) =>
           commandContext.argumentsToSubmit.type !== 'ply',
-        options: [
-          { name: 'ascii', isCurrent: true, value: 'ascii' },
-          { name: 'binary_big_endian', value: 'binary_big_endian' },
-          { name: 'binary_little_endian', value: 'binary_little_endian' },
-        ],
+        options: enumOptions(
+          unsafeTypedKeys(exportOptions.plyStorage),
+          'ascii',
+          exportOptions.plyStorage
+        ),
       },
       schema: {
         inputType: 'options',
@@ -539,7 +538,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         options: (commandContext) => {
           const schema =
             commandContext.argumentsToSubmit.schema ?? StepSchema.Ap242
-          return Object.values(StepSchema).map((value) => ({
+          return unsafeTypedKeys(STEP_SCHEMA_LABELS).map((value) => ({
             name: STEP_SCHEMA_LABELS[value],
             value,
             isCurrent: schema === value,
@@ -562,10 +561,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             (commandContext.argumentsToSubmit.up as
               | AxisDirectionPair['axis']
               | undefined) ?? 'z'
-          return [
-            { name: 'Z+', isCurrent: currentUp === 'z', value: 'z' },
-            { name: 'Y+', isCurrent: currentUp === 'y', value: 'y' },
-          ]
+          return enumOptions(
+            unsafeTypedKeys(exportOptions.up),
+            currentUp,
+            exportOptions.up
+          )
         },
         valueSummary: (value) =>
           value === undefined ? 'Z+' : `${value.toUpperCase()}+`,
@@ -605,7 +605,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             machineContext?.store.defaultUnit?.current ??
             DEFAULT_DEFAULT_LENGTH_UNIT
 
-          return baseUnitsUnion.map((unit) => ({
+          return unsafeTypedKeys(baseUnitLabels).map((unit) => ({
             name: baseUnitLabels[unit],
             value: unit,
             isCurrent: unit === currentScale,
@@ -710,7 +710,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isDirectedNamedViewCamera,
             prepopulate: true,
             defaultValue: 'Isometric',
-            options: stdLibEnumOptions(
+            options: enumOptions(
               STD_LIB_ENUMS['view::Orientation'],
               'Isometric'
             ),
@@ -721,7 +721,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isDirectedNamedViewCamera,
             prepopulate: true,
             defaultValue: 'Orthographic',
-            options: stdLibEnumOptions(
+            options: enumOptions(
               STD_LIB_ENUMS['view::Projection'],
               'Orthographic'
             ),
@@ -729,14 +729,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           baseline: {
             inputType: 'options',
             defaultValue: 'Show',
-            options: stdLibEnumOptions(
-              STD_LIB_ENUMS['view::Visibility'],
-              'Show',
-              {
-                Show: 'Show all',
-                Hide: 'Hide all',
-              }
-            ),
+            options: enumOptions(STD_LIB_ENUMS['view::Visibility'], 'Show', {
+              Show: 'Show all',
+              Hide: 'Hide all',
+            }),
           },
           except: {
             inputType: 'selection',
