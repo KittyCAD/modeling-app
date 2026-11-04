@@ -1088,6 +1088,48 @@ describe('Zookeeper session controller', () => {
     expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
   })
 
+  it.each([false, true])(
+    'keeps billing recovery manual after an active turn (prior network drop: %s)',
+    async (priorNetworkDrop) => {
+      const { actor, controller } = createHarness()
+
+      actor.emit('ready', {
+        awaitingResponse: true,
+        conversation: interruptedConversation,
+      })
+      if (priorNetworkDrop) {
+        actor.emit('await', {
+          abruptlyClosed: true,
+          conversation: interruptedConversation,
+        })
+      }
+      actor.emit('await', {
+        abruptlyClosed: true,
+        setupFailed: true,
+        accessDeniedCode: 'missing_payment_method',
+        conversation: interruptedConversation,
+      })
+      actor.emit('wait-for-continue-check', {
+        conversation: interruptedConversation,
+      })
+      await flushPromises()
+
+      expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+      expect(controller.isResumingInterruptedTurn.value).toBe(false)
+      expect(
+        sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
+      ).toHaveLength(0)
+
+      controller.resumeInterruptedTurn()
+      await flushPromises()
+
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+      expect(
+        sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
+      ).toHaveLength(1)
+    }
+  )
+
   it('does not resume when reconnecting shows the turn already finished', () => {
     const { actor } = createHarness()
     const completedConversation = {

@@ -591,7 +591,9 @@ class SessionController implements ZookeeperSessionController {
       return
     }
 
-    if (
+    if (snapshot.context.setupFailed) {
+      this.autoResumeAfterDisconnect = false
+    } else if (
       snapshot.context.abruptlyClosed &&
       this.wasPromptRunning &&
       !this.userStoppedTurn &&
