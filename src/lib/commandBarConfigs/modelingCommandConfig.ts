@@ -78,10 +78,6 @@ export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLi
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
-type ExtractStorageTypes<T> = T extends { storage?: infer U }
-  ? NonNullable<U>
-  : never
-type StorageUnion = ExtractStorageTypes<OutputFormat>
 type ExportOptionalArg = 'up' | 'scale'
 
 const exportOptionalArgSupportByType: Partial<
@@ -264,7 +260,9 @@ export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
   Export: {
     type: OutputTypeKey
-    storage?: StorageUnion
+    gltfStorage?: Extract<OutputFormat, { type: 'gltf' }>['storage']
+    stlStorage?: Extract<OutputFormat, { type: 'stl' }>['storage']
+    plyStorage?: Extract<OutputFormat, { type: 'ply' }>['storage']
     schema?: StepSchema
     up?: AxisDirectionPair['axis']
     scale?: UnitLength
@@ -483,68 +481,49 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'PLY', isCurrent: false, value: 'ply' },
         ],
       },
-      storage: {
+      gltfStorage: {
+        displayName: 'Storage',
         inputType: 'options',
-        defaultValue: (c) => {
-          switch (c.argumentsToSubmit.type) {
-            case 'gltf':
-              return 'binary'
-            case 'stl':
-              return 'ascii'
-            case 'ply':
-              return 'ascii'
-            default:
-              return undefined
-          }
-        },
+        defaultValue: 'binary',
         skip: true,
         required: (commandContext) =>
-          ['gltf', 'stl', 'ply'].includes(
-            commandContext.argumentsToSubmit.type as string
-          ),
+          commandContext.argumentsToSubmit.type === 'gltf',
         hidden: (commandContext) =>
-          !['gltf', 'stl', 'ply'].includes(
-            commandContext.argumentsToSubmit.type as string
-          ),
-        options: (commandContext) => {
-          const type = commandContext.argumentsToSubmit.type as
-            | OutputTypeKey
-            | undefined
-
-          switch (type) {
-            case 'gltf':
-              return [
-                { name: 'binary', isCurrent: true, value: 'binary' },
-                { name: 'embedded', isCurrent: false, value: 'embedded' },
-                { name: 'standard', isCurrent: false, value: 'standard' },
-              ]
-            case 'stl':
-              return [
-                { name: 'binary', isCurrent: false, value: 'binary' },
-                { name: 'ascii', isCurrent: true, value: 'ascii' },
-              ]
-            case 'ply':
-              return [
-                { name: 'ascii', isCurrent: true, value: 'ascii' },
-                {
-                  name: 'binary_big_endian',
-                  isCurrent: false,
-                  value: 'binary_big_endian',
-                },
-                {
-                  name: 'binary_little_endian',
-                  isCurrent: false,
-                  value: 'binary_little_endian',
-                },
-              ]
-            case undefined:
-            case 'step':
-            case 'obj':
-            case 'fbx':
-            default:
-              return []
-          }
-        },
+          commandContext.argumentsToSubmit.type !== 'gltf',
+        options: [
+          { name: 'binary', isCurrent: true, value: 'binary' },
+          { name: 'embedded', value: 'embedded' },
+          { name: 'standard', value: 'standard' },
+        ],
+      },
+      stlStorage: {
+        displayName: 'Storage',
+        inputType: 'options',
+        defaultValue: 'ascii',
+        skip: true,
+        required: (commandContext) =>
+          commandContext.argumentsToSubmit.type === 'stl',
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'stl',
+        options: [
+          { name: 'binary', value: 'binary' },
+          { name: 'ascii', isCurrent: true, value: 'ascii' },
+        ],
+      },
+      plyStorage: {
+        displayName: 'Storage',
+        inputType: 'options',
+        defaultValue: 'ascii',
+        skip: true,
+        required: (commandContext) =>
+          commandContext.argumentsToSubmit.type === 'ply',
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'ply',
+        options: [
+          { name: 'ascii', isCurrent: true, value: 'ascii' },
+          { name: 'binary_big_endian', value: 'binary_big_endian' },
+          { name: 'binary_little_endian', value: 'binary_little_endian' },
+        ],
       },
       schema: {
         inputType: 'options',

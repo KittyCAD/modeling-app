@@ -973,7 +973,9 @@ export const doExport = async (
   await page.getByRole('option', { name: output.type, exact: false }).click()
   await page.locator('#arg-form').waitFor({ state: 'detached' })
   if ('storage' in output) {
-    await page.getByTestId('arg-name-storage').waitFor({ timeout: 1000 })
+    await page
+      .getByTestId(`arg-name-${output.type}storage`)
+      .waitFor({ timeout: 1000 })
     await page.getByRole('button', { name: 'storage', exact: false }).click()
     await page
       .getByRole('option', { name: output.storage, exact: false })
