@@ -55,7 +55,7 @@ export const NUMBER_REGEXP = '((-)?\\d+(\\.\\d+)?)'
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
-import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { ModelingDialogFixture } from '@e2e/playwright/fixtures/modelingDialogFixture'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
@@ -929,7 +929,7 @@ export const doExport = async (
   output: OutputFormat3d,
   rootDir: string,
   page: Page,
-  cmdBar: CmdBarFixture,
+  modelingDialog: ModelingDialogFixture,
   testInfo: TestInfo,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
@@ -967,22 +967,15 @@ export const doExport = async (
     await expect(exportCommand.first()).toBeVisible()
     await exportCommand.first().click()
   }
-  await expect(page.getByTestId('command-bar')).toBeVisible()
-
-  // Go through export via command bar
-  await page.getByRole('option', { name: output.type, exact: false }).click()
-  await page.locator('#arg-form').waitFor({ state: 'detached' })
+  await modelingDialog.options('type').selectOption({
+    label: output.type === 'gltf' ? 'glTF' : output.type.toUpperCase(),
+  })
   if ('storage' in output) {
-    await page
-      .getByTestId(`arg-name-${output.type}storage`)
-      .waitFor({ timeout: 1000 })
-    await page.getByRole('button', { name: 'storage', exact: false }).click()
-    await page
-      .getByRole('option', { name: output.storage, exact: false })
-      .click()
-    await page.locator('#arg-form').waitFor({ state: 'detached' })
+    await modelingDialog
+      .options('storage')
+      .selectOption({ label: output.storage })
   }
-  await cmdBar.submit()
+  await modelingDialog.submit()
 
   await expect(page.getByText('Exported successfully')).toBeVisible()
 
