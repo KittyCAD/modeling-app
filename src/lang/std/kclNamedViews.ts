@@ -1,7 +1,6 @@
 import type { ArtifactVisibility } from '@rust/kcl-lib/bindings/Artifact'
 import type { NamedView } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
-import { basename } from 'path'
 import { Vector3 } from 'three'
 
 import { filterArtifacts } from '@src/lang/std/artifactGraph'
@@ -56,6 +55,15 @@ export function listNamedViews({
   })
 }
 
+function moduleName(path: ModulePath | undefined): string | undefined {
+  if (path === undefined || path.type === 'Main') {
+    return undefined
+  }
+
+  const file = path.value.replace(/^.*\//, '')
+  return file.endsWith(FILE_EXT) ? file.slice(0, -FILE_EXT.length) : file
+}
+
 /** Uses the same module-qualified labels in the views pane and exports. */
 export function namedViewDisplayNames(views: KclNamedView[]): string[] {
   const nameCounts = new Map<string, number>()
@@ -64,10 +72,7 @@ export function namedViewDisplayNames(views: KclNamedView[]): string[] {
   }
 
   return views.map(({ artifact, modulePath }) => {
-    const module =
-      modulePath === undefined || modulePath.type === 'Main'
-        ? undefined
-        : basename(modulePath.value, FILE_EXT)
+    const module = moduleName(modulePath)
     const collides = (nameCounts.get(artifact.name) ?? 0) > 1
     return collides && module ? `${module}::${artifact.name}` : artifact.name
   })
