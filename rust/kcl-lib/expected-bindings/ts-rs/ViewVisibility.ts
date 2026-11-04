@@ -6,4 +6,4 @@
  * Rust mirror of the KCL enum `std::view::Visibility`. Serialized variant
  * names match the KCL spellings exactly.
  */
-export type Visibility = "Show" | "Hide";
+export type ViewVisibility = "Show" | "Hide";
