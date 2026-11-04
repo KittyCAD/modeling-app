@@ -1,9 +1,24 @@
+import { Registry } from '@kittycad/registry'
+import editorsExtension from '@src/lib/editors/registry'
+import { editorsService } from '@src/lib/editors/registry/contract'
+import projectSessionExtension from '@src/lib/projectSession/registry'
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import type { Project } from '@src/lib/projectSession/next/types'
 import { App } from '@src/lib/app'
 import { PATHS } from '@src/lib/paths'
 import { fileLoader, projectLoader, localLoader } from '@src/lib/routeLoaders'
 import { readProject } from '@src/lib/projectSession/next/utils'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 
 const environment = vi.hoisted(() => ({ projectRouteEnabled: true }))
 
@@ -78,6 +93,7 @@ describe('fileLoader legacy web bookmarks', () => {
 
 describe('local directory loader', () => {
   beforeEach(() => vi.clearAllMocks())
+  afterEach(() => registry?.[Symbol.dispose]())
 
   function setup() {
     const app = new App(App.getDefaultSystems())
@@ -93,7 +109,15 @@ describe('local directory loader', () => {
       metadata: { title: 'Empty', readWriteAccess: false },
     }
     const closeProject = vi.spyOn(app, 'closeProject')
-    return { app, openProject, closeProject, data, owner }
+    return {
+      app,
+      openProject,
+      closeProject,
+      data,
+      operations,
+      sessions,
+      editors: registry.get(editorsService),
+    }
   }
 
   it('redirects requests without the project-shell flag before accessing storage or session state', async () => {
@@ -117,7 +141,7 @@ describe('local directory loader', () => {
   })
 
   it('publishes project data without settings initialization or an editor', async () => {
-    const { app, openProject, closeProject, data, owner } = setup()
+    const { app, openProject, closeProject, data, operations } = setup()
     vi.mocked(readProject).mockResolvedValueOnce(data)
     const request = new Request('https://app.zoo.dev/local/test')
     const result = await localLoader({ app })({
@@ -126,12 +150,12 @@ describe('local directory loader', () => {
       context: undefined,
       unstable_pattern: '/local/:path',
     })
-    expect(result).toBe(owner)
+    expect(result).toBe(openProject.mock.results[0].value)
     expect(openProject).toHaveBeenCalledExactlyOnceWith(data)
     expect(closeProject).not.toHaveBeenCalled()
     expect(vi.spyOn(app, 'beginFileRouteLoad')).not.toHaveBeenCalled()
     expect(loadAndValidateSettings).not.toHaveBeenCalled()
-    expect(readProject).toHaveBeenCalledWith({}, data.contents.path, {
+    expect(readProject).toHaveBeenCalledWith(operations, data.contents.path, {
       signal: request.signal,
       library: undefined,
     })

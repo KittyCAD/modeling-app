@@ -404,7 +404,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
 
   return (
     <div
-      className={`flex-1 flex ${sideToTailwindLayoutDirection(layout.side)}`}
+      className={`min-w-0 flex-1 flex ${sideToTailwindLayoutDirection(layout.side)}`}
     >
       <ul
         ref={paneBarRef}

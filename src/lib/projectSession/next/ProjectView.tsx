@@ -3,6 +3,10 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { Logo } from '@src/components/Logo'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import { useApp } from '@src/lib/boot'
+import { EditorsPane } from '@src/lib/editors/EditorsPane'
+import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
+import { editorsService } from '@src/lib/editors/registry/contract'
 import { LayoutRootNode } from '@src/lib/layout/components'
 import {
   LayoutType,
@@ -16,15 +20,14 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 /**
- * Use the shared pane renderer with data-only areas. Pane changes stay local to this
- * screen instead of changing the saved layout used by the modeling route.
+ * Just a temp layout while we build up parity with the old one.
  */
 const tempLayout: Layout = {
-  id: 'next-project',
+  id: 'next',
   label: 'Project',
   type: LayoutType.Splits,
   orientation: 'inline',
-  sizes: [25, 75],
+  sizes: [50, 50],
   children: [
     {
       id: 'next-sidebar',
@@ -32,15 +35,15 @@ const tempLayout: Layout = {
       type: LayoutType.Panes,
       side: 'inline-start',
       splitOrientation: 'block',
-      sizes: [100],
-      activeIndices: [0],
+      sizes: [],
+      activeIndices: [],
       children: [
         {
-          id: 'next-files',
-          label: 'Project files',
-          icon: 'folder',
+          id: 'next-editors',
+          label: 'Editors',
+          icon: 'code',
           type: LayoutType.Simple,
-          areaType: 'files',
+          areaType: 'editors',
         },
       ],
     },
@@ -109,9 +112,11 @@ function ProjectHeader({ title }: { title: string }) {
   )
 }
 
-/** Compose the shared app shell around a captured project, without editor providers. */
+/** Show the captured project without legacy modeling providers. */
 export function ProjectView({ session }: { session: OpenProjectSession }) {
   useSignals()
+  const { registry, commands } = useApp()
+  const editors = registry.get(editorsService)
   const { contents, metadata } = session.project.value
   const [layout, setLayout] = useState(() => structuredClone(tempLayout))
   const areaLibrary = useMemo<AreaLibrary>(
@@ -120,9 +125,27 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
         hide: () => false,
         Component: (props) => <ProjectFilesPane {...props} session={session} />,
       },
+      editors: {
+        hide: () => false,
+        Component: (props) => (
+          <EditorsPane
+            {...props}
+            editors={editors}
+            onOpenEditor={() =>
+              commands.send({
+                type: 'Find and select command',
+                data: {
+                  name: OPEN_EDITOR_COMMAND.name,
+                  groupId: OPEN_EDITOR_COMMAND.groupId,
+                },
+              })
+            }
+          />
+        ),
+      },
       workspace: { hide: () => false, Component: EmptyWorkspace },
     }),
-    [session]
+    [session, editors, commands]
   )
   return (
     <div className="flex h-screen flex-col bg-chalkboard-10 text-chalkboard-100 dark:bg-chalkboard-100 dark:text-chalkboard-10">
@@ -132,7 +155,7 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
           layout={layout}
           getLayout={() => layout}
           setLayout={setLayout}
-          layoutName="next-project"
+          layoutName="next"
           areaLibrary={areaLibrary}
           showDebugPanel={false}
           notifications={[]}
@@ -142,7 +165,7 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
       <StatusBar
         globalItems={[
           {
-            id: 'next-project-path',
+            id: 'project-path',
             element: 'text',
             label: contents.path,
             className: 'max-w-[50vw] [&>span]:truncate',
@@ -153,17 +176,12 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
           ...(!metadata.readWriteAccess
             ? [
                 {
-                  id: 'next-read-only',
+                  id: 'read-only',
                   element: 'text',
                   label: 'Read-only',
                 } satisfies StatusBarItemType,
               ]
             : []),
-          {
-            id: 'next-no-editor',
-            element: 'text',
-            label: 'No executing editor',
-          },
         ]}
       />
     </div>

@@ -1,0 +1,29 @@
+/* This pane has no header; override LayoutPanel's two-row grid. */
+.pane.pane {
+  @apply flex min-h-0 min-w-0 flex-col border-none;
+}
+.surface {
+  @apply h-full min-h-0 overflow-hidden;
+}
+.surface > :global(.cm-editor) {
+  @apply h-full min-h-0;
+}
+.surface :global(.cm-scroller) {
+  @apply overflow-auto;
+}
+
+.iconButton.iconButton {
+  @apply relative m-0 grid h-7 w-7 place-items-center rounded-none border-0 bg-transparent p-0 text-inherit shadow-none;
+}
+
+.iconButton.iconButton:hover {
+  @apply bg-chalkboard-30/60;
+}
+
+:global(.dark) .iconButton.iconButton:hover {
+  @apply bg-chalkboard-70/60;
+}
+
+.iconButton:focus-visible {
+  @apply outline outline-1 -outline-offset-2 outline-primary;
+}
