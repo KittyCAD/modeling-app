@@ -5,11 +5,9 @@ import type {
   UnitLength,
 } from '@kittycad/lib'
 
-import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
-import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
 import { exportOptions } from '@src/lib/commandBarConfigs/exportOptions'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
@@ -60,15 +58,11 @@ import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
 import { baseUnitLabels } from '@src/lib/settings/settingsTypes'
 import { STEP_SCHEMA_LABELS, StepSchema } from '@src/lib/stepSchema'
-import { err } from '@src/lib/trap'
 import { hasProperty } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type {
-  ModelingMachineContext,
-  SketchTool,
-} from '@src/machines/modelingSharedTypes'
+import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
@@ -276,13 +270,6 @@ export type ModelingCommandSchema = {
   Make: {
     machine: components['schemas']['MachineInfoResponse']
   }
-  'change tool': {
-    tool: SketchTool
-  }
-  'Constrain length': {
-    selection: Selections
-    length: KclCommandValue
-  }
   'Constrain with named value': {
     currentValue: {
       valueText: string
@@ -422,53 +409,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Enter sketch mode.',
     icon: 'sketch',
   },
-  'change tool': [
-    {
-      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
-      description: 'Start drawing straight lines.',
-      icon: 'line',
-      displayName: 'Line',
-      forceCommandBar: true,
-      args: {
-        tool: {
-          defaultValue: 'line',
-          required: true,
-          skip: true,
-          inputType: 'string',
-        },
-      },
-    },
-    {
-      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
-      description: 'Start drawing an arc tangent to the current segment.',
-      icon: 'arc',
-      displayName: 'Tangential Arc',
-      forceCommandBar: true,
-      args: {
-        tool: {
-          defaultValue: 'tangentialArc',
-          required: true,
-          skip: true,
-          inputType: 'string',
-        },
-      },
-    },
-    {
-      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
-      description: 'Start drawing a rectangle.',
-      icon: 'rectangle',
-      displayName: 'Rectangle',
-      forceCommandBar: true,
-      args: {
-        tool: {
-          defaultValue: 'rectangle',
-          required: true,
-          skip: true,
-          inputType: 'string',
-        },
-      },
-    },
-  ],
   Export: {
     description: 'Export the current model.',
     icon: 'floppyDiskArrow',
@@ -1512,51 +1452,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
       }
     ),
-  },
-  'Constrain length': {
-    forceCommandBar: true,
-    scopes: [MODE_SKETCHING_COMMAND_SCOPE],
-    description: 'Constrain the length of one or more segments.',
-    icon: 'dimension',
-    args: {
-      selection: {
-        inputType: 'selection',
-        selectionTypes: ['segment'],
-        multiple: false,
-        required: true,
-        skip: true,
-      },
-      length: {
-        inputType: 'kcl',
-        required: true,
-        createVariable: 'byDefault',
-        defaultValue(_, machineContext, wasmInstance) {
-          const selectionRanges = machineContext?.selectionRanges
-          if (!selectionRanges || !wasmInstance) return KCL_DEFAULT_LENGTH
-          const angleLength = angleLengthInfo({
-            selectionRanges,
-            angleOrLength: 'setLength',
-            kclManager: machineContext.kclManager,
-            wasmInstance,
-          })
-          if (err(angleLength) || !wasmInstance) return KCL_DEFAULT_LENGTH
-          const { transforms } = angleLength
-
-          // QUESTION: is it okay to reference kclManager here? will its state be up to date?
-          const sketched = transformAstSketchLines({
-            ast: structuredClone(machineContext.kclManager.ast),
-            selectionRanges,
-            transformInfos: transforms,
-            memVars: machineContext.kclManager.variables,
-            referenceSegName: '',
-            wasmInstance,
-          })
-          if (err(sketched)) return KCL_DEFAULT_LENGTH
-          const { valueUsedInTransform } = sketched
-          return valueUsedInTransform?.toString() || KCL_DEFAULT_LENGTH
-        },
-      },
-    },
   },
   'Constrain with named value': {
     scopes: [MODE_SKETCHING_COMMAND_SCOPE],

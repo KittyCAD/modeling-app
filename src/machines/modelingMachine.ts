@@ -463,7 +463,7 @@ export type ModelingMachineEvent =
   | { type: 'Constrain snap to Y' }
   | {
       type: 'Constrain length'
-      data: ModelingCommandSchema['Constrain length']
+      data: { selection: Selections; length: KclCommandValue }
     }
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
