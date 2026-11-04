@@ -22,9 +22,9 @@ import {
 import {
   STD_LIB_COMMANDS,
   STD_LIB_ENUMS,
-  stdLibEnumOptions,
   type StdLibCommandArg,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
+import { enumOptions } from '@src/lib/commandUtils'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -628,7 +628,7 @@ function stdLibCommandArgsForConfig(config: StdLibCommandDriftConfig) {
 describe('stdlib command arg derivation', () => {
   it('derives enum options while keeping UI defaults and labels', () => {
     const values = STD_LIB_ENUMS['view::Visibility']
-    const options = stdLibEnumOptions(values, 'Hide', { Hide: 'Hide all' })
+    const options = enumOptions(values, 'Hide', { Hide: 'Hide all' })
 
     expect(options.map(({ value }) => value)).toEqual(['Hide', 'Show'])
     expect(options[0]).toEqual({

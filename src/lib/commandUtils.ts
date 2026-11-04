@@ -77,3 +77,17 @@ export function isKclCommandValue(value: unknown): value is KclCommandValue {
     'valueCalculated' in value
   )
 }
+
+export function enumOptions<Value extends string>(
+  values: readonly Value[],
+  defaultValue: Value,
+  labels: Partial<Record<Value, string>> = {}
+) {
+  return values
+    .map((value) => ({
+      name: labels[value] ?? value,
+      value,
+      isCurrent: value === defaultValue,
+    }))
+    .sort((a, b) => Number(b.isCurrent) - Number(a.isCurrent))
+}
