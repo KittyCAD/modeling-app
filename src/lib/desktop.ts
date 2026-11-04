@@ -723,7 +723,7 @@ export async function getProjectInfo(
   )
 
   // Return walked early if canReadWriteProjectPath is false
-  const walked = await collectAllFilesRecursiveFrom(
+  let walked = await collectAllFilesRecursiveFrom(
     fileOperations,
     projectPath,
     projectPath,
@@ -742,6 +742,17 @@ export async function getProjectInfo(
       walked,
       wasmInstance
     )
+    // Discovery may have created main.kcl after the initial directory walk.
+    if (kclFileCount(walked) === 0) {
+      walked = await collectAllFilesRecursiveFrom(
+        fileOperations,
+        projectPath,
+        projectPath,
+        canReadWriteProjectPath,
+        showAllFiles,
+        gitignoreStack
+      )
+    }
   }
   const projectTomlMetadata = canReadWriteProjectPath
     ? await readProjectTomlMetadata(fileOperations, projectPath)
