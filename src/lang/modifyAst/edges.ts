@@ -745,7 +745,11 @@ export function createEdgeRefObjectExpression(
   fallbackCodeRef?: Pick<CodeRef, 'range' | 'pathToNode'>,
   tagsBaseExpr?: Expr | null,
   owningBodyExpr?: Expr | null,
-  options?: { requireEveryFace?: boolean }
+  options?: {
+    requireEveryFace?: boolean
+    faceExpressions?: ReadonlyMap<string, Expr>
+    requireAllFaces?: boolean
+  }
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
   const sideFaceExprs: Expr[] = []
   // Solid2D tagging mutates its AST argument. The popover path must not tag
@@ -891,6 +895,11 @@ export function createEdgeRefObjectExpression(
   }
 
   for (const faceId of payload.side_faces) {
+    const primitive = options?.faceExpressions?.get(faceId)
+    if (primitive) {
+      sideFaceExprs.push(structuredClone(primitive))
+      continue
+    }
     const faceArtifact = artifactGraph.get(faceId)
     if (!faceArtifact) {
       return new Error(
@@ -1017,6 +1026,11 @@ export function createEdgeRefObjectExpression(
     // still be useful when we cannot tag them: `sideFaces` alone is valid KCL
     // and may intentionally select multiple adjacent edges for fillet/chamfer.
     for (const faceId of payload.end_faces) {
+      const primitive = options?.faceExpressions?.get(faceId)
+      if (primitive) {
+        endFaceExprs.push(structuredClone(primitive))
+        continue
+      }
       const endFaceArtifact = artifactGraph.get(faceId)
       if (!endFaceArtifact) continue
       const codeRefs = getCodeRefsByArtifactId(faceId, artifactGraph)
@@ -1038,7 +1052,9 @@ export function createEdgeRefObjectExpression(
       const endFaceTagExpr = tagResult.exprs[0]
       if (!endFaceTagExpr) continue
 
-      endFaceExprs.push(structuredClone(endFaceTagExpr))
+      endFaceExprs.push(
+        applyTagsBaseExprIfNeeded(endFaceTagExpr, endFaceArtifact)
+      )
       currentAst = tagResult.modifiedAst
     }
   }
@@ -1056,7 +1072,7 @@ export function createEdgeRefObjectExpression(
     properties.index = createLiteral(payload.index, wasmInstance)
   }
 
-  if (options?.requireEveryFace) {
+  if (options?.requireAllFaces || options?.requireEveryFace) {
     const endFaceCount = payload.end_faces?.length ?? 0
     if (
       sideFaceExprs.length !== payload.side_faces.length ||
@@ -1066,7 +1082,10 @@ export function createEdgeRefObjectExpression(
         'Not every face in the edge reference could be expressed without editing the file'
       )
     }
-    if (!programTextEqual(ast, currentAst, wasmInstance)) {
+    if (
+      options?.requireEveryFace &&
+      !programTextEqual(ast, currentAst, wasmInstance)
+    ) {
       return new Error('Edge reference would edit the file')
     }
   }
