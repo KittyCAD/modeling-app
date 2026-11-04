@@ -1,3 +1,5 @@
+import { authService } from '@src/registry/contracts/auth'
+import { collectProjectFilesForClone } from '@src/lib/projectSession/projectFiles'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   defineRegistryItem,
@@ -172,7 +174,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const getConfiguredProjectLibraries = () => {
     const currentSettings = settings.value?.current.value
     return currentSettings
-      ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+      ? projectLibrariesFromSettings(
+          currentSettings.app.libraries.current,
+          ctx.valueSpecs.get(projectLibraryTypesValueSpec)
+        )
       : []
   }
 
@@ -371,6 +376,14 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return undefined
       }
 
+      const auth = ctx.services.optional(authService)
+      const account = auth?.user.peek()?.id ?? auth?.token.peek()
+      const assertCurrentAccount = () => {
+        if ((auth?.user.peek()?.id ?? auth?.token.peek()) !== account) {
+          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+          throw new Error('Your account changed. Please start the clone again.')
+        }
+      }
       const source = await cloneFrom.run({
         library: target.sourceLibrary,
         project,
@@ -380,13 +393,28 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return undefined
       }
 
+      assertCurrentAccount()
+      const current = ctx.services.optional(projectSession)?.getProject()
+      const files = await collectProjectFilesForClone({
+        fileOperations: ctx.services.get(fileOperationsService),
+        projectRoot: source.localProjectPath,
+        editorFiles:
+          current?.path === source.localProjectPath
+            ? [...current.editors].map(([path, editor]) => ({
+                path: path.value,
+                contents: editor.codeSignal.value,
+              }))
+            : [],
+      })
+      assertCurrentAccount()
       const result = await cloneTo.run({
         library: target.library,
         sourceLibrary: target.sourceLibrary,
         project,
-        source,
+        source: { ...source, files },
         requestedProjectTitle: options?.title,
       })
+      assertCurrentAccount()
       toast.success(
         `Created a clone of "${getHomeProjectDisplayName(project)}" in "${target.library.title}".`
       )

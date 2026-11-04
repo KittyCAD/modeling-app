@@ -3,6 +3,7 @@ import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import { reportRejection } from '@src/lib/trap'
 import { useIsOffline } from '@src/hooks/network/useIsOffline'
+import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
 
 export function FileSaveStatus({ app, className }: AppHeaderItemProps) {
   useSignals()
@@ -46,6 +47,31 @@ export function FileSaveStatus({ app, className }: AppHeaderItemProps) {
     return (
       <span role="status" className={className}>
         Offline. Cloud project is read-only.
+      </span>
+    )
+  if (id && cloud.isReadOnlyProject(id))
+    return (
+      <span role="status" className={className}>
+        Read-only project.{' '}
+        <button
+          type="button"
+          onClick={() => {
+            const project = app.registry
+              .get(homeProjectEntriesValueSpec)
+              .find((entry) => entry.remoteProjectId === id)
+            if (!project) return
+            app.commands.send({
+              type: 'Find and select command',
+              data: {
+                groupId: 'projects',
+                name: 'Clone project',
+                argDefaultValues: { project: project.id },
+              },
+            })
+          }}
+        >
+          Create an editable copy
+        </button>
       </span>
     )
   if (!status || status.state === 'saved') return null

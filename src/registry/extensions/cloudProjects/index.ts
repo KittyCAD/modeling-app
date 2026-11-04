@@ -1,3 +1,11 @@
+import fsZds from '@src/lib/fs-zds'
+import { listRemoteProjectLibraries } from '@src/lib/fs-zds/cloud/api'
+import {
+  apiProjectLibraries,
+  apiProjectLibraryId,
+  isApiProjectLibrary,
+} from '@src/lib/projectLibraries/apiProjectLibraries'
+import { runtimeService } from '@src/registry/contracts/runtime'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 
 import { computed, effect, signal } from '@preact/signals-core'
@@ -59,6 +67,18 @@ export default defineRegistryItemFactory((ctx) => {
     Promise.reject(new Error('Missing WASM promise.'))
   const auth = ctx.services.signal(authService)
   const router = ctx.services.signal(routerService)
+  const runtime = ctx.services.signal(runtimeService)
+  const libraries = signal<ReturnType<typeof apiProjectLibraries>>([])
+  const refreshCatalog = signal(0)
+  const libraryIds = computed(() => [
+    PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+    ...libraries.value.map((library) => library.id),
+  ])
+  let stopCatalog = () => {}
+  const onVisibilityChange = () => {
+    if (!document.hidden) refreshCatalog.value += 1
+  }
+  document.addEventListener('visibilitychange', onVisibilityChange)
   const settledAccount = signal<{ id: string | undefined } | undefined>(
     undefined
   )
@@ -66,6 +86,33 @@ export default defineRegistryItemFactory((ctx) => {
   let stop = () => {}
   queueMicrotask(() => {
     if (disposed) return
+    let scope: string | undefined
+    stopCatalog = effect(() => {
+      const token = auth.value?.token.value
+      const account = auth.value?.user.value?.id
+      const baseUrl = runtime.value?.current.value.apiBaseUrl
+      const loggedIn = auth.value?.isLoggedIn.value
+      void refreshCatalog.value
+      const nextScope = JSON.stringify([token, account, baseUrl, loggedIn])
+      if (scope !== nextScope) {
+        scope = nextScope
+        libraries.value = []
+      }
+      if (!loggedIn || !token) return
+      const controller = new AbortController()
+      void listRemoteProjectLibraries(
+        { enabled: true, token, baseUrl },
+        controller.signal
+      )
+        .then((result) => {
+          if (!controller.signal.aborted && !disposed)
+            libraries.value = apiProjectLibraries(result)
+        })
+        .catch((error: unknown) => {
+          if (!controller.signal.aborted && !disposed) reportRejection(error)
+        })
+      return () => controller.abort()
+    })
     stop = effect(() => {
       const loggedIn = auth.value?.isLoggedIn.value
       const token = auth.value?.token.value
@@ -75,8 +122,7 @@ export default defineRegistryItemFactory((ctx) => {
         !loggedIn ||
         !(
           location?.pathname === PATHS.HOME ||
-          location?.pathname ===
-            `${PATHS.LIBRARY}/${PERSONAL_CLOUD_PROJECT_LIBRARY_ID}`
+          location?.pathname.startsWith(`${PATHS.LIBRARY}/`)
         )
       )
         return
@@ -101,7 +147,8 @@ export default defineRegistryItemFactory((ctx) => {
     const thumbnails = cloud().thumbnails.value
     return cloud()
       .projects.value.filter(
-        (project) => project.access?.scope !== 'organization'
+        (project) =>
+          project.library_id || project.access?.scope !== 'organization'
       )
       .map((project) => ({
         id: `cloud:${project.id}`,
@@ -110,11 +157,16 @@ export default defineRegistryItemFactory((ctx) => {
         name: project.id,
         title: project.title ?? 'Untitled',
         remoteProjectId: project.id,
+        localProjectPath: fsZds.join(cloud().root, project.id),
         thumbnail: thumbnails.has(project.id)
           ? { type: 'remote', url: thumbnails.get(project.id)! }
           : undefined,
-        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
-        readWriteAccess: true,
+        libraryIds: [
+          project.library_id
+            ? apiProjectLibraryId(project.library_id)
+            : PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        ],
+        readWriteAccess: project.access?.can_edit ?? true,
         deleteRemoteOnDelete: true,
         modified:
           typeof project.updated_at === 'string'
@@ -151,7 +203,7 @@ export default defineRegistryItemFactory((ctx) => {
           return auth.value?.isLoggedIn.value &&
             account &&
             account.id === auth.value.user.value?.id
-            ? [PERSONAL_CLOUD_PROJECT_LIBRARY_ID]
+            ? libraryIds.value
             : []
         }),
         { key: 'cloud-projects.settled' }
@@ -160,10 +212,18 @@ export default defineRegistryItemFactory((ctx) => {
         homeProjectLoadingLibraryIdsValueSpec,
         computed(() =>
           auth.value?.isLoggedIn.value && cloud().projectsLoading.value
-            ? [PERSONAL_CLOUD_PROJECT_LIBRARY_ID]
+            ? libraryIds.value
             : []
         ),
         { key: 'cloud-projects.loading' }
+      ),
+      provide(
+        projectLibraryTypesValueSpec,
+        computed(() => ({
+          type: CLOUD_PROJECT_LIBRARY_TYPE,
+          title: 'Cloud',
+          libraries: libraries.value,
+        }))
       ),
       provide(homeProjectEntriesValueSpec, entries, {
         key: 'cloud-projects.entries',
@@ -183,6 +243,7 @@ export default defineRegistryItemFactory((ctx) => {
         readRealizations: async () => [],
         operations: {
           createProject: {
+            isAvailable: ({ library }) => !isApiProjectLibrary(library),
             run: async ({
               requestedProjectTitle,
               initialKclFile,
@@ -229,6 +290,7 @@ export default defineRegistryItemFactory((ctx) => {
             },
           },
           renameProject: {
+            isAvailable: ({ library }) => !isApiProjectLibrary(library),
             run: async ({ project, requestedName }) => {
               if (project.remoteProjectId)
                 await cloud().renameProject(
@@ -238,12 +300,14 @@ export default defineRegistryItemFactory((ctx) => {
             },
           },
           deleteProject: {
+            isAvailable: ({ library }) => !isApiProjectLibrary(library),
             run: async ({ project }) => {
               if (project.remoteProjectId)
                 await cloud().deleteProject(project.remoteProjectId)
             },
           },
           duplicateProject: {
+            isAvailable: ({ library }) => !isApiProjectLibrary(library),
             run: async ({ project }) => {
               if (!project.remoteProjectId) return undefined
               const title = `${getHomeProjectDisplayName(project)}-copy`
@@ -259,8 +323,7 @@ export default defineRegistryItemFactory((ctx) => {
             },
           },
           cloneProjectFrom: {
-            canCloneProject: ({ project }) =>
-              Boolean(project.remoteProjectId && project.readWriteAccess),
+            canCloneProject: ({ project }) => Boolean(project.remoteProjectId),
             run: async ({ project }) => {
               if (!project.remoteProjectId) return undefined
               const info = await projectInfo(project.remoteProjectId)
@@ -272,11 +335,15 @@ export default defineRegistryItemFactory((ctx) => {
             },
           },
           cloneProjectTo: {
+            isAvailable: ({ library }) => !isApiProjectLibrary(library),
             run: async ({ source, project, requestedProjectTitle }) => {
-              const archive = await collectProjectFilesForUpload({
-                fileOperations: operations(),
-                projectRoot: source.localProjectPath,
-              })
+              const archive =
+                source.files ??
+                (await collectProjectFilesForUpload({
+                  fileOperations: operations(),
+                  projectRoot: source.localProjectPath,
+                  includeIgnored: true,
+                }))
               const created = await cloud().createProject(
                 requestedProjectTitle ?? getHomeProjectDisplayName(project),
                 archive
@@ -295,6 +362,8 @@ export default defineRegistryItemFactory((ctx) => {
     dispose: () => {
       disposed = true
       stop()
+      stopCatalog()
+      document.removeEventListener('visibilitychange', onVisibilityChange)
       window.removeEventListener('beforeunload', beforeUnload)
     },
   }

@@ -1,3 +1,4 @@
+import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
 import { isNonNullable } from '@src/lib/utils'
 import toast from 'react-hot-toast'
 import type { ExecState } from '@src/lang/wasm'
@@ -34,6 +35,7 @@ async function walkProjectFiles(
     exclude?: (path: string) => boolean
     normalize?: (path: string) => string
     skipMissing?: boolean
+    includeIgnored?: boolean
   } = {}
 ) {
   const gitignoreFs = fileOperationsGitignoreFs(fileOperations)
@@ -50,7 +52,11 @@ async function walkProjectFiles(
         if (options.skipMissing && error instanceof FileNotFound) continue
         return Promise.reject(error)
       }
-      if (isPathIgnoredByGitignore(stack, relativePath, isDirectory)) continue
+      if (
+        !options.includeIgnored &&
+        isPathIgnoredByGitignore(stack, relativePath, isDirectory)
+      )
+        continue
       if (isDirectory) {
         await walk(
           path,
@@ -80,9 +86,11 @@ async function walkProjectFiles(
 export async function collectProjectFilesForUpload({
   fileOperations,
   projectRoot,
+  includeIgnored = false,
 }: {
   fileOperations: FileOperationsRegistryService
   projectRoot: string
+  includeIgnored?: boolean
 }) {
   const files: ProjectArchiveFile[] = []
   await walkProjectFiles(
@@ -94,9 +102,45 @@ export async function collectProjectFilesForUpload({
         data: Uint8Array.from(await fileOperations.readFile(path)),
       })
     },
-    { exclude: isExcludedProjectPath, normalize: normalizeUploadRelativePath }
+    {
+      exclude: isExcludedProjectPath,
+      normalize: normalizeUploadRelativePath,
+      includeIgnored,
+    }
   )
   return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath))
+}
+
+/** Clone every user file and overlay unsaved buffers inside the source project. */
+export async function collectProjectFilesForClone({
+  fileOperations,
+  projectRoot,
+  editorFiles = [],
+}: {
+  fileOperations: FileOperationsRegistryService
+  projectRoot: string
+  editorFiles?: readonly { path: string; contents: string }[]
+}) {
+  const files = await collectProjectFilesForUpload({
+    fileOperations,
+    projectRoot,
+    includeIgnored: true,
+  })
+  const byPath = new Map(files.map((file) => [file.relativePath, file]))
+  for (const editor of editorFiles) {
+    const relative = getContainedRelativePath(
+      { relative: fsZds.relative, sep: fsZds.sep },
+      projectRoot,
+      editor.path
+    )
+    if (!relative || isExcludedProjectPath(relative)) continue
+    const relativePath = normalizeUploadRelativePath(relative)
+    byPath.set(relativePath, {
+      relativePath,
+      data: new TextEncoder().encode(editor.contents),
+    })
+  }
+  return [...byPath.values()]
 }
 
 export const normalizeKCLFileDeletePath = (filePath: string) =>
