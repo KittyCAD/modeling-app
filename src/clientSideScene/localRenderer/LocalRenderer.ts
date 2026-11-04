@@ -382,12 +382,11 @@ export class LocalRenderer {
     if (!artifact) {
       return undefined
     }
-    const reference = artifactToEntityRef(
+    return artifactToEntityRef(
       artifact.type,
       entityId,
       artifact.type === 'segment' ? artifact.pathId : undefined
     )
-    return reference?.type === 'helix' ? undefined : reference
   }
 
   /**
