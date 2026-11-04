@@ -64,6 +64,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   getHomeProjectEntriesForLibrary,
+  getProjectLibraryCreateProjectOperation,
   getProjectLibraryOperation,
   type ProjectLibraryTypeContribution,
   projectLibraryRealizationsService,
@@ -335,9 +336,13 @@ const Home = () => {
   )
   const homeSidebarItems = registry.observe(homeSidebarItemsFacet).value
   const settingsValues = settings.useSettings()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const showHiddenLibraries =
+    searchParams.get('show_hidden_libraries') === 'true'
   const projectLibraryTypes = registry.observe(projectLibraryTypesFacet).value
   const projectLibraries = projectLibrariesFromSettings(
-    settingsValues.app.libraries.current
+    settingsValues.app.libraries.current,
+    projectLibraryTypes
   ).map((library) => ({
     ...library,
     icon: projectLibraryTypes.get(library.type)?.icon ?? library.icon,
@@ -351,14 +356,17 @@ const Home = () => {
     )
     .join('|')
   const homeProjectActions = registry.required(homeProjectActionsService)
+  const visibleProjectLibraries = projectLibraries.filter(
+    (library) => showHiddenLibraries || !library.hiddenByDefault
+  )
   const session = registry.required(projectSession)
   const { libraryId } = useParams()
   const routeSelectedProjectLibrary = libraryId
     ? projectLibraries.find((library) => library.id === libraryId)
     : undefined
   const singleProjectLibrary =
-    !libraryId && projectLibraries.length === 1
-      ? projectLibraries[0]
+    !libraryId && visibleProjectLibraries.length === 1
+      ? visibleProjectLibraries[0]
       : undefined
   const selectedProjectLibrary =
     routeSelectedProjectLibrary ?? singleProjectLibrary
@@ -371,7 +379,7 @@ const Home = () => {
   ).value
   const visibleLibraries = selectedProjectLibrary
     ? [selectedProjectLibrary]
-    : projectLibraries
+    : visibleProjectLibraries
   const projectsInitiallyLoaded = visibleLibraries.every((library) =>
     settledLibraryIds.includes(library.id)
   )
@@ -414,8 +422,11 @@ const Home = () => {
       )
     : libraryId
       ? []
-      : homeProjectEntries
-  const [searchParams, setSearchParams] = useSearchParams()
+      : homeProjectEntries.filter((project) =>
+          project.libraryIds?.some((id) =>
+            visibleProjectLibraries.some((library) => library.id === id)
+          )
+        )
   const { searchResults, query, setQuery } = useProjectSearch(
     scopedHomeProjectEntries
   )
@@ -592,11 +603,14 @@ const Home = () => {
     selectCommand(commands, {
       groupId: 'projects',
       name: 'Create project',
-      argDefaultValues: selectedProjectLibrary
-        ? {
-            libraryId: selectedProjectLibrary.id,
-          }
-        : undefined,
+      argDefaultValues:
+        selectedProjectLibrary &&
+        getProjectLibraryCreateProjectOperation(
+          projectLibraryTypes.get(selectedProjectLibrary.type),
+          selectedProjectLibrary
+        )
+          ? { libraryId: selectedProjectLibrary.id }
+          : undefined,
     })
   useMenuListener(cb)
 
@@ -624,6 +638,27 @@ const Home = () => {
                 : 'Project Libraries'
           }
           library={selectedProjectLibrary}
+          hiddenLibraryToggle={
+            projectLibraries.some((library) => library.hiddenByDefault) ? (
+              <ActionButton
+                Element="button"
+                onClick={() =>
+                  setSearchParams((previous) => {
+                    const next = new URLSearchParams(previous)
+                    if (showHiddenLibraries)
+                      next.delete('show_hidden_libraries')
+                    else next.set('show_hidden_libraries', 'true')
+                    return next
+                  })
+                }
+                className="text-xs border-primary/10"
+              >
+                {showHiddenLibraries
+                  ? 'Hide hidden libraries'
+                  : 'Show hidden libraries'}
+              </ActionButton>
+            ) : undefined
+          }
           showLibraryBackLink={Boolean(routeSelectedProjectLibrary)}
           libraryHomeSummary={
             selectedProjectLibrary ? (
@@ -794,7 +829,7 @@ const Home = () => {
         ) : (
           <ProjectLibraryOverview
             projectShellEnabled={projectShellEnabled}
-            libraries={projectLibraries}
+            libraries={visibleProjectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
             projectsLoaded={projectsInitiallyLoaded}

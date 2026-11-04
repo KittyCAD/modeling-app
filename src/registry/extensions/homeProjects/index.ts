@@ -164,7 +164,10 @@ const homeProjectActions = defineFactory({
     const getConfiguredProjectLibraries = () => {
       const currentSettings = settings.value?.current.value
       return currentSettings
-        ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+        ? projectLibrariesFromSettings(
+            currentSettings.app.libraries.current,
+            projectLibrariesInputs.projectLibraryTypesFacet.value
+          )
         : []
     }
     const getCloneToLibraryTargets = (

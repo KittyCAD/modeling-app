@@ -446,7 +446,10 @@ const configuredProjectLibraryRealizations: Factory = defineFactory({
           const typeById = libraryTypes.value
           const invalidation = readProjectLibraryRealizationsInvalidation()
           const libraries = settings
-            ? projectLibrariesFromSettings(settings.app.libraries.current)
+            ? projectLibrariesFromSettings(
+                settings.app.libraries.current,
+                typeById
+              )
             : []
           const activeLibraryIds = new Set(
             libraries.map((library) => library.id)

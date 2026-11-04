@@ -93,6 +93,39 @@ export async function listRemoteProjects(
   return [...response]
 }
 
+export interface RemoteProjectLibrary {
+  id: string
+  name: string
+  source?: string
+}
+
+export async function listRemoteProjectLibraries(
+  config: CloudApiConfig,
+  signal?: AbortSignal
+): Promise<RemoteProjectLibrary[]> {
+  const libraries = await cloudCall(
+    config,
+    (client) =>
+      collectApiPages(projects.list_project_libraries_pager({ client })),
+    signal
+  )
+  if (
+    !libraries.every(
+      (library) =>
+        library !== null &&
+        typeof library === 'object' &&
+        typeof library.id === 'string' &&
+        library.id.trim().length > 0 &&
+        typeof library.name === 'string' &&
+        (library.source === undefined || typeof library.source === 'string')
+    )
+  )
+    return Promise.reject(new Error('Invalid remote project library list.'))
+  return [
+    ...new Map(libraries.map((library) => [library.id, library])).values(),
+  ]
+}
+
 export async function getRemoteProject(
   config: CloudApiConfig,
   projectId: string,
