@@ -1,6 +1,5 @@
 import { selectCommand } from '@src/lib/commandUtils'
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { createLiteral } from '@src/lang/create'
 import {
   getSelectedPlaneId,
   getSelectedSketchTarget as getSelectedSketchTargetId,
@@ -1022,37 +1021,6 @@ export function buildToolbarConfig(
         {
           id: 'constraints',
           array: [
-            {
-              id: 'constraint-length',
-              disabled: (state, wasmInstance) =>
-                !(
-                  state.matches({ Sketch: 'SketchIdle' }) &&
-                  state.can({
-                    type: 'Constrain length',
-                    data: {
-                      selection: state.context.selectionRanges,
-                      // dummy data is okay for checking if the constrain is possible
-                      length: {
-                        valueAst: createLiteral(1, wasmInstance),
-                        valueText: '1',
-                        valueCalculated: '1',
-                      },
-                    },
-                  })
-                ),
-              onClick: () =>
-                selectCommand(commands, {
-                  name: 'Constrain length',
-                  groupId: 'modeling',
-                }),
-              icon: 'dimension',
-              status: 'available',
-              title: 'Length',
-              showTitle: false,
-              description: 'Constrain the length of a straight segment.',
-              extraInfo: constraintsExtraInfo,
-              links: [],
-            },
             {
               id: 'constraint-angle',
               disabled: (state) =>
