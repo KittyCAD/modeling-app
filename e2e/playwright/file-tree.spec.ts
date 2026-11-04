@@ -43,6 +43,10 @@ test(
         await fs.join(projectPath, 'config'),
         encoder.encode('No extension')
       )
+      await fs.writeFile(
+        await fs.join(projectPath, 'unsupported.bin'),
+        new Uint8Array([0])
+      )
     })
     await homePage.openProject(projectName)
     await toolbar.openPane(DefaultLayoutPaneID.Files)
@@ -66,6 +70,18 @@ test(
           )
         )
       )
+
+    await toolbar.openFile('unsupported.bin')
+    await expect(
+      page.getByText('This file is binary or is not UTF-8 text.', {
+        exact: false,
+      })
+    ).toBeVisible()
+    await expect(
+      page
+        .locator('#code-pane')
+        .getByRole('button', { name: 'Import', exact: true })
+    ).not.toBeVisible()
 
     await toolbar.openFile('config')
     await expect(textEditor).toHaveText('No extension')

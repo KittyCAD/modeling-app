@@ -13,6 +13,7 @@ import {
 } from '@codemirror/view'
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
@@ -42,6 +43,7 @@ import {
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { fileImportActionValueSpec } from '@src/registry/contracts/fileImport'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
@@ -162,7 +164,8 @@ function TextFileEditor({
 }: {
   activeTextFile: ActiveTextFile
 }) {
-  const { fileOperations, settings } = useApp()
+  useSignals()
+  const { fileOperations, settings, registry, project } = useApp()
   const settingsValues = settings.useSettings()
   const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
   const editorParent = useRef<HTMLDivElement>(null)
@@ -240,9 +243,33 @@ function TextFileEditor({
   }
 
   if (activeTextFile.status === 'error') {
+    const currentProject = project?.projectIORefSignal.value
+    const currentFile = project?.executingFileEntry.value
+    const importAction = registry.signal(fileImportActionValueSpec).value
+    const startImport =
+      currentProject?.readWriteAccess &&
+      currentFile &&
+      currentFile.path !== activeTextFile.path &&
+      importAction?.isSupported(activeTextFile.path)
+        ? () =>
+            importAction.startImport(currentProject.path, activeTextFile.path)
+        : undefined
+
     return (
-      <div className="h-full p-3 text-sm text-destroy-80">
-        Failed to open {activeTextFile.name}: {activeTextFile.error}
+      <div className="h-full p-3 text-sm">
+        <p className="text-destroy-80">
+          Failed to open {activeTextFile.name}: {activeTextFile.error}
+        </p>
+        {startImport && (
+          <ActionButton
+            Element="button"
+            className="mt-3 py-2"
+            tabIndex={0}
+            onClick={startImport}
+          >
+            Import
+          </ActionButton>
+        )}
       </div>
     )
   }

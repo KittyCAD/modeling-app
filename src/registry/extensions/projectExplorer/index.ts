@@ -15,6 +15,10 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { commandSystemService } from '@src/registry/contracts/commands'
 import {
+  type FileImportAction,
+  fileImportActionValueSpec,
+} from '@src/registry/contracts/fileImport'
+import {
   type ProjectExplorerRowContextMenuItem,
   type ProjectExplorerRowContextMenuItemContext,
   projectExplorerProjectMenuItemsValueSpec,
@@ -53,8 +57,31 @@ const importInCurrentFileExtension = defineRegistryItemFactory((ctx) => {
     })
     .catch(reportRejection)
 
-  const importItem = computed<ProjectExplorerRowContextMenuItem>(() => {
+  const importAction = computed<FileImportAction>(() => {
     const extensions = importExtensions.value
+    const isSupported = (path: string) =>
+      isExtensionARelevantExtension(path, extensions)
+
+    return {
+      isSupported,
+      startImport: (projectPath, path) => {
+        if (!isSupported(path)) return
+        ctx.services.get(commandSystemService).send({
+          type: 'Find and select command',
+          data: {
+            name: 'Import',
+            groupId: 'code',
+            argDefaultValues: {
+              path: toProjectRelativePath(projectPath, path),
+            },
+          },
+        })
+      },
+    }
+  })
+
+  const importItem = computed<ProjectExplorerRowContextMenuItem>(() => {
+    const action = importAction.value
     const isVisible = ({
       row,
       project,
@@ -67,7 +94,7 @@ const importInCurrentFileExtension = defineRegistryItemFactory((ctx) => {
       !row.isFolder &&
       !row.isFake &&
       row.path !== file.path &&
-      isExtensionARelevantExtension(row.path, extensions)
+      action.isSupported(row.path)
 
     return {
       id: 'import-in-current-file',
@@ -76,19 +103,7 @@ const importInCurrentFileExtension = defineRegistryItemFactory((ctx) => {
       isVisible,
       onSelect: (context) => {
         if (!context.project || !isVisible(context)) return
-        ctx.services.get(commandSystemService).send({
-          type: 'Find and select command',
-          data: {
-            name: 'Import',
-            groupId: 'code',
-            argDefaultValues: {
-              path: toProjectRelativePath(
-                context.project.path,
-                context.row.path
-              ),
-            },
-          },
-        })
+        action.startImport(context.project.path, context.row.path)
       },
     }
   })
@@ -96,6 +111,7 @@ const importInCurrentFileExtension = defineRegistryItemFactory((ctx) => {
   return {
     id: 'project-explorer.import-in-current-file',
     provides: [
+      provide(fileImportActionValueSpec, importAction, { key: 'file-import' }),
       provide(projectExplorerRowContextMenuItemsValueSpec, importItem, {
         key: 'import-in-current-file',
       }),
