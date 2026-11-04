@@ -289,6 +289,82 @@ mod tests {
     use crate::execution::PlaneInfo;
     use crate::execution::Point3d;
 
+    /// Runs `offsetPlane(plane, offset = offset)` in a mm file, where
+    /// `xOffset = 1in`, and returns the origin the engine was told to use, in mm.
+    async fn offset_plane_engine_origin(plane: &str, offset: &str) -> [f64; 3] {
+        let code = format!(
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nxOffset = 1in\nq = offsetPlane({plane}, offset = {offset})"
+        );
+        let result = crate::execution::parse_execute(&code).await.unwrap();
+        result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::MakePlane(make_plane) => {
+                    Some([make_plane.origin.x.0, make_plane.origin.y.0, make_plane.origin.z.0])
+                }
+                _ => None,
+            })
+            .expect("expected offsetPlane() to make a plane")
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn offset_plane_reads_a_mixed_unit_origin_in_one_unit() {
+        // The parts of a custom plane's origin can have different units, for
+        // example `[xOffset, 0mm, 0mm]`. Each case is the same plane as the
+        // all-mm control just above it.
+        let cases = [
+            (
+                "{ origin = [25.4mm, 0mm, 0mm], xAxis = [1, 0, 0], yAxis = [0, 1, 0] }",
+                "0mm",
+                [25.4, 0.0, 0.0],
+            ),
+            (
+                "{ origin = [1in, 0mm, 0mm], xAxis = [1, 0, 0], yAxis = [0, 1, 0] }",
+                "0mm",
+                [25.4, 0.0, 0.0],
+            ),
+            (
+                "{ origin = [xOffset, 0mm, 0mm], xAxis = [1, 0, 0], yAxis = [0, 1, 0] }",
+                "0mm",
+                [25.4, 0.0, 0.0],
+            ),
+            (
+                "{ origin = [25.4mm, 25.4mm, 0mm], xAxis = [1, 0, 0], yAxis = [0, 1, 0] }",
+                "0mm",
+                [25.4, 25.4, 0.0],
+            ),
+            (
+                "{ origin = [1in, 25.4mm, 0mm], xAxis = [1, 0, 0], yAxis = [0, 1, 0] }",
+                "0mm",
+                [25.4, 25.4, 0.0],
+            ),
+            (
+                "{ origin = { x = 1in, y = 25.4mm, z = 0mm }, xAxis = [1, 0, 0], yAxis = [0, 1, 0] }",
+                "0mm",
+                [25.4, 25.4, 0.0],
+            ),
+            // Axes whose parts have different units keep their numbers, so the
+            // offset still moves the plane by exactly 10mm.
+            (
+                "{ origin = [0, 0, 0], xAxis = [1, 0, 0], yAxis = [0, 1, 0] }",
+                "10mm",
+                [0.0, 0.0, 10.0],
+            ),
+            (
+                "{ origin = [0, 0, 0], xAxis = [1in, 0mm, 0mm], yAxis = [0mm, 1in, 0mm] }",
+                "10mm",
+                [0.0, 0.0, 10.0],
+            ),
+        ];
+        for (plane, offset, expected) in cases {
+            let actual = offset_plane_engine_origin(plane, offset).await;
+            for (a, e) in actual.iter().zip(expected) {
+                assert!((a - e).abs() < 1e-9, "{plane}: expected {expected:?}, got {actual:?}");
+            }
+        }
+    }
+
     #[test]
     fn fixes_left_handed_plane() {
         let plane_info = PlaneInfo {

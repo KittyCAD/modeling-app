@@ -2326,7 +2326,12 @@ pub(crate) async fn inner_elliptic(
         minor_radius.unwrap_to_length_units(from.units) * libm::sin(end_angle.to_radians()),
     ];
     let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
-    let major_axis_angle = libm::atan2(major_axis[1].n, major_axis[0].n);
+    // The axis's two parts can have different units, so both are read in the
+    // sketch's unit before taking the angle.
+    let major_axis_angle = libm::atan2(
+        major_axis[1].unwrap_to_length_units(from.units),
+        major_axis[0].unwrap_to_length_units(from.units),
+    );
 
     let point = [
         center_u[0] + to[0] * libm::cos(major_axis_angle) - to[1] * libm::sin(major_axis_angle),
@@ -3385,6 +3390,41 @@ mod tests {
 
     fn engine_error_details(message: &str) -> KclErrorDetails {
         KclErrorDetails::new(message.to_owned(), Vec::new())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn elliptic_reads_a_mixed_unit_major_axis_in_one_unit() {
+        // The two parts of `majorAxis` can have different units. Every case is
+        // the same quarter ellipse, with its major axis halfway between X and Y,
+        // as the all-mm control (the first case of each file), so it must end
+        // at the same point, in the sketch's unit.
+        let half = std::f64::consts::FRAC_1_SQRT_2 * 10.0;
+        for (unit, start, major_axis, expected) in [
+            ("mm", "[25.4mm, 25.4mm]", "[25.4mm, 25.4mm]", [-half, half]),
+            ("mm", "[25.4mm, 25.4mm]", "[1in, 25.4mm]", [-half, half]),
+            ("mm", "[25.4mm, 25.4mm]", "[25.4mm, 1in]", [-half, half]),
+            ("in", "[1in, 1in]", "[1in, 1in]", [-half / 25.4, half / 25.4]),
+            ("in", "[1in, 1in]", "[1in, 25.4mm]", [-half / 25.4, half / 25.4]),
+        ] {
+            let code = format!(
+                "@settings(kclVersion = 2.0, defaultLengthUnit = {unit}, experimentalFeatures = allow)
+p = startSketchOn(XY)
+  |> startProfile(at = {start})
+  |> elliptic(center = [0, 0], angleStart = 0deg, angleEnd = 90deg, majorAxis = {major_axis}, minorRadius = 10mm)
+x = lastSegX(p)
+y = lastSegY(p)"
+            );
+            let result = crate::execution::parse_execute(&code).await.unwrap();
+            for (name, expected) in ["x", "y"].into_iter().zip(expected) {
+                let crate::execution::KclValue::Number { value, .. } = result.variable(name) else {
+                    panic!("expected `{name}` to be a number for:\n{code}");
+                };
+                assert!(
+                    (value - expected).abs() < 1e-9,
+                    "{name}: expected {expected}, got {value} for:\n{code}"
+                );
+            }
+        }
     }
 
     #[test]

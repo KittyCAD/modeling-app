@@ -84,16 +84,24 @@ async fn inner_rectangle(
     // Find the corner in the negative quadrant
     let (ty, corner) = match (center, corner) {
         (Some(center), None) => {
-            let units = center[0].ty.as_length().unwrap_or(UnitLength::Millimeters);
+            let ty = center[0].ty;
+            let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
+            // The two coordinates can have different units, so both are read in
+            // the first one's unit.
+            let center = point_to_len_unit(center, units);
             (
-                center[0].ty,
+                ty,
                 [
-                    center[0].n - width.unwrap_to_length_units(units) / 2.0,
-                    center[1].n - height.unwrap_to_length_units(units) / 2.0,
+                    center[0] - width.unwrap_to_length_units(units) / 2.0,
+                    center[1] - height.unwrap_to_length_units(units) / 2.0,
                 ],
             )
         }
-        (None, Some(corner)) => (corner[0].ty, [corner[0].n, corner[1].n]),
+        (None, Some(corner)) => {
+            let ty = corner[0].ty;
+            let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
+            (ty, point_to_len_unit(corner, units))
+        }
         (None, None) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "You must supply either `corner` or `center` arguments, but not both".to_string(),
@@ -791,6 +799,46 @@ mod tests {
                 (a[0] - e[0]).abs() < 1e-9 && (a[1] - e[1]).abs() < 1e-9,
                 "expected {expected:?}, got {actual:?} for:\n{code}"
             );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn rectangle_reads_both_coordinates_of_the_center_or_corner_in_one_unit() {
+        // The two coordinates of `center` or `corner` can have different units,
+        // for example when they come from variables. Every case is the same 2mm
+        // square as the all-mm control (the first case of each list), so the
+        // engine must get the same numbers.
+        let centered = [
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nr = startSketchOn(XY) |> rectangle(center = [25.4mm, 25.4mm], width = 2mm, height = 2mm)",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nxOffset = 1in\nyOffset = 25.4mm\nr = startSketchOn(XY) |> rectangle(center = [xOffset, yOffset], width = 2mm, height = 2mm)",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nr = startSketchOn(XY) |> rectangle(center = [25.4mm, 1in], width = 2mm, height = 2mm)",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = in)\nr = startSketchOn(XY) |> rectangle(center = [1in, 25.4mm], width = 2mm, height = 2mm)",
+        ];
+        let cornered = [
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nr = startSketchOn(XY) |> rectangle(corner = [25.4mm, 25.4mm], width = 2mm, height = 2mm)",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nr = startSketchOn(XY) |> rectangle(corner = [1in, 25.4mm], width = 2mm, height = 2mm)",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nr = startSketchOn(XY) |> rectangle(corner = [25.4, 1in], width = 2mm, height = 2mm)",
+        ];
+        let segments = [[2.0, 0.0], [0.0, 2.0], [-2.0, 0.0], [0.0, -2.0]];
+
+        for (codes, start, corners) in [
+            (
+                &centered[..],
+                [24.4, 24.4],
+                [[26.4, 24.4], [26.4, 26.4], [24.4, 26.4], [24.4, 24.4]],
+            ),
+            (
+                &cornered[..],
+                [25.4, 25.4],
+                [[27.4, 25.4], [27.4, 27.4], [25.4, 27.4], [25.4, 25.4]],
+            ),
+        ] {
+            for code in codes {
+                let (actual_start, actual_segments, actual_corners) = rectangle_in_mm(code).await;
+                assert_close(&[actual_start], &[start], code);
+                assert_close(&actual_segments, &segments, code);
+                assert_close(&actual_corners, &corners, code);
+            }
         }
     }
 
