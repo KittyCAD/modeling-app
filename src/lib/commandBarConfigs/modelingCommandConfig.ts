@@ -2139,13 +2139,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           objects: {
             inputType: 'selection',
             validation: validateSolidEdgeSelectionArg('objects'),
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: [
+              'cap',
+              'wall',
+              'edgeCut',
+              'segment',
+              'sweepEdge',
+              'enginePrimitiveEdge',
+            ],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
           },
-          tolerance: gdtToleranceProps,
+          tolerance: { ...gdtToleranceProps, required: false },
           ...gdtFrameArgOverrides,
+          framePosition: { defaultValue: undefined },
+          framePlane: {
+            ...gdtFrameDisplayArgOverrides.framePlane,
+            defaultValue: undefined,
+          },
         },
       }
     ),

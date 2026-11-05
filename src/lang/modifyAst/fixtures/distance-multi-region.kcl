@@ -1,0 +1,61 @@
+@settings(kclVersion = "2", defaultLengthUnit = ft)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -7.87ft, var -4.22ft], end = [var 50.03ft, var -4.22ft])
+  line2 = line(start = [var 50.03ft, var -4.22ft], end = [var 50.03ft, var 42.39ft])
+  line3 = line(start = [var 50.03ft, var 42.39ft], end = [var -7.87ft, var 42.39ft])
+  line4 = line(start = [var -7.87ft, var 42.39ft], end = [var -7.87ft, var -4.22ft])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  circle1 = circle(start = [var 4.09ft, var 33.01ft], center = [var 2.64ft, var 33.66ft])
+  circle2 = circle(start = [var 42.34ft, var 1.64ft], center = [var 43.63ft, var 0ft])
+  horizontal([circle2.center, ORIGIN])
+  circle3 = circle(start = [var 17.49ft, var 0ft], center = [var 15.07ft, var 0ft])
+  horizontal([circle3.center, ORIGIN])
+  horizontal([circle3.start, ORIGIN])
+  circle4 = circle(start = [var 34.27ft, var 14.9ft], center = [var 28.95ft, var 24.11ft])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line4, sketch001.line1])
+extrude001 = extrude(
+  region001,
+  length = 5,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
+
+sketch002 = sketch(on = XY) {
+  circle1 = circle(start = [var -30.96ft, var -5.03ft], center = [var -35.12ft, var 0ft])
+  horizontal([circle1.center, ORIGIN])
+  circle2 = circle(start = [var 45.96ft, var 41.1ft], center = [var 41.49ft, var 46.05ft])
+  circle3 = circle(start = [var 33.17ft, var -5.83ft], center = [var 29.33ft, var 0ft])
+  horizontal([circle3.center, ORIGIN])
+}
+hidden002 = hide(sketch002)
+region002 = region(segments = [sketch002.circle1])
+region003 = region(segments = [sketch002.circle3])
+region004 = region(segments = [sketch002.circle2])
+extrude002 = extrude(
+  [region002, region003, region004],
+  length = 5,
+  tagStart = $capStart002,
+  tagEnd = $capEnd002,
+)
+
+gdt::distance(
+  from = {
+    sideFaces = [region003.tags.circle3, capEnd002]
+  },
+  to = {
+    sideFaces = [region002.tags.circle1, capEnd002]
+  },
+  framePlane = XY,
+  framePosition = [0ft, 79.9393ft],
+  fontSize = 4.7014ft,
+)
