@@ -1,8 +1,11 @@
+import fsZds from '@src/lib/fs-zds'
+import { waitFor } from '@testing-library/react'
 import { signal, type Signal } from '@preact/signals-core'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { BulkFileWriteProgress } from '@src/lib/zookeeper/projectFiles'
+import { parseCloudProjectToolChange } from '@src/lib/zookeeper/cloudProjectTools'
 import type * as ProjectFilesModule from '@src/lib/projectSession/projectFiles'
 import { S } from '@src/machines/utils'
 import toast from 'react-hot-toast'
@@ -201,12 +204,14 @@ function createHarness({
   apiToken = 'initial-token',
   initialProjectId = projectId,
   storeGet = Promise.resolve(undefined),
+  cloudProjectId,
 }: {
   actorState?: TestState
   actorContext?: Partial<SnapshotContext>
   apiToken?: string
   initialProjectId?: string | undefined
   storeGet?: Promise<string | undefined>
+  cloudProjectId?: string
 } = {}) {
   const actor = new TestActor()
   actor.setSnapshot(actorState, actorContext)
@@ -227,6 +232,7 @@ function createHarness({
     name: 'bracket',
     path: projectPath,
     projectId: initialProjectId,
+    cloudProjectId,
     readWriteAccess: true,
   }
   const loaderFile = {
@@ -251,24 +257,34 @@ function createHarness({
     zookeeperHistoryRecordingInProgress: false,
   }
   const executingEditor = signal<typeof kclManager | undefined>(kclManager)
+  const reloadFiles = vi.fn(async () => undefined)
   const zdsProject = {
     executingEditor,
+    reloadFilesFromStorage: reloadFiles,
     executingFileEntry: signal(loaderFile),
     projectIORefSignal: signal(project),
   } as unknown as ZDSProject
   const projectSignal = signal<ZDSProject | undefined>(zdsProject)
+  const refreshProject = vi.fn(
+    async (_id: string, _isCurrent?: () => boolean) => undefined
+  )
+  const readFolders = vi.fn(async () => undefined)
+  const fileExists = vi.fn(async () => true)
+  const navigateToFile = vi.fn(async (_data: unknown) => undefined)
   const dependencies = {
     apiToken,
+    cloudStorage: { refreshProject },
     billing: { send: billingSend },
     conversationStore,
     fileOperations: {
       readFile: vi.fn(async () => new Uint8Array()),
+      exists: fileExists,
     },
     kclManager,
     project: projectSignal,
     projectId: initialProjectId,
     projectPath,
-    session: { refreshProject: vi.fn(), openFile: vi.fn() },
+    session: { refreshProject: readFolders, openFile: navigateToFile },
     projectOperations: { applyEdits: vi.fn() },
   } as unknown as ZookeeperSessionControllerDependencies
   const controller = createZookeeperSessionController(dependencies)
@@ -276,6 +292,11 @@ function createHarness({
 
   return {
     actor,
+    fileExists,
+    reloadFiles,
+    navigateToFile,
+    refreshProject,
+    readFolders,
     billingSend,
     controller,
     conversationStore,
@@ -320,6 +341,192 @@ describe('Zookeeper session controller', () => {
     vi.useRealTimers()
     vi.restoreAllMocks()
   })
+
+  it('refreshes a cloud mutation once and ignores another project', async () => {
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    const change = { callId: 'call-1', projectId: 'remote-one', revision: '2' }
+    h.actor.emit('ready', { cloudProjectChange: change })
+    h.actor.emit('ready', { cloudProjectChange: { ...change } })
+    h.actor.emit('ready', {
+      lastMessageId: 1,
+      lastMessageType: 'end_of_stream',
+    })
+    h.actor.emit('ready', {
+      cloudProjectChange: { callId: 'call-2', projectId: 'other' },
+    })
+    await waitFor(() => expect(h.reloadFiles).toHaveBeenCalledOnce())
+    expect(h.refreshProject).toHaveBeenCalledExactlyOnceWith(
+      'remote-one',
+      expect.any(Function),
+      '2'
+    )
+    expect(h.reloadFiles).toHaveBeenCalledOnce()
+    expect(h.readFolders).not.toHaveBeenCalled()
+  })
+
+  it('supersedes an in-flight refresh when a newer mutation arrives', async () => {
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    const gate = deferred<undefined>()
+    h.refreshProject.mockReturnValueOnce(gate.promise)
+    h.actor.emit('ready', {
+      cloudProjectChange: {
+        callId: 'call-1',
+        projectId: 'remote-one',
+        revision: '2',
+      },
+    })
+    await waitFor(() => expect(h.refreshProject).toHaveBeenCalledOnce())
+    const isCurrent = h.refreshProject.mock.calls[0][1]
+    h.actor.emit('ready', {
+      cloudProjectChange: {
+        callId: 'call-2',
+        projectId: 'remote-one',
+        revision: '3',
+      },
+    })
+    expect(isCurrent?.()).toBe(false)
+    gate.resolve(undefined)
+    await waitFor(() => expect(h.reloadFiles).toHaveBeenCalledOnce())
+    expect(h.refreshProject).toHaveBeenLastCalledWith(
+      'remote-one',
+      expect.any(Function),
+      '3'
+    )
+  })
+
+  it.each([false, true])(
+    'distinguishes storage and modeling refresh failures: %s',
+    async (filesRefreshed) => {
+      const h = createHarness({ cloudProjectId: 'remote-one' })
+      const toastError = vi
+        .spyOn(toast, 'error')
+        .mockImplementation(() => 'toast-id')
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      if (filesRefreshed)
+        h.reloadFiles.mockRejectedValueOnce(new Error('Modeling failed'))
+      else h.refreshProject.mockRejectedValueOnce(new Error('Download failed'))
+      h.actor.emit('ready', {
+        cloudProjectChange: {
+          callId: 'call-1',
+          projectId: 'remote-one',
+          revision: '2',
+        },
+      })
+      await waitFor(() =>
+        expect(toastError).toHaveBeenCalledWith(
+          filesRefreshed
+            ? 'Cloud files refreshed, but modeling could not be updated.'
+            : 'Could not refresh the cloud project. Your current files were kept. Resolve any failed saves before reloading.'
+        )
+      )
+    }
+  )
+
+  it('leaves local projects on the file-edit path', async () => {
+    const h = createHarness()
+    h.actor.emit('ready', {
+      cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
+      lastMessageId: 1,
+      lastMessageType: 'end_of_stream',
+    })
+    await flushPromises()
+    expect(h.refreshProject).not.toHaveBeenCalled()
+    expect(workerMocks.histories[0].handleActorSnapshot).toHaveBeenCalled()
+  })
+
+  it('does not refresh cloud state after a read-only turn', async () => {
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    const change = parseCloudProjectToolChange({
+      tool_output: {
+        result: {
+          type: 'project_read_file',
+          call_id: 'read-1',
+          project_id: 'cloud:remote-one',
+          ok: true,
+          output: { id: 'remote-one', revision: '2' },
+        },
+      },
+    })
+    expect(change).toBeUndefined()
+    h.actor.emit('ready', { cloudProjectChange: change })
+    h.actor.emit('ready', {
+      lastMessageId: 1,
+      lastMessageType: 'end_of_stream',
+    })
+    h.actor.emit('ready', {
+      lastMessageId: 1,
+      lastMessageType: 'end_of_stream',
+    })
+    await flushPromises()
+    expect(h.refreshProject).not.toHaveBeenCalled()
+    expect(h.reloadFiles).not.toHaveBeenCalled()
+    expect(h.readFolders).not.toHaveBeenCalled()
+    expect(workerMocks.histories[0].handleActorSnapshot).not.toHaveBeenCalled()
+  })
+
+  it('waits for a pending cloud refresh before continuing a restored turn', async () => {
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    const gate = deferred<undefined>()
+    h.refreshProject.mockReturnValueOnce(gate.promise)
+    const context = {
+      cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
+      conversation: {
+        exchanges: [
+          { responses: [{ end_of_stream: {} }], deltasAggregated: '' },
+        ],
+      },
+    }
+    h.actor.emit('wait-for-continue-check', context)
+    await waitFor(() => expect(h.refreshProject).toHaveBeenCalledOnce())
+    expect(sentEvents(h.actor, ZookeeperManagerStates.ContinueCheck)).toEqual(
+      []
+    )
+    gate.resolve(undefined)
+    await waitFor(() =>
+      expect(
+        sentEvents(h.actor, ZookeeperManagerStates.ContinueCheck)
+      ).toHaveLength(1)
+    )
+  })
+
+  it('drains an in-flight refresh on dispose without updating a replacement session', async () => {
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    const gate = deferred<undefined>()
+    h.refreshProject.mockReturnValueOnce(gate.promise)
+    h.actor.emit('ready', {
+      cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
+    })
+    await waitFor(() => expect(h.refreshProject).toHaveBeenCalledOnce())
+    const disposed = h.controller.dispose()
+    expect(h.refreshProject.mock.calls[0][1]?.()).toBe(false)
+    gate.resolve(undefined)
+    await disposed
+    expect(h.readFolders).not.toHaveBeenCalled()
+    expect(h.reloadFiles).not.toHaveBeenCalled()
+  })
+
+  it.each([true, false])(
+    'only navigates to an existing default file after cloud removal (fallback exists: %s)',
+    async (hasFallback) => {
+      vi.spyOn(fsZds, 'relative').mockReturnValue('main.kcl')
+      const h = createHarness({ cloudProjectId: 'remote-one' })
+      h.fileExists.mockResolvedValueOnce(false).mockResolvedValue(hasFallback)
+      h.actor.emit('ready', {
+        cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
+      })
+      await waitFor(() => expect(h.fileExists).toHaveBeenCalledTimes(2))
+      if (!hasFallback) {
+        expect(h.navigateToFile).not.toHaveBeenCalled()
+        return
+      }
+      await waitFor(() =>
+        expect(h.navigateToFile).toHaveBeenCalledWith(
+          '/projects/bracket/main.kcl',
+          { projectPath: '/projects/bracket' }
+        )
+      )
+    }
+  )
 
   it('owns billing transitions and auth rotation without a mounted pane', () => {
     const { actor, billingSend, controller, conversationStore } =
@@ -1001,6 +1208,7 @@ describe('Zookeeper session controller', () => {
         {
           type: ZookeeperManagerStates.ContinueCheck,
           projectName: 'bracket',
+          projectId: `local:${projectId}`,
           projectFiles: [],
         },
       ])
@@ -1131,39 +1339,46 @@ describe('Zookeeper session controller', () => {
     }
   )
 
-  it('does not resume when reconnecting shows the turn already finished', () => {
-    const { actor } = createHarness()
-    const completedConversation = {
-      exchanges: [
+  it.each(['local', 'cloud'] as const)(
+    'does not resume when reconnecting shows the %s turn already finished',
+    (storage) => {
+      const cloudProjectId = storage === 'cloud' ? 'remote-project' : undefined
+      const { actor } = createHarness({ cloudProjectId })
+      const completedConversation = {
+        exchanges: [
+          {
+            request: { type: 'user', content: 'finish the bracket' },
+            responses: [{ end_of_stream: { whole_response: 'Done.' } }],
+            deltasAggregated: '',
+          },
+        ],
+      } as SnapshotContext['conversation']
+
+      actor.emit('ready', {
+        awaitingResponse: true,
+        conversation: interruptedConversation,
+      })
+      actor.emit('await', {
+        abruptlyClosed: true,
+        conversation: interruptedConversation,
+      })
+      actor.emit('wait-for-continue-check', {
+        conversation: completedConversation,
+      })
+
+      expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+      expect(sentEvents(actor, ZookeeperManagerStates.ContinueCheck)).toEqual([
         {
-          request: { type: 'user', content: 'finish the bracket' },
-          responses: [{ end_of_stream: { whole_response: 'Done.' } }],
-          deltasAggregated: '',
+          type: ZookeeperManagerStates.ContinueCheck,
+          projectName: 'bracket',
+          projectId: cloudProjectId
+            ? `cloud:${cloudProjectId}`
+            : `local:${projectId}`,
+          projectFiles: [],
         },
-      ],
-    } as SnapshotContext['conversation']
-
-    actor.emit('ready', {
-      awaitingResponse: true,
-      conversation: interruptedConversation,
-    })
-    actor.emit('await', {
-      abruptlyClosed: true,
-      conversation: interruptedConversation,
-    })
-    actor.emit('wait-for-continue-check', {
-      conversation: completedConversation,
-    })
-
-    expect(projectFilesMocks.collect).not.toHaveBeenCalled()
-    expect(sentEvents(actor, ZookeeperManagerStates.ContinueCheck)).toEqual([
-      {
-        type: ZookeeperManagerStates.ContinueCheck,
-        projectName: 'bracket',
-        projectFiles: [],
-      },
-    ])
-  })
+      ])
+    }
+  )
 
   it('does not resume a turn the user stopped before disconnecting', () => {
     const { actor, controller } = createHarness()

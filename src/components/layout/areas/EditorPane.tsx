@@ -15,6 +15,8 @@ import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { RouteProviderContext } from '@src/components/RouteProvider'
+import { Spinner } from '@src/components/Spinner'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import {
@@ -49,7 +51,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
-import { use, useEffect, useRef } from 'react'
+import { use, useContext, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
 
@@ -87,6 +89,8 @@ export const EditorPaneContents = () => {
   useSignals()
   const { kclManager } = useSingletons()
   const activeTextFile = activeTextFileSignal.value
+  const { isFileLoading } = useContext(RouteProviderContext)
+  const loading = isFileLoading || activeTextFile?.status === 'loading'
   const editorParent = useRef<HTMLDivElement>(null)
 
   // When this pane unmounts (e.g. the Code pane is closed), stop showing the
@@ -104,17 +108,29 @@ export const EditorPaneContents = () => {
     editorParent.current?.appendChild(kclManager.editorView.dom)
   }, [activeTextFile, kclManager.editorView.dom])
 
-  if (activeTextFile) {
-    return <TextFileEditor activeTextFile={activeTextFile} />
-  }
-
   return (
-    <div className="relative h-full">
-      <div
-        id="code-mirror-override"
-        className="absolute inset-0 pr-1"
-        ref={editorParent}
-      />
+    <div className="relative h-full" aria-busy={loading}>
+      <div className="h-full" inert={loading}>
+        {activeTextFile ? (
+          <TextFileEditor activeTextFile={activeTextFile} />
+        ) : (
+          <div
+            id="code-mirror-override"
+            className="absolute inset-0 pr-1"
+            ref={editorParent}
+          />
+        )}
+      </div>
+      {loading && (
+        <div
+          role="status"
+          aria-label="Loading file"
+          className="absolute inset-0 flex items-center justify-center bg-chalkboard-10/80 dark:bg-chalkboard-100/80"
+        >
+          <Spinner aria-hidden="true" />
+          <span className="sr-only">Loading file</span>
+        </div>
+      )}
     </div>
   )
 }
@@ -169,15 +185,14 @@ function TextFileEditor({
   activeTextFile: ActiveTextFile
 }) {
   useSignals()
-  const { commands, fileOperations, settings, registry, project } = useApp()
+  const { commands, fileOperations, settings, registry, project, projectSession } = useApp()
   const settingsValues = settings.useSettings()
   const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
   const editorParent = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
 
-  // Create/destroy the editor only when the FILE changes (path/status) — never
-  // on keystroke or theme change, which would reset cursor/scroll and could
-  // drop un-flushed edits.
+  // Recreate on file loads or authoritative text replacement. Loaded text stays
+  // unchanged during typing, so keystrokes and theme changes preserve the editor.
   useEffect(() => {
     if (!editorParent.current || activeTextFile.status !== 'ready') {
       return
@@ -205,6 +220,7 @@ function TextFileEditor({
           keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
+              projectSession.editorChanged(path)
               scheduleActiveTextFileWrite(
                 fileOperations,
                 path,
@@ -227,7 +243,7 @@ function TextFileEditor({
     // resolvedTheme is intentionally omitted: theme changes are handled by the
     // compartment effect below so the editor isn't recreated on every toggle.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTextFile.path, activeTextFile.status])
+  }, [activeTextFile.path, activeTextFile.status, activeTextFile.text])
 
   // Reconfigure the theme in place — no recreation, no lost edits.
   useEffect(() => {
@@ -239,11 +255,7 @@ function TextFileEditor({
   }, [resolvedTheme, activeTextFile.path])
 
   if (activeTextFile.status === 'loading') {
-    return (
-      <div className="h-full p-3 text-sm text-chalkboard-70 dark:text-chalkboard-30">
-        Loading {activeTextFile.name}...
-      </div>
-    )
+    return null
   }
 
   if (activeTextFile.status === 'error') {

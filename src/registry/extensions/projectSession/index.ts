@@ -1,8 +1,5 @@
-import {
-  projectStorageProvidersValueSpec,
-  type ProjectStorage,
-} from '@src/lib/projectSession/storage'
 import fsZds from '@src/lib/fs-zds'
+import { reportRejection } from '@src/lib/trap'
 import { getProjectInfo, writeProjectThumbnailFile } from '@src/lib/desktop'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -21,13 +18,16 @@ import { engineConnectionService } from '@src/registry/contracts/engineConnectio
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { ExpectedFileOperationError } from '@src/lib/fileSystem/operationErrors'
-import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
+import {
+  flushActiveTextFileWrite,
+  adoptCloudTextSnapshot,
+} from '@src/lib/activeTextFile'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
   provideService,
 } from '@kittycad/registry'
-import { computed, signal } from '@preact/signals-core'
+import { computed, signal, effect } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lib/projectSession'
 import {
   createTextFileIO,
@@ -35,6 +35,7 @@ import {
 } from '@src/lib/projectSession/textFileIO'
 import {
   type FileOperationsRegistryService,
+  cloudStorageService,
   fileOperationsService,
 } from '@src/registry/contracts/fileOperations'
 import {
@@ -65,55 +66,57 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const currentProjectLibraryId = signal<string | undefined>(undefined)
   let textFileIO: TextFileIO | undefined
   const electron = window.electron
-
-  const watchers = new Map<string, () => void>()
-  const storageFor = (path: string): ProjectStorage => {
-    for (const resolve of ctx.valueSpecs.get(
-      projectStorageProvidersValueSpec
-    )) {
-      const storage = resolve(path)
-      if (storage) return storage
-    }
-    return {
-      root: path,
-      writeAvailability: computed(() => ({ writable: true })),
-      externalChanges: 'files',
-      deletionHistory: 'archive',
-      createMissingEntrypoint: true,
-      watch: (path, key, onEvent) => {
-        electron?.watchFileOn(path, key, onEvent)
-        return () => electron?.watchFileOff(path, key)
-      },
-      batch: (_path, run) => run(ctx.services.get(fileOperationsService)),
-      refresh: async () => {},
-      retry: async () => {},
-      editorChanged: () => {},
-      writeThumbnail: (bytes) =>
-        writeProjectThumbnailFile(
-          ctx.services.get(fileOperationsService),
-          bytes,
-          path
-        ),
-    }
-  }
+  const cloudWatchers = new Map<string, () => void>()
 
   const serviceImpl: ProjectSessionService = {
-    storageFor,
-    editorChanged: (path) => storageFor(path).editorChanged(path),
-    writeThumbnail: (path, bytes) => storageFor(path).writeThumbnail(bytes),
+    editorChanged: (path) => {
+      const cloud = ctx.services.optional(cloudStorageService)
+      if (cloud?.root && path.startsWith(`${cloud.root}${fsZds.sep}`))
+        cloud.editorChanged(path)
+    },
+    writeThumbnail: (path, bytes) => {
+      const cloud = ctx.services.optional(cloudStorageService)
+      return cloud?.root && path.startsWith(`${cloud.root}${fsZds.sep}`)
+        ? cloud.stageThumbnail(path, bytes)
+        : writeProjectThumbnailFile(
+            ctx.services.get(fileOperationsService),
+            bytes,
+            path
+          )
+    },
     get textFileIO() {
       return (textFileIO ??= createTextFileIO(
         ctx.services.get(fileOperationsService),
         {
           watch: (path, key, onEvent) => {
-            const watchKey = `${key}:${path}`
-            watchers.get(watchKey)?.()
-            watchers.set(watchKey, storageFor(path).watch(path, key, onEvent))
+            const cloud = ctx.services.optional(cloudStorageService)
+            if (
+              cloud &&
+              path.startsWith(
+                `${cloud.root}${window.electron?.os.isWindows ? '\\' : '/'}`
+              )
+            ) {
+              const watchKey = `${key}:${path}`
+              cloudWatchers.get(watchKey)?.()
+              cloudWatchers.set(
+                watchKey,
+                cloud.subscribe((changes) => {
+                  for (const change of changes)
+                    if (
+                      change.path === path ||
+                      change.path.startsWith(`${path}/`) ||
+                      change.path.startsWith(`${path}\\`)
+                    )
+                      onEvent(change.eventType, change.path)
+                })
+              )
+            } else electron?.watchFileOn(path, key, onEvent)
           },
           unwatch: (path, key) => {
             const watchKey = `${key}:${path}`
-            watchers.get(watchKey)?.()
-            watchers.delete(watchKey)
+            cloudWatchers.get(watchKey)?.()
+            cloudWatchers.delete(watchKey)
+            electron?.watchFileOff(path, key)
           },
         }
       ))
@@ -129,15 +132,12 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         ctx.services.get(fileOperationsService),
         current.path,
         await wasm,
-        {
-          createMissingEntrypoint: storageFor(current.path)
-            .createMissingEntrypoint,
-        }
+        { createMissingEntrypoint: !metadata.cloudProjectId }
       )
       if (project.peek() !== current || refreshGeneration !== generation) return
       current.projectIORefSignal.value = {
         ...refreshed,
-        cloudProjectId: refreshed.cloudProjectId ?? metadata.cloudProjectId,
+        cloudProjectId: metadata.cloudProjectId,
         libraryPath: metadata.libraryPath,
         libraryType: metadata.libraryType,
       }
@@ -230,7 +230,10 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
             fsZds.relative(source, path.peek())
           )
       }
-      await storageFor(source).batch(source, rename)
+      const cloud = ctx.services.optional(cloudStorageService)
+      if (cloud && source.startsWith(`${cloud.root}${fsZds.sep}`))
+        await cloud.batch(source, rename)
+      else await rename(operations)
     },
     project,
     executingEditor,
@@ -248,12 +251,58 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     },
   }
 
+  const cloudService = ctx.services.signal(cloudStorageService)
+  let disposed = false
+  let stopReconciliation: (() => void) | undefined
+  queueMicrotask(() => {
+    if (disposed) return
+    stopReconciliation = effect(() =>
+      cloudService.value?.subscribeReconciled?.((root, files) => {
+        const current = project.peek()
+        if (!current || current.path !== root) return
+        adoptCloudTextSnapshot(
+          root,
+          new Map(
+            files.map((file) => [
+              fsZds.join(root, file.relativePath),
+              file.data,
+            ])
+          )
+        )
+        const editor = current.executingEditor.peek()
+        const file = files.find(
+          (file) => fsZds.join(root, file.relativePath) === editor?.path
+        )
+        editor?.adoptCloudSnapshot(
+          root,
+          file ? new TextDecoder().decode(file.data) : undefined
+        )
+        const generation = ++refreshGeneration
+        const isCurrent = () =>
+          project.peek() === current && refreshGeneration === generation
+        void current
+          .reloadFilesFromStorage(isCurrent)
+          .then(async () => {
+            if (!isCurrent()) return
+            if (!file) {
+              const target = current.projectIORefSignal.peek().default_file
+              if (target) await serviceImpl.openFile(target)
+              else await ctx.services.get(routerService).navigate(PATHS.HOME)
+            }
+          })
+          .catch(reportRejection)
+      })
+    )
+  })
+
   return {
     id: 'project-session-extension',
     providesServices: [provideService(projectSession, serviceImpl)],
     dispose: () => {
-      for (const stop of watchers.values()) stop()
-      watchers.clear()
+      disposed = true
+      stopReconciliation?.()
+      for (const stop of cloudWatchers.values()) stop()
+      cloudWatchers.clear()
     },
   }
 }, 'project-session-extension')

@@ -6,7 +6,7 @@ import {
   createOpenProjectIdUrl,
   downloadProjectById,
   getProjectNameById,
-} from '@src/lib/downloadProject'
+} from '@src/lib/fs-zds/cloud/project'
 
 afterEach(() => {
   vi.restoreAllMocks()

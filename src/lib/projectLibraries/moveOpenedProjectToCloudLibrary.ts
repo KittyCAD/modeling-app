@@ -1,3 +1,4 @@
+import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import type { App } from '@src/lib/app'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
@@ -32,7 +33,14 @@ export async function moveOpenedProjectToCloudLibrary({
   const actions = app.registry.optional(homeProjectActionsService)
   const homeProject = app.registry
     .get(homeProjectEntriesValueSpec)
-    .find((entry) => entry.localProjectPath === project.path)
+    .find(
+      (entry) =>
+        entry.localProjectPath === project.path ||
+        (entry.remoteProjectId &&
+          app.registry
+            .get(cloudStorageService)
+            .pathFor(entry.remoteProjectId) === project.path)
+    )
   const cloudLibraryTarget = homeProject
     ? actions
         ?.getMoveToLibraryTargets(homeProject)
@@ -101,7 +109,14 @@ export async function updateProjectTitleForPublication({
     const actions = app.registry.optional(homeProjectActionsService)
     const homeProject = app.registry
       .get(homeProjectEntriesValueSpec)
-      .find((entry) => entry.localProjectPath === project.path)
+      .find(
+        (entry) =>
+          entry.localProjectPath === project.path ||
+          (entry.remoteProjectId &&
+            app.registry
+              .get(cloudStorageService)
+              .pathFor(entry.remoteProjectId) === project.path)
+      )
     if (!actions || !homeProject || !actions.canRename(homeProject)) {
       return new Error('The open project title could not be updated.')
     }

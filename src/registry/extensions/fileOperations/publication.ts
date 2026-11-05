@@ -1,14 +1,16 @@
+import { collectApiPages } from '@src/lib/apiPagination'
+import {
+  createRemoteProject,
+  getRemoteProject as getCloudProject,
+  updateRemoteProject,
+} from '@src/lib/fs-zds/cloud/api'
 import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
-import { collectLocalProjectFilesForCloudSync } from '@src/lib/cloudSync/localManifest'
-import {
-  getMimeType,
-  prepareProjectFilesForCloudUpload,
-} from '@src/lib/cloudSync/projectArchive'
+import { collectProjectFilesForUpload } from '@src/lib/projectSession/projectFiles'
 import type {
   ProjectArchiveFile,
   ProjectUploadPublicationMetadata,
-} from '@src/lib/cloudSync/types'
+} from '@src/lib/fs-zds/cloud/types'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import { readProjectSettingsFile } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
@@ -23,6 +25,8 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 import toast from 'react-hot-toast'
 
 export type PublishCurrentProjectArgs = {
+  expectedRevision?: string
+  deletedPaths?: string[]
   fileOperations: FileOperationsRegistryService
   token: string
   project: Project | undefined
@@ -224,45 +228,37 @@ async function ensureCurrentProjectUploaded(
     return existingProjectId
   }
 
-  if (existingProjectId) {
-    const projectResp = await kcCall(() =>
-      projects.update_project({
-        client,
-        id: existingProjectId,
-        files: toKittyCadFiles(
-          project.path,
-          uploadFiles,
-          getProjectUploadPublicationMetadata(args.submission)
-        ),
-      })
+  try {
+    const config = { enabled: true, token: args.token }
+    const publicationMetadata = getProjectUploadPublicationMetadata(
+      args.submission
     )
-    if (err(projectResp)) {
-      return projectResp
+    if (existingProjectId) {
+      const remote = await getCloudProject(config, existingProjectId)
+      if (remote.revision === undefined || remote.revision === null)
+        return new Error('Cloud project is missing its revision.')
+      await updateRemoteProject({
+        config,
+        projectPath: project.path,
+        project: remote,
+        files: uploadFiles,
+        expectedRevision: args.expectedRevision ?? String(remote.revision),
+        deletedPaths: args.deletedPaths,
+        publicationMetadata,
+      })
+      return { client, projectId: existingProjectId }
     }
-
-    return {
-      client,
-      projectId: existingProjectId,
-    }
-  }
-
-  const projectResp = await kcCall(() =>
-    projects.create_project({
-      client,
-      files: toKittyCadFiles(
-        project.path,
-        uploadFiles,
-        getProjectUploadPublicationMetadata(args.submission)
-      ),
-    })
-  )
-  if (err(projectResp)) {
-    return projectResp
-  }
-
-  return {
-    client,
-    projectId: projectResp.id,
+    const remote = await createRemoteProject(
+      config,
+      project.path,
+      uploadFiles,
+      publicationMetadata
+    )
+    return { client, projectId: remote.id }
+  } catch (error) {
+    return error instanceof Error
+      ? error
+      : new Error('Publication save failed.')
   }
 }
 
@@ -307,7 +303,7 @@ async function buildProjectUploadFiles({
 }): Promise<ProjectArchiveFile[] | Error> {
   let files: ProjectArchiveFile[]
   try {
-    files = await collectLocalProjectFilesForCloudSync({
+    files = await collectProjectFilesForUpload({
       fileOperations,
       projectRoot: project.path,
     })
@@ -376,30 +372,6 @@ async function getCloudProjectIdForEnvironment(
   }
 }
 
-function toKittyCadFiles(
-  projectPath: string,
-  files: ProjectArchiveFile[],
-  publicationMetadata: ProjectUploadPublicationMetadata
-): Parameters<typeof projects.create_project>[0]['files'] {
-  const upload = prepareProjectFilesForCloudUpload(projectPath, files, {
-    publicationMetadata,
-  })
-  return [
-    {
-      name: 'body',
-      data: new Blob([JSON.stringify(upload.body)], {
-        type: 'application/json',
-      }),
-    },
-    ...upload.files.map((file) => ({
-      name: file.relativePath,
-      data: new Blob([Uint8Array.from(file.data)], {
-        type: getMimeType(file.relativePath),
-      }),
-    })),
-  ]
-}
-
 function getCurrentEnvironmentName(): string | Error {
   const environmentName = getEnvironmentNameFromEnv(env())
   if (environmentName !== undefined) {
@@ -411,4 +383,20 @@ function getCurrentEnvironmentName(): string | Error {
 
 function getPathLeaf(path: string) {
   return path.split(fsZds.sep).filter(Boolean).at(-1)
+}
+
+export async function getCloudPublicationStatus(id: string, token?: string) {
+  const remote = await projects.get_project({
+    client: createKCClient(token),
+    id,
+  })
+  return {
+    publicationStatus: remote.publication_status,
+    feedback: remote.publication?.feedback ?? undefined,
+  }
+}
+export async function getCloudPublicationStatuses(token?: string) {
+  return collectApiPages(
+    projects.list_projects_pager({ client: createKCClient(token) })
+  )
 }

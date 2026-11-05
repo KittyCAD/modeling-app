@@ -1,4 +1,3 @@
-import type { ProjectStorage } from '@src/lib/projectSession/storage'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal, Signal } from '@preact/signals-core'
 import type { Project } from '@src/lib/project'
@@ -35,9 +34,9 @@ export interface ExecutingEditor {
  * fields delegate to this service while call sites are migrated.
  */
 export interface ProjectSessionService {
-  /** Resolve storage capabilities for the captured path without selecting a backend in callers. */
-  storageFor: (path: string) => ProjectStorage
+  /** Keep derived thumbnail persistence behind continued editor activity. */
   editorChanged: (path: string) => void
+  /** Stage cloud thumbnails for the next save; write directory thumbnails immediately. */
   writeThumbnail: (projectPath: string, bytes: Uint8Array) => Promise<void>
   /** Reload the captured project's tree; stale results never replace another session. */
   refreshProject: () => Promise<Project | undefined>
