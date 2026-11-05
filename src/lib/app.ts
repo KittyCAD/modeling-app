@@ -1,4 +1,3 @@
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import { routerService } from '@src/registry/contracts/router'
 import { PATHS } from '@src/lib/paths'
@@ -10,7 +9,7 @@ import {
   type RegistryItem,
   Slot,
 } from '@kittycad/registry'
-import { effect, type Signal, signal } from '@preact/signals-core'
+import { computed, effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager } from '@src/lang/KclManager'
 import { ZDSProject } from '@src/lib/projectSession'
@@ -356,22 +355,6 @@ export class App implements AppSubsystems {
     return new App(combined)
   }
 
-  private setCloudSyncOpenedProject(project?: Project) {
-    this.registry.get(cloudSyncService).setOpenedProject(
-      project
-        ? {
-            projectPath: project.path,
-            ...(project.libraryPath
-              ? { libraryPath: project.libraryPath }
-              : {}),
-            ...(project.libraryType
-              ? { libraryType: project.libraryType }
-              : {}),
-          }
-        : undefined
-    )
-  }
-
   private fileRouteLoadGeneration = 0
 
   beginFileRouteLoad(signal: AbortSignal) {
@@ -405,7 +388,6 @@ export class App implements AppSubsystems {
     // so we gotta clean up after ourselves and close any open project.
     this.project?.close()
     this.project = nextProject
-    this.setCloudSyncOpenedProject(ownedProject)
 
     // These extensions make global project operations un/redoable.
     this.disposeProjectHistoryExtensions = effect(() => {
@@ -482,13 +464,13 @@ export class App implements AppSubsystems {
   /** Stop the app and await registry-owned runtime resources. */
   async disposeAsync() {
     this.stopSubsystems()
+    await this.singletons.kclManager.waitForFileSaves()
     await this.registry.disposeAsync()
   }
 
   closeProject() {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
-    this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
   }
@@ -761,8 +743,11 @@ export class App implements AppSubsystems {
     // TODO: Remove this and make the app handle no executing editor,
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
+      project: computed(() => this.project?.projectIORefSignal.value),
       fileOperations: this.fileOperations,
       textFileIO: this.projectSession.textFileIO,
+      modelingReady: () => this.project?.modelingReady ?? Promise.resolve(),
+      projectSession: this.projectSession,
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,

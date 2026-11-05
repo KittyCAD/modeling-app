@@ -168,26 +168,30 @@ export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
   return new File([buf], fileName, { type: mime })
 }
 
-export function createThumbnailPNGOnDesktop({
+export function createProjectThumbnail({
   fileOperations,
   projectDirectoryWithoutEndingSlash,
+  isCurrent,
+  writeThumbnail = (path, bytes) =>
+    writeProjectThumbnailFile(fileOperations, bytes, path),
 }: {
   fileOperations: FileOperationsRegistryService
   projectDirectoryWithoutEndingSlash: string
+  isCurrent: () => boolean
+  writeThumbnail?: (path: string, bytes: Uint8Array) => Promise<void>
 }) {
+  if (!isCurrent()) return
   setTimeout(() => {
-    if (!projectDirectoryWithoutEndingSlash) {
+    if (!projectDirectoryWithoutEndingSlash || !isCurrent()) {
       return
     }
     // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
     takeScreenshotOfVideoStreamCanvas()
       .then(async (thumbnail) => {
-        if (!thumbnail) return
-        await writeProjectThumbnailFile(
-          fileOperations,
-          new Uint8Array(await thumbnail.arrayBuffer()),
-          projectDirectoryWithoutEndingSlash
-        )
+        if (!thumbnail || !isCurrent()) return
+        const bytes = new Uint8Array(await thumbnail.arrayBuffer())
+        if (!isCurrent()) return
+        await writeThumbnail(projectDirectoryWithoutEndingSlash, bytes)
       })
       .catch((e) => {
         console.error(

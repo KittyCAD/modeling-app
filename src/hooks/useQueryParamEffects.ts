@@ -1,8 +1,4 @@
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
-import {
-  downloadProjectById,
-  getPublicProjectNameById,
-} from '@src/lib/downloadProject'
+import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import { base64ToString } from '@src/lib/base64'
 import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
@@ -165,7 +161,9 @@ export function useQueryParamEffects() {
         )
       }
 
-      const projectName = await getPublicProjectNameById(projectId)
+      const projectName = await app.registry
+        .get(cloudStorageService)
+        .getPublicProjectNameById(projectId)
       if (err(projectName)) {
         return Promise.reject(projectName)
       }
@@ -173,7 +171,9 @@ export function useQueryParamEffects() {
         return
       }
 
-      const downloadedProject = await downloadProjectById(projectId)
+      const downloadedProject = await app.registry
+        .get(cloudStorageService)
+        .downloadProjectById(projectId)
       if (err(downloadedProject)) {
         return Promise.reject(downloadedProject)
       }
@@ -197,11 +197,8 @@ export function useQueryParamEffects() {
       if (!importedProject?.default_file) {
         return Promise.reject(new Error('Unable to create the shared project.'))
       }
-      if (
-        projectLibraryTarget.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID &&
-        app.registry.get(cloudSyncService).status.value.enabled
-      ) {
-        await app.registry.get(cloudSyncService).syncNow(importedProject.path)
+      if (cancelled) {
+        return
       }
       if (cancelled) {
         return
