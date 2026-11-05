@@ -4471,7 +4471,8 @@ export const modelingMachine = setup({
           format.type === 'obj' ||
           format.type === 'ply' ||
           format.type === 'step' ||
-          format.type === 'stl'
+          format.type === 'stl' ||
+          format.type === 'rhino'
         ) {
           // Configure output orientation from export options.
           format.coords =
@@ -4502,7 +4503,8 @@ export const modelingMachine = setup({
           format.type === 'obj' ||
           format.type === 'stl' ||
           format.type === 'ply' ||
-          format.type === 'step'
+          format.type === 'step' ||
+          format.type === 'rhino'
         ) {
           format.units = exportScale
         }
@@ -7416,10 +7418,14 @@ export const modelingMachine = setup({
           }
           fileName = fileName.replace(/\.kcl$/i, '') // remove trailing .kcl
           fileName = sanitizeProjectName(fileName, 'output') // remove slash, backslash
-          const extension =
-            event.data.type === 'gltf' && event.data.storage === 'binary'
-              ? 'glb'
-              : event.data.type
+          let extension: string = event.data.type
+
+          if (event.data.type === 'gltf' && event.data.storage === 'binary') {
+            extension = 'glb'
+          } else if ((event.data.type as string) === 'rhino') { //TODO remove (as string) cas before merge
+            extension = '3dm'
+          }
+
           fileName += `.${extension}` // add file extension
 
           return {
