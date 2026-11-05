@@ -3176,7 +3176,7 @@ export default {
       {
         "name": "framePlane",
         "ty": "Plane",
-        "docs": "The plane in which to display the distance. Handwritten KCL defaults to `XY` when omitted. Point-and-click uses the common face plane for hole spacing and a plane containing the edge direction for edge lengths, then falls back to selected KCL topology and writes the plane explicitly. For measurements along Z, use `XZ` or `YZ` so the dimension is visible. The distance may be displayed in a plane parallel to the given plane.",
+        "docs": "The plane in which to display the distance. Handwritten KCL defaults to `XY` when omitted. For measurements along Z, use `XZ` or `YZ` so the dimension is visible. The distance may be displayed in a plane parallel to the given plane.",
         "required": false,
         "special": false,
         "experimental": false,
