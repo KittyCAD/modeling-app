@@ -17,7 +17,6 @@ import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelin
 import { modelingStdLibCommandSummary } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { Project } from '@src/lib/project'
 import { modelingMachine } from '@src/machines/modelingMachine'
-import { useFolders } from '@src/machines/systemIO/hooks'
 
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
@@ -71,29 +70,11 @@ export const ModelingMachineProvider = ({
     return configWithoutMake
   }, [machineApiEnabled])
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
-  const projects = useFolders()
   const theProject = useRef<Project | undefined>(
     project?.projectIORefSignal.value
   )
   const file = project?.executingFileEntry.value
-  useEffect(() => {
-    // Have no idea why the project loader data doesn't have the children from the ls on disk
-    // That means it is a different object or cached incorrectly?
-    if (!project || !file || !projects) {
-      return
-    }
-
-    // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
-    const foundYourProject = projects.find((p) => {
-      return p.name === project.name
-    })
-
-    if (!foundYourProject) {
-      return
-    }
-    theProject.current = foundYourProject
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projects, file])
+  theProject.current = project?.projectIORefSignal.value
 
   const streamRef = useRef<HTMLDivElement>(null)
 

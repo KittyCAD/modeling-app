@@ -1,11 +1,8 @@
 import type * as ClientErrors from '@src/lib/clientErrors'
 import {
-  ExpectedSystemIOError,
-  reportSystemIOError,
-} from '@src/machines/systemIO/errorReporting'
-import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
-import type { SystemIOContext } from '@src/machines/systemIO/utils'
-import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
+  ExpectedFileOperationError,
+  reportFileOperationError,
+} from '@src/lib/fileSystem/operationErrors'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -22,66 +19,10 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
 
-const context = {
-  projectDirectoryPath: '/projects',
-  hasListedProjects: true,
-  folders: [{}, {}],
-} as SystemIOContext
-
-const operationCases = [
-  {
-    operation: SystemIOMachineActors.deleteProject,
-    risk: 'destructive',
-  },
-  {
-    operation: SystemIOMachineActors.duplicateProject,
-    risk: 'write',
-  },
-  {
-    operation: SystemIOMachineActors.createBlankFolder,
-    risk: 'write',
-  },
-  {
-    operation: SystemIOMachineActors.renameFile,
-    risk: 'destructive',
-  },
-] as const
-
-describe('SystemIO client error reporting', () => {
+describe('file operation client error reporting', () => {
   beforeEach(() => {
     mocks.reportClientError.mockClear()
   })
-
-  it.each(operationCases)(
-    'classifies $operation failures',
-    ({ operation, risk }) => {
-      const error = new Error('operation failed')
-
-      reportSystemIOMachineError({
-        context,
-        event: {
-          type: `xstate.error.actor.${operation}`,
-          error,
-        },
-      })
-
-      expect(mocks.reportClientError).toHaveBeenCalledWith(
-        expect.objectContaining({
-          code: 'system_io_error',
-          errorName: 'Error',
-          extra: expect.objectContaining({
-            source: 'SystemIOMachine',
-            operation,
-            risk,
-            errorType: 'Error',
-            hasProjectDirectory: true,
-            hasListedProjects: true,
-            projectCount: 2,
-          }),
-        })
-      )
-    }
-  )
 
   it('does not send filesystem paths from the original error', () => {
     const sensitivePath = '/Users/alice/Secret Project/main.kcl'
@@ -90,12 +31,11 @@ describe('SystemIO client error reporting', () => {
       { code: 'EACCES' }
     )
 
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.createBlankFile}`,
-        error,
-      },
+    reportFileOperationError({
+      error,
+      operation: 'create blank file',
+      risk: 'write',
+      source: 'FileOperations',
     })
 
     const report = mocks.reportClientError.mock.calls[0]?.[0]
@@ -122,15 +62,14 @@ describe('SystemIO client error reporting', () => {
     const error = new Error('onFileSystemSuccess', { cause })
     error.stack = [
       'Error: onFileSystemSuccess',
-      `    at actor (${sensitivePath}/systemIOMachineImpl.ts:824:30)`,
+      `    at actor (${sensitivePath}/projectOperations.ts:824:30)`,
     ].join('\n')
 
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile}`,
-        error,
-      },
+    reportFileOperationError({
+      error,
+      operation: 'apply_edits',
+      risk: 'destructive',
+      source: 'FileOperations',
     })
 
     const report = mocks.reportClientError.mock.calls[0]?.[0]
@@ -138,7 +77,7 @@ describe('SystemIO client error reporting', () => {
       error: expect.any(Error),
       errorName: 'Error',
       dedupeKey:
-        'SystemIO:SystemIOMachine:bulk create and delete kcl files and navigate to file:onFileSystemSuccess:Error:EACCES',
+        'SystemIO:FileOperations:apply_edits:onFileSystemSuccess:Error:EACCES',
       extra: {
         errorCode: 'EACCES',
         errorType: 'Error',
@@ -147,9 +86,7 @@ describe('SystemIO client error reporting', () => {
       },
     })
     expect(report.error).not.toBe(error)
-    expect(report.error.stack).toContain(
-      'at actor systemIOMachineImpl.ts:824:30'
-    )
+    expect(report.error.stack).toContain('at actor projectOperations.ts:824:30')
     expect(JSON.stringify(report)).not.toContain(sensitivePath)
     expect(JSON.stringify(report)).not.toContain(cause.message)
     expect(report.error.stack).not.toContain(sensitivePath)
@@ -158,7 +95,7 @@ describe('SystemIO client error reporting', () => {
   it('does not treat a safe-looking raw error message as context', () => {
     const sensitiveFileName = 'secret-project.kcl'
 
-    reportSystemIOError({
+    reportFileOperationError({
       error: new Error(sensitiveFileName),
       operation: 'read project',
       risk: 'read',
@@ -177,7 +114,7 @@ describe('SystemIO client error reporting', () => {
   it('does not treat a primitive cause as an error code', () => {
     const sensitiveFileName = 'secret-project.kcl'
 
-    reportSystemIOError({
+    reportFileOperationError({
       error: new Error('sharedBulkDeleteWorkflow', {
         cause: sensitiveFileName,
       }),
@@ -197,7 +134,7 @@ describe('SystemIO client error reporting', () => {
   it('drops unrecognized phase labels', () => {
     const sensitivePhase = '/Users/alice/Secret Project'
 
-    reportSystemIOError({
+    reportFileOperationError({
       error: new Error('operation failed'),
       operation: 'read project',
       risk: 'read',
@@ -214,26 +151,24 @@ describe('SystemIO client error reporting', () => {
   })
 
   it('does not report expected user naming conflicts', () => {
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
-        error: new ExpectedSystemIOError('Filename already exists.'),
-      },
+    reportFileOperationError({
+      error: new ExpectedFileOperationError('Filename already exists.'),
+      operation: 'rename',
+      risk: 'destructive',
+      source: 'FileOperations',
     })
 
     expect(mocks.reportClientError).not.toHaveBeenCalled()
   })
 
   it('does not report expected errors wrapped with operation context', () => {
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
-        error: new Error('sharedBulkCreateWorkflow', {
-          cause: new ExpectedSystemIOError('Filename already exists.'),
-        }),
-      },
+    reportFileOperationError({
+      error: new Error('sharedBulkCreateWorkflow', {
+        cause: new ExpectedFileOperationError('Filename already exists.'),
+      }),
+      operation: 'rename',
+      risk: 'destructive',
+      source: 'FileOperations',
     })
 
     expect(mocks.reportClientError).not.toHaveBeenCalled()

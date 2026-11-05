@@ -100,9 +100,6 @@ export class ZDSProject {
   get executingPath() {
     return this.#executingPath.value?.value ?? null
   }
-  get executingPathSignal() {
-    return this.#executingPath
-  }
   set executingPath(newPath: string | null) {
     // TODO: Clear current executing editor's execution status
 
@@ -124,6 +121,9 @@ export class ZDSProject {
     if (changedEditor) previous?.setSceneSettingsActive(false)
     this.#executingPath.value = foundPathSignal[0]
     if (changedEditor) found.setSceneSettingsActive(true)
+  }
+  get executingPathSignal() {
+    return this.#executingPath
   }
   findEditor(path: string) {
     return Array.from(this.editors.entries()).find(([p]) => p.value === path)
@@ -326,7 +326,7 @@ export class ZDSProject {
   ): File[] => {
     if (fileOrDir.children) {
       for (let entry of fileOrDir.children) {
-        if (entry.name.endsWith('.kcl')) {
+        if (entry.children === null && entry.name.endsWith('.kcl')) {
           const id = this.nextFileId++
           const path = entry.path
           files.push(new File(path, this.textFileIO, id))
