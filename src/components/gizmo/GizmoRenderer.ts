@@ -631,11 +631,7 @@ async function animateCameraToQuaternion(
   sceneInfra: SceneInfra
 ) {
   const camControls = sceneInfra.camControls
-  const previousSyncDirection = camControls.syncDirection
-  if (
-    !camControls.localCameraMode &&
-    previousSyncDirection === 'engineToClient'
-  ) {
+  if (!camControls.localCameraMode) {
     camControls.syncDirection = 'clientToEngine'
   }
   camControls.enableRotate = false
@@ -651,6 +647,8 @@ async function animateCameraToQuaternion(
   } finally {
     sceneInfra.stop()
     camControls.enableRotate = true
-    camControls.syncDirection = previousSyncDirection
+    if (!camControls.localCameraMode) {
+      camControls.syncDirection = 'engineToClient'
+    }
   }
 }
