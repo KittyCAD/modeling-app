@@ -16,7 +16,7 @@ import {
   type ZookeeperEditPatchFile,
   type ZookeeperModifiedPatchFile,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
-import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { EditorView } from 'codemirror'
 import {
@@ -768,7 +768,7 @@ async function writeZookeeperPatchReplay(
       }
     }
 
-    reportSystemIOError({
+    reportFileOperationError({
       error,
       operation: 'zookeeper_history_replay',
       risk: 'destructive',

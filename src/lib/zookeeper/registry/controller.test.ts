@@ -2,8 +2,8 @@ import { signal, type Signal } from '@preact/signals-core'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import type { BulkFileWriteProgress } from '@src/machines/systemIO/utils'
-import type * as SystemIOUtilsModule from '@src/machines/systemIO/utils'
+import type { BulkFileWriteProgress } from '@src/lib/zookeeper/projectFiles'
+import type * as ProjectFilesModule from '@src/lib/projectSession/projectFiles'
 import { S } from '@src/machines/utils'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
@@ -46,8 +46,8 @@ vi.mock(
   })
 )
 
-vi.mock('@src/machines/systemIO/utils', async (importOriginal) => ({
-  ...(await importOriginal<typeof SystemIOUtilsModule>()),
+vi.mock('@src/lib/projectSession/projectFiles', async (importOriginal) => ({
+  ...(await importOriginal<typeof ProjectFilesModule>()),
   collectProjectFiles: projectFilesMocks.collect,
 }))
 
@@ -268,7 +268,8 @@ function createHarness({
     project: projectSignal,
     projectId: initialProjectId,
     projectPath,
-    systemIO: { actor: {} },
+    session: { refreshProject: vi.fn(), openFile: vi.fn() },
+    projectOperations: { applyEdits: vi.fn() },
   } as unknown as ZookeeperSessionControllerDependencies
   const controller = createZookeeperSessionController(dependencies)
   activeControllers.add(controller)

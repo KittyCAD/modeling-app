@@ -36,10 +36,6 @@ import {
 } from '@src/lib/zookeeper/editorPlugin'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-} from '@src/machines/systemIO/utils'
-import {
   UserFeaturesTransition,
   userFeaturesContextHas,
 } from '@src/machines/userFeaturesMachine'
@@ -58,6 +54,7 @@ import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engine
 import {
   type FileOperationsRegistryService,
   fileOperationsService,
+  projectOperationsService,
 } from '@src/registry/contracts/fileOperations'
 import {
   homeProjectActionsService,
@@ -81,7 +78,6 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { systemIOService } from '@src/registry/contracts/systemIO'
 import {
   type UserFeaturesRegistryService,
   userFeaturesService,
@@ -97,6 +93,15 @@ import {
   coreRegistryItems,
 } from '@src/registry/registry'
 import type { SnapshotFrom, Subscription } from 'xstate'
+import { isPathNotFoundError } from '@src/lib/desktop'
+import { routerService } from '@src/registry/contracts/router'
+import { PATHS } from '@src/lib/paths'
+import fsZds from '@src/lib/fs-zds'
+import {
+  getDefaultDirectoryProjectLibraryPath,
+  projectLibrariesFromSettings,
+} from '@src/lib/projectLibraries'
+import type { SnapshotFrom } from 'xstate'
 
 const appCommandsSlot = new Slot()
 const appViewportScreenshotSlot = new Slot()
@@ -170,7 +175,7 @@ export class App implements AppSubsystems {
 
   declare readonly interactionPerformance?: InteractionPerformanceService
 
-  private get projectSession(): ProjectSessionService {
+  public get projectSession(): ProjectSessionService {
     return this.registry.get(projectSession)
   }
   public get projectSignal(): Signal<ZDSProject | undefined> {
@@ -214,12 +219,41 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
   /** The registry system for the application */
   registry: AppRegistrySystem
-  /**
-   * The interface to reading/writing to IO.
-   * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
-   */
-  get systemIOActor(): SystemIOActor {
-    return this.registry.get(systemIOService).actor
+  get projectOperations() {
+    return this.registry.get(projectOperationsService)
+  }
+
+  get projectDirectoryPath(): string {
+    const project = this.project?.projectIORefSignal.value
+    return (
+      project?.libraryPath ??
+      (project
+        ? fsZds.dirname(project.path)
+        : (getDefaultDirectoryProjectLibraryPath(
+            this.settings.get().app.libraries.current
+          ) ?? ''))
+    )
+  }
+
+  get defaultProjectName(): string {
+    return this.settings.get().projects.defaultProjectName.current
+  }
+
+  async refreshProjects() {
+    const current = this.project
+    const directory = this.projectDirectoryPath
+    try {
+      await Promise.all([
+        directory
+          ? this.projectOperations.listProjects(directory)
+          : Promise.resolve([]),
+        this.projectSession.refreshProject(),
+      ])
+    } catch (error) {
+      if (current && this.project === current && isPathNotFoundError(error))
+        await this.registry.get(routerService).navigate(PATHS.HOME)
+      else return Promise.reject(error)
+    }
   }
 
   private activeWasmInstance: ModuleType | undefined
@@ -359,8 +393,6 @@ export class App implements AppSubsystems {
     }
   }
 
-  private unsubscribeSystemIO: Subscription | undefined
-
   async openProject(
     projectIORef: Project,
     assertCurrent: () => void = () => {}
@@ -391,10 +423,7 @@ export class App implements AppSubsystems {
         return
       }
 
-      const disposeFSHistory = buildFSHistoryExtension(
-        this.systemIOActor,
-        executingEditor
-      )
+      const disposeFSHistory = buildFSHistoryExtension(this, executingEditor)
       const disposeZookeeperHistory = buildZookeeperHistoryExtension({
         fileOperations: this.fileOperations,
         kclManager: executingEditor,
@@ -423,9 +452,7 @@ export class App implements AppSubsystems {
         onProjectFilesReplay: async (replayFiles) => {
           await project.syncReplayedFilesToRust(replayFiles)
           if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            this.systemIOActor.send({
-              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-            })
+            this.refreshProjects().catch(reportRejection)
           }
         },
       })
@@ -433,28 +460,6 @@ export class App implements AppSubsystems {
       return () => {
         disposeFSHistory()
         disposeZookeeperHistory()
-      }
-    })
-
-    // TODO: Rework the systemIOActor to fit into the system better,
-    // so that the project doesn't need to subscribe to it.
-    this.unsubscribeSystemIO?.unsubscribe()
-    this.unsubscribeSystemIO = this.systemIOActor.subscribe(({ context }) => {
-      const foundProject = (context.folders ?? []).find(
-        (p) =>
-          p.name === projectIORefSignal.value.name &&
-          p.path === projectIORefSignal.value.path
-      )
-      if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = {
-          ...foundProject,
-          ...(projectIORefSignal.value.libraryPath
-            ? { libraryPath: projectIORefSignal.value.libraryPath }
-            : {}),
-          ...(projectIORefSignal.value.libraryType
-            ? { libraryType: projectIORefSignal.value.libraryType }
-            : {}),
-        }
       }
     })
 
@@ -492,8 +497,6 @@ export class App implements AppSubsystems {
     this.registry.optional(projectSessionService)?.closeProject()
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
-    this.unsubscribeSystemIO?.unsubscribe()
-    this.unsubscribeSystemIO = undefined
     this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
@@ -566,7 +569,7 @@ export class App implements AppSubsystems {
             provideCommand
           ),
           ...createProjectCommands({
-            systemIOActor: this.systemIOActor,
+            app: this,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
             getCurrentProjectPath: () =>
