@@ -1,3 +1,4 @@
+import { PATHS } from '@src/lib/paths'
 import {
   type ProjectCardClassNames,
   ProjectCard as UiProjectCard,

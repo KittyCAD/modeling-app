@@ -105,14 +105,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             .openFile(entry.path, { projectPath: project?.path })
             .catch(reportRejection)
         }
-        const navigateAfterFlush = () => {
-          void kclManager
-            .flushWriteToFile()
-            .then((saved) => {
-              if (saved) navigateHelper()
-            })
-            .catch(reportRejection)
-        }
         if (modelingMachineState.matches('Sketch')) {
           modelingSend({ type: 'Cancel' })
           const waitForIdlePromise = new Promise((resolve) => {
@@ -124,10 +116,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             })
           })
           waitForIdlePromise.catch(reportRejection).finally(() => {
-            navigateAfterFlush()
+            navigateHelper()
           })
         } else {
-          navigateAfterFlush()
+          // The current project captures outgoing saves without blocking selection.
+          navigateHelper()
         }
       } else if (projectRef.current?.value.name && entry.children == null) {
         // Inspect file contents before allowing edits, regardless of extension.
@@ -137,7 +130,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     },
     [
       fileOperations,
-      kclManager,
       modelingActor,
       modelingMachineState,
       modelingSend,

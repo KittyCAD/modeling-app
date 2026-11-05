@@ -5,6 +5,7 @@ export enum LspWorker {
   Kcl = 'kcl',
 }
 export interface KclWorkerOptions {
+  fileReads?: MessagePort
   wasmUrl: string
   token: string
   apiBaseUrl: string
