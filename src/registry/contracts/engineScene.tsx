@@ -32,6 +32,8 @@ export type EngineScenePathTracing = {
   /** The local renderer runs on WebGPU, which path tracing needs. */
   supported: boolean
   mode: RenderingMode
+  fadeDuration: number
+  setFadeDuration: (duration: number) => void
   edgeOpacity: number
   edges: boolean
   denoise: boolean

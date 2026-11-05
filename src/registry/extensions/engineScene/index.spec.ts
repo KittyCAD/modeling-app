@@ -88,6 +88,8 @@ function createEngineSceneViewExtensionContext(
       supported: false,
       mode: 'standard',
       edges: true,
+      fadeDuration: 2000,
+      setFadeDuration: vi.fn(),
       edgeOpacity: 0.45,
       setEdgeOpacity: vi.fn(),
       denoise: true,

@@ -205,7 +205,7 @@ describe('local GLB loading', () => {
     }
     state.pathTraceRenderer = trace
     state.renderPreview()
-    now += 200
+    now += 2000
     state.renderPreview()
     expect(trace.present).toHaveBeenLastCalledWith(
       state.renderer,

@@ -22,6 +22,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     denoise,
     rayTracingEdges,
     rayTracingEdgeOpacity,
+    fadeDuration,
   } = props
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<LocalRenderer | null>(null)
@@ -128,6 +129,10 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
       rayTracingEdgeOpacity
     )
   }, [rayTracingEdges, rayTracingEdgeOpacity])
+
+  useEffect(() => {
+    rendererRef.current?.setFadeDuration(fadeDuration ?? 2000)
+  }, [fadeDuration])
 
   return (
     <>

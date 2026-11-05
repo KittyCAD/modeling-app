@@ -666,6 +666,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}
           renderingMode={props.streamLayerProps.pathTracing.mode}
           denoise={props.streamLayerProps.pathTracing.denoise}
+          fadeDuration={props.streamLayerProps.pathTracing.fadeDuration}
           rayTracingEdgeOpacity={props.streamLayerProps.pathTracing.edgeOpacity}
           rayTracingEdges={props.streamLayerProps.pathTracing.edges}
           onInitialized={props.streamLayerProps.pathTracing.setSupported}

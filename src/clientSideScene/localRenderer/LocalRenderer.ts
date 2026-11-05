@@ -79,6 +79,7 @@ export interface LocalRendererProps {
   fixedSizeGrid: boolean
   renderingMode: RenderingMode
   denoise: boolean
+  fadeDuration?: number
   rayTracingEdgeOpacity?: number
   rayTracingEdges?: boolean
   /** isNewModel: the result of a finished execution is now in the scene. */
@@ -166,6 +167,10 @@ export class LocalRenderer {
     this.renderingMode = props.renderingMode
     this.rayTracingEdges = props.rayTracingEdges ?? true
     this.rayTracingEdgeOpacity = props.rayTracingEdgeOpacity ?? 0.45
+    this.renderTransition.setDuration(
+      props.fadeDuration ?? 2000,
+      performance.now()
+    )
     this.onModelLoadSettled = props.onModelLoadSettled
     this.onInitialized = props.onInitialized
 
@@ -494,6 +499,11 @@ export class LocalRenderer {
   setRenderingMode(mode: RenderingMode) {
     this.renderingMode = mode
     this.setPathTrace(mode !== 'standard')
+    this.invalidateBaseRender()
+  }
+
+  setFadeDuration(duration: number) {
+    this.renderTransition.setDuration(duration, performance.now())
     this.invalidateBaseRender()
   }
 

@@ -153,6 +153,26 @@ export function PathTraceToggleViewExtension({
           {Math.round(pathTracing.edgeOpacity * 100)}%
         </span>
       </label>
+      <label className="flex items-center gap-1.5">
+        Fade Duration (ms)
+        <input
+          type="number"
+          min="0"
+          step="100"
+          className="w-20 rounded border border-chalkboard-30 bg-transparent px-1 dark:border-chalkboard-70"
+          value={pathTracing.fadeDuration}
+          disabled={
+            pathTracing.mode !== 'ray-tracing-without-drag' &&
+            pathTracing.mode !== 'ray-tracing-stealth'
+          }
+          onChange={(event) => {
+            const duration = event.target.valueAsNumber
+            if (Number.isFinite(duration) && duration >= 0) {
+              pathTracing.setFadeDuration(duration)
+            }
+          }}
+        />
+      </label>
     </div>
   )
 }

@@ -38,6 +38,7 @@ function ModelingArea() {
   )
   const [pathTraceSupported, setPathTraceSupported] = useState(false)
   const [renderingMode, setRenderingMode] = useState<RenderingMode>('standard')
+  const [fadeDuration, setFadeDuration] = useState(2000)
   const [edgeOpacity, setEdgeOpacity] = useState(0.45)
   const [pathTraceEdges, setPathTraceEdges] = useState(true)
   const [pathTraceDenoise, setPathTraceDenoise] = useState(true)
@@ -58,6 +59,8 @@ function ModelingArea() {
       supported: pathTraceSupported,
       mode: renderingMode,
       edges: pathTraceEdges,
+      fadeDuration,
+      setFadeDuration,
       edgeOpacity,
       setEdgeOpacity,
       denoise: pathTraceDenoise,
