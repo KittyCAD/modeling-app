@@ -1,3 +1,5 @@
+import { RenderTransition } from '@src/clientSideScene/localRenderer/RenderTransition'
+import type { RenderingMode } from '@src/registry/contracts/engineScene'
 import type { EntityReference, OkModelingCmdResponse } from '@kittycad/lib'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import {
@@ -75,8 +77,10 @@ export interface LocalRendererProps {
   enableSSAO: boolean
   highlightEdges: boolean
   fixedSizeGrid: boolean
-  pathTrace: boolean
+  renderingMode: RenderingMode
   denoise: boolean
+  rayTracingEdgeOpacity?: number
+  rayTracingEdges?: boolean
   /** isNewModel: the result of a finished execution is now in the scene. */
   onModelLoadSettled?: (isNewModel?: boolean) => void
   /** supportsPathTracing: the renderer runs on WebGPU, which path tracing needs. */
@@ -91,6 +95,11 @@ export class LocalRenderer {
   private highlightEdges: boolean
   private fixedSizeGrid: boolean
   private pathTrace: boolean
+  private lastCameraChange = -Infinity
+  private renderingMode: RenderingMode
+  private readonly renderTransition = new RenderTransition()
+  private rayTracingEdgeOpacity: number
+  private rayTracingEdges: boolean
   private denoise: boolean
   private onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
   private onInitialized: LocalRendererProps['onInitialized']
@@ -152,8 +161,11 @@ export class LocalRenderer {
     this.enableSSAO = props.enableSSAO
     this.highlightEdges = props.highlightEdges
     this.fixedSizeGrid = props.fixedSizeGrid
-    this.pathTrace = props.pathTrace
+    this.pathTrace = props.renderingMode !== 'standard'
     this.denoise = props.denoise
+    this.renderingMode = props.renderingMode
+    this.rayTracingEdges = props.rayTracingEdges ?? true
+    this.rayTracingEdgeOpacity = props.rayTracingEdgeOpacity ?? 0.45
     this.onModelLoadSettled = props.onModelLoadSettled
     this.onInitialized = props.onInitialized
 
@@ -479,8 +491,21 @@ export class LocalRenderer {
     this.invalidateBaseRender()
   }
 
+  setRenderingMode(mode: RenderingMode) {
+    this.renderingMode = mode
+    this.setPathTrace(mode !== 'standard')
+    this.invalidateBaseRender()
+  }
+
+  setRayTracingEdges(edges = true, opacity = 0.45) {
+    this.rayTracingEdgeOpacity = opacity
+    this.rayTracingEdges = edges
+    this.invalidateBaseRender()
+  }
+
   setDenoise(denoise: boolean) {
     this.denoise = denoise
+    this.renderTransition.update(false, performance.now(), false)
     this.pathTraceRenderer?.setDenoise(denoise)
   }
 
@@ -585,6 +610,8 @@ export class LocalRenderer {
   }
 
   private readonly syncPreviewCameraFromShared = () => {
+    this.lastCameraChange = performance.now()
+    this.pathTraceRenderer?.invalidateCamera()
     const cameraControls = this.kclManager.sceneInfra.camControls
     if (cameraControls.isDragging) {
       // Dragging should clear hover, but mouse scroll shouldn't (to avoid flickering when over a plane)
@@ -725,92 +752,137 @@ export class LocalRenderer {
 
     const { pathTraceRenderer } = this
     // A path traced image changes with every frame until it settles.
-    const pathTracing = !!pathTraceRenderer && !pathTraceRenderer.settled
+    const cameraMoving =
+      (this.renderingMode === 'ray-tracing-without-drag' ||
+        this.renderingMode === 'ray-tracing-stealth') &&
+      (this.kclManager.sceneInfra.camControls.isDragging ||
+        (this.renderingMode === 'ray-tracing-stealth' &&
+          performance.now() - this.lastCameraChange < 150))
+    const pathTracing =
+      !!pathTraceRenderer && (!pathTraceRenderer.settled || cameraMoving)
     const baseRendered =
       this.selectionHighlightRenderer?.beginFrame(
-        this.baseRenderDirty || pathTracing
+        this.baseRenderDirty || pathTracing || this.renderTransition.active
       ) ?? true
     if (baseRendered) {
-      if (pathTraceRenderer) {
-        pathTraceRenderer.render(previewCamera)
-      } else if (!this.enableSSAO) {
-        renderer.render(scene, previewCamera)
-      } else {
-        if (this.ambientOcclusionPipeline?.camera !== previewCamera) {
-          this.disposeAmbientOcclusionPipeline()
-
-          // GTAO expects a regular depth texture. The renderer itself can keep
-          // using MSAA, but this intermediate pass must be single-sampled.
-          const scenePass = pass(scene, previewCamera, {
-            samples: 0,
-          })
-          if (LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT) {
-            scenePass.setMRT(
-              mrt({
-                output,
-                normal: normalView,
-              })
-            )
-          }
-          const scenePassColor = LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT
-            ? scenePass.getTextureNode('output')
-            : scenePass.getTextureNode()
-          const scenePassNormal = LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT
-            ? scenePass.getTextureNode('normal')
-            : null
-          const scenePassDepth = scenePass.getTextureNode('depth')
-          const aoPass = (ao as CreateAmbientOcclusion)(
-            scenePassDepth,
-            scenePassNormal,
-            previewCamera
+      const ready =
+        !cameraMoving &&
+        (pathTraceRenderer?.render(
+          previewCamera,
+          renderer,
+          !cameraMoving && this.renderingMode === 'ray-tracing-stealth',
+          false
+        ) ??
+          false)
+      const opacity = this.renderTransition.update(
+        !cameraMoving && ready,
+        performance.now(),
+        this.renderingMode === 'ray-tracing-without-drag' ||
+          this.renderingMode === 'ray-tracing-stealth'
+      )
+      if (pathTraceRenderer && opacity > 0) {
+        if (this.rayTracingEdges && this.edgeRenderer) {
+          pathTraceRenderer.renderEdges(
+            renderer,
+            previewCamera,
+            this.edgeRenderer.lines,
+            this.renderingMode === 'ray-tracing' &&
+              this.kclManager.sceneInfra.camControls.isDragging
+              ? 1
+              : this.rayTracingEdgeOpacity
           )
-          aoPass.resolutionScale = 0.5
-          const denoisePass = LOCAL_WEBGPU_GTAO_USE_DENOISE
-            ? denoise(
-                aoPass.getTextureNode(),
-                scenePassDepth,
-                scenePassNormal as Node,
-                previewCamera
-              )
-            : null
-          const denoiseNoiseTexture = denoisePass
-            ? (denoisePass.noiseNode as unknown as { value: Texture }).value
-            : null
-          this.configureAmbientOcclusion(aoPass, denoisePass)
-
-          const pipeline = new RenderPipeline(renderer)
-          pipeline.outputColorTransform = false
-          // DenoiseNode produces vec4, but the bundled declaration omits its
-          // TempNode output type.
-          const aoOutput = denoisePass
-            ? vec4(denoisePass as unknown as Node<'vec4'>)
-            : aoPass.getTextureNode()
-          // Preserve some indirect light even at maximum occlusion while leaving
-          // enough contrast to make the setting visibly effective.
-          const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
-          pipeline.outputNode = scenePassColor.mul(
-            vec4(vec3(ambientOcclusion), 1)
-          )
-
-          this.ambientOcclusionPipeline = {
-            camera: previewCamera,
-            pipeline,
-            scenePass,
-            aoPass,
-            denoisePass,
-            denoiseNoiseTexture,
-          }
         }
-
-        this.ambientOcclusionPipeline.pipeline.render()
+        pathTraceRenderer.present(renderer, opacity, () =>
+          this.renderRaster(scene, previewCamera, renderer)
+        )
+      } else {
+        this.renderRaster(scene, previewCamera, renderer)
       }
       this.selectionHighlightRenderer?.cacheBaseFrame()
       this.baseRenderDirty = false
     }
 
     this.selectionHighlightRenderer?.render(previewCamera)
-    if (pathTraceRenderer && !pathTraceRenderer.settled) {
+    if (pathTracing || this.renderTransition.active) {
       this.scheduleRender()
+    }
+  }
+
+  private renderRaster(
+    scene: Scene,
+    previewCamera: PerspectiveCamera | OrthographicCamera,
+    renderer: WebGPURenderer
+  ) {
+    if (!this.enableSSAO) {
+      renderer.render(scene, previewCamera)
+    } else {
+      if (this.ambientOcclusionPipeline?.camera !== previewCamera) {
+        this.disposeAmbientOcclusionPipeline()
+
+        // GTAO expects a regular depth texture. The renderer itself can keep
+        // using MSAA, but this intermediate pass must be single-sampled.
+        const scenePass = pass(scene, previewCamera, {
+          samples: 0,
+        })
+        if (LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT) {
+          scenePass.setMRT(
+            mrt({
+              output,
+              normal: normalView,
+            })
+          )
+        }
+        const scenePassColor = LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT
+          ? scenePass.getTextureNode('output')
+          : scenePass.getTextureNode()
+        const scenePassNormal = LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT
+          ? scenePass.getTextureNode('normal')
+          : null
+        const scenePassDepth = scenePass.getTextureNode('depth')
+        const aoPass = (ao as CreateAmbientOcclusion)(
+          scenePassDepth,
+          scenePassNormal,
+          previewCamera
+        )
+        aoPass.resolutionScale = 0.5
+        const denoisePass = LOCAL_WEBGPU_GTAO_USE_DENOISE
+          ? denoise(
+              aoPass.getTextureNode(),
+              scenePassDepth,
+              scenePassNormal as Node,
+              previewCamera
+            )
+          : null
+        const denoiseNoiseTexture = denoisePass
+          ? (denoisePass.noiseNode as unknown as { value: Texture }).value
+          : null
+        this.configureAmbientOcclusion(aoPass, denoisePass)
+
+        const pipeline = new RenderPipeline(renderer)
+        pipeline.outputColorTransform = false
+        // DenoiseNode produces vec4, but the bundled declaration omits its
+        // TempNode output type.
+        const aoOutput = denoisePass
+          ? vec4(denoisePass as unknown as Node<'vec4'>)
+          : aoPass.getTextureNode()
+        // Preserve some indirect light even at maximum occlusion while leaving
+        // enough contrast to make the setting visibly effective.
+        const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
+        pipeline.outputNode = scenePassColor.mul(
+          vec4(vec3(ambientOcclusion), 1)
+        )
+
+        this.ambientOcclusionPipeline = {
+          camera: previewCamera,
+          pipeline,
+          scenePass,
+          aoPass,
+          denoisePass,
+          denoiseNoiseTexture,
+        }
+      }
+
+      this.ambientOcclusionPipeline.pipeline.render()
     }
   }
 
@@ -852,6 +924,7 @@ export class LocalRenderer {
       return
     }
 
+    this.renderTransition.update(false, performance.now(), false)
     renderer.setDrawingBufferSize(width, height, window.devicePixelRatio)
     if (this.previewCamera instanceof PerspectiveCamera) {
       this.previewCamera.aspect = width / height
@@ -870,6 +943,7 @@ export class LocalRenderer {
     if (this.currentModel) {
       this.scene?.remove(this.currentModel)
       this.edgeRenderer?.removeFromParent()
+      this.renderTransition.update(false, performance.now(), false)
       this.pathTraceRenderer?.setModel(null)
       disposeObject3D(this.currentModel)
       this.currentModel = null
@@ -1016,10 +1090,24 @@ export class LocalRenderer {
       this.pointerOverCanvas = false
       this.clearHover()
     }
+    // Refresh even if the camera has settled while the pointer is held down.
+    const onDragStateChange = () => this.invalidateBaseRender()
+    const dragEvents = [
+      'pointerdown',
+      'pointerup',
+      'pointercancel',
+      'lostpointercapture',
+    ]
+    for (const event of dragEvents) {
+      inputCanvas.addEventListener(event, onDragStateChange)
+    }
     inputCanvas.addEventListener('pointerenter', onEnter)
     inputCanvas.addEventListener('pointerleave', onLeave)
     this.unregisterPicking = () => {
       removeSelectionHandler()
+      for (const event of dragEvents) {
+        inputCanvas.removeEventListener(event, onDragStateChange)
+      }
       inputCanvas.removeEventListener('pointerenter', onEnter)
       inputCanvas.removeEventListener('pointerleave', onLeave)
     }
@@ -1123,6 +1211,7 @@ export class LocalRenderer {
 
       this.edgeRenderer?.buildEdges(gltf)
       this.edgeRenderer?.addTo(gltf.scene)
+      this.renderTransition.update(false, performance.now(), false)
       this.pathTraceRenderer?.setModel(gltf.scene)
 
       this.rebuildSelectionTargets()

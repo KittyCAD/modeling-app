@@ -18,8 +18,10 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     enableSSAO,
     highlightEdges,
     fixedSizeGrid,
-    pathTrace,
+    renderingMode,
     denoise,
+    rayTracingEdges,
+    rayTracingEdgeOpacity,
   } = props
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<LocalRenderer | null>(null)
@@ -113,12 +115,19 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   }, [fixedSizeGrid])
 
   useEffect(() => {
-    rendererRef.current?.setPathTrace(pathTrace)
-  }, [pathTrace])
+    rendererRef.current?.setRenderingMode(renderingMode)
+  }, [renderingMode])
 
   useEffect(() => {
     rendererRef.current?.setDenoise(denoise)
   }, [denoise])
+
+  useEffect(() => {
+    rendererRef.current?.setRayTracingEdges(
+      rayTracingEdges,
+      rayTracingEdgeOpacity
+    )
+  }, [rayTracingEdges, rayTracingEdgeOpacity])
 
   return (
     <>

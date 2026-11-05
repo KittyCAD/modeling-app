@@ -21,14 +21,24 @@ export type EngineSceneViewExtensionZone =
 
 export const engineSceneRuntimeExtensionsSlot = new Slot()
 
-/** Path tracing in the local renderer. */
+export type RenderingMode =
+  | 'standard'
+  | 'ray-tracing'
+  | 'ray-tracing-without-drag'
+  | 'ray-tracing-stealth'
+
+/** Experimental rendering controls in the viewport. */
 export type EngineScenePathTracing = {
   /** The local renderer runs on WebGPU, which path tracing needs. */
   supported: boolean
-  enabled: boolean
+  mode: RenderingMode
+  edgeOpacity: number
+  edges: boolean
   denoise: boolean
   setSupported: (supported: boolean) => void
-  setEnabled: Dispatch<SetStateAction<boolean>>
+  setMode: (mode: RenderingMode) => void
+  setEdgeOpacity: (opacity: number) => void
+  setEdges: Dispatch<SetStateAction<boolean>>
   setDenoise: Dispatch<SetStateAction<boolean>>
 }
 

@@ -18,6 +18,7 @@ import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
   EngineSceneViewExtensionOverlay,
+  type RenderingMode,
   engineSceneStreamClassNamesValueSpec,
   engineSceneStreamLayersValueSpec,
   engineSceneViewExtensionsValueSpec,
@@ -36,7 +37,9 @@ function ModelingArea() {
     DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
   )
   const [pathTraceSupported, setPathTraceSupported] = useState(false)
-  const [pathTrace, setPathTrace] = useState(false)
+  const [renderingMode, setRenderingMode] = useState<RenderingMode>('standard')
+  const [edgeOpacity, setEdgeOpacity] = useState(0.45)
+  const [pathTraceEdges, setPathTraceEdges] = useState(true)
   const [pathTraceDenoise, setPathTraceDenoise] = useState(true)
   const engineSceneViewExtensions = registry.signal(
     engineSceneViewExtensionsValueSpec
@@ -53,10 +56,14 @@ function ModelingArea() {
     setSketchSolveStreamDimming,
     pathTracing: {
       supported: pathTraceSupported,
-      enabled: pathTrace,
+      mode: renderingMode,
+      edges: pathTraceEdges,
+      edgeOpacity,
+      setEdgeOpacity,
       denoise: pathTraceDenoise,
       setSupported: setPathTraceSupported,
-      setEnabled: setPathTrace,
+      setMode: setRenderingMode,
+      setEdges: setPathTraceEdges,
       setDenoise: setPathTraceDenoise,
     },
   }

@@ -1,3 +1,4 @@
+import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
@@ -33,7 +34,20 @@ import type { Artifact } from '@src/lang/wasm'
 type RendererInternals = {
   initialize(): Promise<void>
   scheduleRender(): void
-  renderer: { dispose(): void; domElement: HTMLCanvasElement } | null
+  renderPreview(): void
+  pathTraceRenderer: {
+    settled: boolean
+    render: ReturnType<typeof vi.fn>
+    present: ReturnType<typeof vi.fn>
+    renderEdges: ReturnType<typeof vi.fn>
+    dispose: ReturnType<typeof vi.fn>
+  } | null
+  renderer: {
+    dispose(): void
+    domElement: HTMLCanvasElement
+    render: ReturnType<typeof vi.fn>
+  } | null
+  edgeRenderer: EdgeRenderer | null
   scene: Scene | null
   currentModel: Group | null
   planeRenderer: PlaneRenderer | null
@@ -110,7 +124,7 @@ function fixture(
       enableSSAO: false,
       highlightEdges: false,
       fixedSizeGrid: true,
-      pathTrace: false,
+      renderingMode: 'standard',
       denoise: true,
       onModelLoadSettled,
     }
@@ -118,6 +132,7 @@ function fixture(
   const state = renderer as unknown as RendererInternals
   state.renderer = {
     dispose: vi.fn(),
+    render: vi.fn(),
     domElement: document.createElement('canvas'),
   }
   state.scene = new Scene()
@@ -141,6 +156,125 @@ describe('local GLB loading', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
   afterEach(() => vi.restoreAllMocks())
+
+  it.each([
+    'ray-tracing',
+    'ray-tracing-without-drag',
+    'ray-tracing-stealth',
+  ] as const)('%s respects dragging and its reveal policy', (mode) => {
+    const { renderer, state, manager } = fixture()
+    renderer.setRenderingMode(mode)
+    state.previewCamera = new PerspectiveCamera()
+    const trace = {
+      settled: false,
+      render: vi.fn().mockReturnValue(false),
+      present: vi.fn(),
+      renderEdges: vi.fn(),
+      dispose: vi.fn(),
+    }
+    state.pathTraceRenderer = trace
+    manager.sceneInfra.camControls.isDragging = true
+    state.renderPreview()
+    expect(trace.render).toHaveBeenCalledTimes(mode === 'ray-tracing' ? 1 : 0)
+    manager.sceneInfra.camControls.isDragging = false
+    state.renderPreview()
+    expect(trace.render).toHaveBeenLastCalledWith(
+      state.previewCamera,
+      state.renderer,
+      mode === 'ray-tracing-stealth',
+      false
+    )
+    renderer.setRenderingMode('standard')
+    expect(trace.dispose).toHaveBeenCalledOnce()
+    expect(state.pathTraceRenderer).toBeNull()
+    renderer.dispose()
+  })
+
+  it('stops tracing and presents real-time immediately when a new drag starts', () => {
+    let now = 1000
+    vi.spyOn(performance, 'now').mockImplementation(() => now)
+    const { renderer, state, manager } = fixture()
+    renderer.setRenderingMode('ray-tracing-without-drag')
+    state.previewCamera = new PerspectiveCamera()
+    const trace = {
+      settled: true,
+      render: vi.fn().mockReturnValue(true),
+      present: vi.fn(),
+      renderEdges: vi.fn(),
+      dispose: vi.fn(),
+    }
+    state.pathTraceRenderer = trace
+    state.renderPreview()
+    now += 200
+    state.renderPreview()
+    expect(trace.present).toHaveBeenLastCalledWith(
+      state.renderer,
+      1,
+      expect.any(Function)
+    )
+    trace.render.mockClear()
+    trace.present.mockClear()
+    state.renderer?.render.mockClear()
+    manager.sceneInfra.camControls.isDragging = true
+    state.previewCamera.position.x = 5
+    now += 1
+    state.renderPreview()
+    expect(trace.render).not.toHaveBeenCalled()
+    expect(trace.present).not.toHaveBeenCalled()
+    expect(state.renderer?.render).toHaveBeenCalledWith(
+      state.scene,
+      state.previewCamera
+    )
+    renderer.dispose()
+  })
+
+  it.each([0, 0.45, 1])(
+    'uses full-opacity enabled edges during continuous tracing drags, then restores %s',
+    (opacity) => {
+      const { renderer, state, manager } = fixture()
+      renderer.setRenderingMode('ray-tracing')
+      renderer.setRayTracingEdges(true, opacity)
+      state.previewCamera = new PerspectiveCamera()
+      state.edgeRenderer = new EdgeRenderer()
+      const trace = {
+        settled: false,
+        render: vi.fn().mockReturnValue(true),
+        present: vi.fn(),
+        renderEdges: vi.fn(),
+        dispose: vi.fn(),
+      }
+      state.pathTraceRenderer = trace
+      state.renderPreview()
+      expect(trace.renderEdges).toHaveBeenLastCalledWith(
+        state.renderer,
+        state.previewCamera,
+        state.edgeRenderer.lines,
+        opacity
+      )
+      manager.sceneInfra.camControls.isDragging = true
+      state.renderPreview()
+      expect(trace.renderEdges).toHaveBeenLastCalledWith(
+        state.renderer,
+        state.previewCamera,
+        state.edgeRenderer.lines,
+        1
+      )
+      manager.sceneInfra.camControls.isDragging = false
+      state.renderPreview()
+      expect(trace.renderEdges).toHaveBeenLastCalledWith(
+        state.renderer,
+        state.previewCamera,
+        state.edgeRenderer.lines,
+        opacity
+      )
+      renderer.setRayTracingEdges(false, opacity)
+      manager.sceneInfra.camControls.isDragging = true
+      trace.renderEdges.mockClear()
+      state.renderPreview()
+      expect(trace.renderEdges).not.toHaveBeenCalled()
+      renderer.dispose()
+    }
+  )
 
   function planeFixture(id = 'plane-xy') {
     const f = fixture()

@@ -1,3 +1,4 @@
+import type { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import {
   LOCAL_WEBGPU_PATH_TRACE_DENOISED_SAMPLES,
   LOCAL_WEBGPU_PATH_TRACE_PIXEL_RATIO,
@@ -7,6 +8,7 @@ import { reportRejection } from '@src/lib/trap'
 import { initUNetFromURL, type UNet } from 'oidn-web'
 import denoiserWeightsUrl from 'oidn-weights/rt_hdr_alb_nrm.tza?url'
 import {
+  Color,
   DataTexture,
   EquirectangularReflectionMapping,
   FloatType,
@@ -19,11 +21,24 @@ import {
   type PerspectiveCamera,
   RGBAFormat,
   Scene,
+  Vector2,
+  LinearSRGBColorSpace,
   type Texture,
 } from 'three'
-import { float, pmremTexture, screenUV, vec3, vec4 } from 'three/tsl'
+import {
+  float,
+  mix,
+  uniform,
+  pmremTexture,
+  screenUV,
+  texture,
+  vec3,
+  vec4,
+} from 'three/tsl'
 import {
   NodeMaterial,
+  Line2NodeMaterial,
+  MeshBasicNodeMaterial,
   QuadMesh,
   RenderTarget,
   type WebGPURenderer,
@@ -40,6 +55,31 @@ const ENVIRONMENT_HEIGHT = 256
  */
 export class PathTraceRenderer {
   private readonly scene = new Scene()
+  private readonly traceTarget = new RenderTarget(1, 1, {
+    depthBuffer: false,
+    colorSpace: LinearSRGBColorSpace,
+  })
+  private readonly rasterTarget = new RenderTarget(1, 1, {
+    colorSpace: LinearSRGBColorSpace,
+    depthBuffer: true,
+  })
+  private readonly edgeTarget = new RenderTarget(1, 1, {
+    colorSpace: LinearSRGBColorSpace,
+    depthBuffer: true,
+  })
+  private readonly edgeOpacity = uniform(0)
+  private readonly clearColor = new Color()
+  private readonly blend = uniform(1)
+  private readonly edgeMaterial = new Line2NodeMaterial()
+  private readonly presentationMaterial = new NodeMaterial()
+  private readonly presentationQuad = new QuadMesh(this.presentationMaterial)
+  private readonly drawingBufferSize = new Vector2()
+  private readonly depthMaterial = new MeshBasicNodeMaterial({
+    colorWrite: false,
+  })
+  private readonly edgeScene = new Scene()
+  private edgeSource: LineSegments2 | null = null
+  private edgeOverlay: LineSegments2 | null = null
   private readonly pathTracer: WebGPUPathTracer
   private readonly denoiser: OIDNDenoiser
   private readonly unet: Promise<UNet>
@@ -56,6 +96,7 @@ export class PathTraceRenderer {
   private denoise = true
   private denoiserLoaded = false
   private lastRenderTime = -1
+  private revision = 0
   private measuringSamples = false
   private samplesReached = false
   private disposed = false
@@ -75,6 +116,29 @@ export class PathTraceRenderer {
     this.scene.background = this.transparentBackground
     this.scene.environment = environment
     this.scene.environmentIntensity = environmentIntensity
+    this.traceTarget.texture.type = renderer.getOutputBufferType()
+    this.rasterTarget.texture.type = renderer.getOutputBufferType()
+    this.rasterTarget.samples = renderer.samples
+    this.edgeTarget.texture.type = renderer.getOutputBufferType()
+    this.edgeTarget.samples = renderer.samples
+    const traced = texture(this.traceTarget.texture, screenUV)
+    const edges = texture(this.edgeTarget.texture, screenUV)
+    const edgeCoverage = edges.a.mul(this.edgeOpacity)
+    // Both targets contain premultiplied color. Composite edges independently
+    // so opacity never changes the accumulated image or selection materials.
+    const tracedWithEdges = vec4(
+      traced.rgb
+        .mul(edgeCoverage.oneMinus())
+        .add(edges.rgb.mul(this.edgeOpacity)),
+      traced.a.mul(edgeCoverage.oneMinus()).add(edgeCoverage)
+    )
+    this.presentationMaterial.fragmentNode = mix(
+      texture(this.rasterTarget.texture, screenUV),
+      tracedWithEdges,
+      this.blend
+    )
+    this.presentationMaterial.depthTest = false
+    this.presentationMaterial.depthWrite = false
     this.pathTracer = new WebGPUPathTracer(renderer)
     // The denoiser does its own loading, but then it retries a failed load on
     // every frame. Loading the network here reports a failure once.
@@ -116,9 +180,14 @@ export class PathTraceRenderer {
     )
   }
 
+  invalidateCamera() {
+    this.invalidate()
+  }
+
   setModel(model: Object3D | null) {
     this.model = model
     this.modelChanged = true
+    this.invalidate()
   }
 
   setDenoise(denoise: boolean) {
@@ -131,20 +200,41 @@ export class PathTraceRenderer {
       ? LOCAL_WEBGPU_PATH_TRACE_DENOISED_SAMPLES
       : LOCAL_WEBGPU_PATH_TRACE_SAMPLES
     this.pathTracer.setDenoiser(denoiser)
-    this.samplesReached = false
-    this.settled = false
+    this.invalidate()
     this.onChange()
   }
 
   /** Adds samples and draws the image into the current render target. */
-  render(camera: PerspectiveCamera | OrthographicCamera) {
+  render(
+    camera: PerspectiveCamera | OrthographicCamera,
+    renderer: WebGPURenderer,
+    stealth: boolean,
+    draw = true
+  ) {
+    this.edgeOpacity.value = 0
+    const previousTarget = renderer.getRenderTarget()
+    renderer.getDrawingBufferSize(this.drawingBufferSize)
+    const width = previousTarget?.width ?? this.drawingBufferSize.x
+    const height = previousTarget?.height ?? this.drawingBufferSize.y
+    if (
+      this.traceTarget.width !== width ||
+      this.traceTarget.height !== height
+    ) {
+      this.traceTarget.setSize(width, height)
+      this.rasterTarget.setSize(width, height)
+      this.edgeTarget.setSize(width, height)
+      this.pathTracer.reset()
+      this.invalidate()
+    }
     const { pathTracer } = this
     if (this.modelChanged) {
+      this.invalidate()
       this.modelChanged = false
       this.rebuildScene()
       pathTracer.setScene(this.scene, camera)
       this.trackCamera(camera)
     } else if (camera !== this.camera) {
+      this.invalidate()
       pathTracer.setCamera(camera)
       // setCamera leaves the denoiser drawing its guides from the old camera.
       this.denoiser.setScene(this.scene, camera)
@@ -153,6 +243,7 @@ export class PathTraceRenderer {
       !this.cameraMatrix.equals(camera.matrixWorld) ||
       !this.projectionMatrix.equals(camera.projectionMatrix)
     ) {
+      this.invalidate()
       pathTracer.updateCamera()
       this.trackCamera(camera)
     }
@@ -164,7 +255,12 @@ export class PathTraceRenderer {
     const denoising = this.denoise && this.denoiserLoaded
     // The denoiser's last tile reaches the screen with the next draw.
     const denoised = denoising && this.denoiser.complete
-    pathTracer.renderSample()
+    renderer.setRenderTarget(this.traceTarget)
+    try {
+      pathTracer.renderSample()
+    } finally {
+      renderer.setRenderTarget(previousTarget)
+    }
 
     // Any reset, including one for a resized canvas, restarts the render time.
     const renderTime = pathTracer.getRenderTime()
@@ -177,10 +273,84 @@ export class PathTraceRenderer {
     if (!denoising && !this.samplesReached) {
       this.measureSamples()
     }
+    const present = !stealth || this.settled
+    if (present && draw) {
+      this.blend.value = 1
+      this.presentationQuad.render(renderer)
+    }
+    return present
+  }
+
+  /** Composite both views in linear color before the existing display transform. */
+  present(renderer: WebGPURenderer, opacity: number, renderRaster: () => void) {
+    const target = renderer.getRenderTarget()
+    if (opacity < 1) {
+      renderer.setRenderTarget(this.rasterTarget)
+      try {
+        renderRaster()
+      } finally {
+        renderer.setRenderTarget(target)
+      }
+    }
+    this.blend.value = opacity
+    this.presentationQuad.render(renderer)
+  }
+
+  /** Populate depth from the BREP faces so hidden edges stay hidden. */
+  renderEdges(
+    renderer: WebGPURenderer,
+    camera: PerspectiveCamera | OrthographicCamera,
+    edges: LineSegments2,
+    opacity = 0.45
+  ) {
+    if (this.edgeSource !== edges) {
+      this.edgeScene.clear()
+      this.edgeSource = edges
+      this.edgeMaterial.copy(edges.material)
+      this.edgeMaterial.linewidth = 1
+      this.edgeMaterial.transparent = false
+      this.edgeMaterial.opacity = 1
+      this.edgeMaterial.depthWrite = false
+      this.edgeOverlay = edges.clone()
+      this.edgeOverlay.material = this.edgeMaterial
+      this.edgeOverlay.matrixAutoUpdate = false
+      this.edgeScene.add(this.edgeOverlay)
+    }
+    this.edgeOpacity.value = opacity
+    const target = renderer.getRenderTarget()
+    renderer.setRenderTarget(this.edgeTarget)
+    edges.updateWorldMatrix(true, false)
+    this.edgeOverlay?.matrix.copy(edges.matrixWorld)
+    const autoClear = renderer.autoClear
+    const background = this.scene.background
+    renderer.getClearColor(this.clearColor)
+    const clearAlpha = renderer.getClearAlpha()
+    try {
+      renderer.autoClear = false
+      renderer.setClearColor(0, 0)
+      renderer.clear()
+      this.scene.background = null
+      this.scene.overrideMaterial = this.depthMaterial
+      renderer.render(this.scene, camera)
+      renderer.render(this.edgeScene, camera)
+    } finally {
+      this.scene.overrideMaterial = null
+      this.scene.background = background
+      renderer.autoClear = autoClear
+      renderer.setClearColor(this.clearColor, clearAlpha)
+      renderer.setRenderTarget(target)
+    }
   }
 
   dispose() {
     this.disposed = true
+    this.traceTarget.dispose()
+    this.rasterTarget.dispose()
+    this.edgeTarget.dispose()
+    this.edgeMaterial.dispose()
+    this.presentationMaterial.dispose()
+    this.depthMaterial.dispose()
+    this.edgeScene.clear()
     this.pathTracer.dispose()
     this.denoiser.dispose()
     // The denoiser only frees the network once it has run. A failed load was
@@ -223,6 +393,7 @@ export class PathTraceRenderer {
     }
     this.measuringSamples = true
     const renderTime = this.pathTracer.getRenderTime()
+    const revision = this.revision
     this.pathTracer
       .getSampleCountsAsync()
       .then(({ min }) => {
@@ -232,6 +403,7 @@ export class PathTraceRenderer {
         }
         // A reset while measuring makes the count stale.
         if (
+          revision === this.revision &&
           this.pathTracer.getRenderTime() >= renderTime &&
           min >= this.pathTracer.maxSamples
         ) {
@@ -240,6 +412,15 @@ export class PathTraceRenderer {
         }
       })
       .catch(reportRejection)
+      .finally(() => {
+        this.measuringSamples = false
+      })
+  }
+
+  private invalidate() {
+    this.revision++
+    this.samplesReached = false
+    this.settled = false
   }
 }
 

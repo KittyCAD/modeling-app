@@ -664,8 +664,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           enableSSAO={settingsValues.modeling.enableSSAO.current}
           highlightEdges={settingsValues.modeling.highlightEdges.current}
           fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}
-          pathTrace={props.streamLayerProps.pathTracing.enabled}
+          renderingMode={props.streamLayerProps.pathTracing.mode}
           denoise={props.streamLayerProps.pathTracing.denoise}
+          rayTracingEdgeOpacity={props.streamLayerProps.pathTracing.edgeOpacity}
+          rayTracingEdges={props.streamLayerProps.pathTracing.edges}
           onInitialized={props.streamLayerProps.pathTracing.setSupported}
         />
       )}

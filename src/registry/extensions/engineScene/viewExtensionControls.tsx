@@ -93,29 +93,66 @@ export function PathTraceToggleViewExtension({
   pathTracing,
 }: EngineSceneViewExtensionProps) {
   return (
-    <div className="flex items-center gap-2">
-      {pathTracing.enabled && (
-        <label className="h-8 px-2 rounded border text-xs flex items-center gap-1.5 backdrop-blur-sm bg-chalkboard-10/80 dark:bg-chalkboard-100/80 border-chalkboard-20 dark:border-chalkboard-80">
-          <input
-            type="checkbox"
-            checked={pathTracing.denoise}
-            onChange={(event) => pathTracing.setDenoise(event.target.checked)}
-          />
-          AI denoise
-        </label>
-      )}
-      <button
-        type="button"
-        aria-pressed={pathTracing.enabled}
-        onClick={() => pathTracing.setEnabled((enabled) => !enabled)}
-        className={`h-8 px-2 m-0 rounded border text-xs flex items-center backdrop-blur-sm ${
-          pathTracing.enabled
-            ? 'bg-primary hover:bg-primary text-chalkboard-10 border-primary'
-            : 'bg-chalkboard-10/80 dark:bg-chalkboard-100/80 border-chalkboard-20 dark:border-chalkboard-80'
-        }`}
+    <div className="flex flex-wrap items-center gap-2 rounded border px-2 min-h-8 py-1 text-xs backdrop-blur-sm bg-chalkboard-10/80 dark:bg-chalkboard-100/80 border-chalkboard-20 dark:border-chalkboard-80">
+      <select
+        aria-label="Rendering mode"
+        className="bg-transparent text-xs"
+        value={pathTracing.mode}
+        onChange={(event) => {
+          const mode = event.target.value
+          if (
+            mode === 'standard' ||
+            mode === 'ray-tracing' ||
+            mode === 'ray-tracing-without-drag' ||
+            mode === 'ray-tracing-stealth'
+          ) {
+            pathTracing.setMode(mode)
+          }
+        }}
       >
-        Path trace: {pathTracing.enabled ? 'on' : 'off'}
-      </button>
+        <option value="standard">Standard</option>
+        <option value="ray-tracing">Ray Tracing</option>
+        <option value="ray-tracing-without-drag">
+          Ray Tracing Without Drag
+        </option>
+        <option value="ray-tracing-stealth">Ray Tracing Stealth</option>
+      </select>
+      <label className="flex items-center gap-1.5">
+        <input
+          type="checkbox"
+          checked={pathTracing.denoise}
+          disabled={pathTracing.mode === 'standard'}
+          onChange={(event) => pathTracing.setDenoise(event.target.checked)}
+        />
+        AI Denoise
+      </label>
+      <label className="flex items-center gap-1.5">
+        <input
+          type="checkbox"
+          checked={pathTracing.edges}
+          disabled={pathTracing.mode === 'standard'}
+          onChange={(event) => pathTracing.setEdges(event.target.checked)}
+        />
+        Edges
+      </label>
+      <label className="flex items-center gap-1.5">
+        <span className="sr-only">Edge Opacity</span>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          className="w-20 accent-primary"
+          value={Math.round(pathTracing.edgeOpacity * 100)}
+          disabled={pathTracing.mode === 'standard' || !pathTracing.edges}
+          onChange={(event) =>
+            pathTracing.setEdgeOpacity(Number(event.target.value) / 100)
+          }
+        />
+        <span className="w-8 tabular-nums">
+          {Math.round(pathTracing.edgeOpacity * 100)}%
+        </span>
+      </label>
     </div>
   )
 }

@@ -86,10 +86,14 @@ function createEngineSceneViewExtensionContext(
     setSketchSolveStreamDimming: vi.fn(),
     pathTracing: {
       supported: false,
-      enabled: false,
+      mode: 'standard',
+      edges: true,
+      edgeOpacity: 0.45,
+      setEdgeOpacity: vi.fn(),
       denoise: true,
       setSupported: vi.fn(),
-      setEnabled: vi.fn(),
+      setMode: vi.fn(),
+      setEdges: vi.fn(),
       setDenoise: vi.fn(),
     },
   }
