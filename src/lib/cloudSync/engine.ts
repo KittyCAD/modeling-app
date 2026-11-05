@@ -367,6 +367,7 @@ function createCloudSyncProjectApiRequestThrottle({
 
   const sleep = (ms: number) =>
     new Promise<void>((resolve) => {
+      // zds-performance-exception: external-protocol -- Enforce the configured cloud project API rate limit between requests, not a decorative or local interaction delay.
       setTimeout(resolve, ms)
     })
 
@@ -378,6 +379,7 @@ function createCloudSyncProjectApiRequestThrottle({
         jitterRatio: Math.random(),
       })
       if (delayMs > 0) {
+        // zds-performance-exception: external-protocol -- Respect the cloud project API request throttle to avoid retrying into the provider rate limit.
         await sleep(delayMs)
       }
     }
@@ -3969,6 +3971,7 @@ function scheduleSync(delay = SYNC_DEBOUNCE_MS) {
     clearTimeout(syncTimer)
   }
 
+  // zds-performance-exception: storage-batching -- Batch background cloud persistence and scheduled failure retries; local edits and explicit sync ownership remain immediate.
   syncTimer = setTimeout(() => {
     syncTimer = undefined
     void runCloudSync()

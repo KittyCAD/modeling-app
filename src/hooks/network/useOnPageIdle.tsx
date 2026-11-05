@@ -44,6 +44,7 @@ export const useOnPageIdle = ({
 
   useEffect(() => {
     // Check every 1 second to see if you are idle.
+    // zds-performance-exception: idle-lifecycle -- Check session inactivity without postponing foreground input or any request that is already running.
     const interval = setInterval(() => {
       void (async () => {
         const idleTimeMs = idleTimeMsRef.current

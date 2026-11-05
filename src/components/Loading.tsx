@@ -109,6 +109,7 @@ const Loading = ({
 
     clearTimeout(timeoutIdCountdown)
     setTimeoutIdCountdown(
+      // zds-performance-exception: activity-indicator -- Tick the visible reconnect countdown; connection attempts are owned separately and are not delayed here.
       setTimeout(() => {
         setCountdown(countdown - 1)
       }, 1000)
@@ -123,9 +124,11 @@ const Loading = ({
     // Don't set long loading time if there's a more severe error
     if (isUnrecoverableError) return
 
+    // zds-performance-exception: network-deadline -- Escalate a stalled connection warning while the existing connection attempt continues independently.
     const shorterTimer = setTimeout(() => {
       setError({ error: ConnectionError.LongLoadingTime })
     }, 4000)
+    // zds-performance-exception: network-deadline -- Report a very slow connection without postponing its attempt or hiding an already available result.
     const longerTimer = setTimeout(() => {
       setError({ error: ConnectionError.VeryLongLoadingTime })
     }, 7000)

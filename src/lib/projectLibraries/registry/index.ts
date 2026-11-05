@@ -286,6 +286,7 @@ function watchConfiguredProjectLibraries({
     clearTimeout(timersByLibraryId.get(libraryId))
     timersByLibraryId.set(
       libraryId,
+      // zds-performance-exception: external-protocol -- Coalesce a filesystem writer's partial change events before reloading the external library realization.
       setTimeout(() => {
         timersByLibraryId.delete(libraryId)
         onInvalidateLibrary(libraryId)
@@ -297,6 +298,7 @@ function watchConfiguredProjectLibraries({
     clearTimeout(settledTimersByLibraryId.get(libraryId))
     settledTimersByLibraryId.set(
       libraryId,
+      // zds-performance-exception: external-protocol -- Rescan the completed external library write after filesystem events settle so partial realizations are not treated as final.
       setTimeout(() => {
         settledTimersByLibraryId.delete(libraryId)
         onInvalidateLibrary(libraryId)

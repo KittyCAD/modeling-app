@@ -754,7 +754,7 @@ export class LanguageServerPlugin implements PluginValue {
           return {
             dom,
             mount: () => {
-              // Preserve the existing timeout and editor-input dismissal.
+              // zds-performance-exception: feedback-lifetime -- Keep already visible signature help readable for ten seconds; editor input dismisses it sooner.
               timeout = setTimeout(removeTooltip, 10000)
               view.dom.addEventListener('keydown', removeTooltip)
               view.dom.addEventListener('mousedown', removeTooltip)

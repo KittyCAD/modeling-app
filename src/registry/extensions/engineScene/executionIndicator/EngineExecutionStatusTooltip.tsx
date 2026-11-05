@@ -36,6 +36,7 @@ export function EngineExecutionStatusTooltip({
     }
 
     updatePendingCommandCount()
+    // zds-performance-exception: activity-indicator -- Refresh pending-command details while execution is already active; it does not gate completion or initial tooltip feedback.
     const intervalId = window.setInterval(updatePendingCommandCount, 100)
 
     return () => window.clearInterval(intervalId)

@@ -1504,6 +1504,7 @@ const OperationItem = ({
                 )
                 if (row) {
                   row.classList.add('bg-primary/25')
+                  // zds-performance-exception: feedback-lifetime -- Remove an immediately displayed navigation highlight after its readable lifetime; selection and scrolling already happened.
                   setTimeout(() => {
                     row.classList.remove('bg-primary/25')
                   }, 1500)

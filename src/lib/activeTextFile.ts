@@ -132,6 +132,7 @@ export function scheduleActiveTextFileWrite(
   if (pendingWriteTimeout !== undefined) {
     clearTimeout(pendingWriteTimeout)
   }
+  // zds-performance-exception: storage-batching -- Coalesce persistence writes only; editor feedback is immediate and owner transitions explicitly flush the latest pending write.
   pendingWriteTimeout = setTimeout(() => {
     pendingWriteTimeout = undefined
     const write = pendingWrite

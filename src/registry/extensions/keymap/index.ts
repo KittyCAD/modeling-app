@@ -225,6 +225,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       window.clearTimeout(pendingTimeout)
     }
 
+    // zds-performance-exception: input-protocol -- Expire an unfinished multi-key chord; matching keystrokes and their feedback are processed without waiting for expiry.
     pendingTimeout = window.setTimeout(
       clearPendingKeystrokes,
       PARTIAL_MATCH_TIMEOUT_MS

@@ -305,6 +305,7 @@ export class ConnectionManager extends EventTarget {
     })
 
     controller.signal.addEventListener('abort', stopWaiting, { once: true })
+    // zds-performance-exception: network-deadline -- Bound camera capture so an unresponsive engine cannot block reconnect.
     const timeout = setTimeout(() => {
       controller.abort()
     }, RECONNECT_CAMERA_CAPTURE_TIMEOUT_MS)
@@ -1037,6 +1038,7 @@ export class ConnectionManager extends EventTarget {
     }
 
     if (timeoutPendingCommand) {
+      // zds-performance-exception: network-deadline -- Reject missing engine acknowledgements and release their pending commands.
       setTimeout(() => {
         if (!isSettled) {
           // TODO: Send this to a logging or error tracking service

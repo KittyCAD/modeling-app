@@ -15,6 +15,7 @@ export const Spinner = (props: SVGProps<SVGSVGElement>) => {
         stroke="currentColor"
         fill="none"
         strokeDasharray="4, 4"
+        // zds-performance-exception: activity-indicator -- Rotate the pending-work indicator continuously without delaying initial feedback or completion.
         className="animate-spin origin-center"
       />
     </svg>

@@ -17,6 +17,31 @@ import noDirectFsZdsIo from './src/eslint/rules/no-direct-fszds-io.mjs'
 import noInternalFileSystemImports from './src/eslint/rules/no-internal-file-system-imports.mjs'
 import noReactRouterHooks from './src/eslint/rules/no-react-router-hooks.mjs'
 import interactionExpectations from './src/eslint/rules/interaction-expectations.mjs'
+import noArtificialDelay from './src/eslint/rules/no-artificial-delay.mjs'
+import noLongUiAnimation from './src/eslint/rules/no-long-ui-animation.mjs'
+import performanceExceptions from './src/eslint/rules/performance-exceptions.mjs'
+import cssParser from './src/eslint/css-parser.mjs'
+import createPerformanceDirectivesProcessor from './src/eslint/performance-directives.mjs'
+
+const performanceRules = {
+  'zds/no-artificial-delay': 'error',
+  'zds/no-long-ui-animation': 'error',
+  'zds/performance-exceptions': 'error',
+}
+
+const zdsPlugin = {
+  rules: {
+    'interaction-expectations': interactionExpectations,
+    'no-codemirror-printable-keymap-keystrokes':
+      noCodemirrorPrintableKeymapKeystrokes,
+    'no-direct-fszds-io': noDirectFsZdsIo,
+    'no-internal-file-system-imports': noInternalFileSystemImports,
+    'no-react-router-hooks': noReactRouterHooks,
+    'no-artificial-delay': noArtificialDelay,
+    'no-long-ui-animation': noLongUiAnimation,
+    'performance-exceptions': performanceExceptions,
+  },
+}
 
 // These are capabilities, not general-purpose utilities. Keep their import
 // surface at the runtime owners; public module objects cannot allocate contexts.
@@ -114,6 +139,7 @@ export default defineConfig([
     'rust/**/*.ts',
     '!rust/kcl-language-server/client/src/**/*.ts',
     '**/*.typegen.ts',
+    '**/*.stories.{ts,tsx}',
     'packages/codemirror-lsp-client/dist/*',
     '**/.vscode-test',
   ]),
@@ -138,16 +164,7 @@ export default defineConfig([
       'react-hooks': fixupPluginRules(reactHooks),
       'suggest-no-throw': suggestNoThrow,
       '@typescript-eslint': typescriptEslint,
-      zds: {
-        rules: {
-          'interaction-expectations': interactionExpectations,
-          'no-codemirror-printable-keymap-keystrokes':
-            noCodemirrorPrintableKeymapKeystrokes,
-          'no-direct-fszds-io': noDirectFsZdsIo,
-          'no-internal-file-system-imports': noInternalFileSystemImports,
-          'no-react-router-hooks': noReactRouterHooks,
-        },
-      },
+      zds: zdsPlugin,
     },
 
     languageOptions: {
@@ -263,6 +280,51 @@ export default defineConfig([
     },
   },
   {
+    files: [
+      'src/**/*.{ts,tsx}',
+      'packages/*/src/**/*.{ts,tsx}',
+      'rust/kcl-language-server/client/src/**/*.{ts,tsx}',
+    ],
+    // Waiting in assertions/fixtures is not a product interaction. Production
+    // timers are not grandfathered; each functional exception is single-site.
+    ignores: [
+      '**/*.{test,spec,stories}.{ts,tsx}',
+      'src/setupTests.ts',
+      'src/test-setup/**',
+      'src/mocks/**',
+      'src/lib/testHelpers.ts',
+      '**/testUtils.ts',
+    ],
+    processor: createPerformanceDirectivesProcessor(),
+    rules: performanceRules,
+  },
+  {
+    files: [
+      'tailwind.config.js',
+      'src/**/*.{js,jsx}',
+      'packages/*/src/**/*.{js,jsx}',
+    ],
+    ignores: ['**/*.{test,spec,stories}.{js,jsx}'],
+    plugins: { zds: zdsPlugin },
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+    processor: createPerformanceDirectivesProcessor(),
+    rules: performanceRules,
+  },
+  {
+    files: ['src/**/*.css', 'packages/*/src/**/*.css'],
+    plugins: { zds: zdsPlugin },
+    languageOptions: { parser: cssParser },
+    processor: createPerformanceDirectivesProcessor(),
+    rules: {
+      'zds/no-long-ui-animation': 'error',
+      'zds/performance-exceptions': 'error',
+    },
+  },
+  {
     files: ['src/**/*.{ts,tsx}'],
     ignores: [
       'src/lib/fileSystem/**/*.{ts,tsx}',
@@ -284,7 +346,6 @@ export default defineConfig([
       'zds/no-internal-file-system-imports': 'error',
     },
   },
-
   {
     files: ['e2e/**/*.ts'],
     extends: compat.extends('plugin:testing-library/react'),
@@ -321,11 +382,19 @@ export default defineConfig([
     },
   },
   {
+    files: ['packages/ui-components/src/lib/billing.unit.test.ts'],
+    rules: {
+      // Billing normalizes provider failures, including non-Error throws.
+      '@typescript-eslint/only-throw-error': 'off',
+    },
+  },
+  {
     files: ['packages/registry/src/**/*.{ts,tsx}'],
     rules: {
       'suggest-no-throw/suggest-no-throw': 'off',
     },
-  }, // Disjoint scopes prevent a privileged owner from disabling unrelated rules.
+  },
+  // Disjoint scopes prevent a privileged owner from disabling unrelated rules.
   ...[
     { files: ['**/*.{ts,tsx}'], syntax: restrictedSyntax },
     { files: ['**/*.{js,jsx}'], syntax: ['error'] },

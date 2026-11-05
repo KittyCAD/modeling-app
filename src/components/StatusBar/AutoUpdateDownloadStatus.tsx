@@ -34,6 +34,7 @@ export function AutoUpdateDownloadStatus({
       <ActionIcon
         icon="loading"
         size="sm"
+        // zds-performance-exception: activity-indicator -- Indicate an active update download without postponing progress updates or completed download availability.
         iconClassName="animate-spin text-primary dark:text-primary"
         bgClassName="!bg-transparent"
       />

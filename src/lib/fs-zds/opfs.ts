@@ -255,6 +255,7 @@ const readFileTry = async <T extends ReadFileOptions>(
   } catch (e: unknown) {
     console.error(e)
     return new Promise((resolve, reject) => {
+      // zds-performance-exception: resource-retry -- Retry a failed OPFS read with the existing bounded attempt count instead of permanently losing access to a transiently busy file.
       setTimeout(() => {
         if (attemptN === 3) {
           return reject(e)
