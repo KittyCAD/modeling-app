@@ -24,11 +24,11 @@ async function resetView(scene: SceneFixture) {
         () =>
           scene.page.evaluate(() => {
             const manager = window.app.singletons.kclManager
-            const renderer = manager.sceneInfra.localRenderer
+            const view = manager.sceneInfra.localRenderer
             return (
               !manager.isExecuting &&
-              renderer?.isLoadedSceneCurrent() &&
-              !renderer.hasVisibleDefaultPlanes
+              view?.isLoadedSceneCurrent() &&
+              !view.hasVisibleDefaultPlanes
             )
           }),
         { timeout: 30_000 }
