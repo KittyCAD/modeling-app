@@ -215,6 +215,7 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
     match fmt {
         InputFormat3d::Obj(opts) => opts.coords = coords,
         InputFormat3d::Ply(opts) => opts.coords = coords,
+        InputFormat3d::Rhino(opts) => opts.coords = coords,
         InputFormat3d::Step(opts) => opts.coords = coords,
         InputFormat3d::Stl(opts) => opts.coords = coords,
         _ => {
@@ -237,6 +238,7 @@ fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: Sourc
     match fmt {
         InputFormat3d::Obj(opts) => opts.units = units.to_kcmc(),
         InputFormat3d::Ply(opts) => opts.units = units.to_kcmc(),
+        InputFormat3d::Rhino(opts) => opts.units = units.to_kcmc(),
         InputFormat3d::Stl(opts) => opts.units = units.to_kcmc(),
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -374,6 +376,10 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
         FileImportFormat::Sldprt => Ok(InputFormat3d::Sldprt(
             kcmc::format::sldprt::import::Options::builder()
                 .split_closed_faces(false)
+                .build(),
+        )),
+        FileImportFormat::Rhino => Ok(InputFormat3d::Rhino(
+            kcmc::format::rhino::import::Options::builder()
                 .build(),
         )),
         other => anyhow::bail!("Unknown format {other}"),
