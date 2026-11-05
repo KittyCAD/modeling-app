@@ -305,7 +305,7 @@ extrude001 = extrude(sketch001, length = 50)
 
   test(
     'window resize updates should reconfigure the stream',
-    { tag: '@skipLocalEngine' },
+    { tag: ['@skipLocalEngine', '@streamRenderer'] },
     async ({ scene, page, homePage, cmdBar, toolbar }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
@@ -635,7 +635,7 @@ extrude002 = extrude(profile002, length = 150)`
     })
   })
 
-  test(`Refreshing the app doesn't cause the stream to pause on long-executing files`, async ({
+  test(`Refreshing the app doesn't cause the stream to pause on long-executing files @streamRenderer`, async ({
     homePage,
     scene,
     toolbar,
