@@ -32,7 +32,7 @@ kittycad = { version = "0.6.0", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.256", features = [
+kittycad-modeling-cmds = { version = "0.2.258", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -113,7 +113,6 @@ debug = "line-tables-only"
 [patch.crates-io]
 kcl-api = { path = "kcl-api" }
 kcl-error = { path = "kcl-error" }
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", rev = "31056622f39e1e9cecffcbb11057acfe55f57260" }
 
 #Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
 # [patch.crates-io]
