@@ -75,6 +75,26 @@ describe('Effect filesystem operations', () => {
           nodeFileSystem.impl.rm(root, { recursive: true, force: true })
         )
     )
+    vi.useRealTimers()
+  })
+
+  it('drains submitted writes before disposing the runtime', async () => {
+    const gate = createGate()
+    const writeFile = vi.fn(async () => {
+      await gate.promise
+    })
+    const runtime = createRuntime({ ...nodeFileSystem.impl, writeFile })
+    const write = runtime.operations.writeFile('/tmp/zds-runtime-drain.kcl', '')
+    const disposed = vi.fn()
+    const disposal = runtime.dispose().then(disposed)
+    await vi.waitFor(() => expect(writeFile).toHaveBeenCalledOnce())
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(disposed).not.toHaveBeenCalled()
+    expect(writeFile).toHaveBeenCalledOnce()
+    gate.open()
+    await Promise.all([write, disposal])
+    expect(disposed).toHaveBeenCalledOnce()
   })
 
   const testPath = (...parts: string[]) => {
@@ -125,7 +145,10 @@ describe('Effect filesystem operations', () => {
       expect(await runtime.operations.pending()).toBe(2)
     )
     secondContents.fill('x'.charCodeAt(0))
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
     expect(events).toEqual(['start:first'])
+    await expect(runtime.operations.pending()).resolves.toBe(2)
 
     firstWrite.open()
     await Promise.all([first, second])
