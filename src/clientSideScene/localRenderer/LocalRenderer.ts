@@ -41,6 +41,7 @@ import {
   Box3,
   BufferGeometry,
   type Camera,
+  Group,
   Material,
   Mesh,
   NeutralToneMapping,
@@ -1288,6 +1289,7 @@ export class LocalRenderer {
         bytes.buffer,
         ''
       )) as KITTYCAD_GLTF
+      gltf.scene ??= new Group() // A sketch-only model has no scene
       fillEmptyBrepArrays(gltf)
 
       if (!isCurrent()) {
