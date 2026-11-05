@@ -146,17 +146,21 @@ async fn inner_appearance(
             }
         }
         let opacity = (opacity.unwrap_or(50.0) / 100.0) as f32;
-        exec_state
-            .batch_modeling_cmd(
-                ModelingCmdMeta::from_args(exec_state, &args),
-                ModelingCmd::from(
-                    mcmd::PlaneSetColor::builder()
-                        .color(Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity))
-                        .plane_id(plane.id)
-                        .build(),
-                ),
-            )
-            .await?;
+        // Geometry-only engines reject PlaneSetColor until
+        // https://github.com/KittyCAD/engine/pull/5127 is merged.
+        if !exec_state.geometry_only() {
+            exec_state
+                .batch_modeling_cmd(
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    ModelingCmd::from(
+                        mcmd::PlaneSetColor::builder()
+                            .color(Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity))
+                            .plane_id(plane.id)
+                            .build(),
+                    ),
+                )
+                .await?;
+        }
 
         return Ok(geometry);
     }
