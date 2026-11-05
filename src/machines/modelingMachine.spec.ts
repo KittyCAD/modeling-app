@@ -164,6 +164,7 @@ describe('STEP schema export requests', () => {
           forward: { axis: 'z', direction: 'positive' },
           up: { axis: 'y', direction: 'positive' },
         },
+        views: {},
       })
     }
   )
