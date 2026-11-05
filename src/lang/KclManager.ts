@@ -1878,7 +1878,6 @@ export class KclManager extends File {
       this.sceneInfra,
       this,
       this.rustContext,
-      this.systemDeps.commandBar,
       getSettings
     )
 
