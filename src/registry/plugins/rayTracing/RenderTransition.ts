@@ -1,6 +1,6 @@
 /** Fade into tracing; return to the real-time view immediately. */
 export class RenderTransition {
-  private duration = 2000
+  private duration = 800
   private from = 0
   private target = 0
   private started = 0

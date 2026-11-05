@@ -1,10 +1,10 @@
-import { RenderTransition } from '@src/clientSideScene/localRenderer/RenderTransition'
+import { RenderTransition } from '@src/registry/plugins/rayTracing/RenderTransition'
 import type { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import {
   LOCAL_WEBGPU_PATH_TRACE_DENOISED_SAMPLES,
   LOCAL_WEBGPU_PATH_TRACE_PIXEL_RATIO,
   LOCAL_WEBGPU_PATH_TRACE_SAMPLES,
-} from '@src/clientSideScene/localRenderer/config'
+} from '@src/registry/plugins/rayTracing/config'
 import { reportRejection } from '@src/lib/trap'
 import { initUNetFromURL, type UNet } from 'oidn-web'
 import denoiserWeightsUrl from 'oidn-weights/rt_hdr_alb_nrm.tza?url'

@@ -33,7 +33,6 @@ import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
   EngineSceneToolbarViewExtension,
-  PathTraceToggleViewExtension,
   SketchBackgroundOpacityViewExtension,
   SketchConstraintsToggleViewExtension,
 } from './viewExtensionControls'
@@ -207,16 +206,6 @@ const toolbarViewExtension = defineEngineSceneViewExtension({
   wrapperClassName: 'w-full min-w-0 flex justify-center',
 })
 
-// Shares the top row with the toolbar, which can span the whole viewport.
-const pathTraceToggleViewExtension = defineEngineSceneViewExtension({
-  id: 'engine-scene.path-trace-toggle',
-  zone: 'top',
-  order: 10,
-  Component: PathTraceToggleViewExtension,
-  wrapperClassName: 'mt-2 w-[38rem] max-w-[65vw] min-w-0',
-  shouldRegister: (context) => context.pathTracing.supported,
-})
-
 const sketchBackgroundOpacityViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.sketch-background-opacity',
   zone: 'bottom-left',
@@ -388,13 +377,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
       provide(engineSceneViewExtensionsValueSpec, toolbarViewExtension, {
         key: toolbarViewExtension.id,
       }),
-      provide(
-        engineSceneViewExtensionsValueSpec,
-        pathTraceToggleViewExtension,
-        {
-          key: pathTraceToggleViewExtension.id,
-        }
-      ),
+
       provide(
         engineSceneViewExtensionsValueSpec,
         sketchBackgroundOpacityViewExtension,

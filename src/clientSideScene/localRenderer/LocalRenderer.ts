@@ -1,5 +1,3 @@
-import { RenderTransition } from '@src/clientSideScene/localRenderer/RenderTransition'
-import type { RenderingMode } from '@src/registry/contracts/engineScene'
 import type { EntityReference, OkModelingCmdResponse } from '@kittycad/lib'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import {
@@ -12,7 +10,10 @@ import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
-import type { PathTraceRenderer } from '@src/clientSideScene/localRenderer/PathTraceRenderer'
+import type {
+  SceneRenderExtension,
+  SceneRenderExtensionFactory,
+} from '@src/clientSideScene/localRenderer/renderExtension'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
@@ -77,17 +78,11 @@ export interface LocalRendererProps {
   enableSSAO: boolean
   highlightEdges: boolean
   fixedSizeGrid: boolean
-  renderingMode: RenderingMode
-  denoise: boolean
-  thresholdPercent?: number
-  denoiseFadeDuration?: number
-  fadeDuration?: number
-  rayTracingEdgeOpacity?: number
-  rayTracingEdges?: boolean
+  renderExtensionFactory?: SceneRenderExtensionFactory | null
   /** isNewModel: the result of a finished execution is now in the scene. */
   onModelLoadSettled?: (isNewModel?: boolean) => void
-  /** supportsPathTracing: the renderer runs on WebGPU, which path tracing needs. */
-  onInitialized?: (supportsPathTracing: boolean) => void
+  /** supportsWebGPU: whether GPU render extensions can run in this viewport. */
+  onInitialized?: (supportsWebGPU: boolean) => void
 }
 
 export class LocalRenderer {
@@ -97,15 +92,7 @@ export class LocalRenderer {
   private enableSSAO: boolean
   private highlightEdges: boolean
   private fixedSizeGrid: boolean
-  private pathTrace: boolean
-  private denoiseFadeDuration: number
-  private thresholdPercent: number
-  private lastCameraChange = -Infinity
-  private renderingMode: RenderingMode
-  private readonly renderTransition = new RenderTransition()
-  private rayTracingEdgeOpacity: number
-  private rayTracingEdges: boolean
-  private denoise: boolean
+  private renderExtensionFactory: SceneRenderExtensionFactory | null
   private onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
   private onInitialized: LocalRendererProps['onInitialized']
   private renderer: WebGPURenderer | null = null
@@ -134,8 +121,8 @@ export class LocalRenderer {
   private readonly unregisterBaseUnitListener: () => void
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
-  private pathTraceRenderer: PathTraceRenderer | null = null
-  private pathTraceRequest = 0
+  private renderExtension: SceneRenderExtension | null = null
+  private renderExtensionRequest = 0
   private baseRenderDirty = true
   private disposed = false
   private pickingEnabled = false
@@ -166,17 +153,7 @@ export class LocalRenderer {
     this.enableSSAO = props.enableSSAO
     this.highlightEdges = props.highlightEdges
     this.fixedSizeGrid = props.fixedSizeGrid
-    this.pathTrace = props.renderingMode !== 'standard'
-    this.denoise = props.denoise
-    this.renderingMode = props.renderingMode
-    this.thresholdPercent = props.thresholdPercent ?? 50
-    this.denoiseFadeDuration = props.denoiseFadeDuration ?? 200
-    this.rayTracingEdges = props.rayTracingEdges ?? true
-    this.rayTracingEdgeOpacity = props.rayTracingEdgeOpacity ?? 0.45
-    this.renderTransition.setDuration(
-      props.fadeDuration ?? 2000,
-      performance.now()
-    )
+    this.renderExtensionFactory = props.renderExtensionFactory ?? null
     this.onModelLoadSettled = props.onModelLoadSettled
     this.onInitialized = props.onInitialized
 
@@ -488,95 +465,46 @@ export class LocalRenderer {
     this.invalidateBaseRender()
   }
 
-  setPathTrace(pathTrace: boolean) {
-    if (this.pathTrace === pathTrace) {
+  setRenderExtensionFactory(factory: SceneRenderExtensionFactory | null) {
+    if (this.renderExtensionFactory === factory) return
+    this.renderExtensionFactory = factory
+    this.stopRenderExtension()
+    if (factory) this.startRenderExtension().catch(reportRejection)
+    this.invalidateBaseRender()
+  }
+
+  private async startRenderExtension() {
+    const { renderer, device, scene, renderExtensionFactory } = this
+    if (!renderer || !device || !scene?.environment || !renderExtensionFactory)
+      return
+    const request = ++this.renderExtensionRequest
+    let extension: SceneRenderExtension | null
+    try {
+      extension = await renderExtensionFactory({
+        renderer,
+        device,
+        environment: scene.environment,
+        environmentIntensity: scene.environmentIntensity,
+        invalidate: () => this.invalidateBaseRender(),
+      })
+    } catch (error) {
+      if (!this.disposed && request === this.renderExtensionRequest)
+        reportRejection(error)
       return
     }
-
-    this.pathTrace = pathTrace
-    if (pathTrace) {
-      this.startPathTracing().catch(this.handlePathTracingError)
-    } else {
-      this.stopPathTracing()
-    }
-    this.invalidateBaseRender()
-  }
-
-  setRenderingMode(mode: RenderingMode) {
-    this.renderingMode = mode
-    this.setPathTrace(mode !== 'standard')
-    this.invalidateBaseRender()
-  }
-
-  setThresholdPercent(percent: number) {
-    if (!Number.isFinite(percent) || percent < 0 || percent > 100) return
-    this.thresholdPercent = percent
-    this.invalidateBaseRender()
-  }
-
-  setDenoiseFadeDuration(duration: number) {
-    if (!Number.isFinite(duration) || duration < 0) return
-    this.denoiseFadeDuration = duration
-    this.pathTraceRenderer?.setDenoiseFadeDuration(duration)
-    this.invalidateBaseRender()
-  }
-
-  setFadeDuration(duration: number) {
-    this.renderTransition.setDuration(duration, performance.now())
-    this.invalidateBaseRender()
-  }
-
-  setRayTracingEdges(edges = true, opacity = 0.45) {
-    this.rayTracingEdgeOpacity = opacity
-    this.rayTracingEdges = edges
-    this.invalidateBaseRender()
-  }
-
-  setDenoise(denoise: boolean) {
-    this.denoise = denoise
-    this.renderTransition.update(false, performance.now(), false)
-    this.pathTraceRenderer?.setDenoise(denoise)
-  }
-
-  private async startPathTracing() {
-    const { renderer, device, scene } = this
-    // Path tracing needs WebGPU. There is no WebGL fallback.
-    if (!renderer || !device || !scene?.environment) {
+    if (this.disposed || request !== this.renderExtensionRequest) {
+      extension?.dispose()
       return
     }
-
-    const request = ++this.pathTraceRequest
-    const { PathTraceRenderer } = await import(
-      '@src/clientSideScene/localRenderer/PathTraceRenderer'
-    )
-    const pathTraceRenderer = await PathTraceRenderer.create(
-      renderer,
-      device,
-      scene.environment,
-      scene.environmentIntensity,
-      () => this.scheduleRender()
-    )
-    if (this.disposed || request !== this.pathTraceRequest) {
-      pathTraceRenderer.dispose()
-      return
-    }
-
-    pathTraceRenderer.setModel(this.currentModel)
-    pathTraceRenderer.setDenoise(this.denoise)
-    pathTraceRenderer.setDenoiseFadeDuration(this.denoiseFadeDuration)
-    this.pathTraceRenderer = pathTraceRenderer
+    extension?.setModel(this.currentModel)
+    this.renderExtension = extension
     this.invalidateBaseRender()
   }
 
-  private stopPathTracing() {
-    this.pathTraceRequest++
-    this.pathTraceRenderer?.dispose()
-    this.pathTraceRenderer = null
-  }
-
-  private readonly handlePathTracingError = (error: unknown) => {
-    console.error('[LocalWebGPUScene] path tracing failed', error)
-    reportRejection(error)
+  private stopRenderExtension() {
+    this.renderExtensionRequest++
+    this.renderExtension?.dispose()
+    this.renderExtension = null
   }
 
   dispose() {
@@ -614,7 +542,7 @@ export class LocalRenderer {
       this.animationFrameId = -1
     }
     this.disposeAmbientOcclusionPipeline()
-    this.stopPathTracing()
+    this.stopRenderExtension()
     this.envMapLoader?.dispose()
     this.envMapLoader = null
     this.renderer?.domElement.remove()
@@ -640,8 +568,7 @@ export class LocalRenderer {
   }
 
   private readonly syncPreviewCameraFromShared = () => {
-    this.lastCameraChange = performance.now()
-    this.pathTraceRenderer?.invalidateCamera()
+    this.renderExtension?.cameraChanged()
     const cameraControls = this.kclManager.sceneInfra.camControls
     if (cameraControls.isDragging) {
       // Dragging should clear hover, but mouse scroll shouldn't (to avoid flickering when over a plane)
@@ -780,65 +707,30 @@ export class LocalRenderer {
       return
     }
 
-    const { pathTraceRenderer } = this
-    // A path traced image changes with every frame until it settles.
-    const cameraMoving =
-      (this.renderingMode === 'ray-tracing-without-drag' ||
-        this.renderingMode === 'ray-tracing-stealth' ||
-        this.renderingMode === 'ray-tracing-threshold-transition') &&
-      (this.kclManager.sceneInfra.camControls.isDragging ||
-        (this.renderingMode === 'ray-tracing-stealth' &&
-          performance.now() - this.lastCameraChange < 150))
-    const pathTracing =
-      !!pathTraceRenderer && (!pathTraceRenderer.settled || cameraMoving)
+    const extension = this.renderExtension
+    const isDragging = this.kclManager.sceneInfra.camControls.isDragging
     const baseRendered =
       this.selectionHighlightRenderer?.beginFrame(
-        this.baseRenderDirty || pathTracing || this.renderTransition.active
+        this.baseRenderDirty || (extension?.needsFrame(isDragging) ?? false)
       ) ?? true
     if (baseRendered) {
-      const ready =
-        !cameraMoving &&
-        (pathTraceRenderer?.render(
-          previewCamera,
-          renderer,
-          !cameraMoving && this.renderingMode === 'ray-tracing-stealth',
-          false,
-          this.renderingMode === 'ray-tracing-threshold-transition'
-            ? this.thresholdPercent
-            : undefined
-        ) ??
-          false)
-      const opacity = this.renderTransition.update(
-        !cameraMoving && ready,
-        performance.now(),
-        this.renderingMode === 'ray-tracing-without-drag' ||
-          this.renderingMode === 'ray-tracing-stealth' ||
-          this.renderingMode === 'ray-tracing-threshold-transition'
-      )
-      if (pathTraceRenderer && opacity > 0) {
-        if (this.rayTracingEdges && this.edgeRenderer) {
-          pathTraceRenderer.renderEdges(
-            renderer,
-            previewCamera,
-            this.edgeRenderer.lines,
-            this.renderingMode === 'ray-tracing' &&
-              this.kclManager.sceneInfra.camControls.isDragging
-              ? 1
-              : this.rayTracingEdgeOpacity
-          )
-        }
-        pathTraceRenderer.present(renderer, opacity, () =>
-          this.renderRaster(scene, previewCamera, renderer)
-        )
-      } else {
+      const renderRaster = () =>
         this.renderRaster(scene, previewCamera, renderer)
-      }
+      if (extension) {
+        extension.renderFrame({
+          camera: previewCamera,
+          renderer,
+          edges: this.edgeRenderer?.lines ?? null,
+          isDragging,
+          renderRaster,
+        })
+      } else renderRaster()
       this.selectionHighlightRenderer?.cacheBaseFrame()
       this.baseRenderDirty = false
     }
 
     this.selectionHighlightRenderer?.render(previewCamera)
-    if (pathTracing || this.renderTransition.active) {
+    if (extension?.needsFrame(isDragging)) {
       this.scheduleRender()
     }
   }
@@ -959,7 +851,7 @@ export class LocalRenderer {
       return
     }
 
-    this.renderTransition.update(false, performance.now(), false)
+    this.renderExtension?.resized()
     renderer.setDrawingBufferSize(width, height, window.devicePixelRatio)
     if (this.previewCamera instanceof PerspectiveCamera) {
       this.previewCamera.aspect = width / height
@@ -978,8 +870,8 @@ export class LocalRenderer {
     if (this.currentModel) {
       this.scene?.remove(this.currentModel)
       this.edgeRenderer?.removeFromParent()
-      this.renderTransition.update(false, performance.now(), false)
-      this.pathTraceRenderer?.setModel(null)
+      this.renderExtension?.resized()
+      this.renderExtension?.setModel(null)
       disposeObject3D(this.currentModel)
       this.currentModel = null
     }
@@ -1156,8 +1048,8 @@ export class LocalRenderer {
 
     this.container.style.opacity = '1'
     this.onInitialized?.(!!device)
-    if (this.pathTrace) {
-      this.startPathTracing().catch(this.handlePathTracingError)
+    if (this.renderExtensionFactory) {
+      this.startRenderExtension().catch(reportRejection)
     }
     // Execution may finish while the GPU/environment is initializing, or before
     // this renderer is mounted. Load that completed scene once, too.
@@ -1246,8 +1138,8 @@ export class LocalRenderer {
 
       this.edgeRenderer?.buildEdges(gltf)
       this.edgeRenderer?.addTo(gltf.scene)
-      this.renderTransition.update(false, performance.now(), false)
-      this.pathTraceRenderer?.setModel(gltf.scene)
+      this.renderExtension?.resized()
+      this.renderExtension?.setModel(gltf.scene)
 
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)

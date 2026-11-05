@@ -44,7 +44,7 @@ vi.mock('three-gpu-pathtracer/webgpu', () => ({
 }))
 vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
 
-import { PathTraceRenderer } from '@src/clientSideScene/localRenderer/PathTraceRenderer'
+import { PathTraceRenderer } from '@src/registry/plugins/rayTracing/PathTraceRenderer'
 
 async function fixture() {
   let target: unknown = null

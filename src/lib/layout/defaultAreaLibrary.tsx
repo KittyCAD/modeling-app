@@ -18,7 +18,6 @@ import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
   EngineSceneViewExtensionOverlay,
-  type RenderingMode,
   engineSceneStreamClassNamesValueSpec,
   engineSceneStreamLayersValueSpec,
   engineSceneViewExtensionsValueSpec,
@@ -36,14 +35,6 @@ function ModelingArea() {
   const [sketchSolveStreamDimming, setSketchSolveStreamDimming] = useState(
     DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
   )
-  const [pathTraceSupported, setPathTraceSupported] = useState(false)
-  const [renderingMode, setRenderingMode] = useState<RenderingMode>('standard')
-  const [thresholdPercent, setThresholdPercent] = useState(50)
-  const [denoiseFadeDuration, setDenoiseFadeDuration] = useState(200)
-  const [fadeDuration, setFadeDuration] = useState(2000)
-  const [edgeOpacity, setEdgeOpacity] = useState(0.45)
-  const [pathTraceEdges, setPathTraceEdges] = useState(true)
-  const [pathTraceDenoise, setPathTraceDenoise] = useState(true)
   const engineSceneViewExtensions = registry.signal(
     engineSceneViewExtensionsValueSpec
   ).value
@@ -57,24 +48,6 @@ function ModelingArea() {
     modelingSend: send,
     sketchSolveStreamDimming,
     setSketchSolveStreamDimming,
-    pathTracing: {
-      supported: pathTraceSupported,
-      mode: renderingMode,
-      edges: pathTraceEdges,
-      thresholdPercent,
-      setThresholdPercent,
-      denoiseFadeDuration,
-      setDenoiseFadeDuration,
-      fadeDuration,
-      setFadeDuration,
-      edgeOpacity,
-      setEdgeOpacity,
-      denoise: pathTraceDenoise,
-      setSupported: setPathTraceSupported,
-      setMode: setRenderingMode,
-      setEdges: setPathTraceEdges,
-      setDenoise: setPathTraceDenoise,
-    },
   }
   const streamClassName = mergeEngineSceneClassNames(
     engineSceneStreamClassNames

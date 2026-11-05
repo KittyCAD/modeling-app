@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { RenderTransition } from '@src/clientSideScene/localRenderer/RenderTransition'
+import { RenderTransition } from '@src/registry/plugins/rayTracing/RenderTransition'
 
 describe('renderer crossfade', () => {
-  it('fades in over 2000 milliseconds and returns to real-time immediately', () => {
+  it('fades in over 800 milliseconds and returns to real-time immediately', () => {
     const fade = new RenderTransition()
     expect(fade.update(true, 1000, true)).toBe(0)
     expect(fade.active).toBe(true)
-    expect(fade.update(true, 2000, true)).toBe(0.5)
-    expect(fade.update(true, 3000, true)).toBe(1)
+    expect(fade.update(true, 1400, true)).toBe(0.5)
+    expect(fade.update(true, 1800, true)).toBe(1)
     expect(fade.active).toBe(false)
     expect(fade.update(false, 4000, true)).toBe(0)
     expect(fade.active).toBe(false)
@@ -15,6 +15,7 @@ describe('renderer crossfade', () => {
 
   it('cancels a partial fade immediately and starts a fresh fade after release', () => {
     const fade = new RenderTransition()
+    fade.setDuration(2000, 0)
     fade.update(true, 1000, true)
     expect(fade.update(true, 2000, true)).toBe(0.5)
     expect(fade.update(false, 2000, true)).toBe(0)
@@ -26,6 +27,7 @@ describe('renderer crossfade', () => {
 
   it('applies a new duration live without jumping or restarting a partial fade', () => {
     const fade = new RenderTransition()
+    fade.setDuration(2000, 0)
     fade.update(true, 1000, true)
     expect(fade.update(true, 2000, true)).toBe(0.5)
     fade.setDuration(4000, 2000)

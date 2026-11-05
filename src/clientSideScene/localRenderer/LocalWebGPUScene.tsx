@@ -1,3 +1,5 @@
+import { useSignals } from '@preact/signals-react/runtime'
+import { sceneRenderingService } from '@src/registry/contracts/sceneRendering'
 import {
   LocalRenderer,
   type LocalRendererProps,
@@ -13,23 +15,14 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 const THUMBNAIL_DELAY_MS = 500
 
 export const LocalWebGPUScene = (props: LocalRendererProps) => {
-  const {
-    theme,
-    enableSSAO,
-    highlightEdges,
-    fixedSizeGrid,
-    renderingMode,
-    denoise,
-    rayTracingEdges,
-    rayTracingEdgeOpacity,
-    fadeDuration,
-    denoiseFadeDuration,
-    thresholdPercent,
-  } = props
+  useSignals()
+  const { theme, enableSSAO, highlightEdges, fixedSizeGrid } = props
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<LocalRenderer | null>(null)
   const latestPropsRef = useRef(props)
   const app = useApp()
+  const rendering = app.registry.signal(sceneRenderingService).value
+  const [supportsWebGPU, setSupportsWebGPU] = useState(false)
   const { kclManager } = useSingletons()
   const { state } = useModelingContext()
   const pickingEnabled =
@@ -78,6 +71,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     const renderer = new LocalRenderer(container, kclManager, {
       ...latestPropsRef.current,
       onModelLoadSettled: handleModelLoadSettled,
+      onInitialized: setSupportsWebGPU,
     })
     rendererRef.current = renderer
     kclManager.sceneInfra.localRenderer = renderer
@@ -118,31 +112,12 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   }, [fixedSizeGrid])
 
   useEffect(() => {
-    rendererRef.current?.setRenderingMode(renderingMode)
-  }, [renderingMode])
+    rendererRef.current?.setRenderExtensionFactory(rendering?.create ?? null)
+  }, [rendering])
 
   useEffect(() => {
-    rendererRef.current?.setDenoise(denoise)
-  }, [denoise])
-
-  useEffect(() => {
-    rendererRef.current?.setRayTracingEdges(
-      rayTracingEdges,
-      rayTracingEdgeOpacity
-    )
-  }, [rayTracingEdges, rayTracingEdgeOpacity])
-
-  useEffect(() => {
-    rendererRef.current?.setFadeDuration(fadeDuration ?? 2000)
-  }, [fadeDuration])
-
-  useEffect(() => {
-    rendererRef.current?.setThresholdPercent(thresholdPercent ?? 50)
-  }, [thresholdPercent])
-
-  useEffect(() => {
-    rendererRef.current?.setDenoiseFadeDuration(denoiseFadeDuration ?? 200)
-  }, [denoiseFadeDuration])
+    return rendering?.registerViewport(supportsWebGPU)
+  }, [rendering, supportsWebGPU])
 
   return (
     <>

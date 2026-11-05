@@ -84,24 +84,6 @@ function createEngineSceneViewExtensionContext(
     modelingSend: vi.fn(),
     sketchSolveStreamDimming: 0.3,
     setSketchSolveStreamDimming: vi.fn(),
-    pathTracing: {
-      supported: false,
-      mode: 'standard',
-      edges: true,
-      thresholdPercent: 50,
-      setThresholdPercent: vi.fn(),
-      denoiseFadeDuration: 200,
-      setDenoiseFadeDuration: vi.fn(),
-      fadeDuration: 2000,
-      setFadeDuration: vi.fn(),
-      edgeOpacity: 0.45,
-      setEdgeOpacity: vi.fn(),
-      denoise: true,
-      setSupported: vi.fn(),
-      setMode: vi.fn(),
-      setEdges: vi.fn(),
-      setDenoise: vi.fn(),
-    },
   }
 }
 
@@ -329,7 +311,6 @@ describe('engineScene extension', () => {
       }))
     ).toEqual([
       { id: 'engine-scene.toolbar', zone: 'top' },
-      { id: 'engine-scene.path-trace-toggle', zone: 'top' },
       { id: 'engine-scene.sketch-background-opacity', zone: 'bottom-left' },
       { id: 'engine-scene.sketch-constraints-toggle', zone: 'bottom-left' },
       { id: 'engine-scene.gizmo', zone: 'bottom-right' },
