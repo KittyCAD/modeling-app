@@ -24,7 +24,6 @@ use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ImportSelector;
 use crate::parsing::ast::types::ItemVisibility;
-use crate::parsing::ast::types::Literal;
 use crate::parsing::ast::types::LiteralValue;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::NonCodeValue;
@@ -924,7 +923,7 @@ pub struct ArgData {
     /// If the argument is required.
     pub kind: ArgKind,
     /// A literal default declared in KCL, excluding implicit `none`.
-    pub default_value: Option<Literal>,
+    pub default_value: Option<LiteralValue>,
     pub override_in_snippet: Option<bool>,
     /// Additional information that could be used instead of the type's description.
     /// This is helpful if the type is really basic, like "number" -- that won't tell the user much about
@@ -978,7 +977,7 @@ impl ArgData {
                 ArgKind::Special
             },
             default_value: match &arg.default_value {
-                Some(DefaultParamVal::Literal(literal)) => Some(literal.inner.clone()),
+                Some(DefaultParamVal::Literal(literal)) => Some(literal.value.clone()),
                 _ => None,
             },
             added_in: arg.added_in.clone(),

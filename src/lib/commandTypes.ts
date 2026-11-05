@@ -10,7 +10,6 @@ import type {
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { LiteralValue } from '@rust/kcl-lib/bindings/LiteralValue'
-import type { StdLibCommandDefault } from '@rust/kcl-lib/bindings/StdLibCommandTypes'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -147,8 +146,6 @@ export type Command<
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>
   }
-  /** Arguments whose presence carries meaning even when their value matches the default. */
-  preserveDefaultArguments?: readonly string[]
   displayName?: string
   description?: string
   icon?: Icon
@@ -204,7 +201,7 @@ export type CommandArgumentConfig<
   /** Reference documentation shown on demand, separate from command-bar hints. */
   documentation?: string
   /** Declared KCL default when omitted, separate from tool prepopulation. */
-  kclDefault?: StdLibCommandDefault
+  kclDefault?: LiteralValue
   status?: CommandArgumentStatus
   statusMessage?: string
   required: CommandArgumentRequired<C>
@@ -387,7 +384,7 @@ export type CommandArgument<
   /** Reference documentation shown on demand, separate from command-bar hints. */
   documentation?: string
   /** Declared KCL default when omitted, separate from tool prepopulation. */
-  kclDefault?: StdLibCommandDefault
+  kclDefault?: LiteralValue
   status?: CommandArgumentStatus
   statusMessage?: string
   required:

@@ -14,10 +14,7 @@ import {
 import { isErr } from '@src/lib/trap'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import {
-  getArgumentChoices,
-  isArgumentDefault,
-} from '@src/components/ModelingDialog/defaults'
+import { getDefaultOptionIndex } from '@src/components/ModelingDialog/defaults'
 
 export type DialogField = {
   name: string
@@ -120,7 +117,7 @@ export async function resolveArguments(
   rustContext: RustContext,
   ast: Node<Program>,
   artifactGraph?: ArtifactGraph,
-  editedArguments?: ReadonlySet<string>
+  editedOptions?: ReadonlySet<string>
 ): Promise<Record<string, unknown> | Error> {
   const resolved = { ...context.argumentsToSubmit, ...values }
   // Creation dialogs retain inactive drafts. Keep those out of the payload,
@@ -203,12 +200,14 @@ export async function resolveArguments(
   const current = { ...context, argumentsToSubmit: resolved }
   const normalized = { ...resolved }
   for (const { name, arg, required } of getDialogFields(current)) {
-    if (
-      !required &&
-      !context.selectedCommand?.preserveDefaultArguments?.includes(name) &&
-      (!resolved.nodeToEdit || editedArguments?.has(name)) &&
-      isArgumentDefault(arg, resolved[name], getArgumentChoices(arg, current))
-    ) {
+    if (arg.inputType !== 'options' || required) continue
+    if (resolved.nodeToEdit && !editedOptions?.has(name)) continue
+    const choices =
+      typeof arg.options === 'function'
+        ? arg.options(current, arg.machineActor?.getSnapshot().context)
+        : arg.options
+    const defaultIndex = getDefaultOptionIndex(arg, choices)
+    if (defaultIndex >= 0 && resolved[name] === choices[defaultIndex].value) {
       normalized[name] = undefined
     }
   }

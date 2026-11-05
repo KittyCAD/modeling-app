@@ -54,13 +54,12 @@ const commandBarConfig = {
   ],
   WithArguments: {
     description: 'Command with arguments',
-    preserveDefaultArguments: ['availableArg'],
     args: {
       availableArg: {
         inputType: 'string',
         required: false,
         documentation: 'Reference documentation.',
-        kclDefault: { value: 'example', expression: '"example"' },
+        kclDefault: 'example',
       },
       experimentalArg: {
         inputType: 'string',
@@ -248,13 +247,12 @@ describe('createMachineCommand', () => {
     actor.stop()
 
     expect(command).toMatchObject({
-      preserveDefaultArguments: ['availableArg'],
       args: {
         availableArg: {
           hidden: undefined,
           documentation:
             commandBarConfig.WithArguments.args.availableArg.documentation,
-          kclDefault: { value: 'example', expression: '"example"' },
+          kclDefault: 'example',
         },
         deprecatedArg: {
           hidden: undefined,

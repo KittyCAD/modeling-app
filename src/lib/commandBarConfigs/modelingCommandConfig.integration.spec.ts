@@ -628,24 +628,9 @@ function stdLibCommandArgsForConfig(config: StdLibCommandDriftConfig) {
 describe('stdlib command arg derivation', () => {
   it('keeps declared KCL defaults separate from tool prepopulation', () => {
     const extrude = stdLibCommandArgs<Record<string, unknown>>('extrude')
-    const sweep = stdLibCommandArgs<Record<string, unknown>>('sweep')
-    const circular =
-      stdLibCommandArgs<Record<string, unknown>>('patternCircular3d')
-
-    expect(extrude.bodyType.kclDefault).toEqual({
-      value: 'solid',
-      expression: '"solid"',
-    })
+    expect(extrude.bodyType.kclDefault).toBe('solid')
     expect(extrude.bodyType).not.toHaveProperty('defaultValue')
     expect(extrude.method.kclDefault).toBeUndefined()
-    expect(sweep.translateProfileToPath.kclDefault).toEqual({
-      value: false,
-      expression: 'false',
-    })
-    expect(circular.arcDegrees.kclDefault).toEqual({
-      value: { value: 360, suffix: 'Deg' },
-      expression: '360deg',
-    })
   })
 
   it('derives enum options while keeping UI defaults and labels', () => {

@@ -39,20 +39,13 @@ struct StdLibCommandArgShape {
     required: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
-    default_value: Option<StdLibCommandDefault>,
+    default_value: Option<LiteralValue>,
     special: bool,
     experimental: bool,
     added_in: Option<String>,
     deprecated: bool,
     deprecated_since: Option<String>,
     removed_in: Option<String>,
-}
-
-#[derive(Serialize, TS)]
-#[ts(export, export_to = "StdLibCommandTypes.ts")]
-struct StdLibCommandDefault {
-    value: LiteralValue,
-    expression: String,
 }
 
 #[test]
@@ -86,10 +79,7 @@ fn export_bindings_stdlib_commands() {
                             ty: arg.ty.clone(),
                             docs: arg.docs.clone(),
                             required: arg.kind.required(),
-                            default_value: arg.default_value.as_ref().map(|literal| StdLibCommandDefault {
-                                value: literal.value.clone(),
-                                expression: literal.raw.clone(),
-                            }),
+                            default_value: arg.default_value.clone(),
                             special: matches!(arg.kind, ArgKind::Special),
                             experimental: arg.experimental,
                             added_in: arg.added_in.as_ref().map(ToString::to_string),

@@ -58,13 +58,9 @@ import {
 } from '@src/registry/contracts/commands'
 import styles from './CommandKclInput.module.css'
 
-function getKclEditorContentAttributes(
-  labelId: string,
-  descriptionId?: string
-) {
+function getKclEditorContentAttributes(labelId: string) {
   return EditorView.contentAttributes.of({
     'aria-labelledby': labelId,
-    ...(descriptionId && { 'aria-describedby': descriptionId }),
     'aria-multiline': 'false',
     autocapitalize: 'off',
     autocorrect: 'off',
@@ -81,8 +77,6 @@ export function CommandKclInput({
   arg,
   label,
   labelAction,
-  inputAction,
-  inputDescriptionId,
   description,
   placeholder: placeholderText,
   isRequired = true,
@@ -104,8 +98,6 @@ export function CommandKclInput({
   arg: CommandKclArgument
   label: ReactNode
   labelAction?: ReactNode
-  inputAction?: ReactNode
-  inputDescriptionId?: string
   description?: ReactNode
   placeholder?: string
   isRequired?: boolean
@@ -245,7 +237,6 @@ export function CommandKclInput({
   const initialEditorProps = useRef({
     value,
     labelId,
-    inputDescriptionId,
     placeholderText,
     autoFocus,
     theme: settingsValues.app.theme.current,
@@ -266,10 +257,7 @@ export function CommandKclInput({
           compartments.theme.of(editorTheme[getResolvedTheme(initial.theme)]),
           compartments.varMentions.of(varMentions(initial.varMentionData)),
           compartments.contentAttributes.of(
-            getKclEditorContentAttributes(
-              initial.labelId,
-              initial.inputDescriptionId
-            )
+            getKclEditorContentAttributes(initial.labelId)
           ),
           compartments.placeholder.of(
             initial.placeholderText ? placeholder(initial.placeholderText) : []
@@ -357,14 +345,14 @@ export function CommandKclInput({
     miniEditor.dispatch({
       effects: [
         compartmentsRef.current.contentAttributes.reconfigure(
-          getKclEditorContentAttributes(labelId, inputDescriptionId)
+          getKclEditorContentAttributes(labelId)
         ),
         compartmentsRef.current.placeholder.reconfigure(
           placeholderText ? placeholder(placeholderText) : []
         ),
       ],
     })
-  }, [labelId, placeholderText, inputDescriptionId])
+  }, [labelId, placeholderText])
 
   useEffect(() => {
     const miniEditor = miniEditorRef.current
@@ -521,15 +509,12 @@ export function CommandKclInput({
         ) : (
           fieldLabel
         )}
-        <div className={inline ? 'contents' : 'relative'}>
-          <div
-            id={inputId}
-            data-testid="cmd-bar-arg-value"
-            ref={editorRef}
-            className={`${inline ? styles.editor : styles.compactEditor} ${inputAction ? styles.withInputAction : ''}`}
-          />
-          {inputAction}
-        </div>
+        <div
+          id={inputId}
+          data-testid="cmd-bar-arg-value"
+          ref={editorRef}
+          className={inline ? styles.editor : styles.compactEditor}
+        />
         {(inline || !isEmpty) && (
           <span
             className={inline ? 'contents' : 'flex items-center gap-1 text-xs'}

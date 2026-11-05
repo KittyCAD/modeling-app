@@ -2529,20 +2529,10 @@ solid001 = extrude(region001, length = 5)`
         await test.step('Configure arc degrees', async () => {
           await expect(modelingDialog.input('arc degrees')).toHaveAttribute(
             'aria-placeholder',
-            '360deg'
+            'Use defaults'
           )
-          await expect(
-            modelingDialog.input('arc degrees')
-          ).toHaveAccessibleDescription('default')
-          await modelingDialog.input('arc degrees').fill('360deg')
-          await expect(
-            modelingDialog.input('arc degrees')
-          ).toHaveAccessibleDescription('default')
           // Update arc degrees from 360deg to 180
           await modelingDialog.input('arc degrees').fill('180')
-          await expect(
-            modelingDialog.input('arc degrees')
-          ).toHaveAccessibleDescription('')
 
           // Review changes to arc degrees
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -2579,8 +2569,8 @@ solid001 = extrude(region001, length = 5)`
         await editor.expectEditor.toContain('axis = Y')
         await editor.expectEditor.toContain('center = [5, 0, 0]')
         await editor.expectEditor.toContain('arcDegrees = 180')
-        await editor.expectEditor.not.toContain('rotateDuplicates =')
-        await editor.expectEditor.not.toContain('useOriginal =')
+        await editor.expectEditor.toContain('rotateDuplicates = true')
+        await editor.expectEditor.toContain('useOriginal = false')
       })
     })
 
@@ -2670,26 +2660,6 @@ solid001 = extrude(region001, length = 5)`
         await editor.expectEditor.toContain('rotateDuplicates = false')
         await editor.expectEditor.toContain('useOriginal = true')
       })
-    })
-
-    await test.step('Omit a numeric default while preserving a requested variable', async () => {
-      const operation = await toolbar.getFeatureTreeOperation('pattern001', 0)
-      await operation.dblclick()
-      await modelingDialog.input('arc degrees').fill('360deg')
-      await modelingDialog.submit()
-      await scene.settled()
-      await editor.expectEditor.not.toContain('arcDegrees =')
-
-      await operation.dblclick()
-      await modelingDialog.variableCheckbox('arcDegrees').check()
-      await modelingDialog.locator
-        .getByRole('textbox', { name: 'Variable name', exact: true })
-        .fill('patternAngle')
-      await modelingDialog.input('arc degrees').fill('360deg')
-      await modelingDialog.submit()
-      await scene.settled()
-      await editor.expectEditor.toContain('patternAngle = 360deg')
-      await editor.expectEditor.toContain('arcDegrees = patternAngle')
     })
 
     await test.step('Delete Pattern Circular 3D', async () => {
@@ -2854,7 +2824,7 @@ solid001 = extrude(region001, length = 5)`
         await editor.expectEditor.toContain('instances = 4')
         await editor.expectEditor.toContain('distance = 12')
         await editor.expectEditor.toContain('axis = Z')
-        await editor.expectEditor.not.toContain('useOriginal =')
+        await editor.expectEditor.toContain('useOriginal = false')
       })
     })
 

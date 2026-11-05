@@ -1695,8 +1695,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Translate: {
     icon: 'move',
-    // The backend requires a component and checks for conflicts with xyz.
-    preserveDefaultArguments: ['x', 'y', 'z'],
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Translate
@@ -1771,8 +1769,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Scale: {
     icon: 'scale',
-    // The backend requires a component and checks for conflicts with factor.
-    preserveDefaultArguments: ['x', 'y', 'z'],
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Scale

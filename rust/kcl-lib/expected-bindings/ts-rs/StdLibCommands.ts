@@ -222,11 +222,8 @@ export default {
         "docs": "The offset from the intersecting line.",
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 0.0,
-            "suffix": "Mm"
-          },
-          "expression": "0mm"
+          "value": 0.0,
+          "suffix": "Mm"
         },
         "special": false,
         "experimental": false,
@@ -2051,10 +2048,7 @@ export default {
         "ty": "string",
         "docs": "What type of body to produce (solid or surface). Defaults to \"solid\".",
         "required": false,
-        "defaultValue": {
-          "value": "solid",
-          "expression": "\"solid\""
-        },
+        "defaultValue": "solid",
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -3118,11 +3112,8 @@ export default {
         "docs": "The acceptable distance tolerance. If not given, or 0, tolerance will not be shown.",
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 0.0,
-            "suffix": "Mm"
-          },
-          "expression": "0mm"
+          "value": 0.0,
+          "suffix": "Mm"
         },
         "special": false,
         "experimental": false,
@@ -5312,11 +5303,8 @@ export default {
         "docs": null,
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 0.0,
-            "suffix": "None"
-          },
-          "expression": "0"
+          "value": 0.0,
+          "suffix": "None"
         },
         "special": false,
         "experimental": false,
@@ -6108,10 +6096,7 @@ export default {
         "ty": "bool",
         "docs": "If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -6518,11 +6503,8 @@ export default {
         "docs": "Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction.",
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 2.0,
-            "suffix": "None"
-          },
-          "expression": "2"
+          "value": 2.0,
+          "suffix": "None"
         },
         "special": false,
         "experimental": false,
@@ -6536,10 +6518,7 @@ export default {
         "ty": "bool",
         "docs": "Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios. Over time, this field won't be necessary.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -6600,10 +6579,7 @@ export default {
         "ty": "string",
         "docs": "What type of body to produce (solid or surface). Defaults to \"solid\".",
         "required": false,
-        "defaultValue": {
-          "value": "solid",
-          "expression": "\"solid\""
-        },
+        "defaultValue": "solid",
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -7171,11 +7147,8 @@ export default {
         "docs": "The arc angle (in degrees) to place the repetitions. Must be greater than 0.",
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 360.0,
-            "suffix": "Deg"
-          },
-          "expression": "360deg"
+          "value": 360.0,
+          "suffix": "Deg"
         },
         "special": false,
         "experimental": false,
@@ -7189,10 +7162,7 @@ export default {
         "ty": "bool",
         "docs": "Whether or not to rotate the duplicates as they are copied.",
         "required": false,
-        "defaultValue": {
-          "value": true,
-          "expression": "true"
-        },
+        "defaultValue": true,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -7205,10 +7175,7 @@ export default {
         "ty": "bool",
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -7285,11 +7252,8 @@ export default {
         "docs": "\"The arc angle to place the repetitions. Must be greater than 0.",
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 360.0,
-            "suffix": "Deg"
-          },
-          "expression": "360deg"
+          "value": 360.0,
+          "suffix": "Deg"
         },
         "special": false,
         "experimental": false,
@@ -7303,10 +7267,7 @@ export default {
         "ty": "bool",
         "docs": "Whether or not to rotate the duplicates as they are copied.",
         "required": false,
-        "defaultValue": {
-          "value": true,
-          "expression": "true"
-        },
+        "defaultValue": true,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -7319,10 +7280,7 @@ export default {
         "ty": "bool",
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -7398,10 +7356,7 @@ export default {
         "ty": "bool",
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -7477,10 +7432,7 @@ export default {
         "ty": "bool",
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -7544,10 +7496,7 @@ export default {
         "ty": "bool",
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -7611,10 +7560,7 @@ export default {
         "ty": "bool",
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -7768,10 +7714,7 @@ export default {
         "ty": "bool",
         "docs": "Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius.",
         "required": false,
-        "defaultValue": {
-          "value": true,
-          "expression": "true"
-        },
+        "defaultValue": true,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -8147,10 +8090,7 @@ export default {
         "ty": "string",
         "docs": "`CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`. This is usually only needed when two or more `segments` are provided.",
         "required": false,
-        "defaultValue": {
-          "value": "ccw",
-          "expression": "\"ccw\""
-        },
+        "defaultValue": "ccw",
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -8325,10 +8265,7 @@ export default {
         "ty": "string",
         "docs": "What type of body to produce (solid or surface). Defaults to \"solid\".",
         "required": false,
-        "defaultValue": {
-          "value": "solid",
-          "expression": "\"solid\""
-        },
+        "defaultValue": "solid",
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -8428,10 +8365,7 @@ export default {
         "ty": "bool",
         "docs": "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -8499,11 +8433,8 @@ export default {
         "docs": "The dimensionless scale factor for the x axis.",
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 1.0,
-            "suffix": "None"
-          },
-          "expression": "1"
+          "value": 1.0,
+          "suffix": "None"
         },
         "special": false,
         "experimental": false,
@@ -8518,11 +8449,8 @@ export default {
         "docs": "The dimensionless scale factor for the y axis.",
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 1.0,
-            "suffix": "None"
-          },
-          "expression": "1"
+          "value": 1.0,
+          "suffix": "None"
         },
         "special": false,
         "experimental": false,
@@ -8537,11 +8465,8 @@ export default {
         "docs": "The dimensionless scale factor for the z axis.",
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 1.0,
-            "suffix": "None"
-          },
-          "expression": "1"
+          "value": 1.0,
+          "suffix": "None"
         },
         "special": false,
         "experimental": false,
@@ -8555,10 +8480,7 @@ export default {
         "ty": "bool",
         "docs": "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -9006,10 +8928,7 @@ export default {
         "ty": "bool",
         "docs": "Use the counterclockwise sweep from the selected sector's end direction to its start direction. For example, a `20deg` sweep with `inverse = false` becomes `340deg` with `inverse = true`.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -10060,10 +9979,7 @@ export default {
         "ty": "bool",
         "docs": "Whether to compare using locale-independent full Unicode case folding.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -10403,10 +10319,7 @@ export default {
         "ty": "string",
         "docs": "Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.",
         "required": false,
-        "defaultValue": {
-          "value": "trajectoryCurve",
-          "expression": "'trajectoryCurve'"
-        },
+        "defaultValue": "trajectoryCurve",
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -10419,10 +10332,7 @@ export default {
         "ty": "bool",
         "docs": "If true, the profile being swept will be moved to the path being swept along, before the sweep starts. If false, the profile stays where it is, and the sweep starts from there. Defaults to false. On KCL 2.0 and earlier, explicitly setting this option, even to false, requires `version = 2`.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -10471,10 +10381,7 @@ export default {
         "ty": "string",
         "docs": "What type of body to produce (solid or surface). Defaults to \"solid\".",
         "required": false,
-        "defaultValue": {
-          "value": "solid",
-          "expression": "\"solid\""
-        },
+        "defaultValue": "solid",
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -10680,11 +10587,8 @@ export default {
         "docs": "The amount to move the solid or sketch along the x axis.",
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 0.0,
-            "suffix": "None"
-          },
-          "expression": "0"
+          "value": 0.0,
+          "suffix": "None"
         },
         "special": false,
         "experimental": false,
@@ -10699,11 +10603,8 @@ export default {
         "docs": "The amount to move the solid or sketch along the y axis.",
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 0.0,
-            "suffix": "None"
-          },
-          "expression": "0"
+          "value": 0.0,
+          "suffix": "None"
         },
         "special": false,
         "experimental": false,
@@ -10718,11 +10619,8 @@ export default {
         "docs": "The amount to move the solid or sketch along the z axis.",
         "required": false,
         "defaultValue": {
-          "value": {
-            "value": 0.0,
-            "suffix": "None"
-          },
-          "expression": "0"
+          "value": 0.0,
+          "suffix": "None"
         },
         "special": false,
         "experimental": false,
@@ -10736,10 +10634,7 @@ export default {
         "ty": "bool",
         "docs": "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.",
         "required": false,
-        "defaultValue": {
-          "value": false,
-          "expression": "false"
-        },
+        "defaultValue": false,
         "special": false,
         "experimental": false,
         "addedIn": null,

@@ -8,7 +8,7 @@ sketch001 = sketch(on = XY) {
 region001 = region(segments = [sketch001.circle1])`
 
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
-  test('Shows KCL defaults and omits a selected default when creating and editing', async ({
+  test('Shows KCL option defaults and omits a selected default when creating and editing', async ({
     homePage,
     scene,
     editor,
@@ -27,7 +27,7 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await expect(bodyType).toHaveAccessibleDescription('default')
     await expect(
       modelingDialog.options('method').locator('option:checked')
-    ).toHaveText('Use default')
+    ).toHaveText('Optional')
     await bodyType.selectOption({ label: 'Surface' })
     await expect(bodyType).toHaveAccessibleDescription('')
     await bodyType.selectOption({ label: 'Solid' })
