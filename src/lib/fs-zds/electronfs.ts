@@ -31,6 +31,7 @@ const impl: IZooDesignStudioFS =
         writeFile: window.electron.writeFile,
         readdir: window.electron.readdir,
         stat: window.electron.stat,
+        realpath: window.electron.realpath,
         mkdir: window.electron.mkdir,
         rm: window.electron.rm,
         detach,

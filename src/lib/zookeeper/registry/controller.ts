@@ -9,6 +9,10 @@ import { type ZDSProject } from '@src/lib/projectSession'
 import { BillingTransition } from '@src/lib/billing'
 import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
 import { getParentAbsolutePath } from '@src/lib/paths'
+import {
+  createProjectReferenceCommands,
+  type ProjectReferenceCommandTransport,
+} from '@src/lib/zookeeper/projectReferenceCommands'
 import type { Project } from '@src/lib/project'
 import { reportRejection, trap } from '@src/lib/trap'
 import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
@@ -29,6 +33,7 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom, Subscription } from 'xstate'
@@ -38,6 +43,7 @@ export interface ZookeeperSessionControllerDependencies {
   billing: BillingRegistryService
   conversationStore: ZookeeperConversationStore
   fileOperations: FileOperationsRegistryService
+  libraryProjects?: ReadonlySignal<readonly HomeProjectEntry[]>
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
   projectId: string | undefined
@@ -124,12 +130,22 @@ class SessionController implements ZookeeperSessionController {
 
   private readonly history: ZookeeperEditPatchHistory
   private readonly fileRequestProcessor: ZookeeperFileRequestProcessor
+  private readonly clientCommands: ProjectReferenceCommandTransport | undefined
 
   constructor(private readonly deps: ZookeeperSessionControllerDependencies) {
     this.apiToken = deps.apiToken
     this.projectId = deps.projectId
     this.projectPath = deps.projectPath
-    this.actor = createZookeeperManagerActor(deps.apiToken)
+    this.clientCommands = deps.libraryProjects
+      ? createProjectReferenceCommands({
+          entries: deps.libraryProjects,
+          fileOperations: deps.fileOperations,
+          getApiToken: () => this.apiToken,
+        })
+      : undefined
+    this.actor = this.clientCommands
+      ? createZookeeperManagerActor(deps.apiToken, this.clientCommands)
+      : createZookeeperManagerActor(deps.apiToken)
     this.history = new ZookeeperEditPatchHistory(
       deps.kclManager,
       deps.fileOperations

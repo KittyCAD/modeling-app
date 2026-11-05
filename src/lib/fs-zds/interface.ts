@@ -77,6 +77,7 @@ export interface IZooDesignStudioFS {
   ) => Promise<undefined | void>
   readdir: (path: string, options?: any) => Promise<string[]>
   stat: (path: string, options?: any) => Promise<IStat>
+  realpath: (path: string) => Promise<string>
   mkdir: (path: string, options?: any) => Promise<undefined | string>
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   rm: (path: string, options?: any) => Promise<undefined | void>

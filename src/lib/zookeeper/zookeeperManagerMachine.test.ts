@@ -736,6 +736,50 @@ describe('zookeeperManagerMachine', () => {
       stubClientErrorFetch()
     })
 
+    it('advertises reference commands on every connection and routes requests before SDK parsing', async () => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const advertise = vi.fn((ws: WebSocket) => {
+        ws.send(JSON.stringify({ type: 'update_client_command_schema' }))
+      })
+      const handleRequest = vi.fn(() => true)
+      const actor = createZookeeperManagerActor('token', {
+        advertise,
+        handleRequest,
+      })
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: (event) => actor.send(event),
+      })
+
+      const firstSocket = ControllableSetupWebSocket.instances[0]
+      firstSocket.open()
+      await vi.waitFor(() => expect(advertise).toHaveBeenCalledTimes(1))
+      expect(firstSocket.sentPayloads).toContain(
+        JSON.stringify({ type: 'update_client_command_schema' })
+      )
+      const request = {
+        client_command_request: {
+          request_id: 'request-1',
+          catalog_revision: 1,
+          command_id: 'projects.search',
+          arguments: { query: 'TRUCK' },
+        },
+      }
+      firstSocket.receive(request)
+      expect(handleRequest).toHaveBeenCalledWith(firstSocket, request)
+
+      actor.send({
+        type: ZookeeperManagerTransitions.AuthTokenChanged,
+        apiToken: 'new-token',
+      })
+      await vi.waitFor(() => {
+        expect(ControllableSetupWebSocket.instances).toHaveLength(2)
+      })
+      ControllableSetupWebSocket.instances[1].open()
+      await vi.waitFor(() => expect(advertise).toHaveBeenCalledTimes(2))
+      stopZookeeperManagerActor(actor)
+    })
+
     it('waits for auth hydration before opening the setup websocket', async () => {
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(zookeeperManagerMachine, {

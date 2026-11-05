@@ -61,6 +61,7 @@ export interface IElectronAPI {
   rm: typeof fs.rm
   access: typeof fs.access
   stat: (path: string) => Promise<Stats>
+  realpath: typeof fs.realpath
   statIsDirectory: (path: string) => Promise<boolean>
   canReadWriteDirectory: (
     path: string
