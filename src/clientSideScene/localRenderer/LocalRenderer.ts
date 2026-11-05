@@ -257,6 +257,10 @@ export class LocalRenderer {
     this.invalidateBaseRender()
   }
 
+  get hasVisibleDefaultPlanes() {
+    return Object.values(this.settings.defaultPlaneVisibility).some(Boolean)
+  }
+
   private getPlaneTarget(id: string | null): Mesh | null {
     if (!id) return null
     const plane = this.gpu?.planeRenderer.planes.get(id)
@@ -579,7 +583,7 @@ export class LocalRenderer {
    * execState has its generation ready before the signal, which only updates after
    * the artifact graph, so prefer using that.
    */
-  private isLoadedSceneCurrent() {
+  isLoadedSceneCurrent() {
     const { execState, engineSceneGenerationSignal } = this.kclManager
     return (
       this.loadedSceneGeneration ===
@@ -1270,7 +1274,9 @@ export class LocalRenderer {
           type: 'gltf',
           storage: 'binary',
           presentation: 'compact',
-          extras: ['sketches', 'regions'],
+          // Deployed engines still need this flag to link exported geometry to the artifact graph.
+          include_uuids: true,
+          extras: ['geometry_uuids', 'sketches', 'regions'],
         },
         jsAppSettings(this.kclManager.systemDeps.settings)
       )

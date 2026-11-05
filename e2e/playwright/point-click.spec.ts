@@ -17,9 +17,23 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 async function resetView(scene: SceneFixture) {
   if (test.info().tags.includes('@localRenderer')) {
     // Keep the isometric framing used by the projected selections.
-    await expect(scene.page.getByTestId('local-renderer-loading')).toBeHidden({
-      timeout: 30_000,
-    })
+    // Plane hiding is deferred after execution. Wait for both the current model
+    // and that visibility update so zoom-to-fit frames the model, not the planes.
+    await expect
+      .poll(
+        () =>
+          scene.page.evaluate(() => {
+            const manager = window.app.singletons.kclManager
+            const view = manager.sceneInfra.localRenderer
+            return (
+              !manager.isExecuting &&
+              view?.isLoadedSceneCurrent() &&
+              !view.hasVisibleDefaultPlanes
+            )
+          }),
+        { timeout: 30_000 }
+      )
+      .toBe(true)
     await scene.page.evaluate(() =>
       window.app.singletons.kclManager.sceneInfra.camControls.viewIsometric({
         padding: 0.1,
