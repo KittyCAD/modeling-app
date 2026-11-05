@@ -1339,7 +1339,7 @@ for (const kind of ['local', 'cloud'] as const) {
           let downloadStarted = false
           if (kind === 'cloud') {
             await context.route(
-              '**/user/projects/*/download?format=zip',
+              '**/user/projects/**/download?format=zip',
               async (route) => {
                 downloadStarted = true
                 await download.promise
@@ -1365,7 +1365,7 @@ for (const kind of ['local', 'cloud'] as const) {
             download.resolve(undefined)
             if (kind === 'cloud') {
               await page.clock.resume()
-              await context.unroute('**/user/projects/*/download?format=zip')
+              await context.unroute('**/user/projects/**/download?format=zip')
             }
           }
           await scene.settled()

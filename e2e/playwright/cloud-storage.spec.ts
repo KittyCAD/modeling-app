@@ -846,6 +846,12 @@ test(
       )
       .toEqual({ added: true, deleted: false, id: projectId })
     expect(remote.uploads).toHaveLength(initialUploads)
+    expect(remote.downloadRequests.at(-1)).toEqual({
+      revision: remote.project.revision,
+      paths: ['main.kcl', 'new/data.bin'],
+      selected: true,
+    })
+    const downloadsBeforeDeletion = remote.downloads.length
     delete remote.project.files['main.kcl']
     remote.project.revision = String(Number(remote.project.revision) + 1)
     send({
@@ -868,6 +874,7 @@ test(
         root
       )
     ).toBe(false)
+    expect(remote.downloads).toHaveLength(downloadsBeforeDeletion)
     expect(remote.uploads).toHaveLength(initialUploads)
   }
 )

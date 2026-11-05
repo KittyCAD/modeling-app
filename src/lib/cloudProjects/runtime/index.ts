@@ -3,6 +3,7 @@ import {
   decodeCloudDirectories,
   encodeCloudDirectories,
 } from '@src/lib/cloudProjects/runtime/directories'
+import { planCloudRefresh } from '@src/lib/cloudProjects/runtime/refresh'
 import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import { computed, signal } from '@preact/signals-core'
 import { v4 } from 'uuid'
@@ -212,7 +213,11 @@ export function createCloudProjectRuntime(
     clearThumbnail(id)
     const remote = await api.getRemoteProject(requestConfig, id)
     const archive = await parseProjectArchive(
-      await api.downloadRemoteProjectArchive(requestConfig, id)
+      await api.downloadRemoteProjectArchive(
+        requestConfig,
+        id,
+        String(remote.revision ?? '')
+      )
     )
     if (
       config().accountId !== requestConfig.accountId ||
@@ -501,7 +506,11 @@ export function createCloudProjectRuntime(
       await ready
       const remote = await api.getRemoteProject(requestConfig, id)
       const archive = await parseProjectArchive(
-        await api.downloadRemoteProjectArchive(requestConfig, id)
+        await api.downloadRemoteProjectArchive(
+          requestConfig,
+          id,
+          String(remote.revision ?? '')
+        )
       )
       if (config().accountId !== requestConfig.accountId)
         return Promise.reject(
@@ -688,7 +697,7 @@ export function createCloudProjectRuntime(
         const activeProject = opened.get(id)!
         // A push refresh or local save can finish while metadata is in flight.
         if (activeProject.remote.revision !== startingRevision) return unchanged
-        let changed = remote.revision !== activeProject.observedRevision
+        const changed = remote.revision !== activeProject.observedRevision
         activeProject.observedRevision = remote.revision
         if (remote.revision === activeProject.remote.revision)
           return { changed, refreshed: false }
@@ -702,28 +711,24 @@ export function createCloudProjectRuntime(
         if (!safe()) return { changed, refreshed: false }
         // Download without holding the mutation queue so slow networks cannot
         // block local saves. Activity invalidates the snapshot before commit.
-        const archive = await parseProjectArchive(
-          await api.downloadRemoteProjectArchive(
-            requestConfig,
-            id,
-            controller.signal
-          )
+        const plan = planCloudRefresh(
+          activeProject.remote,
+          remote,
+          await collect(pathFor(id))
         )
-        // Downloads serve the latest revision, rather than a pinned revision.
-        const latest = await api.getRemoteProject(
-          requestConfig,
-          id,
-          controller.signal
-        )
-        if (!current()) return { changed, refreshed: false }
-        if (opened.get(id)!.remote.revision !== startingRevision)
-          return { changed, refreshed: false }
-        if (latest.revision !== remote.revision) {
-          const currentProject = opened.get(id)!
-          changed ||= latest.revision !== currentProject.observedRevision
-          currentProject.observedRevision = latest.revision
-          return { changed, refreshed: false }
-        }
+        if (!safe()) return { changed, refreshed: false }
+        const downloaded = plan.selected.length
+          ? await parseProjectArchive(
+              await api.downloadRemoteProjectArchive(
+                requestConfig,
+                id,
+                String(remote.revision),
+                plan.selected.map((file) => file.id),
+                controller.signal
+              )
+            )
+          : []
+        const archive = plan.merge(downloaded)
         if (!safe()) return { changed, refreshed: false }
         let refreshed = false
         await enqueue(
@@ -774,10 +779,27 @@ export function createCloudProjectRuntime(
           const remote =
             revision === undefined
               ? await api.getRemoteProject(requestConfig, id)
-              : { ...opened.get(id)!.remote, revision }
-          const archive = await parseProjectArchive(
-            await api.downloadRemoteProjectArchive(requestConfig, id)
+              : await api.getRemoteProjectVersion(
+                  requestConfig,
+                  opened.get(id)!.remote,
+                  revision
+                )
+          const plan = planCloudRefresh(
+            opened.get(id)!.remote,
+            remote,
+            await collect(pathFor(id))
           )
+          const downloaded = plan.selected.length
+            ? await parseProjectArchive(
+                await api.downloadRemoteProjectArchive(
+                  requestConfig,
+                  id,
+                  String(remote.revision ?? ''),
+                  plan.selected.map((file) => file.id)
+                )
+              )
+            : []
+          const archive = plan.merge(downloaded)
           if (config().accountId !== requestConfig.accountId)
             return Promise.reject(
               new Error('Cloud account changed during refresh.')
