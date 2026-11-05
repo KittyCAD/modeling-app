@@ -6,7 +6,7 @@ import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { createProjectThumbnail } from '@src/lib/screenshot'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 // The default planes are shown or hidden about 200 ms after an execution, so
@@ -62,14 +62,26 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
         setIsAwaitingModel(false)
       }
       const renderer = rendererRef.current
-      const projectPath = app.project?.projectIORefSignal.value.path
+      const project = app.project
+      const projectPath = project?.path
+      const path = kclManager.path
+      const code = kclManager.code
+      const isCurrent = () =>
+        rendererRef.current === renderer &&
+        app.project === project &&
+        kclManager.path === path &&
+        kclManager.code === code &&
+        path === project?.default_file
       if (isNewModel && renderer && projectPath) {
         setTimeout(() => {
+          if (!isCurrent()) return
           renderer.readFrame((renderedCanvas) =>
-            createThumbnailPNGOnDesktop({
+            createProjectThumbnail({
               fileOperations: app.fileOperations,
               projectDirectoryWithoutEndingSlash: projectPath,
               renderedCanvas,
+              isCurrent,
+              writeThumbnail: app.projectSession.writeThumbnail,
             })
           )
         }, THUMBNAIL_DELAY_MS)

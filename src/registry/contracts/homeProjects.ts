@@ -6,7 +6,16 @@ import {
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
-import type { CloudProjectDuplicateRisk } from '@src/registry/contracts/cloudSync'
+type CloudProjectDuplicateRisk =
+  | 'exact'
+  | 'divergent'
+  | 'pending'
+  | 'conflicted'
+  | 'unreadable'
+  | 'tombstoned'
+  | 'sync-excluded'
+  | 'no-sync-base'
+  | 'unknown'
 
 export type HomeProjectSource = 'local' | 'remote'
 

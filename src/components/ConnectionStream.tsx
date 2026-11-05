@@ -34,7 +34,6 @@ import {
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { prepareEditCommand } from '@src/lib/featureTree'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import {
   getEngineRegionSelectionFromPoint,
   normalizeEntityReference,
@@ -69,7 +68,7 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands, fileOperations } = useApp()
+  const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -334,24 +333,11 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           setShowManualConnect,
           sceneInfra,
           settingsActor: settings.actor,
+        }).catch((e) => {
+          console.warn(e)
+          setShowManualConnect(true)
         })
-          .then(() => {
-            // Take a screen shot after the page mounts and zoom to fit runs
-            if (
-              !engineCommandManager.geometryOnly &&
-              projectIORef &&
-              projectIORef.path
-            ) {
-              createThumbnailPNGOnDesktop({
-                fileOperations,
-                projectDirectoryWithoutEndingSlash: projectIORef.path,
-              })
-            }
-          })
-          .catch((e) => {
-            console.warn(e)
-            setShowManualConnect(true)
-          })
+
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
