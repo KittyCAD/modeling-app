@@ -15,12 +15,29 @@ test(
     await mockClientErrorReports(context)
     const remote = await mockCloudStorage(context)
     await setup(context, page, testInfo)
-    const thumbnailResponse = page.waitForResponse(
-      (response) =>
+    let thumbnailAuthenticated = false
+    page.on('response', (response) => {
+      if (
         response.url().endsWith(`/user/projects/${projectId}/thumbnail`) &&
         response.status() === 200
-    )
+      )
+        thumbnailAuthenticated = Boolean(
+          response.request().headers().authorization
+        )
+    })
     await page.goto('/home')
+    await expect(page.getByTestId('home-header')).toBeVisible({
+      timeout: 30_000,
+    })
+    const heading = page.getByRole('heading', { level: 1 })
+    await expect(heading).toHaveText(
+      /^(Project Libraries|Personal Cloud|Projects)$/
+    )
+    if ((await heading.innerText()) === 'Project Libraries') {
+      await page
+        .getByRole('link', { name: 'Open Personal Cloud library', exact: true })
+        .click()
+    }
     await page.evaluate(async (id) => {
       const root = '/documents/legacy-cloud-mirror'
       await window.fsZds.mkdir(root, { recursive: true })
@@ -35,9 +52,7 @@ test(
         )
       )
     }, projectId)
-    expect(
-      (await thumbnailResponse).request().headers().authorization
-    ).toBeTruthy()
+    await expect.poll(() => thumbnailAuthenticated).toBe(true)
     const image = page
       .getByTestId('project-link')
       .filter({ has: page.getByText('Cloud memory model', { exact: true }) })

@@ -3,6 +3,9 @@ import {
   createMountedFileOperations,
   resolveProjectLocation,
 } from '@src/lib/fileSystem/mounts'
+import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
+import noopfs from '@src/lib/fs-zds/noopfs'
+import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -55,6 +58,7 @@ describe('project storage routing', () => {
       root: '/cloud/project',
       operations: {
         ...testFileOperations,
+        createDirectory: async () => {},
         createFile: async () => Promise.reject(new Error('Save failed')),
       },
     })
@@ -62,6 +66,28 @@ describe('project storage routing', () => {
       router.operations.move('/local/main.kcl', '/cloud/project/main.kcl')
     ).rejects.toThrow('Save failed')
     expect(remove).not.toHaveBeenCalled()
+  })
+
+  it('creates nested archive parents before moving a file between backends', async () => {
+    const local = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+    const cloud = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+    await cloud.mkdir('/cloud/project/parts', { recursive: true })
+    const bytes = new Uint8Array([0, 255, 42])
+    await cloud.writeFile('/cloud/project/parts/main.kcl', bytes)
+    const localRuntime = createFileOperationsRuntime(local)
+    const cloudRuntime = createFileOperationsRuntime(cloud)
+    try {
+      const router = createMountedFileOperations(localRuntime.operations, posix)
+      router.mount({ root: '/cloud', operations: cloudRuntime.operations })
+      const destination = '/archive/cloud/project/parts/main.kcl'
+      await router.operations.move('/cloud/project/parts/main.kcl', destination)
+      expect(await local.readFile(destination)).toEqual(bytes)
+      await expect(
+        cloud.readFile('/cloud/project/parts/main.kcl')
+      ).rejects.toMatchObject({ code: 'ENOENT' })
+    } finally {
+      await Promise.all([localRuntime.dispose(), cloudRuntime.dispose()])
+    }
   })
 
   it('uses prefixes without network requests and propagates ambiguous lookup failures', async () => {

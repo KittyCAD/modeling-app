@@ -184,9 +184,8 @@ function TextFileEditor({
   const editorParent = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
 
-  // Create/destroy the editor only when the FILE changes (path/status) — never
-  // on keystroke or theme change, which would reset cursor/scroll and could
-  // drop un-flushed edits.
+  // Recreate on file loads or authoritative text replacement. Loaded text stays
+  // unchanged during typing, so keystrokes and theme changes preserve the editor.
   useEffect(() => {
     if (!editorParent.current || activeTextFile.status !== 'ready') {
       return
@@ -237,7 +236,7 @@ function TextFileEditor({
     // resolvedTheme is intentionally omitted: theme changes are handled by the
     // compartment effect below so the editor isn't recreated on every toggle.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTextFile.path, activeTextFile.status])
+  }, [activeTextFile.path, activeTextFile.status, activeTextFile.text])
 
   // Reconfigure the theme in place — no recreation, no lost edits.
   useEffect(() => {

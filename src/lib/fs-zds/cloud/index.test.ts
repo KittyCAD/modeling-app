@@ -6,7 +6,8 @@ import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import noopfs from '@src/lib/fs-zds/noopfs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@src/lib/fs-zds/cloud/api', () => ({
+vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
+  ...(await original<typeof api>()),
   getRemoteProject: vi.fn(),
   downloadRemoteProjectArchive: vi.fn(),
   updateRemoteProject: vi.fn(),
@@ -347,6 +348,161 @@ describe.each([
     )
     expect(fs.saves.value.get('one')?.state).toBe('saved')
     expect(fs.pending()).toBe(0)
+  })
+
+  it.each(['same', 'different'] as const)(
+    'adopts the cloud snapshot after a lost acknowledgement and conflict (%s contents)',
+    async (contents) => {
+      const { fs, diskWrite } = setup()
+      const root = await fs.openProject('one')
+      const file = paths.join(root, 'main.kcl')
+      const submitted = 'uploaded before connection loss'
+      vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+        new Error('Connection lost')
+      )
+      await expect(
+        fs.writeFile(file, encoder.encode(submitted))
+      ).rejects.toThrow('Connection lost')
+      const cloudCode = contents === 'same' ? submitted : 'another client won'
+      vi.mocked(api.getRemoteProject).mockResolvedValue({
+        ...remote,
+        revision: '3',
+      })
+      vi.mocked(parseProjectArchive).mockResolvedValue([
+        { relativePath: 'main.kcl', data: encoder.encode(cloudCode) },
+        {
+          relativePath: 'nested/new.kcl',
+          data: encoder.encode('remote addition'),
+        },
+      ])
+      const gate = Promise.withResolvers<typeof remote>()
+      vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
+      const reconciled = vi.fn()
+      fs.subscribeReconciled(reconciled)
+      const retry = fs.retry('one')
+      const staleWrite = fs.writeFile(file, encoder.encode('queued stale edit'))
+      const canceled = expect(staleWrite).rejects.toThrow(
+        'queued operation canceled'
+      )
+      await vi.waitFor(() =>
+        expect(api.updateRemoteProject).toHaveBeenCalledTimes(2)
+      )
+      vi.useFakeTimers()
+      await fs.stageThumbnail(root, new Uint8Array([99]))
+      await vi.advanceTimersByTimeAsync(7_000)
+      gate.reject(new api.CloudApiError(409, 'Revision changed'))
+      await retry
+      await canceled
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(await fs.readFile(file, 'utf8')).toBe(cloudCode)
+      expect(
+        await fs.readFile(paths.join(root, 'nested/new.kcl'), 'utf8')
+      ).toBe('remote addition')
+      expect(fs.saves.value.get('one')?.state).toBe('saved')
+      expect(reconciled).toHaveBeenCalledOnce()
+      expect(api.updateRemoteProject).toHaveBeenCalledTimes(2)
+      expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+        expect.objectContaining({ expectedRevision: '1' })
+      )
+      expect(diskWrite).not.toHaveBeenCalled()
+      vi.useRealTimers()
+      await fs.writeFile(file, encoder.encode('fresh edit after recovery'))
+      expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+        expect.objectContaining({ expectedRevision: '3' })
+      )
+    }
+  )
+
+  it('does not stage stale thumbnails while a conflict snapshot is downloading', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    const gate = Promise.withResolvers<ArrayBuffer>()
+    vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+      new api.CloudApiError(409, 'Revision changed')
+    )
+    vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
+      gate.promise
+    )
+    const saving = fs.writeFile(
+      paths.join(root, 'main.kcl'),
+      encoder.encode('old edit')
+    )
+    await vi.waitFor(() =>
+      expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
+    )
+    await expect(fs.stageThumbnail(root, new Uint8Array([99]))).rejects.toThrow(
+      'being reconciled'
+    )
+    await expect(
+      fs.writeFile(
+        paths.join(root, 'main.kcl'),
+        encoder.encode('typed during recovery')
+      )
+    ).rejects.toThrow('Retry before editing')
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    gate.resolve(new ArrayBuffer(0))
+    await saving
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+  })
+
+  it('retries a failed conflict download without uploading the stale snapshot again', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    const file = paths.join(root, 'main.kcl')
+    vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+      new api.CloudApiError(409, 'Revision changed')
+    )
+    vi.mocked(api.downloadRemoteProjectArchive).mockRejectedValueOnce(
+      new Error('Download unavailable')
+    )
+    await expect(fs.writeFile(file, encoder.encode('stale'))).rejects.toThrow(
+      'Download unavailable'
+    )
+    expect(fs.saves.value.get('one')?.state).toBe('failed')
+    vi.mocked(api.getRemoteProject).mockResolvedValue({
+      ...remote,
+      revision: '4',
+    })
+    vi.mocked(parseProjectArchive).mockResolvedValue([
+      { relativePath: 'main.kcl', data: encoder.encode('cloud truth') },
+    ])
+    await fs.retry('one')
+    expect(await fs.readFile(file, 'utf8')).toBe('cloud truth')
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    expect(fs.saves.value.get('one')?.state).toBe('saved')
+  })
+
+  it('discards a conflict download completed after the account changes', async () => {
+    let account = 'first'
+    const { fs } = setup(() => account)
+    const root = await fs.openProject('one')
+    const gate = Promise.withResolvers<ArrayBuffer>()
+    vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+      new api.CloudApiError(409, 'Revision changed')
+    )
+    vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
+      gate.promise
+    )
+    const reconciled = vi.fn()
+    fs.subscribeReconciled(reconciled)
+    const saving = fs.writeFile(
+      paths.join(root, 'main.kcl'),
+      encoder.encode('stale')
+    )
+    const rejected = expect(saving).rejects.toThrow(
+      'changed during reconciliation'
+    )
+    await vi.waitFor(() =>
+      expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
+    )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    account = 'second'
+    gate.resolve(new ArrayBuffer(0))
+    await rejected
+    expect(reconciled).not.toHaveBeenCalled()
   })
 
   it('rejects stale-account reads, mutations, and deletion', async () => {

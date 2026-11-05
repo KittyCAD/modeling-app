@@ -406,6 +406,50 @@ describe('switching files', () => {
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
   })
 
+  it('adopts cloud contents and cancels delayed and queued text saves from the old snapshot', async () => {
+    vi.useFakeTimers()
+    mocks.readFile.mockResolvedValue('old')
+    await mod.openActiveTextFile(fileOperations, '/proj/note.md')
+    const gate = Promise.withResolvers<undefined>()
+    mocks.writeFile.mockReturnValueOnce(gate.promise)
+    mod.scheduleActiveTextFileWrite(
+      fileOperations,
+      '/proj/note.md',
+      'in flight'
+    )
+    const first = mod.flushActiveTextFileWrite()
+    await flushMicrotasks()
+    mod.scheduleActiveTextFileWrite(
+      fileOperations,
+      '/proj/note.md',
+      'queued stale'
+    )
+    const second = mod.flushActiveTextFileWrite()
+    await flushMicrotasks()
+    mod.scheduleActiveTextFileWrite(
+      fileOperations,
+      '/proj/note.md',
+      'debounced stale'
+    )
+    mod.adoptCloudTextSnapshot(
+      '/proj',
+      new Map([['/proj/note.md', new TextEncoder().encode('cloud truth')]])
+    )
+    await vi.advanceTimersByTimeAsync(7_000)
+    gate.resolve(undefined)
+    await Promise.all([first, second])
+    expect(mocks.writeFile).toHaveBeenCalledTimes(1)
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      text: 'cloud truth',
+      status: 'ready',
+    })
+    mocks.readFile.mockResolvedValue('cloud truth')
+    await mod.openActiveTextFile(fileOperations, '/proj/note.md')
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      text: 'cloud truth',
+    })
+  })
+
   it('clearActiveTextFile persists pending edits and clears the signal', async () => {
     mocks.readFile.mockResolvedValueOnce('A')
     await mod.openActiveTextFile(fileOperations, '/proj/a.md')

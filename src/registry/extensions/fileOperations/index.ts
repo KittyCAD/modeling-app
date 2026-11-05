@@ -1,3 +1,5 @@
+import { FileSaveStatus } from '@src/components/FileSaveStatus'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { effect, signal } from '@preact/signals-core'
 import type * as Publication from '@src/registry/extensions/fileOperations/publication'
 import type { PublishCurrentProjectArgs } from '@src/registry/extensions/fileOperations/publication'
@@ -16,6 +18,7 @@ import {
   defineRegistryItem,
   defineRegistryItemFactory,
   provideService,
+  provide,
 } from '@kittycad/registry'
 import { createMountedFileOperations } from '@src/lib/fileSystem/mounts'
 import fsZds from '@src/lib/fs-zds'
@@ -39,6 +42,7 @@ export function createFileOperationsServices(
   const { projects } = fileSystem
   const runtime = createFileOperationsRuntime(fileSystem, {
     atomicFileReads: true,
+    captureMutationGuard: fileSystem.captureMutationGuard,
   })
   const localRuntime = createFileOperationsRuntime(paths)
   const mounted = createMountedFileOperations(localRuntime.operations, paths)
@@ -246,6 +250,13 @@ export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
     )
     return {
       id: 'file-operations-extension',
+      provides: [
+        provide(appHeaderItemsValueSpec, {
+          id: 'file-save-status',
+          order: 20,
+          Component: FileSaveStatus,
+        }),
+      ],
       providesServices: [
         provideService(projectOperationsService, services.projects),
         provideService(cloudStorageService, services.cloud),

@@ -1995,9 +1995,49 @@ export class KclManager extends File {
     this.unwatch()
   }
 
+  private cloudSnapshotGeneration = 0
+  readonly saveState = signal<'saved' | 'saving' | 'failed'>('saved')
+
   private markFileCodeAsSynced(code: string) {
+    this.saveState.value = 'saved'
     this._lastKnownFileCode = normalizeLineEndings(code)
     this.persistRecoverySnapshot()
+  }
+
+  /** Discard buffers and saves based on a cloud revision that has been superseded. */
+  adoptCloudSnapshot(root: string, contents: string | undefined) {
+    clearTimeout(this.timeoutWriter)
+    clearTimeout(this.timeoutRewatch)
+    this.timeoutWriter = undefined
+    this.timeoutRewatch = undefined
+    this._documentVersion += 1
+    this.cloudSnapshotGeneration += 1
+    // Closed files can still have recovery buffers from an earlier app session.
+    const belongs = (path: string) =>
+      path.startsWith(`${root}/`) || path.startsWith(`${root}\\`)
+    const recoveryPrefixes = ['/', '\\'].map((separator) =>
+      getRecoverySnapshotKey(root + separator)
+    )
+    for (let index = localStorage.length - 1; index >= 0; index--) {
+      const key = localStorage.key(index)
+      if (key && recoveryPrefixes.some((prefix) => key.startsWith(prefix)))
+        safeLSRemoveItem(key)
+    }
+    for (const path of this.editorStatesByPath.keys())
+      if (belongs(path)) {
+        this.editorStatesByPath.delete(path)
+        clearRecoverySnapshot(path)
+      }
+    for (const path of this.fileSwitchSaves.keys())
+      if (belongs(path)) this.fileSwitchSaves.delete(path)
+    this.updateCodeEditor(contents ?? '', {
+      shouldWriteToDisk: false,
+      shouldExecute: false,
+      shouldSyncRust: false,
+      shouldClearHistory: true,
+    })
+    this.markFileCodeAsSynced(contents ?? '')
+    this.watch()
   }
 
   hasUnsavedLocalChanges() {
@@ -4008,6 +4048,7 @@ export class KclManager extends File {
       return
     }
 
+    const cloudSnapshotGeneration = this.cloudSnapshotGeneration
     const baseline = this._lastKnownFileCode
     const previousWrite =
       this.inFlightFileWrites.get(requestedPath) ??
@@ -4019,9 +4060,11 @@ export class KclManager extends File {
         await this.textFileIO.read(requestedPath)
       )
     } catch (err: unknown) {
+      if (cloudSnapshotGeneration !== this.cloudSnapshotGeneration) return
       if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
+        this.saveState.value = 'failed'
         reportFileOperationError({
           error: err,
           operation: 'save_kcl_file',
@@ -4065,6 +4108,7 @@ export class KclManager extends File {
       return
     }
 
+    this.saveState.value = 'saving'
     this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
     this.unwatch()
 
@@ -4077,7 +4121,11 @@ export class KclManager extends File {
         if (this.inFlightFileWrites.get(requestedPath) === write)
           this.inFlightFileWrites.delete(requestedPath)
       }
-      if (requestedPath !== this.path) return
+      if (
+        requestedPath !== this.path ||
+        cloudSnapshotGeneration !== this.cloudSnapshotGeneration
+      )
+        return
       if (this.fileSwitchSaves.get(requestedPath)?.code === newCode)
         this.fileSwitchSaves.delete(requestedPath)
       this.markFileCodeAsSynced(newCode)
@@ -4089,6 +4137,8 @@ export class KclManager extends File {
       }, 1_000)
     } catch (err: unknown) {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+      if (cloudSnapshotGeneration !== this.cloudSnapshotGeneration) return
+      this.saveState.value = 'failed'
       console.warn('error saving file', err)
       if (!isPathNotFoundError(err)) {
         reportFileOperationError({

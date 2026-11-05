@@ -1,4 +1,5 @@
 import fsZds from '@src/lib/fs-zds'
+import { reportRejection } from '@src/lib/trap'
 import { getProjectInfo, writeProjectThumbnailFile } from '@src/lib/desktop'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -17,13 +18,16 @@ import { engineConnectionService } from '@src/registry/contracts/engineConnectio
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { ExpectedFileOperationError } from '@src/lib/fileSystem/operationErrors'
-import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
+import {
+  flushActiveTextFileWrite,
+  adoptCloudTextSnapshot,
+} from '@src/lib/activeTextFile'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
   provideService,
 } from '@kittycad/registry'
-import { computed, signal } from '@preact/signals-core'
+import { computed, signal, effect } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lib/projectSession'
 import {
   createTextFileIO,
@@ -238,10 +242,56 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     },
   }
 
+  const cloudService = ctx.services.signal(cloudStorageService)
+  let disposed = false
+  let stopReconciliation: (() => void) | undefined
+  queueMicrotask(() => {
+    if (disposed) return
+    stopReconciliation = effect(() =>
+      cloudService.value?.subscribeReconciled?.((root, files) => {
+        const current = project.peek()
+        if (!current || current.path !== root) return
+        adoptCloudTextSnapshot(
+          root,
+          new Map(
+            files.map((file) => [
+              fsZds.join(root, file.relativePath),
+              file.data,
+            ])
+          )
+        )
+        const editor = current.executingEditor.peek()
+        const file = files.find(
+          (file) => fsZds.join(root, file.relativePath) === editor?.path
+        )
+        editor?.adoptCloudSnapshot(
+          root,
+          file ? new TextDecoder().decode(file.data) : undefined
+        )
+        const generation = ++refreshGeneration
+        const isCurrent = () =>
+          project.peek() === current && refreshGeneration === generation
+        void current
+          .reloadFilesFromStorage(isCurrent)
+          .then(async () => {
+            if (!isCurrent()) return
+            if (!file) {
+              const target = current.projectIORefSignal.peek().default_file
+              if (target) await serviceImpl.openFile(target)
+              else await ctx.services.get(routerService).navigate(PATHS.HOME)
+            }
+          })
+          .catch(reportRejection)
+      })
+    )
+  })
+
   return {
     id: 'project-session-extension',
     providesServices: [provideService(projectSession, serviceImpl)],
     dispose: () => {
+      disposed = true
+      stopReconciliation?.()
       for (const stop of cloudWatchers.values()) stop()
       cloudWatchers.clear()
     },

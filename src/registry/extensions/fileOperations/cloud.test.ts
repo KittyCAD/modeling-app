@@ -8,7 +8,8 @@ import { publishCurrentProject } from '@src/registry/extensions/fileOperations/p
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@src/lib/fs-zds/cloud/api', () => ({
+vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
+  CloudApiError: (await original<typeof api>()).CloudApiError,
   getRemoteProject: vi.fn(),
   downloadRemoteProjectArchive: vi.fn(),
   updateRemoteProject: vi.fn(),
@@ -16,9 +17,6 @@ vi.mock('@src/lib/fs-zds/cloud/api', () => ({
   deleteRemoteProject: vi.fn(),
   listRemoteProjects: vi.fn(),
   getRemoteProjectThumbnailUrl: vi.fn(),
-  CloudApiError: class extends Error {
-    status = 404
-  },
 }))
 vi.mock('@src/registry/extensions/fileOperations/publication', () => ({
   publishCurrentProject: vi.fn(),
@@ -37,6 +35,13 @@ vi.mock('@src/lib/fs-zds/cloud/archive', async (original) => ({
 const remote = { id: 'one', revision: '1', description: '', category_ids: [] }
 const runtimes: ReturnType<typeof createFileOperationsServices>[] = []
 beforeEach(() => {
+  vi.mocked(parseProjectArchive).mockResolvedValue([
+    { relativePath: 'main.kcl', data: new TextEncoder().encode('original') },
+    {
+      relativePath: 'project.toml',
+      data: new TextEncoder().encode('[project]\ntitle = "Test"'),
+    },
+  ])
   vi.mocked(api.listRemoteProjects).mockResolvedValue([remote])
   vi.mocked(api.getRemoteProjectThumbnailUrl).mockResolvedValue(
     'data:image/png;base64,dGh1bWI='
@@ -95,6 +100,64 @@ describe('memory cloud storage', () => {
       expect.objectContaining({ expectedRevision: '1' })
     )
   })
+
+  it.each(['file lock', 'directory membership', 'directory creation'] as const)(
+    'cancels stale mutations waiting for %s after cloud reconciliation',
+    async (kind) => {
+      const { storage } = setup()
+      const root = await storage.openProject('one')
+      const file = posix.join(root, 'main.kcl')
+      const gate = Promise.withResolvers<typeof remote>()
+      vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
+      const first = storage.operations.writeFile(
+        kind === 'file lock' ? file : posix.join(root, 'new.kcl'),
+        'first edit'
+      )
+      await vi.waitFor(() =>
+        expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+      )
+      const second =
+        kind === 'directory creation'
+          ? storage.operations.createDirectory(
+              posix.join(root, 'new-directory')
+            )
+          : storage.operations.writeFile(
+              kind === 'file lock' ? file : posix.join(root, 'another.kcl'),
+              'stale queued edit'
+            )
+      const canceled = expect(second).rejects.toMatchObject({
+        operation: 'validate-mutation',
+        cause: expect.objectContaining({
+          message: 'Cloud snapshot changed; queued operation canceled.',
+        }),
+      })
+      await vi.waitFor(async () =>
+        expect(await storage.operations.pending()).toBeGreaterThanOrEqual(3)
+      )
+      vi.mocked(api.getRemoteProject).mockResolvedValue({
+        ...remote,
+        revision: '3',
+      })
+      vi.mocked(parseProjectArchive).mockResolvedValue([
+        {
+          relativePath: 'main.kcl',
+          data: new TextEncoder().encode('cloud truth'),
+        },
+      ])
+      gate.reject(new api.CloudApiError(409, 'Revision changed'))
+      await first
+      await canceled
+      expect(
+        new TextDecoder().decode(await storage.operations.readFile(file))
+      ).toBe('cloud truth')
+      expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+      expect(storage.saves.value.get('one')?.state).toBe('saved')
+      await storage.operations.writeFile(file, 'fresh edit')
+      expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+        expect.objectContaining({ expectedRevision: '3' })
+      )
+    }
+  )
 
   it('retains failed edits in memory and retries with the acknowledged revision', async () => {
     const { storage } = setup()

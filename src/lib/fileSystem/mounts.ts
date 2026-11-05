@@ -1,3 +1,4 @@
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
@@ -46,6 +47,7 @@ export function createMountedFileOperations(
       }
     } else {
       const bytes = await from.readFile(source)
+      await ensureDirectory(to, paths.dirname(destination))
       if (overwrite) await to.writeFile(destination, bytes)
       else await to.createFile(destination, bytes)
     }

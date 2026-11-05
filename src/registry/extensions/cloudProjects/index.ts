@@ -1,8 +1,5 @@
 import toast from 'react-hot-toast'
 import fsZds from '@src/lib/fs-zds'
-import { CloudSaveStatus } from '@src/components/CloudSaveStatus'
-
-import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 
@@ -122,11 +119,6 @@ export default defineRegistryItemFactory((ctx) => {
   return {
     id: 'cloud-projects',
     provides: [
-      provide(appHeaderItemsValueSpec, {
-        id: 'cloud-save-status',
-        order: 20,
-        Component: CloudSaveStatus,
-      }),
       provide(homeProjectEntriesValueSpec, entries, {
         key: 'cloud-projects.entries',
       }),

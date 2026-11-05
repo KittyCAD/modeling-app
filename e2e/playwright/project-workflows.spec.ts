@@ -8,7 +8,10 @@ import {
   mockClientErrorReports,
   doAndWaitForImageDiff,
 } from '@e2e/playwright/test-utils'
-import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
+import {
+  mockCloudStorage,
+  uploadedProject,
+} from '@e2e/playwright/lib/cloudStorageFixture'
 import { projectToml } from '@e2e/playwright/lib/cloudProjectTestUtils'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
@@ -56,7 +59,18 @@ async function prepareStorage(
       kind === 'cloud' && creationGate ? () => creationGate : undefined,
   })
   if (process.env.TARGET === 'web') await setup(context, page, testInfo)
-  await page.goto('/home')
+  const navigate = async (route: string) => {
+    if (process.env.TARGET === 'web') await page.goto(route)
+    else {
+      const url = new URL(page.url())
+      url.hash = route
+      await page.goto(url.toString())
+      // Fragment navigation can retain the current document in Electron.
+      // Direct entry must load storage again, as browser navigation does.
+      await page.reload({ waitUntil: 'domcontentloaded' })
+    }
+  }
+  await navigate('/home')
   const home = new HomePageFixture(page)
   await expect(page.getByTestId('home-header')).toBeVisible()
   const fs = FsFixture(page)
@@ -183,6 +197,7 @@ async function prepareStorage(
     replace,
     refresh,
     assertStorage,
+    navigate,
   }
 }
 
@@ -221,6 +236,426 @@ for (const kind of ['local', 'cloud'] as const) {
     `${kind} project workflow contract`,
     { tag: ['@web', '@desktop'] },
     () => {
+      test('recovers a failed save through the editor without losing edits', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo)
+        const root = await storage.seed('Recoverable save', blankCode)
+        await storage.refresh()
+        await storage.home.openProject('Recoverable save')
+        await expectEditor(page, blankCode)
+        const code = `${blankCode}// Retained after a failed save\n`
+        const gate = Promise.withResolvers<undefined>()
+        let started = false
+        let fail = true
+        if (kind === 'cloud')
+          await context.route('**/user/projects/**', async (route) => {
+            if (route.request().method() === 'PUT' && fail) {
+              const upload = await uploadedProject(route)
+              if (upload.files['main.kcl'] === code) {
+                started = true
+                await gate.promise
+                return route.fulfill({
+                  status: 503,
+                  json: { message: 'Storage unavailable' },
+                })
+              }
+            }
+            await route.fallback()
+          })
+        // Inject at the local writer boundary; persistence after recovery is real.
+        const localFailure = await page.evaluateHandle((local) => {
+          const io = window.app.singletons.kclManager.textFileIO
+          const write = io.write.bind(io)
+          const gate = Promise.withResolvers<undefined>()
+          let started = false
+          if (local)
+            Object.assign(io, {
+              write: async () => {
+                started = true
+                await gate.promise
+                return Promise.reject(
+                  Object.assign(new Error('Disk unavailable'), {
+                    code: 'ENOSPC',
+                  })
+                )
+              },
+            })
+          return {
+            started: () => started,
+            release: () => gate.resolve(undefined),
+            restore: () => {
+              Object.assign(io, { write })
+            },
+          }
+        }, kind === 'local')
+        try {
+          await editThroughUI(page, code)
+          await expect
+            .poll(() =>
+              kind === 'cloud'
+                ? started
+                : localFailure.evaluate((f) => f.started())
+            )
+            .toBe(true)
+          const clockStart = new Date()
+          await page.clock.install({ time: clockStart })
+          await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+          await page.clock.runFor(7_000)
+          await expect(
+            page.getByRole('status').filter({ hasText: 'Saving...' })
+          ).toBeVisible()
+          await expectEditor(page, code)
+          expect(await storage.read(root)).toBe(blankCode)
+          gate.resolve(undefined)
+          await localFailure.evaluate((f) => f.release())
+          await page.clock.resume()
+          const retry = page.getByRole('button', { name: 'Save failed. Retry' })
+          await expect(retry).toBeVisible()
+          await expectEditor(page, code)
+          expect(await storage.read(root)).toBe(blankCode)
+          fail = false
+          await localFailure.evaluate((f) => f.restore())
+          await retry.click()
+          await expect.poll(() => storage.read(root)).toBe(code)
+          await expect(retry).toBeHidden()
+          await expect
+            .poll(() =>
+              page.evaluate(() =>
+                window.app.singletons.kclManager.hasUnsavedLocalChanges()
+              )
+            )
+            .toBe(false)
+        } finally {
+          gate.resolve(undefined)
+          await localFailure.evaluate((f) => {
+            f.release()
+            f.restore()
+          })
+          await page.clock.resume()
+        }
+        await storage.refresh()
+        await expectEditor(page, code)
+        await storage.assertStorage(root)
+      })
+
+      test('renames and deletes nested files without changing unrelated contents', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo)
+        const nestedCode = `${blankCode}// Nested file\n`
+        const root = await storage.seed('Nested operations', blankCode, {
+          'parts/source.kcl': nestedCode,
+          'parts/existing.kcl': `${blankCode}// Keep existing\n`,
+          'unrelated/keep.kcl': `${blankCode}// Keep unrelated\n`,
+        })
+        await storage.refresh()
+        await storage.home.openProject('Nested operations')
+        await expectEditor(page, blankCode)
+        await page.evaluate(
+          (id) => window.app.layout.openPane(id),
+          DefaultLayoutPaneID.Files
+        )
+        const item = (name: string) =>
+          page.getByRole('treeitem', { name, exact: true })
+        if ((await item('parts').getAttribute('aria-expanded')) !== 'true')
+          await item('parts').click()
+        await item('source.kcl').click()
+        await expectEditor(page, nestedCode)
+        const rename = async (name: string) => {
+          await item('source.kcl').click({ button: 'right' })
+          await page.getByTestId('context-menu-rename').click()
+          await page.getByTestId('file-rename-field').fill(name)
+          await page.keyboard.press('Enter')
+          await expect(page.getByTestId('file-rename-field')).not.toBeAttached()
+        }
+        await rename('existing.kcl')
+        await expect(item('source.kcl')).toBeVisible()
+        await expectEditor(page, nestedCode)
+        expect(await storage.read(root, 'parts/existing.kcl')).toBe(
+          `${blankCode}// Keep existing\n`
+        )
+        await rename('renamed.kcl')
+        await expect(item('renamed.kcl')).toBeVisible()
+        await expect(item('source.kcl')).toBeHidden()
+        await expect(page).toHaveURL(/renamed\.kcl$/)
+        await expectEditor(page, nestedCode)
+        await expect
+          .poll(() => storage.read(root, 'parts/renamed.kcl'))
+          .toBe(nestedCode)
+        await storage.refresh()
+        await expectEditor(page, nestedCode)
+        await item('renamed.kcl').click({ button: 'right' })
+        await page.getByRole('button', { name: 'Delete', exact: true }).click()
+        await page.getByTestId('delete-confirmation').click()
+        await expect(page).toHaveURL(/main\.kcl$/)
+        await expectEditor(page, blankCode)
+        await expect(item('renamed.kcl')).toBeHidden()
+        await expect
+          .poll(() => storage.read(root, 'unrelated/keep.kcl'))
+          .toBe(`${blankCode}// Keep unrelated\n`)
+        await storage.refresh()
+        await expectEditor(page, blankCode)
+        await expect(item('renamed.kcl')).toBeHidden()
+        await storage.assertStorage(root)
+      })
+
+      test('creates a nested file, renames its folder and deletes it while keeping the project root', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo)
+        const root = await storage.seed('Nested creation', blankCode, {
+          'parts/existing.kcl': blankCode,
+        })
+        await storage.refresh()
+        await storage.home.openProject('Nested creation')
+        await expectEditor(page, blankCode)
+        await page.evaluate(
+          (id) => window.app.layout.openPane(id),
+          DefaultLayoutPaneID.Files
+        )
+        const item = (name: string) =>
+          page.getByRole('treeitem', { name, exact: true })
+        await item('parts').click()
+        await page.getByTestId('create-file-button').click()
+        await page.getByTestId('file-rename-field').fill('created')
+        await page.keyboard.press('Enter')
+        await expect(page).toHaveURL(/parts%2Fcreated\.kcl$/)
+        await expect(item('created.kcl')).toBeVisible()
+        await expect
+          .poll(() => storage.read(root, 'parts/created.kcl'))
+          .toMatch(/^@settings\(/)
+        expect(await page.evaluate(() => window.app.project?.path)).toBe(root)
+        expect(await storage.read(root)).toBe(blankCode)
+        await item('parts').click({ button: 'right' })
+        await page.getByTestId('context-menu-rename').click()
+        await page.getByTestId('file-rename-field').fill('components')
+        await page.keyboard.press('Enter')
+        await expect(page).toHaveURL(/components%2Fcreated\.kcl$/)
+        await expect(item('parts')).toBeHidden()
+        await expect(item('components')).toBeVisible()
+        expect(await page.evaluate(() => window.app.project?.path)).toBe(root)
+        await expect
+          .poll(() => storage.read(root, 'components/existing.kcl'))
+          .toBe(blankCode)
+        await storage.refresh()
+        await expect(item('components')).toBeVisible()
+        await item('components').click({ button: 'right' })
+        await page.getByRole('button', { name: 'Delete', exact: true }).click()
+        await page.getByTestId('delete-confirmation').click()
+        await expect(page).toHaveURL(/main\.kcl$/)
+        await expectEditor(page, blankCode)
+        await expect(item('components')).toBeHidden()
+        await storage.refresh()
+        await expectEditor(page, blankCode)
+        await expect(item('components')).toBeHidden()
+        expect(await storage.read(root)).toBe(blankCode)
+        await storage.assertStorage(root)
+      })
+
+      test('renames and deletes a project from Home while preserving the other project', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo)
+        await storage.seed('Rename me', blankCode)
+        const otherCode = `${blankCode}// Other project\n`
+        const other = await storage.seed('Keep me', otherCode)
+        await storage.refresh()
+        const card = (title: string) =>
+          storage.home.projectCard.filter({ hasText: title })
+        await card('Rename me').click({ button: 'right' })
+        await page.getByTestId('project-card-context-rename').click()
+        await page.getByTestId('project-rename-input').fill('Renamed project')
+        await page.keyboard.press('Enter')
+        await expect(card('Renamed project')).toBeVisible()
+        await expect(card('Rename me')).toBeHidden()
+        await expect(page.getByTestId('project-rename-input')).toBeHidden()
+        // Directory libraries synchronize their physical directory name after metadata changes.
+        if (kind === 'local')
+          await expect(card('Renamed project')).toHaveAttribute(
+            'href',
+            /renamed-project/
+          )
+        await storage.home.openProject('Renamed project')
+        await expectEditor(page, blankCode)
+        await storage.refresh()
+        await expectEditor(page, blankCode)
+        await storage.goHome()
+        await card('Renamed project').click({ button: 'right' })
+        await page.getByTestId('project-card-context-delete').click()
+        await page
+          .getByRole('dialog', { name: 'Delete Project', exact: true })
+          .getByRole('button', { name: 'Delete', exact: true })
+          .click()
+        await expect(card('Renamed project')).toBeHidden()
+        await expect(card('Keep me')).toBeVisible()
+        await storage.refresh()
+        await expect(card('Renamed project')).toBeHidden()
+        expect(await storage.read(other)).toBe(otherCode)
+        await storage.home.openProject('Keep me')
+        await expectEditor(page, otherCode)
+        await storage.assertStorage(other)
+      })
+
+      if (kind === 'cloud') {
+        test('replaces a non-KCL editor with the cloud contents after a conflict', async ({
+          page,
+          context,
+        }, testInfo) => {
+          const storage = await prepareStorage(kind, page, context, testInfo)
+          const root = await storage.seed('Text conflict', blankCode, {
+            'note.md': '# Original note\n',
+          })
+          await storage.refresh()
+          await storage.home.openProject('Text conflict')
+          await expectEditor(page, blankCode)
+          await page.evaluate(
+            (id) => window.app.layout.openPane(id),
+            DefaultLayoutPaneID.Files
+          )
+          await page
+            .getByRole('treeitem', { name: 'note.md', exact: true })
+            .click()
+          await expectEditor(page, '# Original note\n')
+          const remote = storage.remote.projects[0]
+          let conflict = true
+          let beforeConflict: string[] = []
+          let submittedRevision = ''
+          await context.route('**/user/projects/**', async (route) => {
+            if (route.request().method() === 'PUT' && conflict) {
+              const upload = await uploadedProject(route)
+              if (upload.files['note.md'] === '# Stale local note\n') {
+                conflict = false
+                beforeConflict = [...storage.remote.uploads]
+                submittedRevision = remote.revision
+                remote.files['note.md'] = '# Cloud truth\n'
+                remote.revision = String(Number(remote.revision) + 1)
+              }
+            }
+            await route.fallback()
+          })
+          await editThroughUI(page, '# Stale local note\n')
+          await expectEditor(page, '# Cloud truth\n')
+          await expect
+            .poll(() => storage.read(root, 'note.md'))
+            .toBe('# Cloud truth\n')
+          expect(storage.remote.uploads).toEqual([
+            ...beforeConflict,
+            submittedRevision,
+          ])
+          const clockStart = new Date()
+          await page.clock.install({ time: clockStart })
+          await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+          await page.clock.runFor(7_000)
+          expect(storage.remote.uploads).toEqual([
+            ...beforeConflict,
+            submittedRevision,
+          ])
+          await page.clock.resume()
+          const cloudRevision = remote.revision
+          await editThroughUI(page, '# Fresh note\n')
+          await expect
+            .poll(() => storage.read(root, 'note.md'))
+            .toBe('# Fresh note\n')
+          expect(storage.remote.uploads).toEqual([
+            ...beforeConflict,
+            submittedRevision,
+            cloudRevision,
+          ])
+          await storage.refresh()
+          await expectEditor(page, blankCode)
+          await page
+            .getByRole('treeitem', { name: 'note.md', exact: true })
+            .click()
+          await expectEditor(page, '# Fresh note\n')
+        })
+        for (const outcome of ['same', 'different'] as const) {
+          test(`recovers a lost save acknowledgement using the cloud snapshot (${outcome} contents)`, async ({
+            page,
+            context,
+          }, testInfo) => {
+            const storage = await prepareStorage(kind, page, context, testInfo)
+            const root = await storage.seed('Conflict recovery', blankCode)
+            await storage.refresh()
+            await storage.home.openProject('Conflict recovery')
+            await expectEditor(page, blankCode)
+            const code = `${blankCode}// Uploaded before connection loss\n`
+            let loseAcknowledgement = true
+            let beforeLoss: string[] = []
+            let submittedRevision = ''
+            await context.route('**/user/projects/**', async (route) => {
+              if (route.request().method() === 'PUT' && loseAcknowledgement) {
+                const upload = await uploadedProject(route)
+                if (upload.files['main.kcl'] === code) {
+                  loseAcknowledgement = false
+                  const remote = storage.remote.projects[0]
+                  submittedRevision = new URL(
+                    route.request().url()
+                  ).searchParams.get('expected_revision')!
+                  expect(submittedRevision).toBe(remote.revision)
+                  beforeLoss = [...storage.remote.uploads]
+                  remote.files = upload.files
+                  remote.title = upload.title
+                  remote.revision = String(Number(remote.revision) + 1)
+                  return route.abort('connectionreset')
+                }
+              }
+              await route.fallback()
+            })
+            await editThroughUI(page, code)
+            const retry = page.getByRole('button', {
+              name: 'Save failed. Retry',
+            })
+            await expect(retry).toBeVisible()
+            const authoritative =
+              outcome === 'same'
+                ? code
+                : `${blankCode}// Changed by another client\n`
+            if (outcome === 'different')
+              await storage.replace(root, authoritative)
+            await retry.click()
+            await expect(retry).toBeHidden()
+            await expectEditor(page, authoritative)
+
+            await expect
+              .poll(() =>
+                page.evaluate(() =>
+                  window.app.singletons.kclManager.hasUnsavedLocalChanges()
+                )
+              )
+              .toBe(false)
+            expect(storage.remote.uploads).toEqual([
+              ...beforeLoss,
+              submittedRevision,
+            ])
+            const clockStart = new Date()
+            await page.clock.install({ time: clockStart })
+            await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+            await page.clock.runFor(7_000)
+            expect(storage.remote.uploads).toEqual([
+              ...beforeLoss,
+              submittedRevision,
+            ])
+            await page.clock.resume()
+            const cloudRevision = storage.remote.projects[0].revision
+            const next = `${authoritative}// Fresh edit after recovery\n`
+            await editThroughUI(page, next)
+            await expect.poll(() => storage.read(root)).toBe(next)
+            expect(storage.remote.uploads).toEqual([
+              ...beforeLoss,
+              submittedRevision,
+              cloudRevision,
+            ])
+            await storage.refresh()
+            await expectEditor(page, next)
+          })
+        }
+      }
+
       test('creates a blank project, edits, saves, reloads and reopens it', async ({
         page,
         context,
@@ -416,7 +851,7 @@ for (const kind of ['local', 'cloud'] as const) {
             `${solidCode}// Direct project load\n`
           )
           const main = await storage.fs.join(firstRoot, 'main.kcl')
-          await page.goto(`/file/${encodeURIComponent(main)}`)
+          await storage.navigate(`/file/${encodeURIComponent(main)}`)
           await expectEditor(page, `${solidCode}// Direct project load\n`)
           await expect
             .poll(() =>

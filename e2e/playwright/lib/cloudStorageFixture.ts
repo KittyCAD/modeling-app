@@ -10,7 +10,7 @@ import {
 const projectId = '12902000-0000-4000-8000-000000000091'
 const mockedModelingContexts = new WeakSet<BrowserContext>()
 
-async function uploadedProject(route: Route) {
+export async function uploadedProject(route: Route) {
   const request = route.request()
   const body = request.postDataBuffer()
   if (!body) throw new Error('Missing upload body')

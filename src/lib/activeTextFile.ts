@@ -67,6 +67,7 @@ const outgoingWrites = new Map<
   string,
   { text: string; promise: Promise<void> }
 >()
+const fileGenerations = new Map<string, number>()
 let pendingWriteTimeout: ReturnType<typeof setTimeout> | undefined
 
 async function performWrite(
@@ -74,17 +75,20 @@ async function performWrite(
   path: string,
   text: string
 ): Promise<void> {
+  const generation = fileGenerations.get(path) ?? 0
   const previous = outgoingWrites.get(path)
   const write = { text, promise: Promise.resolve() }
   outgoingWrites.set(path, write)
   write.promise = (async () => {
     await previous?.promise.catch(() => undefined)
+    if ((fileGenerations.get(path) ?? 0) !== generation) return
     await fileOperations.writeFile(path, text)
   })()
   try {
     await write.promise
     if (outgoingWrites.get(path) === write) outgoingWrites.delete(path)
   } catch (error) {
+    if ((fileGenerations.get(path) ?? 0) !== generation) return
     // The file may have been deleted/moved out from under us (e.g. via the
     // file tree). Don't recreate it or surface a scary error in that case.
     if (isPathNotFoundError(error)) {
@@ -103,6 +107,47 @@ async function performWrite(
     // Surface (but never throw) so a transient auto-save failure can't turn into
     // an unhandled rejection.
     reportRejection(error)
+  }
+}
+
+/** Replace text buffers when a cloud conflict is resolved in favor of storage. */
+export function adoptCloudTextSnapshot(
+  root: string,
+  files: ReadonlyMap<string, Uint8Array>
+) {
+  const belongs = (path: string) =>
+    path.startsWith(`${root}/`) || path.startsWith(`${root}\\`)
+  const active = activeTextFileSignal.peek()
+  const paths = new Set([
+    ...outgoingWrites.keys(),
+    ...(pendingWrite ? [pendingWrite.path] : []),
+    ...(active ? [active.path] : []),
+  ])
+  for (const path of paths)
+    if (belongs(path)) {
+      fileGenerations.set(path, (fileGenerations.get(path) ?? 0) + 1)
+      outgoingWrites.delete(path)
+    }
+  if (pendingWrite && belongs(pendingWrite.path)) {
+    clearTimeout(pendingWriteTimeout)
+    pendingWriteTimeout = undefined
+    pendingWrite = null
+  }
+  if (!active || !belongs(active.path)) return
+  latestOpenRequestId += 1
+  const contents = files.get(active.path)
+  if (!contents) {
+    activeTextFileSignal.value = null
+    return
+  }
+  try {
+    activeTextFileSignal.value = {
+      ...active,
+      status: 'ready',
+      text: decoder.decode(contents),
+    }
+  } catch {
+    setActiveTextFileError(active.path, active.name, UNSUPPORTED_TEXT_MESSAGE)
   }
 }
 

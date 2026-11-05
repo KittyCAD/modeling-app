@@ -31,6 +31,8 @@ interface OpenCloudProject {
   owner: string | undefined
   acknowledgedPaths: Set<string>
   queue: Promise<unknown>
+  generation: number
+  needsReconciliation: boolean
 }
 
 /** A cloud filesystem backed by memory, with serialized revision-checked saves. */
@@ -54,6 +56,9 @@ export function createCloudFileSystem(
     pendingThumbnails.delete(id)
   }
   const opening = new Map<string, Promise<string>>()
+  const reconciliationListeners = new Set<
+    (root: string, files: readonly ProjectArchiveFile[]) => void
+  >()
   const listeners = new Set<(changes: readonly CloudFileChange[]) => void>()
   const ready = memory.mkdir(root, { recursive: true })
   const pathFor = (id: string) => paths.join(root, id)
@@ -121,6 +126,8 @@ export function createCloudFileSystem(
       owner: config().accountId,
       acknowledgedPaths: new Set(archive.map((f) => f.relativePath)),
       queue: project?.queue ?? Promise.resolve(),
+      generation: project?.generation ?? 0,
+      needsReconciliation: false,
     })
     listGeneration += 1
     projects.value = [
@@ -129,6 +136,29 @@ export function createCloudFileSystem(
     ]
     state(id, { state: 'saved' })
   }
+  const reconcile = async (id: string, requestConfig: CloudApiConfig) => {
+    const project = opened.get(id)!
+    // Invalidate work submitted against the superseded snapshot, even if fetching fails.
+    if (!project.needsReconciliation) project.generation += 1
+    project.needsReconciliation = true
+    clearThumbnail(id)
+    const remote = await api.getRemoteProject(requestConfig, id)
+    const archive = await parseProjectArchive(
+      await api.downloadRemoteProjectArchive(requestConfig, id)
+    )
+    if (
+      config().accountId !== requestConfig.accountId ||
+      opened.get(id) !== project
+    )
+      return Promise.reject(
+        new Error('Cloud project changed during reconciliation.')
+      )
+    await hydrate(id, archive)
+    acknowledge(id, remote, archive)
+    for (const listener of reconciliationListeners)
+      listener(pathFor(id), archive)
+    notify([{ path: pathFor(id), eventType: 'change' }])
+  }
   const commit = async (
     id: string,
     snapshot?: ProjectArchiveFile[],
@@ -136,6 +166,7 @@ export function createCloudFileSystem(
   ) => {
     const project = opened.get(id)
     if (!project) return Promise.reject(new Error('Cloud project is not open.'))
+    if (project.needsReconciliation) return reconcile(id, requestConfig)
     const revision = project.remote.revision
     if (
       revision === undefined ||
@@ -154,16 +185,23 @@ export function createCloudFileSystem(
         { relativePath: PROJECT_IMAGE_NAME, data: thumbnail.bytes },
       ]
     const currentPaths = new Set(archive.map((f) => f.relativePath))
-    const remote = await api.updateRemoteProject({
-      config: requestConfig,
-      projectPath: pathFor(id),
-      project: project.remote,
-      files: archive,
-      expectedRevision: String(revision),
-      deletedPaths: [...project.acknowledgedPaths].filter(
-        (path) => !currentPaths.has(path)
-      ),
-    })
+    let remote: RemoteProject
+    try {
+      remote = await api.updateRemoteProject({
+        config: requestConfig,
+        projectPath: pathFor(id),
+        project: project.remote,
+        files: archive,
+        expectedRevision: String(revision),
+        deletedPaths: [...project.acknowledgedPaths].filter(
+          (path) => !currentPaths.has(path)
+        ),
+      })
+    } catch (error) {
+      if (error instanceof api.CloudApiError && error.status === 409)
+        return reconcile(id, requestConfig)
+      return Promise.reject(error)
+    }
     if (config().accountId !== requestConfig.accountId)
       return Promise.reject(new Error('Cloud account changed during save.'))
     if (thumbnail) {
@@ -179,7 +217,8 @@ export function createCloudFileSystem(
     id: string,
     work: (previousState: CloudSaveState | undefined) => Promise<T>,
     persist = true,
-    reportSaveFailure = true
+    reportSaveFailure = true,
+    allowReconciliation = false
   ): Promise<T> => {
     const project = opened.get(id)
     if (!project) return Promise.reject(new Error('Cloud project is not open.'))
@@ -188,10 +227,19 @@ export function createCloudFileSystem(
       return Promise.reject(
         new Error('Reload to open cloud projects after changing accounts.')
       )
+    if (project.needsReconciliation && !allowReconciliation)
+      return Promise.reject(
+        new Error('Cloud snapshot needs reconciliation. Retry before editing.')
+      )
+    const generation = project.generation
     pendingRequests += 1
     const result = project.queue
       .catch(() => undefined)
       .then(async () => {
+        if (opened.get(id)?.generation !== generation)
+          return Promise.reject(
+            new Error('Cloud snapshot changed; queued operation canceled.')
+          )
         const previousState = saves.peek().get(id)
         if (reportSaveFailure) state(id, { state: 'saving' })
         try {
@@ -233,7 +281,7 @@ export function createCloudFileSystem(
               previousState?.state === 'failed')
           )
             await commit(id, after, requestConfig)
-          notify(changes)
+          if (opened.get(id)?.generation === generation) notify(changes)
           if (saves.peek().get(id)?.state === 'saving')
             state(id, previousState ?? { state: 'saved' })
           return value
@@ -448,6 +496,23 @@ export function createCloudFileSystem(
       api.getRemoteProjectThumbnailUrl(config(), project),
     pathFor,
     idFor,
+    captureMutationGuard: (targets: readonly string[]) => {
+      const generations = targets.map((path) => {
+        const id = idFor(path)
+        return {
+          id,
+          generation: opened.get(id)?.generation,
+          reconciling: opened.get(id)?.needsReconciliation,
+        }
+      })
+      return () =>
+        generations.some(
+          ({ id, generation, reconciling }) =>
+            reconciling || opened.get(id)?.generation !== generation
+        )
+          ? new Error('Cloud snapshot changed; queued operation canceled.')
+          : undefined
+    },
     saves,
     stageThumbnail: async (path: string, bytes: Uint8Array) => {
       const id = idFor(path)
@@ -456,12 +521,20 @@ export function createCloudFileSystem(
         return Promise.reject(
           new Error('Cloud project is not open for this account.')
         )
+      if (project.needsReconciliation)
+        return Promise.reject(new Error('Cloud snapshot is being reconciled.'))
       clearThumbnail(id)
       pendingThumbnails.set(id, { bytes: new Uint8Array(bytes) })
       deferThumbnail(id)
     },
     editorChanged: (path: string) => deferThumbnail(idFor(path)),
     pending: () => pendingRequests,
+    subscribeReconciled: (
+      listener: (root: string, files: readonly ProjectArchiveFile[]) => void
+    ) => {
+      reconciliationListeners.add(listener)
+      return () => reconciliationListeners.delete(listener)
+    },
     subscribe: (listener: (changes: readonly CloudFileChange[]) => void) => {
       listeners.add(listener)
       return () => listeners.delete(listener)
@@ -536,7 +609,20 @@ export function createCloudFileSystem(
       path: string,
       run: (backing: IZooDesignStudioFS) => Promise<T>
     ) => enqueue(idFor(path), () => run(memory)),
-    retry: (id: string) => enqueue(id, async () => {}),
+    retry: (id: string) =>
+      enqueue(
+        id,
+        async (previous) => {
+          if (
+            previous?.state === 'failed' ||
+            opened.get(id)?.needsReconciliation
+          )
+            await commit(id)
+        },
+        false,
+        true,
+        true
+      ),
     snapshot: async (id: string) => {
       await openProject(id)
       return collect(pathFor(id))

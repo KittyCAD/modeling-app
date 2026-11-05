@@ -4,6 +4,7 @@ import {
   provide,
   provideService,
   Registry,
+  Slot,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
@@ -31,6 +32,7 @@ vi.mock('@src/lib/desktop', () => ({
 }))
 vi.mock('@src/lib/activeTextFile', () => ({
   flushActiveTextFileWrite: vi.fn(async () => {}),
+  adoptCloudTextSnapshot: vi.fn(),
 }))
 
 const metadata = (title = 'Project'): Project => ({
@@ -73,8 +75,10 @@ function setup(cloud?: CloudStorageService) {
   const navigate = vi.fn(async (_path?: unknown, _options?: unknown) => {})
   router.setNavigate(navigate)
   const registry = new Registry()
+  const lateCloud = new Slot()
   registry.configure([
     projectSessionRegistryItem,
+    lateCloud.of(),
     defineRegistryItem({
       provides: [
         provide(wasmPromiseValueSpec, Promise.resolve({} as ModuleType)),
@@ -93,10 +97,65 @@ function setup(cloud?: CloudStorageService) {
   const session = registry.get(projectSession)
   const current = createProject()
   session.setProject(current.project)
-  return { session, exists, rename, router, navigate, ...current }
+  return {
+    registry,
+    lateCloud,
+    session,
+    exists,
+    rename,
+    router,
+    navigate,
+    ...current,
+  }
 }
 
 describe('direct project session file actions', () => {
+  it('subscribes when cloud storage becomes available and applies its authoritative snapshot', async () => {
+    const s = setup()
+    const adopt = vi.fn()
+    Object.assign(s.project.executingEditor.peek()!, {
+      adoptCloudSnapshot: adopt,
+    })
+    const reload = vi.fn(async () => {})
+    Object.assign(s.project, { reloadFilesFromStorage: reload })
+    await Promise.resolve()
+    let listener:
+      | ((
+          root: string,
+          files: { relativePath: string; data: Uint8Array }[]
+        ) => void)
+      | undefined
+    const stop = vi.fn()
+    const subscribeReconciled = vi.fn((next: NonNullable<typeof listener>) => {
+      listener = next
+      return stop
+    })
+    s.registry.reconfigure(s.lateCloud, [
+      defineRegistryItem({
+        id: 'late-cloud-storage',
+        providesServices: [
+          provideService(cloudStorageService, {
+            subscribeReconciled,
+          } as unknown as CloudStorageService),
+        ],
+      }),
+    ])
+    await vi.waitFor(() => expect(subscribeReconciled).toHaveBeenCalledOnce())
+    listener!('/another-project', [])
+    expect(adopt).not.toHaveBeenCalled()
+    listener!('/project', [
+      {
+        relativePath: 'parts/main.kcl',
+        data: new TextEncoder().encode('cloud truth'),
+      },
+    ])
+    expect(adopt).toHaveBeenCalledWith('/project', 'cloud truth')
+    await vi.waitFor(() => expect(reload).toHaveBeenCalledOnce())
+    s.registry[Symbol.dispose]()
+    registries.splice(registries.indexOf(s.registry), 1)
+    expect(stop).toHaveBeenCalledOnce()
+  })
+
   it('stages cloud thumbnails and forwards editor activity without file writes', async () => {
     const stageThumbnail = vi.fn(async () => {})
     const editorChanged = vi.fn()

@@ -2297,6 +2297,60 @@ describe('KclManager diagnostics', () => {
     expect(writeSpy).not.toHaveBeenCalled()
   })
 
+  it.each(['success', 'failure'] as const)(
+    'adopts cloud contents and ignores superseded save completion (%s)',
+    async (outcome) => {
+      vi.useFakeTimers()
+      const { kclManager } = createKclManagerTestHarness('base')
+      kclManager.path = '/cloud/project/main.kcl'
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: kclManager.path,
+        nextContent: 'base',
+        shouldSyncRust: false,
+      })
+      kclManager.engineCommandManager.started = true
+      vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('base')
+      const gate = Promise.withResolvers<undefined>()
+      const write = vi
+        .spyOn(kclManager, 'write')
+        .mockReturnValueOnce(gate.promise)
+      kclManager.updateCodeEditor('submitted edit', {
+        shouldExecute: false,
+        shouldWriteToDisk: true,
+      })
+      await vi.advanceTimersByTimeAsync(1_500)
+      expect(write).toHaveBeenCalledOnce()
+      kclManager.updateCodeEditor('queued stale edit', {
+        shouldExecute: false,
+        shouldWriteToDisk: true,
+      })
+      localStorage.setItem(
+        'kclRecovery:/cloud/project/closed.kcl',
+        'stale closed-file buffer'
+      )
+      localStorage.setItem(
+        'kclRecovery:/cloud/project-other/main.kcl',
+        'other project buffer'
+      )
+      kclManager.adoptCloudSnapshot('/cloud/project', 'cloud truth')
+      expect(
+        localStorage.getItem('kclRecovery:/cloud/project/closed.kcl')
+      ).toBeNull()
+      expect(
+        localStorage.getItem('kclRecovery:/cloud/project-other/main.kcl')
+      ).toBe('other project buffer')
+      await vi.advanceTimersByTimeAsync(7_000)
+      if (outcome === 'success') gate.resolve(undefined)
+      else gate.reject(new Error('Superseded save failed'))
+      await vi.advanceTimersByTimeAsync(0)
+      expect(kclManager.code).toBe('cloud truth')
+      expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+      expect(kclManager.saveState.value).toBe('saved')
+      await kclManager.flushWriteToFile()
+      expect(write).toHaveBeenCalledOnce()
+    }
+  )
+
   it('reports KCL autosave failures without including source or path', async () => {
     const path = '/tmp/kcl-manager-reporting-test.kcl'
     const newCode = 'local edits'
