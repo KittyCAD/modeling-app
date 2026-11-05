@@ -1,3 +1,5 @@
+import { resolveDistanceSelections } from '@src/lib/gdtDistanceSelections'
+import { isErr } from '@src/lib/trap'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -274,6 +276,8 @@ const withGdtDefaults = <
         sourceCode: kclManager.code,
         outputUnit: kclManager.fileSettings.defaultLengthUnit,
         wasmInstance,
+        distance: commandName === 'GDT Distance',
+        artifactGraph: kclManager.artifactGraph,
       })
 
       return add(
@@ -347,7 +351,42 @@ export const modelingCommandCodemods = {
     'objects'
   ),
   'GDT Distance': withSolidEdgeSelections(
-    withGdtDefaults('GDT Distance', addDistanceGdt),
+    defineModelingCodemod<CommandArgsByName['GDT Distance']>({
+      ...withStdLibExperimentalFeatures('GDT Distance'),
+      run: async ({ args, ast, kclManager, wasmInstance }) => {
+        const resolved = args.nodeToEdit
+          ? {
+              selections: args.objects ?? {
+                graphSelections: [],
+                otherSelections: [],
+              },
+              faces: new Map(),
+            }
+          : await resolveDistanceSelections(
+              args.objects ?? { graphSelections: [], otherSelections: [] },
+              kclManager.artifactGraph,
+              kclManager.engineCommandManager
+            )
+        if (isErr(resolved)) return resolved
+        const data = await withDefaultGdtFrameDefaults({
+          data: { ...args, objects: resolved.selections },
+          ast,
+          artifactGraph: kclManager.artifactGraph,
+          engineCommandManager: kclManager.engineCommandManager,
+          sourceCode: kclManager.code,
+          outputUnit: kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+          distance: true,
+        })
+        return addDistanceGdt({
+          ...data,
+          ast,
+          artifactGraph: kclManager.artifactGraph,
+          wasmInstance,
+          edgeFaceSelections: resolved.faces,
+        })
+      },
+    }),
     'objects'
   ),
   'GDT Perpendicularity': withSolidEdgeSelections(
