@@ -1,7 +1,9 @@
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
+import type { Project } from '@src/lib/project'
 import { posix } from '@chainner/node-path'
 import { createProjectOperations } from '@src/lib/fileSystem/projectOperations'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
 
@@ -9,7 +11,65 @@ vi.mock('@src/lib/desktop', () => ({
   ensureProjectTomlTitle: vi.fn(async () => {}),
 }))
 
+vi.mock('@src/lib/projectLibraries/directoryScanner', () => ({
+  readProjectsFromProjectDirectory: vi.fn(),
+}))
+
 describe('project file operations', () => {
+  beforeEach(() => vi.mocked(readProjectsFromProjectDirectory).mockReset())
+
+  it('keeps the newest directory listing when reads finish out of order', async () => {
+    const older = Promise.withResolvers<Project[]>()
+    const newer = Promise.withResolvers<Project[]>()
+    vi.mocked(readProjectsFromProjectDirectory)
+      .mockReturnValueOnce(older.promise)
+      .mockReturnValueOnce(newer.promise)
+    const projects = createProjectOperations({
+      operations: testFileOperations,
+      wasm: vi.fn(),
+    })
+    const first = projects.listProjects('/older')
+    await vi.waitFor(() =>
+      expect(readProjectsFromProjectDirectory).toHaveBeenCalledTimes(1)
+    )
+    const second = projects.listProjects('/newer')
+    await vi.waitFor(() =>
+      expect(readProjectsFromProjectDirectory).toHaveBeenCalledTimes(2)
+    )
+    expect(projects.pending.value).toBe(2)
+    const newest: Project[] = []
+    newer.resolve(newest)
+    await second
+    expect(projects.projects.value).toBe(newest)
+    const stale: Project[] = []
+    older.resolve(stale)
+    await first
+    expect(projects.projects.value).toBe(newest)
+    expect(projects.pending.value).toBe(0)
+  })
+
+  it('allows a mutation to finish while directory discovery is still pending', async () => {
+    const gate = Promise.withResolvers<Project[]>()
+    vi.mocked(readProjectsFromProjectDirectory)
+      .mockClear()
+      .mockReturnValueOnce(gate.promise)
+    const remove = vi.fn(async () => {})
+    const projects = createProjectOperations({
+      operations: { ...testFileOperations, remove },
+      wasm: vi.fn(),
+    })
+    const listing = projects.listProjects('/projects')
+    await vi.waitFor(() =>
+      expect(readProjectsFromProjectDirectory).toHaveBeenCalledOnce()
+    )
+    await projects.deleteProject('/projects/removed')
+    expect(remove).toHaveBeenCalledWith('/projects/removed')
+    expect(projects.pending.value).toBe(1)
+    gate.resolve([])
+    await listing
+    expect(projects.pending.value).toBe(0)
+  })
+
   it('validates all paths before writing any files', async () => {
     const writeFile = vi.fn()
     const projects = createProjectOperations({

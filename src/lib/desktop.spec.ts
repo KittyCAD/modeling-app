@@ -249,6 +249,41 @@ describe('desktop utilities', () => {
   })
 
   describe('listProjects', () => {
+    it('descends into KCL-named directories when choosing an entrypoint', async () => {
+      const { instance } = await buildTheWorldNode()
+      const projectPath = '/test/projects/project-without-kcl-files'
+      const folder = `${projectPath}/folder.kcl`
+      const nested = `${folder}/part.kcl`
+      const originalStat = mockElectron.stat.getMockImplementation()!
+      mockElectron.stat.mockImplementation((path: string) =>
+        path.endsWith('/main.kcl')
+          ? Promise.reject('ENOENT')
+          : originalStat(path === folder ? projectPath : path)
+      )
+      await expect(
+        getDefaultKclFileForDir(
+          {
+            ...testFileOperations,
+            stat: (path) =>
+              testFileOperations.stat(path === folder ? projectPath : path),
+          },
+          projectPath,
+          {
+            name: 'project-without-kcl-files',
+            path: projectPath,
+            children: [
+              {
+                name: 'folder.kcl',
+                path: folder,
+                children: [{ name: 'part.kcl', path: nested, children: null }],
+              },
+            ],
+          },
+          await instance
+        )
+      ).resolves.toBe(nested)
+    })
+
     it('preserves main.kcl created after discovery observed an empty project', async () => {
       const { instance } = await buildTheWorldNode()
       const projectPath = '/test/projects/project-without-kcl-files'

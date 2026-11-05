@@ -1,3 +1,4 @@
+import type { ProjectOperationsService } from '@src/lib/fileSystem/projectOperations'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
 import type {
@@ -51,9 +52,15 @@ export interface FileOperationsRegistryService {
 }
 
 export const fileOperationsContract = defineContract({
+  projectOperationsService: defineService<ProjectOperationsService>(
+    'fileOperations.projects'
+  ),
   fileOperationsService: defineService<FileOperationsRegistryService>(
     'fileOperations.service'
   ),
 })
 
-export const { fileOperationsService } = fileOperationsContract
+export const { fileOperationsService, projectOperationsService } =
+  fileOperationsContract
+
+export type { ProjectOperationsService } from '@src/lib/fileSystem/projectOperations'

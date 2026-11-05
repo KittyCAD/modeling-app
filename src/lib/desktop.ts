@@ -601,7 +601,7 @@ export async function getDefaultKclFileForDir(
       // Find a kcl file in the directory.
       if (file.children) {
         for (const entry of file.children) {
-          if (entry.name.endsWith('.kcl')) {
+          if (entry.children === null && entry.name.endsWith('.kcl')) {
             return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
@@ -693,9 +693,7 @@ export async function getProjectInfo(
     stats = await fileOperations.stat(projectPath)
   } catch (e) {
     if (isPathNotFoundError(e)) {
-      return Promise.reject(
-        new Error(`Project directory does not exist: ${projectPath}`)
-      )
+      return Promise.reject(e)
     }
   }
 
