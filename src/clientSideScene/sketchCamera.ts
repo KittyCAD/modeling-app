@@ -8,12 +8,13 @@ import { type Object3D, Quaternion, Vector3 } from 'three'
 export function getSketchCameraFrame(
   sketch: Object3D,
   eye: Vector3,
-  // face_get_center returns world coordinates in the model's base units.
+  // face_get_center returns world coordinates in mm, the same as the scene's
+  // world space (the scene is scaled from base units to mm).
   faceCenter?: Vector3
 ) {
   sketch.updateWorldMatrix(true, false)
   const target = faceCenter
-    ? faceCenter.clone().multiply(sketch.getWorldScale(new Vector3()))
+    ? faceCenter.clone()
     : sketch.getWorldPosition(new Vector3())
   const quaternion = sketch.getWorldQuaternion(new Quaternion()).normalize()
   const toEye = eye.clone().sub(target)
