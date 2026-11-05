@@ -79,6 +79,7 @@ export interface LocalRendererProps {
   fixedSizeGrid: boolean
   renderingMode: RenderingMode
   denoise: boolean
+  thresholdPercent?: number
   fadeDuration?: number
   rayTracingEdgeOpacity?: number
   rayTracingEdges?: boolean
@@ -96,6 +97,7 @@ export class LocalRenderer {
   private highlightEdges: boolean
   private fixedSizeGrid: boolean
   private pathTrace: boolean
+  private thresholdPercent: number
   private lastCameraChange = -Infinity
   private renderingMode: RenderingMode
   private readonly renderTransition = new RenderTransition()
@@ -165,6 +167,7 @@ export class LocalRenderer {
     this.pathTrace = props.renderingMode !== 'standard'
     this.denoise = props.denoise
     this.renderingMode = props.renderingMode
+    this.thresholdPercent = props.thresholdPercent ?? 50
     this.rayTracingEdges = props.rayTracingEdges ?? true
     this.rayTracingEdgeOpacity = props.rayTracingEdgeOpacity ?? 0.45
     this.renderTransition.setDuration(
@@ -502,6 +505,12 @@ export class LocalRenderer {
     this.invalidateBaseRender()
   }
 
+  setThresholdPercent(percent: number) {
+    if (!Number.isFinite(percent) || percent < 0 || percent > 100) return
+    this.thresholdPercent = percent
+    this.invalidateBaseRender()
+  }
+
   setFadeDuration(duration: number) {
     this.renderTransition.setDuration(duration, performance.now())
     this.invalidateBaseRender()
@@ -764,7 +773,8 @@ export class LocalRenderer {
     // A path traced image changes with every frame until it settles.
     const cameraMoving =
       (this.renderingMode === 'ray-tracing-without-drag' ||
-        this.renderingMode === 'ray-tracing-stealth') &&
+        this.renderingMode === 'ray-tracing-stealth' ||
+        this.renderingMode === 'ray-tracing-threshold-transition') &&
       (this.kclManager.sceneInfra.camControls.isDragging ||
         (this.renderingMode === 'ray-tracing-stealth' &&
           performance.now() - this.lastCameraChange < 150))
@@ -781,14 +791,18 @@ export class LocalRenderer {
           previewCamera,
           renderer,
           !cameraMoving && this.renderingMode === 'ray-tracing-stealth',
-          false
+          false,
+          this.renderingMode === 'ray-tracing-threshold-transition'
+            ? this.thresholdPercent
+            : undefined
         ) ??
           false)
       const opacity = this.renderTransition.update(
         !cameraMoving && ready,
         performance.now(),
         this.renderingMode === 'ray-tracing-without-drag' ||
-          this.renderingMode === 'ray-tracing-stealth'
+          this.renderingMode === 'ray-tracing-stealth' ||
+          this.renderingMode === 'ray-tracing-threshold-transition'
       )
       if (pathTraceRenderer && opacity > 0) {
         if (this.rayTracingEdges && this.edgeRenderer) {

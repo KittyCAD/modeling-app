@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { HalfFloatType, PerspectiveCamera, Texture, Vector2 } from 'three'
 import type { WebGPURenderer } from 'three/webgpu'
 
@@ -22,6 +22,7 @@ vi.mock('three-gpu-pathtracer/webgpu', () => ({
   },
   WebGPUPathTracer: class {
     maxSamples = 0
+    renderDelay = 0
     reset = state.reset
     setScene = state.reset
     setCamera = state.reset
@@ -67,6 +68,7 @@ async function fixture() {
 }
 
 describe('stealth path tracing', () => {
+  afterEach(() => vi.restoreAllMocks())
   beforeEach(() => {
     state.renderTime = 0
     state.samples = 0
@@ -75,6 +77,7 @@ describe('stealth path tracing', () => {
       state.renderTime = 0
       state.denoised = false
     })
+    state.measure.mockClear()
     state.measure.mockImplementation(async () => ({ min: state.samples }))
   })
 
@@ -127,6 +130,66 @@ describe('stealth path tracing', () => {
     expect(renderer.getRenderTarget()).toBeNull()
     tracer.present(renderer, 1, raster)
     expect(raster).toHaveBeenCalledOnce()
+    tracer.dispose()
+  })
+
+  it.each([
+    { percent: 15, below: 2, ready: 3 },
+    { percent: 50, below: 7, ready: 8 },
+    { percent: 100, below: 15, ready: 16 },
+  ])(
+    'reveals at $percent percent of 16 samples before denoising',
+    async ({ percent, below, ready }) => {
+      let now = 1000
+      vi.spyOn(performance, 'now').mockImplementation(() => now)
+      const { tracer, renderer, camera } = await fixture()
+      tracer.setDenoise(true)
+      state.samples = below
+      expect(tracer.render(camera, renderer, false, false, percent)).toBe(false)
+      await Promise.resolve()
+      expect(tracer.render(camera, renderer, false, false, percent)).toBe(false)
+      state.samples = ready
+      now += 100
+      tracer.render(camera, renderer, false, false, percent)
+      await Promise.resolve()
+      expect(tracer.render(camera, renderer, false, false, percent)).toBe(true)
+      expect(state.denoised).toBe(false)
+      tracer.dispose()
+    }
+  )
+
+  it('reveals immediately at zero percent and limits sample readbacks to ten per second', async () => {
+    let now = 1000
+    vi.spyOn(performance, 'now').mockImplementation(() => now)
+    const { tracer, renderer, camera } = await fixture()
+    expect(tracer.render(camera, renderer, false, false, 0)).toBe(true)
+    await Promise.resolve()
+    now += 99
+    tracer.render(camera, renderer, false, false, 0)
+    expect(state.measure).toHaveBeenCalledTimes(1)
+    now += 1
+    tracer.render(camera, renderer, false, false, 0)
+    expect(state.measure).toHaveBeenCalledTimes(2)
+    tracer.dispose()
+  })
+
+  it('does not let a stale sample count reveal the next camera view', async () => {
+    const { tracer, renderer, camera } = await fixture()
+    tracer.setDenoise(true)
+    let complete: ((value: { min: number }) => void) | undefined
+    state.measure.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          complete = resolve
+        })
+    )
+    tracer.render(camera, renderer, false, false, 50)
+    camera.position.x = 5
+    camera.updateMatrixWorld()
+    expect(tracer.render(camera, renderer, false, false, 50)).toBe(false)
+    complete?.({ min: 16 })
+    await Promise.resolve()
+    expect(tracer.render(camera, renderer, false, false, 50)).toBe(false)
     tracer.dispose()
   })
 

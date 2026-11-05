@@ -99,6 +99,8 @@ export class PathTraceRenderer {
   private revision = 0
   private measuringSamples = false
   private samplesReached = false
+  private samplingProgress = 0
+  private lastSampleMeasurement = -Infinity
   private disposed = false
   /** The image is final, so no more frames are needed until something changes. */
   settled = false
@@ -209,7 +211,8 @@ export class PathTraceRenderer {
     camera: PerspectiveCamera | OrthographicCamera,
     renderer: WebGPURenderer,
     stealth: boolean,
-    draw = true
+    draw = true,
+    thresholdPercent?: number
   ) {
     this.edgeOpacity.value = 0
     const previousTarget = renderer.getRenderTarget()
@@ -267,13 +270,22 @@ export class PathTraceRenderer {
     const restarted = renderTime < this.lastRenderTime
     this.lastRenderTime = renderTime
     if (restarted) {
-      this.samplesReached = false
+      this.invalidate()
     }
     this.settled = !restarted && (denoising ? denoised : this.samplesReached)
-    if (!denoising && !this.samplesReached) {
+    if (this.settled) this.samplingProgress = 1
+    if (thresholdPercent !== undefined) {
+      // Ignore the temporary low-resolution preview when measuring readiness.
+      if (renderTime >= pathTracer.renderDelay && this.samplingProgress < 1) {
+        this.measureSamples(true)
+      }
+    } else if (!denoising && !this.samplesReached) {
       this.measureSamples()
     }
-    const present = !stealth || this.settled
+    const present =
+      thresholdPercent !== undefined
+        ? this.samplingProgress * 100 >= thresholdPercent
+        : !stealth || this.settled
     if (present && draw) {
       this.blend.value = 1
       this.presentationQuad.render(renderer)
@@ -386,12 +398,17 @@ export class PathTraceRenderer {
     })
   }
 
-  /** Without a denoiser, the render settles when every pixel has its samples. */
-  private measureSamples() {
-    if (this.measuringSamples) {
+  /** Read minimum sampling progress without allowing a stale view to reveal. */
+  private measureSamples(throttle = false) {
+    const now = performance.now()
+    if (
+      this.measuringSamples ||
+      (throttle && now - this.lastSampleMeasurement < 100)
+    ) {
       return
     }
     this.measuringSamples = true
+    this.lastSampleMeasurement = now
     const renderTime = this.pathTracer.getRenderTime()
     const revision = this.revision
     this.pathTracer
@@ -403,13 +420,15 @@ export class PathTraceRenderer {
         }
         // A reset while measuring makes the count stale.
         if (
-          revision === this.revision &&
-          this.pathTracer.getRenderTime() >= renderTime &&
-          min >= this.pathTracer.maxSamples
-        ) {
-          this.samplesReached = true
-          this.onChange()
-        }
+          revision !== this.revision ||
+          this.pathTracer.getRenderTime() < renderTime
+        )
+          return
+        const progress = Math.min(1, min / this.pathTracer.maxSamples)
+        const changed = progress !== this.samplingProgress
+        this.samplingProgress = progress
+        if (min >= this.pathTracer.maxSamples) this.samplesReached = true
+        if (changed) this.onChange()
       })
       .catch(reportRejection)
       .finally(() => {
@@ -419,6 +438,8 @@ export class PathTraceRenderer {
 
   private invalidate() {
     this.revision++
+    this.samplingProgress = 0
+    this.lastSampleMeasurement = -Infinity
     this.samplesReached = false
     this.settled = false
   }

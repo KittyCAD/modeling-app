@@ -104,7 +104,8 @@ export function PathTraceToggleViewExtension({
             mode === 'standard' ||
             mode === 'ray-tracing' ||
             mode === 'ray-tracing-without-drag' ||
-            mode === 'ray-tracing-stealth'
+            mode === 'ray-tracing-stealth' ||
+            mode === 'ray-tracing-threshold-transition'
           ) {
             pathTracing.setMode(mode)
           }
@@ -116,6 +117,9 @@ export function PathTraceToggleViewExtension({
           Ray Tracing Without Drag
         </option>
         <option value="ray-tracing-stealth">Ray Tracing Stealth</option>
+        <option value="ray-tracing-threshold-transition">
+          Ray Tracing Threshold Transition
+        </option>
       </select>
       <label className="flex items-center gap-1.5">
         <input
@@ -163,7 +167,8 @@ export function PathTraceToggleViewExtension({
           value={pathTracing.fadeDuration}
           disabled={
             pathTracing.mode !== 'ray-tracing-without-drag' &&
-            pathTracing.mode !== 'ray-tracing-stealth'
+            pathTracing.mode !== 'ray-tracing-stealth' &&
+            pathTracing.mode !== 'ray-tracing-threshold-transition'
           }
           onChange={(event) => {
             const duration = event.target.valueAsNumber
@@ -173,6 +178,28 @@ export function PathTraceToggleViewExtension({
           }}
         />
       </label>
+      {pathTracing.mode === 'ray-tracing-threshold-transition' && (
+        <label
+          className="flex items-center gap-1.5"
+          title="Minimum sampling progress before the fade starts. 100% is the sampling target, before denoising."
+        >
+          Sample Threshold (%)
+          <input
+            type="number"
+            min="0"
+            max="100"
+            step="1"
+            className="w-16 rounded border border-chalkboard-30 bg-transparent px-1 dark:border-chalkboard-70"
+            value={pathTracing.thresholdPercent}
+            onChange={(event) => {
+              const percent = event.target.valueAsNumber
+              if (Number.isFinite(percent) && percent >= 0 && percent <= 100) {
+                pathTracing.setThresholdPercent(percent)
+              }
+            }}
+          />
+        </label>
+      )}
     </div>
   )
 }

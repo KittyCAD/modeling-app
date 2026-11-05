@@ -161,6 +161,7 @@ describe('local GLB loading', () => {
     'ray-tracing',
     'ray-tracing-without-drag',
     'ray-tracing-stealth',
+    'ray-tracing-threshold-transition',
   ] as const)('%s respects dragging and its reveal policy', (mode) => {
     const { renderer, state, manager } = fixture()
     renderer.setRenderingMode(mode)
@@ -182,7 +183,8 @@ describe('local GLB loading', () => {
       state.previewCamera,
       state.renderer,
       mode === 'ray-tracing-stealth',
-      false
+      false,
+      mode === 'ray-tracing-threshold-transition' ? 50 : undefined
     )
     renderer.setRenderingMode('standard')
     expect(trace.dispose).toHaveBeenCalledOnce()
@@ -275,6 +277,51 @@ describe('local GLB loading', () => {
       renderer.dispose()
     }
   )
+
+  it('starts the threshold fade only when ready and returns to real-time immediately on drag', () => {
+    let now = 1000
+    vi.spyOn(performance, 'now').mockImplementation(() => now)
+    const { renderer, state, manager } = fixture()
+    renderer.setRenderingMode('ray-tracing-threshold-transition')
+    renderer.setThresholdPercent(75)
+    renderer.setFadeDuration(1000)
+    state.previewCamera = new PerspectiveCamera()
+    const trace = {
+      settled: false,
+      render: vi.fn().mockReturnValue(false),
+      present: vi.fn(),
+      renderEdges: vi.fn(),
+      dispose: vi.fn(),
+    }
+    state.pathTraceRenderer = trace
+    state.renderPreview()
+    expect(trace.render).toHaveBeenLastCalledWith(
+      state.previewCamera,
+      state.renderer,
+      false,
+      false,
+      75
+    )
+    expect(trace.present).not.toHaveBeenCalled()
+    now += 2000
+    trace.render.mockReturnValue(true)
+    state.renderPreview()
+    expect(trace.present).not.toHaveBeenCalled()
+    now += 500
+    state.renderPreview()
+    expect(trace.present).toHaveBeenLastCalledWith(
+      state.renderer,
+      0.5,
+      expect.any(Function)
+    )
+    trace.render.mockClear()
+    trace.present.mockClear()
+    manager.sceneInfra.camControls.isDragging = true
+    state.renderPreview()
+    expect(trace.render).not.toHaveBeenCalled()
+    expect(trace.present).not.toHaveBeenCalled()
+    renderer.dispose()
+  })
 
   function planeFixture(id = 'plane-xy') {
     const f = fixture()

@@ -26,12 +26,15 @@ export type RenderingMode =
   | 'ray-tracing'
   | 'ray-tracing-without-drag'
   | 'ray-tracing-stealth'
+  | 'ray-tracing-threshold-transition'
 
 /** Experimental rendering controls in the viewport. */
 export type EngineScenePathTracing = {
   /** The local renderer runs on WebGPU, which path tracing needs. */
   supported: boolean
   mode: RenderingMode
+  thresholdPercent: number
+  setThresholdPercent: (percent: number) => void
   fadeDuration: number
   setFadeDuration: (duration: number) => void
   edgeOpacity: number
