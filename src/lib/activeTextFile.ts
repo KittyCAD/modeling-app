@@ -5,7 +5,7 @@ import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { decodeTextFile } from '@src/lib/textFiles'
 import { isErr, reportRejection } from '@src/lib/trap'
-import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 /**
@@ -78,7 +78,7 @@ async function performWrite(
     if (isPathNotFoundError(error)) {
       return
     }
-    reportSystemIOError({
+    reportFileOperationError({
       error,
       operation: 'save_text_file',
       risk: 'write',
