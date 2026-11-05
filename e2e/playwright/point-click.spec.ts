@@ -20,10 +20,14 @@ async function resetView(scene: SceneFixture) {
     // The loading indicator can appear after execution finishes. Wait for the
     // current model itself, or zoom-to-fit can frame only the default planes.
     await expect
-      .poll(async () => (await scene.getProjectedEntities()).length, {
-        timeout: 30_000,
-      })
-      .toBeGreaterThan(0)
+      .poll(
+        () =>
+          scene.page.evaluate(() =>
+            window.app.singletons.kclManager.sceneInfra.localRenderer?.isLoadedSceneCurrent()
+          ),
+        { timeout: 30_000 }
+      )
+      .toBe(true)
     await scene.page.evaluate(() =>
       window.app.singletons.kclManager.sceneInfra.camControls.viewIsometric({
         padding: 0.1,

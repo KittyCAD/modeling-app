@@ -579,7 +579,7 @@ export class LocalRenderer {
    * execState has its generation ready before the signal, which only updates after
    * the artifact graph, so prefer using that.
    */
-  private isLoadedSceneCurrent() {
+  isLoadedSceneCurrent() {
     const { execState, engineSceneGenerationSignal } = this.kclManager
     return (
       this.loadedSceneGeneration ===
