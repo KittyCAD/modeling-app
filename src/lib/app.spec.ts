@@ -1,3 +1,4 @@
+import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -17,7 +18,6 @@ import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
@@ -249,6 +249,87 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
+  it.each([
+    {
+      error: new FileNotFound({
+        operation: 'stat',
+        path: mockProject.path,
+        cause: 'ENOENT',
+        message: 'Removed',
+      }),
+      missing: true,
+    },
+    { error: new Error('Permission denied'), missing: false },
+  ])(
+    'only returns home for a missing project ($missing)',
+    async ({ error, missing }) => {
+      const navigate = vi.fn(async () => {})
+      const app = {
+        project: {},
+        projectDirectoryPath: '/some-dir',
+        projectOperations: { listProjects: vi.fn(async () => []) },
+        projectSession: {
+          refreshProject: vi.fn(async () => Promise.reject(error)),
+        },
+        registry: { get: () => ({ navigate }) },
+      } as unknown as App
+      const refreshed = App.prototype.refreshProjects.call(app)
+      if (missing) {
+        await refreshed
+        expect(navigate).toHaveBeenCalledWith('/home')
+      } else {
+        await expect(refreshed).rejects.toBe(error)
+        expect(navigate).not.toHaveBeenCalled()
+      }
+    }
+  )
+
+  it('opens projects containing KCL-named directories without reading them as files', async () => {
+    const path = `/tmp/app-kcl-directory-${crypto.randomUUID()}`
+    const main = fsZds.join(path, 'main.kcl')
+    const folder = fsZds.join(path, 'folder.kcl')
+    const nested = fsZds.join(folder, 'part.kcl')
+    const app = createAppForTest()
+    try {
+      await writeText(main, '// main\n')
+      await writeText(nested, '// nested\n')
+      const snapshot = vi
+        .spyOn(app.singletons.kclManager.rustContext, 'sendOpenProject')
+        .mockResolvedValue(undefined)
+      const opened = await app.openProject({
+        ...mockProject,
+        path,
+        name: fsZds.basename(path),
+        default_file: main,
+        children: [
+          { name: 'main.kcl', path: main, children: null },
+          {
+            name: 'folder.kcl',
+            path: folder,
+            children: [{ name: 'part.kcl', path: nested, children: null }],
+          },
+        ],
+      })
+      await opened.openEditor(
+        main,
+        app.singletons.kclManager,
+        '// main\n',
+        false
+      )
+      expect(snapshot).toHaveBeenCalledWith(
+        main,
+        expect.arrayContaining([
+          expect.objectContaining({ path: main, text: '// main\n' }),
+          expect.objectContaining({ path: nested, text: '// nested\n' }),
+        ])
+      )
+      expect(snapshot.mock.calls.at(-1)?.[1]).toHaveLength(2)
+    } finally {
+      app.dispose()
+      await fsZds.rm(path, { recursive: true, force: true })
+    }
+  })
+
   it('always closes a the last project before opening a new one', async () => {
     const app = createAppForTest()
     vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})
@@ -948,21 +1029,17 @@ describe('project system', () => {
           },
         })
       )
-      const send = vi.spyOn(app.systemIOActor, 'send')
+      const refresh = vi.spyOn(app, 'refreshProjects')
 
       kclManager.undo()
       await waitForHistoryIdle(kclManager)
-      expect(send).toHaveBeenCalledWith({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
+      expect(refresh).toHaveBeenCalled()
       await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
 
-      send.mockClear()
+      refresh.mockClear()
       kclManager.redo()
       await waitForHistoryIdle(kclManager)
-      expect(send).toHaveBeenCalledWith({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
+      expect(refresh).toHaveBeenCalled()
       await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
         'created = true\n'
       )

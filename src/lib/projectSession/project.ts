@@ -327,7 +327,7 @@ export class ZDSProject {
   ): File[] => {
     if (fileOrDir.children) {
       for (let entry of fileOrDir.children) {
-        if (entry.name.endsWith('.kcl')) {
+        if (entry.children === null && entry.name.endsWith('.kcl')) {
           const id = this.nextFileId++
           const path = entry.path
           files.push(new File(path, this.textFileIO, id))

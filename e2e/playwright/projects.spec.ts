@@ -669,7 +669,7 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
     folderSetupFn,
   }, testInfo) => {
     const projectName = `my_project_to_rename`
-    await folderSetupFn(async (dir) => {
+    const { dir } = await folderSetupFn(async (dir) => {
       await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
       const testFileData = await nodeFs.readFile(
         'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
@@ -723,6 +723,11 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
     const projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
     await test.step(`Check the project was renamed (check breadcrumb)`, async () => {
       await expect(projectSidebarToggle).toBeVisible()
+      await expect(projectSidebarToggle).toContainText(projectRenamedName)
+      const directories = await fs.readdir(dir)
+      expect(directories).toContain(projectName)
+      expect(directories).not.toContain(projectRenamedName)
+      await page.reload()
       await expect(projectSidebarToggle).toContainText(projectRenamedName)
     })
   })
