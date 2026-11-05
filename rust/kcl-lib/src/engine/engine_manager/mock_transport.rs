@@ -18,7 +18,6 @@ use super::ResponseInformation;
 use super::TransportCloseError;
 use crate::SourceRange;
 use crate::errors::KclError;
-use crate::errors::KclErrorDetails;
 
 /// Doesn't actually connect to the engine.
 pub struct MockTransport {
@@ -30,24 +29,8 @@ impl MockTransport {
         Self { responses }
     }
 
-    fn empty_bounding_box() -> Result<OkModelingCmdResponse, KclError> {
-        // The mock has no geometry. Return a valid, zero-extent box so callers
-        // can exercise their no-bounds fallback.
-        serde_json::from_value(serde_json::json!({
-            "center": { "x": 0.0, "y": 0.0, "z": 0.0 },
-            "dimensions": { "x": 0.0, "y": 0.0, "z": 0.0 },
-        }))
-        .map(OkModelingCmdResponse::BoundingBox)
-        .map_err(|error| {
-            KclError::new_internal(KclErrorDetails::new(
-                format!("Invalid mock bounding box response: {error}"),
-                vec![],
-            ))
-        })
-    }
-
-    fn response_for_cmd(id: Uuid, cmd: WebSocketRequest) -> Result<WebSocketResponse, KclError> {
-        Ok(match cmd {
+    fn response_for_cmd(id: Uuid, cmd: WebSocketRequest) -> WebSocketResponse {
+        match cmd {
             WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
                 ref requests,
                 batch_id: _,
@@ -58,11 +41,7 @@ impl MockTransport {
                     responses.insert(
                         request.cmd_id,
                         BatchResponse::Success {
-                            response: if matches!(request.cmd, ModelingCmd::BoundingBox(_)) {
-                                Self::empty_bounding_box()?
-                            } else {
-                                OkModelingCmdResponse::Empty {}
-                            },
+                            response: OkModelingCmdResponse::Empty {},
                         },
                     );
                 }
@@ -86,16 +65,6 @@ impl MockTransport {
                 },
                 success: true,
             }),
-            WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
-                cmd: ModelingCmd::BoundingBox(_),
-                ..
-            }) => WebSocketResponse::Success(SuccessWebSocketResponse {
-                request_id: Some(id),
-                resp: OkWebSocketResponseData::Modeling {
-                    modeling_response: Self::empty_bounding_box()?,
-                },
-                success: true,
-            }),
             WebSocketRequest::ModelingCmdReq(_) => WebSocketResponse::Success(SuccessWebSocketResponse {
                 request_id: Some(id),
                 resp: OkWebSocketResponseData::Modeling {
@@ -110,7 +79,7 @@ impl MockTransport {
                 },
                 success: true,
             }),
-        })
+        }
     }
 }
 
@@ -123,7 +92,7 @@ impl EngineTransport for MockTransport {
         cmd: WebSocketRequest,
         _id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<(), KclError> {
-        let response = Self::response_for_cmd(cmd_id, cmd)?;
+        let response = Self::response_for_cmd(cmd_id, cmd);
         self.responses.add(cmd_id, response).await;
 
         Ok(())
@@ -136,7 +105,7 @@ impl EngineTransport for MockTransport {
         cmd: WebSocketRequest,
         _id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
-        Self::response_for_cmd(id, cmd)
+        Ok(Self::response_for_cmd(id, cmd))
     }
 
     async fn close(&self) -> Result<(), TransportCloseError> {
