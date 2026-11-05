@@ -6,7 +6,7 @@ import {
   parseProjectLoaderId,
 } from '@src/lib/routeLoaders'
 import type * as RouteUtils from '@src/routes/utils'
-import { readProject } from '@src/lib/readProject'
+import { readProject } from '@src/lib/projectSession/next/utils'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -48,7 +48,7 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
     Promise.reject(new Error('Unexpected project lookup for a legacy bookmark'))
   ),
 }))
-vi.mock('@src/lib/readProject', () => ({ readProject: vi.fn() }))
+vi.mock('@src/lib/projectSession/next/utils', () => ({ readProject: vi.fn() }))
 
 describe('fileLoader legacy web bookmarks', () => {
   beforeEach(() => {

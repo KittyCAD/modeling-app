@@ -1,5 +1,5 @@
 import type { FileContents } from '@src/lib/fileSystem/fileOperations'
-import type { Project } from '@src/lib/projectData'
+import type { Project } from '@src/lib/projectSession/next/types'
 import { createProjectSessionService } from '@src/lib/projectSession/next/session'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 

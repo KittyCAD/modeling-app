@@ -1,5 +1,5 @@
 import { signal } from '@preact/signals-core'
-import type { Project } from '@src/lib/projectData'
+import type { Project } from '@src/lib/projectSession/next/types'
 import type { OpenProjectSession } from '@src/lib/projectSession/next/contract'
 import { ProjectRoute } from '@src/lib/projectSession/next/ProjectRoute'
 import { ProjectView } from '@src/lib/projectSession/next/ProjectView'

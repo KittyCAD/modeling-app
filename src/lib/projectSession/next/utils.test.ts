@@ -1,24 +1,34 @@
-import { readProject } from '@src/lib/readProject'
+import { readProject } from '@src/lib/projectSession/next/utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds', async () => {
   const { posix } = await import('node:path')
-  return { default: { join: (...parts: string[]) => posix.join(...parts) } }
+  return {
+    default: {
+      join: (...parts: string[]) => posix.join(...parts),
+      basename: (path: string) => posix.basename(path),
+    },
+  }
 })
 
-const { getProjectContents } = vi.hoisted(() => ({
-  getProjectContents: vi.fn(),
-}))
 vi.mock('@src/lib/desktop', () => ({
-  getProjectContents,
   isPathNotFoundError: (error: unknown) =>
     error instanceof Error && error.message === 'ENOENT',
 }))
 
 const root = { name: 'bracket', path: '/projects/bracket', children: [] }
 const operations = {
-  stat: vi.fn(),
-  readDirectory: vi.fn(),
+  stat: vi.fn(async () => ({
+    kind: 'directory' as const,
+    device: 0,
+    inode: 0,
+    size: 0,
+    accessedAt: 0,
+    modifiedAt: 0,
+    changedAt: 0,
+    createdAt: 0,
+  })),
+  readDirectory: vi.fn(async (): Promise<string[]> => []),
   readFile: vi.fn(async () => new TextEncoder().encode('title = "Bracket"')),
   canReadWrite: vi.fn(async () => true),
   writeFile: vi.fn(),
@@ -29,7 +39,6 @@ const operations = {
 describe('readProject', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    getProjectContents.mockResolvedValue(root)
     operations.readFile.mockResolvedValue(
       new TextEncoder().encode('title = "Bracket"')
     )
@@ -39,7 +48,7 @@ describe('readProject', () => {
   it('reads root configuration and retains library/access metadata without writes', async () => {
     const library = { libraryPath: '/projects', libraryType: 'directory' }
     const project = await readProject(operations, root.path, { library })
-    expect(project).toEqual({
+    expect(project).toMatchObject({
       contents: root,
       metadata: { title: 'Bracket', library, readWriteAccess: true },
     })

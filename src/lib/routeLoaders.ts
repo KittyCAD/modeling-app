@@ -32,7 +32,7 @@ import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import { readProject } from '@src/lib/readProject'
+import { readProject } from '@src/lib/projectSession/next/utils'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'

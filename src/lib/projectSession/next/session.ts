@@ -1,6 +1,6 @@
 import { batch, computed, signal } from '@preact/signals-core'
 import fsZds from '@src/lib/fs-zds'
-import type { Project } from '@src/lib/projectData'
+import type { Project } from '@src/lib/projectSession/next/types'
 import type { FileEntry } from '@src/lib/project'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type {

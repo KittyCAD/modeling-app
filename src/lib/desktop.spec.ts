@@ -4,13 +4,13 @@ import {
   getEnvironmentConfigurationPath,
   getEnvironmentFilePath,
   getDefaultKclFileForDir,
-  getProjectContents,
   getProjectInfo,
   listProjects,
   readEnvironmentConfigurationFile,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
 } from '@src/lib/desktop'
+import { getProjectContents } from '@src/lib/projectSession/next/utils'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'

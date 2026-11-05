@@ -1,6 +1,6 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
-import type { Project } from '@src/lib/projectData'
+import type { Project } from '@src/lib/projectSession/next/types'
 import type { FileEntry } from '@src/lib/project'
 
 /** File capabilities captured for one project opening; paths are project-relative. */
