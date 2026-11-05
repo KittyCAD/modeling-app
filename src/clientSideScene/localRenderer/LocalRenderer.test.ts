@@ -360,6 +360,7 @@ describe('local GLB loading', () => {
         type: 'gltf',
         storage: 'binary',
         presentation: 'compact',
+        include_uuids: true,
         extras: ['geometry_uuids', 'sketches', 'regions'],
       },
       { settings: { modeling: { base_unit: 'mm' } } }
