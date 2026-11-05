@@ -10,6 +10,7 @@ import {
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
+import { parseCloudProjectRelationshipId } from '@src/lib/cloudSync/relationships'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import {
   getOnboardingChildRoute,
@@ -30,8 +31,22 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { readProject } from '@src/lib/readProject'
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
+
+/** A project location parsed from the decoded route ID, before storage is accessed. */
+export type ParsedProjectLoaderId =
+  | { type: 'cloud'; projectId: string }
+  | { type: 'path'; path: string }
+
+/** Interpret the router-decoded ID as a cloud relationship ID or a filesystem path. */
+export function parseProjectLoaderId(id: string): ParsedProjectLoaderId {
+  const projectId = parseCloudProjectRelationshipId(id)
+  return projectId ? { type: 'cloud', projectId } : { type: 'path', path: id }
+}
 
 function loadRouteSettings(
   app: App,
@@ -72,6 +87,55 @@ export const baseLoader =
     }
 
     return redirect(PATHS.HOME + routerSearch)
+  }
+
+/**
+ * Open a local project in the project session on development/staging builds.
+ * The route ID identifies the project directory, without opening an editor runtime.
+ * Reading assembles the full tree and optional TOML metadata without creating files
+ * or applying project settings. Failed or cancelled discovery leaves the selection intact.
+ * Cloud IDs are recognized but unsupported; the legacy editor session is untouched.
+ */
+export const projectLoader =
+  ({ app }: { app: App }): LoaderFunction =>
+  async (routerData) => {
+    if (!IS_STAGING_OR_DEBUG) return redirect(PATHS.HOME)
+
+    const assertCurrent = () => routerData.request.signal.throwIfAborted()
+    const fileOperations = app.registry.get(fileOperationsService)
+    const projectSessions = app.registry.get(projectSessionService)
+
+    const { id } = routerData.params
+    if (id === undefined) {
+      return Promise.reject(new Error('No project ID provided'))
+    }
+
+    const projectIdCategorized = parseProjectLoaderId(id)
+
+    switch (projectIdCategorized.type) {
+      case 'cloud':
+        return Promise.reject(
+          new Error('Cloud project IDs not yet handled by this route')
+        )
+      case 'path': {
+        const library = await getProjectLibraryOwnership(
+          app.settings.get().app.libraries.current,
+          projectIdCategorized.path
+        )
+        assertCurrent()
+        const project = await readProject(
+          fileOperations,
+          projectIdCategorized.path,
+          {
+            signal: routerData.request.signal,
+            library,
+          }
+        )
+        assertCurrent()
+        // Consumers retain this session instead of resolving the global selection again.
+        return projectSessions.openProject(project)
+      }
+    }
   }
 
 export const fileLoader =

@@ -1,3 +1,5 @@
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
+import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -249,6 +251,29 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
+  it('closes the next project session through the Home navigation boundary', async () => {
+    const app = createAppForTest()
+    try {
+      await waitForSettingsIdle(app)
+      await waitForAuthSettled(app)
+      const projects = app.registry.get(projectSessionService)
+      const session = projects.openProject({
+        contents: { name: 'standalone', path: '/standalone', children: [] },
+        metadata: { title: 'Standalone', readWriteAccess: true },
+      })
+      // Exercise Home's actual close boundary without starting unrelated folder IO.
+      loadHomeProjects({
+        systemIOActor: { send: vi.fn() },
+        closeProject: () => app.closeProject(),
+        settings: { actor: { send: vi.fn() } },
+      })
+      expect(projects.currentSession.value).toBeUndefined()
+      expect(session.signal.aborted).toBe(true)
+    } finally {
+      await app.disposeAsync()
+    }
+  })
+
   it('always closes a the last project before opening a new one', async () => {
     const app = createAppForTest()
     vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})

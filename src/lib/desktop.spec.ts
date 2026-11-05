@@ -4,6 +4,7 @@ import {
   getEnvironmentConfigurationPath,
   getEnvironmentFilePath,
   getDefaultKclFileForDir,
+  getProjectContents,
   getProjectInfo,
   listProjects,
   readEnvironmentConfigurationFile,
@@ -376,6 +377,33 @@ describe('desktop utilities', () => {
         'environment.txt',
         'directory1',
       ])
+    })
+
+    it('reads the complete project tree without creating settings or default files', async () => {
+      const contents = await getProjectContents(
+        testFileOperations,
+        '/test/projects/valid-project'
+      )
+
+      expect(contents.name).toBe('valid-project')
+      expect(contents.children.map((child) => child.name)).toContain(
+        'directory1'
+      )
+      expect(
+        contents.children
+          ?.find((child) => child.name === '.hidden-dir')
+          ?.children?.map((child) => child.name)
+      ).toEqual(['secret.txt'])
+      expect(contents.children.map((child) => child.name)).toEqual(
+        expect.arrayContaining([
+          'project.toml',
+          'settings.toml',
+          '.gitignore',
+          'dist',
+          'notes.txt',
+        ])
+      )
+      expect(mockElectron.writeFile).not.toHaveBeenCalled()
     })
 
     it('reads project title and ids from project.toml metadata', async () => {

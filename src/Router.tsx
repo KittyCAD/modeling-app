@@ -14,10 +14,16 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
-import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
+import {
+  baseLoader,
+  fileLoader,
+  homeLoader,
+  projectLoader,
+} from '@src/lib/routeLoaders'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
+import { ProjectRoute } from '@src/lib/projectSession/next/ProjectRoute'
 import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
@@ -54,6 +60,22 @@ export const Router = () => {
               errorElement: <ErrorPage />,
               loader: baseLoader({ app }),
             },
+            ...(IS_STAGING_OR_DEBUG
+              ? [
+                  {
+                    id: PATHS.PROJECT,
+                    path: PATHS.PROJECT.concat('/:id'),
+                    errorElement: <ErrorPage />,
+                    loader: projectLoader({ app }),
+                    element: (
+                      <>
+                        <ProjectRoute />
+                        <CommandBar />
+                      </>
+                    ),
+                  },
+                ]
+              : []),
             {
               loader: fileLoader({
                 app,

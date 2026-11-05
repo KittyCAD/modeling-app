@@ -18,6 +18,7 @@ import {
   shouldPreserveRemoteOnHomeProjectDelete,
 } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -625,6 +626,13 @@ function AppProjectCard({
           return
         }
 
+        if (IS_STAGING_OR_DEBUG && e.shiftKey && project.localProjectPath) {
+          void navigate(
+            `${PATHS.PROJECT}/${encodeURIComponent(project.localProjectPath)}`
+          )
+          return
+        }
+
         void projectActions
           .open(project)
           .then((result) => {
@@ -637,7 +645,15 @@ function AppProjectCard({
           .catch(reportRejection)
       }}
       renderOpenLink={({ href: _href, ...linkProps }) => (
-        <Link {...linkProps} to={openHref} />
+        <Link
+          {...linkProps}
+          to={openHref}
+          title={
+            IS_STAGING_OR_DEBUG && canOpen && project.localProjectPath
+              ? 'Shift-click to open without an editor'
+              : undefined
+          }
+        />
       )}
     />
   )

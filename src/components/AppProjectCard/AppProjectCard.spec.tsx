@@ -1,4 +1,6 @@
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
+import { PATHS } from '@src/lib/paths'
+import type * as RouteUtils from '@src/routes/utils'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import type {
   HomeProjectActionsService,
@@ -19,6 +21,17 @@ import {
 import toast from 'react-hot-toast'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+
+const environment = vi.hoisted(() => ({ standaloneProjectsEnabled: true }))
+vi.mock('@src/routes/utils', async (importOriginal) => {
+  const original = await importOriginal<typeof RouteUtils>()
+  return {
+    ...original,
+    get IS_STAGING_OR_DEBUG() {
+      return environment.standaloneProjectsEnabled
+    },
+  }
+})
 
 const fileOperations = {
   stat: vi.fn().mockResolvedValue({}),
@@ -161,6 +174,7 @@ function submitRenameProject() {
 
 describe('ProjectCard', () => {
   beforeEach(() => {
+    environment.standaloneProjectsEnabled = true
     vi.clearAllMocks()
     fileOperations.readFile.mockResolvedValue(new Uint8Array())
     createObjectURLMock = vi.fn(() => 'blob:thumbnail')
@@ -874,6 +888,82 @@ describe('ProjectCard', () => {
         previousEditedTime ?? ''
       )
     )
+  })
+
+  test.each([
+    {
+      name: 'dev/staging Shift-click',
+      enabled: true,
+      shiftKey: true,
+      local: true,
+      standalone: true,
+    },
+    {
+      name: 'dev/staging normal click',
+      enabled: true,
+      shiftKey: false,
+      local: true,
+      standalone: false,
+    },
+    {
+      name: 'production Shift-click',
+      enabled: false,
+      shiftKey: true,
+      local: true,
+      standalone: false,
+    },
+    {
+      name: 'cloud-only Shift-click',
+      enabled: true,
+      shiftKey: true,
+      local: false,
+      standalone: false,
+    },
+  ])(
+    '$name uses the expected project route',
+    async ({ enabled, shiftKey, local, standalone }) => {
+      environment.standaloneProjectsEnabled = enabled
+      window.history.replaceState({}, '', PATHS.HOME)
+      const project = {
+        ...cloudProject,
+        source: local ? 'local' : 'remote',
+        status: local ? 'synced' : 'cloud-only',
+        localProjectPath: local ? '/projects/Bracket demo' : undefined,
+        defaultFile: local ? cloudProject.defaultFile : undefined,
+      } satisfies HomeProjectEntry
+      const { projectActions } = renderProjectCard({ project })
+      const link = screen.getByTestId('project-link')
+      if (enabled && local) {
+        expect(link).toHaveAttribute(
+          'title',
+          'Shift-click to open without an editor'
+        )
+      } else {
+        expect(link).not.toHaveAttribute('title')
+      }
+      fireEvent.click(link, { shiftKey })
+      await waitFor(() =>
+        expect(window.location.pathname).toBe(
+          standalone
+            ? `${PATHS.PROJECT}/${encodeURIComponent('/projects/Bracket demo')}`
+            : `${PATHS.FILE}/${encodeURIComponent(cloudProject.defaultFile)}`
+        )
+      )
+      if (standalone) {
+        expect(projectActions.open).not.toHaveBeenCalled()
+      } else {
+        expect(projectActions.open).toHaveBeenCalledExactlyOnceWith(project)
+      }
+    }
+  )
+
+  test('Shift-click preserves disabled project cards', () => {
+    window.history.replaceState({}, '', PATHS.HOME)
+    const projectActions = createProjectActions({ canOpen: () => false })
+    renderProjectCard({ projectActions })
+    fireEvent.click(screen.getByTestId('project-link'), { shiftKey: true })
+    expect(window.location.pathname).toBe(PATHS.HOME)
+    expect(projectActions.open).not.toHaveBeenCalled()
   })
 
   test('opens conflicted project cards without resolving cloud conflicts on Home', async () => {
