@@ -1,10 +1,9 @@
-import type { EntityType } from '@kittycad/lib'
-import exportOptions from '@rust/kcl-lib/bindings/ExportOptions'
 import type {
   AxisDirectionPair,
+  EntityType,
   OutputFormat3d,
   UnitLength,
-} from '@rust/kcl-lib/bindings/ModelingCmd'
+} from '@kittycad/lib'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
@@ -12,6 +11,7 @@ import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/model
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
+import { exportOptions } from '@src/lib/commandBarConfigs/exportOptions'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
@@ -60,7 +60,7 @@ import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
 import { baseUnitLabels } from '@src/lib/settings/settingsTypes'
 import { STEP_SCHEMA_LABELS, StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
-import { hasProperty } from '@src/lib/utils'
+import { hasProperty, unsafeTypedKeys } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -263,7 +263,7 @@ export type ModelingCommandSchema = {
     gltfStorage?: Extract<OutputFormat, { type: 'gltf' }>['storage']
     stlStorage?: Extract<OutputFormat, { type: 'stl' }>['storage']
     plyStorage?: Extract<OutputFormat, { type: 'ply' }>['storage']
-    schema?: Extract<OutputFormat, { type: 'step' }>['schema']
+    schema?: StepSchema
     up?: AxisDirectionPair['axis']
     scale?: UnitLength
   }
@@ -472,14 +472,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         defaultValue: 'gltf',
         required: true,
-        options: exportOptions.type
-          // FBX export is not offered in the UI.
-          .filter((value) => value !== 'fbx')
-          .map((value) => ({
-            name: value === 'gltf' ? 'glTF' : value.toUpperCase(),
-            value,
-            isCurrent: value === 'gltf',
-          })),
+        options: unsafeTypedKeys(exportOptions.type).flatMap((value) => {
+          const name = exportOptions.type[value]
+          return name === null
+            ? []
+            : [{ name, value, isCurrent: value === 'gltf' }]
+        }),
       },
       gltfStorage: {
         displayName: 'Storage',
@@ -490,7 +488,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           commandContext.argumentsToSubmit.type === 'gltf',
         hidden: (commandContext) =>
           commandContext.argumentsToSubmit.type !== 'gltf',
-        options: enumOptions(exportOptions.gltfStorage, 'binary'),
+        options: enumOptions(
+          unsafeTypedKeys(exportOptions.gltfStorage),
+          'binary',
+          exportOptions.gltfStorage
+        ),
       },
       stlStorage: {
         displayName: 'Storage',
@@ -501,7 +503,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           commandContext.argumentsToSubmit.type === 'stl',
         hidden: (commandContext) =>
           commandContext.argumentsToSubmit.type !== 'stl',
-        options: enumOptions(exportOptions.stlStorage, 'ascii'),
+        options: enumOptions(
+          unsafeTypedKeys(exportOptions.stlStorage),
+          'ascii',
+          exportOptions.stlStorage
+        ),
       },
       plyStorage: {
         displayName: 'Storage',
@@ -512,7 +518,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           commandContext.argumentsToSubmit.type === 'ply',
         hidden: (commandContext) =>
           commandContext.argumentsToSubmit.type !== 'ply',
-        options: enumOptions(exportOptions.plyStorage, 'ascii'),
+        options: enumOptions(
+          unsafeTypedKeys(exportOptions.plyStorage),
+          'ascii',
+          exportOptions.plyStorage
+        ),
       },
       schema: {
         inputType: 'options',
@@ -525,7 +535,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         options: (commandContext) => {
           const schema =
             commandContext.argumentsToSubmit.schema ?? StepSchema.Ap242
-          return exportOptions.schema.map((value) => ({
+          return unsafeTypedKeys(STEP_SCHEMA_LABELS).map((value) => ({
             name: STEP_SCHEMA_LABELS[value],
             value,
             isCurrent: schema === value,
@@ -548,11 +558,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             (commandContext.argumentsToSubmit.up as
               | AxisDirectionPair['axis']
               | undefined) ?? 'z'
-          return exportOptions.up.map((value) => ({
-            name: `${value.toUpperCase()}+`,
-            value,
-            isCurrent: currentUp === value,
-          }))
+          return enumOptions(
+            unsafeTypedKeys(exportOptions.up),
+            currentUp,
+            exportOptions.up
+          )
         },
         valueSummary: (value) =>
           value === undefined ? 'Z+' : `${value.toUpperCase()}+`,
@@ -592,7 +602,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             machineContext?.store.defaultUnit?.current ??
             DEFAULT_DEFAULT_LENGTH_UNIT
 
-          return exportOptions.scale.map((unit) => ({
+          return unsafeTypedKeys(baseUnitLabels).map((unit) => ({
             name: baseUnitLabels[unit],
             value: unit,
             isCurrent: unit === currentScale,

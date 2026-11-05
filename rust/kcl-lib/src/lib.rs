@@ -63,8 +63,6 @@ mod docs;
 mod engine;
 mod errors;
 mod execution;
-#[cfg(test)]
-mod export_bindings;
 mod fmt;
 mod frontend;
 mod fs;
