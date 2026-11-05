@@ -1270,7 +1270,8 @@ export class LocalRenderer {
           type: 'gltf',
           storage: 'binary',
           presentation: 'compact',
-          extras: ['sketches', 'regions'],
+          // Geometry UUIDs connect exported faces and edges to the artifact graph for picking.
+          extras: ['geometry_uuids', 'sketches', 'regions'],
         },
         jsAppSettings(this.kclManager.systemDeps.settings)
       )
