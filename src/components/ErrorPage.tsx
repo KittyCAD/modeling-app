@@ -4,6 +4,7 @@ import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 import UAParser from 'ua-parser-js'
 
 import { ActionButton } from '@src/components/ActionButton'
+import { AutoUpdateStatus } from '@src/components/StatusBar/AutoUpdateStatus'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -58,6 +59,12 @@ export const ErrorPage = () => {
   console.error('error', error)
 
   useEffect(() => {
+    if (isDesktop()) {
+      window.electron?.appCheckForUpdates().catch(reportRejection)
+    }
+  }, [])
+
+  useEffect(() => {
     const isRouteError = isRouteErrorResponse(error)
     const message = errorMessage(error)
     const name = isErr(error) ? error.name : 'RouteError'
@@ -99,8 +106,8 @@ export const ErrorPage = () => {
   }, [browserCompatibilityError, error])
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <section className="max-w-full xl:max-w-4xl mx-auto">
+    <div className="flex flex-col h-screen">
+      <section className="flex-1 flex flex-col justify-center max-w-full xl:max-w-4xl mx-auto">
         <h1
           className="text-4xl mb-8 font-bold"
           data-testid={
@@ -118,6 +125,7 @@ export const ErrorPage = () => {
             ? 'Your browser is out of date and cannot open Zoo Design Studio projects. Update your browser or use the latest Chrome, Edge, Firefox, or Safari.'
             : "We're sorry, something went wrong. The error has been reported to our team."}
         </p>
+        <AutoUpdateStatus />
         <div className="flex justify-between gap-2 mt-6">
           {browserCompatibilityError ? (
             <>

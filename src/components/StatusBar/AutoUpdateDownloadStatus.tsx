@@ -11,8 +11,10 @@ const bytesToMegabytes = (bytes: number) => {
 
 export function AutoUpdateDownloadStatus({
   progress,
+  showProgressBar = true,
 }: {
   progress: AutoUpdateDownloadProgress
+  showProgressBar?: boolean
 }) {
   const percent = clampProgress(Math.round(progress.percent))
   const transferredMb = bytesToMegabytes(progress.transferred).toFixed(1)
@@ -24,13 +26,15 @@ export function AutoUpdateDownloadStatus({
       data-testid="auto-update-download-status"
       title={`Downloading update: ${transferredMb} MB / ${totalMb} MB`}
     >
-      <div className="absolute inset-x-0 top-0 h-[2px] bg-chalkboard-30 dark:bg-chalkboard-80">
-        <div
-          className="h-full bg-primary transition-all duration-150 ease-linear"
-          data-testid="auto-update-download-progress-bar"
-          style={{ width: `${percent}%` }}
-        />
-      </div>
+      {showProgressBar && (
+        <div className="absolute inset-x-0 top-0 h-[2px] bg-chalkboard-30 dark:bg-chalkboard-80">
+          <div
+            className="h-full bg-primary transition-all duration-150 ease-linear"
+            data-testid="auto-update-download-progress-bar"
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+      )}
       <ActionIcon
         icon="loading"
         size="sm"
