@@ -257,6 +257,10 @@ export class LocalRenderer {
     this.invalidateBaseRender()
   }
 
+  get hasVisibleDefaultPlanes() {
+    return Object.values(this.settings.defaultPlaneVisibility).some(Boolean)
+  }
+
   private getPlaneTarget(id: string | null): Mesh | null {
     if (!id) return null
     const plane = this.gpu?.planeRenderer.planes.get(id)

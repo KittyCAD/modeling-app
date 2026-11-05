@@ -380,6 +380,26 @@ describe('local GLB loading', () => {
     f.renderer.dispose()
   })
 
+  it('keeps planes in fit bounds until their visibility update follows the model load', async () => {
+    const f = fixture()
+    f.gpu.planeRenderer.updateDefaultPlanes(f.manager.rustContext.defaultPlanes)
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    const model = f.state.currentModel
+    if (!model) throw new Error('Missing model')
+    model.scale.setScalar(0.001)
+
+    const boundsWithPlanes = f.renderer.getFitBounds()
+    expect(f.renderer.hasVisibleDefaultPlanes).toBe(true)
+    f.renderer.setDefaultPlaneVisibility({ xy: false, xz: false, yz: false })
+    expect(f.renderer.hasVisibleDefaultPlanes).toBe(false)
+    const modelBounds = f.renderer.getFitBounds()
+    expect(modelBounds?.getSize(new Vector3()).length()).toBeLessThan(
+      boundsWithPlanes?.getSize(new Vector3()).length() ?? 0
+    )
+    f.renderer.dispose()
+  })
+
   it('keeps the loaded model when an execution leaves the scene unchanged', async () => {
     const f = fixture()
     f.done()
