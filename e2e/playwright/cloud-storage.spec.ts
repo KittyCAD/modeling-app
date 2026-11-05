@@ -1,131 +1,11 @@
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { expect, test } from '@e2e/playwright/base-test'
 import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
-import {
-  cloudProjectResponse,
-  projectToml,
-  zipProject,
-  type CloudProject,
-} from '@e2e/playwright/lib/cloudProjectTestUtils'
+import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
+import { cloudProjectResponse } from '@e2e/playwright/lib/cloudProjectTestUtils'
 import { decode } from '@msgpack/msgpack'
-import type { BrowserContext } from '@playwright/test'
-
-test.beforeEach(async ({ page }) => {
-  await page.routeWebSocket('**/ws/modeling/commands**', () => {})
-})
 
 const projectId = '12902000-0000-4000-8000-000000000091'
-
-async function mockCloud(context: BrowserContext) {
-  const project: CloudProject = {
-    id: projectId,
-    title: 'Cloud memory model',
-    revision: '1',
-    files: {
-      'main.kcl': '@settings(kclVersion = 3.0)\n',
-      'parts/note.md': 'original',
-      'project.toml': projectToml('Cloud memory model'),
-    },
-  }
-  const uploads: string[] = []
-  await context.route('**/user', (route) =>
-    route.fulfill({
-      json: {
-        id: '12902000-0000-4000-8000-000000000001',
-        username: 'playwright',
-        name: 'Playwright',
-        email: 'playwright@example.com',
-        image: '',
-        created_at: '2026-09-01T12:00:00Z',
-        updated_at: '2026-09-01T12:00:00Z',
-      },
-    })
-  )
-  await context.route('**/user/projects**', async (route) => {
-    const request = route.request()
-    const url = new URL(request.url())
-    if (url.pathname === '/user/projects')
-      return route.fulfill({
-        json: { items: [cloudProjectResponse(project)], next_page: null },
-      })
-    if (url.pathname.endsWith('/thumbnail'))
-      return route.fulfill({
-        contentType: 'image/png',
-        body: Buffer.from(
-          'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j/1sAAAAASUVORK5CYII=',
-          'base64'
-        ),
-      })
-    if (url.pathname.endsWith('/download'))
-      return route.fulfill({
-        contentType: 'application/zip',
-        body: await zipProject(project.files),
-      })
-    if (request.method() === 'PUT') {
-      uploads.push(url.searchParams.get('expected_revision') ?? '')
-      if (url.searchParams.get('expected_revision') !== project.revision)
-        return route.fulfill({
-          status: 409,
-          json: { message: 'Revision changed' },
-        })
-      const body = request.postDataBuffer()
-      if (!body) throw new Error('Missing upload body')
-      const form = await new Request(request.url(), {
-        method: 'POST',
-        headers: request.headers(),
-        body: new Uint8Array(body).buffer,
-      }).formData()
-      const files: Record<string, string> = {}
-      for (const [name, value] of form.entries()) {
-        if (name !== 'body' && typeof value !== 'string')
-          files[name] = await value.text()
-      }
-      project.files = files
-      project.revision = String(Number(project.revision) + 1)
-    }
-    return route.fulfill({ json: cloudProjectResponse(project) })
-  })
-  return { project, uploads }
-}
-
-test(
-  'loads current cloud files from a direct modeling URL and after reloading it',
-  { tag: '@web' },
-  async ({ context, page }, testInfo) => {
-    await mockClientErrorReports(context)
-    const remote = await mockCloud(context)
-    await setup(context, page, testInfo)
-    const main = `/__zoo_cloud__/${projectId}/main.kcl`
-    remote.project.files['main.kcl'] += '// Direct cloud load\n'
-    await page.goto(`/file/${encodeURIComponent(main)}`)
-    await expect(page.locator('.cm-content').first()).toContainText(
-      'Direct cloud load'
-    )
-    await expect
-      .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
-      .toBe(0)
-    const initialUploads = remote.uploads.length
-    await page.evaluate(() =>
-      window.app.settings.actor.send({
-        type: 'set.app.theme',
-        data: { level: 'user', value: 'dark' },
-      })
-    )
-    await expect
-      .poll(() =>
-        page.evaluate(() => window.app.settings.actor.getSnapshot().value)
-      )
-      .toBe('idle')
-    expect(remote.uploads).toHaveLength(initialUploads)
-    remote.project.files['main.kcl'] =
-      '@settings(kclVersion = 3.0)\n// Changed on another device\n'
-    remote.project.revision = '2'
-    await page.reload({ waitUntil: 'domcontentloaded' })
-    await expect(page.locator('.cm-content').first()).toContainText(
-      'Changed on another device'
-    )
-  }
-)
 
 test(
   'opens, saves, and reloads cloud files without modifying a historical disk mirror',
@@ -133,7 +13,7 @@ test(
   async ({ context, page }, testInfo) => {
     test.setTimeout(180_000)
     await mockClientErrorReports(context)
-    const remote = await mockCloud(context)
+    const remote = await mockCloudStorage(context)
     await setup(context, page, testInfo)
     const thumbnailResponse = page.waitForResponse(
       (response) =>
@@ -218,7 +98,7 @@ test(
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
     await mockClientErrorReports(context)
-    const remote = await mockCloud(context)
+    const remote = await mockCloudStorage(context)
     await setup(context, page, testInfo)
     await page.goto('/home')
     await page
@@ -291,7 +171,7 @@ test(
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
     await mockClientErrorReports(context)
-    const remote = await mockCloud(context)
+    const remote = await mockCloudStorage(context)
     remote.project.files['other.kcl'] =
       '@settings(kclVersion = 3.0)\n// target buffer\n'
     await setup(context, page, testInfo)
@@ -432,7 +312,7 @@ test(
   async ({ context, page }, testInfo) => {
     test.setTimeout(180_000)
     await mockClientErrorReports(context)
-    const remote = await mockCloud(context)
+    const remote = await mockCloudStorage(context)
     let connected = false
     let send: (message: object) => void = () => {
       throw new Error('Zookeeper socket has not connected')

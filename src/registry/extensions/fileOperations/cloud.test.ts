@@ -53,6 +53,7 @@ beforeEach(() => {
 afterEach(async () => {
   await Promise.all(runtimes.splice(0).map((r) => r.dispose()))
   vi.clearAllMocks()
+  vi.useRealTimers()
 })
 const setup = (accountId?: () => string) => {
   const diskWrite = vi.fn()
@@ -137,10 +138,30 @@ describe('memory cloud storage', () => {
   it('serializes saves against the latest acknowledged revision', async () => {
     const { storage } = setup()
     const root = await storage.openProject('one')
-    await Promise.all([
-      storage.operations.writeFile(posix.join(root, 'main.kcl'), 'first'),
-      storage.operations.writeFile(posix.join(root, 'main.kcl'), 'second'),
-    ])
+    const gate = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
+    const first = storage.operations.writeFile(
+      posix.join(root, 'main.kcl'),
+      'first'
+    )
+    await vi.waitFor(() =>
+      expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    )
+    const second = storage.operations.writeFile(
+      posix.join(root, 'main.kcl'),
+      'second'
+    )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    expect(storage.saves.value.get('one')?.state).toBe('saving')
+    gate.resolve({ ...remote, revision: '2' })
+    await Promise.all([first, second])
+    expect(
+      new TextDecoder().decode(
+        await storage.operations.readFile(posix.join(root, 'main.kcl'))
+      )
+    ).toBe('second')
     expect(
       vi
         .mocked(api.updateRemoteProject)
@@ -155,6 +176,9 @@ describe('memory cloud storage', () => {
     const opening = storage.openProject('one')
     await vi.waitFor(() => expect(api.getRemoteProject).toHaveBeenCalledOnce())
     accountId = 'second'
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(storage.projects.value).toEqual([])
     gate.resolve(remote)
     await expect(opening).rejects.toThrow('Cloud account changed')
     expect(await storage.operations.exists(storage.pathFor('one'))).toBe(false)
@@ -318,6 +342,11 @@ describe('memory cloud storage', () => {
         'data:image/png;base64,dGh1bWI='
       )
     )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(storage.thumbnails.value.get('one')).toBe(
+      'data:image/png;base64,dGh1bWI='
+    )
     old.resolve('old-thumbnail')
     await old.promise
     await Promise.resolve()
@@ -338,6 +367,9 @@ describe('memory cloud storage', () => {
     )
     const stop = storage.watchThumbnail('one')
     accountId = 'second'
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(storage.thumbnails.value.size).toBe(0)
     gate.resolve('private-thumbnail')
     await gate.promise
     await Promise.resolve()
@@ -436,6 +468,14 @@ describe('memory cloud storage', () => {
       expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
     )
     current = false
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(storage.projects.value[0].revision).toBe('1')
+    expect(
+      new TextDecoder().decode(
+        await storage.operations.readFile(posix.join(root, 'main.kcl'))
+      )
+    ).toBe('original')
     gate.resolve(new ArrayBuffer(0))
     await refresh
     expect(

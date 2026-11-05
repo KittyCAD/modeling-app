@@ -56,7 +56,7 @@ function projectResponse(projectId: string, revision: string) {
   )
 }
 
-describe('remote project uploads', () => {
+describe('cloud upload HTTP contract (mocked fetch)', () => {
   test.each([
     undefined,
     { description: 'A description', category_ids: ['category-a'] },
@@ -186,7 +186,7 @@ describe('remote project uploads', () => {
   })
 })
 
-describe('remote project thumbnail URLs', () => {
+describe('cloud thumbnail HTTP contract (mocked fetch)', () => {
   test('normalizes Zoo project thumbnail URLs to the extensionless API route', () => {
     expect(
       normalizeRemoteProjectThumbnailUrl(
@@ -289,7 +289,7 @@ describe('remote project thumbnail URLs', () => {
   })
 })
 
-describe('remote project pagination', () => {
+describe('cloud pagination HTTP contract (mocked fetch)', () => {
   const config = {
     enabled: true,
     baseUrl: 'https://example.test',
@@ -352,6 +352,53 @@ describe('remote project pagination', () => {
       )
     }
   })
+
+  test.each(['success', 'failure'] as const)(
+    'keeps inventory pending for a seven-second second page before %s',
+    async (outcome) => {
+      const gate = Promise.withResolvers<Response>()
+      const fetchMock = vi
+        .fn<typeof fetch>()
+        .mockResolvedValueOnce(
+          json({ items: [{ id: 'one' }], next_page: 'two' })
+        )
+        .mockReturnValueOnce(gate.promise)
+      vi.stubGlobal('fetch', fetchMock)
+      const resolved = vi.fn()
+      const rejected = vi.fn()
+      const inventory = listRemoteProjects(config).then(resolved, rejected)
+      await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+      vi.useFakeTimers()
+      try {
+        await vi.advanceTimersByTimeAsync(7_000)
+        expect(resolved).not.toHaveBeenCalled()
+        expect(rejected).not.toHaveBeenCalled()
+        expect(fetchMock).toHaveBeenCalledTimes(2)
+        gate.resolve(
+          outcome === 'success'
+            ? json({ items: [{ id: 'two' }], next_page: null })
+            : new Response(JSON.stringify({ message: 'Unavailable' }), {
+                status: 503,
+              })
+        )
+        await inventory
+        if (outcome === 'success') {
+          expect(resolved).toHaveBeenCalledExactlyOnceWith([
+            { id: 'one' },
+            { id: 'two' },
+          ])
+          expect(rejected).not.toHaveBeenCalled()
+        } else {
+          expect(resolved).not.toHaveBeenCalled()
+          expect(rejected).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({ status: 503 })
+          )
+        }
+      } finally {
+        vi.useRealTimers()
+      }
+    }
+  )
 
   test('accepts an empty final page and deduplicates projects seen on multiple pages', async () => {
     const fetchMock = vi

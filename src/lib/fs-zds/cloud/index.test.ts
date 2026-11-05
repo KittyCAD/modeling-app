@@ -87,6 +87,9 @@ describe.each([
     await vi.waitFor(() =>
       expect(api.updateRemoteProject).toHaveBeenCalledOnce()
     )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
     expect(resolved).not.toHaveBeenCalled()
     expect(fs.pending()).toBe(1)
     expect(await backing.readFile(file, 'utf8')).toBe('changed')
@@ -174,6 +177,9 @@ describe.each([
     await vi.advanceTimersByTimeAsync(0)
     expect(api.updateRemoteProject).toHaveBeenCalledOnce()
     await fs.stageThumbnail(root, new Uint8Array([2]))
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    expect(fs.pending()).toBeGreaterThan(0)
     gate.resolve({ ...remote, revision: '2' })
     await saving
     await vi.advanceTimersByTimeAsync(3_000)
@@ -198,7 +204,7 @@ describe.each([
       paths.join(root, 'main.kcl'),
       encoder.encode('edited')
     )
-    await vi.advanceTimersByTimeAsync(3_000)
+    await vi.advanceTimersByTimeAsync(7_000)
     expect(api.updateRemoteProject).toHaveBeenCalledOnce()
     gate.resolve({ ...remote, revision: '2' })
     await saving
@@ -214,12 +220,15 @@ describe.each([
     const gate = Promise.withResolvers<undefined>()
     vi.mocked(api.deleteRemoteProject).mockReturnValueOnce(gate.promise)
     await fs.stageThumbnail(root, new Uint8Array([1]))
-    const deleting = fs.deleteProject('one')
-    await vi.advanceTimersByTimeAsync(3_000)
+    const deleted = vi.fn()
+    const deleting = fs.deleteProject('one').then(deleted)
+    await vi.advanceTimersByTimeAsync(7_000)
     expect(api.deleteRemoteProject).toHaveBeenCalledOnce()
     expect(api.updateRemoteProject).not.toHaveBeenCalled()
+    expect(deleted).not.toHaveBeenCalled()
     gate.resolve(undefined)
     await deleting
+    expect(deleted).toHaveBeenCalledOnce()
   })
 
   it('flushes a pending thumbnail and cancels its timer when storage is disposed', async () => {
@@ -305,6 +314,41 @@ describe.each([
     )
   })
 
+  it('retains edits after a save fails seven seconds later and retries the acknowledged revision', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    const file = paths.join(root, 'main.kcl')
+    const gate = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
+    const saving = fs.writeFile(file, encoder.encode('unsaved'))
+    // Attach the rejection assertion before releasing the failed request.
+    const rejected = expect(saving).rejects.toThrow('Connection lost')
+    await vi.waitFor(() =>
+      expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(fs.saves.value.get('one')?.state).toBe('saving')
+    expect(await fs.readFile(file, 'utf8')).toBe('unsaved')
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    gate.reject(new Error('Connection lost'))
+    await rejected
+    expect(fs.saves.value.get('one')?.state).toBe('failed')
+    expect(await fs.readFile(file, 'utf8')).toBe('unsaved')
+    await fs.retry('one')
+    expect(api.updateRemoteProject).toHaveBeenCalledTimes(2)
+    expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        expectedRevision: '1',
+        files: expect.arrayContaining([
+          { relativePath: 'main.kcl', data: encoder.encode('unsaved') },
+        ]),
+      })
+    )
+    expect(fs.saves.value.get('one')?.state).toBe('saved')
+    expect(fs.pending()).toBe(0)
+  })
+
   it('rejects stale-account reads, mutations, and deletion', async () => {
     let account = 'first'
     const { fs } = setup(() => account)
@@ -347,6 +391,9 @@ describe.each([
     await vi.waitFor(() =>
       expect(api.updateRemoteProject).toHaveBeenCalledTimes(2)
     )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(api.updateRemoteProject).toHaveBeenCalledTimes(2)
     expect(drained).not.toHaveBeenCalled()
     gate.resolve({ ...remote, revision: '3' })
     await Promise.all([write, detach])
