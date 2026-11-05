@@ -595,6 +595,19 @@ export class SceneFixture {
    *  in the debug panel and then returns the values of the fields
    */
   async getCameraInfo() {
+    if (await this.usesLocalRenderer()) {
+      return this.page.evaluate(async () => {
+        // Drag/scroll deltas are applied by the camera's next animation frame.
+        await new Promise<void>((resolve) =>
+          requestAnimationFrame(() => resolve())
+        )
+        const controls = window.app.singletons.kclManager.sceneInfra.camControls
+        return {
+          position: controls.camera.position.toArray(),
+          target: controls.target.toArray(),
+        }
+      })
+    }
     await openAndClearDebugPanel(this.page)
     await sendCustomCmd(this.page, {
       type: 'modeling_cmd_req',
@@ -622,6 +635,27 @@ export class SceneFixture {
       position,
       target,
     }
+  }
+
+  waitForCameraDrag = async (phase: 'start' | 'end') => {
+    if (await this.usesLocalRenderer()) {
+      await expect
+        .poll(() =>
+          this.page.evaluate(
+            () =>
+              window.app.singletons.kclManager.sceneInfra.camControls.isDragging
+          )
+        )
+        .toBe(phase === 'start')
+      return
+    }
+    await this.page.waitForFunction(
+      (type) =>
+        window.engineCommandManager.commandLogs.some(
+          (log) => log.type === 'receive-reliable' && log.cmd_type === type
+        ),
+      `camera_drag_${phase}`
+    )
   }
 
   connectionEstablished = async () => {
