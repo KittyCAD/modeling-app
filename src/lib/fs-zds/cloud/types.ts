@@ -1,4 +1,4 @@
-import type { ProjectResponse } from '@kittycad/lib'
+import type { ProjectFileResponse, ProjectSummaryResponse } from '@kittycad/lib'
 
 export type Revision = string
 
@@ -8,13 +8,20 @@ export type ProjectArchiveFile = {
   data: Uint8Array
 }
 
-export type RemoteProjectSummary = Pick<ProjectResponse, 'id'> &
-  Partial<Omit<ProjectResponse, 'id' | 'revision'>> & {
+export type RemoteProjectSummary = Pick<ProjectSummaryResponse, 'id'> &
+  Partial<Omit<ProjectSummaryResponse, 'id' | 'revision'>> & {
     revision?: Revision | number
   }
 
-/** Full remote project metadata used before archive download. */
-export type RemoteProject = RemoteProjectSummary
+/** Version-specific identity and content metadata for one remote file. */
+export type RemoteProjectFile = Pick<
+  ProjectFileResponse,
+  'id' | 'relative_path' | 'byte_size' | 'sha256'
+>
+
+export type RemoteProject = RemoteProjectSummary & {
+  files?: readonly RemoteProjectFile[]
+}
 
 /** Metadata fields sent alongside whole-project cloud archive uploads. */
 export type ProjectUploadBody = {

@@ -98,6 +98,29 @@ export async function getRemoteProject(
   )
 }
 
+export async function getRemoteProjectVersion(
+  config: CloudApiConfig,
+  project: RemoteProject,
+  revision: Revision
+): Promise<RemoteProject> {
+  const version = await cloudCall(config, (client) =>
+    projects.get_project_version({
+      client,
+      id: project.id,
+      version_id: revision,
+    })
+  )
+  return {
+    ...project,
+    revision: version.id,
+    title: version.title,
+    description: version.description,
+    files: version.files,
+    entrypoint_path: version.entrypoint_path,
+    project_toml_path: version.project_toml_path,
+  }
+}
+
 export async function getRemoteProjectThumbnailUrl(
   config: CloudApiConfig,
   project: RemoteProjectSummary
@@ -139,10 +162,26 @@ export async function deleteRemoteProject(
 
 export async function downloadRemoteProjectArchive(
   config: CloudApiConfig,
-  projectId: string
+  projectId: string,
+  revision: Revision,
+  fileIds?: readonly string[]
 ) {
+  if (!revision)
+    return Promise.reject(
+      new Error('Cloud project is missing its revision; download canceled.')
+    )
+  if (fileIds?.length === 0)
+    return Promise.reject(
+      new Error('A file download requires at least one file ID.')
+    )
   const response = await cloudCall(config, (client) =>
-    projects.download_project({ client, id: projectId, format: 'zip' })
+    projects.download_project_version({
+      client,
+      id: projectId,
+      version_id: revision,
+      format: 'zip',
+      file_ids: fileIds?.join(','),
+    })
   )
   return response.arrayBuffer()
 }

@@ -1,3 +1,4 @@
+import { planCloudRefresh } from '@src/lib/fs-zds/cloud/refresh'
 import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import { signal } from '@preact/signals-core'
 import { v4 } from 'uuid'
@@ -144,7 +145,11 @@ export function createCloudFileSystem(
     clearThumbnail(id)
     const remote = await api.getRemoteProject(requestConfig, id)
     const archive = await parseProjectArchive(
-      await api.downloadRemoteProjectArchive(requestConfig, id)
+      await api.downloadRemoteProjectArchive(
+        requestConfig,
+        id,
+        String(remote.revision ?? '')
+      )
     )
     if (
       config().accountId !== requestConfig.accountId ||
@@ -405,7 +410,11 @@ export function createCloudFileSystem(
       await ready
       const remote = await api.getRemoteProject(requestConfig, id)
       const archive = await parseProjectArchive(
-        await api.downloadRemoteProjectArchive(requestConfig, id)
+        await api.downloadRemoteProjectArchive(
+          requestConfig,
+          id,
+          String(remote.revision ?? '')
+        )
       )
       if (config().accountId !== requestConfig.accountId)
         return Promise.reject(
@@ -564,10 +573,27 @@ export function createCloudFileSystem(
           const remote =
             revision === undefined
               ? await api.getRemoteProject(requestConfig, id)
-              : { ...opened.get(id)!.remote, revision }
-          const archive = await parseProjectArchive(
-            await api.downloadRemoteProjectArchive(requestConfig, id)
+              : await api.getRemoteProjectVersion(
+                  requestConfig,
+                  opened.get(id)!.remote,
+                  revision
+                )
+          const plan = planCloudRefresh(
+            opened.get(id)!.remote,
+            remote,
+            await collect(pathFor(id))
           )
+          const downloaded = plan.selected.length
+            ? await parseProjectArchive(
+                await api.downloadRemoteProjectArchive(
+                  requestConfig,
+                  id,
+                  String(remote.revision ?? ''),
+                  plan.selected.map((file) => file.id)
+                )
+              )
+            : []
+          const archive = plan.merge(downloaded)
           if (config().accountId !== requestConfig.accountId)
             return Promise.reject(
               new Error('Cloud account changed during refresh.')
