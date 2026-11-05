@@ -19,6 +19,7 @@ import {
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import * as Context from 'effect/Context'
 import * as Effect from 'effect/Effect'
+import * as FiberRef from 'effect/FiberRef'
 import * as Layer from 'effect/Layer'
 import * as Stream from 'effect/Stream'
 import * as SubscriptionRef from 'effect/SubscriptionRef'
@@ -145,9 +146,60 @@ export class FileOperations extends Context.Tag('zds/FileOperations')<
   FileOperationsService
 >() {}
 
-const makeFileOperations = (backing: IZooDesignStudioFS) =>
+export interface FileOperationsOptions {
+  /**
+   * The backing replaces each file's bytes atomically before awaiting persistence.
+   * File reads may proceed while a write waits for remote acknowledgement.
+   * Directory reads and all mutations remain coordinated. Disk and browser
+   * storage retain coordinated file reads by default.
+   */
+  readonly atomicFileReads?: boolean
+  /** Capture the backing snapshot before waiting for locks; reject superseded mutations. */
+  readonly captureMutationGuard?: (
+    paths: readonly string[]
+  ) => () => Error | undefined
+}
+
+const makeFileOperations = (
+  backing: IZooDesignStudioFS,
+  options: FileOperationsOptions
+) =>
   Effect.gen(function* () {
-    const fileSystem = yield* FileSystem
+    const backingFileSystem = yield* FileSystem
+    const mutationGuard = yield* FiberRef.make<
+      (() => Error | undefined) | undefined
+    >(undefined)
+    const validateMutation = (
+      path: string,
+      operation: Effect.Effect<void, FileSystemError>
+    ) =>
+      FiberRef.get(mutationGuard).pipe(
+        Effect.flatMap((check) => {
+          const error = check?.()
+          return error
+            ? Effect.fail(fileSystemError('validate-mutation', path, error))
+            : operation
+        })
+      )
+    // Keep the operation's captured snapshot through every lock wait and primitive.
+    const fileSystem = {
+      ...backingFileSystem,
+      writeFile: (path: string, contents: OwnedFileContents) =>
+        validateMutation(path, backingFileSystem.writeFile(path, contents)),
+      createFile: (path: string, contents: OwnedFileContents) =>
+        validateMutation(path, backingFileSystem.createFile(path, contents)),
+      makeDirectory: (path: string) =>
+        validateMutation(path, backingFileSystem.makeDirectory(path)),
+      remove: (path: string) =>
+        validateMutation(path, backingFileSystem.remove(path)),
+      rename: (source: string, destination: string) =>
+        validateMutation(source, backingFileSystem.rename(source, destination)),
+      copy: (source: string, destination: string, overwrite?: boolean) =>
+        validateMutation(
+          destination,
+          backingFileSystem.copy(source, destination, overwrite)
+        ),
+    }
     const pending = yield* SubscriptionRef.make(0)
     const pathLocks = yield* SynchronizedRef.make(
       new Map<string, PathLockEntry>()
@@ -235,7 +287,12 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
       path: string,
       operation: Effect.Effect<A, E, R>
     ) =>
-      withPathLocks(pathLockRequirements(backing, [path], 'shared'), operation)
+      options.atomicFileReads
+        ? operation
+        : withPathLocks(
+            pathLockRequirements(backing, [path], 'shared'),
+            operation
+          )
 
     const coordinateDirectoryRead = <A, E, R>(
       path: string,
@@ -252,6 +309,14 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
         Effect.ensuring(SubscriptionRef.update(pending, (count) => count - 1))
       )
 
+    const guardMutation = <A, E, R>(
+      paths: readonly string[],
+      operation: Effect.Effect<A, E, R>
+    ) => {
+      const check = options.captureMutationGuard?.(paths)
+      return operation.pipe(Effect.locally(mutationGuard, check))
+    }
+
     const coordinateMutation = <A, E, R>(
       paths: readonly string[],
       operation: Effect.Effect<A, E, R>,
@@ -260,7 +325,11 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
       trackMutation(
         withPathLocks(
           pathLockRequirements(backing, paths),
-          withDirectoryMembershipLocks(membershipPaths, 'exclusive', operation)
+          withDirectoryMembershipLocks(
+            membershipPaths,
+            'exclusive',
+            guardMutation(paths, operation)
+          )
         )
       )
 
@@ -268,19 +337,22 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
       trackMutation(
         withPathLocks(
           pathLockRequirements(backing, [path]),
-          fileSystem
-            .exists(path)
-            .pipe(
-              Effect.flatMap((exists) =>
-                exists
-                  ? fileSystem.writeFile(path, contents)
-                  : withDirectoryMembershipLocks(
-                      [backing.dirname(path)],
-                      'exclusive',
-                      fileSystem.writeFile(path, contents)
-                    )
+          guardMutation(
+            [path],
+            fileSystem
+              .exists(path)
+              .pipe(
+                Effect.flatMap((exists) =>
+                  exists
+                    ? fileSystem.writeFile(path, contents)
+                    : withDirectoryMembershipLocks(
+                        [backing.dirname(path)],
+                        'exclusive',
+                        fileSystem.writeFile(path, contents)
+                      )
+                )
               )
-            )
+          )
         )
       )
 
@@ -435,12 +507,15 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
         trackMutation(
           withPathLocks(
             pathLockRequirements(backing, [path]),
-            ensureDirectoryPath(backing.dirname(path)).pipe(
-              Effect.zipRight(
-                withDirectoryMembershipLocks(
-                  [backing.dirname(path)],
-                  'exclusive',
-                  createDirectoryAt(path)
+            guardMutation(
+              [path],
+              ensureDirectoryPath(backing.dirname(path)).pipe(
+                Effect.zipRight(
+                  withDirectoryMembershipLocks(
+                    [backing.dirname(path)],
+                    'exclusive',
+                    createDirectoryAt(path)
+                  )
                 )
               )
             )
@@ -453,12 +528,15 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
         trackMutation(
           withPathLocks(
             pathLockRequirements(backing, [parent]),
-            ensureDirectoryPath(parent).pipe(
-              Effect.zipRight(
-                withDirectoryMembershipLocks(
-                  [parent],
-                  'exclusive',
-                  createUniqueDirectoryAt(parent, preferredName)
+            guardMutation(
+              [parent],
+              ensureDirectoryPath(parent).pipe(
+                Effect.zipRight(
+                  withDirectoryMembershipLocks(
+                    [parent],
+                    'exclusive',
+                    createUniqueDirectoryAt(parent, preferredName)
+                  )
                 )
               )
             )
@@ -473,8 +551,10 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
     })
   })
 
-export const fileOperationsLayer = (backing: IZooDesignStudioFS) =>
-  Layer.effect(FileOperations, makeFileOperations(backing))
+export const fileOperationsLayer = (
+  backing: IZooDesignStudioFS,
+  options: FileOperationsOptions = {}
+) => Layer.scoped(FileOperations, makeFileOperations(backing, options))
 
 export const pendingFileOperations = FileOperations.pipe(
   Effect.flatMap((operations) => operations.pending)
