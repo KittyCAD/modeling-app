@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
   ...(await original<typeof api>()),
   getRemoteProject: vi.fn(),
+  getRemoteProjectVersion: vi.fn(),
   downloadRemoteProjectArchive: vi.fn(),
   updateRemoteProject: vi.fn(),
   deleteRemoteProject: vi.fn(),
@@ -16,11 +17,27 @@ vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
 vi.mock('@src/lib/fs-zds/cloud/archive', () => ({
   parseProjectArchive: vi.fn(),
 }))
-const remote = { id: 'one', revision: '1', description: '', category_ids: [] }
+const remote = {
+  id: 'one',
+  revision: '1',
+  description: '',
+  category_ids: [],
+  files: [
+    {
+      id: 'main-1',
+      relative_path: 'main.kcl',
+      byte_size: 28,
+      sha256: 'main-hash',
+    },
+  ],
+}
 const encoder = new TextEncoder()
 const instances: ReturnType<typeof createCloudFileSystem>[] = []
 beforeEach(() => {
   vi.mocked(api.getRemoteProject).mockResolvedValue(remote)
+  vi.mocked(api.getRemoteProjectVersion).mockImplementation(
+    async (_config, project, revision) => ({ ...project, revision })
+  )
   vi.mocked(api.downloadRemoteProjectArchive).mockResolvedValue(
     new ArrayBuffer(0)
   )
@@ -60,6 +77,17 @@ describe.each([
     const { fs } = setup()
     await fs.refreshProject('one')
     expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(1)
+    vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
+      ...remote,
+      revision: '2',
+      files: [
+        {
+          id: 'main-2',
+          relative_path: 'main.kcl',
+          byte_size: encoder.encode('updated remotely').length,
+        },
+      ],
+    })
     vi.mocked(parseProjectArchive).mockResolvedValueOnce([
       { relativePath: 'main.kcl', data: encoder.encode('updated remotely') },
     ])
@@ -71,6 +99,47 @@ describe.each([
       )
     ).toBe('updated remotely')
     expect(api.updateRemoteProject).not.toHaveBeenCalled()
+  })
+
+  it('preserves retained files in the next whole-project upload and deletes only paths from the refreshed snapshot', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
+      ...remote,
+      revision: 'refresh-revision',
+      files: [
+        ...remote.files,
+        { id: 'new-1', relative_path: 'nested/data.bin', byte_size: 2 },
+      ],
+    })
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+      { relativePath: 'nested/data.bin', data: new Uint8Array([0, 255]) },
+    ])
+    await fs.refreshProject('one')
+    expect(api.downloadRemoteProjectArchive).toHaveBeenLastCalledWith(
+      expect.anything(),
+      'one',
+      'refresh-revision',
+      ['new-1']
+    )
+    await fs.writeFile(paths.join(root, 'main.kcl'), encoder.encode('edited'))
+    expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        expectedRevision: 'refresh-revision',
+        deletedPaths: [],
+        files: expect.arrayContaining([
+          { relativePath: 'main.kcl', data: encoder.encode('edited') },
+          { relativePath: 'nested/data.bin', data: new Uint8Array([0, 255]) },
+        ]),
+      })
+    )
+    await fs.rm(paths.join(root, 'nested/data.bin'))
+    expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        expectedRevision: '2',
+        deletedPaths: ['nested/data.bin'],
+      })
+    )
   })
 
   it('works through the filesystem interface and waits for acknowledged saves without blocking memory reads', async () => {

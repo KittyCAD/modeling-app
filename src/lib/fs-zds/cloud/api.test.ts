@@ -8,6 +8,7 @@ import {
   createRemoteProject,
   downloadRemoteProjectArchive,
   getRemoteProject,
+  getRemoteProjectVersion,
   deleteRemoteProject,
   getRemoteProjectThumbnailUrl,
   listRemoteProjects,
@@ -358,10 +359,12 @@ describe('cloud SDK response boundary', () => {
       .mockResolvedValueOnce(new Response(bytes))
     vi.stubGlobal('fetch', fetchMock)
     expect(
-      new Uint8Array(await downloadRemoteProjectArchive(config, 'one'))
+      new Uint8Array(
+        await downloadRemoteProjectArchive(config, 'one', 'revision-1')
+      )
     ).toEqual(bytes)
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://example.test/user/projects/one/download?format=zip',
+      'https://example.test/user/projects/one/versions/revision-1/download?format=zip',
       expect.objectContaining({ method: 'GET' })
     )
   })
@@ -494,5 +497,104 @@ describe('SDK multipart and session invariants', () => {
       status: 401,
     })
     expect(sessionExpiredNotice.value?.source).toBe('fetch')
+  })
+})
+
+describe('versioned project download contract', () => {
+  const config = {
+    enabled: true,
+    baseUrl: 'https://api.dev.zoo.dev',
+    token: 'test-token',
+  }
+
+  test('selects exact file IDs within an immutable version and preserves authentication', async () => {
+    const bytes = new Uint8Array([0, 255])
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(bytes))
+    vi.stubGlobal('fetch', fetchMock)
+    expect(
+      new Uint8Array(
+        await downloadRemoteProjectArchive(config, 'one', 'version-old', [
+          'file-a',
+          'file-b',
+        ])
+      )
+    ).toEqual(bytes)
+    const [url, init] = fetchMock.mock.calls[0]
+    const target = new URL(String(url))
+    expect(target.pathname).toBe(
+      '/user/projects/one/versions/version-old/download'
+    )
+    expect(target.searchParams.get('file_ids')).toBe('file-a,file-b')
+    expect(target.searchParams.get('format')).toBe('zip')
+    expect(new Headers(init?.headers).get('Authorization')).toBe(
+      'Bearer test-token'
+    )
+    expect(init?.credentials).toBe('include')
+  })
+
+  test('uses version metadata and keeps project identity separate from version identity', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>().mockResolvedValueOnce(
+        Response.json({
+          id: 'version-2',
+          title: 'New title',
+          description: 'Description',
+          entrypoint_path: 'parts/start.kcl',
+          project_toml_path: 'project.toml',
+          files: [
+            {
+              id: 'new-file-id',
+              relative_path: 'parts/start.kcl',
+              byte_size: 7,
+            },
+          ],
+        })
+      )
+    )
+    await expect(
+      getRemoteProjectVersion(
+        config,
+        { id: 'one', revision: 'old', category_ids: ['category'] },
+        'version-2'
+      )
+    ).resolves.toMatchObject({
+      id: 'one',
+      revision: 'version-2',
+      category_ids: ['category'],
+      entrypoint_path: 'parts/start.kcl',
+      files: [{ id: 'new-file-id' }],
+    })
+  })
+
+  test('rejects a missing revision or empty selection without sending a request', async () => {
+    const fetchMock = vi.fn<typeof fetch>()
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(
+      downloadRemoteProjectArchive(config, 'one', '')
+    ).rejects.toThrow('missing its revision')
+    await expect(
+      downloadRemoteProjectArchive(config, 'one', 'version', [])
+    ).rejects.toThrow('at least one file ID')
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  test('propagates an invalid version selection without retrying the current project download', async () => {
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValueOnce(
+      Response.json(
+        {
+          error_code: 'InvalidProjectFileSelection',
+          message: 'File is absent from this version',
+        },
+        { status: 400 }
+      )
+    )
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(
+      downloadRemoteProjectArchive(config, 'one', 'version', ['missing'])
+    ).rejects.toMatchObject({ status: 400 })
+    expect(fetchMock).toHaveBeenCalledOnce()
   })
 })

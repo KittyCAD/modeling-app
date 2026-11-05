@@ -90,6 +90,13 @@ export function createRemoteListGate(initiallyReleased = false) {
   }
 }
 
+export function projectFileId(project: CloudProject, path: string) {
+  const hex = createHash('sha256')
+    .update(`${project.id}/${project.revision}/${path}`)
+    .digest('hex')
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`
+}
+
 export function cloudProjectResponse(project: CloudProject) {
   return {
     id: project.id,
@@ -98,6 +105,7 @@ export function cloudProjectResponse(project: CloudProject) {
     category_ids: project.categoryIds ?? [],
     revision: project.revision,
     files: Object.entries(project.files).map(([relative_path, contents]) => ({
+      id: projectFileId(project, relative_path),
       relative_path,
       byte_size: Buffer.byteLength(contents),
       sha256: createHash('sha256').update(contents).digest('hex'),

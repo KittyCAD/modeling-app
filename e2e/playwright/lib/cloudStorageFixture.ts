@@ -3,6 +3,7 @@ import type { BrowserContext, Route } from '@playwright/test'
 import {
   cloudProjectResponse,
   projectToml,
+  projectFileId,
   zipProject,
   type CloudProject,
 } from '@e2e/playwright/lib/cloudProjectTestUtils'
@@ -73,6 +74,16 @@ export async function mockCloudStorage(
   const creates: CloudProject[] = []
   const uploads: string[] = []
   const downloads: string[] = []
+  const downloadRequests: {
+    revision: string
+    paths: string[]
+    selected: boolean
+  }[] = []
+  const versions = new Map<string, CloudProject>()
+  const remember = (entry: CloudProject) => {
+    const key = `${entry.id}/${entry.revision}`
+    if (!versions.has(key)) versions.set(key, structuredClone(entry))
+  }
   await context.route('**/user', (route) =>
     route.fulfill({
       json: {
@@ -109,6 +120,12 @@ export async function mockCloudStorage(
         json: projects.map(cloudProjectResponse),
       })
     if (!requestedProject) return route.fulfill({ status: 404 })
+    remember(requestedProject)
+    const version = url.pathname.match(/\/versions\/([^/]+)/)?.[1]
+    const snapshot = version
+      ? versions.get(`${requestedProject.id}/${version}`)
+      : requestedProject
+    if (!snapshot) return route.fulfill({ status: 404 })
     if (url.pathname.endsWith('/thumbnail'))
       return route.fulfill({
         contentType: 'image/png',
@@ -119,11 +136,30 @@ export async function mockCloudStorage(
       })
     if (url.pathname.endsWith('/download')) {
       downloads.push(requestedProject.id)
+      const requestedIds = url.searchParams.get('file_ids')?.split(',')
+      const selected = Object.entries(snapshot.files).filter(
+        ([path]) =>
+          !requestedIds || requestedIds.includes(projectFileId(snapshot, path))
+      )
+      if (requestedIds && selected.length !== new Set(requestedIds).size)
+        return route.fulfill({
+          status: 400,
+          json: { message: 'Invalid file selection' },
+        })
+      downloadRequests.push({
+        revision: snapshot.revision,
+        paths: selected.map(([path]) => path),
+        selected: Boolean(requestedIds),
+      })
       return route.fulfill({
         contentType: 'application/zip',
-        body: await zipProject(requestedProject.files),
+        body: await zipProject(Object.fromEntries(selected)),
       })
     }
+    if (version)
+      return route.fulfill({
+        json: { ...cloudProjectResponse(snapshot), id: snapshot.revision },
+      })
     if (request.method() === 'PUT') {
       const upload = await uploadedProject(route)
       uploads.push(upload.metadata.expected_revision ?? '')
@@ -142,5 +178,5 @@ export async function mockCloudStorage(
     }
     return route.fulfill({ json: cloudProjectResponse(requestedProject) })
   })
-  return { project, projects, uploads, creates, downloads }
+  return { project, projects, uploads, creates, downloads, downloadRequests }
 }
