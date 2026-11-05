@@ -656,8 +656,8 @@ export const settingsMachine = setup({
         onError: {
           target: 'idle',
           actions: [
-            () => {
-              console.error('Error persisting settings')
+            ({ event }) => {
+              console.error('Error persisting settings', event.error)
             },
             'flushDeferredSettingsEvents',
           ],
@@ -669,7 +669,6 @@ export const settingsMachine = setup({
           } else if ('data' in event && 'level' in event.data) {
             level = event.data.level
           }
-
           if (
             event.type === 'set.app.namedViews' &&
             'toastCallback' in event.data

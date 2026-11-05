@@ -4,6 +4,7 @@ import {
   provide,
   provideService,
   Registry,
+  Slot,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
@@ -12,8 +13,10 @@ import type { Project } from '@src/lib/project'
 import type { ZDSProject } from '@src/lib/projectSession'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
+  cloudStorageService,
   fileOperationsService,
   type FileOperationsRegistryService,
+  type CloudStorageService,
 } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { routerService } from '@src/registry/contracts/router'
@@ -25,9 +28,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
 vi.mock('@src/lib/desktop', () => ({
   getProjectInfo: vi.fn(),
+  writeProjectThumbnailFile: vi.fn(async () => {}),
 }))
 vi.mock('@src/lib/activeTextFile', () => ({
   flushActiveTextFileWrite: vi.fn(async () => {}),
+  adoptCloudTextSnapshot: vi.fn(),
 }))
 
 const metadata = (title = 'Project'): Project => ({
@@ -63,15 +68,17 @@ function createProject(path = '/project/parts/main.kcl') {
   } as unknown as ZDSProject
   return { project, filePath, flush }
 }
-function setup() {
+function setup(cloud?: CloudStorageService) {
   const exists = vi.fn(async () => false)
   const rename = vi.fn(async () => {})
   const router = createRouterRegistryService()
   const navigate = vi.fn(async (_path?: unknown, _options?: unknown) => {})
   router.setNavigate(navigate)
   const registry = new Registry()
+  const lateCloud = new Slot()
   registry.configure([
     projectSessionRegistryItem,
+    lateCloud.of(),
     defineRegistryItem({
       provides: [
         provide(wasmPromiseValueSpec, Promise.resolve({} as ModuleType)),
@@ -82,6 +89,7 @@ function setup() {
           rename,
         } as unknown as FileOperationsRegistryService),
         provideService(routerService, router),
+        ...(cloud ? [provideService(cloudStorageService, cloud)] : []),
       ],
     }),
   ])
@@ -91,6 +99,7 @@ function setup() {
   session.setProject(current.project)
   return {
     registry,
+    lateCloud,
     session,
     exists,
     rename,
@@ -101,34 +110,96 @@ function setup() {
 }
 
 describe('direct project session file actions', () => {
-  it.each([undefined, 'remote-after-sync'])(
-    'refreshes cloud identity and preserves library ownership ($0)',
-    async (discoveredId) => {
-      const s = setup()
-      s.project.projectIORefSignal.value = {
-        ...metadata(),
-        cloudProjectId: 'remote',
-        libraryPath: '/library',
-        libraryType: 'cloud',
-      }
-      vi.mocked(getProjectInfo).mockResolvedValueOnce({
-        ...metadata('Fresh'),
-        cloudProjectId: discoveredId,
-      })
-      await s.session.refreshProject()
-      expect(getProjectInfo).toHaveBeenCalledWith(
-        expect.anything(),
-        '/project',
-        expect.anything()
-      )
-      expect(s.project.projectIORefSignal.value).toMatchObject({
-        title: 'Fresh',
-        cloudProjectId: discoveredId ?? 'remote',
-        libraryPath: '/library',
-        libraryType: 'cloud',
-      })
+  it('subscribes when cloud storage becomes available and applies its authoritative snapshot', async () => {
+    const s = setup()
+    const adopt = vi.fn()
+    Object.assign(s.project.executingEditor.peek()!, {
+      adoptCloudSnapshot: adopt,
+    })
+    const reload = vi.fn(async () => {})
+    Object.assign(s.project, { reloadFilesFromStorage: reload })
+    await Promise.resolve()
+    let listener:
+      | ((
+          root: string,
+          files: { relativePath: string; data: Uint8Array }[]
+        ) => void)
+      | undefined
+    const stop = vi.fn()
+    const subscribeReconciled = vi.fn((next: NonNullable<typeof listener>) => {
+      listener = next
+      return stop
+    })
+    s.registry.reconfigure(s.lateCloud, [
+      defineRegistryItem({
+        id: 'late-cloud-storage',
+        providesServices: [
+          provideService(cloudStorageService, {
+            subscribeReconciled,
+          } as unknown as CloudStorageService),
+        ],
+      }),
+    ])
+    await vi.waitFor(() => expect(subscribeReconciled).toHaveBeenCalledOnce())
+    listener!('/another-project', [])
+    expect(adopt).not.toHaveBeenCalled()
+    listener!('/project', [
+      {
+        relativePath: 'parts/main.kcl',
+        data: new TextEncoder().encode('cloud truth'),
+      },
+    ])
+    expect(adopt).toHaveBeenCalledWith('/project', 'cloud truth')
+    await vi.waitFor(() => expect(reload).toHaveBeenCalledOnce())
+    s.registry[Symbol.dispose]()
+    registries.splice(registries.indexOf(s.registry), 1)
+    expect(stop).toHaveBeenCalledOnce()
+  })
+
+  it('stages cloud thumbnails and forwards editor activity without file writes', async () => {
+    const stageThumbnail = vi.fn(async () => {})
+    const editorChanged = vi.fn()
+    const s = setup({
+      root: '/cloud',
+      stageThumbnail,
+      editorChanged,
+    } as unknown as CloudStorageService)
+    const bytes = new Uint8Array([1, 2])
+    await s.session.writeThumbnail('/cloud/project', bytes)
+    s.session.editorChanged('/cloud/project/main.kcl')
+    s.session.editorChanged('/local/main.kcl')
+    expect(stageThumbnail).toHaveBeenCalledExactlyOnceWith(
+      '/cloud/project',
+      bytes
+    )
+    expect(editorChanged).toHaveBeenCalledExactlyOnceWith(
+      '/cloud/project/main.kcl'
+    )
+  })
+
+  it('preserves cloud identity and library ownership when refreshing the tree', async () => {
+    const s = setup()
+    s.project.projectIORefSignal.value = {
+      ...metadata(),
+      cloudProjectId: 'remote',
+      libraryPath: '/library',
+      libraryType: 'cloud',
     }
-  )
+    vi.mocked(getProjectInfo).mockResolvedValueOnce(metadata('Fresh'))
+    await s.session.refreshProject()
+    expect(getProjectInfo).toHaveBeenCalledWith(
+      expect.anything(),
+      '/project',
+      expect.anything(),
+      { createMissingEntrypoint: false }
+    )
+    expect(s.project.projectIORefSignal.value).toMatchObject({
+      title: 'Fresh',
+      cloudProjectId: 'remote',
+      libraryPath: '/library',
+      libraryType: 'cloud',
+    })
+  })
 
   it('discards a tree read completed after the project changed', async () => {
     const s = setup()
@@ -232,5 +303,26 @@ describe('direct project session file actions', () => {
     gate.resolve(undefined)
     await renaming
     expect(next.filePath.value).toBe('/project/parts/main.kcl')
+  })
+  it('keeps the editor at the renamed memory path if cloud persistence fails', async () => {
+    const error = new Error('Save failed')
+    const batch = vi.fn(
+      async (
+        _path: string,
+        run: (operations: FileOperationsRegistryService) => Promise<void>
+      ) => {
+        await run({
+          rename: vi.fn(async () => {}),
+        } as unknown as FileOperationsRegistryService)
+        return Promise.reject(error)
+      }
+    )
+    const s = setup({ root: '/cloud', batch } as unknown as CloudStorageService)
+    s.filePath.value = '/cloud/project/parts/main.kcl'
+    await expect(
+      s.session.rename('/cloud/project/parts', '/cloud/project/renamed')
+    ).rejects.toBe(error)
+    expect(s.filePath.value).toBe('/cloud/project/renamed/main.kcl')
+    expect(s.rename).not.toHaveBeenCalled()
   })
 })

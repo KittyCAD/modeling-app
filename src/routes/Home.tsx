@@ -43,7 +43,10 @@ import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
-import { type FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import {
+  cloudStorageService,
+  type FileOperationsRegistryService,
+} from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
@@ -331,7 +334,11 @@ const Home = () => {
 
   const localProjectsLoaded = app.projectOperations.pending.value === 0
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
-  const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
+  const projectStatuses = useProjectStatuses(
+    registry.get(cloudStorageService),
+    homeProjectEntries,
+    apiToken
+  )
   const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
   const settingsValues = settings.useSettings()
   const projectLibraryTypes = registry.signal(

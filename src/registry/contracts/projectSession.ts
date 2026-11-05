@@ -34,6 +34,10 @@ export interface ExecutingEditor {
  * fields delegate to this service while call sites are migrated.
  */
 export interface ProjectSessionService {
+  /** Keep derived thumbnail persistence behind continued editor activity. */
+  editorChanged: (path: string) => void
+  /** Stage cloud thumbnails for the next save; write directory thumbnails immediately. */
+  writeThumbnail: (projectPath: string, bytes: Uint8Array) => Promise<void>
   /** Reload the captured project's tree; stale results never replace another session. */
   refreshProject: () => Promise<Project | undefined>
   /** Navigate through the router and resolve when its loader completes. */
