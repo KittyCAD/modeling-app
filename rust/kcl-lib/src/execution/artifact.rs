@@ -294,12 +294,8 @@ fn merge_plane(old: &mut Plane, new: Artifact) -> Option<Artifact> {
     let Artifact::Plane(new) = new else { return Some(new) };
     merge_ids(&mut old.path_ids, new.path_ids);
     old.hidden = new.hidden;
-    if new.plane_info.is_some() {
-        old.plane_info = new.plane_info;
-    }
-    if new.size.is_some() {
-        old.size = new.size;
-    }
+    old.plane_info = new.plane_info;
+    old.size = new.size;
     None
 }
 

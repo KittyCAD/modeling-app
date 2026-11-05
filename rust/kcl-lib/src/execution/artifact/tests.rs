@@ -85,8 +85,6 @@ sketch(on = plane) {
         &mut merged,
         Artifact::Plane(Plane {
             path_ids: vec![additional_path_id],
-            plane_info: None,
-            size: None,
             ..plane.clone()
         }),
     );
