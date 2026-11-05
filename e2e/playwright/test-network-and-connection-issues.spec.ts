@@ -93,7 +93,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
 
   test(
     'Paused stream freezes view frame, unpause reconnect is seamless to user',
-    { tag: '@skipLocalEngine' },
+    { tag: ['@skipLocalEngine', '@streamRenderer'] },
     async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
       const networkToggle = page.getByTestId(/network-toggle/)
       const networkToggleConnectedText = page.getByText(
