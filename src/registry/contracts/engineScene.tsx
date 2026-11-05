@@ -35,6 +35,8 @@ export type EngineScenePathTracing = {
   mode: RenderingMode
   thresholdPercent: number
   setThresholdPercent: (percent: number) => void
+  denoiseFadeDuration: number
+  setDenoiseFadeDuration: (duration: number) => void
   fadeDuration: number
   setFadeDuration: (duration: number) => void
   edgeOpacity: number

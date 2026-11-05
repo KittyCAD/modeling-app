@@ -6,6 +6,7 @@ const state = vi.hoisted(() => ({
   renderTime: 0,
   samples: 0,
   denoised: false,
+  denoising: false,
   reset: vi.fn(),
   measure: vi.fn<() => Promise<{ min: number }>>(),
 }))
@@ -16,6 +17,9 @@ vi.mock('three-gpu-pathtracer/webgpu', () => ({
   OIDNDenoiser: class {
     get complete() {
       return state.denoised
+    }
+    get running() {
+      return state.denoising
     }
     setScene = vi.fn()
     dispose = vi.fn()
@@ -73,9 +77,11 @@ describe('stealth path tracing', () => {
     state.renderTime = 0
     state.samples = 0
     state.denoised = false
+    state.denoising = false
     state.reset.mockImplementation(() => {
       state.renderTime = 0
       state.denoised = false
+      state.denoising = false
     })
     state.measure.mockClear()
     state.measure.mockImplementation(async () => ({ min: state.samples }))
@@ -190,6 +196,71 @@ describe('stealth path tracing', () => {
     complete?.({ min: 16 })
     await Promise.resolve()
     expect(tracer.render(camera, renderer, false, false, 50)).toBe(false)
+    tracer.dispose()
+  })
+
+  it('keeps tiled denoising offscreen, then waits for the second fade to finish', async () => {
+    let now = 1000
+    vi.spyOn(performance, 'now').mockImplementation(() => now)
+    const { tracer, renderer, gpu, camera } = await fixture()
+    tracer.setDenoise(true)
+    tracer.setDenoiseFadeDuration(200)
+    tracer.render(camera, renderer, false, false, 0)
+    gpu.render.mockClear()
+    state.denoising = true
+    now += 50
+    tracer.render(camera, renderer, false, false, 0)
+    // Preserve exactly one raw image, before drawing any partially denoised frame.
+    expect(gpu.render).toHaveBeenCalledOnce()
+    now += 50
+    tracer.render(camera, renderer, false, false, 0)
+    expect(gpu.render).toHaveBeenCalledOnce()
+    state.denoising = false
+    state.denoised = true
+    tracer.render(camera, renderer, false, false, 0)
+    expect(tracer.settled).toBe(false)
+    now += 199
+    tracer.render(camera, renderer, false, false, 0)
+    expect(tracer.settled).toBe(false)
+    now += 1
+    tracer.render(camera, renderer, false, false, 0)
+    expect(tracer.settled).toBe(true)
+    expect(gpu.render).toHaveBeenCalledOnce()
+    tracer.dispose()
+  })
+
+  it('supports an instant denoise reveal at zero milliseconds', async () => {
+    const { tracer, renderer, camera } = await fixture()
+    tracer.setDenoise(true)
+    tracer.setDenoiseFadeDuration(0)
+    tracer.render(camera, renderer, false, false, 0)
+    state.denoised = true
+    tracer.render(camera, renderer, false, false, 0)
+    expect(tracer.settled).toBe(true)
+    tracer.dispose()
+  })
+
+  it('discards the old noisy snapshot and denoise fade when the camera changes', async () => {
+    let now = 1000
+    vi.spyOn(performance, 'now').mockImplementation(() => now)
+    const { tracer, renderer, gpu, camera } = await fixture()
+    tracer.setDenoise(true)
+    tracer.render(camera, renderer, false, false, 0)
+    state.denoised = true
+    tracer.render(camera, renderer, false, false, 0)
+    now += 100
+    tracer.render(camera, renderer, false, false, 0)
+    camera.position.x = 5
+    camera.updateMatrixWorld()
+    tracer.render(camera, renderer, false, false, 0)
+    gpu.render.mockClear()
+    state.denoised = true
+    tracer.render(camera, renderer, false, false, 0)
+    expect(gpu.render).toHaveBeenCalledOnce()
+    expect(tracer.settled).toBe(false)
+    now += 200
+    tracer.render(camera, renderer, false, false, 0)
+    expect(tracer.settled).toBe(true)
     tracer.dispose()
   })
 

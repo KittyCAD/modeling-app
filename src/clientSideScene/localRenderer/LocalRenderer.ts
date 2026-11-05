@@ -80,6 +80,7 @@ export interface LocalRendererProps {
   renderingMode: RenderingMode
   denoise: boolean
   thresholdPercent?: number
+  denoiseFadeDuration?: number
   fadeDuration?: number
   rayTracingEdgeOpacity?: number
   rayTracingEdges?: boolean
@@ -97,6 +98,7 @@ export class LocalRenderer {
   private highlightEdges: boolean
   private fixedSizeGrid: boolean
   private pathTrace: boolean
+  private denoiseFadeDuration: number
   private thresholdPercent: number
   private lastCameraChange = -Infinity
   private renderingMode: RenderingMode
@@ -168,6 +170,7 @@ export class LocalRenderer {
     this.denoise = props.denoise
     this.renderingMode = props.renderingMode
     this.thresholdPercent = props.thresholdPercent ?? 50
+    this.denoiseFadeDuration = props.denoiseFadeDuration ?? 200
     this.rayTracingEdges = props.rayTracingEdges ?? true
     this.rayTracingEdgeOpacity = props.rayTracingEdgeOpacity ?? 0.45
     this.renderTransition.setDuration(
@@ -511,6 +514,13 @@ export class LocalRenderer {
     this.invalidateBaseRender()
   }
 
+  setDenoiseFadeDuration(duration: number) {
+    if (!Number.isFinite(duration) || duration < 0) return
+    this.denoiseFadeDuration = duration
+    this.pathTraceRenderer?.setDenoiseFadeDuration(duration)
+    this.invalidateBaseRender()
+  }
+
   setFadeDuration(duration: number) {
     this.renderTransition.setDuration(duration, performance.now())
     this.invalidateBaseRender()
@@ -553,6 +563,7 @@ export class LocalRenderer {
 
     pathTraceRenderer.setModel(this.currentModel)
     pathTraceRenderer.setDenoise(this.denoise)
+    pathTraceRenderer.setDenoiseFadeDuration(this.denoiseFadeDuration)
     this.pathTraceRenderer = pathTraceRenderer
     this.invalidateBaseRender()
   }

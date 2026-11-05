@@ -1,3 +1,4 @@
+import { RenderTransition } from '@src/clientSideScene/localRenderer/RenderTransition'
 import type { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import {
   LOCAL_WEBGPU_PATH_TRACE_DENOISED_SAMPLES,
@@ -59,6 +60,16 @@ export class PathTraceRenderer {
     depthBuffer: false,
     colorSpace: LinearSRGBColorSpace,
   })
+  private readonly noisyTarget = new RenderTarget(1, 1, {
+    depthBuffer: false,
+    colorSpace: LinearSRGBColorSpace,
+  })
+  private readonly noisyCopyMaterial = new NodeMaterial()
+  private readonly noisyCopyQuad = new QuadMesh(this.noisyCopyMaterial)
+  private readonly denoiseBlend = uniform(1)
+  private readonly denoiseTransition = new RenderTransition()
+  private rawFrameAvailable = false
+  private denoiseSnapshot = false
   private readonly rasterTarget = new RenderTarget(1, 1, {
     colorSpace: LinearSRGBColorSpace,
     depthBuffer: true,
@@ -118,12 +129,24 @@ export class PathTraceRenderer {
     this.scene.background = this.transparentBackground
     this.scene.environment = environment
     this.scene.environmentIntensity = environmentIntensity
+    this.denoiseTransition.setDuration(200, performance.now())
     this.traceTarget.texture.type = renderer.getOutputBufferType()
+    this.noisyTarget.texture.type = renderer.getOutputBufferType()
+    this.noisyCopyMaterial.fragmentNode = texture(
+      this.traceTarget.texture,
+      screenUV
+    )
+    this.noisyCopyMaterial.depthTest = false
+    this.noisyCopyMaterial.depthWrite = false
     this.rasterTarget.texture.type = renderer.getOutputBufferType()
     this.rasterTarget.samples = renderer.samples
     this.edgeTarget.texture.type = renderer.getOutputBufferType()
     this.edgeTarget.samples = renderer.samples
-    const traced = texture(this.traceTarget.texture, screenUV)
+    const traced = mix(
+      texture(this.noisyTarget.texture, screenUV),
+      texture(this.traceTarget.texture, screenUV),
+      this.denoiseBlend
+    )
     const edges = texture(this.edgeTarget.texture, screenUV)
     const edgeCoverage = edges.a.mul(this.edgeOpacity)
     // Both targets contain premultiplied color. Composite edges independently
@@ -192,6 +215,11 @@ export class PathTraceRenderer {
     this.invalidate()
   }
 
+  setDenoiseFadeDuration(duration: number) {
+    this.denoiseTransition.setDuration(duration, performance.now())
+    this.onChange()
+  }
+
   setDenoise(denoise: boolean) {
     this.denoise = denoise
     if (this.disposed) {
@@ -224,6 +252,7 @@ export class PathTraceRenderer {
       this.traceTarget.height !== height
     ) {
       this.traceTarget.setSize(width, height)
+      this.noisyTarget.setSize(width, height)
       this.rasterTarget.setSize(width, height)
       this.edgeTarget.setSize(width, height)
       this.pathTracer.reset()
@@ -258,6 +287,22 @@ export class PathTraceRenderer {
     const denoising = this.denoise && this.denoiserLoaded
     // The denoiser's last tile reaches the screen with the next draw.
     const denoised = denoising && this.denoiser.complete
+    const deferDenoise = thresholdPercent !== undefined && denoising
+    // Before the first tiled result is drawn, preserve the last raw frame.
+    if (
+      deferDenoise &&
+      (this.denoiser.running || denoised) &&
+      !this.denoiseSnapshot &&
+      this.rawFrameAvailable
+    ) {
+      renderer.setRenderTarget(this.noisyTarget)
+      try {
+        this.noisyCopyQuad.render(renderer)
+        this.denoiseSnapshot = true
+      } finally {
+        renderer.setRenderTarget(previousTarget)
+      }
+    }
     renderer.setRenderTarget(this.traceTarget)
     try {
       pathTracer.renderSample()
@@ -272,8 +317,19 @@ export class PathTraceRenderer {
     if (restarted) {
       this.invalidate()
     }
-    this.settled = !restarted && (denoising ? denoised : this.samplesReached)
-    if (this.settled) this.samplingProgress = 1
+    const samplingSettled =
+      !restarted && (denoising ? denoised : this.samplesReached)
+    const denoiseOpacity = this.denoiseTransition.update(
+      denoised && !restarted,
+      performance.now(),
+      deferDenoise && this.denoiseSnapshot
+    )
+    this.denoiseBlend.value =
+      deferDenoise && this.denoiseSnapshot ? denoiseOpacity : 1
+    if (deferDenoise && !denoised && !this.denoiseSnapshot)
+      this.rawFrameAvailable = true
+    this.settled = samplingSettled && !this.denoiseTransition.active
+    if (samplingSettled) this.samplingProgress = 1
     if (thresholdPercent !== undefined) {
       // Ignore the temporary low-resolution preview when measuring readiness.
       if (renderTime >= pathTracer.renderDelay && this.samplingProgress < 1) {
@@ -357,6 +413,8 @@ export class PathTraceRenderer {
   dispose() {
     this.disposed = true
     this.traceTarget.dispose()
+    this.noisyTarget.dispose()
+    this.noisyCopyMaterial.dispose()
     this.rasterTarget.dispose()
     this.edgeTarget.dispose()
     this.edgeMaterial.dispose()
@@ -438,6 +496,10 @@ export class PathTraceRenderer {
 
   private invalidate() {
     this.revision++
+    this.rawFrameAvailable = false
+    this.denoiseSnapshot = false
+    this.denoiseBlend.value = 1
+    this.denoiseTransition.update(false, performance.now(), false)
     this.samplingProgress = 0
     this.lastSampleMeasurement = -Infinity
     this.samplesReached = false

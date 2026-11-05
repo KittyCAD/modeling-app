@@ -213,7 +213,7 @@ const pathTraceToggleViewExtension = defineEngineSceneViewExtension({
   zone: 'top',
   order: 10,
   Component: PathTraceToggleViewExtension,
-  wrapperClassName: 'shrink-0 mt-2',
+  wrapperClassName: 'mt-2 w-[38rem] max-w-[65vw] min-w-0',
   shouldRegister: (context) => context.pathTracing.supported,
 })
 
