@@ -393,6 +393,21 @@ export class ElectronZoo {
       mockApiRoutes,
     })
 
+    if (!this.firstUrl) {
+      await this.page.getByRole('heading', { name: 'Projects' }).count()
+      this.firstUrl = this.page.url()
+    }
+
+    // Due to the app controlling its own window context we need to inject new
+    // options and context here.
+    // NOTE TO LEE: Seems to destroy page context when calling an electron loadURL.
+    // await tronApp.electronApp.evaluate(({ app }) => {
+    //   return app.reuseWindowForTest();
+    // });
+
+    // Reset the route before cleanup waits for UI that Settings can hide.
+    await this.page.goto(this.firstUrl)
+
     await this.cleanProjectDir({
       plugins: playwrightPluginSettings({
         zookeeperEnabled: testInfo.tags.includes('@zookeeper'),
@@ -427,21 +442,6 @@ export class ElectronZoo {
     }
 
     await this.page.setBodyDimensions(this.viewPortSize)
-
-    if (!this.firstUrl) {
-      await this.page.getByRole('heading', { name: 'Projects' }).count()
-      this.firstUrl = this.page.url()
-    }
-
-    // Due to the app controlling its own window context we need to inject new
-    // options and context here.
-    // NOTE TO LEE: Seems to destroy page context when calling an electron loadURL.
-    // await tronApp.electronApp.evaluate(({ app }) => {
-    //   return app.reuseWindowForTest();
-    // });
-
-    // Always start at the root view
-    await this.page.goto(this.firstUrl)
 
     // Force a hard reload, destroying the stream and other state
     await this.page.reload()
