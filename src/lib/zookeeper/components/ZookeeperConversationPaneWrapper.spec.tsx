@@ -1,8 +1,13 @@
+import { Registry } from '@kittycad/registry'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import type { ZookeeperSessionController } from '@src/lib/zookeeper/registry/controller'
+import kclMigration from '@src/registry/extensions/kclMigration'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+
+const registry = new Registry()
+registry.configure([kclMigration])
 
 const mocks = vi.hoisted(() => ({
   browserSaveFile: vi.fn(async () => undefined),
@@ -86,6 +91,7 @@ vi.mock('@src/hooks/useModelingContext', () => ({
 
 vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
+    registry,
     auth: {
       useUser: () => mocks.user,
     },

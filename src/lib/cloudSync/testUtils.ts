@@ -84,6 +84,19 @@ export function createCloudSyncTestFs(
         ? `${target}${path.slice(source.length)}`
         : path
 
+  const stat = async (path: string) => {
+    const normalizedPath = normalizeTestPath(path)
+    if (directories.has(normalizedPath)) {
+      return createStat(0o040000)
+    }
+
+    const contents = files.get(normalizedPath)
+    if (contents !== undefined) {
+      return createStat(0o100000, contents.length)
+    }
+    return pathNotFound()
+  }
+
   return {
     resolve: joinTestPaths,
     join: joinTestPaths,
@@ -186,18 +199,8 @@ export function createCloudSyncTestFs(
       }
       return [...children]
     },
-    stat: async (path: string) => {
-      const normalizedPath = normalizeTestPath(path)
-      if (directories.has(normalizedPath)) {
-        return createStat(0o040000)
-      }
-
-      const contents = files.get(normalizedPath)
-      if (contents !== undefined) {
-        return createStat(0o100000, contents.length)
-      }
-      return pathNotFound()
-    },
+    stat,
+    lstat: stat,
     mkdir: async (path: string) => {
       addDirectory(path)
     },

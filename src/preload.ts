@@ -174,9 +174,10 @@ const writeFile = (
   options?: { flag?: 'w' | 'wx' }
 ) => fs.writeFile(path, data, { encoding: 'utf-8', flag: options?.flag ?? 'w' })
 const readdir = (path: string) => fs.readdir(path, 'utf-8')
-const stat = (path: string) => {
-  return fs.stat(path).catch((e) => Promise.reject(e.code))
-}
+const stat = (path: string) =>
+  fs.stat(path).catch((e) => Promise.reject(e.code))
+const lstat = (path: string) =>
+  fs.lstat(path).catch((e) => Promise.reject(e.code))
 
 /**
  * Recursively move a file or folder to a destination
@@ -361,6 +362,7 @@ contextBridge.exposeInMainWorld('electron', {
   rename,
   rm: fs.rm,
   stat,
+  lstat,
   mkdir: fs.mkdir,
   move,
   // opens a dialog

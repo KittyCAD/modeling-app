@@ -25,6 +25,7 @@ export function ownFileContents(contents: Uint8Array): OwnedFileContents {
 }
 
 export interface FileStat {
+  readonly symbolicLink?: boolean
   readonly kind: FileKind
   readonly device: number
   readonly inode: number
@@ -45,6 +46,7 @@ export type FileSystemOperation =
   | 'remove'
   | 'rename'
   | 'stat'
+  | 'lstat'
   | 'write-file'
 
 interface FileSystemErrorDetails {
@@ -96,6 +98,7 @@ export type FileSystemError =
  */
 export interface FileSystemService {
   readonly stat: (path: string) => Effect.Effect<FileStat, FileSystemError>
+  readonly lstat: (path: string) => Effect.Effect<FileStat, FileSystemError>
   readonly canReadWrite: (
     path: string
   ) => Effect.Effect<boolean, FileSystemError>
@@ -217,6 +220,7 @@ function tryBacking<A>(
 
 function toFileStat(stat: BackingFileStat): FileStat {
   return {
+    ...((stat.mode & 0xf000) === 0xa000 ? { symbolicLink: true } : {}),
     kind: stat.mode & fsZdsConstants.S_IFDIR ? 'directory' : ('file' as const),
     device: stat.dev,
     inode: stat.ino,
@@ -275,6 +279,10 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
 
   const service: FileSystemService = {
     stat,
+    lstat: (path) =>
+      tryBacking('lstat', path, () => backing.lstat(path)).pipe(
+        Effect.map(toFileStat)
+      ),
     canReadWrite,
     exists,
     readFile,
@@ -315,6 +323,9 @@ export const fileSystemLayer = (backing: IZooDesignStudioFS) =>
 
 export const stat = (path: string) =>
   FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.stat(path)))
+
+export const lstat = (path: string) =>
+  FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.lstat(path)))
 
 export const canReadWrite = (path: string) =>
   FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.canReadWrite(path)))

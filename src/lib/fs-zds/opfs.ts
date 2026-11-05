@@ -523,6 +523,7 @@ const impl: IZooDesignStudioFS = {
   writeFile,
   readdir,
   stat,
+  lstat: stat, // OPFS has no symbolic links.
   mkdir,
   rm,
   detach: async () => {

@@ -10,6 +10,7 @@ import {
   type ProjectArchiveFile,
   setCloudSyncOpenedProject,
   syncCloudSyncProjectNow,
+  withCloudSyncPaused,
 } from '@src/lib/cloudSync'
 import { projectManifestFromFiles } from '@src/lib/cloudSync/projectArchive'
 import {
@@ -110,6 +111,47 @@ describe('cloud sync reliability', () => {
     vi.useRealTimers()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
+  })
+
+  it('does not upload a partially applied migration before its recovery finishes', async () => {
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'base = 1\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
+    ])
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    await seedSyncedProject([
+      projectFile('main.kcl', 'base = 1\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
+    ])
+    installFetchMock()
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    setCloudSyncOpenedProject({ projectPath })
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName,
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: true,
+    })
+    const putCalls = () =>
+      fetchMock.mock.calls.filter(
+        ([input, init]) =>
+          getFetchUrl(input).startsWith(remoteProjectUrl) &&
+          getFetchMethod(input, init) === 'PUT'
+      )
+    await withCloudSyncPaused(async () => {
+      files.set(`${projectPath}/main.kcl`, 'partial = 2\n')
+      await notifyCloudSyncWriteLikeMutation(`${projectPath}/main.kcl`)
+      await vi.advanceTimersByTimeAsync(3000)
+      expect(putCalls()).toHaveLength(0)
+      files.set(`${projectPath}/main.kcl`, 'base = 1\n')
+      await notifyCloudSyncWriteLikeMutation(`${projectPath}/main.kcl`)
+    })
+    await vi.advanceTimersByTimeAsync(3000)
+    expect(putCalls()).toHaveLength(0)
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('base = 1\n')
   })
 
   it('preserves newer sync metadata when a write notification finishes late', async () => {

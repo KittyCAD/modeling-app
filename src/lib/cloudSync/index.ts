@@ -50,6 +50,7 @@ function bindLocalFileSystem(activeFs: IZooDesignStudioFS): IZooDesignStudioFS {
     writeFile: activeFs.writeFile.bind(activeFs),
     readdir: activeFs.readdir.bind(activeFs),
     stat: activeFs.stat.bind(activeFs),
+    lstat: activeFs.lstat.bind(activeFs),
     mkdir: activeFs.mkdir.bind(activeFs),
     rm: activeFs.rm.bind(activeFs),
     detach: activeFs.detach.bind(activeFs),

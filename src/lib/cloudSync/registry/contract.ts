@@ -86,6 +86,7 @@ export type CloudSyncRegistryRuntimeConfig = {
 }
 
 export type CloudSyncRegistryService = {
+  withLocalProjectMutation: <A>(operation: () => Promise<A>) => Promise<A>
   status: ReadonlySignal<CloudSyncStatus>
   configure: (config: CloudSyncRegistryRuntimeConfig) => void
   installFileSystemObserver: (activeFs?: IZooDesignStudioFS) => void
