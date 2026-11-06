@@ -1,3 +1,4 @@
+import '@src/lib/projectSession/next/testFeature'
 import {
   defineRegistryItem,
   provide,

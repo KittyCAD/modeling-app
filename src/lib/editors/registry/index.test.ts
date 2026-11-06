@@ -1,3 +1,4 @@
+import '@src/lib/projectSession/next/testFeature'
 import { undo } from '@codemirror/commands'
 import { language } from '@codemirror/language'
 import { EditorState } from '@codemirror/state'

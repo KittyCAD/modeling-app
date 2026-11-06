@@ -1,3 +1,4 @@
+import '@src/lib/projectSession/next/testFeature'
 import { undo } from '@codemirror/commands'
 import { Registry } from '@kittycad/registry'
 import { EditorsPane } from '@src/lib/editors/EditorsPane'

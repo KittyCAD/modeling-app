@@ -13,7 +13,7 @@ import { provideCommand } from '@src/registry/contracts/commands'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { keymapEventOwnersValueSpec } from '@src/registry/contracts/keymap'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import {
   editorCapabilityValueSpec,
   editorsService,
@@ -22,8 +22,7 @@ import {
 } from '@src/lib/editors/registry/contract'
 
 /** Owns views and their live capability bindings, without file reads or execution. */
-export default defineRegistryItemFactory(({ valueSpecs, services }) => {
-  if (!IS_STAGING_OR_DEBUG) return { id: 'editors' }
+const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
   const editors = signal<readonly Editor[]>([])
   const editorCapabilities = valueSpecs.signal(editorCapabilityValueSpec)
   const subscriptions = new Map<symbol, () => void>()
@@ -139,3 +138,5 @@ export default defineRegistryItemFactory(({ valueSpecs, services }) => {
     },
   }
 }, 'editors')
+
+export default withProjectShellFeature(extension, 'editors')

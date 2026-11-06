@@ -2,11 +2,10 @@ import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { editorCapabilityValueSpec } from '@src/lib/editors/registry/contract'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 
 /** KCL editing behavior, independent of execution or preview services. */
-export default defineRegistryItemFactory(() => {
-  if (!IS_STAGING_OR_DEBUG) return { id: 'kcl' }
+const extension = defineRegistryItemFactory(() => {
   return {
     id: 'kcl',
     provides: [
@@ -18,3 +17,5 @@ export default defineRegistryItemFactory(() => {
     ],
   }
 }, 'kcl')
+
+export default withProjectShellFeature(extension, 'kcl')

@@ -1,3 +1,4 @@
+import '@src/lib/projectSession/next/testFeature'
 import { redo, undo } from '@codemirror/commands'
 import { highlightingFor, language } from '@codemirror/language'
 import { Registry } from '@kittycad/registry'

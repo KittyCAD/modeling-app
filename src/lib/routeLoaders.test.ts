@@ -1,3 +1,4 @@
+import '@src/lib/projectSession/next/testFeature'
 import { Registry } from '@kittycad/registry'
 import editorsExtension from '@src/lib/editors/registry'
 import { editorsService } from '@src/lib/editors/registry/contract'

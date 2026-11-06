@@ -1,3 +1,4 @@
+import '@src/lib/projectSession/next/testFeature'
 import { signal } from '@preact/signals-core'
 import {
   Registry,
