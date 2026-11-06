@@ -1732,9 +1732,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     const pressUndo = async () => {
-      await page.keyboard.down('Control')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Control')
+      await page.keyboard.press('ControlOrMeta+z')
     }
 
     const clickMidpoint = async (id1: string, id2: string) => {
