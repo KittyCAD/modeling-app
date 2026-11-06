@@ -1,3 +1,4 @@
+import { getPixelRGBs } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import * as fsp from 'fs/promises'
@@ -494,63 +495,111 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     })
   })
 
-  test(`Delete sketch on offset plane and all profiles from feature tree`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-    folderSetupFn,
-  }) => {
-    const beforeKclCode = `plane001 = offsetPlane(XY, offset = 5)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Delete sketch on offset plane and all profiles from feature tree ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+      folderSetupFn,
+    }) => {
+      const beforeKclCode = `plane001 = offsetPlane(XY, offset = 5)
 sketch001 = startSketchOn(plane001)
 profile001 = circle(sketch001, center = [0, 20], radius = 12)
 profile002 = startProfile(sketch001, at = [0, 7.25])
   |> xLine(length = 13.3)
 profile003 = startProfile(sketch001, at = [0, -4.93])
   |> line(endAbsolute = [-5.56, 0])`
-    await folderSetupFn(async (dir) => {
-      const testProject = join(dir, 'test-sample')
-      await fsp.mkdir(testProject, { recursive: true })
-      await fsp.writeFile(join(testProject, 'main.kcl'), beforeKclCode, 'utf-8')
-    })
-    // One dumb hardcoded screen pixel value
-    const pointOnSketch = { x: 650, y: 250 }
-    const pointOnPlane = { x: 650, y: 350 }
-    const sketchColor: [number, number, number] = [149, 149, 149]
-    const planeColor: [number, number, number] = [74, 74, 74]
+      await folderSetupFn(async (dir) => {
+        const testProject = join(dir, 'test-sample')
+        await fsp.mkdir(testProject, { recursive: true })
+        await fsp.writeFile(
+          join(testProject, 'main.kcl'),
+          beforeKclCode,
+          'utf-8'
+        )
+      })
+      // One dumb hardcoded screen pixel value
+      const pointOnSketch = { x: 650, y: 250 }
+      const pointOnPlane = { x: 650, y: 350 }
+      const sketchColor: [number, number, number] = [149, 149, 149]
+      const planeColor: [number, number, number] = [74, 74, 74]
 
-    await homePage.openProject('test-sample')
-    await scene.settled()
-
-    await test.step(`Verify we see the sketch`, async () => {
-      await scene.expectPixelColor(sketchColor, pointOnSketch, 10)
-    })
-
-    await test.step('Delete sketch via feature tree selection', async () => {
-      const operationButton = await toolbar.getFeatureTreeOperation('Sketch', 0)
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.expectPixelColor(planeColor, pointOnPlane, 10)
-    })
-
-    await test.step(`Verify the code changed`, async () => {
-      await editor.expectEditor.toContain('plane001 =')
-      await editor.expectEditor.not.toContain('sketch001 =')
-      await editor.expectEditor.not.toContain('profile002 = ')
-    })
-
-    await test.step(`Delete the remaining plane via feature tree`, async () => {
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'plane001',
-        0
+      await homePage.openProject('test-sample')
+      await scene.settled()
+      const local = await page.evaluate(
+        () => window.engineCommandManager.geometryOnly
       )
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
 
-      // Verify the plane code is gone, and https://github.com/KittyCAD/modeling-app/issues/5988 is fixed.
-      await editor.expectEditor.not.toContain('plane001 =')
+      await test.step(`Verify we see the sketch`, async () => {
+        if (local) {
+          // Local regions are picking-only; verify the rendered sketch outline.
+          await expect
+            .poll(
+              async () => {
+                const point = (await scene.getProjectedEntities()).filter(
+                  (e) => e.kind === 'edge' && e.visible
+                )[0]
+                if (!point) return false
+                const pixels = await getPixelRGBs(page)(point, 3)
+                const color = [205, 206, 208]
+                return pixels.some((pixel) =>
+                  pixel.every(
+                    (channel, index) => Math.abs(channel - color[index]) < 10
+                  )
+                )
+              },
+              { timeout: 10000 }
+            )
+            .toBe(true)
+        } else {
+          await scene.expectPixelColor(sketchColor, pointOnSketch, 10)
+        }
+      })
+
+      await test.step('Delete sketch via feature tree selection', async () => {
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Sketch',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        if (local) {
+          await expect
+            .poll(
+              async () =>
+                (await scene.getProjectedEntities()).filter(
+                  (e) => e.kind === 'edge'
+                ).length
+            )
+            .toBe(0)
+        }
+        await scene.expectPixelColor(
+          local ? [86, 86, 86] : planeColor,
+          pointOnPlane,
+          10
+        )
+      })
+
+      await test.step(`Verify the code changed`, async () => {
+        await editor.expectEditor.toContain('plane001 =')
+        await editor.expectEditor.not.toContain('sketch001 =')
+        await editor.expectEditor.not.toContain('profile002 = ')
+      })
+
+      await test.step(`Delete the remaining plane via feature tree`, async () => {
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'plane001',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+
+        // Verify the plane code is gone, and https://github.com/KittyCAD/modeling-app/issues/5988 is fixed.
+        await editor.expectEditor.not.toContain('plane001 =')
+      })
     })
-  })
+  }
 })

@@ -242,13 +242,14 @@ extrude001 = extrude(
       }
   })
 
-  test(`Verify user can double-click to edit a sketch`, async ({
-    homePage,
-    editor,
-    toolbar,
-    scene,
-  }) => {
-    const initialCode = `closedSketch = sketch(on = XZ) {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Verify user can double-click to edit a sketch ${rendererTag}`, async ({
+      homePage,
+      editor,
+      toolbar,
+      scene,
+    }) => {
+      const initialCode = `closedSketch = sketch(on = XZ) {
   circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
 }
 openSketch = sketch(on = XY) {
@@ -260,53 +261,56 @@ openSketch = sketch(on = XY) {
 }
 `
 
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', initialCode)
-    )
-    // Match the cursor position of an initially loaded file.
-    await editor.scrollToText('closedSketch = sketch(on = XZ) {')
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      // Match the cursor position of an initially loaded file.
+      await editor.scrollToText('closedSketch = sketch(on = XZ) {')
 
-    const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
-      scene.makeMouseHelpers(0.65, 0.5, {
-        format: 'ratio',
+      await test.step(`Double-click on the closed sketch`, async () => {
+        await scene.settled()
+        await editor.closePane()
+        // Selecting the closed region keeps the sketch header active on entry.
+        const [, moveToCircle, dblClickCircle] =
+          await scene.makeSelectionHelpers({
+            kind: 'face',
+            index: 0,
+            stream: { x: 0.63, y: 0.5, format: 'ratio' },
+          })
+        await moveToCircle()
+        await dblClickCircle()
+        await expect(toolbar.exitSketchBtn).toBeVisible()
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await editor.openPane()
+        await editor.expectActiveLinesToBe(['closedSketch = sketch(on = XZ) {'])
       })
 
-    const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
-      0.63,
-      0.5,
-      { format: 'ratio' }
-    )
+      await test.step(`Exit the closed sketch and wait for scene`, async () => {
+        await toolbar.exitSketch()
+        await scene.settled()
+        await editor.closePane()
+      })
 
-    await test.step(`Double-click on the closed sketch`, async () => {
-      await scene.settled()
-      await editor.closePane()
-      await moveToCircle()
-      await dblClickCircle()
-      await expect(toolbar.exitSketchBtn).toBeVisible()
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await editor.openPane()
-      await editor.expectActiveLinesToBe(['closedSketch = sketch(on = XZ) {'])
+      await test.step(`Double-click on the open sketch`, async () => {
+        const [, moveToOpenPath, dblClickOpenPath] =
+          await scene.makeSelectionHelpers({
+            kind: 'edge',
+            index: 3,
+            stream: { x: 0.65, y: 0.5, format: 'ratio' },
+          })
+        await moveToOpenPath()
+        await dblClickOpenPath()
+        await expect(toolbar.exitSketchBtn).toBeVisible()
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await editor.openPane()
+        await editor.expectActiveLinesToBe([
+          'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
+        ])
+      })
     })
-
-    await test.step(`Exit the closed sketch and wait for scene`, async () => {
-      await toolbar.exitSketch()
-      await scene.settled()
-      await editor.closePane()
-    })
-
-    await test.step(`Double-click on the open sketch`, async () => {
-      await moveToOpenPath()
-      await dblClickOpenPath()
-      await expect(toolbar.exitSketchBtn).toBeVisible()
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await editor.openPane()
-      await editor.expectActiveLinesToBe([
-        'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
-      ])
-    })
-  })
+  }
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Shift-click to select and deselect faces ${rendererTag}`, async ({
@@ -2954,391 +2958,408 @@ solid001 = extrude(region001, length = 5)`
     })
   })
 
-  test('GDT Flatness from modeling dialog', async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = in)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`GDT Flatness from modeling dialog ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
 }
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 30)`
-    await test.step('Settle the scene', async () => {
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', initialCode)
-      )
-      await resetView(scene)
-
-      // Close panes to ensure toolbar buttons are visible
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
-
-    // Adjusted coordinates to center screen for clicking on cap
-    const testPoint = { x: 500, y: 200 }
-    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    await test.step('Add GDT Flatness to the scene', async () => {
-      await test.step('Open GDT Flatness command from toolbar', async () => {
-        await toolbar.selectGdtFlatness()
-        await modelingDialog.selection('Faces').click()
-      })
-
-      await test.step('Select face and configure basic parameters', async () => {
-        await test.step('Select face', async () => {
-          await modelingDialog.selection('Faces').click()
-          await clickOnCap()
-          await toolbar.expectSelection('1 face')
-        })
-
-        await test.step('Configure tolerance', async () => {
-          await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
-          // Set tolerance to 0.1in
-          await modelingDialog.input('tolerance').fill('0.1in')
-        })
-
-        await test.step('Review basic parameters', async () => {
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-      })
-
-      await test.step('Configure optional parameters', async () => {
-        await test.step('Configure precision', async () => {
-          await expect(modelingDialog.input('precision')).toHaveAttribute(
-            'aria-placeholder',
-            'Use defaults'
-          )
-          // Update precision from 3 to 5
-          await modelingDialog.input('precision').fill('5')
-
-          // Review changes to precision
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Configure frame position', async () => {
-          await expect(modelingDialog.input('frame position')).toHaveAttribute(
-            'aria-placeholder',
-            'Use defaults'
-          )
-          // Update frame position from [0, 0] to [10, 10]
-          await modelingDialog.input('frame position').fill('[10, 10]')
-
-          // Review changes to frame position
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Configure frame plane', async () => {
-          await expect(modelingDialog.options('frame plane')).toBeVisible()
-          // Select XY plane
-          await modelingDialog
-            .options('frame plane')
-            .selectOption({ label: 'XY Plane' })
-          // Review changes to frame plane
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Configure font size', async () => {
-          await expect(modelingDialog.input('font size')).toHaveAttribute(
-            'aria-placeholder',
-            'Use defaults'
-          )
-          // Update font size to 12mm
-          await modelingDialog.input('font size').fill('12mm')
-
-          // Review changes to font size
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-      })
-
-      await test.step('Submit and verify all parameters', async () => {
-        await modelingDialog.submit()
+      await test.step('Settle the scene', async () => {
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
         await scene.settled()
-        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
-        await editor.expectEditor.toContain('gdt::flatness(')
-        await editor.expectEditor.toContain('faces = [capEnd001]')
-        await editor.expectEditor.toContain('tolerance = 0.1in')
-        await editor.expectEditor.toContain('precision = 5')
-        await editor.expectEditor.toContain('framePosition = [10, 10]')
-        await editor.expectEditor.toContain('framePlane = XY')
-        await editor.expectEditor.toContain('fontSize = 12mm')
-      })
-    })
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', initialCode)
+        )
+        await resetView(scene)
 
-    await test.step('Edit GDT Flatness', async () => {
-      await test.step('Open edit mode from feature tree', async () => {
+        // Close panes to ensure toolbar buttons are visible
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
+
+      // Adjusted coordinates to center screen for clicking on cap
+      const testPoint = { x: 500, y: 200 }
+      const [clickOnCap] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 0,
+        stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
+      })
+      await test.step('Add GDT Flatness to the scene', async () => {
+        await test.step('Open GDT Flatness command from toolbar', async () => {
+          await toolbar.selectGdtFlatness()
+          await modelingDialog.selection('Faces').click()
+        })
+
+        await test.step('Select face and configure basic parameters', async () => {
+          await test.step('Select face', async () => {
+            await modelingDialog.selection('Faces').click()
+            await clickOnCap()
+            await toolbar.expectSelection('1 face')
+          })
+
+          await test.step('Configure tolerance', async () => {
+            await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
+            // Set tolerance to 0.1in
+            await modelingDialog.fillInput('tolerance', '0.1in')
+          })
+
+          await test.step('Review basic parameters', async () => {
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+        })
+
+        await test.step('Configure optional parameters', async () => {
+          await test.step('Configure precision', async () => {
+            await expect(modelingDialog.input('precision')).toHaveAttribute(
+              'aria-placeholder',
+              'Use defaults'
+            )
+            // Update precision from 3 to 5
+            await modelingDialog.fillInput('precision', '5')
+
+            // Review changes to precision
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Configure frame position', async () => {
+            await expect(
+              modelingDialog.input('frame position')
+            ).toHaveAttribute('aria-placeholder', 'Use defaults')
+            // Update frame position from [0, 0] to [10, 10]
+            await modelingDialog.fillInput('frame position', '[10, 10]')
+
+            // Review changes to frame position
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Configure frame plane', async () => {
+            await expect(modelingDialog.options('frame plane')).toBeVisible()
+            // Select XY plane
+            await modelingDialog
+              .options('frame plane')
+              .selectOption({ label: 'XY Plane' })
+            // Review changes to frame plane
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Configure font size', async () => {
+            await expect(modelingDialog.input('font size')).toHaveAttribute(
+              'aria-placeholder',
+              'Use defaults'
+            )
+            // Update font size to 12mm
+            await modelingDialog.fillInput('font size', '12mm')
+
+            // Review changes to font size
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+        })
+
+        await test.step('Submit and verify all parameters', async () => {
+          await modelingDialog.submit()
+          await scene.settled()
+          await editor.expectEditor.not.toContain(
+            'experimentalFeatures = allow'
+          )
+          await editor.expectEditor.toContain('gdt::flatness(')
+          await editor.expectEditor.toContain('faces = [capEnd001]')
+          await editor.expectEditor.toContain('tolerance = 0.1in')
+          await editor.expectEditor.toContain('precision = 5')
+          await editor.expectEditor.toContain('framePosition = [10, 10]')
+          await editor.expectEditor.toContain('framePlane = XY')
+          await editor.expectEditor.toContain('fontSize = 12mm')
+        })
+      })
+
+      await test.step('Edit GDT Flatness', async () => {
+        await test.step('Open edit mode from feature tree', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+          const gdtOperation = await toolbar.getFeatureTreeOperation(
+            'note001',
+            0
+          )
+          await gdtOperation.dblclick()
+          // Should open the modeling dialog in edit mode
+          await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
+        })
+
+        await test.step('Edit parameters', async () => {
+          await test.step('Edit tolerance', async () => {
+            await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
+            // Update tolerance from 0.1in to 0.2in
+            await modelingDialog.fillInput('tolerance', '0.2in')
+
+            // Review changes to tolerance
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Edit precision', async () => {
+            await expect(modelingDialog.input('precision')).toHaveText('5')
+            // Update precision from 5 to 3
+            await modelingDialog.fillInput('precision', '3')
+
+            // Review changes to precision
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Edit frame position', async () => {
+            await expect(modelingDialog.input('frame position')).toHaveText(
+              '[10, 10]'
+            )
+            // Update frame position from [10, 10] to [20, 30]
+            await modelingDialog.fillInput('frame position', '[20, 30]')
+
+            // Review changes to frame position
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Edit frame plane', async () => {
+            await expect(
+              modelingDialog.selectedOption('frame plane')
+            ).toHaveText('XY Plane')
+            // Update frame plane from XY to XZ
+            await modelingDialog
+              .options('frame plane')
+              .selectOption({ label: 'XZ Plane' })
+            // Review changes to frame plane
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Edit font size', async () => {
+            await expect(modelingDialog.input('font size')).toHaveText('12mm')
+            // Update font size from 48 to 24
+            await modelingDialog.fillInput('font size', '24')
+
+            // Review changes to font size
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+        })
+
+        await test.step('Submit and verify all parameters', async () => {
+          await modelingDialog.submit()
+          await scene.settled()
+          await editor.expectEditor.toContain('gdt::flatness(')
+          await editor.expectEditor.toContain('faces = [capEnd001]')
+          await editor.expectEditor.toContain('tolerance = 0.2in')
+          await editor.expectEditor.toContain('precision = 3')
+          await editor.expectEditor.toContain('framePosition = [20, 30]')
+          await editor.expectEditor.toContain('framePlane = XZ')
+          await editor.expectEditor.toContain('fontSize = 24')
+        })
+      })
+
+      await test.step('Delete GDT Flatness', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
-        await gdtOperation.dblclick()
-        // Should open the modeling dialog in edit mode
-        await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
-      })
-
-      await test.step('Edit parameters', async () => {
-        await test.step('Edit tolerance', async () => {
-          await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
-          // Update tolerance from 0.1in to 0.2in
-          await modelingDialog.input('tolerance').fill('0.2in')
-
-          // Review changes to tolerance
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Edit precision', async () => {
-          await expect(modelingDialog.input('precision')).toHaveText('5')
-          // Update precision from 5 to 3
-          await modelingDialog.fillInput('precision', '3')
-
-          // Review changes to precision
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Edit frame position', async () => {
-          await expect(modelingDialog.input('frame position')).toHaveText(
-            '[10, 10]'
-          )
-          // Update frame position from [10, 10] to [20, 30]
-          await modelingDialog.input('frame position').fill('[20, 30]')
-
-          // Review changes to frame position
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Edit frame plane', async () => {
-          await expect(modelingDialog.selectedOption('frame plane')).toHaveText(
-            'XY Plane'
-          )
-          // Update frame plane from XY to XZ
-          await modelingDialog
-            .options('frame plane')
-            .selectOption({ label: 'XZ Plane' })
-          // Review changes to frame plane
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Edit font size', async () => {
-          await expect(modelingDialog.input('font size')).toHaveText('12mm')
-          // Update font size from 48 to 24
-          await modelingDialog.input('font size').fill('24')
-
-          // Review changes to font size
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-      })
-
-      await test.step('Submit and verify all parameters', async () => {
-        await modelingDialog.submit()
+        // Delete the GDT operation
+        await gdtOperation.click({ button: 'left' })
+        await page.keyboard.press('Delete')
         await scene.settled()
-        await editor.expectEditor.toContain('gdt::flatness(')
-        await editor.expectEditor.toContain('faces = [capEnd001]')
-        await editor.expectEditor.toContain('tolerance = 0.2in')
-        await editor.expectEditor.toContain('precision = 3')
-        await editor.expectEditor.toContain('framePosition = [20, 30]')
-        await editor.expectEditor.toContain('framePlane = XZ')
-        await editor.expectEditor.toContain('fontSize = 24')
+        await editor.expectEditor.not.toContain('gdt::flatness(')
       })
     })
+  }
 
-    await test.step('Delete GDT Flatness', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
-      // Delete the GDT operation
-      await gdtOperation.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await editor.expectEditor.not.toContain('gdt::flatness(')
-    })
-  })
-
-  test('GDT Datum from modeling dialog', async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = in)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`GDT Datum from modeling dialog ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
 }
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 30)`
-    await test.step('Settle the scene', async () => {
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', initialCode)
-      )
-      await resetView(scene)
-
-      // Close panes to ensure toolbar buttons are visible
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
-
-    // Adjusted coordinates to center screen for clicking on cap
-    const testPoint = { x: 500, y: 200 }
-    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    await test.step('Add GDT Datum to the scene', async () => {
-      await test.step('Open GDT Datum command from toolbar', async () => {
-        await page
-          .getByRole('button', { name: 'caret down gdt: open menu' })
-          .click()
-        await expect(page.getByTestId('dropdown-gdt-datum')).toBeVisible()
-        await page.getByTestId('dropdown-gdt-datum').click()
-        await modelingDialog.selection('Faces').click()
-      })
-
-      await test.step('Select face and configure basic parameters', async () => {
-        await test.step('Select face', async () => {
-          await modelingDialog.selection('Faces').click()
-          await clickOnCap()
-          await toolbar.expectSelection('1 face')
-        })
-
-        await test.step('Configure name', async () => {
-          await expect(modelingDialog.input('name')).toBeVisible()
-          // Keep default name 'A'
-        })
-
-        await test.step('Review basic parameters', async () => {
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-      })
-
-      await test.step('Configure optional parameters', async () => {
-        await test.step('Configure frame position', async () => {
-          await expect(modelingDialog.input('frame position')).toHaveAttribute(
-            'aria-placeholder',
-            'Use defaults'
-          )
-          // Update frame position from [0, 0] to [5, 0]
-          await modelingDialog.input('frame position').fill('[5, 0]')
-
-          // Review changes to frame position
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Configure frame plane', async () => {
-          await expect(modelingDialog.options('frame plane')).toBeVisible()
-          // Select XZ plane
-          await modelingDialog
-            .options('frame plane')
-            .selectOption({ label: 'XZ Plane' })
-          // Review changes to frame plane
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Configure font size', async () => {
-          await expect(modelingDialog.input('font size')).toHaveAttribute(
-            'aria-placeholder',
-            'Use defaults'
-          )
-          // Update font size to 12mm
-          await modelingDialog.input('font size').fill('12mm')
-
-          // Review changes to font size
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-      })
-
-      await test.step('Submit and verify all parameters', async () => {
-        await modelingDialog.submit()
+      await test.step('Settle the scene', async () => {
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
         await scene.settled()
-        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
-        await editor.expectEditor.toContain('gdt::datum(')
-        await editor.expectEditor.toContain('face = capEnd001')
-        await editor.expectEditor.toContain('name = "A"')
-        await editor.expectEditor.toContain('framePosition = [5, 0]')
-        await editor.expectEditor.toContain('framePlane = XZ')
-        await editor.expectEditor.toContain('fontSize = 12mm')
-      })
-    })
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', initialCode)
+        )
+        await resetView(scene)
 
-    await test.step('Edit GDT Datum', async () => {
-      await test.step('Open edit mode from feature tree', async () => {
+        // Close panes to ensure toolbar buttons are visible
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
+
+      // Adjusted coordinates to center screen for clicking on cap
+      const testPoint = { x: 500, y: 200 }
+      const [clickOnCap] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 0,
+        stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
+      })
+      await test.step('Add GDT Datum to the scene', async () => {
+        await test.step('Open GDT Datum command from toolbar', async () => {
+          await page
+            .getByRole('button', { name: 'caret down gdt: open menu' })
+            .click()
+          await expect(page.getByTestId('dropdown-gdt-datum')).toBeVisible()
+          await page.getByTestId('dropdown-gdt-datum').click()
+          await modelingDialog.selection('Faces').click()
+        })
+
+        await test.step('Select face and configure basic parameters', async () => {
+          await test.step('Select face', async () => {
+            await modelingDialog.selection('Faces').click()
+            await clickOnCap()
+            await toolbar.expectSelection('1 face')
+          })
+
+          await test.step('Configure name', async () => {
+            await expect(modelingDialog.input('name')).toBeVisible()
+            // Keep default name 'A'
+          })
+
+          await test.step('Review basic parameters', async () => {
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+        })
+
+        await test.step('Configure optional parameters', async () => {
+          await test.step('Configure frame position', async () => {
+            await expect(
+              modelingDialog.input('frame position')
+            ).toHaveAttribute('aria-placeholder', 'Use defaults')
+            // Update frame position from [0, 0] to [5, 0]
+            await modelingDialog.fillInput('frame position', '[5, 0]')
+
+            // Review changes to frame position
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Configure frame plane', async () => {
+            await expect(modelingDialog.options('frame plane')).toBeVisible()
+            // Select XZ plane
+            await modelingDialog
+              .options('frame plane')
+              .selectOption({ label: 'XZ Plane' })
+            // Review changes to frame plane
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Configure font size', async () => {
+            await expect(modelingDialog.input('font size')).toHaveAttribute(
+              'aria-placeholder',
+              'Use defaults'
+            )
+            // Update font size to 12mm
+            await modelingDialog.fillInput('font size', '12mm')
+
+            // Review changes to font size
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+        })
+
+        await test.step('Submit and verify all parameters', async () => {
+          await modelingDialog.submit()
+          await scene.settled()
+          await editor.expectEditor.not.toContain(
+            'experimentalFeatures = allow'
+          )
+          await editor.expectEditor.toContain('gdt::datum(')
+          await editor.expectEditor.toContain('face = capEnd001')
+          await editor.expectEditor.toContain('name = "A"')
+          await editor.expectEditor.toContain('framePosition = [5, 0]')
+          await editor.expectEditor.toContain('framePlane = XZ')
+          await editor.expectEditor.toContain('fontSize = 12mm')
+        })
+      })
+
+      await test.step('Edit GDT Datum', async () => {
+        await test.step('Open edit mode from feature tree', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+          const gdtOperation = await toolbar.getFeatureTreeOperation('Datum', 0)
+          await gdtOperation.dblclick()
+          // Should open the modeling dialog in edit mode
+        })
+
+        await test.step('Edit parameters', async () => {
+          await test.step('Edit name from A to B', async () => {
+            await expect(modelingDialog.input('name')).toBeVisible()
+            // Update name from A to B
+            await expect(modelingDialog.input('name')).toBeVisible()
+            await modelingDialog.input('name').fill('B')
+
+            // Review changes to name
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Edit frame position', async () => {
+            await expect(modelingDialog.input('frame position')).toHaveText(
+              '[5, 0]'
+            )
+            // Update frame position from [5, 0] to [10, 5]
+            await modelingDialog.fillInput('frame position', '[10, 5]')
+
+            // Review changes to frame position
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Edit frame plane', async () => {
+            await expect(
+              modelingDialog.selectedOption('frame plane')
+            ).toHaveText('XZ Plane')
+            // Update frame plane from XZ to YZ
+            await modelingDialog
+              .options('frame plane')
+              .selectOption({ label: 'YZ Plane' })
+            // Review changes to frame plane
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+
+          await test.step('Edit font size', async () => {
+            await expect(modelingDialog.input('font size')).toHaveText('12mm')
+            // Update font size from 48 to 32
+            await modelingDialog.fillInput('font size', '32')
+
+            // Review changes to font size
+            await expect(modelingDialog.submitButton).toBeEnabled()
+          })
+        })
+
+        await test.step('Submit and verify all parameters', async () => {
+          await modelingDialog.submit()
+          await scene.settled()
+          await editor.expectEditor.toContain('gdt::datum(')
+          await editor.expectEditor.toContain('face = capEnd001')
+          await editor.expectEditor.toContain('name = "B"')
+          await editor.expectEditor.toContain('framePosition = [10, 5]')
+          await editor.expectEditor.toContain('framePlane = YZ')
+          await editor.expectEditor.toContain('fontSize = 32')
+        })
+      })
+
+      await test.step('Delete GDT Datum', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const gdtOperation = await toolbar.getFeatureTreeOperation('Datum', 0)
-        await gdtOperation.dblclick()
-        // Should open the modeling dialog in edit mode
-      })
-
-      await test.step('Edit parameters', async () => {
-        await test.step('Edit name from A to B', async () => {
-          await expect(modelingDialog.input('name')).toBeVisible()
-          // Update name from A to B
-          await expect(modelingDialog.input('name')).toBeVisible()
-          await modelingDialog.input('name').fill('B')
-
-          // Review changes to name
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Edit frame position', async () => {
-          await expect(modelingDialog.input('frame position')).toHaveText(
-            '[5, 0]'
-          )
-          // Update frame position from [5, 0] to [10, 5]
-          await modelingDialog.input('frame position').fill('[10, 5]')
-
-          // Review changes to frame position
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Edit frame plane', async () => {
-          await expect(modelingDialog.selectedOption('frame plane')).toHaveText(
-            'XZ Plane'
-          )
-          // Update frame plane from XZ to YZ
-          await modelingDialog
-            .options('frame plane')
-            .selectOption({ label: 'YZ Plane' })
-          // Review changes to frame plane
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-
-        await test.step('Edit font size', async () => {
-          await expect(modelingDialog.input('font size')).toHaveText('12mm')
-          // Update font size from 48 to 32
-          await modelingDialog.input('font size').fill('32')
-
-          // Review changes to font size
-          await expect(modelingDialog.submitButton).toBeEnabled()
-        })
-      })
-
-      await test.step('Submit and verify all parameters', async () => {
-        await modelingDialog.submit()
+        // Delete the GDT operation
+        await gdtOperation.click({ button: 'left' })
+        await page.keyboard.press('Delete')
         await scene.settled()
-        await editor.expectEditor.toContain('gdt::datum(')
-        await editor.expectEditor.toContain('face = capEnd001')
-        await editor.expectEditor.toContain('name = "B"')
-        await editor.expectEditor.toContain('framePosition = [10, 5]')
-        await editor.expectEditor.toContain('framePlane = YZ')
-        await editor.expectEditor.toContain('fontSize = 32')
+        await editor.expectEditor.not.toContain('gdt::datum(')
       })
     })
-
-    await test.step('Delete GDT Datum', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const gdtOperation = await toolbar.getFeatureTreeOperation('Datum', 0)
-      // Delete the GDT operation
-      await gdtOperation.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await editor.expectEditor.not.toContain('gdt::datum(')
-    })
-  })
+  }
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Hole point-and-click ${rendererTag}`, async ({

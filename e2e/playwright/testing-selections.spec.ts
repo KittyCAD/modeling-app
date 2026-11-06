@@ -85,35 +85,39 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     ).not.toBeDisabled()
   })
 
-  test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    folderSetupFn,
-    fs,
-  }) => {
-    const cases = [
-      {
-        pos: [0.31, 0.5],
-        expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
-      },
-      {
-        pos: [0.448, 0.557],
-        expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
-      },
-      {
-        pos: [0.753, 0.5],
-        expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
-      },
-    ] as const
-    await folderSetupFn(async (dir) => {
-      const projectDir = path.join(dir, 'demo-project')
-      await fs.mkdir(projectDir, { recursive: true })
-      await fs.writeFile(
-        path.join(projectDir, 'main.kcl'),
-        new TextEncoder().encode(
-          `@settings(defaultLengthUnit = in)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Testing selections (and hovers) work on sketches when NOT in sketch mode ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+      folderSetupFn,
+      fs,
+    }) => {
+      const cases = [
+        {
+          pos: [0.31, 0.5],
+          edgeIndex: 0,
+          expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
+        },
+        {
+          pos: [0.448, 0.557],
+          edgeIndex: 2,
+          expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
+        },
+        {
+          pos: [0.753, 0.5],
+          edgeIndex: 4,
+          expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
+        },
+      ] as const
+      await folderSetupFn(async (dir) => {
+        const projectDir = path.join(dir, 'demo-project')
+        await fs.mkdir(projectDir, { recursive: true })
+        await fs.writeFile(
+          path.join(projectDir, 'main.kcl'),
+          new TextEncoder().encode(
+            `@settings(defaultLengthUnit = in)
 yo = 79
 part001 = startSketchOn(XZ)
   |> startProfile(at = [-40.54, -26.74])
@@ -122,30 +126,33 @@ part001 = startSketchOn(XZ)
   |> ${cases[1].expectedCode}
   |> line(end = [41.19, 28.97 + 5])
   |> ${cases[2].expectedCode}`
+          )
         )
-      )
-    })
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.openProject('demo-project')
-    await scene.settled()
-
-    // end setup, now test hover and selects
-    for (const { pos, expectedCode } of cases) {
-      const [click, hover] = scene.makeMouseHelpers(pos[0], pos[1], {
-        format: 'ratio',
-        steps: 5,
       })
-      // hover over segment, check it's content
-      await hover()
-      await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-      await expect(page.getByTestId('hover-highlight').first()).toHaveText(
-        expectedCode
-      )
-      // hover over segment, click it and check the cursor has move to the right place
-      await click()
-      await expect(page.locator('.cm-activeLine')).toContainText(expectedCode)
-    }
-  })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.openProject('demo-project')
+      await scene.settled()
+
+      // end setup, now test hover and selects
+      for (const { pos, edgeIndex, expectedCode } of cases) {
+        const [click, hover] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: edgeIndex,
+          stream: { x: pos[0], y: pos[1], format: 'ratio', steps: 5 },
+        })
+        // hover over segment, check it's content
+        await hover()
+        await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+        await expect(page.getByTestId('hover-highlight').first()).toHaveText(
+          expectedCode
+        )
+        // hover over segment, click it and check the cursor has move to the right place
+        await click()
+        await expect(page.locator('.cm-activeLine')).toContainText(expectedCode)
+      }
+    })
+  }
+
   test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
     page,
     homePage,
@@ -367,15 +374,16 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
     })
   }
 
-  test(`Can start a sketch on a shell inner face`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    toolbar,
-    editor,
-  }) => {
-    const code = `@settings(kclVersion = 2.0)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Can start a sketch on a shell inner face ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      toolbar,
+      editor,
+    }) => {
+      const code = `@settings(kclVersion = 2.0)
 
 rectangleSketch = sketch(on = XY) {
   line1 = line(start = [var 0.42mm, var 0.91mm], end = [var 3.1mm, var 0.91mm])
@@ -394,28 +402,37 @@ rectangleSketch = sketch(on = XY) {
 extrude001 = extrude(region(point = [1mm, 1mm], sketch = rectangleSketch), length = 1, tagEnd = $capEnd001)
 shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
 
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, code)
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, code)
 
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
+      await scene.settled()
 
-    const [clickOnInnerFace] = scene.makeMouseHelpers(0.6, 0.4, {
-      format: 'ratio',
-    })
+      if (await page.evaluate(() => window.engineCommandManager.geometryOnly)) {
+        await scene.moveCameraTo(
+          { x: 7, y: -5, z: 8 },
+          { x: 1.76, y: 2.635, z: 0.5 }
+        )
+      }
+      // Visible face 3 is the original inner face, topology primitive index 7.
+      const [clickOnInnerFace] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 3,
+        stream: { x: 0.6, y: 0.4, format: 'ratio' },
+      })
 
-    await clickOnInnerFace()
-    await expect(toolbar.selectionStatus).toHaveText(
-      '1 faceCurrently selected geometry'
-    )
-    await toolbar.startSketchPlaneSelection()
+      await clickOnInnerFace()
+      await expect(toolbar.selectionStatus).toHaveText(
+        '1 faceCurrently selected geometry'
+      )
+      await toolbar.startSketchPlaneSelection()
 
-    await expect(toolbar.lineBtn).toBeEnabled()
-    await expect
-      .poll(() => editor.getCurrentCode())
-      .toBe(`@settings(kclVersion = 2.0)
+      await expect(toolbar.lineBtn).toBeEnabled()
+      await expect
+        .poll(() => editor.getCurrentCode())
+        .toBe(`@settings(kclVersion = 2.0)
 
 
 rectangleSketch = sketch(on = XY) {
@@ -439,59 +456,72 @@ sketch001 = sketch(on = face001) {
 }
 
 `)
-  })
-
-  test(`Shell inner edge: selection uses engine topology_fallback (primitive index); fillet codegen uses edgeId(solid, index) when the artifact graph lacks wall/cap.`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    toolbar,
-    modelingDialog,
-    editor,
-  }) => {
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, innerShellCode)
-
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    // Two dumb hardcoded screen ratio values
-    const [clickOnEdge] = scene.makeMouseHelpers(0.5, 0.6, { format: 'ratio' })
-
-    await test.step(`Click a primitive edge and expect the selection to be set to it`, async () => {
-      await clickOnEdge()
-      await expect(toolbar.selectionStatus).toContainText('1 edge')
     })
+  }
 
-    await test.step(`Fillet the selected edge (1mm radius)`, async () => {
-      await scene.moveCameraTo(
-        { x: 11.58, y: -20.49, z: 5.72 },
-        { x: 0, y: -2.6, z: 2.5 }
-      )
-      // await page.pause()
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Shell inner edge: selection uses engine topology_fallback (primitive index); fillet codegen uses edgeId(solid, index) when the artifact graph lacks wall/cap. ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      toolbar,
+      modelingDialog,
+      editor,
+    }) => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, innerShellCode)
 
-      const [clickEdgeForFillet] = scene.makeMouseHelpers(0.4457, 0.5014, {
-        format: 'ratio',
-      })
-      // const [clickEdgeForFillet] = scene.makeMouseHelpers(830, 412,  {})
-      // const [clickEdgeForFillet] = scene.makeMouseHelpers(828, 420)
-      await clickEdgeForFillet()
-
-      await page.waitForTimeout(100)
-      await toolbar.filletButton.click()
-
-      await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
-      await modelingDialog.input('radius').fill('1')
-
-      await modelingDialog.submit()
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
       await scene.settled()
-      await editor.expectEditor.toContain('fillet')
-      await editor.expectEditor.toContain('radius')
-      await editor.expectEditor.toContain('edgeId')
-      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+
+      if (rendererTag === '@localRenderer') {
+        // Expose the original inner edge, whose midpoint is otherwise occluded.
+        await scene.moveCameraTo(
+          { x: 6.2, y: -18.83, z: 7.77 },
+          { x: 0, y: -2.5, z: 2.5 }
+        )
+      }
+      // Original stream selection resolves to shell topology edge 15.
+      const [clickOnEdge] = await scene.makeSelectionHelpers({
+        kind: 'edge',
+        index: 10,
+        stream: { x: 0.5, y: 0.6, format: 'ratio' },
+      })
+
+      await test.step(`Click a primitive edge and expect the selection to be set to it`, async () => {
+        await clickOnEdge()
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
+      })
+
+      await test.step(`Fillet the selected edge (1mm radius)`, async () => {
+        await scene.moveCameraTo(
+          { x: 11.58, y: -20.49, z: 5.72 },
+          { x: 0, y: -2.6, z: 2.5 }
+        )
+        // Original stream fillet selection resolves to shell topology edge 19.
+        const [clickEdgeForFillet] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 12,
+          stream: { x: 0.4457, y: 0.5014, format: 'ratio' },
+        })
+        await clickEdgeForFillet()
+
+        await page.waitForTimeout(100)
+        await toolbar.filletButton.click()
+
+        await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
+        await modelingDialog.input('radius').fill('1')
+
+        await modelingDialog.submit()
+        await scene.settled()
+        await editor.expectEditor.toContain('fillet')
+        await editor.expectEditor.toContain('radius')
+        await editor.expectEditor.toContain('edgeId')
+        await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+      })
     })
-  })
+  }
 })
