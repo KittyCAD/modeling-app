@@ -2119,7 +2119,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (err(newCode)) throw newCode
 
       // A note is standalone: no faces/edges selection, just the text.
-      expect(newCode).toContain('note001 = gdt::note(note = "Note:")')
+      expect(newCode).toContain('annotation001 = gdt::note(note = "Note:")')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
