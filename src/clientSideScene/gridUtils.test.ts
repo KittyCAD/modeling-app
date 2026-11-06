@@ -44,6 +44,18 @@ describe('gridUtils', () => {
     ).toEqual({ point: [1.25, -0.5], snapped: true })
   })
 
+  it('allows fractional snaps per minor to snap every other grid line', () => {
+    expect(
+      snapPointToGrid([8.8, -11.1], {
+        majorGridSpacing: 5,
+        minorGridsPerMajor: 1,
+        snapsPerMinor: 0.5,
+        pixelsPerBaseUnit: 100,
+        fixedSizeGrid: true,
+      })
+    ).toEqual({ point: [10, -10], snapped: true })
+  })
+
   it('uses the visible dynamic-grid scale when snapping', () => {
     expect(
       snapPointToGrid([3.6, -3.6], {

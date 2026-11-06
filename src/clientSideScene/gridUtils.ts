@@ -60,7 +60,7 @@ export function snapPointToGrid(
   if (
     !Number.isFinite(snapSpacing) ||
     snapSpacing <= 0 ||
-    !Number.isSafeInteger(divisions) ||
+    !Number.isFinite(divisions) ||
     divisions <= 0
   ) {
     return { point, snapped: false }
