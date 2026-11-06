@@ -172,6 +172,7 @@ export class ElectronZoo {
   public page!: Page
   public context!: BrowserContext
   private tracingEnabled = false
+  private deferInitScriptReloads = false
 
   constructor(private readonly launchOptions: ElectronZooLaunchOptions = {}) {}
 
@@ -341,9 +342,9 @@ export class ElectronZoo {
       }
 
       // We need to patch this because addInitScript will bind too late in our
-      // electron tests, never running. We need to call reload() after each call
-      // to guarantee it runs. Intentionally changing `this`, so no need to
-      // bind.
+      // electron tests, never running. Reload to apply scripts added by tests;
+      // fixture setup batches them before one final navigation.
+      // Intentionally changing `this`, so no need to bind.
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldContextAddInitScript = this.context.addInitScript
       this.context.addInitScript = async function (a, b) {
@@ -351,7 +352,7 @@ export class ElectronZoo {
           this,
           scopedInitScript(a, b, that.projectDirName)
         )
-        await that.page.reload()
+        if (!that.deferInitScriptReloads) await that.page.reload()
         return disposable
       }
 
@@ -363,7 +364,7 @@ export class ElectronZoo {
           this,
           scopedInitScript(a, b, that.projectDirName)
         )
-        await that.page.reload()
+        if (!that.deferInitScriptReloads) await that.page.reload()
         return disposable
       }
     }
@@ -389,30 +390,26 @@ export class ElectronZoo {
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
     }, this.projectDirName)
 
-    await setup(this.context, this.page, testInfo, userFeatures, {
-      mockApiRoutes,
-    })
-
-    if (!this.firstUrl) {
-      await this.page.getByRole('heading', { name: 'Projects' }).count()
-      this.firstUrl = this.page.url()
+    // Register all fixture scripts without booting the app between each step.
+    // Individual tests retain addInitScript's historical immediate reload.
+    this.deferInitScriptReloads = true
+    try {
+      await setup(this.context, this.page, testInfo, userFeatures, {
+        mockApiRoutes,
+        reload: false,
+      })
+    } finally {
+      this.deferInitScriptReloads = false
     }
 
-    // Due to the app controlling its own window context we need to inject new
-    // options and context here.
-    // NOTE TO LEE: Seems to destroy page context when calling an electron loadURL.
-    // await tronApp.electronApp.evaluate(({ app }) => {
-    //   return app.reuseWindowForTest();
-    // });
-
-    // Reset the route before cleanup waits for UI that Settings can hide.
-    await this.page.goto(this.firstUrl)
-
-    await this.cleanProjectDir({
-      plugins: playwrightPluginSettings({
-        zookeeperEnabled: testInfo.tags.includes('@zookeeper'),
-      }),
-    })
+    await this.cleanProjectDir(
+      {
+        plugins: playwrightPluginSettings({
+          zookeeperEnabled: testInfo.tags.includes('@zookeeper'),
+        }),
+      },
+      { reload: false }
+    )
 
     // Create a consistent way to resize the page across electron and web.
     // (lee) I had to do everything in the book to make electron change its
@@ -443,13 +440,29 @@ export class ElectronZoo {
 
     await this.page.setBodyDimensions(this.viewPortSize)
 
-    // Force a hard reload, destroying the stream and other state
-    await this.page.reload()
+    if (!this.firstUrl) {
+      await this.page.getByRole('heading', { name: 'Projects' }).count()
+      this.firstUrl = this.page.url()
+    }
+
+    // Due to the app controlling its own window context we need to inject new
+    // options and context here.
+    // NOTE TO LEE: Seems to destroy page context when calling an electron loadURL.
+    // await tronApp.electronApp.evaluate(({ app }) => {
+    //   return app.reuseWindowForTest();
+    // });
+
+    // One full navigation applies the prepared scripts and settings and destroys
+    // the previous renderer state. A hash-only goto would preserve that state.
+    await this.page.goto(this.firstUrl.split('#')[0])
     await waitForAppLoad(this.page)
     if (!mockApiRoutes) await waitForAuthentication(this.page)
   }
 
-  async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
+  async cleanProjectDir(
+    appSettings?: DeepPartial<Settings>,
+    { reload = true }: { reload?: boolean } = {}
+  ) {
     await this.stopSettingsWrites()
 
     try {
@@ -504,8 +517,10 @@ export class ElectronZoo {
       },
     })
     await fsp.writeFile(tempSettingsFilePath, settingsOverridesToml)
-    await this.page.reload()
-    await waitForAppLoad(this.page)
+    if (reload) {
+      await this.page.reload()
+      await waitForAppLoad(this.page)
+    }
   }
 
   private async stopSettingsWrites() {

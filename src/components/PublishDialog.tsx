@@ -1,5 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
-import type { ProjectCategoryResponse } from '@kittycad/lib'
+import { type ProjectCategoryResponse, projects } from '@kittycad/lib'
 import {
   MarkdownEditor,
   type MarkdownEditorActions,
@@ -8,15 +8,14 @@ import {
 import { ActionButton } from '@src/components/ActionButton'
 import { AquariumStatusDetails } from '@src/components/AquariumStatusBadge'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
-import { collectApiList } from '@src/lib/apiPagination'
+import { collectApiPages } from '@src/lib/apiPagination'
+import { createKCClient } from '@src/lib/kcClient'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import type {
   CurrentProjectPublicationDetails,
   ProjectPublishSubmission,
 } from '@src/lib/share'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 
 type PublishDialogMarkdownEditorKeymap = {
@@ -110,23 +109,12 @@ export function PublishDialog({
     setCategoriesError(null)
 
     try {
-      const nextCategories = await collectApiList<ProjectCategoryWithStatus>(
-        '/projects/categories',
-        async (path) => {
-          const response = await fetchWithSessionExpiration(
-            withAPIBaseURL(path),
-            {
-              cache: 'no-cache',
-              signal,
-            }
-          )
-          if (!response.ok) {
-            return Promise.reject(
-              new Error(await getResponseErrorMessage(response))
-            )
-          }
-          return response.json()
-        }
+      const client = createKCClient(undefined, undefined, {
+        signal,
+        cache: 'no-cache',
+      })
+      const nextCategories: ProjectCategoryWithStatus[] = await collectApiPages(
+        projects.list_project_categories_pager({ client })
       )
       if (signal?.aborted) return
       setCategories(
@@ -258,7 +246,7 @@ export function PublishDialog({
       leaveFrom="opacity-100 translate-y-0 scale-100"
       leaveTo="opacity-0 translate-y-1 scale-[0.98]"
     >
-      <Popover.Panel className="fixed bottom-4 right-4 top-16 z-20 flex w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded border border-chalkboard-30/80 bg-chalkboard-10/95 text-sm text-chalkboard-100 shadow-2xl backdrop-blur-sm dark:border-chalkboard-80/60 dark:bg-chalkboard-90/95 dark:text-chalkboard-10">
+      <Popover.Panel className="fixed right-4 top-16 z-20 flex max-h-[calc(100vh-5rem)] w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded border border-chalkboard-30/80 bg-chalkboard-10/95 text-sm text-chalkboard-100 shadow-2xl backdrop-blur-sm dark:border-chalkboard-80/60 dark:bg-chalkboard-90/95 dark:text-chalkboard-10">
         <div className="shrink-0 border-b border-chalkboard-20/70 bg-chalkboard-20/70 px-4 py-4 text-chalkboard-100 dark:border-chalkboard-80/70 dark:bg-chalkboard-80/70 dark:text-chalkboard-10">
           <div className="min-w-0">
             <h2 className="text-base font-medium leading-none">
@@ -565,24 +553,6 @@ function formatDate(value: string) {
     day: 'numeric',
     year: 'numeric',
   }).format(date)
-}
-
-async function getResponseErrorMessage(response: Response) {
-  try {
-    const body = (await response.json()) as { message?: string }
-    if (body.message) {
-      return body.message
-    }
-  } catch {}
-
-  try {
-    const text = await response.text()
-    if (text) {
-      return text
-    }
-  } catch {}
-
-  return 'Failed to load Aquarium categories.'
 }
 
 function CheckIcon() {

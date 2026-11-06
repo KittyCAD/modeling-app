@@ -1,6 +1,6 @@
-import { ApiError, Client } from '@kittycad/lib'
-import type { Announcement, ProjectShareLinkResponse } from '@kittycad/lib'
-import { listClientItems } from '@src/lib/apiPagination'
+import { Client, meta, projects } from '@kittycad/lib'
+import type { Announcement, ApiError } from '@kittycad/lib'
+import { collectApiPages } from '@src/lib/apiPagination'
 import { describe, expect, test, vi } from 'vitest'
 
 const announcement: Announcement = {
@@ -11,152 +11,121 @@ const announcement: Announcement = {
   updated_at: '2026-09-25T00:00:00Z',
 }
 
-describe('API list compatibility', () => {
-  test.each([
-    {
-      path: '/announcements',
-      body: { announcements: [announcement] },
-    },
-    {
-      path: '/announcements?locale=en',
-      body: { announcements: [announcement] },
-    },
-    {
-      path: '/announcements',
-      body: { items: [announcement], next_page: null },
-    },
-    {
-      path: '/announcements?locale=en',
-      body: { items: [announcement], next_page: null },
-    },
-  ])(
-    'accepts legacy and paginated announcements at $path',
-    async ({ path, body }) => {
+const pagers = [
+  { path: '/announcements', create: meta.get_announcements_pager },
+  { path: '/user/projects', create: projects.list_projects_pager },
+  {
+    path: '/projects/categories',
+    create: projects.list_project_categories_pager,
+  },
+]
+
+describe('complete SDK page collection', () => {
+  test.each(pagers)(
+    'loads every page of $path, including empty pages',
+    async ({ path, create }) => {
       const transport = vi
         .fn<typeof fetch>()
-        .mockResolvedValue(Response.json(body))
+        .mockResolvedValueOnce(
+          Response.json({ items: [], next_page: 'next+/=' })
+        )
+        .mockResolvedValueOnce(
+          Response.json({ items: [announcement], next_page: null })
+        )
       const client = new Client({
-        baseUrl: 'https://api.example.test/proxy/',
+        baseUrl: 'https://api.example.test',
         token: 'test-token',
         fetch: transport,
       })
-      const controller = new AbortController()
-
       await expect(
-        listClientItems<Announcement>(client, path, controller.signal)
+        collectApiPages<unknown>(create({ client }))
       ).resolves.toEqual([announcement])
-      expect(transport).toHaveBeenCalledWith(
-        `https://api.example.test/proxy${path}`,
-        {
-          method: 'GET',
-          headers: { Authorization: 'Bearer test-token' },
-          signal: controller.signal,
-        }
+      expect(transport).toHaveBeenCalledTimes(2)
+      expect(transport).toHaveBeenLastCalledWith(
+        `https://api.example.test${path}?page_token=next%2B%2F%3D`,
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer test-token',
+          }),
+        })
       )
     }
   )
 
-  test.each([
-    { name: 'empty initial', firstPage: null, items: [] },
-    { name: 'nonempty initial', firstPage: null, items: [announcement] },
-    {
-      name: 'empty later',
-      firstPage: { items: [announcement], next_page: 'next' },
-      items: [],
-    },
-    {
-      name: 'nonempty later',
-      firstPage: { items: [], next_page: 'next' },
-      items: [announcement],
-    },
-  ])(
-    'accepts an omitted cursor on an $name terminal page',
-    async ({ firstPage, items }) => {
-      const transport = vi.fn<typeof fetch>()
-      if (firstPage) {
-        transport.mockResolvedValueOnce(Response.json(firstPage))
-      }
-      transport.mockResolvedValueOnce(Response.json({ items }))
+  test.each([null, undefined])(
+    'accepts a terminal SDK page with cursor %s',
+    async (next_page) => {
       const client = new Client({
-        baseUrl: 'https://api.example.test',
-        fetch: transport,
+        fetch: vi
+          .fn<typeof fetch>()
+          .mockResolvedValueOnce(
+            Response.json({ items: [announcement], next_page })
+          ),
       })
-
       await expect(
-        listClientItems<Announcement>(client, '/announcements')
-      ).resolves.toEqual([...(firstPage?.items ?? []), ...items])
-      expect(transport).toHaveBeenCalledTimes(firstPage ? 2 : 1)
-      if (firstPage) {
-        expect(transport.mock.calls[1][0]).toBe(
-          'https://api.example.test/announcements?page_token=next'
-        )
-      }
+        collectApiPages(meta.get_announcements_pager({ client }))
+      ).resolves.toEqual([announcement])
     }
   )
 
-  test('rejects the announcements envelope at a different endpoint with the same prefix', async () => {
-    const client = new Client({
-      baseUrl: 'https://api.example.test',
-      fetch: vi
-        .fn<typeof fetch>()
-        .mockResolvedValue(Response.json({ announcements: [announcement] })),
-    })
-
-    await expect(
-      listClientItems<Announcement>(client, '/announcements-archive?locale=en')
-    ).rejects.toThrow('Invalid API list response')
-  })
+  test.each([
+    { announcements: [announcement] },
+    [announcement],
+    { items: null, next_page: null },
+    { next_page: null },
+  ])(
+    'rejects obsolete or malformed responses instead of silently returning an empty list',
+    async (body) => {
+      const client = new Client({
+        fetch: vi.fn<typeof fetch>().mockResolvedValueOnce(Response.json(body)),
+      })
+      await expect(
+        collectApiPages(meta.get_announcements_pager({ client }))
+      ).rejects.toBeInstanceOf(Error)
+    }
+  )
 
   test.each([
     { items: [], next_page: 'same' },
     { items: [], next_page: '' },
+    { items: [], next_page: '   ' },
     { items: [], next_page: 5 },
-    { next_page: null },
     {},
     [],
   ])(
-    'rejects malformed or changed continuation instead of returning an empty share list',
+    'rejects invalid continuation without returning a partial list',
     async (secondPage) => {
       const transport = vi
         .fn<typeof fetch>()
-        .mockResolvedValueOnce(Response.json({ items: [], next_page: 'same' }))
-        .mockResolvedValueOnce(Response.json(secondPage))
-      const client = new Client({
-        baseUrl: 'https://api.example.test',
-        fetch: transport,
-      })
-
-      await expect(
-        listClientItems<ProjectShareLinkResponse>(
-          client,
-          '/user/projects/project-1/share-links'
+        .mockResolvedValueOnce(
+          Response.json({ items: [announcement], next_page: 'same' })
         )
+        .mockResolvedValueOnce(Response.json(secondPage))
+      const client = new Client({ fetch: transport })
+      await expect(
+        collectApiPages(meta.get_announcements_pager({ client }))
       ).rejects.toBeInstanceOf(Error)
       expect(transport).toHaveBeenCalledTimes(2)
     }
   )
 
-  test('preserves HTTP status for cleanup handling without converting failure to an empty list', async () => {
+  test('preserves a later HTTP error instead of returning the first page', async () => {
     const client = new Client({
-      baseUrl: 'https://api.example.test',
       fetch: vi
         .fn<typeof fetch>()
-        .mockResolvedValue(
-          Response.json({ message: 'Not found' }, { status: 404 })
+        .mockResolvedValueOnce(
+          Response.json({ items: [announcement], next_page: 'next' })
+        )
+        .mockResolvedValueOnce(
+          Response.json({ message: 'Unavailable' }, { status: 503 })
         ),
     })
     await expect(
-      listClientItems<ProjectShareLinkResponse>(
-        client,
-        '/user/projects/missing/share-links'
-      )
+      collectApiPages(meta.get_announcements_pager({ client }))
     ).rejects.toMatchObject({
       name: 'ApiError',
-      status: 404,
-      message: 'Not found',
-    })
-    await expect(
-      listClientItems(client, '/user/projects/missing/share-links')
-    ).rejects.toBeInstanceOf(ApiError)
+      status: 503,
+      message: 'Unavailable',
+    } satisfies Partial<ApiError>)
   })
 })
