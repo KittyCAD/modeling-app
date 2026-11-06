@@ -1444,12 +1444,14 @@ export function insertFacePrimitiveVariablesAndOffsetPathToNode({
   artifactGraph,
   wasmInstance,
   useLatestBody = false,
+  bodyExpr,
 }: {
   enginePrimitives: EnginePrimitiveSelection[]
   modifiedAst: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
   useLatestBody?: boolean
+  bodyExpr?: Expr
 }): Error | { solidsExprs: Expr[]; faceExprs: Expr[] } {
   if (enginePrimitives.length === 0) {
     return { solidsExprs: [], faceExprs: [] }
@@ -1516,7 +1518,7 @@ export function insertFacePrimitiveVariablesAndOffsetPathToNode({
       return bodyVars
     }
 
-    let solidExpr = createVariableExpressionsArray(bodyVars.exprs)
+    let solidExpr = bodyExpr ?? createVariableExpressionsArray(bodyVars.exprs)
     if (solidExpr === null && bodyVars.exprs.length === 1) {
       solidExpr = bodyVars.exprs[0]
     }

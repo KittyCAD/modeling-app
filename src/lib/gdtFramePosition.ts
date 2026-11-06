@@ -6,7 +6,9 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { createArrayExpression, createLiteral } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
 import { getSketchBlockForArtifact } from '@src/lang/std/artifactGraph'
-import { isEnginePrimitiveSelection } from '@src/lang/queryAst'
+import { isDistanceEdge } from '@src/lang/modifyAst/gdtSelections'
+import type { DistanceSelections } from '@src/lang/modifyAst/gdtSelections'
+import type { DistanceFrameDefaults } from '@src/lang/modifyAst/gdtSelections'
 import { defaultPlaneNameToKcl } from '@src/lib/planes'
 import type {
   ArtifactId,
@@ -14,6 +16,7 @@ import type {
   CallExpressionKw,
   Expr,
   Program,
+  VariableMap,
 } from '@src/lang/wasm'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
@@ -26,7 +29,7 @@ import {
 } from '@src/lib/constants'
 import { baseUnitToMm, isArray, roundOff } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 type Axis = 'x' | 'y' | 'z'
@@ -524,13 +527,9 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   sourceCode,
   outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
   wasmInstance,
-  distance = false,
-  artifactGraph,
 }: {
   data: T
   engineCommandManager: ConnectionManager
-  distance?: boolean
-  artifactGraph?: ArtifactGraph
   ast?: Node<Program>
   sourceCode?: string
   outputUnit?: UnitLength
@@ -548,14 +547,6 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
           ...data,
           fontSize: existingFontSize,
         }
-  if (distance)
-    return withDistanceFrameDefaults(
-      nextData,
-      engineCommandManager,
-      artifactGraph,
-      outputUnit,
-      wasmInstance
-    )
   let hasResolvedFramePlane = Boolean(nextData.framePlane)
   let framePositionSigns: GdtFramePositionSigns | undefined
   const shouldQueryNormalDefaults =
@@ -668,7 +659,8 @@ function getDistanceFramePlaneFromDirection(
   }
   // Choose the standard plane that retains the most of the measurement.
   // Prefer XY for horizontal distances, then XZ when the distance is vertical.
-  const normalAxis = (['z', 'y', 'x'] as const).reduce((best, axis) =>
+  const normalAxes: Axis[] = ['z', 'y', 'x']
+  const normalAxis = normalAxes.reduce((best, axis) =>
     Math.abs(direction[axis]) < Math.abs(direction[best]) ? axis : best
   )
   return getFeaturePlaneForNormalAxis(normalAxis)
@@ -777,9 +769,25 @@ export function getOutsideDistanceSetback(
 
 function getGdtFontHeight(
   fontSize: KclCommandValue | undefined,
-  outputUnit: UnitLength
+  outputUnit: UnitLength,
+  variables: VariableMap | undefined
 ): number | undefined {
   const value = fontSize?.valueAst
+  const inOutputUnits = (height: number, unit: UnitLength) =>
+    Number.isFinite(height) && height > 0
+      ? (height * baseUnitToMm(unit)) / baseUnitToMm(outputUnit)
+      : undefined
+  if (value?.type === 'Name' && value.path.length === 0) {
+    const resolved = variables?.[value.name.name]
+    if (resolved?.type !== 'Number') return undefined
+    const unit =
+      resolved.ty.type === 'Known' && resolved.ty.value.type === 'Length'
+        ? resolved.ty.value.value
+        : resolved.ty.type === 'Default'
+          ? resolved.ty.value.len
+          : outputUnit
+    return inOutputUnits(resolved.value, unit)
+  }
   if (
     value?.type !== 'Literal' ||
     typeof value.value !== 'object' ||
@@ -797,9 +805,7 @@ function getGdtFontHeight(
     None: outputUnit,
   }
   const unit = units[value.value.suffix]
-  return unit && Number.isFinite(value.value.value) && value.value.value > 0
-    ? (value.value.value * baseUnitToMm(unit)) / baseUnitToMm(outputUnit)
-    : undefined
+  return unit ? inOutputUnits(value.value.value, unit) : undefined
 }
 
 // Plane aliases and offsets have already been evaluated in the artifact graph.
@@ -914,15 +920,25 @@ async function distanceCircleCenter(
   return center
 }
 
-async function withDistanceFrameDefaults<T extends GdtCommandData>(
-  data: T,
+type DistanceTarget = {
+  id?: string
+  selection: Selection
+  isEdge: boolean
+  sides: string[]
+  bounds?: BoundingBox
+  start?: Point3d
+  end?: Point3d
+  center?: Point3d
+}
+
+type DistanceBoundsQuery = (ids: string[]) => Promise<BoundingBox | undefined>
+
+async function getDistanceTargets(
+  selections: DistanceSelections,
   engine: ConnectionManager,
-  graph: ArtifactGraph | undefined,
   outputUnit: UnitLength,
-  wasmInstance: ModuleType
-): Promise<T> {
-  const selections = getSelectionsFromGdtData(data)
-  const ids = getEngineEntityIdsForGdtSelections(selections)
+  boundingBox: DistanceBoundsQuery
+): Promise<DistanceTarget[]> {
   const scale = baseUnitToMm(outputUnit)
   const point = (p: Point3d): Point3d => ({
     x: p.x / scale,
@@ -934,44 +950,13 @@ async function withDistanceFrameDefaults<T extends GdtCommandData>(
     y: b.y - a.y,
     z: b.z - a.z,
   })
-  const boundingBox = (entityIds: string[]) =>
-    getBoundingBoxForGdtEntities({
-      engineCommandManager: engine,
-      entityIds,
-      outputUnit,
-      includeEntireScene: true,
-    })
-  const modelBounds = !data.fontSize ? await boundingBox([]) : undefined
-  const average = modelBounds && distanceSetback(modelBounds)
-  const fontSize =
-    data.fontSize ??
-    (average !== undefined
-      ? createFontSizeCommandValue(average, outputUnit, wasmInstance)
-      : undefined)
-  if (data.framePlane && data.framePosition) return { ...data, fontSize }
-  const inputs = [
-    ...(selections?.graphSelections ?? []).map((selection) => ({
-      selection,
-      primitive: undefined,
-    })),
-    ...(
-      selections?.otherSelections.filter(isEnginePrimitiveSelection) ?? []
-    ).map((primitive) => ({ selection: undefined, primitive })),
-  ]
   const targets = await Promise.all(
-    inputs.map(async ({ selection, primitive }) => {
-      const id =
-        primitive?.entityId ??
-        (selection &&
-          getEngineEntityIdsForGdtSelections({
-            graphSelections: [selection],
-            otherSelections: [],
-          })[0])
-      const isEdge =
-        selection?.entityRef?.type === 'edge' ||
-        selection?.artifact?.type === 'segment' ||
-        selection?.artifact?.type === 'sweepEdge' ||
-        primitive?.primitiveType === 'edge'
+    selections.graphSelections.map(async (selection) => {
+      const id = getEngineEntityIdsForGdtSelections({
+        graphSelections: [selection],
+        otherSelections: [],
+      })[0]
+      const isEdge = isDistanceEdge(selection)
       const sides =
         selection?.entityRef?.type === 'edge'
           ? selection.entityRef.side_faces
@@ -1018,7 +1003,6 @@ async function withDistanceFrameDefaults<T extends GdtCommandData>(
       return {
         id,
         selection,
-        primitive,
         isEdge,
         sides,
         bounds,
@@ -1028,6 +1012,20 @@ async function withDistanceFrameDefaults<T extends GdtCommandData>(
       }
     })
   )
+  return targets
+}
+
+async function getDistanceFramePlane(
+  targets: DistanceTarget[],
+  mode: 'lengths' | 'between',
+  preferred: GdtFramePlane | undefined,
+  engine: ConnectionManager
+): Promise<GdtFramePlane | undefined> {
+  const direction = (a: Point3d, b: Point3d): Point3d => ({
+    x: b.x - a.x,
+    y: b.y - a.y,
+    z: b.z - a.z,
+  })
   const faceQueries = new Map<string, Promise<FaceIsPlanar | undefined>>()
   const planarFace = (id: string) => {
     const existing = faceQueries.get(id)
@@ -1039,25 +1037,12 @@ async function withDistanceFrameDefaults<T extends GdtCommandData>(
     faceQueries.set(id, query)
     return query
   }
-  const featurePlane = (bounds: BoundingBox | undefined) => {
-    if (!bounds) return undefined
-    const axis = getDecisiveAxis(bounds.dimensions, (a, b) => a - b)
-    return axis &&
-      bounds.dimensions[axis] <=
-        Math.max(...Object.values(bounds.dimensions)) * AXIS_INFERENCE_TOLERANCE
-      ? getFeaturePlaneForNormalAxis(axis)
-      : undefined
-  }
-  const firstPlane = featurePlane(targets[0]?.bounds)
-  const preferred =
-    distanceSourcePlane(selections, graph) ??
-    (firstPlane === featurePlane(targets[1]?.bounds) ? firstPlane : undefined)
   const choosePlane = (d: Point3d) =>
     preferred && planeContainsDirection(preferred, d)
       ? preferred
       : getDistanceFramePlaneFromDirection(d)
-  let plane = data.framePlane
-  if (!plane && targets.length >= 2 && targets.every((t) => t.isEdge)) {
+  let plane: GdtFramePlane | undefined
+  if (mode === 'between' && targets.every((t) => t.isEdge)) {
     for (const id of targets[0].sides.filter((id) =>
       targets.every((t) => t.sides.includes(id))
     )) {
@@ -1073,7 +1058,7 @@ async function withDistanceFrameDefaults<T extends GdtCommandData>(
   const [a, b] = targets
   if (!plane && a && targets.length === 1 && a.isEdge && a.start && a.end)
     plane = choosePlane(direction(a.start, a.end))
-  if (!plane && a?.center && b?.center)
+  if (!plane && mode === 'between' && a?.center && b?.center)
     plane = choosePlane(direction(a.center, b.center))
   if (!plane && a && targets.every((t) => t.isEdge)) {
     const faces = await Promise.all(
@@ -1105,75 +1090,174 @@ async function withDistanceFrameDefaults<T extends GdtCommandData>(
         }
     }
   }
+  return plane
+}
+
+async function getDistanceSetback({
+  targets,
+  modelBounds,
+  selectedBounds,
+  plane,
+  fontSize,
+  engine,
+  graph,
+  outputUnit,
+  boundingBox,
+  variables,
+}: {
+  targets: DistanceTarget[]
+  modelBounds?: BoundingBox
+  selectedBounds?: BoundingBox
+  plane: string
+  fontSize?: KclCommandValue
+  engine: ConnectionManager
+  graph?: ArtifactGraph
+  outputUnit: UnitLength
+  boundingBox: DistanceBoundsQuery
+  variables?: VariableMap
+}): Promise<number | undefined> {
+  const [a, b] = targets
+  const from = targets.length === 1 ? a?.start : a?.center
+  const to = targets.length === 1 ? a?.end : b?.center
+  let bounds = modelBounds
+  if (from && to) {
+    const parents = await Promise.all(
+      targets.map(async (t) => {
+        if (!t.id) return undefined
+        const parent = await queryModelingCommand(engine, {
+          type: 'entity_get_parent_id',
+          entity_id: t.id,
+        })
+        if (parent?.type === 'entity_get_parent_id')
+          return parent.data.entity_id
+        const face =
+          t.sides
+            .map((id) => graph?.get(id))
+            .find((f) => f?.type === 'cap' || f?.type === 'wall') ??
+          t.selection?.artifact
+        const artifactId =
+          t.selection?.engineTopologyFallback?.parentId ??
+          (face?.type === 'cap' || face?.type === 'wall'
+            ? face.sweepId
+            : undefined)
+        const body = graph?.get(artifactId ?? '')
+        return body?.type === 'sweep' ? (body.pathId ?? undefined) : artifactId
+      })
+    )
+    const bodyBounds =
+      parents.length && parents.every((id) => id !== undefined)
+        ? await boundingBox([...new Set(parents)])
+        : undefined
+    bounds = bodyBounds ?? modelBounds ?? (await boundingBox([]))
+  }
+  if (!bounds && distanceSetback(selectedBounds) === undefined)
+    bounds = await boundingBox([])
+  const margin =
+    targets.length === 1
+      ? 2 *
+        Math.max(
+          (distanceSetback(bounds) ?? 0) *
+            GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
+          getGdtFontHeight(fontSize, outputUnit, variables) ?? 0
+        )
+      : 0
+  const outside =
+    from && to && bounds
+      ? getOutsideDistanceSetback(from, to, plane, bounds, margin)
+      : undefined
+  return outside ?? distanceSetback(selectedBounds) ?? distanceSetback(bounds)
+}
+
+export async function withDefaultDistanceFrameDefaults<
+  T extends ModelingCommandSchema['GDT Distance'],
+>({
+  data,
+  mode,
+  engineCommandManager: engine,
+  artifactGraph: graph,
+  ast,
+  sourceCode,
+  outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
+  wasmInstance,
+  variables,
+}: {
+  data: T
+  mode: 'lengths' | 'between'
+  engineCommandManager: ConnectionManager
+  artifactGraph?: ArtifactGraph
+  ast?: Node<Program>
+  sourceCode?: string
+  outputUnit?: UnitLength
+  wasmInstance: ModuleType
+  variables?: VariableMap
+}): Promise<T & DistanceFrameDefaults> {
+  const boundingBox: DistanceBoundsQuery = (entityIds) =>
+    getBoundingBoxForGdtEntities({
+      engineCommandManager: engine,
+      entityIds,
+      outputUnit,
+      includeEntireScene: true,
+    })
+  const inheritedFont = data.fontSize ?? getExistingGdtFontSize(ast, sourceCode)
+  const modelBounds = !inheritedFont ? await boundingBox([]) : undefined
+  const average = modelBounds && distanceSetback(modelBounds)
+  const fontSize =
+    inheritedFont ??
+    (average !== undefined
+      ? createFontSizeCommandValue(average, outputUnit, wasmInstance)
+      : undefined)
+  if (data.framePlane && data.framePosition) return { ...data, fontSize }
+
+  const targets = await getDistanceTargets(
+    data.objects,
+    engine,
+    outputUnit,
+    boundingBox
+  )
+  const ids = getEngineEntityIdsForGdtSelections(data.objects)
   const selectedBounds =
     ids.length === 1
-      ? a?.bounds
+      ? targets[0]?.bounds
       : ids.length
         ? await boundingBox(ids)
         : undefined
-  plane ??=
+  const featurePlane = (bounds: BoundingBox | undefined) => {
+    if (!bounds) return undefined
+    const axis = getDecisiveAxis(bounds.dimensions, (a, b) => a - b)
+    return axis &&
+      bounds.dimensions[axis] <=
+        Math.max(...Object.values(bounds.dimensions)) * AXIS_INFERENCE_TOLERANCE
+      ? getFeaturePlaneForNormalAxis(axis)
+      : undefined
+  }
+  const firstPlane = featurePlane(targets[0]?.bounds)
+  const preferred =
+    distanceSourcePlane(data.objects, graph) ??
+    (firstPlane === featurePlane(targets[1]?.bounds) ? firstPlane : undefined)
+  const framePlane =
+    data.framePlane ??
+    (await getDistanceFramePlane(targets, mode, preferred, engine)) ??
     preferred ??
     (selectedBounds &&
       getDistanceFramePlaneFromDirection(selectedBounds.dimensions)) ??
     KCL_PLANE_XY
-  let framePosition = data.framePosition
-  if (!framePosition) {
-    const from = targets.length === 1 ? a?.start : a?.center
-    const to = targets.length === 1 ? a?.end : b?.center
-    let bounds = modelBounds
-    if (from && to) {
-      const parents = await Promise.all(
-        targets.map(async (t) => {
-          if (!t.id) return undefined
-          const parent = await queryModelingCommand(engine, {
-            type: 'entity_get_parent_id',
-            entity_id: t.id,
-          })
-          if (parent?.type === 'entity_get_parent_id')
-            return parent.data.entity_id
-          const face =
-            t.sides
-              .map((id) => graph?.get(id))
-              .find((f) => f?.type === 'cap' || f?.type === 'wall') ??
-            t.selection?.artifact
-          const artifactId =
-            t.selection?.engineTopologyFallback?.parentId ??
-            t.primitive?.parentEntityId ??
-            (face?.type === 'cap' || face?.type === 'wall'
-              ? face.sweepId
-              : undefined)
-          const body = graph?.get(artifactId ?? '')
-          return body?.type === 'sweep'
-            ? (body.pathId ?? undefined)
-            : artifactId
-        })
-      )
-      const bodyBounds =
-        parents.length && parents.every((id) => id !== undefined)
-          ? await boundingBox([...new Set(parents)])
-          : undefined
-      bounds = bodyBounds ?? modelBounds ?? (await boundingBox([]))
-    }
-    if (!bounds && distanceSetback(selectedBounds) === undefined)
-      bounds = await boundingBox([])
-    const margin =
-      targets.length === 1
-        ? 2 *
-          Math.max(
-            (distanceSetback(bounds) ?? 0) *
-              GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
-            getGdtFontHeight(fontSize, outputUnit) ?? 0
-          )
-        : 0
-    const outside =
-      from && to && bounds
-        ? getOutsideDistanceSetback(from, to, plane, bounds, margin)
-        : undefined
-    framePosition = createDistanceFramePositionCommandValue(
-      outside ?? distanceSetback(selectedBounds) ?? distanceSetback(bounds),
+  const framePosition =
+    data.framePosition ??
+    createDistanceFramePositionCommandValue(
+      await getDistanceSetback({
+        targets,
+        modelBounds,
+        selectedBounds,
+        plane: framePlane,
+        fontSize,
+        engine,
+        graph,
+        outputUnit,
+        boundingBox,
+        variables,
+      }),
       outputUnit,
       wasmInstance
     )
-  }
-  return { ...data, framePlane: plane, framePosition, fontSize }
+  return { ...data, framePlane, framePosition, fontSize }
 }
