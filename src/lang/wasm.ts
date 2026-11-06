@@ -1081,19 +1081,6 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
   return pathToNode
 }
 
-export function defaultAppSettings(
-  wasmInstance: ModuleType
-): DeepPartial<Configuration> | Error {
-  return wasmInstance.default_app_settings()
-}
-
-export function parseAppSettings(
-  toml: string,
-  wasmInstance: ModuleType
-): DeepPartial<Configuration> | Error {
-  return wasmInstance.parse_app_settings(toml)
-}
-
 export function defaultProjectSettings(
   wasmInstance: ModuleType
 ): DeepPartial<ProjectConfiguration> | Error {

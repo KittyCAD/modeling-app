@@ -1,5 +1,5 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import { APP_NAME, ARCHIVE_DIR } from '@src/lib/constants'
 import { getEXTNoPeriod } from '@src/lib/fileExtensions'
 import fsZds from '@src/lib/fs-zds'
 import { webSafeJoin } from '@src/lib/pathUtils'
@@ -9,10 +9,8 @@ import {
 } from '@src/lib/projectLibraries'
 
 import type { FileEntry, Project } from '@src/lib/project'
-import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const SETTINGS = '/settings'
 const HOME = '/home'
@@ -119,36 +117,6 @@ export function getRouterSearchFromRequestUrl(
     nestedHashIndex === -1 ? hashSearch : hashSearch.slice(0, nestedHashIndex)
 
   return routerSearch === '?' ? '' : routerSearch
-}
-
-export async function getProjectMetaByRouteId(
-  readAppSettingsFile: (
-    wasmInstance: ModuleType
-  ) => Promise<DeepPartial<Configuration>>,
-  wasmInstance: ModuleType,
-  id?: string,
-  configuration?: DeepPartial<Configuration> | Error
-): Promise<ProjectRoute | undefined> {
-  if (!id) return undefined
-
-  const isPlaywright = localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
-
-  if (configuration === undefined || isPlaywright) {
-    configuration = await readAppSettingsFile(wasmInstance)
-  }
-
-  if (err(configuration)) return Promise.reject(configuration)
-
-  // Should not be possible but I guess logically it could be
-  if (configuration === undefined) {
-    return Promise.reject(new Error('No configuration found'))
-  }
-
-  const route = parseProjectRoute(configuration, id)
-
-  if (err(route)) return Promise.reject(route)
-
-  return route
 }
 
 export function parseProjectRoute(

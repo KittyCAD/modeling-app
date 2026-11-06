@@ -3,10 +3,13 @@ import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
   createNewProjectDirectory,
   overwriteProjectTomlWithNewSettings,
+  readAppSettingsFile,
 } from '@src/lib/desktop'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 const createdProjectDirectoryPaths: string[] = []
@@ -30,6 +33,56 @@ beforeAll(async () => {
 
 const createTempDirectoryPath = () =>
   fsZds.join(tmpdir(), `create-project-${crypto.randomUUID()}`)
+
+describe('app settings without Wasm', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  const settingsFiles = (contents: string): FileOperationsRegistryService => ({
+    ...testFileOperations,
+    stat: vi.fn<FileOperationsRegistryService['stat']>(async () => ({
+      kind: 'file',
+      device: 0,
+      inode: 0,
+      size: contents.length,
+      accessedAt: 0,
+      modifiedAt: 0,
+      changedAt: 0,
+      createdAt: 0,
+    })),
+    readFile: vi.fn(async () => new TextEncoder().encode(contents)),
+  })
+
+  it('reads persisted settings using only the file service', async () => {
+    vi.spyOn(fsZds, 'getPath').mockResolvedValue('/settings-test')
+
+    expect(
+      await readAppSettingsFile(
+        settingsFiles(
+          '[settings.project]\ndirectory = "/my/projects"\n[settings.app]\nstreamIdleMode = true'
+        )
+      )
+    ).toEqual({
+      settings: {
+        project: { directory: '/my/projects' },
+        app: { stream_idle_mode: 300000 },
+      },
+    })
+  })
+
+  it('loads user settings while Wasm initialization is still pending', async () => {
+    vi.spyOn(fsZds, 'getPath').mockResolvedValue('/settings-test')
+    const pendingWasm = new Promise<ModuleType>(() => {})
+
+    const settings = await loadAndValidateSettings(
+      settingsFiles('[settings.app.appearance]\ntheme = "dark"'),
+      pendingWasm
+    )
+
+    expect(settings.settings.app.theme.current).toBe('dark')
+  })
+})
 
 describe('createNewProjectDirectory', () => {
   afterEach(async () => {
