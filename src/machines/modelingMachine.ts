@@ -7422,7 +7422,8 @@ export const modelingMachine = setup({
 
           if (event.data.type === 'gltf' && event.data.storage === 'binary') {
             extension = 'glb'
-          } else if ((event.data.type as string) === 'rhino') { //TODO remove (as string) cas before merge
+          } else if ((event.data.type as string) === 'rhino') {
+            //TODO remove (as string) cas before merge
             extension = '3dm'
           }
 
