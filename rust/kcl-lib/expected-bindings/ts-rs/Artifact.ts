@@ -37,6 +37,12 @@ target: ArtifactPoint3d | null,
 distance: number | null, projection: ArtifactProjection, };
 
 /**
+ * API-owned RGBA color with channels from 0 to 1, equivalent to the engine
+ * color, avoiding a kcl-api dependency on kittycad-modeling-cmds.
+ */
+export type ArtifactColor = { r: number, g: number, b: number, a: number, };
+
+/**
  * A command that may create or update artifacts on the TS side.  Because
  * engine commands are batched, we don't have the response yet when these are
  * created.
@@ -291,7 +297,11 @@ size?: number | null,
 /**
  * Visibility after plane creation and subsequent ObjectVisible commands.
  */
-hidden?: boolean, };
+hidden?: boolean, 
+/**
+ * The color from the last PlaneSetColor command, if any.
+ */
+color?: ArtifactColor | null, };
 
 export type PlaneOfFace = { id: ArtifactId, faceId: ArtifactId, codeRef: CodeRef, };
 
