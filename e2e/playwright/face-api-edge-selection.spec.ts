@@ -46,7 +46,6 @@ sketch001 = startSketchOn(YZ)
  */
 test.describe('Face API edge selection', { tag: '@web' }, () => {
   test('Can select Solid3D edges and Surface edges for revolve', async ({
-    context,
     scene,
     modelingDialog,
     page,
@@ -54,10 +53,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     editor,
     homePage,
   }) => {
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, testCode)
-
     await homePage.goToModelingScene()
     await scene.settled()
     if ((await editor.getCurrentCode()).trim() !== testCode.trim()) {
@@ -181,7 +176,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
   })
 
   test('Can select split edges for fillet', async ({
-    context,
     scene,
     modelingDialog,
     page,
@@ -192,10 +186,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     const [clickEdge] = scene.makeMouseHelpers(0.1709, 0.4864, {
       format: 'ratio',
     })
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, testCode)
-
     await homePage.goToModelingScene()
     await scene.settled()
     if ((await editor.getCurrentCode()).trim() !== testCode.trim()) {
@@ -231,7 +221,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
   })
 
   test('Can use an edge-extruded surface boundary as a Helix axis', async ({
-    context,
     page,
     scene,
     modelingDialog,
@@ -253,14 +242,6 @@ surface001 = extrude(
 )
 hide(sketch001)`
 
-    await context.addInitScript(
-      ({ initialCode }) => {
-        localStorage.setItem('persistCode', initialCode)
-      },
-      {
-        initialCode: code,
-      }
-    )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
