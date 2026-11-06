@@ -23,8 +23,14 @@ test.describe(
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      const XYPlaneRed: [number, number, number] = [46, 36, 34]
-      await scene.expectPixelColor(XYPlaneRed, { x: 700, y: 300 }, 15)
+      const local = await page.evaluate(
+        () => window.engineCommandManager.geometryOnly
+      )
+      // The local planes overlap at this probe and use different materials.
+      const defaultPlanesColor: [number, number, number] = local
+        ? [62, 63, 66]
+        : [46, 36, 34]
+      await scene.expectPixelColor(defaultPlanesColor, { x: 700, y: 300 }, 15)
 
       const coord =
         plane === '-XY' || plane === '-YZ' || plane === 'XZ' ? -100 : 100
@@ -82,18 +88,26 @@ test.describe(
       },
     ]
 
-    for (const config of planeConfigs) {
-      test(config.plane, async ({ page, homePage, scene, toolbar, editor }) => {
-        await sketchOnPlaneAndBackSideTest(
+    for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+      for (const config of planeConfigs) {
+        test(`${config.plane} ${rendererTag}`, async ({
           page,
           homePage,
           scene,
           toolbar,
           editor,
-          config.plane,
-          config.coords
-        )
-      })
+        }) => {
+          await sketchOnPlaneAndBackSideTest(
+            page,
+            homePage,
+            scene,
+            toolbar,
+            editor,
+            config.plane,
+            config.coords
+          )
+        })
+      }
     }
   }
 )
@@ -226,18 +240,26 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
       // },
     ]
 
-    for (const config of planeConfigs) {
-      test(config.plane, async ({ page, homePage, scene, toolbar, editor }) => {
-        await sketchOnPlaneAndBackSideTest(
+    for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+      for (const config of planeConfigs) {
+        test(`${config.plane} ${rendererTag}`, async ({
           page,
           homePage,
           scene,
           toolbar,
           editor,
-          config.plane,
-          config.coords
-        )
-      })
+        }) => {
+          await sketchOnPlaneAndBackSideTest(
+            page,
+            homePage,
+            scene,
+            toolbar,
+            editor,
+            config.plane,
+            config.coords
+          )
+        })
+      }
     }
   }
 )

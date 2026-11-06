@@ -558,6 +558,13 @@ export class SceneFixture {
       } else {
         await moveCamera()
       }
+      // Plane picking also uses the frontend camera in stream mode. Read back
+      // the engine pose so picking and front/back orientation match the image.
+      await sendSceneCommand(this.page, {
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'default_camera_get_settings' },
+      })
       return
     }
     // Initial model loading fits the local camera; let it finish before
