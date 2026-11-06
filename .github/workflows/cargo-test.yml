@@ -167,7 +167,7 @@ jobs:
           name: nextest-archive
           path: rust/nextest-archive.tar.zst
   check-bindings:
-    name: Check TypeScript-facing bindings against expected
+    name: Check bindings
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     needs: build-test-artifacts
     steps:

@@ -1087,8 +1087,13 @@ export async function setup(
   userFeatures: readonly Feature[] = [],
   {
     cloudSyncEnabled = false,
+    reload = true,
     mockApiRoutes = true,
-  }: { cloudSyncEnabled?: boolean; mockApiRoutes?: boolean } = {}
+  }: {
+    cloudSyncEnabled?: boolean
+    mockApiRoutes?: boolean
+    reload?: boolean
+  } = {}
 ) {
   if (!mockApiRoutes && userFeatures.length > 0)
     throw new Error('userFeatures requires mockApiRoutes to be enabled')
@@ -1198,8 +1203,8 @@ export async function setup(
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 
-  // Trigger a navigation, since loading file:// doesn't.
-  await page.reload()
+  // Electron batches scripts and settings before its final startup navigation.
+  if (reload) await page.reload()
 }
 
 const slowFsMethodNames = [
