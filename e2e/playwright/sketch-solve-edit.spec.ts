@@ -2258,107 +2258,131 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
   })
 
-  test('can sketch on extrude cap', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    const code = `${square}
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`can sketch on extrude cap ${rendererTag}`, async ({
+      page,
+      context,
+      homePage,
+      scene,
+      cmdBar,
+      editor,
+      toolbar,
+    }) => {
+      const code = `${square}
 hidden001 = hide(sketch001)
 region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5)`
-    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
-      format: 'ratio',
-    })
 
-    await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code,
+      await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
+        await context.addInitScript(
+          async ({ code }) => {
+            localStorage.setItem('persistCode', code)
+          },
+          {
+            code,
+          }
+        )
+
+        await page.setBodyDimensions({ width: 1200, height: 1000 })
+
+        await homePage.goToModelingScene()
+        await scene.settled()
+        if (
+          await page.evaluate(() => window.engineCommandManager.geometryOnly)
+        ) {
+          // Frame the small body from its end-cap/top side before showing planes.
+          await scene.moveCameraTo(
+            { x: 7, y: -12, z: 7 },
+            { x: 0, y: -2.5, z: 0 }
+          )
         }
-      )
+      })
 
-      await page.setBodyDimensions({ width: 1200, height: 1000 })
+      await test.step('Start sketch and click center face', async () => {
+        await toolbar.startSketchPlaneSelection()
+        const [clickCenter] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 2,
+          stream: { x: 0.5, y: 0.5, format: 'ratio' },
+        })
+        await clickCenter()
+      })
 
-      await homePage.goToModelingScene()
-      await scene.settled()
-    })
-
-    await test.step('Start sketch and click center face', async () => {
-      await toolbar.startSketchPlaneSelection()
-      await clickCenter()
-    })
-
-    await test.step('Expect sketch on end cap', async () => {
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await editor.expectEditor.toContain(
-        `
+      await test.step('Expect sketch on end cap', async () => {
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await editor.expectEditor.toContain(
+          `
         face001 = faceOf(extrude001, face = END)
         sketch002 = sketch(on = face001) {
         }`,
-        { shouldNormalise: true }
-      )
+          { shouldNormalise: true }
+        )
+      })
     })
-  })
 
-  test('can sketch on extrude wall', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    const code = `sketch001 = startSketchOn(XZ)
+    test(`can sketch on extrude wall ${rendererTag}`, async ({
+      page,
+      context,
+      homePage,
+      scene,
+      cmdBar,
+      editor,
+      toolbar,
+    }) => {
+      const code = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [-2.05mm, -1.99mm])
   |> line(endAbsolute = [2.1mm, -1.99mm], tag = $line1)
   |> line(endAbsolute = [2.1mm, 2.23mm], tag = $line2)
   |> line(endAbsolute = [-2.05mm, 2.23mm], tag = $line3)
   |> close(tag = $line4)
 extrude001 = extrude(profile001, length = 5)`
-    const [clickAboveCenter] = scene.makeMouseHelpers(0.5, 0.28, {
-      format: 'ratio',
-    })
 
-    await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code,
+      await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
+        await context.addInitScript(
+          async ({ code }) => {
+            localStorage.setItem('persistCode', code)
+          },
+          {
+            code,
+          }
+        )
+
+        await page.setBodyDimensions({ width: 1200, height: 1000 })
+
+        await homePage.goToModelingScene()
+        await scene.settled()
+        if (
+          await page.evaluate(() => window.engineCommandManager.geometryOnly)
+        ) {
+          // Frame the small body from its end-cap/top side before showing planes.
+          await scene.moveCameraTo(
+            { x: 7, y: -12, z: 7 },
+            { x: 0, y: -2.5, z: 0 }
+          )
         }
-      )
+      })
 
-      await page.setBodyDimensions({ width: 1200, height: 1000 })
+      await test.step('Start sketch and click top face', async () => {
+        await toolbar.startSketchPlaneSelection()
+        const [clickAboveCenter] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 1,
+          stream: { x: 0.5, y: 0.28, format: 'ratio' },
+        })
+        await clickAboveCenter()
+      })
 
-      await homePage.goToModelingScene()
-      await scene.settled()
-    })
-
-    await test.step('Start sketch and click top face', async () => {
-      await toolbar.startSketchPlaneSelection()
-      await clickAboveCenter()
-    })
-
-    await test.step('Expect sketch on wall', async () => {
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await editor.expectEditor.toContain(
-        `
+      await test.step('Expect sketch on wall', async () => {
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await editor.expectEditor.toContain(
+          `
         sketch002 = sketch(on = faceOf(extrude001, face = line3)) {
         }`,
-        { shouldNormalise: true }
-      )
+          { shouldNormalise: true }
+        )
+      })
     })
-  })
+  }
 
   test('starts a sketch block on an extruded sketch-block wall', async ({
     context,
