@@ -18,7 +18,6 @@ import {
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
 } from '@src/lib/constants'
-import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import dotenv from 'dotenv'
@@ -1445,7 +1444,7 @@ export async function doAndWaitForImageDiff(
   fn: () => Promise<unknown>,
   diffCount = 200
 ) {
-  return new Promise<boolean>((resolve) => {
+  return new Promise<boolean>((resolve, reject) => {
     ;(async () => {
       await pageOrLocator.screenshot({
         path: './e2e/playwright/temp1.png',
@@ -1482,7 +1481,7 @@ export async function doAndWaitForImageDiff(
         await new Promise((resolve) => setTimeout(resolve, 50))
       }
       resolve(false)
-    })().catch(reportRejection)
+    })().catch(reject)
   })
 }
 

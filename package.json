@@ -143,7 +143,7 @@
     "test-setup": "npm install && npm run build:wasm",
     "test": "vitest --mode=development",
     "test:unit": "vitest run --mode=development --project=unit --sequence.shuffle",
-    "test:properties": "vitest run --mode=development --project=unit .properties.test",
+    "test:properties": "vitest run --mode=development .properties.",
     "test:integration": "vitest run --mode=development --project=integration --sequence.shuffle",
     "test:snapshots": "cross-env TARGET=web NODE_ENV=development playwright test --config=playwright.config.ts --grep=@snapshot --project=\"Google Chrome\"",
     "test:e2e:kcl": "(cd rust && just test && just lint)",
