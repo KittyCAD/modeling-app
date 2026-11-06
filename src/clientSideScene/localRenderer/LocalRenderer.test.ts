@@ -9,13 +9,13 @@ import { Themes } from '@src/lib/theme'
 import {
   Group,
   Mesh,
-  MeshStandardMaterial,
   type OrthographicCamera,
   PerspectiveCamera,
   Scene,
   Vector3,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { MeshStandardNodeMaterial } from 'three/webgpu'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lang/KclManager', () => ({
@@ -148,6 +148,7 @@ function fixture(
       enableSSAO: false,
       highlightEdges: false,
       fixedSizeGrid: true,
+      backfaceColor: '#00D5FF',
       onModelLoadSettled,
     }
   )
@@ -369,7 +370,7 @@ describe('local GLB loading', () => {
     expect(mesh).toBeInstanceOf(Mesh)
     if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
     expect(mesh.geometry.getAttribute('position').count).toBe(3)
-    expect(mesh.material).toBeInstanceOf(MeshStandardMaterial)
+    expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
     expect(mesh.material.metalness).toBe(0.3)
     expect(mesh.material.roughness).toBe(0.4)
     expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({

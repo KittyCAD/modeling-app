@@ -663,6 +663,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           enableSSAO={settingsValues.modeling.enableSSAO.current}
           highlightEdges={settingsValues.modeling.highlightEdges.current}
           fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}
+          backfaceColor={settingsValues.modeling.backfaceColor.current}
         />
       )}
       <ClientSideScene
