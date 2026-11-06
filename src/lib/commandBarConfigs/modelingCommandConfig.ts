@@ -78,7 +78,9 @@ export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLi
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
-type ExtractStorageTypes<T> = T extends { storage?: infer U } ? U : never
+type ExtractStorageTypes<T> = T extends { storage?: infer U }
+  ? NonNullable<U>
+  : never
 type StorageUnion = ExtractStorageTypes<OutputFormat>
 type ExportOptionalArg = 'up' | 'scale'
 
@@ -2139,25 +2141,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           objects: {
             inputType: 'selection',
             validation: validateSolidEdgeSelectionArg('objects'),
-            selectionTypes: [
-              'cap',
-              'wall',
-              'edgeCut',
-              'segment',
-              'sweepEdge',
-              'enginePrimitiveEdge',
-            ],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
           },
-          tolerance: { ...gdtToleranceProps, required: false },
+          tolerance: gdtToleranceProps,
           ...gdtFrameArgOverrides,
-          framePosition: { defaultValue: undefined },
-          framePlane: {
-            ...gdtFrameDisplayArgOverrides.framePlane,
-            defaultValue: undefined,
-          },
         },
       }
     ),

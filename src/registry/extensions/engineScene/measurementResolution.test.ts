@@ -23,7 +23,7 @@ function response(id: string) {
 }
 
 describe('topology measurement regressions', () => {
-  it('does not measure an annotation as its engine entity', () => {
+  it('classifies annotation selections separately from geometry', () => {
     expect(
       getMeasurementEntities({
         graphSelections: [
@@ -34,7 +34,7 @@ describe('topology measurement regressions', () => {
         ],
         otherSelections: [],
       })
-    ).toEqual([])
+    ).toEqual([{ id: 'annotation', kind: 'other' }])
   })
 
   it('resolves pump edge index 10, independently of adjacent faces and reference index', async () => {

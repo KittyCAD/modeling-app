@@ -1686,6 +1686,8 @@ export function artifactToEntityRef(
   artifactId: string,
   pathId?: string
 ): EntityReference | undefined {
+  if (artifactType === 'gdtAnnotation')
+    return { type: 'annotation', annotation_id: artifactId }
   if (artifactType === 'plane') return { type: 'plane', plane_id: artifactId }
   if (artifactType === 'solid2d')
     return { type: 'solid2d', solid2d_id: artifactId }
