@@ -38,6 +38,9 @@ import {
 
 const SELECTION_LINE_WIDTH_AT_REFERENCE_PX = 24
 const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
+// The ID of whatever can't be picked: occluders, line segments that aren't
+// targets, and the background, which clears to 0. targetById[0] is null to match.
+const NO_TARGET_ID = 0
 
 type LineTargets = { source: LineSegments2; targets: EdgeSelectionTarget[] }
 
@@ -81,8 +84,8 @@ export class IntegerIdPicker {
     return vec4(byte(0), byte(8), byte(16), 1)
   }
 
-  // Each allowed target gets a copy of its mesh with its own material, which draws that target's unique ID.
-  // Other model meshes all share ID = 0, they block picks behind them but can't be picked themselves. Excluded regions are skipped, because they're invisible.
+  // Each allowed target gets a copy of its mesh, which draws that target's unique ID.
+  // Other model meshes all share NO_TARGET_ID, they block picks behind them but can't be picked themselves. Excluded regions are skipped, because they're invisible.
   // Edges and sketch lines are added only if they were passed in depending on the filter
   // Share geometry; only the small ID materials and scene nodes are owned here.
   setTargets(
@@ -126,7 +129,7 @@ export class IntegerIdPicker {
       this.scene.add(proxy)
     }
     const targetSet = new Set(targets)
-    // Add "hit blockers" which have ID = 0, they cannot be selected but
+    // Add "hit blockers" which have NO_TARGET_ID, they cannot be selected but
     // block objects behind them from being selected.
     occluder?.traverseVisible((object) => {
       if (
@@ -139,7 +142,7 @@ export class IntegerIdPicker {
         // already pickable, the next loop will add it, no need to add it twice.
         !targetSet.has(object)
       ) {
-        addMesh(object, 0)
+        addMesh(object, NO_TARGET_ID)
       }
     })
     for (const target of targets) {
@@ -193,7 +196,7 @@ export class IntegerIdPicker {
     // number of targets before this batch changes.
     const selectionId = select(
       selectionIndex.equal(uint(0)),
-      uint(0),
+      uint(NO_TARGET_ID),
       uniform(idBeforeFirstTarget, 'uint').add(selectionIndex)
     )
     material.outputNode = this.idOutput(varying(selectionId))
