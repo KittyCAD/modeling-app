@@ -186,6 +186,7 @@ describe('ExchangeCard replay attachments', () => {
                   call_id: 'call-1',
                   name: 'read_project_file',
                   status: 'started',
+                  label: 'Read main.kcl',
                 }),
             },
           },
@@ -201,7 +202,7 @@ describe('ExchangeCard replay attachments', () => {
     const groupSummary = screen.getByText('Read files')
     expect(groupSummary).toBeVisible()
     expect(groupSummary.closest('details')).not.toHaveAttribute('open')
-    expect(screen.getByText('read project file · Running')).not.toBeVisible()
+    expect(screen.getByText('Read main.kcl · Running')).not.toBeVisible()
     expect(screen.queryByText('Reading main.kcl')).not.toBeInTheDocument()
     expect(
       screen.queryByText('The project contains one KCL file.')

@@ -421,7 +421,8 @@ describe('Thinking', () => {
         call_id: 'call-1',
         name: 'read_project_file',
         status: 'started',
-        arguments: '{"path":"main.kcl"}',
+        label: 'Read main.kcl',
+        arguments: '{"path":"main.kcl","contents":"SECRET_KCL_CONTENT"}',
       }),
     ]
     const view = () => (
@@ -437,7 +438,7 @@ describe('Thinking', () => {
     const groupSummary = screen.getByText('Read files')
     const groupDetails = groupSummary.closest('details')
     expect(groupDetails).not.toHaveAttribute('open')
-    expect(screen.getByText('read project file · Running')).not.toBeVisible()
+    expect(screen.getByText('Read main.kcl · Running')).not.toBeVisible()
     expect(screen.queryByText('Reasoning summary')).not.toBeInTheDocument()
     expect(
       screen.queryByText('The project contains one KCL file.')
@@ -460,17 +461,15 @@ describe('Thinking', () => {
     rerender(view())
 
     expect(groupDetails).not.toHaveAttribute('open')
-    expect(screen.getByText('read project file · Finished')).not.toBeVisible()
+    expect(screen.getByText('Read main.kcl')).not.toBeVisible()
     fireEvent.click(groupSummary)
     expect(groupDetails).toHaveAttribute('open')
-    const toolSummary = screen.getByText('read project file · Finished')
-    const toolDetails = toolSummary.closest('details')
-    expect(toolSummary).toBeVisible()
-    expect(toolDetails).not.toHaveAttribute('open')
-    fireEvent.click(toolSummary)
-    expect(toolDetails).toHaveAttribute('open')
-    expect(screen.getByText('Found main.kcl')).toBeVisible()
-    expect(screen.getAllByText('read project file · Finished')).toHaveLength(1)
+    const toolRow = screen.getByText('Read main.kcl')
+    expect(toolRow).toBeVisible()
+    expect(toolRow.closest('details')).toBe(groupDetails)
+    expect(screen.queryByText('Arguments')).not.toBeInTheDocument()
+    expect(screen.queryByText('SECRET_KCL_CONTENT')).not.toBeInTheDocument()
+    expect(screen.queryByText('Found main.kcl')).not.toBeInTheDocument()
   })
 
   test('keeps tool batches folded as new commentary and tool events arrive', () => {
@@ -481,6 +480,7 @@ describe('Thinking', () => {
         call_id: 'read-1',
         name: 'read_project_file',
         status: 'started',
+        label: 'Read main.kcl',
         arguments: '{"path":"main.kcl"}',
       }),
       activity({
@@ -496,6 +496,7 @@ describe('Thinking', () => {
         call_id: 'write-1',
         name: 'write_project_file',
         status: 'completed',
+        label: 'Edited main.kcl',
         output: 'Wrote main.kcl',
         ok: true,
       }),
@@ -519,8 +520,8 @@ describe('Thinking', () => {
     const groupSummary = screen.getByText('Read files, edited files')
     const group = groupSummary.closest('details')
     expect(group).not.toHaveAttribute('open')
-    expect(screen.getByText('read project file · Finished')).not.toBeVisible()
-    expect(screen.getByText('write project file · Finished')).not.toBeVisible()
+    expect(screen.getByText('Read main.kcl')).not.toBeVisible()
+    expect(screen.getByText('Edited main.kcl')).not.toBeVisible()
 
     thoughts.push(
       activity({ kind: 'commentary', text: 'Validating the model.' })
@@ -529,15 +530,13 @@ describe('Thinking', () => {
 
     expect(group).not.toHaveAttribute('open')
     expect(screen.getByText('Validating the model.')).toBeVisible()
-    expect(screen.getByText('read project file · Finished')).not.toBeVisible()
+    expect(screen.getByText('Read main.kcl')).not.toBeVisible()
     fireEvent.click(groupSummary)
     expect(group).toHaveAttribute('open')
-    expect(screen.getByText('read project file · Finished')).toBeVisible()
+    expect(screen.getByText('Read main.kcl')).toBeVisible()
+    expect(screen.getByText('Edited main.kcl')).toBeVisible()
     expect(screen.getByText('Updated Project File (main.kcl)')).toBeVisible()
-    const readDetails = screen
-      .getByText('read project file · Finished')
-      .closest('details')
-    expect(readDetails).not.toHaveAttribute('open')
+    expect(screen.queryByText('Wrote main.kcl')).not.toBeInTheDocument()
 
     thoughts.push(
       activity({
@@ -545,18 +544,19 @@ describe('Thinking', () => {
         call_id: 'execute-1',
         name: 'execute_project',
         status: 'completed',
+        label: 'Validated project',
         ok: true,
       })
     )
     rerender(view())
     const nextGroup = screen.getByText('Ran project checks').closest('details')
     expect(nextGroup).not.toHaveAttribute('open')
-    expect(screen.getByText('execute project · Finished')).not.toBeVisible()
+    expect(screen.getByText('Validated project')).not.toBeVisible()
     expect(group).toHaveAttribute('open')
 
     rerender(view(true))
     expect(nextGroup).not.toHaveAttribute('open')
-    expect(screen.getByText('execute project · Finished')).not.toBeVisible()
+    expect(screen.getByText('Validated project')).not.toBeVisible()
   })
 
   test('labels unfinished tool activity as stopped after an interrupted turn', () => {
@@ -573,6 +573,7 @@ describe('Thinking', () => {
                   call_id: 'call-interrupted',
                   name: 'read_project_file',
                   status: 'started',
+                  label: 'Read main.kcl',
                 }),
             },
           },
@@ -583,7 +584,7 @@ describe('Thinking', () => {
     )
 
     expect(screen.getByText('Read files · Stopped')).toBeVisible()
-    expect(screen.getByText('read project file · Stopped')).not.toBeVisible()
+    expect(screen.getByText('Read main.kcl · Stopped')).not.toBeVisible()
   })
 
   test('shows thinking after a tool status when markdown reasoning arrives', () => {

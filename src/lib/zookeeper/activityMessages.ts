@@ -9,10 +9,8 @@ export type ZookeeperActivity =
       call_id: string
       name: string
       status: 'started' | 'completed'
-      arguments?: string
-      output?: string
+      label?: string
       ok?: boolean
-      duration_ms?: number
     }
 
 export type ActivityItem =
@@ -53,17 +51,11 @@ export const parseZookeeperActivity = (
       call_id: value.call_id,
       name: value.name,
       status: value.status,
-      ...('arguments' in value && typeof value.arguments === 'string'
-        ? { arguments: value.arguments }
-        : {}),
-      ...('output' in value && typeof value.output === 'string'
-        ? { output: value.output }
+      ...('label' in value && typeof value.label === 'string'
+        ? { label: value.label }
         : {}),
       ...('ok' in value && typeof value.ok === 'boolean'
         ? { ok: value.ok }
-        : {}),
-      ...('duration_ms' in value && typeof value.duration_ms === 'number'
-        ? { duration_ms: value.duration_ms }
         : {}),
     }
   } catch {
@@ -93,9 +85,7 @@ export const collectActivityItems = (
       } else {
         const started = items[index]
         items[index] =
-          started.kind === 'tool'
-            ? { ...started, ...activity, arguments: started.arguments }
-            : activity
+          started.kind === 'tool' ? { ...started, ...activity } : activity
       }
     }
   }

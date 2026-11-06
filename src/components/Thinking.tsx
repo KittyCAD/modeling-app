@@ -367,7 +367,10 @@ const ToolActivityRow = (props: {
   tool: Extract<ZookeeperActivity, { kind: 'tool' }>
   isDone: boolean
 }) => {
-  const label = props.tool.name.replaceAll('_', ' ')
+  const fallbackLabel = props.tool.name.replaceAll('_', ' ')
+  const label =
+    props.tool.label ??
+    fallbackLabel.charAt(0).toUpperCase() + fallbackLabel.slice(1)
   const icon = props.tool.name.includes('search')
     ? 'search'
     : props.tool.name.includes('file')
@@ -376,50 +379,22 @@ const ToolActivityRow = (props: {
   const status =
     props.tool.status === 'started'
       ? props.isDone
-        ? 'Stopped'
-        : 'Running'
+        ? ' · Stopped'
+        : ' · Running'
       : props.tool.ok === false
-        ? 'Failed'
-        : 'Finished'
+        ? ' · Failed'
+        : ''
 
   return (
-    <details className="group/tool py-2">
-      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm text-chalkboard-70 dark:text-chalkboard-30 [&::-webkit-details-marker]:hidden">
-        <span aria-hidden="true">
-          <CustomIcon name={icon} className="h-4 w-4 shrink-0" />
-        </span>
-        <span>
-          {label} · {status}
-        </span>
-        <span aria-hidden="true" className="ml-auto">
-          <CustomIcon
-            name="caretDown"
-            className="h-4 w-4 shrink-0 opacity-60 transition-transform group-open/tool:rotate-180"
-          />
-        </span>
-      </summary>
-      <div className="ml-6 mt-2 space-y-2 text-xs">
-        {props.tool.arguments !== undefined && (
-          <div>
-            <div className="font-semibold">Arguments</div>
-            <pre className="whitespace-pre-wrap break-all">
-              {props.tool.arguments}
-            </pre>
-          </div>
-        )}
-        {props.tool.output !== undefined && (
-          <div>
-            <div className="font-semibold">Result</div>
-            <pre className="whitespace-pre-wrap break-all">
-              {props.tool.output}
-            </pre>
-          </div>
-        )}
-        {props.tool.duration_ms !== undefined && (
-          <div>{ms(props.tool.duration_ms, { long: true })}</div>
-        )}
-      </div>
-    </details>
+    <div className="flex items-center gap-2 py-2 text-sm text-chalkboard-70 dark:text-chalkboard-30">
+      <span aria-hidden="true">
+        <CustomIcon name={icon} className="h-4 w-4 shrink-0" />
+      </span>
+      <span className="min-w-0 truncate">
+        {label}
+        {status}
+      </span>
+    </div>
   )
 }
 
