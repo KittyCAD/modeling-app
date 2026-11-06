@@ -360,7 +360,8 @@ describe('local GLB loading', () => {
         type: 'gltf',
         storage: 'binary',
         presentation: 'compact',
-        extras: ['sketches', 'regions'],
+        include_uuids: true,
+        extras: ['geometry_uuids', 'sketches', 'regions'],
       },
       { settings: { modeling: { base_unit: 'mm' } } }
     )
@@ -376,6 +377,26 @@ describe('local GLB loading', () => {
       settingsActor: f.manager.systemDeps.settings,
     })
     expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
+    f.renderer.dispose()
+  })
+
+  it('keeps planes in fit bounds until their visibility update follows the model load', async () => {
+    const f = fixture()
+    f.gpu.planeRenderer.updateDefaultPlanes(f.manager.rustContext.defaultPlanes)
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    const model = f.state.currentModel
+    if (!model) throw new Error('Missing model')
+    model.scale.setScalar(0.001)
+
+    const boundsWithPlanes = f.renderer.getFitBounds()
+    expect(f.renderer.hasVisibleDefaultPlanes).toBe(true)
+    f.renderer.setDefaultPlaneVisibility({ xy: false, xz: false, yz: false })
+    expect(f.renderer.hasVisibleDefaultPlanes).toBe(false)
+    const modelBounds = f.renderer.getFitBounds()
+    expect(modelBounds?.getSize(new Vector3()).length()).toBeLessThan(
+      boundsWithPlanes?.getSize(new Vector3()).length() ?? 0
+    )
     f.renderer.dispose()
   })
 
@@ -401,6 +422,7 @@ describe('local GLB loading', () => {
     f.manager.rustContext.export.mockReturnValueOnce(pending.promise)
     const parse = vi.spyOn(GLTFLoader.prototype, 'parseAsync')
     f.done()
+    expect(f.renderer.isLoadedSceneCurrent()).toBe(false)
     f.manager.isExecutingSignal.value = true
     pending.resolve([triangleGlb()])
     await pending.promise
@@ -409,6 +431,7 @@ describe('local GLB loading', () => {
     expect(f.onModelLoadSettled).not.toHaveBeenCalled()
     f.done()
     await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
     f.renderer.dispose()
   })
 
