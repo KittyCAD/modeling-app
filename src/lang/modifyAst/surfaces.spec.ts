@@ -1,7 +1,13 @@
 import type { KclManager } from '@src/lang/KclManager'
-import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
+import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
+import {
+  addFlipSurface,
+  addJoinSurfaces,
+  addPlanarSurface,
+} from '@src/lang/modifyAst/surfaces'
+import { addDelete } from '@src/lang/modifyAst/transforms'
+import { type Artifact, assertParse, recast } from '@src/lang/wasm'
 import { artifactToEntityRef } from '@src/lang/queryAst'
-import { type Artifact, recast } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
@@ -11,7 +17,7 @@ import {
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
@@ -356,5 +362,271 @@ blend005 = blend([
       expect(newCode).toContain(`${code}\n${expectedNewLine}`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
+  })
+})
+
+describe('addPlanarSurface', () => {
+  const circle = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
+}`
+
+  const regionsSketch = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
+  circle2 = circle(start = [40mm, 0mm], center = [30mm, 0mm])
+  circle3 = circle(start = [70mm, 0mm], center = [60mm, 0mm])
+}`
+
+  async function setup(code = circle) {
+    return getAstAndArtifactGraph(
+      code,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+  }
+
+  it('combines authored and viewport regions and hides their sketch once', async () => {
+    const { ast, artifactGraph } = await setup(`${regionsSketch}
+region001 = region(segments = [sketch001.circle1])`)
+    const sketch = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'sketchBlock'
+    )
+    const region = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'path' && artifact.subType === 'region'
+    )
+    if (!sketch || !region) throw new Error('Missing sketch or region')
+    const result = addPlanarSurface({
+      ast,
+      artifactGraph,
+      curves: {
+        ...createSelectionFromArtifacts([region], artifactGraph),
+        otherSelections: [
+          {
+            type: 'engineRegion',
+            id: 'selected-region',
+            sketchId: sketch.id,
+            point: { x: 30, y: 0 },
+          },
+          {
+            type: 'engineRegion',
+            id: 'second-region',
+            sketchId: sketch.id,
+            point: { x: 60, y: 0 },
+          },
+        ],
+      },
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(result)) throw result
+    const code = recast(result.modifiedAst, instanceInThisFile)
+    if (err(code)) throw code
+    expect(code).toContain(`hidden001 = hide(sketch001)
+region002 = region(point = [30mm, 0mm], sketch = sketch001)
+region003 = region(point = [60mm, 0mm], sketch = sketch001)
+surface001 = planarSurface([region001, region002, region003])`)
+    expect(code.match(/hide\(sketch001\)/g)).toHaveLength(1)
+    expect(
+      await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+    ).toBeUndefined()
+  })
+
+  it('preserves individual regions and surfaces stored in arrays', async () => {
+    const { ast, artifactGraph } = await setup(`${regionsSketch}
+regions = [
+  region(segments = [sketch001.circle1]),
+  region(segments = [sketch001.circle2])
+]`)
+    const regions = [...artifactGraph.values()].filter(
+      (artifact) => artifact.type === 'path' && artifact.subType === 'region'
+    )
+    expect(regions).toHaveLength(2)
+    for (const selected of [[regions[1]], [regions[1], regions[0]]]) {
+      const result = addPlanarSurface({
+        ast,
+        artifactGraph,
+        curves: createSelectionFromArtifacts(selected, artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const code = recast(result.modifiedAst, instanceInThisFile)
+      if (err(code)) throw code
+      const input =
+        selected.length === 1 ? 'regions[1]' : '[regions[1], regions[0]]'
+      const call = `planarSurface(${input})`
+      expect(code).toContain(`surface001 = ${call}`)
+      for (const expression of [
+        call,
+        `${input} |> planarSurface(%)`,
+        `${call} |> translate(x = 1mm)`,
+      ]) {
+        const createdAst = assertParse(
+          code.replace(call, expression),
+          instanceInThisFile
+        )
+        const created = await enginelessExecutor(
+          createdAst,
+          rustContextInThisFile
+        )
+        const surfaces = [...created.artifactGraph.values()].filter(
+          (artifact) =>
+            artifact.type === 'sweep' && artifact.subType === 'planarSurface'
+        )
+        expect(surfaces).toHaveLength(selected.length)
+        const deleted = addDelete({
+          ast: createdAst,
+          artifactGraph: created.artifactGraph,
+          objects: createSelectionFromArtifacts(
+            [surfaces.at(-1)!],
+            created.artifactGraph
+          ),
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(deleted)) throw deleted
+        expect(recast(deleted.modifiedAst, instanceInThisFile)).toContain(
+          selected.length === 1 ? 'delete(surface001)' : 'delete(surface001[1])'
+        )
+      }
+    }
+  })
+
+  it('preserves the selected clone and all Face API disambiguators', async () => {
+    const { ast, artifactGraph } = await setup(`${circle}
+region001 = region(segments = [sketch001.circle1])
+original = extrude(region001, length = 5mm)
+selected = clone(original) |> translate(x = 25mm)`)
+    const body = [...artifactGraph.values()].findLast(
+      (artifact) => artifact.type === 'sweep'
+    )
+    if (body?.type !== 'sweep') throw new Error('Missing body')
+    const faces = body.surfaceIds.map((id) => artifactGraph.get(id))
+    const wall = faces.find((face) => face?.type === 'wall')
+    const cap = faces.find(
+      (face) => face?.type === 'cap' && face.subType === 'end'
+    )
+    if (!wall || !cap) throw new Error('Missing body faces')
+    const selection: Selection = {
+      entityRef: {
+        type: 'edge',
+        side_faces: [wall.id],
+        end_faces: [cap.id],
+        index: 0,
+      },
+      engineTopologyFallback: { parentId: body.id, primitiveIndex: 123 },
+    }
+    const result = addPlanarSurface({
+      ast,
+      artifactGraph,
+      curves: { graphSelections: [selection], otherSelections: [] },
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(result)) throw result
+    const code = recast(result.modifiedAst, instanceInThisFile)
+    expect(code).toContain('sideFaces = [selected.sketch.tags.circle1]')
+    expect(code).toContain('endFaces = [selected.faces.')
+    expect(code).toContain('index = 0')
+    expect(
+      await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+    ).toBeUndefined()
+
+    expect(
+      addPlanarSurface({
+        ast,
+        artifactGraph,
+        curves: {
+          graphSelections: [
+            {
+              ...selection,
+              entityRef: {
+                type: 'edge',
+                side_faces: [wall.id],
+                end_faces: ['missing-face'],
+                index: 0,
+              },
+            },
+          ],
+          otherSelections: [],
+        },
+        wasmInstance: instanceInThisFile,
+      })
+    ).toBeInstanceOf(Error)
+  })
+
+  it('keeps an anonymous body edge in its pipe', async () => {
+    const { ast, artifactGraph } = await setup(`${circle}
+region001 = region(segments = [sketch001.circle1])
+extrude(region001, length = 5mm) |> translate(x = 25mm)`)
+    const body = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'sweep'
+    )
+    if (body?.type !== 'sweep') throw new Error('Missing body')
+    const faces = body.surfaceIds.map((id) => artifactGraph.get(id))
+    const wall = faces.find((face) => face?.type === 'wall')
+    const cap = faces.find(
+      (face) => face?.type === 'cap' && face.subType === 'end'
+    )
+    if (!wall || !cap) throw new Error('Missing body faces')
+    const result = addPlanarSurface({
+      ast,
+      artifactGraph,
+      curves: {
+        graphSelections: [
+          { entityRef: { type: 'edge', side_faces: [wall.id, cap.id] } },
+        ],
+        otherSelections: [],
+      },
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(result)) throw result
+    const code = recast(result.modifiedAst, instanceInThisFile)
+    expect(code).toContain('|> planarSurface([')
+    expect(code).toContain('%.sketch.tags.circle1')
+    expect(code).toContain('%.faces.')
+    expect(
+      await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+    ).toBeUndefined()
+  })
+
+  it('rejects empty, whole-sketch, and mixed selections', async () => {
+    const { ast, artifactGraph } = await setup()
+    const sketch = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'sketchBlock'
+    )
+    if (!sketch) throw new Error('Missing sketch')
+    const region = {
+      type: 'engineRegion' as const,
+      id: 'selected-region',
+      sketchId: sketch.id,
+      point: { x: 0, y: 0 },
+    }
+    const invalidSelections: Selections[] = [
+      { graphSelections: [], otherSelections: [] },
+      createSelectionFromArtifacts([sketch], artifactGraph),
+      {
+        graphSelections: [
+          { entityRef: { type: 'edge', side_faces: ['face'] } },
+        ],
+        otherSelections: [region],
+      },
+    ]
+    for (const curves of invalidSelections) {
+      expect(
+        addPlanarSurface({
+          ast,
+          artifactGraph,
+          curves,
+          wasmInstance: instanceInThisFile,
+        })
+      ).toBeInstanceOf(Error)
+    }
   })
 })

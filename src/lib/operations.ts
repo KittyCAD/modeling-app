@@ -3590,6 +3590,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  planarSurface: {
+    label: 'Planar Surface',
+    icon: 'planarSurface',
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
   split: {
     label: 'Split',
     icon: 'split',
