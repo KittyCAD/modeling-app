@@ -134,6 +134,7 @@ import {
   getSketchBlockForArtifact,
   isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
+import { namedViewsForExport } from '@src/lang/std/kclNamedViews'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import {
   crossProduct,
@@ -4461,6 +4462,17 @@ export const modelingMachine = setup({
           defaultUnit?.current ??
           // Fall back to app default units if the project setting is absent.
           DEFAULT_DEFAULT_LENGTH_UNIT
+
+        if (format.type === 'gltf' || format.type === 'step') {
+          const { camControls } = kclManager.sceneInfra
+          format.views = namedViewsForExport({
+            artifactGraph: kclManager.artifactGraph,
+            filenames: kclManager.execState.filenames,
+            fallbackDistance: camControls.camera.position.distanceTo(
+              camControls.target
+            ),
+          })
+        }
 
         // Set all the un-configurable defaults here.
         if (format.type === 'gltf') {
