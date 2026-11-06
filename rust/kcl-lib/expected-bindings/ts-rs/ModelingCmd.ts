@@ -318,7 +318,7 @@ export type AnnotationMbdLeaderPosition = { "normalized_pos": {
 /**
  * The position
  */
-pos: Point2d<number>, } } | { "centroid": Record<symbol, never> };
+pos: Point2d<number>, } } | { "centroid": Record<symbol, never> } | { "step_from": Record<symbol, never> } | { "auto": Record<symbol, never> };
 
 /**
  * Options for annotations
@@ -758,7 +758,9 @@ scale: TransformBy<Point3d<number>> | null, };
 
 /**
  * Create a planar surface bounded by the connection of various paths and curves.
- * 'CreatePlanarSurface' modeling command.
+ * For example, if you delete a face from a body, you could use this command
+ * to recreate it. Or you could use this command to make a 3D surface (with 0 thickness) from a 2D region.
+ * The surface will have the ID of this command.
  */
 export type CreatePlanarSurface = { 
 /**
@@ -766,7 +768,7 @@ export type CreatePlanarSurface = {
  * Curves must be provided in the order they are connected to each other
  * They must form a closed loop, either by themselves or in a group
  */
-curve_ids: Array<string>, 
+target: PlanarSurfaceTarget, 
 /**
  * Tolerance for the planar surface creation. Must be positive (i.e. greater than zero).
  */
@@ -1563,9 +1565,13 @@ edge_id?: string | null,
 edge_reference?: EdgeSpecifier | null, };
 
 /**
- * An edge/vertex can be defined by the faces that it is connected to.
+ * A reference identifying a selectable scene entity.
  */
-export type EntityReference = { "type": "plane", 
+export type EntityReference = { "type": "annotation", 
+/**
+ * Id of the annotation object being referenced.
+ */
+annotation_id: string, } | { "type": "plane", 
 /**
  * Id of the plane being referenced.
  */
@@ -1679,7 +1685,7 @@ opacity: number, };
 /**
  * The type of entity
  */
-export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region" | "patterngroup";
+export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region" | "patterngroup" | "annotation";
 
 /**
  * Export the scene to a file.
@@ -2922,6 +2928,19 @@ surface_area_output_unit: UnitArea,
  * The output unit for the bounding box's dimensions.
  */
 bounding_box_output_unit: UnitLength, };
+
+/**
+ * Something to create a planar surface from.
+ */
+export type PlanarSurfaceTarget = { "edge": { 
+/**
+ * Which edges to create a surface between.
+ */
+specifier: Array<EdgeSpecifier>, } } | { "region": { 
+/**
+ * Create a surface which spans this region.
+ */
+region_id: string, } };
 
 /**
  * Utility method. Performs both a ray cast and projection to plane-local coordinates.
