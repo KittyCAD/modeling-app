@@ -3,6 +3,7 @@ import {
   createRemoteProject,
   getRemoteProjectThumbnailUrl,
   listRemoteProjects,
+  listRemoteProjectLibraries,
   normalizeRemoteProjectThumbnailUrl,
   remoteProjectThumbnailTargetPathFromUrl,
   thumbnailUrlFromRemoteProjectPayload,
@@ -16,6 +17,69 @@ afterEach(() => {
 })
 
 const encoder = new TextEncoder()
+
+describe('remote project libraries', () => {
+  test('fetches every library page with the configured session and cancellation signal', async () => {
+    const controller = new AbortController()
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            items: [
+              { id: 'dataset', name: 'Conversions', source: 'org_dataset' },
+            ],
+            next_page: 'next/cursor',
+          })
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            items: [
+              { id: 'factory', name: 'Factory', source: 'factory_portal' },
+            ],
+            next_page: null,
+          })
+        )
+      )
+    vi.stubGlobal('fetch', fetchMock)
+    expect(
+      await listRemoteProjectLibraries(
+        { enabled: true, token: 'token', baseUrl: 'https://api.test' },
+        controller.signal
+      )
+    ).toEqual([
+      { id: 'dataset', name: 'Conversions', source: 'org_dataset' },
+      { id: 'factory', name: 'Factory', source: 'factory_portal' },
+    ])
+    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
+      'https://api.test/user/project-libraries',
+      'https://api.test/user/project-libraries?page_token=next%2Fcursor',
+    ])
+    const init = fetchMock.mock.calls[1][1]!
+    expect(new Headers(init.headers).get('Authorization')).toBe('Bearer token')
+    expect(init.signal).toBe(controller.signal)
+    expect(init.credentials).toBe('include')
+  })
+
+  test('rejects malformed library records instead of exposing a partial list', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            items: [{ id: 'valid', name: 'Valid' }, { id: 'broken' }],
+            next_page: null,
+          })
+        )
+      )
+    )
+    await expect(
+      listRemoteProjectLibraries({ enabled: true, baseUrl: 'https://api.test' })
+    ).rejects.toThrow('Invalid remote project library list')
+  })
+})
 
 function projectFile(relativePath: string, contents = ''): ProjectArchiveFile {
   return {

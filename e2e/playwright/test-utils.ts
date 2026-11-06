@@ -1106,7 +1106,11 @@ export async function setup(
       : undefined
 
   await context.unroute('**/user/features')
+  await context.unroute('**/user/project-libraries**')
   if (mockApiRoutes) {
+    await context.route('**/user/project-libraries**', async (route) => {
+      await route.fulfill({ json: { items: [], next_page: null } })
+    })
     await context.route('**/user/features', async (route) => {
       await route.fulfill({
         status: 200,

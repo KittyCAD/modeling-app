@@ -51,6 +51,7 @@ import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import {
   getProjectLibraryCreateProjectOperation,
+  getProjectLibraryOperation,
   type ProjectLibraryRealization,
   projectLibraryRealizationsValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
@@ -1245,6 +1246,33 @@ describe('cloud sync project library', () => {
       expect(cloudLibraryType.operations?.moveProjectTo).toBeDefined()
     } finally {
       registry[Symbol.dispose]()
+    }
+  })
+
+  test('keeps named API libraries browsable without offering writes that lose membership', () => {
+    using registry = new Registry()
+    registry.configure([cloudSyncProjectLibraryType])
+    const libraryType = registry
+      .get(projectLibraryTypesValueSpec)
+      .get(CLOUD_PROJECT_LIBRARY_TYPE)
+    const library = {
+      ...getDefaultCloudProjectLibrarySetting(),
+      id: 'cloud-library-dataset',
+      source: '/project-libraries/dataset',
+    }
+
+    expect(
+      getProjectLibraryOperation(libraryType, library, 'openProject')
+    ).toBeDefined()
+    for (const operation of [
+      'createProject',
+      'duplicateProject',
+      'moveProjectFrom',
+      'moveProjectTo',
+    ] as const) {
+      expect(
+        getProjectLibraryOperation(libraryType, library, operation)
+      ).toBeUndefined()
     }
   })
 

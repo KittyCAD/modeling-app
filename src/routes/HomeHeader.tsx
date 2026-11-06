@@ -4,6 +4,7 @@ import { ProjectSearchBar } from '@src/components/ProjectSearchBar'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
   formatProjectLibraryPathForDisplay,
   getProjectLibraryDetailsDescription,
   getProjectLibraryLocationLabel,
@@ -30,6 +31,7 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   readWriteProjectDir: ReadWriteProjectState
   projectSearchKeybinding?: string
   libraryHomeSummary?: ReactNode
+  libraryVisibilityControl?: ReactNode
   showFreeCloudProjectTrainingDisclosure?: boolean
 }
 
@@ -43,6 +45,7 @@ export function HomeHeader({
   readWriteProjectDir,
   projectSearchKeybinding,
   libraryHomeSummary,
+  libraryVisibilityControl,
   showFreeCloudProjectTrainingDisclosure = false,
   ...rest
 }: HomeHeaderProps) {
@@ -84,6 +87,7 @@ export function HomeHeader({
               )}
               <h1 className="text-3xl font-bold">{title}</h1>
             </div>
+            {libraryVisibilityControl}
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
@@ -145,21 +149,24 @@ export function HomeHeader({
           )}
           <p className="m-0 min-w-0 flex-1 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30 sm:order-1">
             {libraryDetailsDescription ? `${libraryDetailsDescription} ` : null}
-            <span className="whitespace-nowrap">
-              {libraryDetailsDescription
-                ? `${getProjectLibraryLocationLabel(library)}: `
-                : 'Loaded from '}
-              <Link
-                data-testid="project-directory-settings-link"
-                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-                className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-              >
-                {formatProjectLibraryPathForDisplay(library)}
-              </Link>
-            </span>
+            {library.type !== CLOUD_PROJECT_LIBRARY_TYPE && (
+              <span className="whitespace-nowrap">
+                {libraryDetailsDescription
+                  ? `${getProjectLibraryLocationLabel(library)}: `
+                  : 'Loaded from '}
+                <Link
+                  data-testid="project-directory-settings-link"
+                  to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+                  className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+                >
+                  {formatProjectLibraryPathForDisplay(library)}
+                </Link>
+              </span>
+            )}
             {showFreeCloudProjectTrainingDisclosure && (
               <>
-                . Zoo trains on Free user cloud projects.{' '}
+                {' '}
+                Zoo trains on Free user cloud projects.{' '}
                 <a
                   href={FREE_CLOUD_PROJECT_TRAINING_POLICY_URL}
                   onClick={openExternalBrowserIfDesktop(

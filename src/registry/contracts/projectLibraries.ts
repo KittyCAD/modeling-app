@@ -265,6 +265,8 @@ export interface ProjectLibraryTypeContribution {
   type: ProjectLibraryType
   title: string
   cacheScope?: string
+  /** Libraries discovered by this type's provider, in addition to user settings. */
+  libraries?: readonly ProjectLibrary[]
   icon?: string
   order?: number
   /** Initial value used when settings are seeded or migrated for this type. */
@@ -325,6 +327,15 @@ export function combineProjectLibraryTypes(
     const nextContribution: ProjectLibraryTypeContribution = {
       ...previousContribution,
       ...contribution,
+    }
+    const libraries = [
+      ...(previousContribution?.libraries ?? []),
+      ...(contribution.libraries ?? []),
+    ]
+    if (libraries.length > 0) {
+      nextContribution.libraries = Array.from(
+        new Map(libraries.map((library) => [library.id, library])).values()
+      )
     }
     if (Object.keys(operations).length > 0) {
       nextContribution.operations = operations

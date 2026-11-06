@@ -96,6 +96,8 @@ export type OutboxEntry = {
 /** Cloud project metadata retained after endpoint-specific parsing. */
 export type RemoteProjectSummary = {
   id: string
+  /** Named cloud library; null or omitted means unassigned. */
+  library_id?: string | null
   title?: string
   updated_at?: string
   revision?: Revision | number
