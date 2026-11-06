@@ -701,6 +701,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'options',
             required: true,
             defaultValue: 'oriented',
+            documentation:
+              '**Oriented** uses a standard camera orientation, such as Front, Top, or Isometric.\n\n**Directed** saves a custom camera view. Orbit, pan, and zoom to the view you want, then click **Capture camera**.',
             options: [
               STD_LIB_COMMANDS['view::oriented'],
               STD_LIB_COMMANDS['view::directed'],
