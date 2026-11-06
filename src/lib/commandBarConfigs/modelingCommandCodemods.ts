@@ -77,11 +77,15 @@ import {
   modelingStdLibCommandUsesExperimentalFeatures,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
+import {
+  withDefaultGdtFrameDefaults,
+  withDefaultDistanceFrameDefaults,
+} from '@src/lib/gdtFramePosition'
 import {
   resolveDistanceSelections,
-  type DistanceFaceSelections,
-} from '@src/lib/gdtDistanceSelections'
+  getDistanceMeasurementMode,
+  isDistanceEdge,
+} from '@src/lang/modifyAst/gdtSelections'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
@@ -272,32 +276,13 @@ const withGdtDefaults = <
   defineModelingCodemod<CommandArgsByName[Name]>({
     ...withStdLibExperimentalFeatures(commandName, options),
     run: async ({ args, ast, kclManager, wasmInstance }) => {
-      let commandArgs = args
-      let edgeFaceSelections: DistanceFaceSelections | undefined
-      if (
-        commandName === 'GDT Distance' &&
-        !args.nodeToEdit &&
-        'objects' in args &&
-        args.objects
-      ) {
-        const resolved = await resolveDistanceSelections(
-          args.objects,
-          kclManager.artifactGraph,
-          kclManager.engineCommandManager
-        )
-        if (isErr(resolved)) return resolved
-        commandArgs = { ...args, objects: resolved.selections }
-        edgeFaceSelections = resolved.faces
-      }
       const data = await withDefaultGdtFrameDefaults({
-        data: commandArgs as GdtCommandData,
+        data: args as GdtCommandData,
         engineCommandManager: kclManager.engineCommandManager,
         ast,
         sourceCode: kclManager.code,
         outputUnit: kclManager.fileSettings.defaultLengthUnit,
         wasmInstance,
-        distance: commandName === 'GDT Distance',
-        artifactGraph: kclManager.artifactGraph,
       })
 
       return add(
@@ -305,11 +290,80 @@ const withGdtDefaults = <
           ast,
           artifactGraph: kclManager.artifactGraph,
           wasmInstance,
-          edgeFaceSelections,
         })
       )
     },
   })
+
+const distanceCodemod = defineModelingCodemod<
+  CommandArgsByName['GDT Distance']
+>({
+  ...withStdLibExperimentalFeatures('GDT Distance'),
+  run: async (context) => {
+    const { args, kclManager, wasmInstance } = context
+    // Edit selections are display-only; preserve the original arguments and omissions.
+    const addDistance = (
+      data: CommandArgsByName['GDT Distance'],
+      ast: Node<Program>
+    ) =>
+      addDistanceGdt({
+        ...data,
+        ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance,
+      })
+    if (args.nodeToEdit) return addDistance(args, context.ast)
+    const objects = await resolveDistanceSelections(
+      args.objects,
+      kclManager.artifactGraph,
+      kclManager.engineCommandManager
+    )
+    if (isErr(objects)) return objects
+    const mode = getDistanceMeasurementMode(
+      objects.graphSelections.map((selection) => ({
+        kind: isDistanceEdge(selection) ? 'edge' : 'face',
+      }))
+    )
+    if (isErr(mode)) return mode
+    const defaultsFor = (measurement: typeof objects) =>
+      withDefaultDistanceFrameDefaults({
+        data: { ...args, objects: measurement },
+        mode,
+        engineCommandManager: kclManager.engineCommandManager,
+        artifactGraph: kclManager.artifactGraph,
+        ast: context.ast,
+        sourceCode: kclManager.code,
+        outputUnit: kclManager.fileSettings.defaultLengthUnit,
+        wasmInstance,
+        variables: kclManager.variables,
+      })
+    if (mode === 'between')
+      return addDistance(await defaultsFor(objects), context.ast)
+    // Resolve every selection before inserting any user argument variables.
+    const graphSelections = await Promise.all(
+      objects.graphSelections.map(async (selection) => {
+        const defaults = await defaultsFor({
+          graphSelections: [selection],
+          otherSelections: [],
+        })
+        return {
+          ...selection,
+          frameDefaults: {
+            framePosition: args.framePosition
+              ? undefined
+              : defaults.framePosition,
+            framePlane: args.framePlane ? undefined : defaults.framePlane,
+            fontSize: args.fontSize ? undefined : defaults.fontSize,
+          },
+        }
+      })
+    )
+    return addDistance(
+      { ...args, objects: { ...objects, graphSelections } },
+      context.ast
+    )
+  },
+})
 
 export const modelingCommandCodemods = {
   'Named View': withArtifactGraph('Named View', addNamedView, {
@@ -371,10 +425,7 @@ export const modelingCommandCodemods = {
     withGdtDefaults('GDT Profile', addProfileGdt),
     'objects'
   ),
-  'GDT Distance': withSolidEdgeSelections(
-    withGdtDefaults('GDT Distance', addDistanceGdt),
-    'objects'
-  ),
+  'GDT Distance': withSolidEdgeSelections(distanceCodemod, 'objects'),
   'GDT Perpendicularity': withSolidEdgeSelections(
     withGdtDefaults('GDT Perpendicularity', addPerpendicularityGdt),
     'objects'
