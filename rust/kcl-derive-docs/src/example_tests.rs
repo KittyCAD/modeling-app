@@ -44,6 +44,11 @@ pub fn do_for_all_example_test(item: proc_macro2::TokenStream) -> proc_macro2::T
 }
 
 pub const TEST_NAMES: &[&str] = &[
+    "std-sketch-startPath3d-0",
+    "std-sketch-line3d-0",
+    "std-sketch-arc3d-0",
+    "std-sketch-tangentialArc3d-0",
+    "std-sketch-pathFillet-0",
     "std-operation-facing-0",
     "std-appearance-hexString-0",
     "std-appearance-hexString-1",

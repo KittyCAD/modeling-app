@@ -184,6 +184,7 @@ fn collect_artifact_ids(value: &OpKclValue, ids: &mut HashSet<ArtifactId>) {
         OpKclValue::Plane { artifact_id }
         | OpKclValue::Face { artifact_id }
         | OpKclValue::Segment { artifact_id }
+        | OpKclValue::Path3d { artifact_id }
         | OpKclValue::GdtAnnotation { artifact_id }
         | OpKclValue::ImportedGeometry { artifact_id } => {
             ids.insert(*artifact_id);
