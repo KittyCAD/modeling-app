@@ -1,3 +1,4 @@
+import { signal } from '@preact/signals-core'
 import type { WebSocketResponse } from '@kittycad/lib'
 
 import { encode as msgpackEncode } from '@msgpack/msgpack'
@@ -46,7 +47,7 @@ export default class RustContext {
   private contextChanged = new AbortController()
   private destroyed = false
   private ctxInstance: Context | null = null
-  private _defaultPlanes: DefaultPlanes | null = null
+  private _defaultPlanes = signal<DefaultPlanes | null>(null)
   public readonly planesCreated = new LegacySignal()
 
   constructor(
@@ -224,12 +225,12 @@ export default class RustContext {
   }
 
   get defaultPlanes() {
-    return this._defaultPlanes
+    return this._defaultPlanes.value
   }
 
   /** Internal setter for default planes that emits a planesCreated signal when planes are available */
   private setDefaultPlanes(planes: DefaultPlanes | null) {
-    this._defaultPlanes = planes
+    this._defaultPlanes.value = planes
     if (planes) {
       this.planesCreated.dispatch()
     }
@@ -980,7 +981,7 @@ export default class RustContext {
     this.destroyed = true
     this.ctxInstance = null
     this.initialization = undefined
-    this._defaultPlanes = null
+    this._defaultPlanes.value = null
     this.hasOpenedProject = false
     this.contextChanged.abort()
   }
