@@ -21,6 +21,7 @@ const eligibleProject: ProjectSummaryResponse = {
   created_at: new Date(cutoff - 1).toISOString(),
   updated_at: new Date(cutoff - 1).toISOString(),
   revision: 'revision-1',
+  metadata_revision: 'metadata-revision-1',
   publication_status: 'private',
   publication: { has_unpublished_changes: false },
   access: {
