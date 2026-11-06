@@ -21,6 +21,10 @@ import {
   getZookeeperAttachmentKey,
   type ZookeeperAttachmentFetchState,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import {
+  collectActivityItems,
+  type ZookeeperActivity,
+} from '@src/lib/zookeeper/activityMessages'
 
 interface IRowCollapse {
   fn: () => void
@@ -357,6 +361,61 @@ export const NothingInParticular = (props: {
     </ThoughtContainer>
   )
 }
+
+const ToolActivityRow = (props: {
+  tool: Extract<ZookeeperActivity, { kind: 'tool' }>
+  isDone: boolean
+}) => {
+  const label = props.tool.name.replaceAll('_', ' ')
+  const status =
+    props.tool.status === 'started'
+      ? props.isDone
+        ? 'Stopped'
+        : 'Running'
+      : props.tool.ok === false
+        ? 'Failed'
+        : 'Finished'
+
+  return (
+    <details className="ml-4 border-l border-chalkboard-30 py-2 pl-3 dark:border-chalkboard-70">
+      <summary className="cursor-pointer text-sm text-chalkboard-70 dark:text-chalkboard-30">
+        {label} · {status}
+      </summary>
+      <div className="mt-2 space-y-2 text-xs">
+        {props.tool.arguments !== undefined && (
+          <div>
+            <div className="font-semibold">Arguments</div>
+            <pre className="whitespace-pre-wrap break-all">
+              {props.tool.arguments}
+            </pre>
+          </div>
+        )}
+        {props.tool.output !== undefined && (
+          <div>
+            <div className="font-semibold">Result</div>
+            <pre className="whitespace-pre-wrap break-all">
+              {props.tool.output}
+            </pre>
+          </div>
+        )}
+        {props.tool.duration_ms !== undefined && (
+          <div>{ms(props.tool.duration_ms, { long: true })}</div>
+        )}
+      </div>
+    </details>
+  )
+}
+
+const ReasoningSummaryRow = (props: { content: string }) => (
+  <details className="ml-4 border-l border-chalkboard-30 py-2 pl-3 dark:border-chalkboard-70">
+    <summary className="cursor-pointer text-sm text-chalkboard-70 dark:text-chalkboard-30">
+      Reasoning summary
+    </summary>
+    <div className="mt-2 text-sm">
+      <MarkdownText text={props.content} />
+    </div>
+  </details>
+)
 
 export const End = () => {
   return (
@@ -982,8 +1041,40 @@ export const Thinking = (
     )
   }
 
-  const componentThoughts = reasoningThoughts.map((thought, index: number) => {
-    return fromDataToComponent(thought, {
+  const activityItems = collectActivityItems(reasoningThoughts)
+  const hasStructuredActivity = activityItems.some(
+    (item) => item.kind !== 'legacy'
+  )
+  const componentThoughts = activityItems.map((item, index) => {
+    if (item.kind === 'commentary') {
+      return (
+        <div key={index} className="px-2 py-3 text-sm">
+          <MarkdownText text={item.text} />
+        </div>
+      )
+    }
+    if (item.kind === 'tool') {
+      return (
+        <ToolActivityRow
+          key={`${item.call_id}-${index}`}
+          tool={item}
+          isDone={props.isDone}
+        />
+      )
+    }
+    if (
+      hasStructuredActivity &&
+      'reasoning' in item.message &&
+      item.message.reasoning.type === 'markdown'
+    ) {
+      return (
+        <ReasoningSummaryRow
+          key={index}
+          content={item.message.reasoning.content}
+        />
+      )
+    }
+    return fromDataToComponent(item.message, {
       key: index,
       setAnyRowCollapse,
       keyIndex: index,
@@ -996,6 +1087,9 @@ export const Thinking = (
     componentThoughts.push(<End key={reasoningThoughts.length} />)
   }
 
+  const lastActivity = activityItems.findLast(
+    (item) => item.kind === 'commentary' || item.kind === 'tool'
+  )
   const lastImmediateThought = reasoningThoughts.findLast(
     (thought) =>
       'reasoning' in thought &&
@@ -1013,14 +1107,21 @@ export const Thinking = (
     lastImmediateThought.reasoning.type === 'text'
       ? lastImmediateThought.reasoning.content
       : ''
-  const componentLastGenericThought = isImmediateThinking ? (
-    <div className="flex flex-row items-center gap-2">
-      <CustomIcon name="brain" className="w-6 h-6" />
-      <Generic content="Thinking" />
-    </div>
-  ) : (
-    <Generic content={immediateThoughtContent} />
-  )
+  const componentLastGenericThought =
+    lastActivity?.kind === 'commentary' ? (
+      <Generic content={lastActivity.text} />
+    ) : lastActivity?.kind === 'tool' ? (
+      <Generic
+        content={`${lastActivity.status === 'started' ? 'Running' : 'Finished'} ${lastActivity.name.replaceAll('_', ' ')}`}
+      />
+    ) : isImmediateThinking ? (
+      <div className="flex flex-row items-center gap-2">
+        <CustomIcon name="brain" className="w-6 h-6" />
+        <Generic content="Thinking" />
+      </div>
+    ) : (
+      <Generic content={immediateThoughtContent} />
+    )
 
   const ViewFull = (
     <div

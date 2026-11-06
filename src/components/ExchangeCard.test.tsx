@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { ExchangeCard } from '@src/components/ExchangeCard'
+import { ZOOKEEPER_ACTIVITY_PREFIX } from '@src/lib/zookeeper/activityMessages'
 import { describe, expect, test, vi } from 'vitest'
 
 describe('ExchangeCard replay attachments', () => {
@@ -110,5 +111,44 @@ describe('ExchangeCard replay attachments', () => {
 
     expect(onFetchAttachment).toHaveBeenCalledOnce()
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
+  })
+
+  test('starts completed activity folded while keeping the final answer visible', () => {
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        request={{ type: 'user', content: 'Inspect the project' }}
+        responses={[
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'commentary',
+                  text: 'Checking the project.',
+                }),
+            },
+          },
+          {
+            end_of_stream: {
+              whole_response: 'The project is ready.',
+              started_at: '2026-11-05T10:00:00Z',
+              completed_at: '2026-11-05T10:01:14Z',
+            },
+          },
+        ]}
+        deltasAggregated="The project is ready."
+      />
+    )
+
+    expect(
+      screen.getByRole('button', { name: /Worked for 1m 14s/ })
+    ).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.getByText('The project is ready.')).toBeVisible()
+    expect(screen.queryByText('Checking the project.')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /Worked for 1m 14s/ }))
+    expect(screen.getByText('Checking the project.')).toBeVisible()
   })
 })

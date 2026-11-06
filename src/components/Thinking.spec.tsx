@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
 import { FilesSnapshot, Thinking } from '@src/components/Thinking'
+import { ZOOKEEPER_ACTIVITY_PREFIX } from '@src/lib/zookeeper/activityMessages'
 
 // Mock a small valid PNG image (1x1 transparent pixel)
 const MOCK_PNG_DATA = [
@@ -393,6 +394,91 @@ describe('FilesSnapshot', () => {
 })
 
 describe('Thinking', () => {
+  test('shows commentary and keeps tool details folded as the tool finishes', () => {
+    const activity = (payload: object): MlCopilotServerMessage => ({
+      reasoning: {
+        type: 'markdown',
+        content: ZOOKEEPER_ACTIVITY_PREFIX + JSON.stringify(payload),
+      },
+    })
+    const thoughts: MlCopilotServerMessage[] = [
+      activity({ kind: 'commentary', text: 'Checking the project.' }),
+      {
+        reasoning: {
+          type: 'markdown',
+          content: 'The project contains one KCL file.',
+        },
+      },
+      activity({
+        kind: 'tool',
+        call_id: 'call-1',
+        name: 'read_project_file',
+        status: 'started',
+        arguments: '{"path":"main.kcl"}',
+      }),
+    ]
+    const view = () => (
+      <Thinking
+        thoughts={thoughts}
+        isDone={false}
+        onlyShowImmediateThought={false}
+      />
+    )
+    const { rerender } = render(view())
+
+    expect(screen.getByText('Checking the project.')).toBeVisible()
+    expect(screen.getByText('read project file · Running')).toBeVisible()
+    expect(
+      screen.getByText('Reasoning summary').closest('details')
+    ).not.toHaveAttribute('open')
+
+    thoughts.push(
+      activity({
+        kind: 'tool',
+        call_id: 'call-1',
+        name: 'read_project_file',
+        status: 'completed',
+        output: 'Found main.kcl',
+        ok: true,
+      })
+    )
+    rerender(view())
+
+    const summary = screen.getByText('read project file · Finished')
+    const details = summary.closest('details')
+    expect(details).not.toHaveAttribute('open')
+    fireEvent.click(summary)
+    expect(details).toHaveAttribute('open')
+    expect(screen.getByText('Found main.kcl')).toBeVisible()
+    expect(screen.getAllByText('read project file · Finished')).toHaveLength(1)
+  })
+
+  test('labels unfinished tool activity as stopped after an interrupted turn', () => {
+    render(
+      <Thinking
+        thoughts={[
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'tool',
+                  call_id: 'call-interrupted',
+                  name: 'read_project_file',
+                  status: 'started',
+                }),
+            },
+          },
+        ]}
+        isDone={true}
+        onlyShowImmediateThought={false}
+      />
+    )
+
+    expect(screen.getByText('read project file · Stopped')).toBeVisible()
+  })
+
   test('shows thinking after a tool status when markdown reasoning arrives', () => {
     const thoughts: MlCopilotServerMessage[] = [
       {
