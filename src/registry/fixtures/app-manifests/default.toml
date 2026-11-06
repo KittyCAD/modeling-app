@@ -1,0 +1,7 @@
+# Data-only example. Startup loading is introduced separately.
+schema-version = 1
+base = "zoo:default"
+
+[extensions]
+add = []
+exclude = ["zoo:publish"]
