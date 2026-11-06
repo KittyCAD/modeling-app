@@ -19,7 +19,7 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
-  createEdgeRefObjectExpression,
+  createEdgeRefFromSelection,
   entityReferenceToEdgeRefPayload,
   retrieveEdgeSelectionFromOpValue,
 } from '@src/lang/modifyAst/edges'
@@ -141,7 +141,8 @@ export function addExtrude({
       if (edgeSel.entityRef?.type !== 'edge') continue
       const payload = entityReferenceToEdgeRefPayload(edgeSel.entityRef)
       const originalEdgeSelection = resolveToCodeRef(edgeSel, artifactGraph)
-      const edgeRefResult = createEdgeRefObjectExpression(
+      const edgeRefResult = createEdgeRefFromSelection(
+        edgeSel,
         payload,
         wasmInstance,
         modifiedAst,

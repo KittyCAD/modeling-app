@@ -1161,9 +1161,10 @@ merged = extrude(faceRegion, length = 2)`
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
       expect(newCode).toContain('extrude001 = extrude(')
-      expect(newCode).toContain(
-        'sideFaces = [faceRegion.tags.circle1, capEnd001]'
+      expect(newCode.replace(/\s+/g, '')).toContain(
+        'sideFaces=[merged.sketch.tags.circle1,merged.faces.capEnd001]'
       )
       expect(newCode).toContain(
         'merged = extrude(faceRegion, length = 2, tagEnd = $capEnd001)'
