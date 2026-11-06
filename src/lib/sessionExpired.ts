@@ -41,6 +41,6 @@ export async function fetchWithSessionExpiration(
   init?: RequestInit
 ) {
   const response = await fetch(input, init)
-  notifySessionExpiredFromResponse(response)
+  if (!init?.signal?.aborted) notifySessionExpiredFromResponse(response)
   return response
 }

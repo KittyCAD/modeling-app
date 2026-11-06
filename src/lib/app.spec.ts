@@ -4,13 +4,16 @@ import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import { File } from '@src/lib/projectSession'
 import { App } from '@src/lib/app'
+import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
@@ -26,6 +29,7 @@ import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
@@ -486,13 +490,20 @@ describe('project system', () => {
     try {
       await waitForSettingsIdle(app)
 
-      const library = app.settings.get().app.libraries.current[0]
+      const library = projectLibrariesFromSettings(
+        app.settings.get().app.libraries.current,
+        app.registry.get(projectLibraryTypesValueSpec)
+      )[0]
       expect(library).toBeDefined()
       if (!library) {
         return
       }
 
-      const projectPath = fsZds.join(library.path, 'bracket')
+      const libraryPath =
+        library.type === CLOUD_PROJECT_LIBRARY_TYPE
+          ? await getCloudProjectLibraryMaterializationDirectoryPath(library)
+          : library.path
+      const projectPath = fsZds.join(libraryPath, 'bracket')
       const openedProject = await app.openProject({
         ...mockProject,
         name: 'bracket',
@@ -502,7 +513,7 @@ describe('project system', () => {
 
       expect(openedProject.projectIORefSignal.value).toEqual(
         expect.objectContaining({
-          libraryPath: library.path,
+          libraryPath,
           libraryType: library.type,
         })
       )

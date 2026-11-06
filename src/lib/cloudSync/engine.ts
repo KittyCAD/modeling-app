@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-core'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
+import { getCloudSyncCacheScopeFromPath } from '@src/lib/cloudSync/account'
 import {
   reportCloudSyncConflict,
   reportCloudSyncFailure,
@@ -48,6 +49,7 @@ import {
 import { parseAcknowledgedSyncBase } from '@src/lib/cloudSync/syncBase'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
+  configureCloudSyncDatabase,
   clearLegacyConflictCopyReferences,
   clearOutboxEntriesForProject as clearSyncDbOutboxEntriesForProject,
   clearOutboxEntriesForProjectAtGeneration as clearSyncDbOutboxEntriesForProjectAtGeneration,
@@ -176,6 +178,58 @@ let syncScopeProjectPath: string | undefined
 let syncScopeSyncable = false
 const scheduledProjectDirectoryNameSyncs = new Set<string>()
 const disconnectingProjectPaths = new Set<string>()
+let accountOperationCount = 0
+let pendingAccountConfig: CloudSyncConfig | undefined
+let accountRequests = new AbortController()
+const accountIdleWaiters = new Set<() => void>()
+
+export function getCloudSyncAccountScope() {
+  return pendingAccountConfig
+    ? pendingAccountConfig.cacheScope
+    : config.cacheScope
+}
+
+export function isCloudSyncAccountScopeCurrent(cacheScope: string | undefined) {
+  return !pendingAccountConfig && cacheScope === config.cacheScope
+}
+
+function projectAccountError(projectPath: string) {
+  const cacheScope = getCloudSyncCacheScopeFromPath(projectPath)
+  return cacheScope && cacheScope !== config.cacheScope
+    ? new Error('This project belongs to a different cloud account.')
+    : undefined
+}
+
+/** Keep an account's credentials and database installed until its work drains. */
+export function withCloudSyncAccount<Args extends unknown[], Result>(
+  operation: (...args: Args) => Promise<Result>
+): (...args: Args) => Promise<Result> {
+  return async (...args) => {
+    if (pendingAccountConfig) {
+      return Promise.reject(new Error('Cloud sync account is changing.'))
+    }
+    const signal = config.signal
+    accountOperationCount += 1
+    try {
+      const result = await operation(...args)
+      signal?.throwIfAborted()
+      return result
+    } finally {
+      accountOperationCount -= 1
+      applyPendingAccountConfig()
+    }
+  }
+}
+
+function applyPendingAccountConfig() {
+  if (syncInProgress || accountOperationCount > 0) return
+  for (const resolve of accountIdleWaiters) resolve()
+  accountIdleWaiters.clear()
+  if (!pendingAccountConfig) return
+  const nextConfig = pendingAccountConfig
+  pendingAccountConfig = undefined
+  configureCloudSyncEngine(nextConfig)
+}
 
 /**
  * Per-run throttle for automatic full-library syncs. It spaces project API
@@ -199,6 +253,7 @@ function releaseCloudSyncOperation() {
     resolve()
   }
   syncIdleWaiters.clear()
+  applyPendingAccountConfig()
 }
 
 export const cloudSyncStatus = signal<CloudSyncStatus>({
@@ -389,8 +444,12 @@ async function runCloudSyncProjectApiRequest<T>(
   throttleProjectApiRequest: CloudSyncProjectApiRequestThrottle,
   request: () => Promise<T>
 ) {
+  const signal = config.signal
   await throttleProjectApiRequest()
-  return request()
+  signal?.throwIfAborted()
+  const result = await request()
+  signal?.throwIfAborted()
+  return result
 }
 
 export function shouldScheduleCloudSyncPendingWork({
@@ -1118,8 +1177,17 @@ export function scheduleCloudProjectDirectoryNameSyncFromTitles({
     return
   }
 
+  const cacheScope = config.cacheScope
   queueMicrotask(() => {
-    void (async () => {
+    if (
+      !isCloudSyncAccountScopeCurrent(cacheScope) ||
+      !isConfiguredForCloud()
+    ) {
+      for (const [path] of syncGroups)
+        scheduledProjectDirectoryNameSyncs.delete(path)
+      return
+    }
+    void withCloudSyncAccount(async () => {
       let renamed = false
       const pendingProjectPaths = new Set(
         (await getAllOutboxEntries()).map((entry) =>
@@ -1864,6 +1932,12 @@ export async function ensureCloudProjectLocallySynced(
     ? normalizePathForSync(targetProjectDirectoryPath)
     : undefined
   if (!projectDirectory) {
+    return undefined
+  }
+  if (
+    config.cacheScope &&
+    !getCloudLibraryMaterializationPaths().includes(projectDirectory)
+  ) {
     return undefined
   }
   const knownLocalProjectPath = knownLocalMetadata
@@ -3026,6 +3100,8 @@ async function syncProject(
   entries: OutboxEntry[],
   throttleProjectApiRequest: CloudSyncProjectApiRequestThrottle = unthrottledCloudSyncProjectApiRequest
 ) {
+  const accountError = projectAccountError(projectPath)
+  if (accountError) return Promise.reject(accountError)
   if (disconnectingProjectPaths.has(normalizePathForSync(projectPath))) {
     return
   }
@@ -3431,6 +3507,7 @@ async function syncRemoteIndex(
       )
     }
   })
+  indexConfig.signal?.throwIfAborted()
   const remoteProjectIds = new Set(
     remoteProjects.map((remoteProject) => remoteProject.id).filter(Boolean)
   )
@@ -3843,6 +3920,7 @@ async function runCloudSync() {
 
   try {
     let entries = await getAllOutboxEntries()
+    syncConfig.signal?.throwIfAborted()
     let syncScopePlan = getCloudSyncScopePlanForScope(entries, scopedScope)
     let throttleProjectApiRequest = createCloudSyncProjectApiRequestThrottle({
       enabled: shouldThrottleCloudSyncProjectApiRequests({
@@ -3884,6 +3962,7 @@ async function runCloudSync() {
     }
 
     for (const projectPath of syncScopePlan.projectPaths) {
+      syncConfig.signal?.throwIfAborted()
       await syncProject(
         projectPath,
         outboxEntriesForProject(entries, projectPath),
@@ -3932,6 +4011,7 @@ async function runCloudSync() {
       scheduleSync(SYNC_DEBOUNCE_MS)
     }
   } catch (error) {
+    if (syncConfig.signal?.aborted) return
     const syncedAt = pendingStatusSyncedAt
     const kind = projectFailureKind(error)
     reportCloudSyncFailure('sync', error)
@@ -4029,6 +4109,8 @@ export function setCloudSyncOpenedProject(
  * policy so local-only projects can be opted into cloud sync one at a time.
  */
 export async function startCloudSyncProject(projectPath: string) {
+  const accountError = projectAccountError(projectPath)
+  if (accountError) return Promise.reject(accountError)
   if (!isConfiguredForCloud()) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
     throw new Error('Cloud sync is not enabled.')
@@ -4076,6 +4158,8 @@ export async function startCloudSyncProject(projectPath: string) {
 export async function syncCloudSyncProjectNow(
   projectPath: string
 ): Promise<CloudSyncProjectNowResult> {
+  const accountError = projectAccountError(projectPath)
+  if (accountError) return Promise.reject(accountError)
   if (!isConfiguredForCloud()) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
     throw new Error('Cloud sync is not enabled.')
@@ -4337,7 +4421,11 @@ async function registerProjectMutation(
   sourcePath?: string,
   deletedPaths?: string[]
 ) {
-  if (!isConfiguredForCloud() || isCloudSyncExcludedPath(targetPath)) {
+  if (
+    !isConfiguredForCloud() ||
+    isCloudSyncExcludedPath(targetPath) ||
+    projectAccountError(projectPath)
+  ) {
     return
   }
 
@@ -4545,6 +4633,35 @@ export async function notifyCloudSyncRenameMutation(
 }
 
 export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
+  const requestedConfig = { ...(pendingAccountConfig ?? config), ...nextConfig }
+  if (
+    pendingAccountConfig ||
+    (requestedConfig.cacheScope !== config.cacheScope &&
+      (syncInProgress || accountOperationCount > 0))
+  ) {
+    pendingAccountConfig = requestedConfig
+    accountRequests.abort()
+    applyCloudSyncConfig({ ...config, enabled: false })
+    applyPendingAccountConfig()
+    return
+  }
+
+  if (
+    requestedConfig.cacheScope !== config.cacheScope ||
+    accountRequests.signal.aborted
+  ) {
+    accountRequests.abort()
+    accountRequests = new AbortController()
+    configureCloudSyncDatabase(requestedConfig.cacheScope)
+    cloudSyncRemoteProjects.value = []
+    openedProjectContext = undefined
+    syncScopeProjectPath = undefined
+    syncScopeSyncable = false
+  }
+  applyCloudSyncConfig({ ...requestedConfig, signal: accountRequests.signal })
+}
+
+function applyCloudSyncConfig(nextConfig: CloudSyncConfig) {
   const previousConfig = config
   config = {
     ...config,
@@ -4553,7 +4670,8 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   const cloudIdentityChanged =
     previousConfig.token !== config.token ||
     previousConfig.baseUrl !== config.baseUrl ||
-    previousConfig.environmentName !== config.environmentName
+    previousConfig.environmentName !== config.environmentName ||
+    previousConfig.cacheScope !== config.cacheScope
   const projectDirectoryChanged =
     getCloudLibraryMaterializationConfigKey(previousConfig) !==
     getCloudLibraryMaterializationConfigKey(config)
@@ -4587,6 +4705,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     updateStatus({
       enabled: false,
       state: 'disabled',
+      pendingCount: 0,
       activeProjectPath: undefined,
       scopedProjectPath: undefined,
       scopedProjectCloudProjectId: undefined,
@@ -4633,14 +4752,14 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
  */
 export async function disableCloudSyncEngineForTest() {
   configureCloudSyncEngine({ enabled: false })
-  if (!syncInProgress) {
+  if (!syncInProgress && accountOperationCount === 0) {
     return
   }
 
   await new Promise<void>((resolve) => {
-    syncIdleWaiters.add(resolve)
-    if (!syncInProgress) {
-      syncIdleWaiters.delete(resolve)
+    accountIdleWaiters.add(resolve)
+    if (!syncInProgress && accountOperationCount === 0) {
+      accountIdleWaiters.delete(resolve)
       resolve()
     }
   })

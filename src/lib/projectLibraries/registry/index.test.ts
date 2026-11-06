@@ -4,7 +4,7 @@ import {
   provideService,
   Registry,
 } from '@kittycad/registry'
-import { signal } from '@preact/signals-core'
+import { computed, signal } from '@preact/signals-core'
 import {
   type ProjectLibrarySetting,
   projectLibrariesFromSettings,
@@ -14,6 +14,7 @@ import {
   projectLibraryRealizationsService,
   projectLibraryRealizationsValueSpec,
   projectLibraryTypesValueSpec,
+  type ProjectLibraryTypeContribution,
 } from '@src/registry/contracts/projectLibraries'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
@@ -52,6 +53,81 @@ describe('project library realizations registry service', () => {
     registry = undefined
     vi.restoreAllMocks()
     vi.useRealTimers()
+  })
+
+  it('drops the previous account realizations and rejects a late scan after account changes', async () => {
+    const account = signal('first-account')
+    let finishOld!: (projects: []) => void
+    let oldSignal!: AbortSignal
+    const readRealizations = vi.fn(
+      ({
+        library,
+        signal,
+      }: Parameters<
+        NonNullable<ProjectLibraryTypeContribution['readRealizations']>
+      >[0]) => {
+        if (library.cacheScope === 'first-account') {
+          oldSignal = signal
+          return new Promise<[]>((resolve) => {
+            finishOld = resolve
+          })
+        }
+        return Promise.resolve([
+          {
+            library,
+            localProjectPath: '/second/project',
+            localProjectName: 'project',
+            name: 'Second account project',
+            readWriteAccess: true,
+          },
+        ])
+      }
+    )
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.scoped-libraries',
+        providesServices: [
+          provideService(
+            settingsService,
+            createSettingsService([
+              { type: 'scoped-cloud', title: 'Cloud', path: '/cloud' },
+            ])
+          ),
+        ],
+        provides: [
+          provide(
+            projectLibraryTypesValueSpec,
+            computed(() => ({
+              type: 'scoped-cloud',
+              title: 'Cloud',
+              cacheScope: account.value,
+              readRealizations,
+            }))
+          ),
+        ],
+      }),
+      projectLibrariesExtension,
+    ])
+    registry.get(projectLibraryRealizationsValueSpec)
+    await waitFor(() => expect(readRealizations).toHaveBeenCalledTimes(1))
+    account.value = 'second-account'
+    expect(oldSignal.aborted).toBe(true)
+    expect(registry.get(projectLibraryRealizationsValueSpec)).toEqual([])
+    await waitFor(() =>
+      expect(
+        registry!
+          .get(projectLibraryRealizationsValueSpec)
+          .map((project) => project.name)
+      ).toEqual(['Second account project'])
+    )
+    finishOld([])
+    await Promise.resolve()
+    expect(
+      registry
+        .get(projectLibraryRealizationsValueSpec)
+        .map((project) => project.name)
+    ).toEqual(['Second account project'])
   })
 
   it('refreshes watched libraries and invalidates only the library that changes', async () => {

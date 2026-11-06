@@ -1,5 +1,6 @@
 import { App } from '@src/lib/app'
 import { PATHS } from '@src/lib/paths'
+import { getCloudSyncCacheScope } from '@src/lib/cloudSync/account'
 import { fileLoader } from '@src/lib/routeLoaders'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -31,6 +32,30 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
 describe('fileLoader legacy web bookmarks', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  it('rejects a previous account cache route before project or settings I/O', async () => {
+    const app = new App(App.getDefaultSystems())
+    vi.spyOn(app.registry, 'get').mockReturnValue(
+      new Map([
+        [
+          'cloud',
+          { cacheScope: getCloudSyncCacheScope('second', 'https://api.test') },
+        ],
+      ])
+    )
+    const path = `/cloud/.accounts/${getCloudSyncCacheScope('first', 'https://api.test')}/part/main.kcl`
+    const result = await fileLoader({ app })({
+      request: new Request(
+        `https://app.zoo.dev/file/${encodeURIComponent(path)}`
+      ),
+      params: { id: path },
+      context: undefined,
+      unstable_pattern: '/file/:id',
+    })
+    expect(result).toBeInstanceOf(Response)
+    expect((result as Response).headers.get('Location')).toBe(PATHS.HOME)
+    expect(loadAndValidateSettings).not.toHaveBeenCalled()
   })
 
   it.each(['/browser', '/browser/main.kcl', '/browser/old-project/main.kcl'])(

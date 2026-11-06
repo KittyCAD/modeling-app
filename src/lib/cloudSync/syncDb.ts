@@ -7,6 +7,11 @@ import type {
 } from '@src/lib/cloudSync/types'
 
 const DB_NAME = 'zds-opfs-cloud-sync'
+let databaseName = DB_NAME
+
+export function configureCloudSyncDatabase(cacheScope: string | undefined) {
+  databaseName = cacheScope ? `${DB_NAME}:${cacheScope}` : DB_NAME
+}
 const DB_VERSION = 1
 const PROJECTS_STORE = 'projects'
 const OUTBOX_STORE = 'outbox'
@@ -24,7 +29,7 @@ function openSyncDbUncategorized(): Promise<IDBDatabase> {
       return
     }
 
-    const request = indexedDB.open(DB_NAME, DB_VERSION)
+    const request = indexedDB.open(databaseName, DB_VERSION)
     request.onupgradeneeded = () => {
       const db = request.result
       if (!db.objectStoreNames.contains(PROJECTS_STORE)) {

@@ -4,6 +4,7 @@ import {
   Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import { getCloudSyncCacheScope } from '@src/lib/cloudSync/account'
 
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
@@ -225,6 +226,7 @@ describe('cloud sync extension', () => {
       })
     )
     const token = signal('test-token')
+    const user = signal({ id: 'first-account' })
     const settingsRegistryItem = defineRegistryItem({
       id: 'test.settings',
       providesServices: [
@@ -249,6 +251,7 @@ describe('cloud sync extension', () => {
       providesServices: [
         provideService(authService, {
           token,
+          user,
         } as AuthRegistryService),
       ],
     })
@@ -272,6 +275,10 @@ describe('cloud sync extension', () => {
       expect(cloudSyncMocks.configureCloudSync).toHaveBeenLastCalledWith({
         enabled: true,
         autoEnrollCloudLibraryProjects: true,
+        cacheScope: getCloudSyncCacheScope(
+          'first-account',
+          'https://api.dev.zoo.dev'
+        ),
         token: 'test-token',
         baseUrl: 'https://api.dev.zoo.dev',
         environmentName: 'dev.zoo.dev',
@@ -287,12 +294,29 @@ describe('cloud sync extension', () => {
       )
     })
 
+    user.value = { id: 'second-account' }
+    await vi.waitFor(() => {
+      expect(cloudSyncMocks.configureCloudSync).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          enabled: true,
+          cacheScope: getCloudSyncCacheScope(
+            'second-account',
+            'https://api.dev.zoo.dev'
+          ),
+        })
+      )
+    })
+
     token.value = ''
 
     await vi.waitFor(() => {
       expect(cloudSyncMocks.configureCloudSync).toHaveBeenLastCalledWith({
         enabled: false,
         autoEnrollCloudLibraryProjects: true,
+        cacheScope: getCloudSyncCacheScope(
+          'second-account',
+          'https://api.dev.zoo.dev'
+        ),
         token: '',
         baseUrl: 'https://api.dev.zoo.dev',
         environmentName: 'dev.zoo.dev',

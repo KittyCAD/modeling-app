@@ -77,6 +77,7 @@ function areProjectLibrariesEqual(
         library.id === otherLibrary.id &&
         library.title === otherLibrary.title &&
         library.path === otherLibrary.path &&
+        library.cacheScope === otherLibrary.cacheScope &&
         library.type === otherLibrary.type &&
         library.order === otherLibrary.order
       )
@@ -455,7 +456,10 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         const typeById = libraryTypes.value
         const invalidation = readProjectLibraryRealizationsInvalidation()
         const libraries = currentSettings
-          ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+          ? projectLibrariesFromSettings(
+              currentSettings.app.libraries.current,
+              typeById
+            )
           : []
         const activeLibraryIds = new Set(libraries.map((library) => library.id))
         currentLibraryIds = libraries.map((library) => library.id)

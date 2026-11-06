@@ -6,6 +6,7 @@ import {
   isDefaultPersonalCloudProjectLibraryPathSetting,
   isLegacyPersonalCloudProjectLibraryPathSetting,
   type ProjectLibrarySetting,
+  type ProjectLibrary,
 } from '@src/lib/projectLibraries'
 
 export const INTERNAL_OPFS_META_FILE = '._meta'
@@ -24,13 +25,23 @@ const CLOUD_SYNC_EXCLUDED_PATH_PARTS = new Set([
 ])
 
 export async function getCloudProjectLibraryMaterializationDirectoryPath(
-  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'> &
+    Pick<ProjectLibrary, 'cacheScope'>
 ) {
   if (library.type !== CLOUD_PROJECT_LIBRARY_TYPE) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
     throw new Error('Expected a cloud project library.')
   }
 
+  const root = await getCloudLibraryCacheRoot(library)
+  return library.cacheScope
+    ? fsZds.join(root, '.accounts', library.cacheScope)
+    : root
+}
+
+async function getCloudLibraryCacheRoot(
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+) {
   if (
     isLegacyPersonalCloudProjectLibraryPathSetting(library) ||
     isDefaultPersonalCloudProjectLibraryPathSetting(library)
