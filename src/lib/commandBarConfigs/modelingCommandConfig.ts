@@ -78,7 +78,9 @@ export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLi
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
-type ExtractStorageTypes<T> = T extends { storage?: infer U } ? U : never
+type ExtractStorageTypes<T> = T extends { storage?: infer U }
+  ? NonNullable<U>
+  : never
 type StorageUnion = ExtractStorageTypes<OutputFormat>
 type ExportOptionalArg = 'up' | 'scale'
 
