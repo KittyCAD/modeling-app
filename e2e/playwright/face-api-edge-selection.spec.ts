@@ -55,11 +55,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
   }) => {
     await homePage.goToModelingScene()
     await scene.settled()
-    if ((await editor.getCurrentCode()).trim() !== testCode.trim()) {
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', testCode)
-      )
-    }
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', testCode)
+    )
     await editor.expectEditor.toContain('solid001 = subtract')
 
     // Set camera so that we can select what we need to.
@@ -188,11 +186,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     })
     await homePage.goToModelingScene()
     await scene.settled()
-    if ((await editor.getCurrentCode()).trim() !== testCode.trim()) {
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', testCode)
-      )
-    }
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', testCode)
+    )
     await editor.expectEditor.toContain('solid001 = subtract')
 
     // Set camera position for optimal edge viewing
@@ -245,9 +241,7 @@ hide(sketch001)`
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
-    if ((await editor.getCurrentCode()).trim() !== code.trim()) {
-      await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
-    }
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('surface001 = extrude')
     await editor.closePane()
 
