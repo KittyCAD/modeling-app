@@ -3,6 +3,8 @@ import {
   provideService,
   Registry,
 } from '@kittycad/registry'
+import { signal } from '@preact/signals-core'
+import { ConnectionAvailability } from '@src/lib/engineConnection/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type RustContext from '@src/lib/rustContext'
@@ -29,7 +31,10 @@ function createRegistry() {
     debug,
     defineRegistryItem({
       providesServices: [
-        provideService(engineConnectionService, { manager }),
+        provideService(engineConnectionService, {
+          manager,
+          connectionAvailability: signal(ConnectionAvailability.Unavailable),
+        }),
         provideService(rustContextService, { context }),
       ],
     }),

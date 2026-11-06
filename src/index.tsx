@@ -1,4 +1,3 @@
-import { AppStreamProvider } from '@src/AppState'
 import { Router } from '@src/Router'
 import ReactDOM from 'react-dom/client'
 import toast, { Toaster } from 'react-hot-toast'
@@ -117,30 +116,28 @@ function mountAppToReact(app: App) {
   root.render(
     <AppContext.Provider value={app}>
       <HotkeysProvider>
-        <AppStreamProvider>
-          <Router />
-          <Toaster
-            position="bottom-center"
-            toastOptions={{
-              style: {
-                borderRadius: '3px',
-                maxInlineSize: 'min(480px, 100%)',
+        <Router />
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            style: {
+              borderRadius: '3px',
+              maxInlineSize: 'min(480px, 100%)',
+            },
+            className:
+              'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-sm border-chalkboard-20/50 dark:border-chalkboard-80/50',
+            success: {
+              iconTheme: {
+                primary: 'oklch(89% 0.16 143.4deg)',
+                secondary: 'oklch(48.62% 0.1654 142.5deg)',
               },
-              className:
-                'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-sm border-chalkboard-20/50 dark:border-chalkboard-80/50',
-              success: {
-                iconTheme: {
-                  primary: 'oklch(89% 0.16 143.4deg)',
-                  secondary: 'oklch(48.62% 0.1654 142.5deg)',
-                },
-                // We shouldn't have a different duration in tests than prod, it might
-                // lead to issues.
-                duration: 1500,
-              },
-            }}
-          />
-          <ModalContainer />
-        </AppStreamProvider>
+              // We shouldn't have a different duration in tests than prod, it might
+              // lead to issues.
+              duration: 1500,
+            },
+          }}
+        />
+        <ModalContainer />
       </HotkeysProvider>
     </AppContext.Provider>
   )

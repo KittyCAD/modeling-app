@@ -308,6 +308,8 @@ export type UnreliableResponses = Extract<
 >
 
 export enum EngineConnectionManagerEvents {
+  AvailabilityChanged = 'availability-changed',
+
   // engineConnection is available but scene setup may not have run
   EngineAvailable = 'engine-available',
 
