@@ -3744,10 +3744,6 @@ hole001 = hole::hole(
 })
 
 test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
-  test.use({
-    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG],
-  })
-
   test('Creates a planar surface from a sketch region', async ({
     homePage,
     scene,
@@ -3755,7 +3751,7 @@ test.describe('Point-and-click tests (dialogs)', { tag: '@web' }, () => {
     toolbar,
     modelingDialog,
   }) => {
-    const code = `@settings(experimentalFeatures = allow, kclVersion = 3.0)
+    const code = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
