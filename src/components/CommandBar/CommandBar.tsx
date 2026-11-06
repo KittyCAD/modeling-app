@@ -194,8 +194,7 @@ export const CommandBar = () => {
       <WrapperComponent.Panel
         // The command actor owns visibility, not Popover's toggle state.
         {...(isArgumentThatShouldBeHardToDismiss ? { static: true } : {})}
-        // Keep the old scale transition's compositing layer without animating it.
-        className={`relative z-50 transform-gpu pointer-events-auto w-full ${
+        className={`relative z-50 pointer-events-auto w-full ${
           showsCodemodReview ? 'max-w-3xl' : 'max-w-xl'
         } pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70`}
         as="div"
@@ -239,7 +238,7 @@ export const CommandBar = () => {
           >
             <CustomIcon
               name="close"
-              className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+              className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:bg-destroy-20 dark:group-hover:bg-destroy-70"
             />
             <Tooltip position="bottom">
               Cancel{' '}
