@@ -752,14 +752,15 @@ impl MockConfig {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+#[ts(tag = "type")]
 pub struct TagIdentifier {
     pub value: String,
     // Multi-version representation of info about the tag. Kept ordered. The usize is the epoch at which the info
     // was written.
-    #[serde(skip)]
+    #[ts(skip)]
     pub info: Vec<(usize, TagEngineInfo)>,
-    #[serde(skip)]
+    #[ts(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -863,7 +864,7 @@ impl std::hash::Hash for TagIdentifier {
 }
 
 /// Engine information for a tag.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagEngineInfo {

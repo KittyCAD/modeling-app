@@ -1,3 +1,5 @@
+pub(crate) mod display;
+
 pub use kcl_api::kcl_value_view::*;
 use serde::Serialize;
 
@@ -341,7 +343,7 @@ impl From<KclValue> for KclValueView {
                 }),
             },
             KclValue::SketchConstraint { value } => Self::SketchConstraint {
-                value: json_view(&value),
+                value: json_view(&display::ConstraintView::from(*value)),
             },
             KclValue::Tuple { value, .. } => Self::Tuple {
                 value: value.into_iter().map(Self::from).collect(),
@@ -370,10 +372,10 @@ impl From<KclValue> for KclValueView {
                 value: Box::new(GdtAnnotationView { id: value.id }),
             },
             KclValue::CameraView { value } => Self::CameraView {
-                value: json_view(&value),
+                value: json_view(&display::CameraValueView::from(value.as_ref())),
             },
             KclValue::NamedView { value } => Self::NamedView {
-                value: json_view(&value),
+                value: json_view(&display::NamedValueView::from(value.as_ref())),
             },
             KclValue::Plane { value } => Self::Plane {
                 value: Box::new(plane_view(*value)),
@@ -390,7 +392,7 @@ impl From<KclValue> for KclValueView {
                 },
             },
             KclValue::Segment { value } => Self::Segment {
-                value: json_view(&value),
+                value: json_view(&display::SegmentValueView::from(*value)),
             },
             KclValue::Sketch { value } => Self::Sketch {
                 value: Box::new(sketch_view(*value)),
