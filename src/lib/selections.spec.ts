@@ -2413,7 +2413,7 @@ body = extrude(profile001, length = 5)
     ])
   })
 
-  test('requireEveryFace rejects an in-place Solid2D tag and leaves the original AST unchanged', async () => {
+  test('disallowing AST edits rejects an in-place Solid2D tag and leaves the original AST unchanged', async () => {
     const world = await untaggedSolid2dEdge()
     const before = recast(world.ast, world.instance)
     expect(before).not.toBeInstanceOf(Error)
@@ -2427,7 +2427,7 @@ body = extrude(profile001, length = 5)
       world.segmentCodeRef,
       undefined,
       undefined,
-      { requireEveryFace: true }
+      { requireAllFaces: true, allowAstEdits: false }
     )
     expect(strict).toBeInstanceOf(Error)
     expect(recast(world.ast, world.instance)).toBe(before)
@@ -2446,7 +2446,7 @@ body = extrude(profile001, length = 5)
     expect(recast(world.ast, world.instance)).toBe(before)
   })
 
-  test('requireEveryFace returns an error after an in-place tag when a later face is missing', async () => {
+  test('requiring all faces returns an error after an in-place tag when a later face is missing', async () => {
     const world = await untaggedSolid2dEdge()
     const before = recast(world.ast, world.instance)
     expect(before).not.toBeInstanceOf(Error)
@@ -2463,7 +2463,7 @@ body = extrude(profile001, length = 5)
       world.segmentCodeRef,
       undefined,
       undefined,
-      { requireEveryFace: true }
+      { requireAllFaces: true, allowAstEdits: false }
     )
     expect(strict).toBeInstanceOf(Error)
     expect(recast(world.ast, world.instance)).toBe(before)
