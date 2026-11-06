@@ -57,6 +57,7 @@ import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperCo
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import type * as ScreenshotModule from '@src/lib/screenshot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { ZOOKEEPER_ACTIVITY_PREFIX } from '@src/lib/zookeeper/activityMessages'
 import type {
   Conversation,
   MlCopilotModeId,
@@ -789,7 +790,7 @@ describe('ZookeeperConversation', () => {
     'Manual edits detected since the last Zookeeper state.',
     'Temporary connection issue. Retrying automatically…',
   ])(
-    'keeps reasoning expanded for non-terminal info notices: %s',
+    'keeps activity expanded for non-terminal info notices: %s',
     async (infoText) => {
       const conversation: Conversation = {
         exchanges: [
@@ -856,12 +857,13 @@ describe('ZookeeperConversation', () => {
           screen.getByTestId('ml-response-thinking-view')
         ).toBeInTheDocument()
       })
-      expect(screen.getByText('Collapse')).toBeInTheDocument()
-      expect(screen.queryByText('See reasoning')).not.toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Working for/ })
+      ).toHaveAttribute('aria-expanded', 'true')
     }
   )
 
-  test('preserves active reasoning time when its exchange remounts', () => {
+  test('preserves active working time when its exchange remounts', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-07-15T12:20:00.000Z'))
 
@@ -881,16 +883,97 @@ describe('ZookeeperConversation', () => {
 
     try {
       const { unmount } = renderExchange()
-      expect(screen.getByText('Reasoned for 20 minutes')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Working for 20m 0s' })
+      ).toBeInTheDocument()
       unmount()
 
       vi.setSystemTime(new Date('2026-07-15T12:21:00.000Z'))
       renderExchange()
-      expect(screen.getByText('Reasoned for 21 minutes')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Working for 21m 0s' })
+      ).toBeInTheDocument()
     } finally {
       vi.clearAllTimers()
       vi.useRealTimers()
     }
+  })
+
+  test('follows new activity rows until the reader scrolls away', () => {
+    const activity = (payload: object) => ({
+      reasoning: {
+        type: 'markdown' as const,
+        content: ZOOKEEPER_ACTIVITY_PREFIX + JSON.stringify(payload),
+      },
+    })
+    const responses = [
+      activity({ kind: 'commentary', text: 'Checking the project.' }),
+    ]
+    const conversationProps = {
+      isLoading: false,
+      onProcess: vi.fn(),
+      onClickClearChat: vi.fn(),
+      onReconnect: vi.fn(),
+      onCancel: vi.fn(),
+      needsReconnect: false,
+      contexts: [],
+      disabled: false,
+      hasPromptCompleted: false,
+      isProcessing: true,
+      queue: [],
+      onRemoveFromQueue: vi.fn(),
+      onSteer: vi.fn(),
+    }
+    const renderConversation = (messages: typeof responses) => (
+      <ZookeeperConversation
+        {...conversationProps}
+        conversation={{
+          exchanges: [
+            {
+              request: { type: 'user', content: 'Inspect the project' },
+              responses: messages,
+              deltasAggregated: '',
+            },
+          ],
+        }}
+      />
+    )
+    const { rerender } = render(renderConversation(responses))
+    const scrollPane = screen.getByTestId('zookeeper-conversation-scroll')
+    const scrollTo = vi.fn()
+    Object.defineProperties(scrollPane, {
+      scrollHeight: { configurable: true, value: 1_000 },
+      clientHeight: { configurable: true, value: 200 },
+      scrollTop: { configurable: true, writable: true, value: 800 },
+      scrollTo: { configurable: true, value: scrollTo },
+    })
+    fireEvent.scroll(scrollPane)
+
+    const started = activity({
+      kind: 'tool',
+      call_id: 'call-1',
+      name: 'read_project_file',
+      status: 'started',
+    })
+    rerender(renderConversation([...responses, started]))
+    expect(scrollTo).toHaveBeenCalledWith({ top: 1_000, behavior: 'auto' })
+
+    scrollPane.scrollTop = 0
+    fireEvent.scroll(scrollPane)
+    scrollTo.mockClear()
+    rerender(
+      renderConversation([
+        ...responses,
+        started,
+        activity({
+          kind: 'tool',
+          call_id: 'call-1',
+          name: 'read_project_file',
+          status: 'completed',
+        }),
+      ])
+    )
+    expect(scrollTo).not.toHaveBeenCalled()
   })
 
   test('hides the immediate thought when end_of_stream is followed by another response', () => {

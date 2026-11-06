@@ -560,7 +560,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         />
       )}
       {hasActivity && (
-        <div className="pl-8 flex flex-row items-center justify-start gap-2">
+        <div className="mx-8 flex flex-row items-center justify-start gap-2 border-b border-chalkboard-30 pb-2 dark:border-chalkboard-70">
           <button
             type="button"
             className="flex items-center gap-2 py-1 text-chalkboard-70 dark:text-chalkboard-30"
@@ -568,7 +568,12 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
             onClick={onSeeReasoning}
           >
             {isEndOfStream ? 'Worked' : 'Working'} for {elapsedLabel}
-            <CustomIcon name="collapse" className="w-5 h-5" />
+            <span aria-hidden="true">
+              <CustomIcon
+                name={showFullReasoning ? 'caretUp' : 'caretDown'}
+                className="h-5 w-5"
+              />
+            </span>
           </button>
           {props.isLastResponse && !showFullReasoning && (
             <ExchangeCardStatus

@@ -151,4 +151,61 @@ describe('ExchangeCard replay attachments', () => {
     fireEvent.click(screen.getByRole('button', { name: /Worked for 1m 14s/ }))
     expect(screen.getByText('Checking the project.')).toBeVisible()
   })
+
+  test('shows one flat activity section while a turn is running', () => {
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        request={{ type: 'user', content: 'Inspect the project' }}
+        responses={[
+          { reasoning: { type: 'text', content: 'Reading main.kcl' } },
+          {
+            reasoning: {
+              type: 'markdown',
+              content: 'The project contains one KCL file.',
+            },
+          },
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'commentary',
+                  text: 'Checking the project.',
+                }),
+            },
+          },
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'tool',
+                  call_id: 'call-1',
+                  name: 'read_project_file',
+                  status: 'started',
+                }),
+            },
+          },
+        ]}
+      />
+    )
+
+    expect(screen.getByRole('button', { name: /Working for/ })).toHaveAttribute(
+      'aria-expanded',
+      'true'
+    )
+    expect(screen.getByText('Checking the project.')).toBeVisible()
+    expect(screen.getByText('read project file · Running')).toBeVisible()
+    expect(screen.queryByText('Reading main.kcl')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('The project contains one KCL file.')
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId('ml-response-thinking-view')).not.toHaveClass(
+      'overflow-auto',
+      'border'
+    )
+  })
 })

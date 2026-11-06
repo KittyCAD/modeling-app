@@ -409,6 +409,12 @@ describe('Thinking', () => {
           content: 'The project contains one KCL file.',
         },
       },
+      {
+        reasoning: {
+          type: 'text',
+          content: 'Reading main.kcl',
+        },
+      },
       activity({
         kind: 'tool',
         call_id: 'call-1',
@@ -428,9 +434,14 @@ describe('Thinking', () => {
 
     expect(screen.getByText('Checking the project.')).toBeVisible()
     expect(screen.getByText('read project file · Running')).toBeVisible()
+    expect(screen.queryByText('Reasoning summary')).not.toBeInTheDocument()
     expect(
-      screen.getByText('Reasoning summary').closest('details')
-    ).not.toHaveAttribute('open')
+      screen.queryByText('The project contains one KCL file.')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Reading main.kcl')).not.toBeInTheDocument()
+    const activityView = screen.getByTestId('ml-response-thinking-view')
+    expect(activityView).not.toHaveStyle({ maxHeight: '20lh' })
+    expect(activityView).not.toHaveClass('overflow-auto', 'border', 'shadow-md')
 
     thoughts.push(
       activity({

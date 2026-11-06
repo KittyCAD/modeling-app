@@ -367,6 +367,11 @@ const ToolActivityRow = (props: {
   isDone: boolean
 }) => {
   const label = props.tool.name.replaceAll('_', ' ')
+  const icon = props.tool.name.includes('search')
+    ? 'search'
+    : props.tool.name.includes('file')
+      ? 'file'
+      : 'gear'
   const status =
     props.tool.status === 'started'
       ? props.isDone
@@ -377,11 +382,22 @@ const ToolActivityRow = (props: {
         : 'Finished'
 
   return (
-    <details className="ml-4 border-l border-chalkboard-30 py-2 pl-3 dark:border-chalkboard-70">
-      <summary className="cursor-pointer text-sm text-chalkboard-70 dark:text-chalkboard-30">
-        {label} · {status}
+    <details className="group py-2">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm text-chalkboard-70 dark:text-chalkboard-30 [&::-webkit-details-marker]:hidden">
+        <span aria-hidden="true">
+          <CustomIcon name={icon} className="h-4 w-4 shrink-0" />
+        </span>
+        <span>
+          {label} · {status}
+        </span>
+        <span aria-hidden="true" className="ml-auto">
+          <CustomIcon
+            name="caretDown"
+            className="h-4 w-4 shrink-0 opacity-60 transition-transform group-open:rotate-180"
+          />
+        </span>
       </summary>
-      <div className="mt-2 space-y-2 text-xs">
+      <div className="ml-6 mt-2 space-y-2 text-xs">
         {props.tool.arguments !== undefined && (
           <div>
             <div className="font-semibold">Arguments</div>
@@ -405,17 +421,6 @@ const ToolActivityRow = (props: {
     </details>
   )
 }
-
-const ReasoningSummaryRow = (props: { content: string }) => (
-  <details className="ml-4 border-l border-chalkboard-30 py-2 pl-3 dark:border-chalkboard-70">
-    <summary className="cursor-pointer text-sm text-chalkboard-70 dark:text-chalkboard-30">
-      Reasoning summary
-    </summary>
-    <div className="mt-2 text-sm">
-      <MarkdownText text={props.content} />
-    </div>
-  </details>
-)
 
 export const End = () => {
   return (
@@ -979,6 +984,10 @@ export const Thinking = (
           x.files.files.some((file) => !isExportDownloadFile(file)))
       )
     }) ?? []
+  const activityItems = collectActivityItems(reasoningThoughts)
+  const hasStructuredActivity = activityItems.some(
+    (item) => item.kind !== 'legacy'
+  )
 
   // Resume reasoning autoscroll when a new prompt is sent
   useEffect(() => {
@@ -1011,7 +1020,11 @@ export const Thinking = (
   }, [])
 
   useEffect(() => {
-    if (props.onlyShowImmediateThought === true || userHasManuallyScrolled) {
+    if (
+      hasStructuredActivity ||
+      props.onlyShowImmediateThought === true ||
+      userHasManuallyScrolled
+    ) {
       return
     }
 
@@ -1028,6 +1041,7 @@ export const Thinking = (
       })
     })
   }, [
+    hasStructuredActivity,
     reasoningThoughts.length,
     props.onlyShowImmediateThought,
     userHasManuallyScrolled,
@@ -1041,14 +1055,21 @@ export const Thinking = (
     )
   }
 
-  const activityItems = collectActivityItems(reasoningThoughts)
-  const hasStructuredActivity = activityItems.some(
-    (item) => item.kind !== 'legacy'
-  )
-  const componentThoughts = activityItems.map((item, index) => {
+  // Structured activity replaces the old progress text and model summary.
+  // Retain file and other rich artifacts, and keep old conversations unchanged.
+  const displayedItems = hasStructuredActivity
+    ? activityItems.filter(
+        (item) =>
+          item.kind !== 'legacy' ||
+          !('reasoning' in item.message) ||
+          (item.message.reasoning.type !== 'text' &&
+            item.message.reasoning.type !== 'markdown')
+      )
+    : activityItems
+  const componentThoughts = displayedItems.map((item, index) => {
     if (item.kind === 'commentary') {
       return (
-        <div key={index} className="px-2 py-3 text-sm">
+        <div key={index} className="py-2 text-sm">
           <MarkdownText text={item.text} />
         </div>
       )
@@ -1062,18 +1083,6 @@ export const Thinking = (
         />
       )
     }
-    if (
-      hasStructuredActivity &&
-      'reasoning' in item.message &&
-      item.message.reasoning.type === 'markdown'
-    ) {
-      return (
-        <ReasoningSummaryRow
-          key={index}
-          content={item.message.reasoning.content}
-        />
-      )
-    }
     return fromDataToComponent(item.message, {
       key: index,
       setAnyRowCollapse,
@@ -1083,7 +1092,7 @@ export const Thinking = (
     })
   })
 
-  if (props.isDone) {
+  if (props.isDone && !hasStructuredActivity) {
     componentThoughts.push(<End key={reasoningThoughts.length} />)
   }
 
@@ -1128,16 +1137,24 @@ export const Thinking = (
       data-testid="ml-response-thinking-view"
       ref={refViewFull}
       role="region"
-      style={{ maxHeight: '20lh' }}
-      className={`relative select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`}
-      onScroll={onReasoningScroll}
-      onWheel={onReasoningPaneInteraction}
-      onTouchStart={onReasoningPaneInteraction}
-      onPointerDown={onReasoningPaneInteraction}
-      onKeyDown={onReasoningPaneInteraction}
+      style={hasStructuredActivity ? undefined : { maxHeight: '20lh' }}
+      className={
+        hasStructuredActivity
+          ? 'select-text pl-8 pr-2 pb-2'
+          : `relative select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`
+      }
+      onScroll={hasStructuredActivity ? undefined : onReasoningScroll}
+      onWheel={hasStructuredActivity ? undefined : onReasoningPaneInteraction}
+      onTouchStart={
+        hasStructuredActivity ? undefined : onReasoningPaneInteraction
+      }
+      onPointerDown={
+        hasStructuredActivity ? undefined : onReasoningPaneInteraction
+      }
+      onKeyDown={hasStructuredActivity ? undefined : onReasoningPaneInteraction}
     >
       {componentThoughts.length > 0 ? componentThoughts : <PlaceholderLine />}
-      {anyRowCollapse.length > 0 && (
+      {!hasStructuredActivity && anyRowCollapse.length > 0 && (
         <button
           className="absolute flex justify-center items-center flex-none bottom-8 right-3 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 "
           onClick={collapseAndClearAllRows}
