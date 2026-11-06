@@ -92,9 +92,15 @@ export class IntegerIdPicker {
     sketchLines?: LineTargets
   ) {
     this.clearModel()
-    const createMaterial = (id: number, isSketchRegion = false) => {
+    // All meshes share two materials (with and without the region offset), so
+    // the ID shader is built once, not per face. The ID is set per proxy mesh,
+    // as it is drawn.
+    const pickId = uniform(0, 'uint').onObjectUpdate(
+      ({ object }) => object?.userData.pickId
+    )
+    const createMaterial = (isSketchRegion: boolean) => {
       const material = new NodeMaterial()
-      material.fragmentNode = this.idOutput(uniform(id, 'uint'))
+      material.fragmentNode = this.idOutput(pickId)
       material.side = DoubleSide
       material.blending = NoBlending
       material.toneMapped = false
@@ -108,14 +114,17 @@ export class IntegerIdPicker {
       this.materials.add(material)
       return material
     }
-    const addMesh = (source: Mesh, material: NodeMaterial) => {
+    const meshMaterial = createMaterial(false)
+    const regionMaterial = createMaterial(true)
+    const addMesh = (source: Mesh, id: number) => {
       const proxy = source.clone(false)
-      proxy.material = material
+      proxy.material =
+        source.userData.isSketchRegion === true ? regionMaterial : meshMaterial
+      proxy.userData.pickId = id
       proxy.matrixAutoUpdate = false
       this.sourceByProxy.set(proxy, source)
       this.scene.add(proxy)
     }
-    const occluderMaterial = createMaterial(0)
     const targetSet = new Set(targets)
     // Add "hit blockers" which have ID = 0, they cannot be selected but
     // block objects behind them from being selected.
@@ -130,15 +139,11 @@ export class IntegerIdPicker {
         // already pickable, the next loop will add it, no need to add it twice.
         !targetSet.has(object)
       ) {
-        addMesh(object, occluderMaterial)
+        addMesh(object, 0)
       }
     })
     for (const target of targets) {
-      const id = this.targetById.push(target) - 1
-      addMesh(
-        target,
-        createMaterial(id, target.userData.isSketchRegion === true)
-      )
+      addMesh(target, this.targetById.push(target) - 1)
     }
     if (edges) {
       this.edgeObject = this.addLines(edges)
