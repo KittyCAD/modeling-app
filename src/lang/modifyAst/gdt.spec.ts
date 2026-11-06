@@ -291,7 +291,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $seg02')
       expect(newCode).toContain('tag = $seg03')
       // Should create three separate GDT annotations (one per face)
-      const gdtCalls = newCode.match(/note\d{3} = gdt::flatness/g)
+      const gdtCalls = newCode.match(/annotation\d{3} = gdt::flatness/g)
       expect(gdtCalls).toHaveLength(3)
       // Verify each face has its own annotation
       expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')

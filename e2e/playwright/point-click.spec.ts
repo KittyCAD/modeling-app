@@ -3781,7 +3781,7 @@ annotation001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontS
       exact: true,
     })
     await expect(exceptions).toHaveText('1 sweep')
-    await (await toolbar.getFeatureTreeOperation('Note', 0)).click({
+    await (await toolbar.getFeatureTreeOperation('annotation001', 0)).click({
       modifiers: ['Shift'],
     })
     await expect(exceptions).toHaveText('1 sweep, 1 annotation')
