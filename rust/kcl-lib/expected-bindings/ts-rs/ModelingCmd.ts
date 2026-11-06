@@ -1565,9 +1565,13 @@ edge_id?: string | null,
 edge_reference?: EdgeSpecifier | null, };
 
 /**
- * An edge/vertex can be defined by the faces that it is connected to.
+ * A reference identifying a selectable scene entity.
  */
-export type EntityReference = { "type": "plane", 
+export type EntityReference = { "type": "annotation", 
+/**
+ * Id of the annotation object being referenced.
+ */
+annotation_id: string, } | { "type": "plane", 
 /**
  * Id of the plane being referenced.
  */
@@ -1681,7 +1685,7 @@ opacity: number, };
 /**
  * The type of entity
  */
-export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region" | "patterngroup";
+export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region" | "patterngroup" | "annotation";
 
 /**
  * Export the scene to a file.
