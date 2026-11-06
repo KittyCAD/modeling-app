@@ -26,6 +26,7 @@ pub(crate) const IMPORT_FILE_EXTENSION_FORMATS: &[(&str, &[FileImportFormat])] =
     ("step", &[FileImportFormat::Step]),
     ("stp", &[FileImportFormat::Step]),
     ("stl", &[FileImportFormat::Stl]),
+    ("3dm", &[FileImportFormat::Rhino]),
 ];
 
 fn formats_for_extension(extension: &str) -> Option<&'static [FileImportFormat]> {
