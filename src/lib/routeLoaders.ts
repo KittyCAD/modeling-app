@@ -31,7 +31,8 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { hasProjectShellFeature } from '@src/lib/projectSession/next/feature'
+import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
 import { readProject } from '@src/lib/projectSession/next/utils'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 
@@ -90,7 +91,7 @@ export const baseLoader =
   }
 
 /**
- * Open a local project in the project session on development/staging builds.
+ * Open a local project when the project-shell feature is granted.
  * The route ID identifies the project directory, without opening an editor runtime.
  * Reading assembles the full tree and optional TOML metadata without creating files
  * or applying project settings. Failed or cancelled discovery leaves the selection intact.
@@ -99,7 +100,12 @@ export const baseLoader =
 export const projectLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (routerData) => {
-    if (!IS_STAGING_OR_DEBUG) return redirect(PATHS.HOME)
+    await waitForUserFeaturesSettled(
+      app.userFeatures.actor,
+      undefined,
+      routerData.request.signal
+    )
+    if (!hasProjectShellFeature(app.userFeatures)) return redirect(PATHS.HOME)
 
     const assertCurrent = () => routerData.request.signal.throwIfAborted()
     const fileOperations = app.registry.get(fileOperationsService)

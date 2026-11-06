@@ -1,6 +1,5 @@
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import { PATHS } from '@src/lib/paths'
-import type * as RouteUtils from '@src/routes/utils'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import type {
   HomeProjectActionsService,
@@ -22,16 +21,7 @@ import toast from 'react-hot-toast'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
-const environment = vi.hoisted(() => ({ standaloneProjectsEnabled: true }))
-vi.mock('@src/routes/utils', async (importOriginal) => {
-  const original = await importOriginal<typeof RouteUtils>()
-  return {
-    ...original,
-    get IS_STAGING_OR_DEBUG() {
-      return environment.standaloneProjectsEnabled
-    },
-  }
-})
+const environment = vi.hoisted(() => ({ projectShellEnabled: true }))
 
 const fileOperations = {
   stat: vi.fn().mockResolvedValue({}),
@@ -144,6 +134,7 @@ function renderProjectCard({
   render(
     <BrowserRouter>
       <AppProjectCard
+        projectShellEnabled={environment.projectShellEnabled}
         density={density}
         project={project}
         projectActions={projectActions}
@@ -174,7 +165,7 @@ function submitRenameProject() {
 
 describe('ProjectCard', () => {
   beforeEach(() => {
-    environment.standaloneProjectsEnabled = true
+    environment.projectShellEnabled = true
     vi.clearAllMocks()
     fileOperations.readFile.mockResolvedValue(new Uint8Array())
     createObjectURLMock = vi.fn(() => 'blob:thumbnail')
@@ -892,21 +883,21 @@ describe('ProjectCard', () => {
 
   test.each([
     {
-      name: 'dev/staging Shift-click',
+      name: 'flag-enabled Shift-click',
       enabled: true,
       shiftKey: true,
       local: true,
       standalone: true,
     },
     {
-      name: 'dev/staging normal click',
+      name: 'flag-enabled normal click',
       enabled: true,
       shiftKey: false,
       local: true,
       standalone: false,
     },
     {
-      name: 'production Shift-click',
+      name: 'flag-disabled Shift-click',
       enabled: false,
       shiftKey: true,
       local: true,
@@ -922,7 +913,7 @@ describe('ProjectCard', () => {
   ])(
     '$name uses the expected project route',
     async ({ enabled, shiftKey, local, standalone }) => {
-      environment.standaloneProjectsEnabled = enabled
+      environment.projectShellEnabled = enabled
       window.history.replaceState({}, '', PATHS.HOME)
       const project = {
         ...cloudProject,

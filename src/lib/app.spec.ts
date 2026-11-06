@@ -1,3 +1,4 @@
+import '@src/lib/projectSession/next/testFeature'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import type { Feature } from '@kittycad/lib'

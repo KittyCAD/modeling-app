@@ -60,22 +60,18 @@ export const Router = () => {
               errorElement: <ErrorPage />,
               loader: baseLoader({ app }),
             },
-            ...(IS_STAGING_OR_DEBUG
-              ? [
-                  {
-                    id: PATHS.PROJECT,
-                    path: PATHS.PROJECT.concat('/:id'),
-                    errorElement: <ErrorPage />,
-                    loader: projectLoader({ app }),
-                    element: (
-                      <>
-                        <ProjectRoute />
-                        <CommandBar />
-                      </>
-                    ),
-                  },
-                ]
-              : []),
+            {
+              id: PATHS.PROJECT,
+              path: PATHS.PROJECT.concat('/:id'),
+              errorElement: <ErrorPage />,
+              loader: projectLoader({ app }),
+              element: (
+                <>
+                  <ProjectRoute />
+                  <CommandBar />
+                </>
+              ),
+            },
             {
               loader: fileLoader({
                 app,

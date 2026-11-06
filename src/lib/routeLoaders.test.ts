@@ -5,21 +5,11 @@ import {
   projectLoader,
   parseProjectLoaderId,
 } from '@src/lib/routeLoaders'
-import type * as RouteUtils from '@src/routes/utils'
 import { readProject } from '@src/lib/projectSession/next/utils'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const environment = vi.hoisted(() => ({ projectRouteEnabled: true }))
-vi.mock('@src/routes/utils', async (importOriginal) => {
-  const original = await importOriginal<typeof RouteUtils>()
-  return {
-    ...original,
-    get IS_STAGING_OR_DEBUG() {
-      return environment.projectRouteEnabled
-    },
-  }
-})
 
 // Transitive loader imports reach this wrapper even though redirects never use
 // Wasm. Unit tests run without the generated Wasm JavaScript or binary.
@@ -32,6 +22,13 @@ vi.mock('@src/lib/app', () => ({
       return {}
     }
 
+    userFeatures = {
+      has: () => environment.projectRouteEnabled,
+      actor: {
+        getSnapshot: () => ({ matches: () => true, context: {} }),
+        subscribe: () => ({ unsubscribe: () => {} }),
+      },
+    }
     beginFileRouteLoad = vi.fn(() => vi.fn())
     registry = { get: vi.fn() }
     settings = {
@@ -124,7 +121,7 @@ describe('project loader', () => {
     return { app, openProject, closeProject, data, owner }
   }
 
-  it('redirects production requests before accessing storage or session state', async () => {
+  it('redirects requests without the project-shell flag before accessing storage or session state', async () => {
     const app = new App(App.getDefaultSystems())
     environment.projectRouteEnabled = false
     try {

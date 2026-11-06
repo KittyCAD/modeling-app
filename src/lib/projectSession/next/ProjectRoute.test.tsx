@@ -7,7 +7,7 @@ import { act, cleanup, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const registry = vi.hoisted(() => ({ get: vi.fn() }))
+const registry = vi.hoisted(() => ({ get: vi.fn(), signal: vi.fn() }))
 // No singleton/editor capability is available to this route.
 vi.mock('@src/lib/boot', () => ({ useApp: () => ({ registry }) }))
 
@@ -66,7 +66,7 @@ describe('project screen', () => {
     const first = createSession('First')
     const second = createSession('Second')
     const currentSession = signal<OpenProjectSession | undefined>(first)
-    registry.get.mockReturnValue({ currentSession })
+    registry.signal.mockReturnValue({ value: { currentSession } })
     render(
       <MemoryRouter>
         <ProjectRoute />
