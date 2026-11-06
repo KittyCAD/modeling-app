@@ -459,57 +459,69 @@ sketch001 = sketch(on = face001) {
     })
   }
 
-  test(`Shell inner edge: selection uses engine topology_fallback (primitive index); fillet codegen uses edgeId(solid, index) when the artifact graph lacks wall/cap.`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    toolbar,
-    modelingDialog,
-    editor,
-  }) => {
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, innerShellCode)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Shell inner edge: selection uses engine topology_fallback (primitive index); fillet codegen uses edgeId(solid, index) when the artifact graph lacks wall/cap. ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      toolbar,
+      modelingDialog,
+      editor,
+    }) => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, innerShellCode)
 
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    // Two dumb hardcoded screen ratio values
-    const [clickOnEdge] = scene.makeMouseHelpers(0.5, 0.6, { format: 'ratio' })
-
-    await test.step(`Click a primitive edge and expect the selection to be set to it`, async () => {
-      await clickOnEdge()
-      await expect(toolbar.selectionStatus).toContainText('1 edge')
-    })
-
-    await test.step(`Fillet the selected edge (1mm radius)`, async () => {
-      await scene.moveCameraTo(
-        { x: 11.58, y: -20.49, z: 5.72 },
-        { x: 0, y: -2.6, z: 2.5 }
-      )
-      // await page.pause()
-
-      const [clickEdgeForFillet] = scene.makeMouseHelpers(0.4457, 0.5014, {
-        format: 'ratio',
-      })
-      // const [clickEdgeForFillet] = scene.makeMouseHelpers(830, 412,  {})
-      // const [clickEdgeForFillet] = scene.makeMouseHelpers(828, 420)
-      await clickEdgeForFillet()
-
-      await page.waitForTimeout(100)
-      await toolbar.filletButton.click()
-
-      await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
-      await modelingDialog.input('radius').fill('1')
-
-      await modelingDialog.submit()
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
       await scene.settled()
-      await editor.expectEditor.toContain('fillet')
-      await editor.expectEditor.toContain('radius')
-      await editor.expectEditor.toContain('edgeId')
-      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+
+      if (rendererTag === '@localRenderer') {
+        // Expose the original inner edge, whose midpoint is otherwise occluded.
+        await scene.moveCameraTo(
+          { x: 6.2, y: -18.83, z: 7.77 },
+          { x: 0, y: -2.5, z: 2.5 }
+        )
+      }
+      // Original stream selection resolves to shell topology edge 15.
+      const [clickOnEdge] = await scene.makeSelectionHelpers({
+        kind: 'edge',
+        index: 10,
+        stream: { x: 0.5, y: 0.6, format: 'ratio' },
+      })
+
+      await test.step(`Click a primitive edge and expect the selection to be set to it`, async () => {
+        await clickOnEdge()
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
+      })
+
+      await test.step(`Fillet the selected edge (1mm radius)`, async () => {
+        await scene.moveCameraTo(
+          { x: 11.58, y: -20.49, z: 5.72 },
+          { x: 0, y: -2.6, z: 2.5 }
+        )
+        // Original stream fillet selection resolves to shell topology edge 19.
+        const [clickEdgeForFillet] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 12,
+          stream: { x: 0.4457, y: 0.5014, format: 'ratio' },
+        })
+        await clickEdgeForFillet()
+
+        await page.waitForTimeout(100)
+        await toolbar.filletButton.click()
+
+        await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
+        await modelingDialog.input('radius').fill('1')
+
+        await modelingDialog.submit()
+        await scene.settled()
+        await editor.expectEditor.toContain('fillet')
+        await editor.expectEditor.toContain('radius')
+        await editor.expectEditor.toContain('edgeId')
+        await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+      })
     })
-  })
+  }
 })
