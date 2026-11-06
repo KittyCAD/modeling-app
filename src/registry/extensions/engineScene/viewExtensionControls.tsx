@@ -46,12 +46,10 @@ export function EngineSceneGizmoViewExtension() {
 }
 
 export function SketchBackgroundOpacityViewExtension({
-  sketchSolveStreamDimming,
-  setSketchSolveStreamDimming,
+  sketchSolveDimming,
+  setSketchSolveDimming,
 }: EngineSceneViewExtensionProps) {
-  const streamVisibilityPercent = Math.round(
-    (1 - sketchSolveStreamDimming) * 100
-  )
+  const renderVisibilityPercent = Math.round((1 - sketchSolveDimming) * 100)
 
   return (
     <div className="px-2 py-1 border border-chalkboard-20 dark:border-chalkboard-80 rounded bg-chalkboard-10/80 dark:bg-chalkboard-100/80 backdrop-blur-sm">
@@ -64,10 +62,10 @@ export function SketchBackgroundOpacityViewExtension({
         min="0"
         max="100"
         step="1"
-        value={streamVisibilityPercent}
+        value={renderVisibilityPercent}
         onChange={(event) => {
           const nextVisibilityPercent = Number(event.target.value)
-          setSketchSolveStreamDimming((100 - nextVisibilityPercent) / 100)
+          setSketchSolveDimming((100 - nextVisibilityPercent) / 100)
         }}
         className="w-32 cursor-pointer"
       />

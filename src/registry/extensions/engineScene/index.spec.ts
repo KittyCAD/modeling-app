@@ -106,8 +106,8 @@ function createEngineSceneViewExtensionContext(
   return {
     modelingState: createModelingState(inSketchSolveMode),
     modelingSend: vi.fn(),
-    sketchSolveStreamDimming: 0.3,
-    setSketchSolveStreamDimming: vi.fn(),
+    sketchSolveDimming: 0.3,
+    setSketchSolveDimming: vi.fn(),
   }
 }
 

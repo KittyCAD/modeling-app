@@ -15,10 +15,10 @@ it('removes inactive contributions and their empty zones when context changes', 
       id: 'browser',
       zone: 'left',
       Component: () => <div>Browser</div>,
-      shouldRegister: (context) => context.sketchSolveStreamDimming > 0,
+      shouldRegister: (context) => context.sketchSolveDimming > 0,
     },
   ]
-  const context = { sketchSolveStreamDimming: 1 } as EngineSceneExtensionContext
+  const context = { sketchSolveDimming: 1 } as EngineSceneExtensionContext
   const view = render(
     <EngineSceneViewExtensionOverlay {...context} extensions={extensions} />
   )
@@ -27,7 +27,7 @@ it('removes inactive contributions and their empty zones when context changes', 
   view.rerender(
     <EngineSceneViewExtensionOverlay
       {...context}
-      sketchSolveStreamDimming={0}
+      sketchSolveDimming={0}
       extensions={extensions}
     />
   )
