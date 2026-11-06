@@ -142,7 +142,7 @@ type GpuResources = {
 type RendererSettings = {
   theme: ResolvedTheme
   enableSSAO: boolean
-  highlightEdges: boolean
+  shouldHighlightEdges: boolean
   fixedSizeGrid: boolean
   pickingEnabled: boolean
   defaultPlaneVisibility: PlaneVisibilityMap
@@ -150,7 +150,7 @@ type RendererSettings = {
 export interface LocalRendererProps {
   theme: ResolvedTheme
   enableSSAO: boolean
-  highlightEdges: boolean
+  shouldHighlightEdges: boolean
   fixedSizeGrid: boolean
   backfaceColor: string
   /** isNewModel: the result of a finished execution is now in the scene. */
@@ -207,7 +207,7 @@ export class LocalRenderer {
     this.settings = {
       theme: props.theme,
       enableSSAO: props.enableSSAO,
-      highlightEdges: props.highlightEdges,
+      shouldHighlightEdges: props.shouldHighlightEdges,
       fixedSizeGrid: props.fixedSizeGrid,
       pickingEnabled: false,
       defaultPlaneVisibility: { xy: true, xz: true, yz: true },
@@ -624,14 +624,14 @@ export class LocalRenderer {
     this.invalidateBaseRender()
   }
 
-  setHighlightEdges(highlightEdges: boolean) {
-    if (this.settings.highlightEdges === highlightEdges) {
+  setEdgeHighlighting(shouldHighlightEdges: boolean) {
+    if (this.settings.shouldHighlightEdges === shouldHighlightEdges) {
       return
     }
 
-    this.settings.highlightEdges = highlightEdges
-    this.gpu?.edgeRenderer.setVisible(highlightEdges)
-    this.gpu?.integerIdPicker.setEdgesVisible(highlightEdges)
+    this.settings.shouldHighlightEdges = shouldHighlightEdges
+    this.gpu?.edgeRenderer.setVisible(shouldHighlightEdges)
+    this.gpu?.integerIdPicker.setEdgesVisible(shouldHighlightEdges)
     this.invalidateBaseRender()
   }
 
@@ -1078,18 +1078,18 @@ export class LocalRenderer {
       return
     }
 
-    const { theme, highlightEdges } = this.settings
+    const { theme, shouldHighlightEdges } = this.settings
     // Keep reference planes separate from the GLB and its fit-to-model bounds.
     const planeRenderer = new PlaneRenderer(theme)
     planeRenderer.addTo(scene)
     const integerIdPicker = new IntegerIdPicker(renderer)
-    integerIdPicker.setEdgesVisible(highlightEdges)
+    integerIdPicker.setEdgesVisible(shouldHighlightEdges)
     this.gpu = {
       renderer,
       device: device ?? null,
       scene,
       envMapLoader,
-      edgeRenderer: new EdgeRenderer(highlightEdges),
+      edgeRenderer: new EdgeRenderer(shouldHighlightEdges),
       sketchLineRenderer: new EdgeRenderer(
         true,
         getSketchLineColor(theme),
