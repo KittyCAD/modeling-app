@@ -34,13 +34,19 @@ sketch001 = sketch(on = XZ) {
     // Reproduce the reported sticky-Shift flow: clicking a region can retain
     // the editor's sketch selection, which Extrude Profiles must reject.
     await editor.selectText('sketch(on = XZ)')
-    // The Extrude tooltip can cover the upper part of this region in WebKit.
-    const [selectProfile] = scene.makeMouseHelpers(0.38, 0.6, {
-      format: 'ratio',
+    // Move off the toolbar before holding Shift. Unlike a raw mouse click,
+    // locator actions wait until the canvas receives events at this point.
+    const profilePosition = await scene.streamWrapper.evaluate((element) => {
+      const bounds = element.getBoundingClientRect()
+      return { x: bounds.width * 0.38, y: bounds.height * 0.6 }
     })
+    await scene.streamWrapper.hover({ position: profilePosition })
+    await expect(
+      page.getByRole('tooltip').filter({ hasText: /^Extrude/ })
+    ).toBeHidden()
     await page.keyboard.down('Shift')
     try {
-      await selectProfile()
+      await scene.streamWrapper.click({ position: profilePosition })
       await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
     } finally {
       await page.keyboard.up('Shift')
