@@ -94,6 +94,7 @@ export function SettingsFieldInput({
           )}
           name={`${category}-${settingName}`}
           data-testid={`${category}-${settingName}`}
+          disabled={!setting.isEnabled(context)}
         />
       )
     case 'options':

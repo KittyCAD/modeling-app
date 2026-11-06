@@ -113,6 +113,9 @@ debug = "line-tables-only"
 [patch.crates-io]
 kcl-api = { path = "kcl-api" }
 kcl-error = { path = "kcl-error" }
+# TEMP: the glTF `extras` export option that engine PR 5225 reads, restored by
+# modeling-api #1481. Replace with a release containing it once published.
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "36e8179b9ba7336327372c0b37dd2e58a35eaa99" }
 
 #Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
 # [patch.crates-io]

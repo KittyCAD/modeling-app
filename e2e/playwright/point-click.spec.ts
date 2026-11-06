@@ -15,6 +15,32 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // Restore the camera used when these files were preloaded.
 async function resetView(scene: SceneFixture) {
+  if (test.info().tags.includes('@localRenderer')) {
+    // Keep the isometric framing used by the projected selections.
+    // Plane hiding is deferred after execution. Wait for both the current model
+    // and that visibility update so zoom-to-fit frames the model, not the planes.
+    await expect
+      .poll(
+        () =>
+          scene.page.evaluate(() => {
+            const manager = window.app.singletons.kclManager
+            const view = manager.sceneInfra.localRenderer
+            return (
+              !manager.isExecuting &&
+              view?.isLoadedSceneCurrent() &&
+              !view.hasVisibleDefaultPlanes
+            )
+          }),
+        { timeout: 30_000 }
+      )
+      .toBe(true)
+    await scene.page.evaluate(() =>
+      window.app.singletons.kclManager.sceneInfra.camControls.viewIsometric({
+        padding: 0.1,
+      })
+    )
+    return
+  }
   // The camera may already face this way, so no image change is guaranteed.
   await scene.moveCameraTo({ x: 0, y: -128, z: 64 }, undefined, {
     waitForImageChange: false,
@@ -282,15 +308,16 @@ openSketch = sketch(on = XY) {
     })
   })
 
-  test(`Shift-click to select and deselect faces`, async ({
-    editor,
-    toolbar,
-    page,
-    homePage,
-    scene,
-  }) => {
-    // Code samples
-    const initialCode = `sketch002 = sketch(on = XY) {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Shift-click to select and deselect faces ${rendererTag}`, async ({
+      editor,
+      toolbar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      // Code samples
+      const initialCode = `sketch002 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -303,36 +330,46 @@ hide(sketch002)
 region001 = region(segments = [sketch002.line1, sketch002.line2])
 sketch001 = extrude(region001, length = -12)`
 
-    // Locators
-    const faceLocation = { x: 630, y: 290 }
+      // Locators
+      const faceLocation = { x: 630, y: 290 }
 
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', initialCode)
-      )
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
+      // Setup
+      await test.step(`Initial test setup`, async () => {
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', initialCode)
+        )
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
 
-    // Click helpers
-    const [clickOnFace] = scene.makeMouseHelpers(faceLocation.x, faceLocation.y)
+      // Click helpers
 
-    await test.step('Select the face (Shift-click)', async () => {
-      await page.keyboard.down('Shift')
-      await clickOnFace()
-      await expect(toolbar.selectionStatus).toContainText('1 face')
-      await page.keyboard.up('Shift')
+      await test.step('Select the face (Shift-click)', async () => {
+        await page.keyboard.down('Shift')
+        const [clickOnFace] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 1,
+          stream: { x: faceLocation.x, y: faceLocation.y, format: 'pixels' },
+        })
+        await clickOnFace()
+        await expect(toolbar.selectionStatus).toContainText('1 face')
+        await page.keyboard.up('Shift')
+      })
+      await test.step('Deselect the face (Shift-click)', async () => {
+        await page.keyboard.down('Shift')
+        const [clickOnFace] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 1,
+          stream: { x: faceLocation.x, y: faceLocation.y, format: 'pixels' },
+        })
+        await clickOnFace()
+        await expect(toolbar.selectionStatus).not.toContainText('1 face')
+        await page.keyboard.up('Shift')
+      })
     })
-    await test.step('Deselect the face (Shift-click)', async () => {
-      await page.keyboard.down('Shift')
-      await clickOnFace()
-      await expect(toolbar.selectionStatus).not.toContainText('1 face')
-      await page.keyboard.up('Shift')
-    })
-  })
+  }
 
   test(`Offset plane point-and-click`, async ({
     homePage,
@@ -739,16 +776,17 @@ region001 = region(segments = [sketch001.circle1])`
     })
   })
 
-  test(`Fillet point-and-click`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    // Code samples
-    const initialCode = `sketch001 = sketch(on = XY) {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Fillet point-and-click ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      // Code samples
+      const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -760,166 +798,178 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], radius=5,)`
+      const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
+      const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], radius=5,)`
 
-    // Locators
-    // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
-    const firstEdgeLocation = { x: 600, y: 205 }
-    const [clickOnFirstEdge] = scene.makeMouseHelpers(
-      firstEdgeLocation.x,
-      firstEdgeLocation.y
-    )
-    const secondEdgeLocation = { x: 600, y: 374 }
-    const [clickOnSecondEdge] = scene.makeMouseHelpers(
-      secondEdgeLocation.x,
-      secondEdgeLocation.y
-    )
+      // Locators
+      // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
+      const firstEdgeLocation = { x: 600, y: 205 }
 
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', initialCode)
-      )
-      await resetView(scene)
-    })
+      const secondEdgeLocation = { x: 600, y: 374 }
 
-    // Test 1: Modeling dialog with preselected edges
-    await test.step(`Select first edge`, async () => {
-      await clickOnFirstEdge()
-    })
-
-    await test.step(`Apply fillet to the preselected edge`, async () => {
-      await page.waitForTimeout(100)
-      await editor.closePane()
-      await toolbar.filletButton.click()
-      await modelingDialog.selection('Selection').click()
-
-      await expect(modelingDialog.input('radius')).toHaveText('5')
-
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(firstFilletDeclaration, {
-        shouldNormalise: true,
+      // Setup
+      await test.step(`Initial test setup`, async () => {
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', initialCode)
+        )
+        await resetView(scene)
       })
-    })
 
-    // Test 1.1: Edit fillet (segment type)
-    async function editFillet(
-      featureTreeIndex: number,
-      oldValue: string,
-      newValue: string
-    ) {
-      await scene.settled()
-      // await scene.waitForExecutionDoneAfter(async () =>
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      // )
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'Fillet',
-        featureTreeIndex
-      )
-      await operationButton.dblclick({ button: 'left' })
-      await expect(modelingDialog.input('radius')).toHaveText(oldValue)
-      await modelingDialog.input('radius').fill(newValue)
-
-      // await page.pause()
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-    }
-
-    await test.step('Edit fillet via feature tree selection works', async () => {
-      const firstFilletFeatureTreeIndex = 0
-      const editedRadius = '1'
-      await editFillet(firstFilletFeatureTreeIndex, '5', editedRadius)
-      await editor.expectEditor.toContain(
-        firstFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
-        { shouldNormalise: true }
-      )
-
-      // Edit back to original radius
-      await editFillet(firstFilletFeatureTreeIndex, editedRadius, '5')
-      await editor.expectEditor.toContain(firstFilletDeclaration, {
-        shouldNormalise: true,
+      // Test 1: Modeling dialog with preselected edges
+      await test.step(`Select first edge`, async () => {
+        const [clickOnFirstEdge] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 4,
+          stream: {
+            x: firstEdgeLocation.x,
+            y: firstEdgeLocation.y,
+            format: 'pixels',
+          },
+        })
+        await clickOnFirstEdge()
       })
-    })
 
-    // Test 2: Modeling dialog without preselected edges
-    await test.step(`Open fillet UI without selecting edges`, async () => {
-      await page.waitForTimeout(100)
-      const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
-        format: 'ratio',
+      await test.step(`Apply fillet to the preselected edge`, async () => {
+        await page.waitForTimeout(100)
+        await editor.closePane()
+        await toolbar.filletButton.click()
+        await modelingDialog.selection('Selection').click()
+
+        await expect(modelingDialog.input('radius')).toHaveText('5')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
       })
-      await clearSelection()
-      await page.waitForTimeout(100)
-      await editor.closePane()
-      await toolbar.filletButton.click()
-      await modelingDialog.selection('Selection').click()
-    })
 
-    await test.step(`Select second edge`, async () => {
-      await clickOnSecondEdge()
-    })
-
-    await test.step(`Apply fillet to the second edge`, async () => {
-      await modelingDialog.selection('Selection').click()
-
-      await expect(modelingDialog.input('radius')).toHaveText('5')
-
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(secondFilletDeclaration, {
-        shouldNormalise: true,
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await editor.expectEditor.toContain(firstFilletDeclaration, {
+          shouldNormalise: true,
+        })
       })
-    })
 
-    // Test 2.1: Edit fillet (edgeSweep type)
-    await test.step('Edit fillet via feature tree selection works', async () => {
-      const secondFilletFeatureTreeIndex = 1
-      const editedRadius = '2'
-      await editFillet(secondFilletFeatureTreeIndex, '5', editedRadius)
-      await editor.expectEditor.toContain(
-        secondFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
-        { shouldNormalise: true }
-      )
-
-      // Edit back to original radius
-      await editFillet(secondFilletFeatureTreeIndex, editedRadius, '5')
-      await editor.expectEditor.toContain(secondFilletDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-
-    // Test 3: Delete fillets
-    await test.step('Delete fillet via feature tree selection', async () => {
-      await test.step('Open Feature Tree Pane', async () => {
+      // Test 1.1: Edit fillet (segment type)
+      async function editFillet(
+        featureTreeIndex: number,
+        oldValue: string,
+        newValue: string
+      ) {
+        await scene.settled()
+        // await scene.waitForExecutionDoneAfter(async () =>
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        await page.waitForTimeout(500)
+        // )
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Fillet',
+          featureTreeIndex
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await expect(modelingDialog.input('radius')).toHaveText(oldValue)
+        await modelingDialog.fillInput('radius', newValue)
+
+        // await page.pause()
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      }
+
+      await test.step('Edit fillet via feature tree selection works', async () => {
+        const firstFilletFeatureTreeIndex = 0
+        const editedRadius = '1'
+        await editFillet(firstFilletFeatureTreeIndex, '5', editedRadius)
+        await editor.expectEditor.toContain(
+          firstFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
+          { shouldNormalise: true }
+        )
+
+        // Edit back to original radius
+        await editFillet(firstFilletFeatureTreeIndex, editedRadius, '5')
+        await editor.expectEditor.toContain(firstFilletDeclaration, {
+          shouldNormalise: true,
+        })
       })
-      await test.step('Delete fillet via feature tree selection', async () => {
+
+      // Test 2: Modeling dialog without preselected edges
+      await test.step(`Open fillet UI without selecting edges`, async () => {
+        await page.waitForTimeout(100)
+        const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+          format: 'ratio',
+        })
+        await clearSelection()
+        await page.waitForTimeout(100)
+        await editor.closePane()
+        await toolbar.filletButton.click()
+        await modelingDialog.selection('Selection').click()
+      })
+
+      await test.step(`Select second edge`, async () => {
+        const [clickOnSecondEdge] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 3,
+          stream: {
+            x: secondEdgeLocation.x,
+            y: secondEdgeLocation.y,
+            format: 'pixels',
+          },
+        })
+        await clickOnSecondEdge()
+      })
+
+      await test.step(`Apply fillet to the second edge`, async () => {
+        await modelingDialog.selection('Selection').click()
+
+        await expect(modelingDialog.input('radius')).toHaveText('5')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+      })
+
+      await test.step(`Confirm code is added to the editor`, async () => {
         await editor.expectEditor.toContain(secondFilletDeclaration, {
           shouldNormalise: true,
         })
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'Fillet',
-          1
+      })
+
+      // Test 2.1: Edit fillet (edgeSweep type)
+      await test.step('Edit fillet via feature tree selection works', async () => {
+        const secondFilletFeatureTreeIndex = 1
+        const editedRadius = '2'
+        await editFillet(secondFilletFeatureTreeIndex, '5', editedRadius)
+        await editor.expectEditor.toContain(
+          secondFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
+          { shouldNormalise: true }
         )
-        await operationButton.click({ button: 'left' })
-        await page.keyboard.press('Delete')
-        await page.waitForTimeout(500)
-        await editor.expectEditor.not.toContain(secondFilletDeclaration)
+
+        // Edit back to original radius
+        await editFillet(secondFilletFeatureTreeIndex, editedRadius, '5')
+        await editor.expectEditor.toContain(secondFilletDeclaration, {
+          shouldNormalise: true,
+        })
+      })
+
+      // Test 3: Delete fillets
+      await test.step('Delete fillet via feature tree selection', async () => {
+        await test.step('Open Feature Tree Pane', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+          await page.waitForTimeout(500)
+        })
+        await test.step('Delete fillet via feature tree selection', async () => {
+          await editor.expectEditor.toContain(secondFilletDeclaration, {
+            shouldNormalise: true,
+          })
+          const operationButton = await toolbar.getFeatureTreeOperation(
+            'Fillet',
+            1
+          )
+          await operationButton.click({ button: 'left' })
+          await page.keyboard.press('Delete')
+          await page.waitForTimeout(500)
+          await editor.expectEditor.not.toContain(secondFilletDeclaration)
+        })
       })
     })
-  })
+  }
 
   test(`Fillet point-and-click edit standalone expression`, async ({
     page,
@@ -1245,16 +1295,17 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
     })
   })
 
-  test(`Fillet with large radius should update code even if engine fails`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    // Create a cube with small edges that will cause some fillets to fail
-    const initialCode = `sketch001 = sketch(on = XY) {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Fillet with large radius should update code even if engine fails ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      // Create a cube with small edges that will cause some fillets to fail
+      const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -1mm])
   line2 = line(start = [var 0mm, var -1mm], end = [var -10mm, var -1mm])
   coincident([line1.end, line2.start])
@@ -1268,70 +1319,78 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5)`
-    // Locators
-    // TODO: find a way to select sweepEdges in a different way
-    const edgeLocation = { x: 617, y: 283 }
+      // Locators
+      // TODO: find a way to select sweepEdges in a different way
+      const edgeLocation = { x: 617, y: 283 }
 
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', initialCode)
-      )
-      await resetView(scene)
-    })
-
-    // Test
-    await test.step('Select edges and apply oversized fillet', async () => {
-      await test.step(`Select the edge`, async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        const [clickOnTheEdge] = scene.makeMouseHelpers(
-          edgeLocation.x,
-          edgeLocation.y
+      // Setup
+      await test.step(`Initial test setup`, async () => {
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', initialCode)
         )
-        await clickOnTheEdge()
+        await resetView(scene)
       })
 
-      await test.step(`Apply fillet`, async () => {
-        await page.waitForTimeout(100)
-        await toolbar.filletButton.click()
-        await modelingDialog.selection('Selection').click()
+      // Test
+      await test.step('Select edges and apply oversized fillet', async () => {
+        await test.step(`Select the edge`, async () => {
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
 
-        await expect(modelingDialog.input('radius')).toHaveText('5')
-        // Set a large radius (1000)
-        await modelingDialog.input('radius').fill('1000')
+          const [clickOnTheEdge] = await scene.makeSelectionHelpers({
+            kind: 'edge',
+            index: 3,
+            stream: {
+              x: edgeLocation.x,
+              y: edgeLocation.y,
+              format: 'pixels',
+            },
+          })
+          await clickOnTheEdge()
+        })
 
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        // Apply fillet with large radius
-        await modelingDialog.submit()
+        await test.step(`Apply fillet`, async () => {
+          await page.waitForTimeout(100)
+          await toolbar.filletButton.click()
+          await modelingDialog.selection('Selection').click()
+
+          await expect(modelingDialog.input('radius')).toHaveText('5')
+          // Set a large radius (1000)
+          await modelingDialog.fillInput('radius', '1000')
+
+          await expect(modelingDialog.submitButton).toBeEnabled()
+          // Apply fillet with large radius
+          await modelingDialog.submit()
+        })
+      })
+
+      await test.step('Verify code is updated regardless of execution errors', async () => {
+        const code = await editor.getCurrentCode()
+        const normalizedCode = code.replace(/\s+/g, '')
+
+        expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
+        expect(normalizedCode).toContain(
+          'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
+        )
+        expect(normalizedCode).toContain('radius=1000,')
+        expect(normalizedCode).not.toContain('tags=[')
       })
     })
+  }
 
-    await test.step('Verify code is updated regardless of execution errors', async () => {
-      const code = await editor.getCurrentCode()
-      const normalizedCode = code.replace(/\s+/g, '')
-
-      expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
-      expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
-      )
-      expect(normalizedCode).toContain('radius=1000,')
-      expect(normalizedCode).not.toContain('tags=[')
-    })
-  })
-
-  test(`Chamfer point-and-click`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Chamfer point-and-click ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      // Code samples
+      const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12in, var -6in], end = [var -12in, var 6in])
@@ -1345,168 +1404,182 @@ sketch001 = sketch(on = XY) {
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], length=5,)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], length=5,)`
+      const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], length=5,)`
+      const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], length=5,)`
 
-    // Locators
-    const firstEdgeLocation = { x: 600, y: 205 }
-    const secondEdgeLocation = { x: 600, y: 374 }
+      // Locators
+      const firstEdgeLocation = { x: 600, y: 205 }
+      const secondEdgeLocation = { x: 600, y: 374 }
 
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', initialCode)
-      )
-      await resetView(scene)
-      await editor.closePane()
-    })
-
-    const [clickOnFirstEdge] = scene.makeMouseHelpers(
-      firstEdgeLocation.x,
-      firstEdgeLocation.y
-    )
-    const [clickOnSecondEdge] = scene.makeMouseHelpers(
-      secondEdgeLocation.x,
-      secondEdgeLocation.y
-    )
-
-    // Test 1: Modeling dialog with preselected edges
-    await test.step(`Select first edge`, async () => {
-      await clickOnFirstEdge()
-      await editor.openPane()
-    })
-
-    await test.step(`Apply chamfer to the preselected edge`, async () => {
-      await page.waitForTimeout(100)
-      await toolbar.chamferButton.click()
-      await modelingDialog.selection('Selection').click()
-
-      await page.waitForTimeout(1000)
-      await expect(modelingDialog.input('length')).toHaveText('5')
-
-      await page.waitForTimeout(1000)
-
-      await page.waitForTimeout(1000)
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(firstChamferDeclaration, {
-        shouldNormalise: true,
+      // Setup
+      await test.step(`Initial test setup`, async () => {
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', initialCode)
+        )
+        await resetView(scene)
+        await editor.closePane()
       })
-      await editor.closePane()
-    })
 
-    // Test 1.1: Edit sweep
-    async function editChamfer(
-      operationName: string,
-      oldValue: string,
-      newValue: string
-    ) {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      await page.waitForTimeout(300)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        operationName,
-        0
-      )
-      await operationButton.dblclick({ button: 'left' })
-      await expect(modelingDialog.input('length')).toHaveText(oldValue)
-      await modelingDialog.input('length').fill(newValue)
+      // Test 1: Modeling dialog with preselected edges
+      await test.step(`Select first edge`, async () => {
+        const [clickOnFirstEdge] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 4,
+          stream: {
+            x: firstEdgeLocation.x,
+            y: firstEdgeLocation.y,
+            format: 'pixels',
+          },
+        })
+        await clickOnFirstEdge()
+        await editor.openPane()
+      })
 
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-    }
+      await test.step(`Apply chamfer to the preselected edge`, async () => {
+        await page.waitForTimeout(100)
+        await toolbar.chamferButton.click()
+        await modelingDialog.selection('Selection').click()
 
-    await test.step('Edit chamfer via feature tree selection works', async () => {
-      const editedLength = '1'
-      await editChamfer('chamfer001', '5', editedLength)
-      await editor.expectEditor.toContain(
-        firstChamferDeclaration.replace('length=5', 'length=' + editedLength),
-        { shouldNormalise: true }
-      )
+        await page.waitForTimeout(1000)
+        await expect(modelingDialog.input('length')).toHaveText('5')
 
-      // Edit back to original length
-      await editChamfer('chamfer001', editedLength, '5')
-      await editor.expectEditor.toContain(firstChamferDeclaration, {
-        shouldNormalise: true,
+        await page.waitForTimeout(1000)
+
+        await page.waitForTimeout(1000)
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+      })
+
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await editor.expectEditor.toContain(firstChamferDeclaration, {
+          shouldNormalise: true,
+        })
+        await editor.closePane()
+      })
+
+      // Test 1.1: Edit sweep
+      async function editChamfer(
+        operationName: string,
+        oldValue: string,
+        newValue: string
+      ) {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        await page.waitForTimeout(300)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          operationName,
+          0
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await expect(modelingDialog.input('length')).toHaveText(oldValue)
+        await modelingDialog.fillInput('length', newValue)
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      }
+
+      await test.step('Edit chamfer via feature tree selection works', async () => {
+        const editedLength = '1'
+        await editChamfer('chamfer001', '5', editedLength)
+        await editor.expectEditor.toContain(
+          firstChamferDeclaration.replace('length=5', 'length=' + editedLength),
+          { shouldNormalise: true }
+        )
+
+        // Edit back to original length
+        await editChamfer('chamfer001', editedLength, '5')
+        await editor.expectEditor.toContain(firstChamferDeclaration, {
+          shouldNormalise: true,
+        })
+      })
+
+      // Test 2: Modeling dialog without preselected edges
+      await test.step(`Open chamfer UI without selecting edges`, async () => {
+        // The preceding edit leaves its edge selected; clear it so this exercises
+        // opening Chamfer without a preselection.
+        const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+          format: 'ratio',
+        })
+        await clearSelection()
+        await expect(toolbar.selectionStatus).not.toContainText('edge')
+        await page.waitForTimeout(100)
+        await toolbar.chamferButton.click()
+        await modelingDialog.selection('Selection').click()
+      })
+
+      await test.step(`Select second edge`, async () => {
+        await editor.closePane()
+        const [clickOnSecondEdge] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 3,
+          stream: {
+            x: secondEdgeLocation.x,
+            y: secondEdgeLocation.y,
+            format: 'pixels',
+          },
+        })
+        await clickOnSecondEdge()
+      })
+
+      await test.step(`Apply chamfer to the second edge`, async () => {
+        await modelingDialog.selection('Selection').click()
+        await editor.openPane()
+
+        await expect(modelingDialog.input('length')).toHaveText('5')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+      })
+
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await editor.expectEditor.toContain(secondChamferDeclaration, {
+          shouldNormalise: true,
+        })
+        await editor.closePane()
+      })
+
+      // Test 2.1: Edit chamfer (edgeSweep type)
+      await test.step('Edit chamfer via feature tree selection works', async () => {
+        const editedLength = '2'
+        await editChamfer('chamfer002', '5', editedLength)
+        await editor.expectEditor.toContain(
+          secondChamferDeclaration.replace(
+            'length=5',
+            'length=' + editedLength
+          ),
+          { shouldNormalise: true }
+        )
+
+        // Edit back to original length
+        await editChamfer('chamfer002', editedLength, '5')
+        await editor.expectEditor.toContain(secondChamferDeclaration, {
+          shouldNormalise: true,
+        })
+        await editor.closePane()
+      })
+
+      // Test 3: Delete chamfer via feature tree selection
+      await test.step('Open Feature Tree Pane', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        await page.waitForTimeout(500)
+      })
+      await test.step('Delete chamfer via feature tree selection', async () => {
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'chamfer002',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await editor.expectEditor.not.toContain(secondChamferDeclaration, {
+          shouldNormalise: true,
+        })
       })
     })
-
-    // Test 2: Modeling dialog without preselected edges
-    await test.step(`Open chamfer UI without selecting edges`, async () => {
-      // The preceding edit leaves its edge selected; clear it so this exercises
-      // opening Chamfer without a preselection.
-      const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
-        format: 'ratio',
-      })
-      await clearSelection()
-      await expect(toolbar.selectionStatus).not.toContainText('edge')
-      await page.waitForTimeout(100)
-      await toolbar.chamferButton.click()
-      await modelingDialog.selection('Selection').click()
-    })
-
-    await test.step(`Select second edge`, async () => {
-      await clickOnSecondEdge()
-    })
-
-    await test.step(`Apply chamfer to the second edge`, async () => {
-      await modelingDialog.selection('Selection').click()
-      await editor.openPane()
-
-      await expect(modelingDialog.input('length')).toHaveText('5')
-
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(secondChamferDeclaration, {
-        shouldNormalise: true,
-      })
-      await editor.closePane()
-    })
-
-    // Test 2.1: Edit chamfer (edgeSweep type)
-    await test.step('Edit chamfer via feature tree selection works', async () => {
-      const editedLength = '2'
-      await editChamfer('chamfer002', '5', editedLength)
-      await editor.expectEditor.toContain(
-        secondChamferDeclaration.replace('length=5', 'length=' + editedLength),
-        { shouldNormalise: true }
-      )
-
-      // Edit back to original length
-      await editChamfer('chamfer002', editedLength, '5')
-      await editor.expectEditor.toContain(secondChamferDeclaration, {
-        shouldNormalise: true,
-      })
-      await editor.closePane()
-    })
-
-    // Test 3: Delete chamfer via feature tree selection
-    await test.step('Open Feature Tree Pane', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      await page.waitForTimeout(500)
-    })
-    await test.step('Delete chamfer via feature tree selection', async () => {
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'chamfer002',
-        0
-      )
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await editor.expectEditor.not.toContain(secondChamferDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-  })
+  }
 
   test(`Chamfer point-and-click delete`, async ({
     page,
@@ -1679,15 +1752,16 @@ chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line2, ca
     })
   })
 
-  test(`Shell point-and-click`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = in)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Shell point-and-click ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
@@ -1695,27 +1769,27 @@ sketch001 = sketch(on = XZ) {
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 30)`
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', initialCode)
-    )
-    await resetView(scene)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await resetView(scene)
 
-    // One dumb hardcoded screen pixel value
-    // Any idea here how to select a cap without clicking in the scene?
-    const testPoint = { x: 575, y: 200 }
-    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const shellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
-    const shellDeclaration2 =
-      'shell001 = shell(extrude001, faces = capStart001, thickness = 5)'
-    const secondaryShellFaceDeclaration =
-      'extrude001 = extrude(profile001, length = 500, tagStart = $capStart001)'
-    const editedShellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
-    const secondaryShellCode = `sketch001 = startSketchOn(-XZ)
+      // One dumb hardcoded screen pixel value
+      // Any idea here how to select a cap without clicking in the scene?
+      const testPoint = { x: 575, y: 200 }
+
+      const shellDeclaration =
+        'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
+      const shellDeclaration2 =
+        'shell001 = shell(extrude001, faces = capStart001, thickness = 5)'
+      const secondaryShellFaceDeclaration =
+        'extrude001 = extrude(profile001, length = 500, tagStart = $capStart001)'
+      const editedShellDeclaration =
+        'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
+      const secondaryShellCode = `sketch001 = startSketchOn(-XZ)
 profile001 = startProfile(sketch001, at = [-219, 25])
   |> angledLine(angle = 0deg, length = 488, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 472)
@@ -1723,167 +1797,190 @@ profile001 = startProfile(sketch001, at = [-219, 25])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
 extrude001 = extrude(profile001, length = 500)`
-    const secondaryShellClickPoint = {
-      x: 0.4935,
-      y: 0.5159,
-      format: 'ratio' as const,
-    }
+      const secondaryShellClickPoint = {
+        x: 0.4935,
+        y: 0.5159,
+        format: 'ratio' as const,
+      }
 
-    await test.step(`Fill the modeling dialog without preselected faces`, async () => {
-      await editor.closePane()
-      await toolbar.shellButton.click()
-      await modelingDialog.selection('Faces').click()
-      await clickOnCap()
-      await toolbar.expectSelection('1 face')
+      await test.step(`Fill the modeling dialog without preselected faces`, async () => {
+        await editor.closePane()
+        await toolbar.shellButton.click()
+        await modelingDialog.selection('Faces').click()
+        const [clickOnCap] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 0,
+          stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
+        })
+        await clickOnCap()
+        await toolbar.expectSelection('1 face')
 
-      await expect(modelingDialog.input('thickness')).toHaveText('5')
-      await editor.openPane()
+        await expect(modelingDialog.input('thickness')).toHaveText('5')
+        await editor.openPane()
 
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-    })
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+      })
 
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await scene.settled()
-      await editor.expectEditor.toContain(shellDeclaration)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [shellDeclaration],
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await scene.settled()
+        await editor.expectEditor.toContain(shellDeclaration)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [shellDeclaration],
+        })
+      })
+
+      await test.step('Edit shell via feature tree selection works', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Shell',
+          0
+        )
+        await operationButton.dblclick()
+        await expect(modelingDialog.input('thickness')).toHaveText('5')
+        await modelingDialog.fillInput('thickness', '2')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(editedShellDeclaration)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [editedShellDeclaration],
+        })
+      })
+
+      await test.step('Delete shell via feature tree selection', async () => {
+        await editor.closePane()
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Shell',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await editor.expectEditor.not.toContain(shellDeclaration)
+      })
+      await test.step('Replace modeling code with secondary shell snippet', async () => {
+        await editor.openPane()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', secondaryShellCode)
+        )
+        await editor.closePane()
+      })
+
+      await test.step('Repeat shell flow on secondary code (pause before selecting face)', async () => {
+        await editor.closePane()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.shellButton.click()
+        await modelingDialog.selection('Faces').click()
+
+        const [clickOnDebugCap] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 2,
+          stream: {
+            x: secondaryShellClickPoint.x,
+            y: secondaryShellClickPoint.y,
+            format: secondaryShellClickPoint.format,
+          },
+        })
+        await clickOnDebugCap()
+        await toolbar.expectSelection('1 face')
+
+        await expect(modelingDialog.input('thickness')).toHaveText('5')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+        await scene.settled()
+      })
+
+      await test.step('Confirm secondary shell code exists without diagnostics', async () => {
+        await editor.openPane()
+        await editor.expectEditor.toContain(secondaryShellFaceDeclaration)
+        await editor.expectEditor.toContain(shellDeclaration2)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [shellDeclaration2],
+        })
+        await editor.closePane()
       })
     })
+  }
 
-    await test.step('Edit shell via feature tree selection works', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
-      await operationButton.dblclick()
-      await expect(modelingDialog.input('thickness')).toHaveText('5')
-      await modelingDialog.input('thickness').fill('2')
-
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-      await scene.settled()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(editedShellDeclaration)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [editedShellDeclaration],
-      })
-    })
-
-    await test.step('Delete shell via feature tree selection', async () => {
-      await editor.closePane()
-      const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await editor.expectEditor.not.toContain(shellDeclaration)
-    })
-    await test.step('Replace modeling code with secondary shell snippet', async () => {
-      await editor.openPane()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', secondaryShellCode)
-      )
-      await editor.closePane()
-    })
-
-    await test.step('Repeat shell flow on secondary code (pause before selecting face)', async () => {
-      const [clickOnDebugCap] = scene.makeMouseHelpers(
-        secondaryShellClickPoint.x,
-        secondaryShellClickPoint.y,
-        { format: secondaryShellClickPoint.format ?? undefined }
-      )
-      await editor.closePane()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.shellButton.click()
-      await modelingDialog.selection('Faces').click()
-
-      await clickOnDebugCap()
-      await toolbar.expectSelection('1 face')
-
-      await expect(modelingDialog.input('thickness')).toHaveText('5')
-
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-      await scene.settled()
-    })
-
-    await test.step('Confirm secondary shell code exists without diagnostics', async () => {
-      await editor.openPane()
-      await editor.expectEditor.toContain(secondaryShellFaceDeclaration)
-      await editor.expectEditor.toContain(shellDeclaration2)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [shellDeclaration2],
-      })
-      await editor.closePane()
-    })
-  })
-
-  test(`Delete Face point-and-click`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Delete Face point-and-click ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
 
 sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
 }
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 30)`
-    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', initialCode)
-    )
-    await resetView(scene)
-
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 575, y: 200 }
-    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-
-    await test.step(`Fill the modeling dialog`, async () => {
-      await toolbar.selectSurface('delete-face')
-      await modelingDialog.selection('Faces').click()
-      await clickOnCap()
-      await toolbar.expectSelection('1 face')
-
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
+      const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
+      await homePage.goToModelingScene()
       await scene.settled()
-      await editor.expectEditor.toContain(deleteDeclaration)
-    })
-
-    await test.step('Delete delete face via feature tree selection', async () => {
-      await editor.closePane()
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'surface001',
-        0
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
       )
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await editor.expectEditor.not.toContain(deleteDeclaration)
-    })
-  })
+      await resetView(scene)
 
-  test(`Delete face on a face-API chamfer using its edge-cut tag`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow, kclVersion = "3.0-preview")
+      // One dumb hardcoded screen pixel value
+      const testPoint = { x: 575, y: 200 }
+
+      await test.step(`Fill the modeling dialog`, async () => {
+        await toolbar.selectSurface('delete-face')
+        await modelingDialog.selection('Faces').click()
+        const [clickOnCap] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 0,
+          stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
+        })
+        await clickOnCap()
+        await toolbar.expectSelection('1 face')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+      })
+
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await scene.settled()
+        await editor.expectEditor.toContain(deleteDeclaration)
+      })
+
+      await test.step('Delete delete face via feature tree selection', async () => {
+        await editor.closePane()
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'surface001',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await editor.expectEditor.not.toContain(deleteDeclaration)
+      })
+    })
+  }
+
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Delete face on a face-API chamfer using its edge-cut tag ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [-12in, -6in], end = [-12in, 6in])
@@ -1899,43 +1996,47 @@ chamfer001 = chamfer(
   length = 5in,
 )`
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', initialCode)
-    )
-    await editor.closePane()
-    await scene.moveCameraTo(
-      { x: 573.4, y: -539.4, z: 453.32 },
-      { x: 51.38, y: -17.36, z: -68.74 }
-    )
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.closePane()
+      await scene.moveCameraTo(
+        { x: 573.4, y: -539.4, z: 453.32 },
+        { x: 51.38, y: -17.36, z: -68.74 }
+      )
 
-    const [clickChamferFace] = scene.makeMouseHelpers(0.4948, 0.6468, {
-      format: 'ratio',
+      await toolbar.selectSurface('delete-face')
+      const [clickChamferFace] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 2,
+        stream: { x: 0.4948, y: 0.6468, format: 'ratio' },
+      })
+      await clickChamferFace()
+      await toolbar.expectSelection('1 face')
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+
+      await editor.expectEditor.toContain('tag = $chamferFace01')
+      await editor.expectEditor.toContain(
+        'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
+      )
     })
-    await toolbar.selectSurface('delete-face')
-    await clickChamferFace()
-    await toolbar.expectSelection('1 face')
-    await expect(modelingDialog.submitButton).toBeEnabled()
-    await modelingDialog.submit()
-    await scene.settled()
+  }
 
-    await editor.expectEditor.toContain('tag = $chamferFace01')
-    await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
-    )
-  })
-
-  test(`Delete face on an unmapped multi-selector chamfer face`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Delete face on an unmapped multi-selector chamfer face ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [24, 0])
@@ -1955,43 +2056,47 @@ chamfer001 = chamfer(
 )
 hide(sketch001)`
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', initialCode)
-    )
-    await editor.closePane()
-    await scene.moveCameraTo(
-      { x: 5.72, y: -14.38, z: 26.13 },
-      { x: 12, y: 8, z: 5 }
-    )
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.closePane()
+      await scene.moveCameraTo(
+        { x: 5.72, y: -14.38, z: 26.13 },
+        { x: 12, y: 8, z: 5 }
+      )
 
-    const [clickChamferFace] = scene.makeMouseHelpers(0.5631, 0.5459, {
-      format: 'ratio',
+      await toolbar.selectSurface('delete-face')
+      const [clickChamferFace] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 2,
+        stream: { x: 0.5631, y: 0.5459, format: 'ratio' },
+      })
+      await clickChamferFace()
+      await toolbar.expectSelection('1 face')
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+
+      await editor.expectEditor.toContain('tag = $chamferFace01')
+      await editor.expectEditor.toContain(
+        'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
+      )
     })
-    await toolbar.selectSurface('delete-face')
-    await clickChamferFace()
-    await toolbar.expectSelection('1 face')
-    await expect(modelingDialog.submitButton).toBeEnabled()
-    await modelingDialog.submit()
-    await scene.settled()
+  }
 
-    await editor.expectEditor.toContain('tag = $chamferFace01')
-    await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
-    )
-  })
-
-  test(`Delete face on an unmapped chained fillet face`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Delete face on an unmapped chained fillet face ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [30, 0])
@@ -2013,33 +2118,36 @@ fillet001 = fillet(
 )
 hide(sketch001)`
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', initialCode)
-    )
-    await editor.closePane()
-    await scene.moveCameraTo(
-      { x: 39.68, y: -7.24, z: 19.4 },
-      { x: 15, y: 10, z: 6 }
-    )
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.closePane()
+      await scene.moveCameraTo(
+        { x: 39.68, y: -7.24, z: 19.4 },
+        { x: 15, y: 10, z: 6 }
+      )
 
-    const [clickFilletFace] = scene.makeMouseHelpers(0.6532, 0.4954, {
-      format: 'ratio',
+      await toolbar.selectSurface('delete-face')
+      const [clickFilletFace] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 4,
+        stream: { x: 0.6532, y: 0.4954, format: 'ratio' },
+      })
+      await clickFilletFace()
+      await toolbar.expectSelection('1 face')
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+
+      await editor.expectEditor.toContain('tag = $filletFace01')
+      await editor.expectEditor.toContain(
+        'surface001 = deleteFace(fillet001, faces = filletFace01)'
+      )
     })
-    await toolbar.selectSurface('delete-face')
-    await clickFilletFace()
-    await toolbar.expectSelection('1 face')
-    await expect(modelingDialog.submitButton).toBeEnabled()
-    await modelingDialog.submit()
-    await scene.settled()
-
-    await editor.expectEditor.toContain('tag = $filletFace01')
-    await editor.expectEditor.toContain(
-      'surface001 = deleteFace(fillet001, faces = filletFace01)'
-    )
-  })
+  }
 
   test('Revolve point-and-click', async ({
     page,
@@ -3232,15 +3340,16 @@ extrude001 = extrude(region001, length = 30)`
     })
   })
 
-  test('Hole point-and-click', async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    const initialCode = `sketch001 = sketch(on = XZ) {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Hole point-and-click ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -5mm, var -5mm], end = [var 5mm, var -5mm])
   line2 = line(start = [var 5mm, var -5mm], end = [var 5mm, var 5mm])
   coincident([line1.end, line2.start])
@@ -3251,53 +3360,60 @@ extrude001 = extrude(region001, length = 30)`
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 10)`
-    await test.step('Settle the scene', async () => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', initialCode)
-      )
-      await resetView(scene)
+      await test.step('Settle the scene', async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', initialCode)
+        )
+        await resetView(scene)
 
-      // Close panes to ensure toolbar buttons are visible
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
+        // Close panes to ensure toolbar buttons are visible
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
 
-    await test.step('Add the hole through the command flow', async () => {
-      await toolbar.holeButton.click()
-      const testPoint = { x: 600, y: 250 }
-      const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-      await modelingDialog.selection('Face').click()
-      await clickOnCap()
-      await toolbar.expectSelection('1 face')
+      await test.step('Add the hole through the command flow', async () => {
+        await toolbar.holeButton.click()
+        const testPoint = { x: 600, y: 250 }
 
-      await expect(modelingDialog.input('cut at')).toHaveText('[0, 0]')
+        await modelingDialog.selection('Face').click()
+        const [clickOnCap] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 2,
+          stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
+        })
+        await clickOnCap()
+        await toolbar.expectSelection('1 face')
 
-      await expect(modelingDialog.options('hole body')).toBeVisible()
-      await modelingDialog.options('hole body').selectOption({ label: 'Blind' })
-      await expect(modelingDialog.input('blind depth')).toHaveText('2')
+        await expect(modelingDialog.input('cut at')).toHaveText('[0, 0]')
 
-      await expect(modelingDialog.input('blind diameter')).toHaveText('1')
+        await expect(modelingDialog.options('hole body')).toBeVisible()
+        await modelingDialog
+          .options('hole body')
+          .selectOption({ label: 'Blind' })
+        await expect(modelingDialog.input('blind depth')).toHaveText('2')
 
-      await expect(modelingDialog.options('hole type')).toBeVisible()
-      await modelingDialog
-        .options('hole type')
-        .selectOption({ label: 'Simple' })
-      await expect(modelingDialog.options('hole bottom')).toBeVisible()
-      await modelingDialog
-        .options('hole bottom')
-        .selectOption({ label: 'Flat' })
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-    })
+        await expect(modelingDialog.input('blind diameter')).toHaveText('1')
 
-    await test.step('Expect hole call added to the editor', async () => {
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `extrude001 = extrude(region001, length = 10, tagEnd = $capEnd001)
+        await expect(modelingDialog.options('hole type')).toBeVisible()
+        await modelingDialog
+          .options('hole type')
+          .selectOption({ label: 'Simple' })
+        await expect(modelingDialog.options('hole bottom')).toBeVisible()
+        await modelingDialog
+          .options('hole bottom')
+          .selectOption({ label: 'Flat' })
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+      })
+
+      await test.step('Expect hole call added to the editor', async () => {
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `extrude001 = extrude(region001, length = 10, tagEnd = $capEnd001)
 hole001 = hole::hole(
   extrude001,
   face = capEnd001,
@@ -3306,42 +3422,42 @@ hole001 = hole::hole(
   holeBody = hole::blind(depth = 2, diameter = 1),
   holeType = hole::simple(),
 )`,
-        { shouldNormalise: true }
-      )
-    })
+          { shouldNormalise: true }
+        )
+      })
 
-    await test.step('Edit the hole from the feature-tree', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const holeOperation = await toolbar.getFeatureTreeOperation('Hole', 0)
-      await holeOperation.dblclick()
-      await expect(modelingDialog.submitButton).toBeEnabled()
+      await test.step('Edit the hole from the feature-tree', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const holeOperation = await toolbar.getFeatureTreeOperation('Hole', 0)
+        await holeOperation.dblclick()
+        await expect(modelingDialog.submitButton).toBeEnabled()
 
-      await expect(modelingDialog.input('cut at')).toHaveText('[0, 0]')
-      // Update cut at from [0, 0] to [2, 2]
-      await modelingDialog.input('cut at').fill('[2, 2]')
+        await expect(modelingDialog.input('cut at')).toHaveText('[0, 0]')
+        // Update cut at from [0, 0] to [2, 2]
+        await modelingDialog.fillInput('cut at', '[2, 2]')
 
-      await expect(modelingDialog.submitButton).toBeEnabled()
+        await expect(modelingDialog.submitButton).toBeEnabled()
 
-      await expect(modelingDialog.options('hole type')).toBeVisible()
-      await modelingDialog
-        .options('hole type')
-        .selectOption({ label: 'Countersink' })
-      await expect(modelingDialog.input('countersink angle')).toBeVisible()
-      await modelingDialog.input('countersink angle').fill('80deg')
+        await expect(modelingDialog.options('hole type')).toBeVisible()
+        await modelingDialog
+          .options('hole type')
+          .selectOption({ label: 'Countersink' })
+        await expect(modelingDialog.input('countersink angle')).toBeVisible()
+        await modelingDialog.fillInput('countersink angle', '80deg')
 
-      await expect(modelingDialog.input('countersink diameter')).toBeVisible()
-      await modelingDialog.input('countersink diameter').fill('3')
+        await expect(modelingDialog.input('countersink diameter')).toBeVisible()
+        await modelingDialog.fillInput('countersink diameter', '3')
 
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-    })
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+      })
 
-    await test.step('Expect hole call updated in the editor', async () => {
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `hole001 = hole::hole(
+      await test.step('Expect hole call updated in the editor', async () => {
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `hole001 = hole::hole(
   extrude001,
   face = capEnd001,
   cutAt = [2, 2],
@@ -3349,10 +3465,11 @@ hole001 = hole::hole(
   holeBody =   hole::blind(depth = 2, diameter = 1),
   holeType =   hole::countersink(angle = 80deg, diameter = 3),
 )`,
-        { shouldNormalise: true }
-      )
+          { shouldNormalise: true }
+        )
+      })
     })
-  })
+  }
 
   test('Helical gear point-and-click with edit and delete', async ({
     page,
