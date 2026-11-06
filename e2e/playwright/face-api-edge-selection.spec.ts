@@ -86,6 +86,10 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await scene.settled()
 
       await toolbar.expectSelection('No selection')
+      await expect(modelingDialog.selection('Profiles')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
       await clickProfile()
       await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
 
@@ -131,6 +135,10 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await scene.settled()
 
       await toolbar.expectSelection('1 edge')
+      await expect(modelingDialog.selection('Profiles')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
       await clickProfile2()
       await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
       await page.waitForTimeout(500)
