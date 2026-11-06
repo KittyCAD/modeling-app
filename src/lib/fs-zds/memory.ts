@@ -167,8 +167,41 @@ export function createMemoryFileSystem(
     rm,
     cp,
     rename: async (source, destination) => {
-      await cp(source, destination, { recursive: true, force: false })
-      await rm(source, { recursive: true })
+      source = key(source)
+      destination = key(destination)
+      const entry = get(source)
+      if (source === destination) return
+      const prefix = source.endsWith(paths.sep)
+        ? source
+        : `${source}${paths.sep}`
+      if (destination.startsWith(prefix))
+        return Promise.reject(error('EINVAL', destination))
+      if (get(paths.dirname(destination)).data)
+        return Promise.reject(error('ENOTDIR', paths.dirname(destination)))
+      const target = entries.get(destination)
+      if (target) {
+        if (entry.data && !target.data)
+          return Promise.reject(error('EISDIR', destination))
+        if (!entry.data && target.data)
+          return Promise.reject(error('ENOTDIR', destination))
+        if (!target.data && children(destination).length)
+          return Promise.reject(error('ENOTEMPTY', destination))
+      }
+
+      // Check every collision before moving entries synchronously. Rename retains
+      // inode identity and never exposes a partially copied or removed subtree.
+      const moved = [...entries].filter(
+        ([path]) => path === source || path.startsWith(prefix)
+      )
+      entries.delete(destination)
+      for (const [path] of moved) entries.delete(path)
+      for (const [path, value] of moved)
+        entries.set(
+          path === source
+            ? destination
+            : paths.join(destination, paths.relative(source, path)),
+          value
+        )
     },
     readdir: async (path) => {
       if (get(path).data) return Promise.reject(error('ENOTDIR', path))
