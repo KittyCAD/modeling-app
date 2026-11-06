@@ -1207,6 +1207,8 @@ export const valueOrVariable = (variable: KclCommandValue) => {
  */
 export function getEntityRefId(entityRef: EntityReference): string | undefined {
   switch (entityRef.type) {
+    case 'annotation':
+      return entityRef.annotation_id
     case 'plane':
       return entityRef.plane_id
     case 'face':
@@ -1241,6 +1243,8 @@ function sortedIds(ids: readonly string[] | undefined): string {
  */
 export function entityReferenceKey(entityRef: EntityReference): string | null {
   switch (entityRef.type) {
+    case 'annotation':
+      return `annotation:${entityRef.annotation_id}`
     case 'plane':
       return `plane:${entityRef.plane_id}`
     case 'face':

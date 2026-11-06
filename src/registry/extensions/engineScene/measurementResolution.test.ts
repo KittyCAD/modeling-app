@@ -23,6 +23,20 @@ function response(id: string) {
 }
 
 describe('topology measurement regressions', () => {
+  it('does not measure an annotation as its engine entity', () => {
+    expect(
+      getMeasurementEntities({
+        graphSelections: [
+          {
+            entityRef: { type: 'annotation', annotation_id: 'annotation' },
+            engineEntityId: 'annotation',
+          },
+        ],
+        otherSelections: [],
+      })
+    ).toEqual([])
+  })
+
   it('resolves pump edge index 10, independently of adjacent faces and reference index', async () => {
     const selected: Selections = {
       graphSelections: [

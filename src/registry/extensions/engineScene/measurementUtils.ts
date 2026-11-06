@@ -175,6 +175,9 @@ function getEntitiesForGraphSelection(
   const reference = selection.entityRef
   if (reference) {
     switch (reference.type) {
+      case 'annotation':
+        // An annotation is selectable, but is not measurable geometry.
+        return []
       case 'edge': {
         const id =
           selection.engineEntityId ??
