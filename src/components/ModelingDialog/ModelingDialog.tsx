@@ -10,6 +10,7 @@ import {
 } from '@src/components/CommandBar/CommandKclInput'
 import { CommandCameraInput } from '@src/components/CommandBar/CommandCameraInput'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { getDefaultOptionIndex } from '@src/components/ModelingDialog/defaults'
 import { ErrorBanner } from '@src/components/ErrorBanner'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
@@ -68,6 +69,7 @@ export default function ModelingDialog({
   // Restore focus to the corresponding field after removing a selection.
   const selectionInputs = useRef(new Map<string, HTMLButtonElement>())
   const initialContext = useRef(state.context)
+  const editedOptions = useRef(new Set<string>())
   const fields = getDialogFields({
     ...state.context,
     argumentsToSubmit: { ...state.context.argumentsToSubmit, ...values },
@@ -173,7 +175,8 @@ export default function ModelingDialog({
         selection.draft,
         kclManager.rustContext,
         kclManager.astSignal.value,
-        kclManager.artifactGraph
+        kclManager.artifactGraph,
+        editedOptions.current
       )
       if (!isCurrent()) return
       if (isErr(resolved)) {
@@ -363,37 +366,59 @@ export default function ModelingDialog({
             : typeof arg.options === 'function'
               ? arg.options(context, machineContext)
               : arg.options
-        const index = choices.findIndex((choice) => choice.value === value)
+        const defaultIndex = required ? -1 : getDefaultOptionIndex(arg, choices)
+        const index =
+          value === undefined
+            ? defaultIndex
+            : choices.findIndex((choice) => choice.value === value)
+        const isDefault = defaultIndex >= 0 && index === defaultIndex
+        const defaultDescriptionId = isDefault
+          ? `${fieldId}-default`
+          : undefined
         return (
           <div key={name} className="flex flex-col gap-1">
             {fieldLabel}
-            <select
-              id={fieldId}
-              autoFocus={name === firstFieldName}
-              className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
-              value={index < 0 ? '' : String(index)}
-              onChange={(event) =>
-                save(
-                  name,
-                  event.target.value === ''
-                    ? undefined
-                    : choices[Number(event.target.value)]?.value
-                )
-              }
-            >
-              <option value="" disabled={required}>
-                {required ? 'Select an option' : 'Optional'}
-              </option>
-              {choices.map((choice, index) => (
-                <option
-                  key={choice.name}
-                  value={index}
-                  disabled={'disabled' in choice && choice.disabled}
+            <div className="relative">
+              <select
+                id={fieldId}
+                aria-describedby={defaultDescriptionId}
+                autoFocus={name === firstFieldName}
+                className={`w-full rounded-sm border border-chalkboard-30 bg-transparent pl-2 py-1 text-xs dark:border-chalkboard-70 ${isDefault ? 'pr-20' : 'pr-2'} ${isDefault && value === undefined ? 'text-chalkboard-70 dark:text-chalkboard-40' : ''}`}
+                value={index < 0 ? '' : String(index)}
+                onChange={(event) => {
+                  editedOptions.current.add(name)
+                  save(
+                    name,
+                    event.target.value === ''
+                      ? undefined
+                      : choices[Number(event.target.value)]?.value
+                  )
+                }}
+              >
+                {defaultIndex < 0 && (
+                  <option value="" disabled={required}>
+                    {required ? 'Select an option' : 'Optional'}
+                  </option>
+                )}
+                {choices.map((choice, index) => (
+                  <option
+                    key={choice.name}
+                    value={index}
+                    disabled={'disabled' in choice && choice.disabled}
+                  >
+                    {choice.name}
+                  </option>
+                ))}
+              </select>
+              {isDefault && (
+                <span
+                  id={defaultDescriptionId}
+                  className="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 text-[10px] text-chalkboard-70 dark:text-chalkboard-40"
                 >
-                  {choice.name}
-                </option>
-              ))}
-            </select>
+                  default
+                </span>
+              )}
+            </div>
             {description}
           </div>
         )

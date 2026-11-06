@@ -59,6 +59,7 @@ const commandBarConfig = {
         inputType: 'string',
         required: false,
         documentation: 'Reference documentation.',
+        kclDefault: 'example',
       },
       experimentalArg: {
         inputType: 'string',
@@ -251,6 +252,7 @@ describe('createMachineCommand', () => {
           hidden: undefined,
           documentation:
             commandBarConfig.WithArguments.args.availableArg.documentation,
+          kclDefault: 'example',
         },
         deprecatedArg: {
           hidden: undefined,

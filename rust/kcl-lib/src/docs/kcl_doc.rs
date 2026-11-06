@@ -20,6 +20,7 @@ use crate::ModuleId;
 use crate::execution::annotations;
 use crate::execution::annotations::VersionConstraint;
 use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ImportSelector;
 use crate::parsing::ast::types::ItemVisibility;
@@ -407,6 +408,8 @@ pub struct ConstData {
     /// The fully qualified name.
     pub qual_name: String,
     pub value: Option<String>,
+    /// Literal value, including constants with an explicit type annotation.
+    pub literal_value: Option<LiteralValue>,
     pub ty: Option<String>,
     pub properties: Properties,
 
@@ -450,12 +453,21 @@ impl ConstData {
         };
 
         let name = var.declaration.id.name.clone();
+        let mut initializer = &var.declaration.init;
+        while let Expr::AscribedExpression(expr) = initializer {
+            initializer = &expr.expr;
+        }
+        let literal_value = match initializer {
+            Expr::Literal(literal) => Some(literal.value.clone()),
+            _ => None,
+        };
         qual_name.push_str(&name);
         ConstData {
             preferred_name: format!("{preferred_prefix}{name}"),
             name,
             qual_name,
             value,
+            literal_value,
             // TODO use type decl when we have them.
             ty,
             properties: Properties {
@@ -910,6 +922,8 @@ pub struct ArgData {
     pub ty: Option<String>,
     /// If the argument is required.
     pub kind: ArgKind,
+    /// A literal default declared in KCL, excluding implicit `none`.
+    pub default_value: Option<LiteralValue>,
     pub override_in_snippet: Option<bool>,
     /// Additional information that could be used instead of the type's description.
     /// This is helpful if the type is really basic, like "number" -- that won't tell the user much about
@@ -945,7 +959,6 @@ impl fmt::Display for ArgData {
 pub enum ArgKind {
     Special,
     // Parameter is whether the arg is optional.
-    // TODO should store default value if present
     Labelled(bool),
 }
 
@@ -962,6 +975,10 @@ impl ArgData {
                 ArgKind::Labelled(arg.optional())
             } else {
                 ArgKind::Special
+            },
+            default_value: match &arg.default_value {
+                Some(DefaultParamVal::Literal(literal)) => Some(literal.value.clone()),
+                _ => None,
             },
             added_in: arg.added_in.clone(),
             deprecated: arg.deprecated,
