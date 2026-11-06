@@ -94,7 +94,7 @@ export class IntegerIdPicker {
     this.clearModel()
     const createMaterial = (id: number, isSketchRegion = false) => {
       const material = new NodeMaterial()
-      material.fragmentNode = this.idOutput(uint(id))
+      material.fragmentNode = this.idOutput(uniform(id, 'uint'))
       material.side = DoubleSide
       material.blending = NoBlending
       material.toneMapped = false
