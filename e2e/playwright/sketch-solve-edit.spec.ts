@@ -2111,152 +2111,163 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   const squareInches = withDefaultLengthUnitInches(square)
 
-  test('can extrude sketch regions', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    modelingDialog,
-    editor,
-    toolbar,
-  }) => {
-    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
-      format: 'ratio',
-    })
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`can extrude sketch regions ${rendererTag}`, async ({
+      page,
+      context,
+      homePage,
+      scene,
+      modelingDialog,
+      editor,
+      toolbar,
+    }) => {
+      await test.step('Set up scene with a closed sketch block', async () => {
+        await context.addInitScript(async (square) => {
+          localStorage.setItem('persistCode', square)
+        }, square)
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
+      })
 
-    await test.step('Set up scene with a closed sketch block', async () => {
-      await context.addInitScript(async (square) => {
-        localStorage.setItem('persistCode', square)
-      }, square)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
-    })
+      await test.step('Extrude region by clicking center', async () => {
+        // Keep the region clear of the modeling dialog on narrow scene panes.
+        await editor.closePane()
+        await toolbar.extrudeButton.click()
+        const [clickCenter] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 0,
+          stream: { x: 0.5, y: 0.5, format: 'ratio' },
+        })
+        await clickCenter()
+        await expect(modelingDialog.selection('Profiles')).toHaveText(
+          '1 region'
+        )
+        await modelingDialog.selection('Profiles').click()
 
-    await test.step('Extrude region by clicking center', async () => {
-      await toolbar.extrudeButton.click()
-      await clickCenter()
-      await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
-      await modelingDialog.selection('Profiles').click()
+        await expect(modelingDialog.input('length')).toHaveText('5')
 
-      await expect(modelingDialog.input('length')).toHaveText('5')
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+      })
 
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-    })
+      await test.step('Expect extrusion', async () => {
+        await scene.settled()
+        await editor.openPane()
+        await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
+        await editor.expectEditor.toContain(
+          'region(segments = [sketch001.line4, sketch001.line1])'
+        )
+        await editor.expectEditor.toContain(
+          'extrude001 = extrude(region001, length = 5)'
+        )
+        await expect(
+          page.locator('.cm-lint-marker-error').first()
+        ).not.toBeInViewport()
+      })
 
-    await test.step('Expect extrusion', async () => {
-      await scene.settled()
-      await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
-      await editor.expectEditor.toContain(
-        'region(segments = [sketch001.line4, sketch001.line1])'
-      )
-      await editor.expectEditor.toContain(
-        'extrude001 = extrude(region001, length = 5)'
-      )
-      await expect(
-        page.locator('.cm-lint-marker-error').first()
-      ).not.toBeInViewport()
-    })
+      await test.step('Remove extrude from feature tree', async () => {
+        await toolbar.openFeatureTreePane()
+        const extrudeOp = toolbar.featureTreePane
+          .getByRole('button', { name: /^(Extrude|extrude001)$/ })
+          .first()
+        await expect(extrudeOp).toBeVisible()
+        await toolbar.removeFeatureTreeOperation(extrudeOp)
+        await scene.settled()
+        await editor.expectEditor.not.toContain('extrude(')
+      })
 
-    await test.step('Remove extrude from feature tree', async () => {
-      await toolbar.openFeatureTreePane()
-      const extrudeOp = toolbar.featureTreePane
-        .getByRole('button', { name: /^(Extrude|extrude001)$/ })
-        .first()
-      await expect(extrudeOp).toBeVisible()
-      await toolbar.removeFeatureTreeOperation(extrudeOp)
-      await scene.settled()
-      await editor.expectEditor.not.toContain('extrude(')
-    })
-
-    await test.step('Remove region from feature tree and expect original code', async () => {
-      await toolbar.openFeatureTreePane()
-      const regionOp = toolbar.featureTreePane
-        .getByRole('button', { name: /^(Region|region001)$/ })
-        .first()
-      await expect(regionOp).toBeVisible()
-      await toolbar.removeFeatureTreeOperation(regionOp)
-      await scene.settled()
-      await editor.expectEditor.not.toContain('region(')
-      await editor.expectEditor.toContain(square, { shouldNormalise: true })
-    })
-  })
-
-  test('can extrude sketch regions with defaultLengthUnit = inches', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    modelingDialog,
-    editor,
-    toolbar,
-  }) => {
-    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
-      format: 'ratio',
-    })
-
-    await test.step('Set up scene with a closed sketch block in inches', async () => {
-      await context.addInitScript(async (code) => {
-        localStorage.setItem('persistCode', code)
-      }, squareInches)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await editor.expectEditor.toContain('@settings(defaultLengthUnit = in')
-      await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
-
-      // Force the point fallback while leaving the query point from the engine intact.
-      await page.evaluate(() => {
-        const engine = window.engineCommandManager
-        const sendSceneCommand = engine.sendSceneCommand.bind(engine)
-        engine.sendSceneCommand = async (...args) => {
-          const [command] = args
-          if (
-            command.type === 'modeling_cmd_req' &&
-            command.cmd.type === 'region_get_resolvable_intersection_info'
-          ) {
-            return {
-              success: true,
-              request_id: command.cmd_id,
-              resp: {
-                type: 'modeling',
-                data: { modeling_response: { type: 'empty' } },
-              },
-            }
-          }
-          return sendSceneCommand(...args)
-        }
+      await test.step('Remove region from feature tree and expect original code', async () => {
+        await toolbar.openFeatureTreePane()
+        const regionOp = toolbar.featureTreePane
+          .getByRole('button', { name: /^(Region|region001)$/ })
+          .first()
+        await expect(regionOp).toBeVisible()
+        await toolbar.removeFeatureTreeOperation(regionOp)
+        await scene.settled()
+        await editor.expectEditor.not.toContain('region(')
+        await editor.expectEditor.toContain(square, { shouldNormalise: true })
       })
     })
 
-    await test.step('Extrude region by clicking center', async () => {
-      await toolbar.extrudeButton.click()
-      await clickCenter()
-      await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
-      await modelingDialog.selection('Profiles').click()
+    test(`can extrude sketch regions with defaultLengthUnit = inches ${rendererTag}`, async ({
+      page,
+      context,
+      homePage,
+      scene,
+      modelingDialog,
+      editor,
+      toolbar,
+    }) => {
+      await test.step('Set up scene with a closed sketch block in inches', async () => {
+        await context.addInitScript(async (code) => {
+          localStorage.setItem('persistCode', code)
+        }, squareInches)
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await editor.expectEditor.toContain('@settings(defaultLengthUnit = in')
+        await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
 
-      await expect(modelingDialog.input('length')).toHaveText('5')
+        // Force the point fallback while leaving the query point from the engine intact.
+        await page.evaluate(() => {
+          const engine = window.engineCommandManager
+          const sendSceneCommand = engine.sendSceneCommand.bind(engine)
+          engine.sendSceneCommand = async (...args) => {
+            const [command] = args
+            if (
+              command.type === 'modeling_cmd_req' &&
+              command.cmd.type === 'region_get_resolvable_intersection_info'
+            ) {
+              return {
+                success: true,
+                request_id: command.cmd_id,
+                resp: {
+                  type: 'modeling',
+                  data: { modeling_response: { type: 'empty' } },
+                },
+              }
+            }
+            return sendSceneCommand(...args)
+          }
+        })
+      })
 
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
+      await test.step('Extrude region by clicking center', async () => {
+        await toolbar.extrudeButton.click()
+        const [clickCenter] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 0,
+          stream: { x: 0.5, y: 0.5, format: 'ratio' },
+        })
+        await clickCenter()
+        await expect(modelingDialog.selection('Profiles')).toHaveText(
+          '1 region'
+        )
+        await modelingDialog.selection('Profiles').click()
+
+        await expect(modelingDialog.input('length')).toHaveText('5')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+      })
+
+      await test.step('Expect point fallback extrusion with inches as the default unit', async () => {
+        await scene.settled()
+        await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
+        await editor.expectEditor.toContain(
+          'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
+        )
+        await editor.expectEditor.toContain(
+          'extrude001 = extrude(region001, length = 5)'
+        )
+        await expect(
+          page.locator('.cm-lint-marker-error').first()
+        ).not.toBeInViewport()
+      })
     })
-
-    await test.step('Expect point fallback extrusion with inches as the default unit', async () => {
-      await scene.settled()
-      await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
-      await editor.expectEditor.toContain(
-        'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
-      )
-      await editor.expectEditor.toContain(
-        'extrude001 = extrude(region001, length = 5)'
-      )
-      await expect(
-        page.locator('.cm-lint-marker-error').first()
-      ).not.toBeInViewport()
-    })
-  })
+  }
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`can sketch on extrude cap ${rendererTag}`, async ({
