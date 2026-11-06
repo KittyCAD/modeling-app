@@ -27,6 +27,7 @@ import {
 } from '@src/lang/modifyAst/tagManagement'
 import {
   artifactToEntityRef,
+  getEdgeSelections,
   getNodeFromPath,
   getRegionSketchTagExprFromSourceSurface,
   getRegionTagExprFromSegmentId,
@@ -748,7 +749,6 @@ export function createEdgeRefObjectExpression(
   owningBodyExpr?: Expr | null,
   options?: {
     allowAstEdits?: boolean
-    faceExpressions?: ReadonlyMap<string, Expr>
     requireAllFaces?: boolean
   }
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
@@ -897,11 +897,6 @@ export function createEdgeRefObjectExpression(
   }
 
   for (const faceId of payload.side_faces) {
-    const primitive = options?.faceExpressions?.get(faceId)
-    if (primitive) {
-      sideFaceExprs.push(structuredClone(primitive))
-      continue
-    }
     const faceArtifact = artifactGraph.get(faceId)
     if (!faceArtifact) {
       return new Error(
@@ -1028,11 +1023,6 @@ export function createEdgeRefObjectExpression(
     // still be useful when we cannot tag them: `sideFaces` alone is valid KCL
     // and may intentionally select multiple adjacent edges for fillet/chamfer.
     for (const faceId of payload.end_faces) {
-      const primitive = options?.faceExpressions?.get(faceId)
-      if (primitive) {
-        endFaceExprs.push(structuredClone(primitive))
-        continue
-      }
       const endFaceArtifact = artifactGraph.get(faceId)
       if (!endFaceArtifact) continue
       const codeRefs = getCodeRefsByArtifactId(faceId, artifactGraph)
@@ -2945,17 +2935,6 @@ type BodySelectionData = {
   pathIfPipe?: PathToNode
 }
 
-function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
-  return [
-    ...edges.graphSelections,
-    ...edges.otherSelections.filter(
-      (selection): selection is EnginePrimitiveSelection =>
-        isEnginePrimitiveSelection(selection) &&
-        selection.primitiveType === 'edge'
-    ),
-  ]
-}
-
 // Utility functions
 
 /**
@@ -3266,15 +3245,10 @@ export function groupSelectionsByBodyAndAddTags(
     if (primForBody?.primitiveIndices.length && solidsExpr) {
       let insertIndex = modifiedAst.body.length
       for (const primitiveIndex of primForBody.primitiveIndices) {
-        const edgeIdExpr = createCallExpressionStdLibKw(
-          'edgeId',
-          structuredClone(solidsExpr),
-          [
-            createLabeledArg(
-              'index',
-              createLiteral(primitiveIndex, wasmInstance)
-            ),
-          ]
+        const edgeIdExpr = createPrimitiveEdgeExpression(
+          solidsExpr,
+          primitiveIndex,
+          wasmInstance
         )
         const edgeVariableName = findUniqueName(
           modifiedAst,
@@ -3744,6 +3718,16 @@ export function getEdgeTagCall(
   return tagCall
 }
 
+export function createPrimitiveEdgeExpression(
+  body: Expr,
+  primitiveIndex: number,
+  wasmInstance: ModuleType
+): Expr {
+  return createCallExpressionStdLibKw('edgeId', structuredClone(body), [
+    createLabeledArg('index', createLiteral(primitiveIndex, wasmInstance)),
+  ])
+}
+
 // Adds all the edgeId calls needed in the AST so we can refer to them,
 // keeps track of their names as "tags",
 // and gathers the corresponding solid expressions.
@@ -3868,10 +3852,10 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
 
     // Step 3. Insert variable declarations for edgeId calls
     for (const primitiveIndex of primitiveData.primitiveIndices) {
-      const edgeIdExpr = createCallExpressionStdLibKw(
-        'edgeId',
-        structuredClone(solidsExpr),
-        [createLabeledArg('index', createLiteral(primitiveIndex, wasmInstance))]
+      const edgeIdExpr = createPrimitiveEdgeExpression(
+        solidsExpr,
+        primitiveIndex,
+        wasmInstance
       )
       const edgeVariableName = findUniqueName(
         modifiedAst,
