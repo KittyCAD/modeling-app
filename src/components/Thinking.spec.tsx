@@ -468,6 +468,45 @@ describe('Thinking', () => {
     expect(screen.queryByText('Found main.kcl')).not.toBeInTheDocument()
   })
 
+  test('keeps named skill calls distinct inside a concise action summary', () => {
+    const tools = [
+      ['skill-1', 'activate_skill', 'Activating skill: kcl-modeling'],
+      ['skill-2', 'activate_skill', 'Activating skill: kcl-knowledge'],
+      [
+        'skill-3',
+        'activate_skill',
+        'Activating skill: kcl-mechanical-engineering',
+      ],
+      ['selections', 'read_user_selections', 'Read user selections'],
+      ['files', 'list_user_files', 'Listed project files and attachments'],
+    ] as const
+
+    render(
+      <Thinking
+        thoughts={tools.map(([call_id, name, label]) =>
+          activity({ kind: 'tool', call_id, name, label, status: 'completed' })
+        )}
+        isDone={true}
+        onlyShowImmediateThought={false}
+      />
+    )
+
+    const summary = screen.getByText(
+      'Activated 3 skills, read user selections, listed project files'
+    )
+    const group = summary.closest('details')
+    expect(group).not.toHaveAttribute('open')
+    expect(screen.getByText('Activating skill: kcl-modeling')).not.toBeVisible()
+
+    fireEvent.click(summary)
+    expect(group).toHaveAttribute('open')
+    expect(screen.getByText('Activating skill: kcl-modeling')).toBeVisible()
+    expect(screen.getByText('Activating skill: kcl-knowledge')).toBeVisible()
+    expect(
+      screen.getByText('Activating skill: kcl-mechanical-engineering')
+    ).toBeVisible()
+  })
+
   test('keeps tool batches folded as new commentary and tool events arrive', () => {
     const thoughts: MlCopilotServerMessage[] = [
       activity({ kind: 'commentary', text: 'Inspecting the project.' }),

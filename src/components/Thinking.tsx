@@ -432,12 +432,14 @@ const actionLabel = (item: ActionItem): string => {
     return 'Viewed project details'
   }
   const name = item.name.toLowerCase()
-  if (name === 'read_user_selections') return 'Read selections'
+  if (name === 'activate_skill') return 'Activated skills'
+  if (name === 'read_user_selections') return 'Read user selections'
   if (name === 'retrieve_kcl_code_examples') return 'Read KCL examples'
   if (name === 'search_knowledge') return 'Searched knowledge'
   if (name.includes('web_search')) return 'Searched the web'
   if (name.includes('search')) return 'Searched'
   if (name.startsWith('read_')) return 'Read files'
+  if (name === 'list_user_files') return 'Listed project files'
   if (name.startsWith('list_')) return 'Listed files'
   if (
     name.startsWith('write_') ||
@@ -463,7 +465,14 @@ const ActionGroup = (props: {
     return <>{props.children}</>
   }
 
-  const labels = [...new Set(props.items.map(actionLabel))]
+  const skillCount = props.items.filter(
+    (item) => item.kind === 'tool' && item.name === 'activate_skill'
+  ).length
+  const labels = [...new Set(props.items.map(actionLabel))].map((label) =>
+    label === 'Activated skills'
+      ? `Activated ${skillCount} ${skillCount === 1 ? 'skill' : 'skills'}`
+      : label
+  )
   const summary = labels
     .slice(0, 3)
     .map((label, index) =>
