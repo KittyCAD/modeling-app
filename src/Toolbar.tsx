@@ -35,6 +35,7 @@ import {
   getDefaultRecentToolbarItemIds,
   getToolbarDropdownDisplay,
   getToolbarItemDescription,
+  indexToolbarCommands,
   isSketchToolbarTransitioning,
   isToolbarItemResolvedDropdown,
   modelingMachineStateToToolbarModeName,
@@ -84,6 +85,10 @@ const Toolbar_ = memo(
     const registeredCommands = useSelector(
       app.commands.actor,
       (state) => state.context.commands
+    )
+    const commandsByKey = useMemo(
+      () => indexToolbarCommands(registeredCommands),
+      [registeredCommands]
     )
     const activeDialogCommandKey = useSelector(app.commands.actor, (state) => {
       const command = state.context.selectedCommand
@@ -318,7 +323,7 @@ const Toolbar_ = memo(
           iconColor,
           description: getToolbarItemDescription(
             maybeIconConfig,
-            registeredCommands
+            commandsByKey
           ),
           links: maybeIconConfig.links || [],
           isActive: itemIsActive,
@@ -358,7 +363,7 @@ const Toolbar_ = memo(
       showNonVisualConstraints,
       sketchSolveSelectedIdsKey,
       keymapTree,
-      registeredCommands,
+      commandsByKey,
       activeDialogCommandKey,
     ])
 
