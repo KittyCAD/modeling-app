@@ -79,7 +79,7 @@ import {
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import {
   withDefaultGdtFrameDefaults,
-  withDefaultDistanceFrameDefaults,
+  getDistanceFrameDefaults,
 } from '@src/lib/gdtFramePosition'
 import {
   resolveDistanceSelections,
@@ -299,69 +299,54 @@ const distanceCodemod = defineModelingCodemod<
   CommandArgsByName['GDT Distance']
 >({
   ...withStdLibExperimentalFeatures('GDT Distance'),
-  run: async (context) => {
-    const { args, kclManager, wasmInstance } = context
+  run: async ({ args, ast, kclManager, wasmInstance }) => {
+    const context = {
+      ast,
+      artifactGraph: kclManager.artifactGraph,
+      wasmInstance,
+    }
     // Edit selections are display-only; preserve the original arguments and omissions.
-    const addDistance = (
-      data: CommandArgsByName['GDT Distance'],
-      ast: Node<Program>
-    ) =>
-      addDistanceGdt({
-        ...data,
-        ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance,
-      })
-    if (args.nodeToEdit) return addDistance(args, context.ast)
-    const objects = await resolveDistanceSelections(
+    if (args.nodeToEdit) return addDistanceGdt(addCodemodArgs(args, context))
+    const resolved = await resolveDistanceSelections(
       args.objects,
       kclManager.artifactGraph,
       kclManager.engineCommandManager
     )
-    if (isErr(objects)) return objects
+    if (isErr(resolved)) return resolved
+    const { objects } = resolved
     const mode = getDistanceMeasurementMode(
       objects.graphSelections.map((selection) => ({
         kind: isDistanceEdge(selection) ? 'edge' : 'face',
       }))
     )
     if (isErr(mode)) return mode
-    const defaultsFor = (measurement: typeof objects) =>
-      withDefaultDistanceFrameDefaults({
-        data: { ...args, objects: measurement },
-        mode,
-        engineCommandManager: kclManager.engineCommandManager,
-        artifactGraph: kclManager.artifactGraph,
-        ast: context.ast,
-        sourceCode: kclManager.code,
-        outputUnit: kclManager.fileSettings.defaultLengthUnit,
-        wasmInstance,
-        variables: kclManager.variables,
-      })
-    if (mode === 'between')
-      return addDistance(await defaultsFor(objects), context.ast)
-    // Resolve every selection before inserting any user argument variables.
-    const graphSelections = await Promise.all(
-      objects.graphSelections.map(async (selection) => {
-        const defaults = await defaultsFor({
-          graphSelections: [selection],
-          otherSelections: [],
+    const measurements =
+      mode === 'between'
+        ? [objects]
+        : objects.graphSelections.map((selection) => ({
+            graphSelections: [selection],
+            otherSelections: [],
+          }))
+    const frameDefaults = await Promise.all(
+      measurements.map((measurement) =>
+        getDistanceFrameDefaults({
+          data: { ...args, objects: measurement },
+          mode,
+          engineCommandManager: kclManager.engineCommandManager,
+          artifactGraph: kclManager.artifactGraph,
+          ast,
+          sourceCode: kclManager.code,
+          outputUnit: kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+          variables: kclManager.variables,
         })
-        return {
-          ...selection,
-          frameDefaults: {
-            framePosition: args.framePosition
-              ? undefined
-              : defaults.framePosition,
-            framePlane: args.framePlane ? undefined : defaults.framePlane,
-            fontSize: args.fontSize ? undefined : defaults.fontSize,
-          },
-        }
-      })
+      )
     )
-    return addDistance(
-      { ...args, objects: { ...objects, graphSelections } },
-      context.ast
-    )
+    return addDistanceGdt({
+      ...addCodemodArgs(args, context),
+      ...resolved,
+      frameDefaults,
+    })
   },
 })
 
