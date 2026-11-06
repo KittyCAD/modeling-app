@@ -228,6 +228,8 @@ jobs:
     runs-on: ${{ matrix.config.os }}
     continue-on-error: ${{ matrix.config.optional == true && github.repository != 'kittycad/modeling-app' }}
     env:
+      # Temporary preview dependency for #14985; remove after engine #5225 is deployed.
+      VITE_KITTYCAD_WEBSOCKET_URL: ${{ (github.head_ref || github.ref_name) == 'kurt-local-renderer-e2e-fixes' && 'wss://api.dev.zoo.dev/ws/modeling/commands?pr=5225' || '' }}
       OS_NAME: ${{ contains(matrix.config.os, 'ubuntu') && 'ubuntu' || (contains(matrix.config.os, 'windows') && 'windows' || 'macos') }}
     strategy:
       fail-fast: false
@@ -349,6 +351,8 @@ jobs:
     if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep }}
     runs-on: ${{ matrix.os }}
     env:
+      # Temporary preview dependency for #14985; remove after engine #5225 is deployed.
+      VITE_KITTYCAD_WEBSOCKET_URL: ${{ (github.head_ref || github.ref_name) == 'kurt-local-renderer-e2e-fixes' && 'wss://api.dev.zoo.dev/ws/modeling/commands?pr=5225' || '' }}
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
     strategy:
       fail-fast: false
