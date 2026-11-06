@@ -96,8 +96,11 @@ export function createMountedFileOperations(
     operations,
     mount: (mount: FileOperationsMount) => {
       const root = paths.resolve(mount.root)
-      mounts.set(root, { ...mount, root })
-      return () => mounts.delete(root)
+      const registration = { ...mount, root }
+      mounts.set(root, registration)
+      return () => {
+        if (mounts.get(root) === registration) mounts.delete(root)
+      }
     },
   }
 }
