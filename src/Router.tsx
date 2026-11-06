@@ -61,8 +61,8 @@ export const Router = () => {
               loader: baseLoader({ app }),
             },
             {
-              id: PATHS.PROJECT,
-              path: PATHS.PROJECT.concat('/:id'),
+              id: PATHS.PROJECT_NEXT,
+              path: PATHS.PROJECT_NEXT.concat('/:id'),
               errorElement: <ErrorPage />,
               loader: projectLoader({ app }),
               element: (
