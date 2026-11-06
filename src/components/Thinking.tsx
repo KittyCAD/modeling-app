@@ -386,7 +386,7 @@ const ToolActivityRow = (props: {
         : ''
 
   return (
-    <div className="flex items-center gap-2 py-2 text-sm text-chalkboard-70 dark:text-chalkboard-30">
+    <div className="flex items-center gap-2 py-1 text-chalkboard-70 dark:text-chalkboard-30">
       <span aria-hidden="true">
         <CustomIcon name={icon} className="h-4 w-4 shrink-0" />
       </span>
@@ -491,8 +491,8 @@ const ActionGroup = (props: {
       : ''
 
   return (
-    <details className="group/actions py-2">
-      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm text-chalkboard-70 dark:text-chalkboard-30 [&::-webkit-details-marker]:hidden">
+    <details className="group/actions py-1">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-chalkboard-70 dark:text-chalkboard-30 [&::-webkit-details-marker]:hidden">
         <span aria-hidden="true">
           <CustomIcon name="gear" className="h-4 w-4 shrink-0" />
         </span>
@@ -508,7 +508,7 @@ const ActionGroup = (props: {
           />
         </span>
       </summary>
-      <div className="pl-6 pt-2">{props.children}</div>
+      <div className="pl-6 pt-1">{props.children}</div>
     </details>
   )
 }
@@ -1164,7 +1164,7 @@ export const Thinking = (
     ? sections.map((section, sectionIndex) => {
         if (section.kind === 'commentary') {
           return (
-            <div key={sectionIndex} className="py-2 text-sm">
+            <div key={sectionIndex} className="py-1">
               <MarkdownText text={section.text} />
             </div>
           )
@@ -1255,7 +1255,7 @@ export const Thinking = (
       style={hasStructuredActivity ? undefined : { maxHeight: '20lh' }}
       className={
         hasStructuredActivity
-          ? 'select-text pl-8 pr-2 pb-2'
+          ? 'select-text text-2 text-xs pl-8 pr-2 pb-2'
           : `relative select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`
       }
       onScroll={hasStructuredActivity ? undefined : onReasoningScroll}
