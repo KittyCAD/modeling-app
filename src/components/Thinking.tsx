@@ -481,12 +481,9 @@ const actionLabel = (item: ActionItem): string => {
 
 const ActionGroup = (props: {
   items: ActionItem[]
-  isCurrent: boolean
   isDone: boolean
   children: ReactNode
 }) => {
-  if (props.isCurrent) return <div>{props.children}</div>
-
   const labels = [...new Set(props.items.map(actionLabel))]
   const summary = labels
     .slice(0, 3)
@@ -1188,7 +1185,6 @@ export const Thinking = (
           <ActionGroup
             key={`${section.startIndex}-${sectionIndex}`}
             items={section.items}
-            isCurrent={!props.isDone && sectionIndex === sections.length - 1}
             isDone={props.isDone}
           >
             {section.items.map((item, actionIndex) =>

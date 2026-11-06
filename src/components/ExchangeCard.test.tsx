@@ -198,7 +198,10 @@ describe('ExchangeCard replay attachments', () => {
       'true'
     )
     expect(screen.getByText('Checking the project.')).toBeVisible()
-    expect(screen.getByText('read project file · Running')).toBeVisible()
+    const groupSummary = screen.getByText('Read files')
+    expect(groupSummary).toBeVisible()
+    expect(groupSummary.closest('details')).not.toHaveAttribute('open')
+    expect(screen.getByText('read project file · Running')).not.toBeVisible()
     expect(screen.queryByText('Reading main.kcl')).not.toBeInTheDocument()
     expect(
       screen.queryByText('The project contains one KCL file.')

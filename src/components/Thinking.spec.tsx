@@ -401,7 +401,7 @@ describe('Thinking', () => {
     },
   })
 
-  test('shows commentary and keeps tool details folded as the tool finishes', () => {
+  test('shows commentary while the current tool batch stays folded', () => {
     const thoughts: MlCopilotServerMessage[] = [
       activity({ kind: 'commentary', text: 'Checking the project.' }),
       {
@@ -434,7 +434,10 @@ describe('Thinking', () => {
     const { rerender } = render(view())
 
     expect(screen.getByText('Checking the project.')).toBeVisible()
-    expect(screen.getByText('read project file · Running')).toBeVisible()
+    const groupSummary = screen.getByText('Read files')
+    const groupDetails = groupSummary.closest('details')
+    expect(groupDetails).not.toHaveAttribute('open')
+    expect(screen.getByText('read project file · Running')).not.toBeVisible()
     expect(screen.queryByText('Reasoning summary')).not.toBeInTheDocument()
     expect(
       screen.queryByText('The project contains one KCL file.')
@@ -456,16 +459,21 @@ describe('Thinking', () => {
     )
     rerender(view())
 
-    const summary = screen.getByText('read project file · Finished')
-    const details = summary.closest('details')
-    expect(details).not.toHaveAttribute('open')
-    fireEvent.click(summary)
-    expect(details).toHaveAttribute('open')
+    expect(groupDetails).not.toHaveAttribute('open')
+    expect(screen.getByText('read project file · Finished')).not.toBeVisible()
+    fireEvent.click(groupSummary)
+    expect(groupDetails).toHaveAttribute('open')
+    const toolSummary = screen.getByText('read project file · Finished')
+    const toolDetails = toolSummary.closest('details')
+    expect(toolSummary).toBeVisible()
+    expect(toolDetails).not.toHaveAttribute('open')
+    fireEvent.click(toolSummary)
+    expect(toolDetails).toHaveAttribute('open')
     expect(screen.getByText('Found main.kcl')).toBeVisible()
     expect(screen.getAllByText('read project file · Finished')).toHaveLength(1)
   })
 
-  test('collapses previous tool actions when new commentary arrives', () => {
+  test('keeps tool batches folded as new commentary and tool events arrive', () => {
     const thoughts: MlCopilotServerMessage[] = [
       activity({ kind: 'commentary', text: 'Inspecting the project.' }),
       activity({
@@ -508,24 +516,21 @@ describe('Thinking', () => {
     )
     const { rerender } = render(view())
 
-    expect(screen.getByText('read project file · Finished')).toBeVisible()
-    expect(screen.getByText('write project file · Finished')).toBeVisible()
-    expect(
-      screen.queryByText('Read files, edited files')
-    ).not.toBeInTheDocument()
+    const groupSummary = screen.getByText('Read files, edited files')
+    const group = groupSummary.closest('details')
+    expect(group).not.toHaveAttribute('open')
+    expect(screen.getByText('read project file · Finished')).not.toBeVisible()
+    expect(screen.getByText('write project file · Finished')).not.toBeVisible()
 
     thoughts.push(
       activity({ kind: 'commentary', text: 'Validating the model.' })
     )
     rerender(view())
 
-    const group = screen
-      .getByText('Read files, edited files')
-      .closest('details')
     expect(group).not.toHaveAttribute('open')
     expect(screen.getByText('Validating the model.')).toBeVisible()
     expect(screen.getByText('read project file · Finished')).not.toBeVisible()
-    fireEvent.click(screen.getByText('Read files, edited files'))
+    fireEvent.click(groupSummary)
     expect(group).toHaveAttribute('open')
     expect(screen.getByText('read project file · Finished')).toBeVisible()
     expect(screen.getByText('Updated Project File (main.kcl)')).toBeVisible()
@@ -544,10 +549,13 @@ describe('Thinking', () => {
       })
     )
     rerender(view())
-    expect(screen.getByText('execute project · Finished')).toBeVisible()
+    const nextGroup = screen.getByText('Ran project checks').closest('details')
+    expect(nextGroup).not.toHaveAttribute('open')
+    expect(screen.getByText('execute project · Finished')).not.toBeVisible()
+    expect(group).toHaveAttribute('open')
 
     rerender(view(true))
-    expect(screen.getByText('Ran project checks')).toBeVisible()
+    expect(nextGroup).not.toHaveAttribute('open')
     expect(screen.getByText('execute project · Finished')).not.toBeVisible()
   })
 
