@@ -512,6 +512,7 @@ export class KclManager extends File {
   livePathsToWatch = signal<string[]>([])
 
   private _execState = signal<ExecState>(emptyExecState())
+  private stopNamedViewInvalidation: (() => void) | undefined
   /**
    * The engine scene generation from the last execution: the number of runs
    * that changed the engine scene. Runs answered from the cache leave it
@@ -802,6 +803,17 @@ export class KclManager extends File {
     this.variables = execState.variables
   }
 
+  private clearNamedViews() {
+    this.execState = { ...this._execState.peek(), namedViews: null }
+  }
+
+  private watchNamedViewInvalidation() {
+    if (this.stopNamedViewInvalidation) return
+    this.stopNamedViewInvalidation = this.rustContext.namedViewsInvalidated.add(
+      () => this.clearNamedViews()
+    )
+  }
+
   private beginLiveOperationUpdates(executionId: number) {
     this.activeLiveOperationExecutionId = executionId
     this._liveOperationsByModule.value = emptyOperationsByModule()
@@ -1038,7 +1050,10 @@ export class KclManager extends File {
     this.diagnostics = []
     this.refreshSketchSolveAst(code, execState, options).catch(reportRejection)
 
-    this.execState = execState
+    this.execState = {
+      ...execState,
+      namedViews: execState.namedViews ?? this.execState.namedViews,
+    }
     this.lastSuccessfulVariables = execState.variables
     this.lastSuccessfulOperations = execState.operations
     this.lastSuccessfulCode = code
@@ -1817,6 +1832,7 @@ export class KclManager extends File {
       providedEditor.path,
       providedEditor.editorView.state
     )
+    providedEditor.clearNamedViews()
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
@@ -1848,6 +1864,7 @@ export class KclManager extends File {
       })
     }
     providedEditor.markFileCodeAsSynced(diskCode)
+    providedEditor.watchNamedViewInvalidation()
     providedEditor.startWatchingSettings()
     providedEditor.refreshEditorSettings()
     providedEditor.watch()
@@ -1896,6 +1913,7 @@ export class KclManager extends File {
         this.updateHistoryDepth()
       })
 
+    this.watchNamedViewInvalidation()
     this.startWatchingSettings()
 
     this.systemDeps.wasmInstancePromise
@@ -1922,6 +1940,9 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
+    this.clearNamedViews()
+    this.stopNamedViewInvalidation?.()
+    this.stopNamedViewInvalidation = undefined
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.sceneSettingsActive.value = false
@@ -2354,8 +2375,10 @@ export class KclManager extends File {
     })
 
     this.logs = logs
-    this._execState.value = execState
-    this._variables.value = execState.variables
+    this.execState = {
+      ...execState,
+      namedViews: this.execState.namedViews,
+    }
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
