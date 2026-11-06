@@ -103,6 +103,7 @@ describe('ExchangeCard replay attachments', () => {
       />
     )
 
+    fireEvent.click(screen.getByRole('button', { name: /Working for/ }))
     fireEvent.click(
       screen.getByRole('button', {
         name: 'generated.png: Load attachment',
@@ -152,7 +153,7 @@ describe('ExchangeCard replay attachments', () => {
     expect(screen.getByText('Checking the project.')).toBeVisible()
   })
 
-  test('shows one flat activity section while a turn is running', () => {
+  test('starts a running turn collapsed with only the latest commentary visible', () => {
     render(
       <ExchangeCard
         {...exchangeProps}
@@ -196,17 +197,26 @@ describe('ExchangeCard replay attachments', () => {
 
     expect(screen.getByRole('button', { name: /Working for/ })).toHaveAttribute(
       'aria-expanded',
-      'true'
+      'false'
     )
     expect(screen.getByText('Checking the project.')).toBeVisible()
-    const groupSummary = screen.getByText('Read files')
-    expect(groupSummary).toBeVisible()
-    expect(groupSummary.closest('details')).not.toHaveAttribute('open')
-    expect(screen.getByText('Read main.kcl · Running')).not.toBeVisible()
+    expect(
+      screen.queryByText('Read main.kcl · Running')
+    ).not.toBeInTheDocument()
     expect(screen.queryByText('Reading main.kcl')).not.toBeInTheDocument()
     expect(
       screen.queryByText('The project contains one KCL file.')
     ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /Working for/ }))
+    expect(screen.getByRole('button', { name: /Working for/ })).toHaveAttribute(
+      'aria-expanded',
+      'true'
+    )
+    expect(screen.getByText('Read main.kcl · Running')).toBeVisible()
+    expect(
+      screen.getByText('Read main.kcl · Running').closest('details')
+    ).toBeNull()
     expect(screen.getByTestId('ml-response-thinking-view')).not.toHaveClass(
       'overflow-auto',
       'border'

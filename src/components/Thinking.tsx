@@ -459,6 +459,10 @@ const ActionGroup = (props: {
   isDone: boolean
   children: ReactNode
 }) => {
+  if (props.items.length === 1 && props.items[0].kind === 'tool') {
+    return <>{props.children}</>
+  }
+
   const labels = [...new Set(props.items.map(actionLabel))]
   const summary = labels
     .slice(0, 3)
@@ -1197,9 +1201,10 @@ export const Thinking = (
     componentThoughts.push(<End key={reasoningThoughts.length} />)
   }
 
-  const lastActivity = activityItems.findLast(
-    (item) => item.kind === 'commentary' || item.kind === 'tool'
+  const lastCommentary = activityItems.findLast(
+    (item) => item.kind === 'commentary'
   )
+  const lastTool = activityItems.findLast((item) => item.kind === 'tool')
   const lastImmediateThought = reasoningThoughts.findLast(
     (thought) =>
       'reasoning' in thought &&
@@ -1218,11 +1223,11 @@ export const Thinking = (
       ? lastImmediateThought.reasoning.content
       : ''
   const componentLastGenericThought =
-    lastActivity?.kind === 'commentary' ? (
-      <Generic content={lastActivity.text} />
-    ) : lastActivity?.kind === 'tool' ? (
+    lastCommentary?.kind === 'commentary' ? (
+      <Generic content={lastCommentary.text} />
+    ) : lastTool?.kind === 'tool' ? (
       <Generic
-        content={`${lastActivity.status === 'started' ? 'Running' : 'Finished'} ${lastActivity.name.replaceAll('_', ' ')}`}
+        content={`${lastTool.status === 'started' ? 'Running' : 'Finished'} ${lastTool.name.replaceAll('_', ' ')}`}
       />
     ) : isImmediateThinking ? (
       <div className="flex flex-row items-center gap-2">
@@ -1230,7 +1235,7 @@ export const Thinking = (
         <Generic content="Thinking" />
       </div>
     ) : (
-      <Generic content={immediateThoughtContent} />
+      <Generic content={immediateThoughtContent || 'Thinking...'} />
     )
 
   const ViewFull = (

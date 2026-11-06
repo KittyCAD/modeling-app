@@ -401,7 +401,7 @@ describe('Thinking', () => {
     },
   })
 
-  test('shows commentary while the current tool batch stays folded', () => {
+  test('shows a single tool without an empty disclosure', () => {
     const thoughts: MlCopilotServerMessage[] = [
       activity({ kind: 'commentary', text: 'Checking the project.' }),
       {
@@ -435,10 +435,10 @@ describe('Thinking', () => {
     const { rerender } = render(view())
 
     expect(screen.getByText('Checking the project.')).toBeVisible()
-    const groupSummary = screen.getByText('Read files')
-    const groupDetails = groupSummary.closest('details')
-    expect(groupDetails).not.toHaveAttribute('open')
-    expect(screen.getByText('Read main.kcl · Running')).not.toBeVisible()
+    expect(screen.getByText('Read main.kcl · Running')).toBeVisible()
+    expect(
+      screen.getByText('Read main.kcl · Running').closest('details')
+    ).toBeNull()
     expect(screen.queryByText('Reasoning summary')).not.toBeInTheDocument()
     expect(
       screen.queryByText('The project contains one KCL file.')
@@ -460,13 +460,9 @@ describe('Thinking', () => {
     )
     rerender(view())
 
-    expect(groupDetails).not.toHaveAttribute('open')
-    expect(screen.getByText('Read main.kcl')).not.toBeVisible()
-    fireEvent.click(groupSummary)
-    expect(groupDetails).toHaveAttribute('open')
     const toolRow = screen.getByText('Read main.kcl')
     expect(toolRow).toBeVisible()
-    expect(toolRow.closest('details')).toBe(groupDetails)
+    expect(toolRow.closest('details')).toBeNull()
     expect(screen.queryByText('Arguments')).not.toBeInTheDocument()
     expect(screen.queryByText('SECRET_KCL_CONTENT')).not.toBeInTheDocument()
     expect(screen.queryByText('Found main.kcl')).not.toBeInTheDocument()
@@ -549,14 +545,12 @@ describe('Thinking', () => {
       })
     )
     rerender(view())
-    const nextGroup = screen.getByText('Ran project checks').closest('details')
-    expect(nextGroup).not.toHaveAttribute('open')
-    expect(screen.getByText('Validated project')).not.toBeVisible()
+    expect(screen.getByText('Validated project')).toBeVisible()
+    expect(screen.getByText('Validated project').closest('details')).toBeNull()
     expect(group).toHaveAttribute('open')
 
     rerender(view(true))
-    expect(nextGroup).not.toHaveAttribute('open')
-    expect(screen.getByText('Validated project')).not.toBeVisible()
+    expect(screen.getByText('Validated project')).toBeVisible()
   })
 
   test('labels unfinished tool activity as stopped after an interrupted turn', () => {
@@ -583,8 +577,10 @@ describe('Thinking', () => {
       />
     )
 
-    expect(screen.getByText('Read files · Stopped')).toBeVisible()
-    expect(screen.getByText('Read main.kcl · Stopped')).not.toBeVisible()
+    expect(screen.getByText('Read main.kcl · Stopped')).toBeVisible()
+    expect(
+      screen.getByText('Read main.kcl · Stopped').closest('details')
+    ).toBeNull()
   })
 
   test('shows thinking after a tool status when markdown reasoning arrives', () => {
