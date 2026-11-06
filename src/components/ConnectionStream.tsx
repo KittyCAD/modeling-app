@@ -11,7 +11,7 @@ import {
   type EngineDisconnectEvent,
   useOnPeerConnectionClose,
 } from '@src/hooks/network/useOnPeerConnectionClose'
-import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
+import { useOnEngineOnline } from '@src/hooks/network/useOnEngineOnline'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import { useTryConnect } from '@src/hooks/network/useTryConnect'
@@ -470,7 +470,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   )
   useOnWebsocketClose(onWebSocketCloseParams)
 
-  const onVitestEngineOnline = useMemo(
+  const onEngineOnline = useMemo(
     () => ({
       engineCommandManager,
       callback: () => {
@@ -496,7 +496,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isConnecting, numberOfConnectionAttempts, props.authToken, settings]
   )
-  useOnVitestEngineOnline(onVitestEngineOnline)
+  useOnEngineOnline(onEngineOnline)
 
   const onPeerConnectionCloseParams = useMemo(
     () => ({
