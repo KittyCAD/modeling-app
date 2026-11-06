@@ -27,7 +27,7 @@ operations: OperationsByModule,
  */
 artifactGraph: ArtifactGraph, 
 /**
- * Resolved views, present only for successful actual execution.
+ * Resolved views (default and any named views)
  */
 namedViews: ResolvedViewBatch | null, 
 /**
