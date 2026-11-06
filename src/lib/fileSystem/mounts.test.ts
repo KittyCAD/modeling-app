@@ -119,6 +119,135 @@ describe('project storage routing', () => {
     }
   })
 
+  it.each([
+    { kind: 'file', fail: false },
+    { kind: 'directory', fail: false },
+    { kind: 'file', fail: true },
+    { kind: 'directory', fail: true },
+  ])(
+    'protects a moving $kind from saves until persistence completes (upload failure: $fail)',
+    async ({ kind, fail }) => {
+      const local = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+      const cloud = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+      await local.mkdir('/local/project', { recursive: true })
+      await cloud.mkdir('/cloud', { recursive: true })
+      const file = '/local/project/main.kcl'
+      await local.writeFile(file, new TextEncoder().encode('old'))
+      const source = kind === 'file' ? file : '/local/project'
+      const destination = kind === 'file' ? '/cloud/main.kcl' : '/cloud/project'
+      const localRuntime = createFileOperationsRuntime(local)
+      const cloudRuntime = createFileOperationsRuntime(cloud)
+      let releaseUpload = () => {}
+      const uploading = new Promise<void>((resolve) => {
+        releaseUpload = resolve
+      })
+      let markStarted = () => {}
+      const started = new Promise<void>((resolve) => {
+        markStarted = resolve
+      })
+      const router = createMountedFileOperations(localRuntime.operations, posix)
+      router.mount({
+        root: '/cloud',
+        operations: {
+          ...cloudRuntime.operations,
+          createFile: async (path, contents) => {
+            markStarted()
+            await uploading
+            if (fail) return Promise.reject(new Error('Upload failed'))
+            await cloudRuntime.operations.createFile(path, contents)
+          },
+        },
+      })
+      const move = router.operations.move(source, destination)
+      let save: Promise<void> | undefined
+      let saveSettled = false
+      try {
+        await started
+        const contents = new TextEncoder().encode('new')
+        save = router.operations.writeFile(file, contents)
+        contents.fill(0)
+        void save.then(
+          () => {
+            saveSettled = true
+          },
+          () => {
+            saveSettled = true
+          }
+        )
+        // Unrelated paths stay usable while the upload and overlapping save wait.
+        await router.operations.writeFile('/local/unrelated.kcl', 'unrelated')
+        expect(saveSettled).toBe(false)
+        expect(await router.operations.pending()).toBeGreaterThan(0)
+      } finally {
+        releaseUpload()
+        const results = await Promise.allSettled([move, save])
+        await Promise.all([localRuntime.dispose(), cloudRuntime.dispose()])
+        expect(results[0].status).toBe(fail ? 'rejected' : 'fulfilled')
+        // Removing the parent makes a queued directory save fail explicitly.
+        expect(results[1].status).toBe(
+          fail || kind === 'file' ? 'fulfilled' : 'rejected'
+        )
+      }
+      if (!fail)
+        expect(
+          new TextDecoder().decode(
+            await cloud.readFile(
+              kind === 'file'
+                ? destination
+                : posix.join(destination, 'main.kcl')
+            )
+          )
+        ).toBe('old')
+      if (fail || kind === 'file')
+        expect(new TextDecoder().decode(await local.readFile(file))).toBe('new')
+    }
+  )
+
+  it('waits for an earlier save before transferring its source directory', async () => {
+    const local = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+    const cloud = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+    await local.mkdir('/local/project', { recursive: true })
+    await cloud.mkdir('/cloud', { recursive: true })
+    const file = '/local/project/main.kcl'
+    await local.writeFile(file, new TextEncoder().encode('old'))
+    const localRuntime = createFileOperationsRuntime(local)
+    const cloudRuntime = createFileOperationsRuntime(cloud)
+    const saving = Promise.withResolvers<undefined>()
+    const releaseSave = Promise.withResolvers<undefined>()
+    const router = createMountedFileOperations(
+      {
+        ...localRuntime.operations,
+        writeFile: async (path, contents) => {
+          if (path === file) {
+            saving.resolve(undefined)
+            await releaseSave.promise
+          }
+          await localRuntime.operations.writeFile(path, contents)
+        },
+      },
+      posix
+    )
+    const upload = vi.fn(cloudRuntime.operations.createFile)
+    router.mount({
+      root: '/cloud',
+      operations: { ...cloudRuntime.operations, createFile: upload },
+    })
+    const save = router.operations.writeFile(file, 'new')
+    await saving.promise
+    const move = router.operations.move('/local/project', '/cloud/project')
+    try {
+      await router.operations.writeFile('/local/unrelated.kcl', 'unrelated')
+      expect(upload).not.toHaveBeenCalled()
+    } finally {
+      releaseSave.resolve(undefined)
+      await Promise.all([save, move])
+      await Promise.all([localRuntime.dispose(), cloudRuntime.dispose()])
+    }
+    expect(
+      new TextDecoder().decode(await cloud.readFile('/cloud/project/main.kcl'))
+    ).toBe('new')
+  })
+
   it('uses prefixes without network requests and propagates ambiguous lookup failures', async () => {
     const exists = vi.fn(async () => true)
     expect(await resolveProjectLocation('local:one', exists)).toEqual({
