@@ -734,7 +734,8 @@ export function entityReferenceToEdgeRefPayload(
  * @param originalEdgeSelection - Optional original edge selection for Solid2D edge handling
  * @param fallbackCodeRef - Optional code location used when originalEdgeSelection is not available. Accepts either CodeRef: the wasm one carries nodePath, and the app one only needs range and pathToNode.
  * @param tagsBaseExpr - When original tags were referenced as base.tags.x (e.g. bs.tags.edge7), pass the base expr so we emit sideFaces = [base.tags.edge6, base.tags.edge7]
- * @param options.requireEveryFace - Popover copy path. Every side face and end face must appear in the expression, and building it must not edit the file. Codemod callers leave this off so a missing end face can still produce a useful sideFaces selector.
+ * @param options.requireAllFaces - Retain every disambiguating face. Fillet/chamfer may leave this off to select multiple matching edges.
+ * @param options.allowAstEdits - Set false for the popover copy path, which must leave the file unchanged.
  */
 export function createEdgeRefObjectExpression(
   payload: FilletEdgeRefPayload,
@@ -746,7 +747,7 @@ export function createEdgeRefObjectExpression(
   tagsBaseExpr?: Expr | null,
   owningBodyExpr?: Expr | null,
   options?: {
-    requireEveryFace?: boolean
+    allowAstEdits?: boolean
     faceExpressions?: ReadonlyMap<string, Expr>
     requireAllFaces?: boolean
   }
@@ -755,7 +756,8 @@ export function createEdgeRefObjectExpression(
   // Solid2D tagging mutates its AST argument. The popover path must not tag
   // the live program, so every helper below runs on a clone. Codemod callers
   // still receive the AST they passed in.
-  let currentAst = options?.requireEveryFace ? structuredClone(ast) : ast
+  const allowAstEdits = options?.allowAstEdits !== false
+  let currentAst = allowAstEdits ? ast : structuredClone(ast)
   const effectiveTagsBaseExpr =
     tagsBaseExpr && tagsBaseMatchesOwningBody(tagsBaseExpr, owningBodyExpr)
       ? tagsBaseExpr
@@ -1072,22 +1074,19 @@ export function createEdgeRefObjectExpression(
     properties.index = createLiteral(payload.index, wasmInstance)
   }
 
-  if (options?.requireAllFaces || options?.requireEveryFace) {
+  if (options?.requireAllFaces) {
     const endFaceCount = payload.end_faces?.length ?? 0
     if (
       sideFaceExprs.length !== payload.side_faces.length ||
       endFaceExprs.length !== endFaceCount
     ) {
       return new Error(
-        'Not every face in the edge reference could be expressed without editing the file'
+        'Not every face in the edge reference could be expressed'
       )
     }
-    if (
-      options?.requireEveryFace &&
-      !programTextEqual(ast, currentAst, wasmInstance)
-    ) {
-      return new Error('Edge reference would edit the file')
-    }
+  }
+  if (!allowAstEdits && !programTextEqual(ast, currentAst, wasmInstance)) {
+    return new Error('Edge reference would edit the file')
   }
 
   // Create object expression (KCL object literal)

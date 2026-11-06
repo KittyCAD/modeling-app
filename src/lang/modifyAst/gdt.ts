@@ -7,6 +7,8 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import {
   createPoint2dExpression,
@@ -24,7 +26,13 @@ import {
 } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
+  type DistanceSelections,
+  type DistanceFrameDefaults,
+  getDistanceMeasurementMode,
+} from '@src/lang/modifyAst/gdtSelections'
+import {
   getVariableExprsFromSelection,
+  getBodyIndex,
   resolveToCodeRef,
   traverse,
   valueOrVariable,
@@ -38,7 +46,7 @@ import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
-import type { DistanceFaceSelections } from '@src/lib/gdtDistanceSelections'
+import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lib/primitiveBodySelection'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
@@ -1275,12 +1283,11 @@ export function addDistanceGdt({
   leaderScale,
   fontSize,
   nodeToEdit,
-  edgeFaceSelections,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
-  objects?: Selections
-  edges?: Selections
+  objects?: DistanceSelections
+  edges?: DistanceSelections
   tolerance?: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
@@ -1289,8 +1296,9 @@ export function addDistanceGdt({
   leaderScale?: KclCommandValue
   fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
-  edgeFaceSelections?: DistanceFaceSelections
-}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+}):
+  | Error
+  | { modifiedAst: Node<Program>; pathToNode: PathToNode | PathToNode[] } {
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
   const selections = objects ??
@@ -1309,25 +1317,75 @@ export function addDistanceGdt({
               resolveToCodeRef(selection, artifactGraph)?.artifact
           )
       )
-  if (!mNodeToEdit && targetSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    (targetSelections.length === 0 ||
+      targetSelections.length !== selections.graphSelections.length ||
+      selections.otherSelections.length > 0)
+  ) {
     return new Error(
       'No valid selections found. Select one edge, or exactly two faces or edges.'
     )
   }
 
-  const targets: Array<{ kind: 'face' | 'edge'; expr: Expr }> = mNodeToEdit
-    ? [{ kind: 'edge', expr: createLocalName('selection') }]
-    : []
+  const targets: Array<{
+    kind: 'face' | 'edge'
+    expr: Expr
+    frameDefaults?: DistanceFrameDefaults
+  }> = mNodeToEdit ? [{ kind: 'edge', expr: createLocalName('selection') }] : []
   const faceExpressions = new Map<string, Expr>()
-  for (const [id, primitive] of edgeFaceSelections ?? []) {
+  const unnamedBodies = new Map<number, string>()
+  const bodyExpression = (selection: Selection): Expr | Error => {
+    const owner = getVariableExprsFromSelection(
+      { graphSelections: [selection], otherSelections: [] },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      {
+        artifactTypeFilter: ['sweep', 'compositeSolid'],
+        lastChildLookup: false,
+      }
+    )
+    if (err(owner)) return owner
+    if (owner.exprs.length !== 1)
+      return new Error('Could not resolve the distance body.')
+    if (!owner.pathIfPipe) return owner.exprs[0]
+    const index = getBodyIndex(owner.pathIfPipe)
+    if (err(index)) return index
+    let name = unnamedBodies.get(index)
+    if (!name) {
+      let suffix = unnamedBodies.size + 1
+      do {
+        name = findUniqueName(modifiedAst, 'body', 3, suffix++)
+      } while ([...unnamedBodies.values()].includes(name))
+      unnamedBodies.set(index, name)
+    }
+    return createLocalName(name)
+  }
+  for (const primitive of targetSelections.flatMap(
+    (selection) => selection.primitiveFaces ?? []
+  )) {
+    if (faceExpressions.has(primitive.entityId)) continue
+    const body =
+      primitive.parentEntityId &&
+      getBodySelectionFromPrimitiveParentEntityId(
+        primitive.parentEntityId,
+        artifactGraph
+      )
+    if (!body) return new Error('Could not resolve the distance face body.')
+    const bodyExpr = bodyExpression(body)
+    if (err(bodyExpr)) return bodyExpr
     const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
       enginePrimitives: [primitive],
+      bodyExpr,
       modifiedAst,
       artifactGraph,
       wasmInstance,
     })
     if (err(result)) return result
-    if (result.faceExprs[0]) faceExpressions.set(id, result.faceExprs[0])
+    if (result.faceExprs[0])
+      faceExpressions.set(primitive.entityId, result.faceExprs[0])
   }
   for (const selection of targetSelections) {
     const payload = getEdgeRefPayloadFromSelection(selection)
@@ -1339,21 +1397,9 @@ export function addDistanceGdt({
         cap?.type === 'cap' ? artifactGraph.get(cap.sweepId) : undefined
       const owner =
         sweep?.type === 'sweep'
-          ? getVariableExprsFromSelection(
-              {
-                graphSelections: [{ artifact: sweep, codeRef: sweep.codeRef }],
-                otherSelections: [],
-              },
-              artifactGraph,
-              modifiedAst,
-              wasmInstance,
-              undefined,
-              { artifactTypeFilter: ['sweep'], lastChildLookup: false }
-            )
+          ? bodyExpression({ artifact: sweep, codeRef: sweep.codeRef })
           : undefined
       if (err(owner)) return owner
-      if (owner && owner.exprs.length !== 1)
-        return new Error('Could not resolve the distance cap owner.')
       const result = createEdgeRefObjectExpression(
         payload,
         wasmInstance,
@@ -1362,12 +1408,16 @@ export function addDistanceGdt({
         undefined,
         selection.codeRef,
         undefined,
-        owner?.exprs[0],
+        owner,
         { faceExpressions, requireAllFaces: true }
       )
       if (err(result)) return result
       modifiedAst = result.modifiedAst
-      targets.push({ kind: 'edge', expr: result.expr })
+      targets.push({
+        kind: 'edge',
+        expr: result.expr,
+        frameDefaults: selection.frameDefaults,
+      })
       continue
     }
     const expressions = buildGdtFaceAndEdgeExpressions({
@@ -1376,40 +1426,32 @@ export function addDistanceGdt({
       ast: modifiedAst,
       wasmInstance,
     })
-    if (err(expressions)) {
-      console.warn('Failed to build distance selection', expressions)
-      continue
-    }
+    if (err(expressions)) return expressions
     modifiedAst = expressions.modifiedAst
 
     const edgeExpr = expressions.edgeExprs[0]
     const expr = edgeExpr ?? expressions.faceExprs[0]
-    if (!expr) {
-      console.warn('No expression could be generated for distance selection')
-      continue
-    }
+    if (!expr)
+      return new Error(
+        'No expression could be generated for distance selection.'
+      )
     targets.push({
       kind: edgeExpr ? 'edge' : 'face',
       expr,
     })
   }
 
-  if (targets.length === 0) {
-    return new Error('No valid distance targets could be generated')
-  }
+  const mode = getDistanceMeasurementMode(targets)
+  if (err(mode)) return mode
 
-  if (targets.length === 1 && targets[0].kind !== 'edge') {
-    return new Error(
-      'A single distance selection must be an edge. Select two faces or edges to measure between entities.'
-    )
-  }
-
-  const allTargetsAreEdges = targets.every((target) => target.kind === 'edge')
-
-  if (targets.length > 2 && !allTargetsAreEdges) {
-    return new Error(
-      'Select one or more edges for edge lengths, or exactly two faces or edges for a distance.'
-    )
+  // Name variable-less bodies after tag lookups, before argument insertions shift paths.
+  for (const [index, name] of unnamedBodies) {
+    const statement = modifiedAst.body[index]
+    if (statement?.type !== 'ExpressionStatement')
+      return new Error('Could not name the distance body.')
+    const declaration = createVariableDeclaration(name, statement.expression)
+    declaration.preComments = statement.preComments
+    modifiedAst.body[index] = declaration
   }
 
   if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
@@ -1432,60 +1474,65 @@ export function addDistanceGdt({
     return styleResult
   }
 
-  const edgeLengthExprs =
-    targets.length === 1 || targets.length > 2
-      ? deduplicateFaceExprs(targets.map((target) => target.expr))
-      : []
-
-  if (
-    (targets.length === 1 || targets.length > 2) &&
-    edgeLengthExprs.length === 0
-  ) {
-    return new Error('No valid edge expressions could be generated')
-  }
-
-  const labeledArgs: LabeledArg[] =
-    edgeLengthExprs.length > 0
-      ? [createLabeledArg('edges', createArrayExpression(edgeLengthExprs))]
+  const measurements =
+    mode === 'lengths'
+      ? deduplicateFaceExprs(targets.map((target) => target.expr)).map(
+          (expr) => ({
+            exprs: [expr],
+            frameDefaults: targets.find((target) => target.expr === expr)
+              ?.frameDefaults,
+          })
+        )
       : [
-          createLabeledArg('from', targets[0].expr),
-          createLabeledArg('to', targets[1].expr),
+          {
+            exprs: targets.map((target) => target.expr),
+            frameDefaults: undefined,
+          },
         ]
-
-  if (tolerance !== undefined) {
-    labeledArgs.push(createLabeledArg('tolerance', valueOrVariable(tolerance)))
-  }
-
-  if (precision !== undefined) {
-    labeledArgs.push(createLabeledArg('precision', valueOrVariable(precision)))
-  }
-
-  labeledArgs.push(...styleResult.labeledArgs)
+  const paths: PathToNode[] = []
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Distance')
-
-  const call = createCallExpressionStdLibKw(
-    stdLibCall.name,
-    null,
-    labeledArgs,
-    undefined,
-    stdLibCall.modulePath
-  )
-
-  const pathToNode = setCallInAst({
-    ast: modifiedAst,
-    call,
-    pathToEdit: mNodeToEdit,
-    pathIfNewPipe: undefined,
-    wasmInstance,
-  })
-  if (err(pathToNode)) {
-    return pathToNode
+  for (const measurement of measurements) {
+    // Calculated defaults contain no new argument variables; user variables were inserted once above.
+    const defaults = processGdtStyleParameters({
+      modifiedAst,
+      wasmInstance,
+      ...measurement.frameDefaults,
+    })
+    if (err(defaults)) return defaults
+    const labeledArgs: LabeledArg[] =
+      mode === 'lengths'
+        ? [createLabeledArg('edges', createArrayExpression(measurement.exprs))]
+        : [
+            createLabeledArg('from', measurement.exprs[0]),
+            createLabeledArg('to', measurement.exprs[1]),
+          ]
+    if (tolerance !== undefined)
+      labeledArgs.push(
+        createLabeledArg('tolerance', valueOrVariable(tolerance))
+      )
+    if (precision !== undefined)
+      labeledArgs.push(
+        createLabeledArg('precision', valueOrVariable(precision))
+      )
+    labeledArgs.push(...defaults.labeledArgs, ...styleResult.labeledArgs)
+    const call = createCallExpressionStdLibKw(
+      stdLibCall.name,
+      null,
+      labeledArgs,
+      undefined,
+      stdLibCall.modulePath
+    )
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call,
+      pathToEdit: mNodeToEdit,
+      pathIfNewPipe: undefined,
+      wasmInstance,
+    })
+    if (err(pathToNode)) return pathToNode
+    paths.push(pathToNode)
   }
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
+  return { modifiedAst, pathToNode: paths.length === 1 ? paths[0] : paths }
 }
 
 export function addPerpendicularityGdt({

@@ -1,5 +1,6 @@
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import { queryModelingCommand } from '@src/lib/engineConnection/utils'
 import {
   getPrimitiveSelectionForEntity,
@@ -7,24 +8,59 @@ import {
 } from '@src/lib/selections'
 import type {
   EnginePrimitiveSelection,
+  Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
 
-export type DistanceFaceSelections = Map<string, EnginePrimitiveSelection>
+/** Engine-only adjacent faces travel with the edge they identify. */
+export type DistanceSelection = Selection & {
+  primitiveFaces?: EnginePrimitiveSelection[]
+  frameDefaults?: DistanceFrameDefaults
+}
+
+export type DistanceFrameDefaults = {
+  framePosition?: KclCommandValue
+  framePlane?: string
+  fontSize?: KclCommandValue
+}
+
+export type DistanceSelections = {
+  graphSelections: DistanceSelection[]
+  otherSelections: Selections['otherSelections']
+}
+
+export function isDistanceEdge(selection: Selection): boolean {
+  return (
+    selection.entityRef?.type === 'edge' ||
+    selection.artifact?.type === 'segment' ||
+    selection.artifact?.type === 'sweepEdge'
+  )
+}
+
+export function getDistanceMeasurementMode(
+  targets: ReadonlyArray<{ kind: 'face' | 'edge' }>
+): 'lengths' | 'between' | Error {
+  if (!targets.length) return new Error('No valid distance selections found.')
+  if (targets.length === 2) return 'between'
+  if (targets.every((target) => target.kind === 'edge')) return 'lengths'
+  return new Error(
+    'Select one or more edges for edge lengths, or exactly two faces or edges for a distance.'
+  )
+}
 
 /** Convert viewport primitives to face references, keeping engine and artifact ownership distinct. */
 export async function resolveDistanceSelections(
   selections: Selections,
   graph: ArtifactGraph,
   engine: ConnectionManager
-): Promise<{ selections: Selections; faces: DistanceFaceSelections } | Error> {
-  const normalized: Selections = {
+): Promise<DistanceSelections | Error> {
+  const normalized: DistanceSelections = {
     graphSelections: selections.graphSelections.map((selection) => ({
       ...selection,
     })),
     otherSelections: [],
   }
-  const faces: DistanceFaceSelections = new Map()
+  const faces = new Map<string, EnginePrimitiveSelection>()
   for (const selection of selections.otherSelections) {
     if (
       !isEnginePrimitiveSelection(selection) ||
@@ -87,13 +123,12 @@ export async function resolveDistanceSelections(
       if (edge && edge.type === 'solid3d_get_common_edge' && edge.data.edge)
         selection.engineEntityId = edge.data.edge
     }
+    selection.primitiveFaces = []
     for (const id of [...ref.side_faces, ...(ref.end_faces ?? [])]) {
-      if (
-        faces.has(id) ||
-        (graph.has(id) && graph.get(id)?.type !== 'primitiveFace')
-      )
-        continue
-      const face = await getPrimitiveSelectionForEntity(id, engine, graph)
+      if (graph.has(id) && graph.get(id)?.type !== 'primitiveFace') continue
+      const face =
+        faces.get(id) ??
+        (await getPrimitiveSelectionForEntity(id, engine, graph))
       if (
         !face ||
         face.primitiveType !== 'face' ||
@@ -105,7 +140,8 @@ export async function resolveDistanceSelections(
         )
       }
       faces.set(id, face)
+      selection.primitiveFaces.push(face)
     }
   }
-  return { selections: normalized, faces }
+  return normalized
 }

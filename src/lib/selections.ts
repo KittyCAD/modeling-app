@@ -558,7 +558,7 @@ async function createFaceApiReferenceExpr({
       primitiveSelection.graphSelection?.codeRef,
       undefined,
       undefined,
-      { requireEveryFace: true }
+      { requireAllFaces: true, allowAstEdits: false }
     )
   } catch {
     return null

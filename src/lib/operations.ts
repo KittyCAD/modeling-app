@@ -2569,26 +2569,16 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
 
   const objects = { graphSelections, otherSelections: [] }
 
-  const tolerance = await extractKclArgument(
-    code,
-    operation,
-    'tolerance',
-    rustContext
-  )
-  if ('error' in tolerance) {
-    return { reason: tolerance.error }
-  }
-
   const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'tolerance', rustContext),
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
     extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
-    (arg) => ('error' in arg ? undefined : arg)
-  )
+  const [tolerance, precision, framePosition, leaderScale, fontSize] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
