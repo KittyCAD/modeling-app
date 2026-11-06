@@ -2,6 +2,27 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 
 const DESC = ':desc'
 
+/** Supported project-list sorting choices, including the default reset choice. */
+export type ProjectSortField = 'name' | 'modified'
+export type ProjectSort =
+  | ''
+  | ProjectSortField
+  | `${ProjectSortField}${typeof DESC}`
+export const DEFAULT_PROJECT_SORT: ProjectSort = 'modified:desc'
+
+export function parseProjectSort(value: string): ProjectSort {
+  switch (value) {
+    case '':
+    case 'name':
+    case 'name:desc':
+    case 'modified':
+    case 'modified:desc':
+      return value
+    default:
+      return DEFAULT_PROJECT_SORT
+  }
+}
+
 type SortableProject = {
   name?: string
   title?: string
@@ -23,16 +44,17 @@ export function getSortIcon(
   return 'horizontalDash'
 }
 
-export function getNextSearchParams(currentSort: string, newSort: string) {
-  if (currentSort === null || !currentSort) {
-    return { sort_by: newSort + (newSort !== 'modified' ? DESC : '') }
+export function getNextProjectSort(
+  currentSort: ProjectSort,
+  newSort: ProjectSortField
+): ProjectSort {
+  if (!currentSort) {
+    return newSort === 'modified' ? 'modified' : 'name:desc'
   }
   if (currentSort.includes(newSort) && !currentSort.includes(DESC)) {
-    return { sort_by: '' }
+    return ''
   }
-  return {
-    sort_by: newSort + (currentSort.includes(DESC) ? '' : DESC),
-  }
+  return currentSort.includes(DESC) ? newSort : `${newSort}:desc`
 }
 
 function getSortableProjectName(project: SortableProject) {

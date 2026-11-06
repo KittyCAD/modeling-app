@@ -1,12 +1,19 @@
+import { Registry } from '@kittycad/registry'
+import { useSignals } from '@preact/signals-react/runtime'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import {
   FREE_CLOUD_PROJECT_TRAINING_POLICY_URL,
   shouldShowFreeCloudProjectTrainingDisclosure,
 } from '@src/lib/projectLibraries/trainingDisclosure'
 import type { HomeProjectActionsService } from '@src/registry/contracts/homeProjects'
+import { projectSortingService } from '@src/lib/sorting/registry/contract'
+import { urlService } from '@src/registry/contracts/url'
+import projectSorting from '@src/lib/sorting/registry'
+import url, { createBrowserUrlAdapter } from '@src/registry/extensions/url'
+import { getSortFunction } from '@src/lib/sorting'
 import { HomeHeader } from '@src/routes/HomeHeader'
 import { ProjectLibraryPreviewRow } from '@src/routes/HomeProjectCards'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -50,7 +57,7 @@ function renderHomeHeader({
         library={cloudLibrary}
         setQuery={vi.fn()}
         sort="modified:desc"
-        setSearchParams={vi.fn()}
+        onSort={vi.fn()}
         readWriteProjectDir={{ value: true, error: undefined }}
         showFreeCloudProjectTrainingDisclosure={
           showFreeCloudProjectTrainingDisclosure
@@ -82,6 +89,64 @@ function renderProjectLibraryPreviewRow(library: ProjectLibrary) {
 }
 
 describe('HomeHeader', () => {
+  it('sorts from application state while publishing the URL without dropping other fields', async () => {
+    window.history.replaceState(null, '', '/home?keep=yes')
+    const registry = new Registry()
+    registry.configure([url, projectSorting])
+    await registry.get(urlService).start(createBrowserUrlAdapter(window, false))
+    const sorting = registry.get(projectSortingService)
+
+    function ProjectList() {
+      useSignals()
+      const sort = sorting.sort.value
+      const projects = [
+        { name: 'alpha', modified: 30 },
+        { name: 'zebra', modified: 10 },
+      ].toSorted(getSortFunction(sort))
+      return (
+        <>
+          <HomeHeader
+            title="Projects"
+            setQuery={vi.fn()}
+            sort={sort}
+            onSort={sorting.toggle}
+            readWriteProjectDir={{ value: true, error: undefined }}
+          />
+          <ol aria-label="Projects">
+            {projects.map((project) => (
+              <li key={project.name}>{project.name}</li>
+            ))}
+          </ol>
+        </>
+      )
+    }
+
+    try {
+      render(
+        <MemoryRouter>
+          <ProjectList />
+        </MemoryRouter>
+      )
+      expect(
+        screen.getAllByRole('listitem').map((item) => item.textContent)
+      ).toEqual(['alpha', 'zebra'])
+      fireEvent.click(screen.getByRole('button', { name: /Name$/ }))
+      await waitFor(() => {
+        expect(
+          screen.getAllByRole('listitem').map((item) => item.textContent)
+        ).toEqual(['zebra', 'alpha'])
+      })
+      expect(window.location.search).toBe('?keep=yes&sort_by=name')
+
+      fireEvent.click(screen.getByRole('button', { name: /Last Modified$/ }))
+      await waitFor(() => expect(sorting.sort.value).toBe('modified:desc'))
+      expect(window.location.search).toBe('?keep=yes&sort_by=modified%3Adesc')
+    } finally {
+      registry[Symbol.dispose]()
+      window.history.replaceState(null, '', '/')
+    }
+  })
+
   it('shows the Free cloud-project training disclosure with the policy link', () => {
     renderHomeHeader({
       showFreeCloudProjectTrainingDisclosure:
