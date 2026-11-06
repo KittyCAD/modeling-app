@@ -200,24 +200,12 @@ export class SelectionHighlightRenderer {
     this.backgroundColorNode.value.set(backgroundColor)
   }
 
-  setHover(target: Mesh | null) {
-    this.hoveredKeys.clear()
-    if (target) {
-      const faceUuid = target.userData.faceUuid
-      if (typeof faceUuid === 'string') {
-        // Periodic surfaces can be split into several meshes with one face ID.
-        for (const source of this.sourceByOverlay.values()) {
-          if (source.userData.faceUuid === faceUuid) {
-            this.hoveredKeys.add(source.uuid)
-          }
-        }
-      } else {
-        this.hoveredKeys.add(target.uuid)
-      }
-    }
+  setHover(targets: Mesh[]) {
+    this.hoveredKeys = new Set(targets.map((target) => target.uuid))
     this.updateSceneMembership()
   }
 
+  // Prepares highlights, creates one overlay for each target: sharing geometry.
   setTargets(targets: Mesh[]) {
     this.clearModel()
     for (const mesh of targets) {
