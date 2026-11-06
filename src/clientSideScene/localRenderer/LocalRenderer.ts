@@ -1276,7 +1276,8 @@ export class LocalRenderer {
           presentation: 'compact',
           // Deployed engines still need this flag to link exported geometry to the artifact graph.
           include_uuids: true,
-          extras: ['geometry_uuids', 'sketches', 'regions'],
+          // Older preview engines reject geometry_uuids in extras; use the flag above.
+          extras: ['sketches', 'regions'],
         },
         jsAppSettings(this.kclManager.systemDeps.settings)
       )
