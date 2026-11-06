@@ -9,6 +9,7 @@ import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
+import { ZookeeperImagePreview } from '@src/lib/zookeeper/components/ZookeeperImagePreview'
 import {
   type ReactNode,
   useCallback,
@@ -476,9 +477,7 @@ const ImageFileItem = (props: {
   url: string | undefined
   onDownload: (url: string, filename: string) => void
 }) => {
-  const [imageError, setImageError] = useState(false)
-
-  if (!props.url || imageError) {
+  if (!props.url) {
     // Fallback to file icon if image fails to load
     return (
       <button
@@ -496,23 +495,11 @@ const ImageFileItem = (props: {
   }
 
   return (
-    <div className="flex max-w-full min-w-0 flex-col gap-1">
-      <span className="max-w-full truncate text-xs text-chalkboard-70 dark:text-chalkboard-40">
-        {props.file.name}
-      </span>
-      <button
-        onClick={() => props.onDownload(props.url!, props.file.name)}
-        className="m-0 w-fit max-w-full cursor-pointer overflow-hidden rounded border border-chalkboard-30 bg-transparent p-0 text-left transition-opacity hover:opacity-80 dark:border-chalkboard-80"
-        title={`Click to download ${props.file.name}`}
-      >
-        <img
-          src={props.url}
-          alt={props.file.name}
-          className="block h-auto max-w-full"
-          onError={() => setImageError(true)}
-        />
-      </button>
-    </div>
+    <ZookeeperImagePreview
+      key={props.url}
+      url={props.url}
+      name={props.file.name}
+    />
   )
 }
 
@@ -527,7 +514,9 @@ const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
 
         const fetchState =
           props.attachmentFetches?.[getZookeeperAttachmentKey(attachmentRef)]
-        return fetchState?.status === 'loaded' ? fetchState.file : file
+        return fetchState?.status === 'loaded'
+          ? { ...fetchState.file, name: file.name }
+          : file
       }),
     [props.attachmentFetches, props.files]
   )

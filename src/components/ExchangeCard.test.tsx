@@ -35,7 +35,6 @@ describe('ExchangeCard replay attachments', () => {
       <ExchangeCard {...exchangeProps} onFetchAttachment={onFetchAttachment} />
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /reference\.png/ }))
     expect(onFetchAttachment).toHaveBeenCalledOnce()
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
 
@@ -63,14 +62,58 @@ describe('ExchangeCard replay attachments', () => {
             file: {
               ...exchangeProps.request.additional_files[0],
               data: [1, 2, 3],
+              name: 'opaque-blob-name.png',
             },
           },
         }}
       />
     )
 
-    expect(screen.queryByRole('button', { name: /reference\.png/ })).toBeNull()
+    expect(
+      screen.getByRole('button', { name: 'View reference.png' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Download reference.png' })
+    ).toHaveAttribute('download', 'reference.png')
     expect(screen.getByText('Loaded')).toBeInTheDocument()
+  })
+
+  test('shows every image without expanding the other attachments', () => {
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        request={{
+          ...exchangeProps.request,
+          additional_files: [
+            { name: 'notes.txt', mimetype: 'text/plain', data: [1] },
+            ...['front.png', 'side.png', 'top.png'].map((name) => ({
+              name,
+              mimetype: 'image/png',
+              data: [1],
+            })),
+          ],
+        }}
+      />
+    )
+    for (const name of ['front.png', 'side.png', 'top.png']) {
+      expect(screen.getByRole('img', { name })).toBeInTheDocument()
+    }
+  })
+
+  test('retries failed replay images only when requested', () => {
+    const onFetchAttachment = vi.fn()
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        onFetchAttachment={onFetchAttachment}
+        attachmentFetches={{
+          [attachmentKey]: { status: 'error', message: 'Temporary failure' },
+        }}
+      />
+    )
+    expect(onFetchAttachment).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: /reference\.png/ }))
+    expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
   })
 
   test('renders a metadata-only server file without a reasoning message', () => {

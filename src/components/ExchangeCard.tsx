@@ -1,4 +1,8 @@
-import type { AttachmentRef, MlCopilotServerMessage } from '@kittycad/lib'
+import type {
+  AttachmentRef,
+  MlCopilotFile,
+  MlCopilotServerMessage,
+} from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
@@ -248,6 +252,7 @@ type RequestCardProps = Exchange['request'] & {
 }
 
 const MAX_VISIBLE_ATTACHMENTS = 2
+const EMPTY_ATTACHMENTS: MlCopilotFile[] = []
 
 const hasVisibleChildren = (children: ReactNode) => {
   return (
@@ -290,16 +295,55 @@ export const ChatBubble = (props: {
 
 export const RequestCard = (props: RequestCardProps) => {
   const [showAllAttachments, setShowAllAttachments] = useState(false)
+  const { attachmentFetches, onFetchAttachment } = props
+  const additionalFiles = isMlCopilotUserRequest(props)
+    ? (props.additional_files ?? EMPTY_ATTACHMENTS)
+    : EMPTY_ATTACHMENTS
+
+  useEffect(() => {
+    for (const file of additionalFiles) {
+      const ref = file.attachment_ref
+      if (
+        file.mimetype.startsWith('image/') &&
+        file.data.length === 0 &&
+        ref &&
+        !attachmentFetches?.[getZookeeperAttachmentKey(ref)] &&
+        file.metadata?.zoo_replay_error !== 'attachment_unavailable'
+      ) {
+        onFetchAttachment?.(ref)
+      }
+    }
+  }, [additionalFiles, attachmentFetches, onFetchAttachment])
+
+  const resolvedFiles = useMemo(
+    () =>
+      additionalFiles.map((file) => {
+        const state = file.attachment_ref
+          ? props.attachmentFetches?.[
+              getZookeeperAttachmentKey(file.attachment_ref)
+            ]
+          : undefined
+        return state?.status === 'loaded'
+          ? { ...state.file, name: file.name }
+          : file
+      }),
+    [additionalFiles, props.attachmentFetches]
+  )
 
   if (!isMlCopilotUserRequest(props)) {
     return null
   }
 
-  const additionalFiles = props.additional_files ?? []
-  const hasHiddenAttachments = additionalFiles.length > MAX_VISIBLE_ATTACHMENTS
-  const visibleAttachments = showAllAttachments
-    ? additionalFiles
-    : additionalFiles.slice(0, MAX_VISIBLE_ATTACHMENTS)
+  const hasHiddenAttachments = additionalFiles.some(
+    (file, index) =>
+      index >= MAX_VISIBLE_ATTACHMENTS && !file.mimetype.startsWith('image/')
+  )
+  const visibleAttachments = resolvedFiles.filter(
+    (file, index) =>
+      showAllAttachments ||
+      index < MAX_VISIBLE_ATTACHMENTS ||
+      file.mimetype.startsWith('image/')
+  )
 
   return (
     <>
@@ -314,7 +358,7 @@ export const RequestCard = (props: RequestCardProps) => {
       {additionalFiles.length > 0 && (
         <div className="flex justify-end pr-9">
           <div
-            className="flex flex-col items-end gap-1"
+            className="flex min-w-0 max-w-full flex-col items-end gap-1"
             data-testid="ml-request-chat-bubble-attachments"
           >
             <div className="w-full text-right text-xs font-medium text-chalkboard-70 dark:text-chalkboard-40">
@@ -335,11 +379,7 @@ export const RequestCard = (props: RequestCardProps) => {
 
               const contents = (
                 <>
-                  <ZookeeperAttachmentPreview
-                    file={
-                      fetchState?.status === 'loaded' ? fetchState.file : file
-                    }
-                  />
+                  <ZookeeperAttachmentPreview file={file} />
                   {fetchState?.status === 'loading' && (
                     <span className="text-chalkboard-70 dark:text-chalkboard-40">
                       Loading…
@@ -353,7 +393,7 @@ export const RequestCard = (props: RequestCardProps) => {
                 </>
               )
               const className =
-                'flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 px-2 py-1 text-xs'
+                'flex min-w-0 max-w-full items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 px-2 py-1 text-xs'
 
               return canFetch ? (
                 <button
