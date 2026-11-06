@@ -1,47 +1,53 @@
 /// Define gears that users can include in their models.
 
-fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: number(Angle), offsetHeight: number(Length), helixAngle: number(Angle)) {
-  // Calculate gear parameters
-  pitchDiameter = module * nTeeth
-  addendum = module
-  deddendum = 1.25 * module
-  baseDiameter = pitchDiameter * cos(pressureAngle)
-  baseRadius = baseDiameter / 2
-  tipDiameter = pitchDiameter + 2 * module
+fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: number(Angle), offsetHeight: number(Length), helixAngle: number(Angle), profileShift: number(_)) {
+// Gear circles
+pitchDiameter = module * nTeeth
+pitchRadius = pitchDiameter / 2
+baseRadius = pitchRadius * cos(pressureAngle)
+tipRadius = pitchRadius + module * (1 + profileShift)
 
-  // `acos` requires an explicitly unitless ratio when the lengths carry concrete units.
-  helixRatio = (offsetHeight * tan(helixAngle) / (tipDiameter / 2)): number(_)
-  // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
-  helixCalc = acos(helixRatio)
+dedendum = 1.25 * module
+rootRadius = pitchRadius - dedendum + profileShift * module
 
-  // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
-  return startSketchOn(offsetPlane(XY, offset = offsetHeight))
-    |> startProfile(at = polar(angle = helixCalc, length = baseDiameter / 2))
-    |> involuteCircular(
-         startRadius = baseDiameter / 2,
-         endRadius = tipDiameter / 2,
-         angle = helixCalc,
-         tag = $seg01,
-       )
-    |> line(endAbsolute = polar(angle = 160deg / nTeeth + helixCalc, length = tipDiameter / 2))
-    |> involuteCircular(
-         startRadius = baseDiameter / 2,
-         endRadius = tipDiameter / 2,
-         angle = -(4 * atan(segEndY(seg01) / segEndX(seg01)) - (3 * helixCalc)),
-         reverse = true,
-       )
+// Involute function inv(a) = tan(a) - a, in degrees
+invAlpha = (tan(pressureAngle) * 180 / PI): number(deg) - pressureAngle
 
-    // Position the end line of the sketch at the start of the next tooth
-    |> line(endAbsolute = polar(angle = 360deg / nTeeth + helixCalc, length = baseDiameter / 2))
+// Half the tooth's angular thickness at the base circle
+halfToothBase = 90deg / nTeeth
+  + (2 * profileShift * tan(pressureAngle) / nTeeth * 180 / PI): number(deg)
+  + invAlpha
 
-    // Pattern the sketch about the center by the specified number of teeth, then close the sketch
-    |> patternCircular2d(
-         instances = nTeeth,
-         center = [0, 0],
-         arcDegrees = 360deg,
-         rotateDuplicates = true,
-       )
-    |> close()
+// Helix twist at this sketch height
+twist = (offsetHeight * tan(helixAngle) / pitchRadius * 180 / PI): number(deg)
+
+// Tooth centre line and the two flank start angles on the base circle
+toothCenter = 90deg + twist
+rightStart = toothCenter - halfToothBase
+leftStart = toothCenter + halfToothBase
+
+return startSketchOn(offsetPlane(XY, offset = offsetHeight))
+  |> startProfile(at = polar(angle = rightStart, length = baseRadius))
+  // Right flank, base to tip
+  |> involuteCircular(startRadius = baseRadius, endRadius = tipRadius, angle = rightStart, tag = $seg01)
+  // Tip land: mirror the tip corner across the tooth centre line
+  |> arc(
+       interiorAbsolute = polar(angle = toothCenter, length = tipRadius),
+       endAbsolute = polar(angle = 2 * toothCenter - atan2(y = segEndY(seg01), x = segEndX(seg01)), length = tipRadius))
+  // Left flank, tip to base
+  |> involuteCircular(startRadius = baseRadius, endRadius = tipRadius, angle = leftStart, reverse = true)
+  // Down to the root circle
+  |> line(endAbsolute = polar(angle = leftStart, length = rootRadius))
+  // Along the root circle to below the next tooth
+  |> arc(
+       interiorAbsolute = polar(angle = toothCenter + 180deg / nTeeth, length = rootRadius),
+       endAbsolute = polar(angle = rightStart + 360deg / nTeeth, length = rootRadius),
+     )
+  // Up to the base circle where the next tooth starts
+  |> line(endAbsolute = polar(angle = rightStart + 360deg / nTeeth, length = baseRadius))
+  // Repeat around the gear
+  |> patternCircular2d(instances = nTeeth, center = [0, 0], arcDegrees = 360deg, rotateDuplicates = true)
+|> close()
 }
 
 /// A helical gear (like a spur gear, but the teeth are cut at an angle to the axis).
@@ -58,6 +64,7 @@ fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: num
 ///   pressureAngle = 20deg,
 ///   helixAngle = 35deg,
 ///   gearHeight = 7,
+///   profileShift = 0,
 /// )
 ///```
 ///```kcl
@@ -90,6 +97,7 @@ fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: num
 ///   pressureAngle = 20deg,
 ///   helixAngle = 35deg,
 ///   gearHeight,
+///   profileShift = 0,
 /// )
 /// // Create a keyhole solid, then cut it out from the gear
 /// // body to create the final gear with a keyhole.
@@ -102,6 +110,7 @@ export fn helical(nTeeth: number(Count),
   pressureAngle: number(Angle),
   helixAngle: number(Angle),
   gearHeight: number(Length),
+  profileShift: number(_),
 ): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
@@ -115,7 +124,7 @@ export fn helical(nTeeth: number(Count),
   heightToPitchRatio = (gearHeight / pitchDiameter): number(_)
   twistAngle = (360deg * heightToPitchRatio * tan(helixAngle) / PI): number(deg)
 
-  helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle, offsetHeight = 0)
+  helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle, offsetHeight = 0, profileShift)
     |> extrude(length = gearHeight, twistAngle, twistAngleStep = 0)
 
   return helicalGear
@@ -135,6 +144,7 @@ export fn helical(nTeeth: number(Count),
 ///   module = 1.5,
 ///   pressureAngle = 14deg,
 ///   gearHeight = 6,
+///   profileShift = 0,
 /// )
 /// ```
 @(experimental = true)
@@ -143,6 +153,7 @@ export fn spur(
   module: number(Length),
   pressureAngle: number(Angle),
   gearHeight: number(Length),
+  profileShift: number(_),
 ): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
@@ -152,7 +163,7 @@ export fn spur(
   baseRadius = baseDiameter / 2
   tipDiameter = pitchDiameter + 2 * module
 
-  helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle = 0, offsetHeight = 0)
+  helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle = 0, offsetHeight = 0, profileShift)
     |> extrude(length = gearHeight)
 
   return helicalGear
@@ -172,6 +183,7 @@ export fn spur(
 ///   pressureAngle = 20deg,
 ///   gearHeight = 5,
 ///   helixAngle = 40deg,
+///   profileShift = 0,
 /// )
 ///```
 @(experimental = true)
@@ -181,6 +193,7 @@ export fn herringbone(
   pressureAngle: number(Angle),
   gearHeight: number(Length),
   helixAngle: number(Angle),
+  profileShift: number(_),
 ): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
@@ -197,6 +210,7 @@ export fn herringbone(
     pressureAngle,
     offsetHeight = 0,
     helixAngle,
+    profileShift,
   )
 
   // Draw a gear sketch that has been rotated by the helix angle
@@ -206,6 +220,7 @@ export fn herringbone(
     pressureAngle,
     offsetHeight = gearHeight / 2,
     helixAngle,
+    profileShift,
   )
 
   // Draw a gear sketch at the total gear height that reverses the angle direction
@@ -238,6 +253,7 @@ export fn herringbone(
 ///   pressureAngle = 14deg,
 ///   helixAngle = -25deg,
 ///   gearHeight = 5,
+///   profileShift = 0,
 /// )
 /// ```
 @(experimental = true)
@@ -246,7 +262,8 @@ export fn ring(
   module: number(Length),
   pressureAngle: number(Angle),
   helixAngle: number(Angle),
-  gearHeight: number(Length)
+  gearHeight: number(Length),
+    profileShift: number(_),
 ): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
@@ -255,7 +272,7 @@ export fn ring(
   baseDiameter = pitchDiameter * cos(pressureAngle)
   tipDiameter = pitchDiameter + 2 * module
 
-  helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle, offsetHeight = 0)
+  helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle, offsetHeight = 0, profileShift)
   twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter)
 
   return startSketchOn(XY)
