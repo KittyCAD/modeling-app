@@ -367,15 +367,16 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
     })
   }
 
-  test(`Can start a sketch on a shell inner face`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    toolbar,
-    editor,
-  }) => {
-    const code = `@settings(kclVersion = 2.0)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Can start a sketch on a shell inner face ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      toolbar,
+      editor,
+    }) => {
+      const code = `@settings(kclVersion = 2.0)
 
 rectangleSketch = sketch(on = XY) {
   line1 = line(start = [var 0.42mm, var 0.91mm], end = [var 3.1mm, var 0.91mm])
@@ -394,28 +395,37 @@ rectangleSketch = sketch(on = XY) {
 extrude001 = extrude(region(point = [1mm, 1mm], sketch = rectangleSketch), length = 1, tagEnd = $capEnd001)
 shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
 
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, code)
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, code)
 
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
+      await scene.settled()
 
-    const [clickOnInnerFace] = scene.makeMouseHelpers(0.6, 0.4, {
-      format: 'ratio',
-    })
+      if (await page.evaluate(() => window.engineCommandManager.geometryOnly)) {
+        await scene.moveCameraTo(
+          { x: 7, y: -5, z: 8 },
+          { x: 1.76, y: 2.635, z: 0.5 }
+        )
+      }
+      // Visible face 3 is the original inner face, topology primitive index 7.
+      const [clickOnInnerFace] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 3,
+        stream: { x: 0.6, y: 0.4, format: 'ratio' },
+      })
 
-    await clickOnInnerFace()
-    await expect(toolbar.selectionStatus).toHaveText(
-      '1 faceCurrently selected geometry'
-    )
-    await toolbar.startSketchPlaneSelection()
+      await clickOnInnerFace()
+      await expect(toolbar.selectionStatus).toHaveText(
+        '1 faceCurrently selected geometry'
+      )
+      await toolbar.startSketchPlaneSelection()
 
-    await expect(toolbar.lineBtn).toBeEnabled()
-    await expect
-      .poll(() => editor.getCurrentCode())
-      .toBe(`@settings(kclVersion = 2.0)
+      await expect(toolbar.lineBtn).toBeEnabled()
+      await expect
+        .poll(() => editor.getCurrentCode())
+        .toBe(`@settings(kclVersion = 2.0)
 
 
 rectangleSketch = sketch(on = XY) {
@@ -439,7 +449,8 @@ sketch001 = sketch(on = face001) {
 }
 
 `)
-  })
+    })
+  }
 
   test(`Shell inner edge: selection uses engine topology_fallback (primitive index); fillet codegen uses edgeId(solid, index) when the artifact graph lacks wall/cap.`, async ({
     context,
