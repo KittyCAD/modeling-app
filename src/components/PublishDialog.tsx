@@ -246,7 +246,7 @@ export function PublishDialog({
       leaveFrom="opacity-100 translate-y-0 scale-100"
       leaveTo="opacity-0 translate-y-1 scale-[0.98]"
     >
-      <Popover.Panel className="fixed bottom-4 right-4 top-16 z-20 flex w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded border border-chalkboard-30/80 bg-chalkboard-10/95 text-sm text-chalkboard-100 shadow-2xl backdrop-blur-sm dark:border-chalkboard-80/60 dark:bg-chalkboard-90/95 dark:text-chalkboard-10">
+      <Popover.Panel className="fixed right-4 top-16 z-20 flex max-h-[calc(100vh-5rem)] w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded border border-chalkboard-30/80 bg-chalkboard-10/95 text-sm text-chalkboard-100 shadow-2xl backdrop-blur-sm dark:border-chalkboard-80/60 dark:bg-chalkboard-90/95 dark:text-chalkboard-10">
         <div className="shrink-0 border-b border-chalkboard-20/70 bg-chalkboard-20/70 px-4 py-4 text-chalkboard-100 dark:border-chalkboard-80/70 dark:bg-chalkboard-80/70 dark:text-chalkboard-10">
           <div className="min-w-0">
             <h2 className="text-base font-medium leading-none">
