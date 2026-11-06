@@ -1315,7 +1315,10 @@ export class LocalRenderer {
       gpu?.edgeRenderer.addTo(gltf.scene)
       gpu?.sketchLineRenderer.buildEdges(gltf, getSketchSegmentEdges(gltf))
       gpu?.sketchLineRenderer.addTo(gltf.scene)
-      for (const mesh of createRegionMeshes(gltf)) {
+      for (const mesh of createRegionMeshes(
+        gltf,
+        this.kclManager.artifactGraph
+      )) {
         gltf.scene.add(mesh)
       }
 
