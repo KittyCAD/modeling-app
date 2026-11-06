@@ -1338,7 +1338,7 @@ export class LocalRenderer {
 }
 
 // The glTF materials are single-sided, but the engine draws the backs of faces
-// in the backface color, which shows on open surfaces. 
+// in the backface color, which shows on open surfaces.
 // This makes GLTFLoaderbuild doubleSided materials.
 function backfaceColorPlugin(backfaceColor: Node<'color'>): GLTFLoaderPlugin {
   return {
