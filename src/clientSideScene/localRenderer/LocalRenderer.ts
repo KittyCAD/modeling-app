@@ -40,6 +40,8 @@ import {
   Box3,
   BufferGeometry,
   type Camera,
+  Color,
+  DoubleSide,
   Group,
   Material,
   Mesh,
@@ -54,14 +56,28 @@ import {
 } from 'three'
 import {
   GLTFLoader,
+  type GLTFLoaderPlugin,
   type GLTFReference,
 } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import type DenoiseNode from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import type GTAONode from 'three/examples/jsm/tsl/display/GTAONode.js'
 import { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
-import { mrt, normalView, output, pass, vec3, vec4 } from 'three/tsl'
 import {
+  color,
+  frontFacing,
+  materialColor,
+  mrt,
+  normalView,
+  output,
+  pass,
+  select,
+  uniform,
+  vec3,
+  vec4,
+} from 'three/tsl'
+import {
+  MeshStandardNodeMaterial,
   type Node,
   type PassNode,
   RenderPipeline,
@@ -136,6 +152,7 @@ export interface LocalRendererProps {
   enableSSAO: boolean
   highlightEdges: boolean
   fixedSizeGrid: boolean
+  backfaceColor: string
   /** isNewModel: the result of a finished execution is now in the scene. */
   onModelLoadSettled?: (isNewModel?: boolean) => void
 }
@@ -151,6 +168,8 @@ export class LocalRenderer {
   private animationFrameId = -1
   private currentModel: Object3D | null = null
   private readonly gltfLoader = new GLTFLoader()
+  // Shared by all model materials, so a new color doesn't rebuild their shaders.
+  private readonly backfaceColor = uniform(new Color())
   /** Bumped when an execution starts. Async work started before it is stale. */
   private executionVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
@@ -194,6 +213,8 @@ export class LocalRenderer {
       defaultPlaneVisibility: { xy: true, xz: true, yz: true },
     }
     this.onModelLoadSettled = props.onModelLoadSettled
+    this.backfaceColor.value.set(props.backfaceColor)
+    this.gltfLoader.register(() => backfaceColorPlugin(this.backfaceColor))
 
     this.container.style.opacity = '0'
     kclManager.addEventListener(
@@ -611,6 +632,11 @@ export class LocalRenderer {
     this.settings.highlightEdges = highlightEdges
     this.gpu?.edgeRenderer.setVisible(highlightEdges)
     this.gpu?.integerIdPicker.setEdgesVisible(highlightEdges)
+    this.invalidateBaseRender()
+  }
+
+  setBackfaceColor(backfaceColor: string) {
+    this.backfaceColor.value.set(backfaceColor)
     this.invalidateBaseRender()
   }
 
@@ -1224,6 +1250,7 @@ export class LocalRenderer {
         bytes.buffer,
         ''
       )) as KITTYCAD_GLTF
+      console.log('local renderer glTF', gltf.parser.json, gltf)
       gltf.scene ??= new Group() // A sketch-only model has no scene
       fillEmptyBrepArrays(gltf)
 
@@ -1307,6 +1334,25 @@ export class LocalRenderer {
     camera.updateProjectionMatrix()
     camera.updateMatrixWorld(true)
     controls.onCameraChange()
+  }
+}
+
+// The glTF materials are single-sided, but the engine draws the backs of faces
+// in the backface color, which shows on open surfaces. 
+// This makes GLTFLoaderbuild doubleSided materials.
+function backfaceColorPlugin(backfaceColor: Node<'color'>): GLTFLoaderPlugin {
+  return {
+    name: 'zoo_backface_color',
+    getMaterialType: () => MeshStandardNodeMaterial,
+    extendMaterialParams: (_materialIndex, params) => {
+      params.side = DoubleSide
+      params.colorNode = select(
+        frontFacing,
+        color(materialColor),
+        backfaceColor
+      )
+      return null
+    },
   }
 }
 

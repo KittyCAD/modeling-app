@@ -2962,7 +2962,10 @@ export class KclManager extends File {
           highlightEdges: highlightEdges.value,
           backfaceColor: backfaceColor.value,
         }
-        const backfaceChanged = current.backfaceColor !== previous.backfaceColor
+        // The local renderer draws back faces itself, so the engine scene can stay.
+        const backfaceChanged =
+          current.backfaceColor !== previous.backfaceColor &&
+          !this.engineCommandManager.geometryOnly
         const engineSettingsChanged =
           current.showScaleGrid !== previous.showScaleGrid ||
           current.fixedSizeGrid !== previous.fixedSizeGrid ||

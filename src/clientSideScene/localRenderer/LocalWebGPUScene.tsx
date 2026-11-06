@@ -21,7 +21,8 @@ function getPendingCommandCount(kclManager: KclManager) {
 }
 
 export const LocalWebGPUScene = (props: LocalRendererProps) => {
-  const { theme, enableSSAO, highlightEdges, fixedSizeGrid } = props
+  const { theme, enableSSAO, highlightEdges, fixedSizeGrid, backfaceColor } =
+    props
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<LocalRenderer | null>(null)
   const latestPropsRef = useRef(props)
@@ -119,6 +120,10 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   useEffect(() => {
     rendererRef.current?.setFixedSizeGrid(fixedSizeGrid)
   }, [fixedSizeGrid])
+
+  useEffect(() => {
+    rendererRef.current?.setBackfaceColor(backfaceColor)
+  }, [backfaceColor])
 
   return (
     <>
