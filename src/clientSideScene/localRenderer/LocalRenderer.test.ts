@@ -353,7 +353,8 @@ describe('local GLB loading', () => {
         type: 'gltf',
         storage: 'binary',
         presentation: 'compact',
-        extras: ['sketches', 'regions'],
+        include_uuids: true,
+        extras: ['geometry_uuids', 'sketches', 'regions'],
       },
       { settings: { modeling: { base_unit: 'mm' } } }
     )
@@ -393,6 +394,7 @@ describe('local GLB loading', () => {
     f.manager.rustContext.export.mockReturnValueOnce(pending.promise)
     const parse = vi.spyOn(GLTFLoader.prototype, 'parseAsync')
     f.done()
+    expect(f.renderer.isLoadedSceneCurrent()).toBe(false)
     f.manager.isExecutingSignal.value = true
     pending.resolve([triangleGlb()])
     await pending.promise
@@ -401,6 +403,7 @@ describe('local GLB loading', () => {
     expect(f.onModelLoadSettled).not.toHaveBeenCalled()
     f.done()
     await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
     f.renderer.dispose()
   })
 
