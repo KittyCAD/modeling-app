@@ -72,8 +72,6 @@ import {
   SEGMENT_LENGTH_LABEL_OFFSET_PX,
   SEGMENT_LENGTH_LABEL_TEXT,
 } from '@src/clientSideScene/sceneUtils'
-import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
-import type { KclManager } from '@src/lang/KclManager'
 import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
 import type { Coords2d } from '@src/lang/util'
@@ -85,15 +83,11 @@ import { err } from '@src/lib/trap'
 import { isClockwise, normaliseAngle, roundOff } from '@src/lib/utils'
 import { getTangentPointFromPreviousArc } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
   SegmentOverlay,
   SegmentOverlayPayload,
   SegmentOverlays,
 } from '@src/machines/modelingSharedTypes'
-import toast from 'react-hot-toast'
-import type { ActorRefFrom } from 'xstate'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -107,9 +101,6 @@ interface CreateSegmentArgs {
   theme: Themes
   isSelected?: boolean
   sceneInfra: SceneInfra
-  selection?: Selections
-  commandBarActor: ActorRefFrom<typeof commandBarMachine>
-  kclManager: KclManager
   wasmInstance: ModuleType
 }
 
@@ -160,9 +151,6 @@ class StraightSegment implements SegmentUtils {
     isSelected = false,
     sceneInfra,
     prevSegment,
-    selection,
-    commandBarActor,
-    kclManager,
     wasmInstance,
   }) => {
     if (input.type !== 'straight-segment')
@@ -202,7 +190,6 @@ class StraightSegment implements SegmentUtils {
       isSelected,
       callExpName,
       baseColor,
-      selection,
       wasmInstance,
     }
 
@@ -222,9 +209,6 @@ class StraightSegment implements SegmentUtils {
         to,
         scale,
         sceneInfra,
-        commandBarActor,
-        kclManager,
-        wasmInstance,
       })
       segmentGroup.add(arrowGroup)
       segmentGroup.add(lengthIndicatorGroup)
@@ -611,8 +595,6 @@ class CircleSegment implements SegmentUtils {
     theme,
     isSelected,
     sceneInfra,
-    commandBarActor,
-    kclManager,
     wasmInstance,
   }) => {
     if (input.type !== 'arc-segment') {
@@ -658,9 +640,6 @@ class CircleSegment implements SegmentUtils {
       to: [center[0] + radius, center[1]],
       scale,
       sceneInfra,
-      commandBarActor,
-      kclManager,
-      wasmInstance,
     })
 
     arcMesh.userData.type = meshType
@@ -1080,8 +1059,6 @@ class ArcSegment implements SegmentUtils {
     theme,
     isSelected,
     sceneInfra,
-    commandBarActor,
-    kclManager,
     wasmInstance,
   }) => {
     if (input.type !== 'arc-segment') {
@@ -1123,9 +1100,6 @@ class ArcSegment implements SegmentUtils {
       to: from,
       scale,
       sceneInfra,
-      commandBarActor,
-      kclManager,
-      wasmInstance,
     })
 
     const grey = 0xaaaaaa
@@ -1179,9 +1153,6 @@ class ArcSegment implements SegmentUtils {
       ],
       scale,
       sceneInfra,
-      commandBarActor,
-      kclManager,
-      wasmInstance,
     })
     endAngleLengthIndicator.name = 'endAngleLengthIndicator'
 
@@ -1799,18 +1770,12 @@ function createLengthIndicator({
   scale,
   length = 0.1,
   sceneInfra,
-  commandBarActor,
-  kclManager,
-  wasmInstance,
 }: {
   from: Coords2d
   to: Coords2d
   scale: number
   length?: number
   sceneInfra: SceneInfra
-  commandBarActor: ActorRefFrom<typeof commandBarMachine>
-  kclManager: KclManager
-  wasmInstance: ModuleType
 }) {
   const lengthIndicatorGroup = new Group()
   lengthIndicatorGroup.name = SEGMENT_LENGTH_LABEL
@@ -1825,53 +1790,6 @@ function createLengthIndicator({
     // dispatch to cameraControls, without this mouse wheel wouldn't work when hovering this segment label
     sceneInfra.camControls.onMouseWheel(e)
   })
-  // Double click workflow
-  lengthIndicatorWrapper.ondblclick = () => {
-    const selection = lengthIndicatorGroup.parent?.userData.selection
-    if (!selection) {
-      console.error('Unable to dimension segment when clicking the label.')
-      return
-    }
-
-    const firstGraphSelection = selection.graphSelections?.[0]
-    if (!firstGraphSelection) return
-    sceneInfra.modelingSend({
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: firstGraphSelection,
-      },
-    })
-
-    const canConstrainLength = angleLengthInfo({
-      selectionRanges: {
-        ...selection,
-        graphSelections: [firstGraphSelection],
-      },
-      angleOrLength: 'setLength',
-      kclManager,
-      wasmInstance,
-    })
-    if (err(canConstrainLength) || !canConstrainLength.enabled) {
-      toast.error(
-        'Unable to constrain the length of this segment. Check the KCL code.'
-      )
-      return
-    }
-
-    // Command Bar
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        name: 'Constrain length',
-        groupId: 'modeling',
-        argDefaultValues: {
-          selection,
-        },
-      },
-    })
-  }
-
   // Style the elements
   lengthIndicatorWrapper.style.position = 'absolute'
   lengthIndicatorWrapper.style.pointerEvents = 'auto'
