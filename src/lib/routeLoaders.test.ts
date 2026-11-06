@@ -30,7 +30,7 @@ vi.mock('@src/lib/app', () => ({
       },
     }
     beginFileRouteLoad = vi.fn(() => vi.fn())
-    registry = { get: vi.fn() }
+    registry = { get: vi.fn(), optional: vi.fn() }
     settings = {
       actor: {},
       get: () => ({ app: { libraries: { current: [] } } }),
@@ -110,9 +110,11 @@ describe('project loader', () => {
     const app = new App(App.getDefaultSystems())
     const owner = {}
     const openProject = vi.fn(() => owner)
+    const sessions = { openProject }
+    vi.spyOn(app.registry, 'optional').mockReturnValue(sessions)
     vi.spyOn(app.registry, 'get')
       .mockReturnValueOnce({})
-      .mockReturnValueOnce({ openProject })
+      .mockReturnValueOnce(sessions)
     const data = {
       contents: { name: 'empty', path: '/projects/empty', children: [] },
       metadata: { title: 'Empty', readWriteAccess: false },
@@ -176,6 +178,38 @@ describe('project loader', () => {
     expect(openProject).not.toHaveBeenCalled()
     expect(closeProject).not.toHaveBeenCalled()
   })
+
+  it.each(['revoked', 'replaced'] as const)(
+    'does not publish discovery through a session whose grant was %s',
+    async (action) => {
+      const { app, openProject, data } = setup()
+      const discovery = Promise.withResolvers<typeof data>()
+      vi.mocked(readProject).mockReturnValueOnce(discovery.promise)
+      const loading = projectLoader({ app })({
+        request: new Request('https://app.zoo.dev/project/test'),
+        params: { id: data.contents.path },
+        context: undefined,
+        unstable_pattern: '/project/:id',
+      })
+      // Wait until discovery has actually started, after ownership lookup.
+      await vi.waitFor(() => expect(readProject).toHaveBeenCalledOnce())
+      const replacement = { openProject: vi.fn() }
+      if (action === 'revoked') environment.projectRouteEnabled = false
+      else vi.spyOn(app.registry, 'optional').mockReturnValue(replacement)
+      try {
+        discovery.resolve(data)
+        const result = await loading
+        expect(result).toBeInstanceOf(Response)
+        if (!(result instanceof Response))
+          throw new Error('Expected a redirect')
+        expect(result.headers.get('Location')).toBe(PATHS.HOME)
+        expect(openProject).not.toHaveBeenCalled()
+        expect(replacement.openProject).not.toHaveBeenCalled()
+      } finally {
+        environment.projectRouteEnabled = true
+      }
+    }
+  )
 
   it('retains the active project when reading the next one fails', async () => {
     const { app, openProject, closeProject, data } = setup()

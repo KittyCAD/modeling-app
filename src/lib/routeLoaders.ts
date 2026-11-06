@@ -110,6 +110,11 @@ export const projectLoader =
     const assertCurrent = () => routerData.request.signal.throwIfAborted()
     const fileOperations = app.registry.get(fileOperationsService)
     const projectSessions = app.registry.get(projectSessionService)
+    // A grant can be revoked (and granted again) while discovery is awaiting IO.
+    // Never publish through a captured service that the registry has disposed.
+    const ownsSession = () =>
+      hasProjectShellFeature(app.userFeatures) &&
+      app.registry.optional(projectSessionService) === projectSessions
 
     const { id } = routerData.params
     if (id === undefined) {
@@ -129,6 +134,7 @@ export const projectLoader =
           projectIdCategorized.path
         )
         assertCurrent()
+        if (!ownsSession()) return redirect(PATHS.HOME)
         const project = await readProject(
           fileOperations,
           projectIdCategorized.path,
@@ -138,6 +144,7 @@ export const projectLoader =
           }
         )
         assertCurrent()
+        if (!ownsSession()) return redirect(PATHS.HOME)
         // Consumers retain this session instead of resolving the global selection again.
         return projectSessions.openProject(project)
       }
