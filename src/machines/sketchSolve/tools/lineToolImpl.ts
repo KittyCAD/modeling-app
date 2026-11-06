@@ -9,7 +9,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import {
   getCoincidentCluster,
   isLineSegment,
@@ -28,6 +27,7 @@ import {
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { resolveSketchPoint } from '@src/machines/sketchSolve/tools/sketchCoordinates'
 import {
   type ActionArgs,
   type AssignArgs,
@@ -159,7 +159,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
         const units = baseUnitToNumericSuffix(
           context.kclManager.fileSettings.defaultLengthUnit
         )
-        const [x, y] = snappingCandidate?.position ?? mousePosition
+        const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
         try {
           isEditInProgress = true
           const settings = jsAppSettings(context.rustContext.settingsActor)
@@ -175,12 +175,12 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
                   position: {
                     x: {
                       type: 'Var',
-                      value: roundOff(x),
+                      value: x,
                       units,
                     },
                     y: {
                       type: 'Var',
-                      value: roundOff(y),
+                      value: y,
                       units,
                     },
                   },
@@ -224,7 +224,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
             context.draftPointId
           ),
         })
-        const [x, y] = snappingCandidate?.position ?? mousePosition
+        const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
         self.send({
           type: 'add point',
           data: [x, y],
@@ -258,7 +258,7 @@ export function addPointListener({ self, context }: ToolActionArgs) {
               context.draftPointId
             ),
         })
-        const [x, y] = snappingCandidate?.position ?? mousePosition
+        const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
         self.send({
           type: 'add point',
           data: [x, y],

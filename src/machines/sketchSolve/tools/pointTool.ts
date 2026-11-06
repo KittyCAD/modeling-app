@@ -11,7 +11,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   isSketchSolveErrorOutput,
@@ -32,6 +31,7 @@ import {
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { resolveSketchPoint } from '@src/machines/sketchSolve/tools/sketchCoordinates'
 
 const TOOL_ID = 'Point tool'
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -104,7 +104,7 @@ export const machine = setup({
               mousePosition,
               mouseEvent: args.mouseEvent,
             })
-            const [x, y] = snappingCandidate?.position ?? mousePosition
+            const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
             self.send({
               type: 'add point',
               data: [x, y],
@@ -197,8 +197,8 @@ export const machine = setup({
           const segmentCtor: SegmentCtor = {
             type: 'Point',
             position: {
-              x: { type: 'Var', value: roundOff(x), units },
-              y: { type: 'Var', value: roundOff(y), units },
+              x: { type: 'Var', value: x, units },
+              y: { type: 'Var', value: y, units },
             },
           }
 

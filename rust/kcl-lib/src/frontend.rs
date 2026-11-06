@@ -1047,9 +1047,10 @@ impl SketchApi for FrontendState {
                                     } else {
                                         line_ctor.end = ctor.position;
                                     }
-                                } else if let SegmentCtor::Line(line_ctor) = &line.ctor {
+                                } else if let SegmentCtor::Line(mut line_ctor) =
+                                    line.ctor.clone().with_exact_coordinates()
+                                {
                                     // Line owner is not in final_edits yet -> create it
-                                    let mut line_ctor = line_ctor.clone();
                                     if line.start == segment_id {
                                         line_ctor.start = ctor.position;
                                     } else {
@@ -1082,8 +1083,8 @@ impl SketchApi for FrontendState {
                                     } else {
                                         arc_ctor.center = ctor.position;
                                     }
-                                } else if let SegmentCtor::Arc(arc_ctor) = &arc.ctor {
-                                    let mut arc_ctor = arc_ctor.clone();
+                                } else if let SegmentCtor::Arc(mut arc_ctor) = arc.ctor.clone().with_exact_coordinates()
+                                {
                                     if arc.start == segment_id {
                                         arc_ctor.start = ctor.position;
                                     } else if arc.end == segment_id {
@@ -1113,8 +1114,9 @@ impl SketchApi for FrontendState {
                                     } else {
                                         circle_ctor.center = ctor.position;
                                     }
-                                } else if let SegmentCtor::Circle(circle_ctor) = &circle.ctor {
-                                    let mut circle_ctor = circle_ctor.clone();
+                                } else if let SegmentCtor::Circle(mut circle_ctor) =
+                                    circle.ctor.clone().with_exact_coordinates()
+                                {
                                     if circle.start == segment_id {
                                         circle_ctor.start = ctor.position;
                                     } else {
@@ -1145,8 +1147,9 @@ impl SketchApi for FrontendState {
                                         ))));
                                     };
                                     spline_ctor.points[control_index] = ctor.position;
-                                } else if let SegmentCtor::ControlPointSpline(spline_ctor) = &spline.ctor {
-                                    let mut spline_ctor = spline_ctor.clone();
+                                } else if let SegmentCtor::ControlPointSpline(mut spline_ctor) =
+                                    spline.ctor.clone().with_exact_coordinates()
+                                {
                                     spline_ctor.points[control_index] = ctor.position;
                                     final_edits.insert(owner_id, SegmentCtor::ControlPointSpline(spline_ctor));
                                 } else {
@@ -7587,7 +7590,7 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
     }
 
     #[tokio::test]
-    async fn test_grid_precision_survives_create_and_reload() {
+    async fn test_grid_precision_survives_create_edit_and_reload() {
         let point = |x, y| Point2d {
             x: Expr::VarExact(Number {
                 value: x,
@@ -7642,6 +7645,25 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
             let position = point_position(&frontend.scene_graph, point_id);
             assert_eq!(position.x.value, step);
             assert_eq!(position.y.value, -step);
+            let (source, _) = frontend
+                .edit_segments(
+                    &mock_ctx,
+                    Version(0),
+                    sketch_id,
+                    vec![ExistingSegmentCtor {
+                        id: point_id,
+                        ctor: SegmentCtor::Point(PointCtor {
+                            position: point(-step, step),
+                        }),
+                    }],
+                )
+                .await
+                .unwrap();
+            let saved = Program::parse(&source.text).unwrap().0.unwrap();
+            seed_frontend_with_mock(&mut frontend, &mock_ctx, &saved).await;
+            let position = point_position(&frontend.scene_graph, point_id);
+            assert_eq!(position.x.value, -step);
+            assert_eq!(position.y.value, step);
             let untouched = point_position(&frontend.scene_graph, other_id);
             assert_eq!(untouched.x.value, 1.0 + step);
             assert_eq!(untouched.y.value, 2.0 + step);

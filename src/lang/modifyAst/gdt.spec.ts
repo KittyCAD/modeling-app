@@ -33,6 +33,7 @@ import {
   clonedRegionBody,
   createSelectionFromArtifacts,
   enginelessExecutor,
+  getAstAndArtifactGraph as executeCode,
   getCapFromCylinder,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
@@ -70,18 +71,6 @@ afterAll(() => {
     initiatedBy: 'client',
   })
 })
-
-const executeCode = async (
-  code: string,
-  instance: ModuleType,
-  kclManager: KclManager
-) => {
-  const ast = assertParse(code, instance)
-  await kclManager.executeAst({ ast })
-  const artifactGraph = kclManager.artifactGraph
-  await new Promise((resolve) => setTimeout(resolve, 100))
-  return { ast, artifactGraph }
-}
 
 function getWallsFromBox(artifactGraph: ArtifactGraph, count: number) {
   const walls = [...artifactGraph.values()]

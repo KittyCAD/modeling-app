@@ -12,7 +12,6 @@ import {
 import type { KclExpression } from '@src/lib/commandTypes'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
-import { roundOff } from '@src/lib/utils'
 import type { Vector2 } from 'three'
 
 export const DUMMY_VARIABLE_NAME = '__result__'
@@ -201,12 +200,12 @@ export function applyVectorToPoint2D(
   return {
     x: {
       type: 'Var',
-      value: roundOff(xValue.value + vector.x),
+      value: xValue.value + vector.x,
       units: forceSuffix(xValue.units),
     },
     y: {
       type: 'Var',
-      value: roundOff(yValue.value + vector.y),
+      value: yValue.value + vector.y,
       units: forceSuffix(yValue.units),
     },
   }
