@@ -88,7 +88,8 @@ export const PATHS = {
   HOME,
   LIBRARY,
   FILE: '/file',
-  PROJECT: '/project',
+  // The project shell rearchitecture is isolated here.
+  PROJECT_NEXT: '/project-next',
   SETTINGS,
   SETTINGS_USER: `${SETTINGS}?tab=user` as const,
   SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,
