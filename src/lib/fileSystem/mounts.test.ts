@@ -10,6 +10,35 @@ import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { describe, expect, it, vi } from 'vitest'
 
 describe('project storage routing', () => {
+  it('keeps a replacement mount when an older registration is disposed', async () => {
+    const localRead = vi.fn(async () => new Uint8Array([1]))
+    const replacementRead = vi.fn(async () => new Uint8Array([2]))
+    const router = createMountedFileOperations(
+      { ...testFileOperations, readFile: localRead },
+      posix
+    )
+    const unmountOld = router.mount({
+      root: '/cloud',
+      operations: testFileOperations,
+    })
+    const unmountReplacement = router.mount({
+      root: '/cloud',
+      operations: { ...testFileOperations, readFile: replacementRead },
+    })
+
+    unmountOld()
+    unmountOld()
+    expect(await router.operations.readFile('/cloud/main.kcl')).toEqual(
+      new Uint8Array([2])
+    )
+    expect(localRead).not.toHaveBeenCalled()
+
+    unmountReplacement()
+    expect(await router.operations.readFile('/cloud/main.kcl')).toEqual(
+      new Uint8Array([1])
+    )
+  })
+
   it('routes by path and preserves local access while a cloud project is mounted', async () => {
     const localRead = vi.fn(async () => new Uint8Array([1]))
     const cloudRead = vi.fn(async () => new Uint8Array([2]))
