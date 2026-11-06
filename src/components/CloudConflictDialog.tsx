@@ -15,15 +15,15 @@ import {
   getCloudSyncProjectMetadataIndex,
   isCloudSyncConflictRevisionChangedError,
   loadCloudSyncProjectConflictInspection,
-  retryCloudSync,
   resolveCloudSyncProjectConflict,
+  retryCloudSync,
 } from '@src/lib/cloudSync'
-import { normalizePathForSync } from '@src/lib/cloudSync/paths'
 import {
   type ConflictFileComparison,
   type ConflictFileStatus,
   type ConflictInspection,
 } from '@src/lib/cloudSync/conflictInspection'
+import { normalizePathForSync } from '@src/lib/cloudSync/paths'
 import { formatDateTime, formatOptionalDateTime } from '@src/lib/dateTime'
 import fsZds from '@src/lib/fs-zds'
 import type { ResolvedTheme } from '@src/lib/theme'
@@ -49,6 +49,8 @@ type CloudSyncErrorDialogRequest = {
   message: string
   projectName?: string
   occurredAt?: string
+  projectPath?: string
+  kind?: string
 }
 
 type ConflictInspectionState =
@@ -565,11 +567,17 @@ export function CloudConflictDialog({
 function CloudSyncErrorDialog({
   request,
   onDismiss,
+  onCreateCopy,
 }: {
   request: CloudSyncErrorDialogRequest
   onDismiss: () => void
+  onCreateCopy?: (projectPath: string) => void
 }) {
   const formattedTime = formatOptionalDateTime(request.occurredAt)
+  const canCopy =
+    request.kind === 'remote-upload-forbidden' &&
+    request.projectPath &&
+    onCreateCopy
 
   return (
     <Dialog
@@ -580,13 +588,13 @@ function CloudSyncErrorDialog({
       <Dialog.Overlay className="fixed inset-0 bg-chalkboard-10/80 dark:bg-chalkboard-110/40" />
       <div className="relative flex min-h-full items-center justify-center">
         <Dialog.Panel
-          className="relative flex w-[min(92vw,34rem)] flex-col rounded border border-destroy-40 bg-chalkboard-10 shadow-lg dark:border-destroy-80 dark:bg-chalkboard-100"
+          className={`relative flex w-[min(92vw,34rem)] flex-col rounded border bg-chalkboard-10 shadow-lg dark:bg-chalkboard-100 ${canCopy ? 'border-chalkboard-30 dark:border-chalkboard-70' : 'border-destroy-40 dark:border-destroy-80'}`}
           data-testid="cloud-sync-error-dialog"
         >
           <div className="flex items-center justify-between gap-4 border-b border-chalkboard-20 p-4 dark:border-chalkboard-70">
             <div className="min-w-0 flex-1">
               <Dialog.Title as="h2" className="text-xl font-bold">
-                {request.title}
+                {canCopy ? 'Create an editable copy' : request.title}
               </Dialog.Title>
             </div>
             <button
@@ -603,7 +611,9 @@ function CloudSyncErrorDialog({
             <Dialog.Description as="div" className="space-y-2">
               {request.projectName && (
                 <p className="break-words">
-                  Cloud sync hit an error for{' '}
+                  {canCopy
+                    ? 'This project is read-only: '
+                    : 'Cloud sync hit an error for '}
                   <span className="font-medium">{request.projectName}</span>.
                 </p>
               )}
@@ -614,8 +624,12 @@ function CloudSyncErrorDialog({
               )}
             </Dialog.Description>
 
-            <p className="whitespace-pre-wrap break-words rounded border border-destroy-40 bg-destroy-10/50 px-3 py-2 text-destroy-80 dark:border-destroy-80 dark:bg-destroy-80/20 dark:text-destroy-20">
-              {request.message}
+            <p
+              className={`whitespace-pre-wrap break-words rounded border px-3 py-2 ${canCopy ? 'border-chalkboard-30 dark:border-chalkboard-70' : 'border-destroy-40 bg-destroy-10/50 text-destroy-80 dark:border-destroy-80 dark:bg-destroy-80/20 dark:text-destroy-20'}`}
+            >
+              {canCopy
+                ? 'To keep editing, create a copy in a writable library. Your current edits will be included.'
+                : request.message}
             </p>
           </div>
 
@@ -624,19 +638,27 @@ function CloudSyncErrorDialog({
               Element="button"
               type="button"
               iconStart={{
-                icon: 'refresh',
+                icon: canCopy ? 'clone' : 'refresh',
                 size: 'sm',
                 className: 'p-1',
                 bgClassName: '!bg-transparent dark:!bg-transparent',
               }}
               onClick={() => {
-                retryCloudSync()
                 onDismiss()
+                if (canCopy && request.projectPath) {
+                  onCreateCopy?.(request.projectPath)
+                } else {
+                  retryCloudSync()
+                }
               }}
               className="bg-primary text-white hover:bg-primary/90 dark:bg-primary dark:text-white dark:hover:bg-primary/90"
-              data-testid="cloud-sync-error-retry-button"
+              data-testid={
+                canCopy
+                  ? 'cloud-sync-create-copy-button'
+                  : 'cloud-sync-error-retry-button'
+              }
             >
-              Retry cloud sync
+              {canCopy ? 'Create editable copy' : 'Retry cloud sync'}
             </ActionButton>
           </div>
         </Dialog.Panel>
@@ -678,7 +700,11 @@ export function CloudConflictDialogHost({
   )
 }
 
-export function CloudSyncErrorDialogHost() {
+export function CloudSyncErrorDialogHost({
+  onCreateCopy,
+}: {
+  onCreateCopy?: (projectPath: string) => void
+}) {
   useSignals()
   const errorDialog = cloudSyncErrorDialogRequest.value
 
@@ -695,6 +721,7 @@ export function CloudSyncErrorDialogHost() {
   return (
     <CloudSyncErrorDialog
       request={errorDialog}
+      onCreateCopy={onCreateCopy}
       onDismiss={() => {
         cloudSyncErrorDialogRequest.value = null
       }}

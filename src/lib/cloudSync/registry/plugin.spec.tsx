@@ -80,6 +80,7 @@ const cloudConflictDialogMocks = vi.hoisted(
     conflictDialogProjectPath?: string
     dialogProjectPaths: string[]
     errorDialogMessage?: string
+    errorDialogRequests: { projectPath?: string; kind?: string }[]
     projectMetadata?: unknown
     listeners: Set<() => void>
     notify: () => void
@@ -89,6 +90,7 @@ const cloudConflictDialogMocks = vi.hoisted(
     conflictDialogProjectPath: undefined,
     dialogProjectPaths: [],
     errorDialogMessage: undefined,
+    errorDialogRequests: [],
     projectMetadata: undefined,
     listeners: new Set(),
     notify: () => {
@@ -135,7 +137,11 @@ vi.mock('@src/components/CloudConflictDialog', async () => {
     )
   }
 
-  function MockCloudSyncErrorDialogHost() {
+  function MockCloudSyncErrorDialogHost({
+    onCreateCopy,
+  }: {
+    onCreateCopy?: (projectPath: string) => void
+  }) {
     useMockDialogSignalRender()
 
     return (
@@ -143,6 +149,17 @@ vi.mock('@src/components/CloudConflictDialog', async () => {
         {cloudConflictDialogMocks.errorDialogMessage && (
           <div data-testid="cloud-sync-error-dialog">
             {cloudConflictDialogMocks.errorDialogMessage}
+            <button
+              onClick={() => {
+                const path =
+                  cloudConflictDialogMocks.errorDialogRequests.at(
+                    -1
+                  )?.projectPath
+                if (path) onCreateCopy?.(path)
+              }}
+            >
+              Create editable copy
+            </button>
           </div>
         )}
       </>
@@ -160,7 +177,15 @@ vi.mock('@src/components/CloudConflictDialog', async () => {
       cloudConflictDialogMocks.conflictDialogProjectPath = projectPath
       cloudConflictDialogMocks.notify()
     },
-    openCloudSyncErrorDialog: ({ message }: { message: string }) => {
+    openCloudSyncErrorDialog: ({
+      message,
+      ...request
+    }: {
+      message: string
+      projectPath?: string
+      kind?: string
+    }) => {
+      cloudConflictDialogMocks.errorDialogRequests.push(request)
       cloudConflictDialogMocks.errorDialogMessage = message
       cloudConflictDialogMocks.notify()
     },
@@ -459,6 +484,7 @@ afterEach(() => {
   cloudConflictDialogMocks.conflictDialogProjectPath = undefined
   cloudConflictDialogMocks.dialogProjectPaths = []
   cloudConflictDialogMocks.errorDialogMessage = undefined
+  cloudConflictDialogMocks.errorDialogRequests = []
   cloudConflictDialogMocks.projectMetadata = undefined
   cloudSyncStatus.value = {
     enabled: false,
@@ -470,6 +496,61 @@ afterEach(() => {
 })
 
 describe('cloud sync status presentation', () => {
+  test('prompts once for edits to the open read-only project and opens the shared copy command', async () => {
+    const { app, dispose } = createProjectMenuApp(createCloudSyncService())
+    Object.defineProperty(app, 'project', { value: { path: '/dataset/model' } })
+    cloudConflictDialogMocks.projectMetadata = {
+      localProjectPath: '/dataset/model',
+      projectName: 'Model',
+      remoteProjectId: 'readonly',
+      hasPendingChanges: true,
+      lastFailure: {
+        kind: 'remote-upload-forbidden',
+        message: 'Read-only',
+        at: new Date(now).toISOString(),
+      },
+    }
+    try {
+      const { rerender } = render(<CloudSyncDialogHostContribution app={app} />)
+      expect(cloudConflictDialogMocks.errorDialogRequests).toEqual([
+        {
+          projectPath: '/dataset/model',
+          projectName: 'Model',
+          title: 'Create an editable copy',
+          kind: 'remote-upload-forbidden',
+        },
+      ])
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Create editable copy' })
+      )
+      expect(app.commands.send).toHaveBeenCalledWith({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Copy project',
+          argDefaultValues: { project: '/dataset/model' },
+        },
+      })
+      cloudConflictDialogMocks.projectMetadata = {
+        ...(cloudConflictDialogMocks.projectMetadata as object),
+      }
+      rerender(<CloudSyncDialogHostContribution app={app} />)
+      expect(cloudConflictDialogMocks.errorDialogRequests).toHaveLength(1)
+      cloudConflictDialogMocks.projectMetadata = {
+        localProjectPath: '/dataset/other',
+        hasPendingChanges: true,
+        lastFailure: {
+          kind: 'remote-upload-forbidden',
+          message: 'Other project',
+        },
+      }
+      rerender(<CloudSyncDialogHostContribution app={app} />)
+      expect(cloudConflictDialogMocks.errorDialogRequests).toHaveLength(1)
+    } finally {
+      dispose()
+    }
+  })
+
   test('labels remote upload permission failures as blocked sync', () => {
     expect(
       getCloudSyncStatusBarPresentation({

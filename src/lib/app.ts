@@ -8,20 +8,21 @@ import {
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager } from '@src/lang/KclManager'
-import { ZDSProject } from '@src/lib/projectSession'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { isPlaywright } from '@src/lib/isPlaywright'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
+import { copyProjectToLibrary } from '@src/lib/projectCopy'
 import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
+import { ZDSProject } from '@src/lib/projectSession'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { reportRejection } from '@src/lib/trap'
@@ -576,6 +577,41 @@ export class App implements AppSubsystems {
                 this.registry.get(projectLibraryTypesValueSpec)
               ),
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
+            copyProject: async ({ sourcePath, title, target }) => {
+              const userId = this.auth.user.value?.id
+              const token = this.auth.token.value
+              const assertCurrent = () => {
+                if (
+                  this.auth.user.value?.id !== userId ||
+                  this.auth.token.value !== token ||
+                  !this.getCreateProjectLibraryTargets().some(
+                    (current) =>
+                      current.library.id === target.library.id &&
+                      current.library.path === target.library.path &&
+                      current.library.type === target.library.type &&
+                      current.library.cacheScope === target.library.cacheScope
+                  )
+                ) {
+                  // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+                  throw new Error(
+                    'Your account or destination library changed. Please start the copy again.'
+                  )
+                }
+              }
+              return copyProjectToLibrary({
+                fileOperations: this.fileOperations,
+                sourcePath,
+                title,
+                target,
+                editorFiles: [...(this.project?.editors ?? [])].map(
+                  ([path, editor]) => ({
+                    path: path.value,
+                    contents: editor.codeSignal.value,
+                  })
+                ),
+                assertCurrent,
+              })
+            },
             getHomeProjectActions: () =>
               this.registry.get(homeProjectActionsService),
             getHomeProjectEntries: () =>

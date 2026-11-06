@@ -5,8 +5,8 @@ import {
 } from '@src/components/CloudConflictDialog'
 import {
   loadCloudSyncProjectConflictInspection,
-  retryCloudSync,
   resolveCloudSyncProjectConflict,
+  retryCloudSync,
 } from '@src/lib/cloudSync'
 import { Themes } from '@src/lib/theme'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -198,6 +198,32 @@ describe('CloudConflictDialog', () => {
 
     expect(loadCloudSyncProjectConflictInspection).toHaveBeenCalledWith(
       '/projects/local'
+    )
+  })
+
+  test('offers an editable copy for read-only projects without retrying the upload', async () => {
+    const onCreateCopy = vi.fn()
+    openCloudSyncErrorDialog({
+      title: 'Cloud sync blocked',
+      message: 'Forbidden',
+      projectPath: '/library/readonly',
+      projectName: 'Read-only project',
+      kind: 'remote-upload-forbidden',
+    })
+    render(<CloudSyncErrorDialogHost onCreateCopy={onCreateCopy} />)
+    expect(
+      screen.getByText(/Your current edits will be included/)
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('cloud-sync-error-retry-button')
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('cloud-sync-create-copy-button'))
+    expect(onCreateCopy).toHaveBeenCalledWith('/library/readonly')
+    expect(retryCloudSync).not.toHaveBeenCalled()
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId('cloud-sync-error-dialog')
+      ).not.toBeInTheDocument()
     )
   })
 

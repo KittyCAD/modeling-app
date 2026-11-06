@@ -520,6 +520,9 @@ export async function updateRemoteProject({
   entrypointPath?: string
   deletedPaths?: string[]
 }) {
+  if (project.access?.can_edit === false) {
+    return Promise.reject(new CloudApiError(403, 'This project is read-only.'))
+  }
   const publicationMetadata = getProjectUploadPublicationMetadata(project)
 
   return cloudJson<RemoteProject>(

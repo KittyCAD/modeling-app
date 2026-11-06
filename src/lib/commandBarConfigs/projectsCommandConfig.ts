@@ -19,11 +19,11 @@ import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
-import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import type {
   ProjectLibraryCreateProjectInput,
   ProjectLibraryOperation,
@@ -38,6 +38,11 @@ export type ProjectsCommandSchema = {
   'Move project': {
     project: string
     library: string
+  }
+  'Copy project': {
+    project: string
+    name: string
+    libraryId: string
   }
   'Import file from URL': {
     name: string
@@ -71,6 +76,7 @@ export function createProjectCommands({
   getCreateProjectLibraryTargets,
   getHomeProjectActions,
   getHomeProjectEntries,
+  copyProject,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   getCurrentProjectDirectoryName?: () => string | undefined
@@ -80,6 +86,11 @@ export function createProjectCommands({
   getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
   getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
+  copyProject?: (input: {
+    sourcePath: string
+    title: string
+    target: CreateProjectLibraryTarget
+  }) => Promise<Project | undefined>
 }) {
   /**
    * Helper functions instead of importing these due to circular deps.
@@ -425,6 +436,106 @@ export function createProjectCommands({
     },
   }
 
+  const copyProjectOptions = () => {
+    const options = new Map<string, CommandArgumentOption<string>>()
+    for (const project of folderSnapshot() ?? []) {
+      options.set(project.path, {
+        name: getProjectDisplayName(project),
+        value: project.path,
+        isCurrent: project.path === getCurrentProjectPath?.(),
+      })
+    }
+    for (const project of homeProjectEntriesSnapshot() ?? []) {
+      if (project.localProjectPath) {
+        options.set(project.localProjectPath, {
+          name: getHomeProjectDisplayName(project),
+          value: project.localProjectPath,
+          isCurrent: isCurrentHomeProject(project),
+        })
+      }
+    }
+    const currentPath = getCurrentProjectPath?.()
+    if (currentPath && !options.has(currentPath)) {
+      options.set(currentPath, {
+        name: currentProjectDirectoryNameSnapshot() ?? 'Current project',
+        value: currentPath,
+        isCurrent: true,
+      })
+    }
+    return [...options.values()]
+  }
+  const copyProjectCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
+    icon: 'clone',
+    name: 'Copy project',
+    description: 'Create an editable copy in a library',
+    groupId: 'projects',
+    needsReview: true,
+    hideFromSearch: !copyProject,
+    onSubmit: async (record) => {
+      if (!record || !copyProject) return
+      const source = copyProjectOptions().find(
+        (option) => option.value === record.project
+      )
+      const target = createProjectTargetsSnapshot()?.find(
+        (target) => target.library.id === record.libraryId
+      )
+      const title = String(record.name ?? '').trim()
+      if (!source || !target) {
+        toast.error('Choose a project and a writable destination library.')
+        return
+      }
+      if (
+        !title ||
+        getProjectDirectoryNameFromTitle(title, 'project-copy').length >
+          MAX_PROJECT_NAME_LENGTH
+      ) {
+        toast.error(
+          `Choose a project title of at most ${MAX_PROJECT_NAME_LENGTH} characters.`
+        )
+        return
+      }
+      const project = await copyProject({
+        sourcePath: source.value,
+        title,
+        target,
+      })
+      if (project?.default_file) navigateToProjectFile(project.default_file)
+    },
+    args: {
+      project: {
+        required: true,
+        inputType: 'options',
+        options: copyProjectOptions,
+        defaultValue: () => getCurrentProjectPath?.() ?? '',
+        valueSummary: (value) =>
+          copyProjectOptions().find((option) => option.value === value)?.name ??
+          'Project',
+      },
+      name: {
+        displayName: 'Title',
+        required: true,
+        inputType: 'string',
+        defaultValue: ({
+          argumentsToSubmit,
+        }: ContextFrom<typeof commandBarMachine>) =>
+          `${copyProjectOptions().find((option) => option.value === argumentsToSubmit.project)?.name ?? 'Project'}-copy`,
+      },
+      libraryId: {
+        displayName: 'Library',
+        required: true,
+        inputType: 'options',
+        options: createProjectLibraryOptions,
+        defaultValue: defaultCreateProjectLibraryId,
+        valueSummary: (value) =>
+          createProjectLibraryOptions().find((option) => option.value === value)
+            ?.name ?? 'Library',
+      },
+    },
+    reviewMessage: ({ argumentsToSubmit }) =>
+      `Create an editable copy named "${argumentsToSubmit.name}" in ${createProjectLibraryOptions().find((option) => option.value === argumentsToSubmit.libraryId)?.name ?? 'the selected library'}, including your current edits.`,
+  }
+
   const moveToLibraryCommand: Command = {
     scopes: GLOBAL_COMMAND_SCOPES,
     icon: 'folder',
@@ -721,6 +832,7 @@ export function createProjectCommands({
   return [
     openProjectCommand,
     createProjectCommand,
+    copyProjectCommand,
     moveToLibraryCommand,
     deleteProjectCommand,
     renameProjectCommand,

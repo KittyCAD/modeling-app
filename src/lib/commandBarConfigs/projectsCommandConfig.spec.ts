@@ -124,6 +124,32 @@ function projectOptions(
 }
 
 describe('project command config', () => {
+  it('rejects missing source projects and stale destinations instead of falling back to another library', async () => {
+    const source = createProject({ name: 'source' })
+    const target = {
+      library: createLibrary('available', 'Available'),
+      createProject: { run: vi.fn() },
+    }
+    const copyProject = vi.fn()
+    const command = createProjectCommands({
+      systemIOActor: createSystemIOActor([source]),
+      getCreateProjectLibraryTargets: () => [target],
+      copyProject,
+    }).find((command) => command.name === 'Copy project')!
+    await command.onSubmit({
+      project: source.path,
+      name: 'Copy',
+      libraryId: 'removed',
+    })
+    await command.onSubmit({
+      project: '/unlisted/private',
+      name: 'Copy',
+      libraryId: 'available',
+    })
+    expect(copyProject).not.toHaveBeenCalled()
+    expect(target.createProject.run).not.toHaveBeenCalled()
+  })
+
   it('keeps URL import registered but hidden from search', () => {
     const commands = createProjectCommands({
       systemIOActor: createSystemIOActor(),
