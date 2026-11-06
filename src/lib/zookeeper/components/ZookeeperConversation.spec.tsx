@@ -790,7 +790,7 @@ describe('ZookeeperConversation', () => {
     'Manual edits detected since the last Zookeeper state.',
     'Temporary connection issue. Retrying automatically…',
   ])(
-    'keeps activity expanded for non-terminal info notices: %s',
+    'keeps activity available for non-terminal info notices: %s',
     async (infoText) => {
       const conversation: Conversation = {
         exchanges: [
@@ -852,14 +852,17 @@ describe('ZookeeperConversation', () => {
         screen.getByTestId('ml-response-chat-bubble-thinking')
       ).toBeInTheDocument()
 
+      const activityToggle = screen.getByRole('button', {
+        name: /Working for/,
+      })
+      expect(activityToggle).toHaveAttribute('aria-expanded', 'false')
+      fireEvent.click(activityToggle)
       await waitFor(() => {
         expect(
           screen.getByTestId('ml-response-thinking-view')
         ).toBeInTheDocument()
       })
-      expect(
-        screen.getByRole('button', { name: /Working for/ })
-      ).toHaveAttribute('aria-expanded', 'true')
+      expect(activityToggle).toHaveAttribute('aria-expanded', 'true')
     }
   )
 
