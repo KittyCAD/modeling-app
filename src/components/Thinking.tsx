@@ -21,6 +21,11 @@ import {
   getZookeeperAttachmentKey,
   type ZookeeperAttachmentFetchState,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import {
+  collectActivityItems,
+  type ActivityItem,
+  type ZookeeperActivity,
+} from '@src/lib/zookeeper/activityMessages'
 
 interface IRowCollapse {
   fn: () => void
@@ -355,6 +360,156 @@ export const NothingInParticular = (props: {
         <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
+  )
+}
+
+const ToolActivityRow = (props: {
+  tool: Extract<ZookeeperActivity, { kind: 'tool' }>
+  isDone: boolean
+}) => {
+  const fallbackLabel = props.tool.name.replaceAll('_', ' ')
+  const label =
+    props.tool.label ??
+    fallbackLabel.charAt(0).toUpperCase() + fallbackLabel.slice(1)
+  const icon = props.tool.name.includes('search')
+    ? 'search'
+    : props.tool.name.includes('file')
+      ? 'file'
+      : 'gear'
+  const status =
+    props.tool.status === 'started'
+      ? props.isDone
+        ? ' · Stopped'
+        : ' · Running'
+      : props.tool.ok === false
+        ? ' · Failed'
+        : ''
+
+  return (
+    <div className="flex items-center gap-2 py-1 text-chalkboard-70 dark:text-chalkboard-30">
+      <span aria-hidden="true">
+        <CustomIcon name={icon} className="h-4 w-4 shrink-0" />
+      </span>
+      <span className="min-w-0 truncate">
+        {label}
+        {status}
+      </span>
+    </div>
+  )
+}
+
+type ActionItem = Exclude<ActivityItem, { kind: 'commentary' }>
+type ActivitySection =
+  | Extract<ActivityItem, { kind: 'commentary' }>
+  | { kind: 'actions'; items: ActionItem[]; startIndex: number }
+
+const groupActivityItems = (items: ActivityItem[]): ActivitySection[] => {
+  const sections: ActivitySection[] = []
+  items.forEach((item, index) => {
+    if (item.kind === 'commentary') {
+      sections.push(item)
+      return
+    }
+    const last = sections.at(-1)
+    if (last?.kind === 'actions') {
+      last.items.push(item)
+    } else {
+      sections.push({ kind: 'actions', items: [item], startIndex: index })
+    }
+  })
+  return sections
+}
+
+const actionLabel = (item: ActionItem): string => {
+  if (item.kind === 'legacy') {
+    if ('files' in item.message) return 'Viewed files'
+    if (!('reasoning' in item.message)) return 'Viewed activity'
+    const type = item.message.reasoning.type
+    if (type.endsWith('_file') || type === 'generated_kcl_code')
+      return 'Edited files'
+    if (type === 'kcl_docs') return 'Read documentation'
+    if (type === 'kcl_code_error') return 'KCL error'
+    return 'Viewed project details'
+  }
+  const name = item.name.toLowerCase()
+  if (name === 'activate_skill') return 'Activated skills'
+  if (name === 'read_user_selections') return 'Read user selections'
+  if (name === 'retrieve_kcl_code_examples') return 'Read KCL examples'
+  if (name === 'search_knowledge') return 'Searched knowledge'
+  if (name.includes('web_search')) return 'Searched the web'
+  if (name.includes('search')) return 'Searched'
+  if (name.startsWith('read_')) return 'Read files'
+  if (name === 'list_user_files') return 'Listed project files'
+  if (name.startsWith('list_')) return 'Listed files'
+  if (
+    name.startsWith('write_') ||
+    name.startsWith('edit_') ||
+    name.startsWith('delete_')
+  )
+    return 'Edited files'
+  if (
+    name.startsWith('execute_') ||
+    name.startsWith('format_') ||
+    name.startsWith('lint_')
+  )
+    return 'Ran project checks'
+  return `Used ${item.name.replaceAll('_', ' ')}`
+}
+
+const ActionGroup = (props: {
+  items: ActionItem[]
+  isDone: boolean
+  children: ReactNode
+}) => {
+  if (props.items.length === 1 && props.items[0].kind === 'tool') {
+    return <>{props.children}</>
+  }
+
+  const skillCount = props.items.filter(
+    (item) => item.kind === 'tool' && item.name === 'activate_skill'
+  ).length
+  const labels = [...new Set(props.items.map(actionLabel))].map((label) =>
+    label === 'Activated skills'
+      ? `Activated ${skillCount} ${skillCount === 1 ? 'skill' : 'skills'}`
+      : label
+  )
+  const summary = labels
+    .slice(0, 3)
+    .map((label, index) =>
+      index === 0 ? label : label[0].toLowerCase() + label.slice(1)
+    )
+    .join(', ')
+  const outcome = props.items.some(
+    (item) => item.kind === 'tool' && item.ok === false
+  )
+    ? ' · Failed'
+    : props.isDone &&
+        props.items.some(
+          (item) => item.kind === 'tool' && item.status === 'started'
+        )
+      ? ' · Stopped'
+      : ''
+
+  return (
+    <details className="group/actions py-1">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-chalkboard-70 dark:text-chalkboard-30 [&::-webkit-details-marker]:hidden">
+        <span aria-hidden="true">
+          <CustomIcon name="gear" className="h-4 w-4 shrink-0" />
+        </span>
+        <span className="min-w-0 truncate">
+          {summary}
+          {labels.length > 3 ? ', ...' : ''}
+          {outcome}
+        </span>
+        <span aria-hidden="true" className="ml-auto">
+          <CustomIcon
+            name="caretDown"
+            className="h-4 w-4 shrink-0 opacity-60 transition-transform group-open/actions:rotate-180"
+          />
+        </span>
+      </summary>
+      <div className="pl-6 pt-1">{props.children}</div>
+    </details>
   )
 }
 
@@ -920,6 +1075,10 @@ export const Thinking = (
           x.files.files.some((file) => !isExportDownloadFile(file)))
       )
     }) ?? []
+  const activityItems = collectActivityItems(reasoningThoughts)
+  const hasStructuredActivity = activityItems.some(
+    (item) => item.kind !== 'legacy'
+  )
 
   // Resume reasoning autoscroll when a new prompt is sent
   useEffect(() => {
@@ -952,7 +1111,11 @@ export const Thinking = (
   }, [])
 
   useEffect(() => {
-    if (props.onlyShowImmediateThought === true || userHasManuallyScrolled) {
+    if (
+      hasStructuredActivity ||
+      props.onlyShowImmediateThought === true ||
+      userHasManuallyScrolled
+    ) {
       return
     }
 
@@ -969,6 +1132,7 @@ export const Thinking = (
       })
     })
   }, [
+    hasStructuredActivity,
     reasoningThoughts.length,
     props.onlyShowImmediateThought,
     userHasManuallyScrolled,
@@ -982,20 +1146,74 @@ export const Thinking = (
     )
   }
 
-  const componentThoughts = reasoningThoughts.map((thought, index: number) => {
-    return fromDataToComponent(thought, {
-      key: index,
-      setAnyRowCollapse,
-      keyIndex: index,
-      attachmentFetches: props.attachmentFetches,
-      onFetchAttachment: props.onFetchAttachment,
-    })
-  })
+  // Structured activity replaces the old progress text and model summary.
+  // Retain file and other rich artifacts, and keep old conversations unchanged.
+  const displayedItems = hasStructuredActivity
+    ? activityItems.filter(
+        (item) =>
+          item.kind !== 'legacy' ||
+          !('reasoning' in item.message) ||
+          (item.message.reasoning.type !== 'text' &&
+            item.message.reasoning.type !== 'markdown')
+      )
+    : activityItems
+  const sections = hasStructuredActivity
+    ? groupActivityItems(displayedItems)
+    : undefined
+  const componentThoughts = sections
+    ? sections.map((section, sectionIndex) => {
+        if (section.kind === 'commentary') {
+          return (
+            <div key={sectionIndex} className="py-1">
+              <MarkdownText text={section.text} />
+            </div>
+          )
+        }
+        return (
+          <ActionGroup
+            key={`${section.startIndex}-${sectionIndex}`}
+            items={section.items}
+            isDone={props.isDone}
+          >
+            {section.items.map((item, actionIndex) =>
+              item.kind === 'tool' ? (
+                <ToolActivityRow
+                  key={`${item.call_id}-${actionIndex}`}
+                  tool={item}
+                  isDone={props.isDone}
+                />
+              ) : (
+                fromDataToComponent(item.message, {
+                  key: actionIndex,
+                  setAnyRowCollapse,
+                  keyIndex: section.startIndex + actionIndex,
+                  attachmentFetches: props.attachmentFetches,
+                  onFetchAttachment: props.onFetchAttachment,
+                })
+              )
+            )}
+          </ActionGroup>
+        )
+      })
+    : displayedItems.map((item, index) => {
+        if (item.kind !== 'legacy') return null
+        return fromDataToComponent(item.message, {
+          key: index,
+          setAnyRowCollapse,
+          keyIndex: index,
+          attachmentFetches: props.attachmentFetches,
+          onFetchAttachment: props.onFetchAttachment,
+        })
+      })
 
-  if (props.isDone) {
+  if (props.isDone && !hasStructuredActivity) {
     componentThoughts.push(<End key={reasoningThoughts.length} />)
   }
 
+  const lastCommentary = activityItems.findLast(
+    (item) => item.kind === 'commentary'
+  )
+  const lastTool = activityItems.findLast((item) => item.kind === 'tool')
   const lastImmediateThought = reasoningThoughts.findLast(
     (thought) =>
       'reasoning' in thought &&
@@ -1013,30 +1231,45 @@ export const Thinking = (
     lastImmediateThought.reasoning.type === 'text'
       ? lastImmediateThought.reasoning.content
       : ''
-  const componentLastGenericThought = isImmediateThinking ? (
-    <div className="flex flex-row items-center gap-2">
-      <CustomIcon name="brain" className="w-6 h-6" />
-      <Generic content="Thinking" />
-    </div>
-  ) : (
-    <Generic content={immediateThoughtContent} />
-  )
+  const componentLastGenericThought =
+    lastCommentary?.kind === 'commentary' ? (
+      <Generic content={lastCommentary.text} />
+    ) : lastTool?.kind === 'tool' ? (
+      <Generic
+        content={`${lastTool.status === 'started' ? 'Running' : 'Finished'} ${lastTool.name.replaceAll('_', ' ')}`}
+      />
+    ) : isImmediateThinking ? (
+      <div className="flex flex-row items-center gap-2">
+        <CustomIcon name="brain" className="w-6 h-6" />
+        <Generic content="Thinking" />
+      </div>
+    ) : (
+      <Generic content={immediateThoughtContent || 'Thinking...'} />
+    )
 
   const ViewFull = (
     <div
       data-testid="ml-response-thinking-view"
       ref={refViewFull}
       role="region"
-      style={{ maxHeight: '20lh' }}
-      className={`relative select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`}
-      onScroll={onReasoningScroll}
-      onWheel={onReasoningPaneInteraction}
-      onTouchStart={onReasoningPaneInteraction}
-      onPointerDown={onReasoningPaneInteraction}
-      onKeyDown={onReasoningPaneInteraction}
+      style={hasStructuredActivity ? undefined : { maxHeight: '20lh' }}
+      className={
+        hasStructuredActivity
+          ? 'select-text text-2 text-xs pl-8 pr-2 pb-2'
+          : `relative select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`
+      }
+      onScroll={hasStructuredActivity ? undefined : onReasoningScroll}
+      onWheel={hasStructuredActivity ? undefined : onReasoningPaneInteraction}
+      onTouchStart={
+        hasStructuredActivity ? undefined : onReasoningPaneInteraction
+      }
+      onPointerDown={
+        hasStructuredActivity ? undefined : onReasoningPaneInteraction
+      }
+      onKeyDown={hasStructuredActivity ? undefined : onReasoningPaneInteraction}
     >
       {componentThoughts.length > 0 ? componentThoughts : <PlaceholderLine />}
-      {anyRowCollapse.length > 0 && (
+      {!hasStructuredActivity && anyRowCollapse.length > 0 && (
         <button
           className="absolute flex justify-center items-center flex-none bottom-8 right-3 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 "
           onClick={collapseAndClearAllRows}

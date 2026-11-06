@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { ExchangeCard } from '@src/components/ExchangeCard'
+import { ZOOKEEPER_ACTIVITY_PREFIX } from '@src/lib/zookeeper/activityMessages'
 import { describe, expect, test, vi } from 'vitest'
 
 describe('ExchangeCard replay attachments', () => {
@@ -102,6 +103,7 @@ describe('ExchangeCard replay attachments', () => {
       />
     )
 
+    fireEvent.click(screen.getByRole('button', { name: /Working for/ }))
     fireEvent.click(
       screen.getByRole('button', {
         name: 'generated.png: Load attachment',
@@ -110,5 +112,114 @@ describe('ExchangeCard replay attachments', () => {
 
     expect(onFetchAttachment).toHaveBeenCalledOnce()
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
+  })
+
+  test('starts completed activity folded while keeping the final answer visible', () => {
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        request={{ type: 'user', content: 'Inspect the project' }}
+        responses={[
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'commentary',
+                  text: 'Checking the project.',
+                }),
+            },
+          },
+          {
+            end_of_stream: {
+              whole_response: 'The project is ready.',
+              started_at: '2026-11-05T10:00:00Z',
+              completed_at: '2026-11-05T10:01:14Z',
+            },
+          },
+        ]}
+        deltasAggregated="The project is ready."
+      />
+    )
+
+    expect(
+      screen.getByRole('button', { name: /Worked for 1m 14s/ })
+    ).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.getByText('The project is ready.')).toBeVisible()
+    expect(screen.queryByText('Checking the project.')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /Worked for 1m 14s/ }))
+    expect(screen.getByText('Checking the project.')).toBeVisible()
+  })
+
+  test('starts a running turn collapsed with only the latest commentary visible', () => {
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        request={{ type: 'user', content: 'Inspect the project' }}
+        responses={[
+          { reasoning: { type: 'text', content: 'Reading main.kcl' } },
+          {
+            reasoning: {
+              type: 'markdown',
+              content: 'The project contains one KCL file.',
+            },
+          },
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'commentary',
+                  text: 'Checking the project.',
+                }),
+            },
+          },
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'tool',
+                  call_id: 'call-1',
+                  name: 'read_project_file',
+                  status: 'started',
+                  label: 'Read main.kcl',
+                }),
+            },
+          },
+        ]}
+      />
+    )
+
+    expect(screen.getByRole('button', { name: /Working for/ })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    )
+    expect(screen.getByText('Checking the project.')).toBeVisible()
+    expect(
+      screen.queryByText('Read main.kcl · Running')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Reading main.kcl')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('The project contains one KCL file.')
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /Working for/ }))
+    expect(screen.getByRole('button', { name: /Working for/ })).toHaveAttribute(
+      'aria-expanded',
+      'true'
+    )
+    expect(screen.getByText('Read main.kcl · Running')).toBeVisible()
+    expect(
+      screen.getByText('Read main.kcl · Running').closest('details')
+    ).toBeNull()
+    expect(screen.getByTestId('ml-response-thinking-view')).not.toHaveClass(
+      'overflow-auto',
+      'border'
+    )
   })
 })

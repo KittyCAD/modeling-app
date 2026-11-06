@@ -14,6 +14,7 @@ import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
+import { parseZookeeperActivity } from '@src/lib/zookeeper/activityMessages'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
 import type { QueuedMessage } from '@src/lib/zookeeper/registry/controller'
@@ -698,6 +699,7 @@ export const ZookeeperConversationInput = (
 
 export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
+  const shouldFollowActivityRef = useRef(true)
   const exchangesLength = props.conversation?.exchanges.length ?? 0
   const hasMessages = exchangesLength > 0
   const lastExchange = exchangesLength
@@ -705,15 +707,37 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     : undefined
   const isEndOfStream =
     lastExchange?.responses.some(isResponseComplete) ?? false
+  const lastResponseCount = lastExchange?.responses.length ?? 0
+  const hasStructuredActivity =
+    lastExchange?.responses.some(
+      (response) => parseZookeeperActivity(response) !== undefined
+    ) ?? false
 
   // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
     if (exchangesLength === 0 || !refScroll.current) return
+    shouldFollowActivityRef.current = true
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: 'auto',
     })
   }, [exchangesLength])
+
+  // Structured activity grows in the conversation instead of an inner pane.
+  // Follow new rows while the reader remains near the bottom of the chat.
+  useEffect(() => {
+    if (
+      !hasStructuredActivity ||
+      isEndOfStream ||
+      !shouldFollowActivityRef.current ||
+      !refScroll.current
+    )
+      return
+    refScroll.current.scrollTo({
+      top: refScroll.current.scrollHeight,
+      behavior: 'auto',
+    })
+  }, [hasStructuredActivity, isEndOfStream, lastResponseCount])
 
   // Autoscroll: right after Zookeeper completes its turn in the exchange.
   useEffect(() => {
@@ -754,6 +778,15 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   : 'overflow-auto'
               }
               ref={refScroll}
+              data-testid="zookeeper-conversation-scroll"
+              onScroll={(event) => {
+                const element = event.currentTarget
+                shouldFollowActivityRef.current =
+                  element.scrollHeight -
+                    element.scrollTop -
+                    element.clientHeight <
+                  64
+              }}
             >
               {props.showManualConnect ? (
                 <ConnectionRecovery

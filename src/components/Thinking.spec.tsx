@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
 import { FilesSnapshot, Thinking } from '@src/components/Thinking'
+import { ZOOKEEPER_ACTIVITY_PREFIX } from '@src/lib/zookeeper/activityMessages'
 
 // Mock a small valid PNG image (1x1 transparent pixel)
 const MOCK_PNG_DATA = [
@@ -393,6 +394,234 @@ describe('FilesSnapshot', () => {
 })
 
 describe('Thinking', () => {
+  const activity = (payload: object): MlCopilotServerMessage => ({
+    reasoning: {
+      type: 'markdown',
+      content: ZOOKEEPER_ACTIVITY_PREFIX + JSON.stringify(payload),
+    },
+  })
+
+  test('shows a single tool without an empty disclosure', () => {
+    const thoughts: MlCopilotServerMessage[] = [
+      activity({ kind: 'commentary', text: 'Checking the project.' }),
+      {
+        reasoning: {
+          type: 'markdown',
+          content: 'The project contains one KCL file.',
+        },
+      },
+      {
+        reasoning: {
+          type: 'text',
+          content: 'Reading main.kcl',
+        },
+      },
+      activity({
+        kind: 'tool',
+        call_id: 'call-1',
+        name: 'read_project_file',
+        status: 'started',
+        label: 'Read main.kcl',
+        arguments: '{"path":"main.kcl","contents":"SECRET_KCL_CONTENT"}',
+      }),
+    ]
+    const view = () => (
+      <Thinking
+        thoughts={thoughts}
+        isDone={false}
+        onlyShowImmediateThought={false}
+      />
+    )
+    const { rerender } = render(view())
+
+    expect(screen.getByText('Checking the project.')).toBeVisible()
+    expect(screen.getByText('Read main.kcl · Running')).toBeVisible()
+    expect(
+      screen.getByText('Read main.kcl · Running').closest('details')
+    ).toBeNull()
+    expect(screen.queryByText('Reasoning summary')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('The project contains one KCL file.')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Reading main.kcl')).not.toBeInTheDocument()
+    const activityView = screen.getByTestId('ml-response-thinking-view')
+    expect(activityView).not.toHaveStyle({ maxHeight: '20lh' })
+    expect(activityView).not.toHaveClass('overflow-auto', 'border', 'shadow-md')
+
+    thoughts.push(
+      activity({
+        kind: 'tool',
+        call_id: 'call-1',
+        name: 'read_project_file',
+        status: 'completed',
+        output: 'Found main.kcl',
+        ok: true,
+      })
+    )
+    rerender(view())
+
+    const toolRow = screen.getByText('Read main.kcl')
+    expect(toolRow).toBeVisible()
+    expect(toolRow.closest('details')).toBeNull()
+    expect(screen.queryByText('Arguments')).not.toBeInTheDocument()
+    expect(screen.queryByText('SECRET_KCL_CONTENT')).not.toBeInTheDocument()
+    expect(screen.queryByText('Found main.kcl')).not.toBeInTheDocument()
+  })
+
+  test('keeps named skill calls distinct inside a concise action summary', () => {
+    const tools = [
+      ['skill-1', 'activate_skill', 'Activating skill: kcl-modeling'],
+      ['skill-2', 'activate_skill', 'Activating skill: kcl-knowledge'],
+      [
+        'skill-3',
+        'activate_skill',
+        'Activating skill: kcl-mechanical-engineering',
+      ],
+      ['selections', 'read_user_selections', 'Read user selections'],
+      ['files', 'list_user_files', 'Listed project files and attachments'],
+    ] as const
+
+    render(
+      <Thinking
+        thoughts={tools.map(([call_id, name, label]) =>
+          activity({ kind: 'tool', call_id, name, label, status: 'completed' })
+        )}
+        isDone={true}
+        onlyShowImmediateThought={false}
+      />
+    )
+
+    const summary = screen.getByText(
+      'Activated 3 skills, read user selections, listed project files'
+    )
+    const group = summary.closest('details')
+    expect(group).not.toHaveAttribute('open')
+    expect(screen.getByText('Activating skill: kcl-modeling')).not.toBeVisible()
+
+    fireEvent.click(summary)
+    expect(group).toHaveAttribute('open')
+    expect(screen.getByText('Activating skill: kcl-modeling')).toBeVisible()
+    expect(screen.getByText('Activating skill: kcl-knowledge')).toBeVisible()
+    expect(
+      screen.getByText('Activating skill: kcl-mechanical-engineering')
+    ).toBeVisible()
+  })
+
+  test('keeps tool batches folded as new commentary and tool events arrive', () => {
+    const thoughts: MlCopilotServerMessage[] = [
+      activity({ kind: 'commentary', text: 'Inspecting the project.' }),
+      activity({
+        kind: 'tool',
+        call_id: 'read-1',
+        name: 'read_project_file',
+        status: 'started',
+        label: 'Read main.kcl',
+        arguments: '{"path":"main.kcl"}',
+      }),
+      activity({
+        kind: 'tool',
+        call_id: 'read-1',
+        name: 'read_project_file',
+        status: 'completed',
+        output: 'Found main.kcl',
+        ok: true,
+      }),
+      activity({
+        kind: 'tool',
+        call_id: 'write-1',
+        name: 'write_project_file',
+        status: 'completed',
+        label: 'Edited main.kcl',
+        output: 'Wrote main.kcl',
+        ok: true,
+      }),
+      {
+        reasoning: {
+          type: 'updated_project_file',
+          file_name: 'main.kcl',
+          content: 'thickness = 4',
+        },
+      },
+    ]
+    const view = (isDone = false) => (
+      <Thinking
+        thoughts={thoughts}
+        isDone={isDone}
+        onlyShowImmediateThought={false}
+      />
+    )
+    const { rerender } = render(view())
+
+    const groupSummary = screen.getByText('Read files, edited files')
+    const group = groupSummary.closest('details')
+    expect(group).not.toHaveAttribute('open')
+    expect(screen.getByText('Read main.kcl')).not.toBeVisible()
+    expect(screen.getByText('Edited main.kcl')).not.toBeVisible()
+
+    thoughts.push(
+      activity({ kind: 'commentary', text: 'Validating the model.' })
+    )
+    rerender(view())
+
+    expect(group).not.toHaveAttribute('open')
+    expect(screen.getByText('Validating the model.')).toBeVisible()
+    expect(screen.getByText('Read main.kcl')).not.toBeVisible()
+    fireEvent.click(groupSummary)
+    expect(group).toHaveAttribute('open')
+    expect(screen.getByText('Read main.kcl')).toBeVisible()
+    expect(screen.getByText('Edited main.kcl')).toBeVisible()
+    expect(screen.getByText('Updated Project File (main.kcl)')).toBeVisible()
+    expect(screen.queryByText('Wrote main.kcl')).not.toBeInTheDocument()
+
+    thoughts.push(
+      activity({
+        kind: 'tool',
+        call_id: 'execute-1',
+        name: 'execute_project',
+        status: 'completed',
+        label: 'Validated project',
+        ok: true,
+      })
+    )
+    rerender(view())
+    expect(screen.getByText('Validated project')).toBeVisible()
+    expect(screen.getByText('Validated project').closest('details')).toBeNull()
+    expect(group).toHaveAttribute('open')
+
+    rerender(view(true))
+    expect(screen.getByText('Validated project')).toBeVisible()
+  })
+
+  test('labels unfinished tool activity as stopped after an interrupted turn', () => {
+    render(
+      <Thinking
+        thoughts={[
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'tool',
+                  call_id: 'call-interrupted',
+                  name: 'read_project_file',
+                  status: 'started',
+                  label: 'Read main.kcl',
+                }),
+            },
+          },
+        ]}
+        isDone={true}
+        onlyShowImmediateThought={false}
+      />
+    )
+
+    expect(screen.getByText('Read main.kcl · Stopped')).toBeVisible()
+    expect(
+      screen.getByText('Read main.kcl · Stopped').closest('details')
+    ).toBeNull()
+  })
+
   test('shows thinking after a tool status when markdown reasoning arrives', () => {
     const thoughts: MlCopilotServerMessage[] = [
       {

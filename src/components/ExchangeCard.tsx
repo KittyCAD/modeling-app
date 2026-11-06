@@ -154,70 +154,27 @@ export const ExchangeCardStatus = (props: {
   attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
   onFetchAttachment?: (attachmentRef: AttachmentRef) => void
   onlyShowImmediateThought: boolean
-  startedAt: Date
-  updatedAt?: Date
   maybeError?: MlCopilotServerMessageError
 }) => {
-  const [triggerRender, setTriggerRender] = useState<number>(0)
+  // Error and info also signal the end of a stream when no end_of_stream arrives.
+  const isEndOfStream = isExchangeComplete(props.responses)
   const thinker = (
     <Thinking
       thoughts={props.responses}
-      isDone={props.responses?.some((m) => 'delta' in m) || false}
+      isDone={isEndOfStream}
       attachmentFetches={props.attachmentFetches}
       onFetchAttachment={props.onFetchAttachment}
       onlyShowImmediateThought={props.onlyShowImmediateThought}
     />
   )
 
-  // Error and info also signals the end of a stream, because we'll never
-  // see an end_of_stream from them.
-  const isEndOfStream = isExchangeComplete(props.responses)
-
-  useEffect(() => {
-    const i = setInterval(() => {
-      setTriggerRender(triggerRender + 1)
-    }, 500)
-
-    if (isEndOfStream) {
-      clearInterval(i)
-    }
-
-    return () => {
-      clearInterval(i)
-    }
-  }, [triggerRender, isEndOfStream])
-
-  let timeReasonedFor = 0
-  if (isEndOfStream) {
-    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
-    if (endOfStreamResponse !== undefined) {
-      timeReasonedFor =
-        new Date(
-          endOfStreamResponse.end_of_stream.completed_at ?? 0
-        ).getTime() -
-        new Date(endOfStreamResponse.end_of_stream.started_at ?? 0).getTime()
-    }
-  } else {
-    timeReasonedFor =
-      (props.updatedAt ?? new Date()).getTime() - props.startedAt.getTime()
-  }
-
   return props.onlyShowImmediateThought ? (
-    <div className="text-sm text-chalkboard-70">
+    <div className="text-xs text-chalkboard-70">
       {isEndOfStream && <MaybeError />}
       {!isEndOfStream && thinker}
     </div>
   ) : (
-    <div className="relative">
-      {thinker}
-      {props.updatedAt && (
-        <div className="text-chalkboard-70 p-2 pb-0">
-          {timeReasonedFor ? (
-            <>Reasoned for {ms(timeReasonedFor, { long: true })}</>
-          ) : null}
-        </div>
-      )}
-    </div>
+    <div className="relative">{thinker}</div>
   )
 }
 
@@ -523,7 +480,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   let [startedAt] = useState<Date>(props.startedAt ?? new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
 
-  const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
+  const [showFullReasoning, setShowFullReasoning] = useState(false)
 
   const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden text-sm
@@ -558,6 +515,18 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     }
   }
 
+  const endOfStreamResponse = getEndOfStreamResponse(props.responses)
+  const completedAt = endOfStreamResponse?.end_of_stream.completed_at
+  const elapsedMs = Math.max(
+    0,
+    (completedAt
+      ? new Date(completedAt)
+      : (updatedAt ?? new Date())
+    ).getTime() - startedAt.getTime()
+  )
+  const elapsedSeconds = Math.floor(elapsedMs / 1000)
+  const elapsedLabel = `${elapsedSeconds >= 60 ? `${Math.floor(elapsedSeconds / 60)}m ` : ''}${elapsedSeconds % 60}s`
+
   useEffect(() => {
     if (isEndOfStream) {
       setShowFullReasoning(false)
@@ -572,6 +541,8 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
       ('files' in response &&
         response.files.files.some((file) => !isExportDownloadFile(file)))
   )
+  const hasActivity =
+    hasReasoningContent || (!isEndOfStream && props.isLastResponse)
 
   return (
     <div className={cssCard}>
@@ -586,48 +557,40 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           onFetchAttachment={props.onFetchAttachment}
         />
       )}
-      {showFullReasoning && hasReasoningContent && (
-        <div>
-          <ExchangeCardStatus
-            responses={props.responses}
-            attachmentFetches={props.attachmentFetches}
-            onFetchAttachment={props.onFetchAttachment}
-            onlyShowImmediateThought={false}
-            startedAt={startedAt}
-            updatedAt={updatedAt}
-          />
-        </div>
-      )}
-      {hasReasoningContent && (
-        <div
-          tabIndex={0}
-          role="button"
-          className="pl-8 flex flex-row items-center cursor-pointer justify-start gap-2"
-          onClick={() => onSeeReasoning()}
-        >
-          <div>
-            <button className="flex justify-center items-center flex-none pt-1 pb-1">
-              {showFullReasoning ? (
-                <>
-                  Collapse <CustomIcon name="collapse" className="w-5 h-5" />
-                </>
-              ) : (
-                <>See reasoning</>
-              )}
-            </button>
-          </div>
-          {props.isLastResponse && (
+      {hasActivity && (
+        <div className="mx-8 flex flex-row items-center justify-start gap-2 border-b border-chalkboard-30 pb-2 dark:border-chalkboard-70">
+          <button
+            type="button"
+            className="m-0 flex items-center gap-2 rounded-none border-none bg-transparent px-0 py-1 text-xs text-chalkboard-70 hover:border-none hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground dark:text-chalkboard-30 dark:hover:bg-transparent"
+            aria-expanded={showFullReasoning}
+            onClick={onSeeReasoning}
+          >
+            {isEndOfStream ? 'Worked' : 'Working'} for {elapsedLabel}
+            <span aria-hidden="true">
+              <CustomIcon
+                name={showFullReasoning ? 'caretUp' : 'caretDown'}
+                className="h-4 w-4"
+              />
+            </span>
+          </button>
+          {props.isLastResponse && !showFullReasoning && (
             <ExchangeCardStatus
               maybeError={maybeError}
               responses={props.responses}
               attachmentFetches={props.attachmentFetches}
               onFetchAttachment={props.onFetchAttachment}
               onlyShowImmediateThought={true}
-              startedAt={startedAt}
-              updatedAt={updatedAt}
             />
           )}
         </div>
+      )}
+      {showFullReasoning && hasActivity && (
+        <ExchangeCardStatus
+          responses={props.responses}
+          attachmentFetches={props.attachmentFetches}
+          onFetchAttachment={props.onFetchAttachment}
+          onlyShowImmediateThought={false}
+        />
       )}
       <ResponsesCard
         items={props.responses}
