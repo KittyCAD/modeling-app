@@ -242,13 +242,14 @@ extrude001 = extrude(
       }
   })
 
-  test(`Verify user can double-click to edit a sketch`, async ({
-    homePage,
-    editor,
-    toolbar,
-    scene,
-  }) => {
-    const initialCode = `closedSketch = sketch(on = XZ) {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Verify user can double-click to edit a sketch ${rendererTag}`, async ({
+      homePage,
+      editor,
+      toolbar,
+      scene,
+    }) => {
+      const initialCode = `closedSketch = sketch(on = XZ) {
   circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
 }
 openSketch = sketch(on = XY) {
@@ -260,53 +261,56 @@ openSketch = sketch(on = XY) {
 }
 `
 
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', initialCode)
-    )
-    // Match the cursor position of an initially loaded file.
-    await editor.scrollToText('closedSketch = sketch(on = XZ) {')
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      // Match the cursor position of an initially loaded file.
+      await editor.scrollToText('closedSketch = sketch(on = XZ) {')
 
-    const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
-      scene.makeMouseHelpers(0.65, 0.5, {
-        format: 'ratio',
+      await test.step(`Double-click on the closed sketch`, async () => {
+        await scene.settled()
+        await editor.closePane()
+        // Selecting the closed region keeps the sketch header active on entry.
+        const [, moveToCircle, dblClickCircle] =
+          await scene.makeSelectionHelpers({
+            kind: 'face',
+            index: 0,
+            stream: { x: 0.63, y: 0.5, format: 'ratio' },
+          })
+        await moveToCircle()
+        await dblClickCircle()
+        await expect(toolbar.exitSketchBtn).toBeVisible()
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await editor.openPane()
+        await editor.expectActiveLinesToBe(['closedSketch = sketch(on = XZ) {'])
       })
 
-    const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
-      0.63,
-      0.5,
-      { format: 'ratio' }
-    )
+      await test.step(`Exit the closed sketch and wait for scene`, async () => {
+        await toolbar.exitSketch()
+        await scene.settled()
+        await editor.closePane()
+      })
 
-    await test.step(`Double-click on the closed sketch`, async () => {
-      await scene.settled()
-      await editor.closePane()
-      await moveToCircle()
-      await dblClickCircle()
-      await expect(toolbar.exitSketchBtn).toBeVisible()
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await editor.openPane()
-      await editor.expectActiveLinesToBe(['closedSketch = sketch(on = XZ) {'])
+      await test.step(`Double-click on the open sketch`, async () => {
+        const [, moveToOpenPath, dblClickOpenPath] =
+          await scene.makeSelectionHelpers({
+            kind: 'edge',
+            index: 3,
+            stream: { x: 0.65, y: 0.5, format: 'ratio' },
+          })
+        await moveToOpenPath()
+        await dblClickOpenPath()
+        await expect(toolbar.exitSketchBtn).toBeVisible()
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await editor.openPane()
+        await editor.expectActiveLinesToBe([
+          'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
+        ])
+      })
     })
-
-    await test.step(`Exit the closed sketch and wait for scene`, async () => {
-      await toolbar.exitSketch()
-      await scene.settled()
-      await editor.closePane()
-    })
-
-    await test.step(`Double-click on the open sketch`, async () => {
-      await moveToOpenPath()
-      await dblClickOpenPath()
-      await expect(toolbar.exitSketchBtn).toBeVisible()
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await editor.openPane()
-      await editor.expectActiveLinesToBe([
-        'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
-      ])
-    })
-  })
+  }
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Shift-click to select and deselect faces ${rendererTag}`, async ({
