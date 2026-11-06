@@ -1,6 +1,5 @@
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import type { KclCommandValue } from '@src/lib/commandTypes'
 import { queryModelingCommand } from '@src/lib/engineConnection/utils'
 import {
   getPrimitiveSelectionForEntity,
@@ -11,23 +10,6 @@ import type {
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-
-/** Engine-only adjacent faces travel with the edge they identify. */
-export type DistanceSelection = Selection & {
-  primitiveFaces?: EnginePrimitiveSelection[]
-  frameDefaults?: DistanceFrameDefaults
-}
-
-export type DistanceFrameDefaults = {
-  framePosition?: KclCommandValue
-  framePlane?: string
-  fontSize?: KclCommandValue
-}
-
-export type DistanceSelections = {
-  graphSelections: DistanceSelection[]
-  otherSelections: Selections['otherSelections']
-}
 
 export function isDistanceEdge(selection: Selection): boolean {
   return (
@@ -53,8 +35,10 @@ export async function resolveDistanceSelections(
   selections: Selections,
   graph: ArtifactGraph,
   engine: ConnectionManager
-): Promise<DistanceSelections | Error> {
-  const normalized: DistanceSelections = {
+): Promise<
+  { objects: Selections; primitiveFaces: EnginePrimitiveSelection[] } | Error
+> {
+  const normalized: Selections = {
     graphSelections: selections.graphSelections.map((selection) => ({
       ...selection,
     })),
@@ -123,7 +107,6 @@ export async function resolveDistanceSelections(
       if (edge && edge.type === 'solid3d_get_common_edge' && edge.data.edge)
         selection.engineEntityId = edge.data.edge
     }
-    selection.primitiveFaces = []
     for (const id of [...ref.side_faces, ...(ref.end_faces ?? [])]) {
       if (graph.has(id) && graph.get(id)?.type !== 'primitiveFace') continue
       const face =
@@ -140,8 +123,7 @@ export async function resolveDistanceSelections(
         )
       }
       faces.set(id, face)
-      selection.primitiveFaces.push(face)
     }
   }
-  return normalized
+  return { objects: normalized, primitiveFaces: [...faces.values()] }
 }

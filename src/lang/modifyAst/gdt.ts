@@ -25,11 +25,8 @@ import {
   insertFacePrimitiveVariablesAndOffsetPathToNode,
 } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import {
-  type DistanceSelections,
-  type DistanceFrameDefaults,
-  getDistanceMeasurementMode,
-} from '@src/lang/modifyAst/gdtSelections'
+import { getDistanceMeasurementMode } from '@src/lang/modifyAst/gdtSelections'
+import type { DistanceFrameDefaults } from '@src/lib/gdtFramePosition'
 import {
   getVariableExprsFromSelection,
   getBodyIndex,
@@ -49,7 +46,11 @@ import { err } from '@src/lib/trap'
 import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lib/primitiveBodySelection'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EnginePrimitiveSelection,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 
 const GDT_LABELED_SELECTION_ARG_NAMES = [
   'faces',
@@ -1275,6 +1276,8 @@ export function addDistanceGdt({
   artifactGraph,
   objects,
   edges,
+  primitiveFaces = [],
+  frameDefaults = [],
   tolerance,
   wasmInstance,
   precision,
@@ -1286,8 +1289,11 @@ export function addDistanceGdt({
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
-  objects?: DistanceSelections
-  edges?: DistanceSelections
+  objects?: Selections
+  edges?: Selections
+  primitiveFaces?: EnginePrimitiveSelection[]
+  /** One default frame per measurement, in selection order (one for a pair). */
+  frameDefaults?: DistanceFrameDefaults[]
   tolerance?: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
@@ -1331,7 +1337,6 @@ export function addDistanceGdt({
   const targets: Array<{
     kind: 'face' | 'edge'
     expr: Expr
-    frameDefaults?: DistanceFrameDefaults
   }> = mNodeToEdit ? [{ kind: 'edge', expr: createLocalName('selection') }] : []
   const faceExpressions = new Map<string, Expr>()
   const unnamedBodies = new Map<number, string>()
@@ -1363,9 +1368,7 @@ export function addDistanceGdt({
     }
     return createLocalName(name)
   }
-  for (const primitive of targetSelections.flatMap(
-    (selection) => selection.primitiveFaces ?? []
-  )) {
+  for (const primitive of mNodeToEdit ? [] : primitiveFaces) {
     if (faceExpressions.has(primitive.entityId)) continue
     const body =
       primitive.parentEntityId &&
@@ -1416,7 +1419,6 @@ export function addDistanceGdt({
       targets.push({
         kind: 'edge',
         expr: result.expr,
-        frameDefaults: selection.frameDefaults,
       })
       continue
     }
@@ -1474,38 +1476,25 @@ export function addDistanceGdt({
     return styleResult
   }
 
+  const targetExprs = targets.map((target) => target.expr)
   const measurements =
     mode === 'lengths'
-      ? deduplicateFaceExprs(targets.map((target) => target.expr)).map(
-          (expr) => ({
-            exprs: [expr],
-            frameDefaults: targets.find((target) => target.expr === expr)
-              ?.frameDefaults,
-          })
-        )
-      : [
-          {
-            exprs: targets.map((target) => target.expr),
-            frameDefaults: undefined,
-          },
-        ]
+      ? deduplicateFaceExprs(targetExprs).map((expr) => [expr])
+      : [targetExprs]
   const paths: PathToNode[] = []
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Distance')
-  for (const measurement of measurements) {
+  for (const exprs of measurements) {
     // Calculated defaults contain no new argument variables; user variables were inserted once above.
     const defaults = processGdtStyleParameters({
       modifiedAst,
       wasmInstance,
-      ...measurement.frameDefaults,
+      ...frameDefaults[mode === 'lengths' ? targetExprs.indexOf(exprs[0]) : 0],
     })
     if (err(defaults)) return defaults
     const labeledArgs: LabeledArg[] =
       mode === 'lengths'
-        ? [createLabeledArg('edges', createArrayExpression(measurement.exprs))]
-        : [
-            createLabeledArg('from', measurement.exprs[0]),
-            createLabeledArg('to', measurement.exprs[1]),
-          ]
+        ? [createLabeledArg('edges', createArrayExpression(exprs))]
+        : [createLabeledArg('from', exprs[0]), createLabeledArg('to', exprs[1])]
     if (tolerance !== undefined)
       labeledArgs.push(
         createLabeledArg('tolerance', valueOrVariable(tolerance))

@@ -21,7 +21,7 @@ import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingComm
 import { baseUnitToMm } from '@src/lib/utils'
 import { getPrimitiveSelectionForEntity } from '@src/lib/selections'
 import { enterEditFlow } from '@src/lib/operations'
-import { withDefaultDistanceFrameDefaults } from '@src/lib/gdtFramePosition'
+import { getDistanceFrameDefaults } from '@src/lib/gdtFramePosition'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -456,7 +456,7 @@ extrude(region001, length = 5mm, tagEnd = $end)`,
   }
 )
 
-it('places each edge length using its own direction, body bounds and inherited font', async () => {
+it('keeps each unique edge length paired with its frame and inherited font', async () => {
   const { instance, rustContext, kclManager, engineCommandManager } =
     await buildTheWorldAndNoEngineConnection()
   const ast = assertParse(
@@ -533,13 +533,13 @@ gdt::note(note = "Large labels", fontSize = labelHeight)`,
       wasmInstance: instance,
       args: {
         objects: {
-          graphSelections: ['edgeX', 'edgeY', 'edgeZ'].map(
-            (engineEntityId, index) => ({
+          graphSelections: ['edgeX', 'edgeX', 'edgeY', 'edgeZ'].map(
+            (engineEntityId) => ({
               engineEntityId,
               entityRef: {
                 type: 'edge',
                 side_faces: ['sideA', 'sideB'],
-                index,
+                index: ['edgeX', 'edgeY', 'edgeZ'].indexOf(engineEntityId),
               },
             })
           ),
@@ -620,7 +620,7 @@ it('uses cylindrical face centers when face bounds point to the other side of th
       }
     })
   try {
-    const result = await withDefaultDistanceFrameDefaults({
+    const result = await getDistanceFrameDefaults({
       data: {
         objects: {
           graphSelections: ['faceA', 'faceB'].map((face_id) => ({
