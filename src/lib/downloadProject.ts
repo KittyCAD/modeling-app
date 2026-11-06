@@ -80,6 +80,8 @@ async function downloadProjectArchiveById(
 ): Promise<DownloadedProjectArchive | Error> {
   const client = createKCClient()
   const originalFetch = client.fetch || fetch
+  // The SDK types JSON error responses; capture the successful binary response here.
+  let downloaded: DownloadedProjectArchive | undefined
 
   client.fetch = async (input, init) => {
     const response = await originalFetch(
@@ -90,8 +92,11 @@ async function downloadProjectArchiveById(
       return response
     }
 
-    const archive = await response.arrayBuffer()
-    return createArchiveResponse(response, archive)
+    downloaded = {
+      archive: await response.arrayBuffer(),
+      contentDisposition: response.headers.get('content-disposition'),
+    }
+    return createArchiveResponse(response, downloaded)
   }
 
   const result = await kcCall(() =>
@@ -106,7 +111,7 @@ async function downloadProjectArchiveById(
     return result
   }
 
-  return result as DownloadedProjectArchive
+  return downloaded ?? new Error('Project download did not return an archive')
 }
 
 function ensureProjectIdDownloadFormat(input: RequestInfo | URL) {
@@ -140,16 +145,15 @@ function getRequestUrl(input: RequestInfo | URL) {
   return undefined
 }
 
-function createArchiveResponse(response: Response, archive: ArrayBuffer) {
+function createArchiveResponse(
+  response: Response,
+  payload: DownloadedProjectArchive
+) {
   const wrappedResponse = new Response(null, {
     headers: response.headers,
     status: response.status,
     statusText: response.statusText,
   })
-  const payload: DownloadedProjectArchive = {
-    archive,
-    contentDisposition: response.headers.get('content-disposition'),
-  }
 
   Object.defineProperty(wrappedResponse, 'json', {
     value: async () => payload,

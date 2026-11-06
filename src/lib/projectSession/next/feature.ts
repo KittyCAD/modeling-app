@@ -9,8 +9,8 @@ import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { reportRejection } from '@src/lib/trap'
 
-// Added by API #5136; the bundled SDK's Feature union has not caught up yet.
-export const PROJECT_SHELL_FEATURE = 'zds_project_shell_refactor' as Feature
+export const PROJECT_SHELL_FEATURE =
+  'zds_project_shell_refactor' satisfies Feature
 
 export function hasProjectShellFeature(
   features: UserFeaturesService | undefined
