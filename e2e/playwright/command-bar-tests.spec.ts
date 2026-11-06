@@ -492,32 +492,49 @@ export exported = 2`,
     }
   )
 
-  test('Command bar steps back through optional and required Export arguments', async ({
+  test('Command bar steps back through optional and required arguments', async ({
     page,
     homePage,
     scene,
     cmdBar,
     modelingDialog,
   }) => {
-    await page.addInitScript(() => {
-      localStorage.setItem(
-        'persistCode',
-        `@settings(kclVersion = 3.0)
-sketch001 = sketch(on = XY) {
-  circle001 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region001 = region(segments = [sketch001.circle001])
-extrude001 = extrude(region001, length = 10mm)`
-      )
-    })
     await homePage.goToModelingScene()
     await scene.settled()
+    await page.evaluate(() => {
+      window.app.commands.actor.send({
+        type: 'Add commands',
+        data: {
+          commands: [
+            {
+              name: 'Test argument navigation',
+              groupId: 'test',
+              scopes: ['base'],
+              needsReview: true,
+              onSubmit: () => undefined,
+              args: {
+                required: { inputType: 'string', required: true },
+                optional: {
+                  inputType: 'string',
+                  required: false,
+                  prepopulate: true,
+                  defaultValue: 'default',
+                },
+              },
+            },
+          ],
+        },
+      })
+    })
     await cmdBar.openCmdBar()
-    await cmdBar.cmdOptions.getByText('Export', { exact: true }).click()
+    await cmdBar.cmdOptions
+      .getByText('Test argument navigation', { exact: true })
+      .click()
     await expect
       .poll(() => cmdBar.getState())
-      .toMatchObject({ stage: 'arguments', currentArgKey: 'type' })
-    await cmdBar.selectOption({ name: 'STL', exact: true }).click()
+      .toMatchObject({ stage: 'arguments', currentArgKey: 'required' })
+    await cmdBar.argumentInput.fill('value')
+    await cmdBar.continue()
     await expect
       .poll(() => cmdBar.getState())
       .toMatchObject({ stage: 'review' })
@@ -525,32 +542,30 @@ extrude001 = extrude(region001, length = 10mm)`
     await page.keyboard.press('Meta+Backspace')
     await expect
       .poll(() => cmdBar.getState())
-      .toMatchObject({ stage: 'arguments', currentArgKey: 'Scale' })
+      .toMatchObject({ stage: 'arguments', currentArgKey: 'optional' })
     await cmdBar.clearNonRequiredButton.click()
     await expect
       .poll(() => cmdBar.getState())
       .toMatchObject({ stage: 'review' })
     const review = await cmdBar.getState()
-    if (review.stage !== 'review') throw new Error('Expected Export review')
+    if (review.stage !== 'review') throw new Error('Expected command review')
 
-    await cmdBar.clickOptionalArgument('scale')
+    await cmdBar.clickOptionalArgument('optional')
     await expect
       .poll(() => cmdBar.getState())
       .toMatchObject({
         stage: 'arguments',
-        currentArgKey: 'Scale',
+        currentArgKey: 'optional',
       })
-    // Leave the optional argument unconfirmed, then traverse both kinds of fields.
-    for (const name of ['Up', 'storage', 'type']) {
-      await cmdBar.stepBackButton.click()
-      await expect
-        .poll(() => cmdBar.getState())
-        .toMatchObject({
-          stage: 'arguments',
-          currentArgKey: name,
-          headerArguments: review.headerArguments,
-        })
-    }
+    // Leave the optional argument unconfirmed, then return to the required one.
+    await cmdBar.stepBackButton.click()
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({
+        stage: 'arguments',
+        currentArgKey: 'required',
+        headerArguments: review.headerArguments,
+      })
     await cmdBar.stepBackButton.click()
     await cmdBar.expectState({ stage: 'commandBarClosed' })
   })

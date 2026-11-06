@@ -11,6 +11,7 @@ import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/model
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
+import { exportOptions } from '@src/lib/commandBarConfigs/exportOptions'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
@@ -20,14 +21,13 @@ import {
 import {
   STD_LIB_COMMANDS,
   STD_LIB_ENUMS,
-  stdLibEnumOptions,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
-import { isKclCommandValue } from '@src/lib/commandUtils'
+import { enumOptions, isKclCommandValue } from '@src/lib/commandUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   KCL_AXIS_X,
@@ -57,10 +57,10 @@ import {
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
-import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { baseUnitLabels } from '@src/lib/settings/settingsTypes'
 import { STEP_SCHEMA_LABELS, StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
-import { hasProperty } from '@src/lib/utils'
+import { hasProperty, unsafeTypedKeys } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -78,10 +78,6 @@ export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLi
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
-type ExtractStorageTypes<T> = T extends { storage?: infer U }
-  ? NonNullable<U>
-  : never
-type StorageUnion = ExtractStorageTypes<OutputFormat>
 type ExportOptionalArg = 'up' | 'scale'
 
 const exportOptionalArgSupportByType: Partial<
@@ -264,7 +260,9 @@ export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
   Export: {
     type: OutputTypeKey
-    storage?: StorageUnion
+    gltfStorage?: Extract<OutputFormat, { type: 'gltf' }>['storage']
+    stlStorage?: Extract<OutputFormat, { type: 'stl' }>['storage']
+    plyStorage?: Extract<OutputFormat, { type: 'ply' }>['storage']
     schema?: StepSchema
     up?: AxisDirectionPair['axis']
     scale?: UnitLength
@@ -466,7 +464,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   ],
   Export: {
-    forceCommandBar: true,
     description: 'Export the current model.',
     icon: 'floppyDiskArrow',
     needsReview: true,
@@ -475,76 +472,57 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         defaultValue: 'gltf',
         required: true,
-        options: [
-          { name: 'glTF', isCurrent: true, value: 'gltf' },
-          { name: 'OBJ', isCurrent: false, value: 'obj' },
-          { name: 'STL', isCurrent: false, value: 'stl' },
-          { name: 'STEP', isCurrent: false, value: 'step' },
-          { name: 'PLY', isCurrent: false, value: 'ply' },
-        ],
+        options: unsafeTypedKeys(exportOptions.type).flatMap((value) => {
+          const name = exportOptions.type[value]
+          return name === null
+            ? []
+            : [{ name, value, isCurrent: value === 'gltf' }]
+        }),
       },
-      storage: {
+      gltfStorage: {
+        displayName: 'Storage',
         inputType: 'options',
-        defaultValue: (c) => {
-          switch (c.argumentsToSubmit.type) {
-            case 'gltf':
-              return 'binary'
-            case 'stl':
-              return 'ascii'
-            case 'ply':
-              return 'ascii'
-            default:
-              return undefined
-          }
-        },
+        defaultValue: 'binary',
         skip: true,
         required: (commandContext) =>
-          ['gltf', 'stl', 'ply'].includes(
-            commandContext.argumentsToSubmit.type as string
-          ),
+          commandContext.argumentsToSubmit.type === 'gltf',
         hidden: (commandContext) =>
-          !['gltf', 'stl', 'ply'].includes(
-            commandContext.argumentsToSubmit.type as string
-          ),
-        options: (commandContext) => {
-          const type = commandContext.argumentsToSubmit.type as
-            | OutputTypeKey
-            | undefined
-
-          switch (type) {
-            case 'gltf':
-              return [
-                { name: 'binary', isCurrent: true, value: 'binary' },
-                { name: 'embedded', isCurrent: false, value: 'embedded' },
-                { name: 'standard', isCurrent: false, value: 'standard' },
-              ]
-            case 'stl':
-              return [
-                { name: 'binary', isCurrent: false, value: 'binary' },
-                { name: 'ascii', isCurrent: true, value: 'ascii' },
-              ]
-            case 'ply':
-              return [
-                { name: 'ascii', isCurrent: true, value: 'ascii' },
-                {
-                  name: 'binary_big_endian',
-                  isCurrent: false,
-                  value: 'binary_big_endian',
-                },
-                {
-                  name: 'binary_little_endian',
-                  isCurrent: false,
-                  value: 'binary_little_endian',
-                },
-              ]
-            case undefined:
-            case 'step':
-            case 'obj':
-            case 'fbx':
-            default:
-              return []
-          }
-        },
+          commandContext.argumentsToSubmit.type !== 'gltf',
+        options: enumOptions(
+          unsafeTypedKeys(exportOptions.gltfStorage),
+          'binary',
+          exportOptions.gltfStorage
+        ),
+      },
+      stlStorage: {
+        displayName: 'Storage',
+        inputType: 'options',
+        defaultValue: 'ascii',
+        skip: true,
+        required: (commandContext) =>
+          commandContext.argumentsToSubmit.type === 'stl',
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'stl',
+        options: enumOptions(
+          unsafeTypedKeys(exportOptions.stlStorage),
+          'ascii',
+          exportOptions.stlStorage
+        ),
+      },
+      plyStorage: {
+        displayName: 'Storage',
+        inputType: 'options',
+        defaultValue: 'ascii',
+        skip: true,
+        required: (commandContext) =>
+          commandContext.argumentsToSubmit.type === 'ply',
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'ply',
+        options: enumOptions(
+          unsafeTypedKeys(exportOptions.plyStorage),
+          'ascii',
+          exportOptions.plyStorage
+        ),
       },
       schema: {
         inputType: 'options',
@@ -557,7 +535,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         options: (commandContext) => {
           const schema =
             commandContext.argumentsToSubmit.schema ?? StepSchema.Ap242
-          return Object.values(StepSchema).map((value) => ({
+          return unsafeTypedKeys(STEP_SCHEMA_LABELS).map((value) => ({
             name: STEP_SCHEMA_LABELS[value],
             value,
             isCurrent: schema === value,
@@ -580,10 +558,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             (commandContext.argumentsToSubmit.up as
               | AxisDirectionPair['axis']
               | undefined) ?? 'z'
-          return [
-            { name: 'Z+', isCurrent: currentUp === 'z', value: 'z' },
-            { name: 'Y+', isCurrent: currentUp === 'y', value: 'y' },
-          ]
+          return enumOptions(
+            unsafeTypedKeys(exportOptions.up),
+            currentUp,
+            exportOptions.up
+          )
         },
         valueSummary: (value) =>
           value === undefined ? 'Z+' : `${value.toUpperCase()}+`,
@@ -623,7 +602,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             machineContext?.store.defaultUnit?.current ??
             DEFAULT_DEFAULT_LENGTH_UNIT
 
-          return baseUnitsUnion.map((unit) => ({
+          return unsafeTypedKeys(baseUnitLabels).map((unit) => ({
             name: baseUnitLabels[unit],
             value: unit,
             isCurrent: unit === currentScale,
@@ -726,7 +705,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isDirectedNamedViewCamera,
             prepopulate: true,
             defaultValue: 'Isometric',
-            options: stdLibEnumOptions(
+            options: enumOptions(
               STD_LIB_ENUMS['view::Orientation'],
               'Isometric'
             ),
@@ -737,7 +716,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isDirectedNamedViewCamera,
             prepopulate: true,
             defaultValue: 'Orthographic',
-            options: stdLibEnumOptions(
+            options: enumOptions(
               STD_LIB_ENUMS['view::Projection'],
               'Orthographic'
             ),
@@ -745,14 +724,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           baseline: {
             inputType: 'options',
             defaultValue: 'Show',
-            options: stdLibEnumOptions(
-              STD_LIB_ENUMS['view::Visibility'],
-              'Show',
-              {
-                Show: 'Show all',
-                Hide: 'Hide all',
-              }
-            ),
+            options: enumOptions(STD_LIB_ENUMS['view::Visibility'], 'Show', {
+              Show: 'Show all',
+              Hide: 'Hide all',
+            }),
           },
           except: {
             inputType: 'selection',
