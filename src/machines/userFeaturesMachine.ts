@@ -6,6 +6,9 @@ import { xstateEventError } from '@src/machines/utils'
 import type { ActorRefFrom, DoneActorEvent, ErrorActorEvent } from 'xstate'
 import { assign, fromPromise, raise, setup } from 'xstate'
 
+/** API feature IDs, including the Scene browser flag awaiting an SDK release. */
+export type UserFeature = Feature | 'scene_browser'
+
 export const USER_FEATURES_POLL_INTERVAL_MS = 5 * 60 * 1000
 export const USER_FEATURES_RETRY_INTERVAL_MS = 60 * 1000
 
@@ -31,14 +34,14 @@ type FetchUserFeaturesInput = {
 }
 
 type FetchUserFeaturesOutput = {
-  featureIds: Set<Feature>
+  featureIds: Set<UserFeature>
 }
 type FetchUserFeaturesResult = FetchUserFeaturesOutput | Error
 type FetchUserFeaturesDoneEvent = DoneActorEvent<FetchUserFeaturesResult>
 type FetchUserFeaturesErrorEvent = ErrorActorEvent<Error>
 
 export interface UserFeaturesContext {
-  featureIds: Set<Feature>
+  featureIds: Set<UserFeature>
   token?: string
   fetchedAt?: Date
   error?: Error
@@ -52,7 +55,7 @@ export type UserFeaturesEvent =
   | FetchUserFeaturesErrorEvent
 
 export type UserFeaturesService = {
-  has: (featureFlagId: Feature, defaultValue: boolean) => boolean
+  has: (featureFlagId: UserFeature, defaultValue: boolean) => boolean
 }
 
 /**
@@ -157,7 +160,7 @@ export function waitForUserFeaturesSettled(
 
 function createDefaultContext(): UserFeaturesContext {
   return {
-    featureIds: new Set<Feature>(),
+    featureIds: new Set<UserFeature>(),
     token: undefined,
     fetchedAt: undefined,
     error: undefined,
@@ -187,7 +190,7 @@ function hasEventToken(
   return typeof token === 'string' && token.length > 0
 }
 
-function featureIdsFromResponse(data: UserFeatureList): Set<Feature> {
+function featureIdsFromResponse(data: UserFeatureList): Set<UserFeature> {
   return new Set(data.features.map(({ id }) => id))
 }
 
@@ -201,7 +204,7 @@ function userFeaturesErrorContext(context: UserFeaturesContext) {
 
 export function userFeaturesContextHas(
   context: UserFeaturesContext,
-  featureFlagId: Feature,
+  featureFlagId: UserFeature,
   defaultValue: boolean
 ): boolean {
   return context.featureIds.has(featureFlagId) ? true : defaultValue
@@ -269,7 +272,7 @@ export const userFeaturesMachine = setup({
         ...(context.token === token
           ? {}
           : {
-              featureIds: new Set<Feature>(),
+              featureIds: new Set<UserFeature>(),
               fetchedAt: undefined,
             }),
       }

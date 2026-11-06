@@ -12,6 +12,8 @@ import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplore
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { SCENE_BROWSER_FEATURE } from '@src/lib/sceneBrowser/featureFlag'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import {
@@ -72,6 +74,9 @@ export const useDefaultAreaLibrary = () => {
   useSignals()
   const { settings, layout, registry } = useApp()
   const { kclManager } = useSingletons()
+  const sceneBrowserEnabled =
+    registry.optional(userFeaturesService)?.has(SCENE_BROWSER_FEATURE, false) ??
+    false
   const getSettings = settings.get
   const registeredAreaLibrary = registry.signal(
     layoutAreaLibraryValueSpec
@@ -90,7 +95,7 @@ export const useDefaultAreaLibrary = () => {
       Object.freeze({
         featureTree: {
           hide: () => false,
-          shortcut: 'Shift + T',
+          shortcut: sceneBrowserEnabled ? undefined : 'Shift + T',
           Component: FeatureTreePane,
         },
         bodies: {
@@ -160,7 +165,13 @@ export const useDefaultAreaLibrary = () => {
         },
         ...registeredAreaLibrary,
       } satisfies AreaLibrary),
-    [getSettings, kclManager, onCodeNotificationClick, registeredAreaLibrary]
+    [
+      getSettings,
+      kclManager,
+      onCodeNotificationClick,
+      registeredAreaLibrary,
+      sceneBrowserEnabled,
+    ]
   )
 }
 

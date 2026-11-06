@@ -1,8 +1,6 @@
 import { Menu } from '@headlessui/react'
-
-import { useApp } from '@src/lib/boot'
-
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
+import { useApp } from '@src/lib/boot'
 
 export const FeatureTreeMenu = () => {
   const { commands } = useApp()
