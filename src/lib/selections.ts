@@ -2,7 +2,7 @@ import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type {
   Point2d,
-  EntityReference as SdkEntityReference,
+  QueryEntityTypeWithPoint,
   RegionGetResolvableIntersectionInfo,
   WebSocketRequest,
 } from '@kittycad/lib'
@@ -2172,21 +2172,16 @@ export function handleSelectionBatch({
   const selectionToEngine: SelectionToEngine[] = []
   let engineEvents: WebSocketRequest[] = []
 
-  // Select annotations by UUID until the SDK includes annotation references.
-  const entityReferences = selections.graphSelections
+  const entityReferences: EntityReference[] = selections.graphSelections
     .map((v2Sel) => v2Sel.entityRef)
-    .filter(
-      (ref): ref is SdkEntityReference =>
-        ref !== undefined && ref.type !== 'annotation'
-    )
+    .filter((ref): ref is EntityReference => ref !== undefined)
 
   if (entityReferences.length > 0) {
     engineEvents = setEngineEntitySelectionV2(entityReferences, systemDeps)
     const fallbackSelections = [
       ...selections.graphSelections
         .map((selection) => {
-          if (selection.entityRef && selection.entityRef.type !== 'annotation')
-            return undefined
+          if (selection.entityRef) return undefined
           const entityId = getEngineEntityIdForSelection(
             selection,
             artifactGraph
@@ -2533,7 +2528,7 @@ function resetAndSetEngineEntitySelectionCmds(
 }
 
 function setEngineEntitySelectionV2(
-  entityReferences: SdkEntityReference[],
+  entityReferences: EntityReference[],
   systemDeps: {
     engineCommandManager: ConnectionManager
   }
@@ -2563,14 +2558,8 @@ function getEngineEntityIdForSelection(
     return selection.engineEntityId
   }
 
-  if (selection.entityRef?.type === 'annotation') {
-    return selection.entityRef.annotation_id
-  }
-
   return resolveToCodeRef(selection, artifactGraph)?.artifact?.id
 }
-
-type QueryEntityTypeWithPoint = { reference?: EntityReference }
 
 function getQueryEntityTypeWithPointData(
   res: unknown

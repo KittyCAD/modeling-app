@@ -3277,7 +3277,7 @@ describe('default plane selection synchronization', () => {
 
 describe('mixed entity-reference selection highlighting', () => {
   test.each([false, true])(
-    'selects annotations by UUID (mixed with a face: %s)',
+    'selects annotations by entity reference (mixed with a face: %s)',
     async (withFace) => {
       const world = await buildTheWorldAndNoEngineConnection()
       const graphSelections: Selection[] = [
@@ -3312,13 +3312,10 @@ describe('mixed entity-reference selection highlighting', () => {
             event.type === 'modeling_cmd_req' ? [event.cmd] : []
           )
         ).toEqual([
-          withFace
-            ? {
-                type: 'select_entity',
-                entities: [{ type: 'face', face_id: 'face-id' }],
-              }
-            : { type: 'select_clear' },
-          { type: 'select_add', entities: ['annotation-id'] },
+          {
+            type: 'select_entity',
+            entities: graphSelections.map((selection) => selection.entityRef),
+          },
         ])
       } finally {
         world.engineCommandManager.connection = undefined

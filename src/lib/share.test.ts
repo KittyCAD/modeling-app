@@ -18,6 +18,7 @@ function makeRemoteProject(
     entrypoint_path: 'main.kcl',
     files: [],
     id: 'project-existing',
+    metadata_revision: 'metadata-revision-1',
     preview_status: 'pending',
     project_toml_path: 'project.toml',
     publication: {

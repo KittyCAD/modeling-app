@@ -106,7 +106,8 @@ async function downloadProjectArchiveById(
     return result
   }
 
-  return result as DownloadedProjectArchive
+  // The fetch wrapper replaces the SDK's JSON response with the ZIP payload.
+  return result as unknown as DownloadedProjectArchive
 }
 
 function ensureProjectIdDownloadFormat(input: RequestInfo | URL) {

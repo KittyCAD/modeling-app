@@ -23,10 +23,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
-// Remove this extension once @kittycad/lib includes annotation references.
-export type EntityReference =
-  | SdkEntityReference
-  | { type: 'annotation'; annotation_id: string }
+export type EntityReference = SdkEntityReference
 
 export type DefaultPlaneSelection = {
   name: DefaultPlaneStr
