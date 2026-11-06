@@ -111,3 +111,53 @@ describe('readProject', () => {
     ).rejects.toMatchObject({ name: 'AbortError' })
   })
 })
+
+it('records directory, cyclic, and dangling links as leaves without traversing their targets', async () => {
+  const fs = await import('node:fs/promises')
+  const { tmpdir } = await import('node:os')
+  const path = await import('node:path')
+  const { default: nodeFileSystem } = await import('@src/lib/fs-zds/nodefs')
+  const { createFileOperationsRuntime } = await import(
+    '@src/lib/fileSystem/runtime'
+  )
+  const { getProjectContents } = await import(
+    '@src/lib/projectSession/next/utils'
+  )
+  const temporary = await fs.mkdtemp(path.join(tmpdir(), 'zds-project-links-'))
+  const runtime = createFileOperationsRuntime(nodeFileSystem.impl)
+  try {
+    const project = path.join(temporary, 'project')
+    const outside = path.join(temporary, 'outside')
+    await fs.mkdir(project)
+    await fs.mkdir(outside)
+    await fs.writeFile(path.join(outside, 'private.kcl'), 'outside contents')
+    await fs.writeFile(path.join(project, 'main.kcl'), 'project contents')
+    await fs.symlink(outside, path.join(project, 'external'), 'junction')
+    await fs.symlink(project, path.join(project, 'self'), 'junction')
+    await fs.symlink(
+      path.join(temporary, 'missing'),
+      path.join(project, 'dangling'),
+      'junction'
+    )
+    const readDirectory = vi.spyOn(runtime.operations, 'readDirectory')
+    const contents = await getProjectContents(runtime.operations, project)
+    expect(
+      contents.children
+        .map(({ name, children }) => ({ name, children }))
+        .sort((a, b) => a.name.localeCompare(b.name))
+    ).toEqual([
+      { name: 'dangling', children: null },
+      { name: 'external', children: null },
+      { name: 'main.kcl', children: null },
+      { name: 'self', children: null },
+    ])
+    expect(readDirectory).toHaveBeenCalledExactlyOnceWith(project)
+    // Ordinary stat callers retain their existing target-following behavior.
+    expect(
+      (await runtime.operations.stat(path.join(project, 'external'))).kind
+    ).toBe('directory')
+  } finally {
+    await runtime.dispose()
+    await fs.rm(temporary, { recursive: true, force: true })
+  }
+})

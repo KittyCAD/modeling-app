@@ -36,7 +36,9 @@ export async function getProjectContents(
   signal?: AbortSignal
 ): Promise<ProjectDirectory> {
   signal?.throwIfAborted()
-  const stats = await fileOperations.stat(projectPath)
+  const stats = await fileOperations.stat(projectPath, {
+    followSymlinks: false,
+  })
   if (stats.kind !== 'directory') {
     return Promise.reject(
       new Error(`Project path is not a directory: ${projectPath}`)
@@ -47,7 +49,9 @@ export async function getProjectContents(
   for (const name of await fileOperations.readDirectory(projectPath)) {
     signal?.throwIfAborted()
     const path = fsZds.join(projectPath, name)
-    const childStats = await fileOperations.stat(path)
+    const childStats = await fileOperations.stat(path, {
+      followSymlinks: false,
+    })
     children.push(
       childStats.kind === 'directory'
         ? await getProjectContents(fileOperations, path, signal)
