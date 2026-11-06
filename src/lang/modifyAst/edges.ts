@@ -536,6 +536,48 @@ function buildEdgeExpr(
 
   const graphEdgeSelection = edgeSelection as Selection
   const resolved = resolveToCodeRef(graphEdgeSelection, artifactGraph)
+  // Viewport edges resolve through adjacent faces; retain their boundary index
+  // and end faces instead of treating the first face as a sketch segment.
+  if (graphEdgeSelection.entityRef?.type === 'edge' && resolved?.artifact) {
+    const sweep = getSweepArtifactFromSelection(resolved, artifactGraph)
+    if (err(sweep)) return sweep
+    const surface = getVariableExprsFromSelection(
+      {
+        graphSelections: [{ artifact: sweep, codeRef: sweep.codeRef }],
+        otherSelections: [],
+      },
+      artifactGraph,
+      ast,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: false,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(surface)) return surface
+    if (surface.exprs.length !== 1) {
+      return new Error('Could not resolve the source surface for blend edge.')
+    }
+    const surfaceExpr = surface.exprs[0]
+    const edgeRef = createEdgeRefObjectExpression(
+      entityReferenceToEdgeRefPayload(graphEdgeSelection.entityRef),
+      wasmInstance,
+      ast,
+      artifactGraph,
+      resolved,
+      resolved.codeRef,
+      undefined,
+      surfaceExpr
+    )
+    if (err(edgeRef)) return edgeRef
+    return {
+      modifiedAst: edgeRef.modifiedAst,
+      edgeExpr: createCallExpressionStdLibKw('getBoundedEdge', surfaceExpr, [
+        createLabeledArg('edge', edgeRef.expr),
+      ]),
+    }
+  }
   const edgeArtifact = resolved?.artifact
   if (
     !resolved?.codeRef ||
