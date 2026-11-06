@@ -316,8 +316,8 @@ async function closeKclCodePanel(page: Page) {
 async function openDebugPanel(page: Page) {
   await openPane(page, 'debug-pane-button')
 
-  // The debug pane needs time to load everything.
-  await page.waitForTimeout(3000)
+  // Wait for the lazy pane contents rather than imposing a fixed delay.
+  await expect(page.getByTestId('debug-panel')).toBeAttached()
 }
 
 export async function closeDebugPanel(page: Page) {
