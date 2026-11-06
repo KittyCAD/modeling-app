@@ -1,12 +1,10 @@
 import type { Page } from '@playwright/test'
-import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import { uuidv4 } from '@src/lib/utils'
 
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import { escapeRegExp, getUtils } from '@e2e/playwright/test-utils'
+import { escapeRegExp } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe(
@@ -22,7 +20,6 @@ test.describe(
       plane: string,
       clickCoords: { x: number; y: number }
     ) => {
-      const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
@@ -31,35 +28,15 @@ test.describe(
 
       const coord =
         plane === '-XY' || plane === '-YZ' || plane === 'XZ' ? -100 : 100
-      const camCommand: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          center: { x: 0, y: 0, z: 0 },
-          vantage: { x: coord, y: coord, z: coord },
-          up: { x: 0, y: 0, z: 1 },
-        },
-      }
-      const updateCamCommand: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_get_settings',
-        },
-      }
 
       const code = `@settings(defaultLengthUnit = in, kclVersion = 3.0)sketch001 = sketch(on = ${plane}) {}`
-      await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
-        await u.openDebugPanel()
-        await u.clearCommandLogs()
+      await test.step(`Sketch on the ${plane} plane using the camera fixture to orient`, async () => {
         await toolbar.startSketchBtn.click()
 
-        await u.sendCustomCmd(camCommand)
-        await page.waitForTimeout(100)
-        await u.sendCustomCmd(updateCamCommand)
-
-        await u.closeDebugPanel()
+        await scene.moveCameraTo(
+          { x: coord, y: coord, z: coord },
+          { x: 0, y: 0, z: 0 }
+        )
 
         const resolvedCoords = await scene.convertPagePositionToStream(
           clickCoords.x,
@@ -133,7 +110,6 @@ test.describe(
       plane: string,
       clickCoords: { x: number; y: number }
     ) => {
-      const u = await getUtils(page)
       await page.addInitScript(() => {
         localStorage.setItem(
           'persistCode',
@@ -146,27 +122,9 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await u.openDebugPanel()
 
       const coord =
         plane === '-XY' || plane === '-YZ' || plane === 'XZ' ? -100 : 100
-      const camCommand: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          center: { x: 0, y: 0, z: 0 },
-          vantage: { x: coord, y: coord, z: coord },
-          up: { x: 0, y: 0, z: 1 },
-        },
-      }
-      const updateCamCommand: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_get_settings',
-        },
-      }
 
       const prefix = plane.length === 3 ? '-' : ''
       const planeName = plane
@@ -175,13 +133,13 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
 
       const planeRef = `${prefix}${planeName}Plane`
 
-      await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
-        await u.clearCommandLogs()
+      await test.step(`Sketch on the ${plane} plane using the camera fixture to orient`, async () => {
         await toolbar.startSketchBtn.click()
 
-        await u.sendCustomCmd(camCommand)
-        await page.waitForTimeout(100)
-        await u.sendCustomCmd(updateCamCommand)
+        await scene.moveCameraTo(
+          { x: coord, y: coord, z: coord },
+          { x: 0, y: 0, z: 0 }
+        )
 
         // TODO: can we remove these feature tree checks? They seem out of place.
         await toolbar.openFeatureTreePane()
