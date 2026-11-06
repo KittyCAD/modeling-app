@@ -2381,13 +2381,36 @@ export function getSelectedSketchTarget(
 }
 
 export function isEnginePrimitiveSelection(
-  selection: Selections['otherSelections'][number]
+  selection: Selection | Selections['otherSelections'][number]
 ): selection is EnginePrimitiveSelection {
   return (
     typeof selection === 'object' &&
     'type' in selection &&
     selection.type === 'enginePrimitive'
   )
+}
+
+export function getEdgeSelections(
+  selections: Selections
+): Array<Selection | EnginePrimitiveSelection> {
+  return [
+    ...selections.graphSelections,
+    ...selections.otherSelections.filter(
+      (selection): selection is EnginePrimitiveSelection =>
+        isEnginePrimitiveSelection(selection) &&
+        selection.primitiveType === 'edge'
+    ),
+  ]
+}
+
+export function isEdgeSelection(
+  selection: Selection | EnginePrimitiveSelection
+): boolean {
+  return isEnginePrimitiveSelection(selection)
+    ? selection.primitiveType === 'edge'
+    : selection.entityRef?.type === 'edge' ||
+        selection.artifact?.type === 'segment' ||
+        selection.artifact?.type === 'sweepEdge'
 }
 
 export function getSelectedPlaneAsNode(

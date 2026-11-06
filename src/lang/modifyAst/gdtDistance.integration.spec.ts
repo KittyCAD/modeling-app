@@ -81,16 +81,13 @@ plate = extrude(region(sketch = profile, point = [0mm, 10mm]), length = 5mm)`,
             response = { type: cmd.type, data: { entity_id: engineBodyId } }
             break
           case 'entity_get_primitive_index':
+            if (!cmd.entity_id.endsWith('rim'))
+              throw new Error('Unexpected adjacent-face primitive lookup')
             response = {
               type: cmd.type,
               data: {
-                primitive_index:
-                  cmd.entity_id === 'cap'
-                    ? 0
-                    : cmd.entity_id.startsWith('left')
-                      ? 1
-                      : 2,
-                entity_type: cmd.entity_id.endsWith('rim') ? 'edge' : 'face',
+                primitive_index: cmd.entity_id.startsWith('left') ? 1 : 2,
+                entity_type: 'edge',
               },
             }
             break
@@ -221,9 +218,9 @@ plate = extrude(region(sketch = profile, point = [0mm, 10mm]), length = 5mm)`,
       expect(code).toContain(`framePlane = ${plane}`)
       expect(code).toContain('precision = 0')
       expect(code).not.toContain('tolerance =')
-      expect(code).not.toContain('edgeId(')
-      expect(code).toContain('sideFaces = [')
-      expect(code).toContain('faceId(plate, index = ')
+      expect(code).toContain('from = edgeId(plate, index = 1)')
+      expect(code).toContain('to = edgeId(plate, index = 2)')
+      expect(code).not.toContain('faceId(')
       expect(code).toContain(
         explicit
           ? 'framePosition = [0, 0]'
@@ -232,11 +229,13 @@ plate = extrude(region(sketch = profile, point = [0mm, 10mm]), length = 5mm)`,
             : `framePosition = [0${unit}, ${sign < 0 ? '-' : ''}${unit === 'ft' ? '0.0947' : '28.8521'}${unit}]`
       )
       if (explicit) {
-        expect(mock).not.toHaveBeenCalledWith(
-          expect.objectContaining({
-            cmd: expect.objectContaining({ type: 'curve_get_end_points' }),
-          })
-        )
+        for (const type of [
+          'curve_get_end_points',
+          'solid3d_get_all_edge_faces',
+        ])
+          expect(mock).not.toHaveBeenCalledWith(
+            expect.objectContaining({ cmd: expect.objectContaining({ type }) })
+          )
       }
       const execution = await enginelessExecutor(
         assertParse(code, instance),
@@ -277,7 +276,8 @@ plate = extrude(region(sketch = profile, point = [0mm, 10mm]), length = 5mm)`,
         const editedCode = recast(edited.modifiedAst, instance)
         expect(editedCode).toContain('precision = 1')
         expect(editedCode).toContain('framePosition = [0, 0]')
-        expect(editedCode).toContain('sideFaces = [')
+        expect(editedCode).toContain('from = edgeId(plate, index = 1)')
+        expect(editedCode).toContain('to = edgeId(plate, index = 2)')
         expect(editedCode).not.toContain('tolerance =')
         expect(mock).not.toHaveBeenCalled()
         await enginelessExecutor(edited.modifiedAst, rustContext)
@@ -432,9 +432,13 @@ extrude002 = extrude(
   }
 )
 
-it.each([1, 3])(
-  'names a variable-less body after resolving %i cap edges',
-  async (count) => {
+it.each([
+  { count: 1, mixed: false },
+  { count: 3, mixed: false },
+  { count: 3, mixed: true },
+])(
+  'names a variable-less body after resolving $count edges (mixed topology: $mixed)',
+  async ({ count, mixed }) => {
     const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse(
       `@settings(kclVersion = 3.0)
@@ -485,15 +489,35 @@ extrude(region001, length = 5mm, tagEnd = $end)`,
       faceCodeRef: sweep.codeRef,
       cmdId: sweep.id,
     })
+    const objects: Selections = {
+      graphSelections: Array.from(
+        { length: mixed ? 1 : count },
+        (_, index) => ({
+          entityRef: { type: 'edge', side_faces: ['wall', 'cap'], index },
+        })
+      ),
+      otherSelections: [],
+    }
+    if (mixed) {
+      objects.graphSelections.push({
+        entityRef: {
+          type: 'edge',
+          side_faces: ['engine-only-wall', 'engine-only-cap'],
+        },
+        engineTopologyFallback: { parentId: sweep.id, primitiveIndex: 1 },
+      })
+      objects.otherSelections.push({
+        type: 'enginePrimitive',
+        primitiveType: 'edge',
+        entityId: 'engine-only-edge',
+        parentEntityId: sweep.id,
+        primitiveIndex: 2,
+      })
+    }
     const result = addDistanceGdt({
       ast,
       artifactGraph: graph,
-      objects: {
-        graphSelections: Array.from({ length: count }, (_, index) => ({
-          entityRef: { type: 'edge', side_faces: ['wall', 'cap'], index },
-        })),
-        otherSelections: [],
-      },
+      objects,
       wasmInstance: instance,
     })
     if (result instanceof Error) throw result
@@ -501,6 +525,10 @@ extrude(region001, length = 5mm, tagEnd = $end)`,
     expect(code).toContain('body001 = extrude(')
     expect(code).toContain('body001.faces.end')
     expect(code).not.toContain('%')
+    if (mixed) {
+      expect(code).toContain('edgeId(body001, index = 1)')
+      expect(code).toContain('edgeId(body001, index = 2)')
+    }
     await enginelessExecutor(result.modifiedAst, rustContext)
   }
 )
@@ -560,14 +588,6 @@ gdt::note(note = "Large labels", fontSize = labelHeight)`,
         }
       } else if (cmd.type === 'entity_get_parent_id') {
         response = { type: cmd.type, data: { entity_id: sweep.id } }
-      } else if (cmd.type === 'entity_get_primitive_index') {
-        response = {
-          type: cmd.type,
-          data: {
-            primitive_index: cmd.entity_id === 'sideA' ? 0 : 1,
-            entity_type: 'face',
-          },
-        }
       } else throw new Error(`Unexpected query: ${cmd.type}`)
       return {
         success: true,
@@ -589,6 +609,12 @@ gdt::note(note = "Large labels", fontSize = labelHeight)`,
                 type: 'edge',
                 side_faces: ['sideA', 'sideB'],
                 index: ['edgeX', 'edgeY', 'edgeZ'].indexOf(engineEntityId),
+              },
+              engineTopologyFallback: {
+                parentId: sweep.id,
+                primitiveIndex: ['edgeX', 'edgeY', 'edgeZ'].indexOf(
+                  engineEntityId
+                ),
               },
             })
           ),

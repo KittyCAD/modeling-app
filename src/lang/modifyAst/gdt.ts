@@ -18,18 +18,17 @@ import {
 } from '@src/lang/modifyAst'
 import {
   createEdgeRefObjectExpression,
+  createPrimitiveEdgeExpression,
   entityReferenceToEdgeRefPayload,
 } from '@src/lang/modifyAst/edges'
-import {
-  isFaceArtifact,
-  insertFacePrimitiveVariablesAndOffsetPathToNode,
-} from '@src/lang/modifyAst/faces'
+import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { getDistanceMeasurementMode } from '@src/lang/modifyAst/gdtSelections'
 import type { DistanceFrameDefaults } from '@src/lib/gdtFramePosition'
 import {
   getVariableExprsFromSelection,
   getBodyIndex,
+  getEdgeSelections,
+  isEnginePrimitiveSelection,
   resolveToCodeRef,
   traverse,
   valueOrVariable,
@@ -38,19 +37,19 @@ import {
   type ResolvedGraphSelection,
   getArtifactOfTypes,
   getCapForPathId,
+  getMergedSweepBodyArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
-import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lib/primitiveBodySelection'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  getEngineTopologyFallbackNormalized,
+} from '@src/lib/primitiveBodySelection'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type {
-  EnginePrimitiveSelection,
-  Selection,
-  Selections,
-} from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 const GDT_LABELED_SELECTION_ARG_NAMES = [
   'faces',
@@ -1271,12 +1270,22 @@ export function addProfileGdt({
   }
 }
 
+export function getDistanceMeasurementMode(
+  targets: ReadonlyArray<{ kind: 'face' | 'edge' }>
+): 'lengths' | 'between' | Error {
+  if (!targets.length) return new Error('No valid distance selections found.')
+  if (targets.length === 2) return 'between'
+  if (targets.every((target) => target.kind === 'edge')) return 'lengths'
+  return new Error(
+    'Select one or more edges for edge lengths, or exactly two faces or edges for a distance.'
+  )
+}
+
 export function addDistanceGdt({
   ast,
   artifactGraph,
   objects,
   edges,
-  primitiveFaces = [],
   frameDefaults = [],
   tolerance,
   wasmInstance,
@@ -1291,7 +1300,6 @@ export function addDistanceGdt({
   artifactGraph: ArtifactGraph
   objects?: Selections
   edges?: Selections
-  primitiveFaces?: EnginePrimitiveSelection[]
   /** One default frame per measurement, in selection order (one for a pair). */
   frameDefaults?: DistanceFrameDefaults[]
   tolerance?: KclCommandValue
@@ -1315,8 +1323,9 @@ export function addDistanceGdt({
 
   const targetSelections = mNodeToEdit
     ? []
-    : selections.graphSelections.filter(
+    : getEdgeSelections(selections).filter(
         (selection) =>
+          isEnginePrimitiveSelection(selection) ||
           getEdgeRefPayloadFromSelection(selection) !== null ||
           isFaceArtifact(
             selection.artifact ??
@@ -1326,8 +1335,8 @@ export function addDistanceGdt({
   if (
     !mNodeToEdit &&
     (targetSelections.length === 0 ||
-      targetSelections.length !== selections.graphSelections.length ||
-      selections.otherSelections.length > 0)
+      targetSelections.length !==
+        selections.graphSelections.length + selections.otherSelections.length)
   ) {
     return new Error(
       'No valid selections found. Select one edge, or exactly two faces or edges.'
@@ -1338,9 +1347,11 @@ export function addDistanceGdt({
     kind: 'face' | 'edge'
     expr: Expr
   }> = mNodeToEdit ? [{ kind: 'edge', expr: createLocalName('selection') }] : []
-  const faceExpressions = new Map<string, Expr>()
   const unnamedBodies = new Map<number, string>()
-  const bodyExpression = (selection: Selection): Expr | Error => {
+  const bodyExpression = (
+    selection: Selection,
+    lastChildLookup = false
+  ): Expr | Error => {
     const owner = getVariableExprsFromSelection(
       { graphSelections: [selection], otherSelections: [] },
       artifactGraph,
@@ -1349,7 +1360,7 @@ export function addDistanceGdt({
       undefined,
       {
         artifactTypeFilter: ['sweep', 'compositeSolid'],
-        lastChildLookup: false,
+        lastChildLookup,
       }
     )
     if (err(owner)) return owner
@@ -1368,30 +1379,57 @@ export function addDistanceGdt({
     }
     return createLocalName(name)
   }
-  for (const primitive of mNodeToEdit ? [] : primitiveFaces) {
-    if (faceExpressions.has(primitive.entityId)) continue
-    const body =
-      primitive.parentEntityId &&
-      getBodySelectionFromPrimitiveParentEntityId(
-        primitive.parentEntityId,
+  for (const selection of targetSelections) {
+    const primitive = isEnginePrimitiveSelection(selection)
+    const payload = primitive ? null : getEdgeRefPayloadFromSelection(selection)
+    const topology = primitive
+      ? {
+          parentId: selection.parentEntityId,
+          primitiveIndex: selection.primitiveIndex,
+        }
+      : getEngineTopologyFallbackNormalized(selection)
+    // Match fillet/chamfer: prefer adjacent-face references, then primitive topology.
+    if (
+      topology &&
+      (!payload?.side_faces.length ||
+        [...payload.side_faces, ...(payload.end_faces ?? [])].some((id) => {
+          const face = artifactGraph.get(id)
+          return !face || face.type === 'primitiveFace'
+        }))
+    ) {
+      if (
+        !topology.parentId ||
+        !Number.isInteger(topology.primitiveIndex) ||
+        topology.primitiveIndex < 0
+      )
+        return new Error(
+          'Could not resolve the selected distance edge topology.'
+        )
+      const body = getBodySelectionFromPrimitiveParentEntityId(
+        topology.parentId,
         artifactGraph
       )
-    if (!body) return new Error('Could not resolve the distance face body.')
-    const bodyExpr = bodyExpression(body)
-    if (err(bodyExpr)) return bodyExpr
-    const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
-      enginePrimitives: [primitive],
-      bodyExpr,
-      modifiedAst,
-      artifactGraph,
-      wasmInstance,
-    })
-    if (err(result)) return result
-    if (result.faceExprs[0])
-      faceExpressions.set(primitive.entityId, result.faceExprs[0])
-  }
-  for (const selection of targetSelections) {
-    const payload = getEdgeRefPayloadFromSelection(selection)
+      if (!body) return new Error('Could not resolve the distance edge body.')
+      if (body.artifact?.type === 'sweep') {
+        const merged = getMergedSweepBodyArtifact(body.artifact, artifactGraph)
+        if (err(merged)) return merged
+        body.artifact = merged
+        body.codeRef = merged.codeRef
+      }
+      const bodyExpr = bodyExpression(body, true)
+      if (err(bodyExpr)) return bodyExpr
+      targets.push({
+        kind: 'edge',
+        expr: createPrimitiveEdgeExpression(
+          bodyExpr,
+          topology.primitiveIndex,
+          wasmInstance
+        ),
+      })
+      continue
+    }
+    if (primitive)
+      return new Error('Could not resolve the selected distance edge.')
     if (payload) {
       const cap = [...payload.side_faces, ...(payload.end_faces ?? [])]
         .map((id) => artifactGraph.get(id))
@@ -1412,7 +1450,7 @@ export function addDistanceGdt({
         selection.codeRef,
         undefined,
         owner,
-        { faceExpressions, requireAllFaces: true }
+        { requireAllFaces: true }
       )
       if (err(result)) return result
       modifiedAst = result.modifiedAst

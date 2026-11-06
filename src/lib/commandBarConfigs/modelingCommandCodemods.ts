@@ -1,6 +1,11 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import {
+  getEdgeSelections,
+  isEdgeSelection,
+  isEnginePrimitiveSelection,
+} from '@src/lang/queryAst'
 
 import {
   addIntersect,
@@ -23,6 +28,7 @@ import {
   addCylindricityGdt,
   addDatumGdt,
   addDistanceGdt,
+  getDistanceMeasurementMode,
   addFlatnessGdt,
   addNoteGdt,
   addParallelismGdt,
@@ -81,11 +87,6 @@ import {
   withDefaultGdtFrameDefaults,
   getDistanceFrameDefaults,
 } from '@src/lib/gdtFramePosition'
-import {
-  resolveDistanceSelections,
-  getDistanceMeasurementMode,
-  isDistanceEdge,
-} from '@src/lang/modifyAst/gdtSelections'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
@@ -307,26 +308,26 @@ const distanceCodemod = defineModelingCodemod<
     }
     // Edit selections are display-only; preserve the original arguments and omissions.
     if (args.nodeToEdit) return addDistanceGdt(addCodemodArgs(args, context))
-    const resolved = await resolveDistanceSelections(
-      args.objects,
-      kclManager.artifactGraph,
-      kclManager.engineCommandManager
-    )
-    if (isErr(resolved)) return resolved
-    const { objects } = resolved
+    const objects = args.objects
+    const targets = getEdgeSelections(objects)
     const mode = getDistanceMeasurementMode(
-      objects.graphSelections.map((selection) => ({
-        kind: isDistanceEdge(selection) ? 'edge' : 'face',
+      targets.map((selection) => ({
+        kind: isEdgeSelection(selection) ? 'edge' : 'face',
       }))
     )
     if (isErr(mode)) return mode
     const measurements =
       mode === 'between'
         ? [objects]
-        : objects.graphSelections.map((selection) => ({
-            graphSelections: [selection],
-            otherSelections: [],
-          }))
+        : targets.map(
+            (selection): Selections =>
+              isEnginePrimitiveSelection(selection)
+                ? {
+                    graphSelections: [],
+                    otherSelections: [selection],
+                  }
+                : { graphSelections: [selection], otherSelections: [] }
+          )
     const frameDefaults = await Promise.all(
       measurements.map((measurement) =>
         getDistanceFrameDefaults({
@@ -344,7 +345,7 @@ const distanceCodemod = defineModelingCodemod<
     )
     return addDistanceGdt({
       ...addCodemodArgs(args, context),
-      ...resolved,
+      objects,
       frameDefaults,
     })
   },

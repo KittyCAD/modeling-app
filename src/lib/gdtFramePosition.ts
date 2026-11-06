@@ -6,7 +6,11 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { createArrayExpression, createLiteral } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
 import { getSketchBlockForArtifact } from '@src/lang/std/artifactGraph'
-import { isDistanceEdge } from '@src/lang/modifyAst/gdtSelections'
+import {
+  getEdgeSelections,
+  isEdgeSelection,
+  isEnginePrimitiveSelection,
+} from '@src/lang/queryAst'
 import { defaultPlaneNameToKcl } from '@src/lib/planes'
 import type {
   ArtifactId,
@@ -828,8 +832,12 @@ function distanceSourcePlane(
           : undefined),
     ]
   })
-  const parents = selections.graphSelections.map((s) =>
-    graph.get(s.engineTopologyFallback?.parentId ?? '')
+  const parents = getEdgeSelections(selections).map((s) =>
+    graph.get(
+      (isEnginePrimitiveSelection(s)
+        ? s.parentEntityId
+        : s.engineTopologyFallback?.parentId) ?? ''
+    )
   )
   const sketches = [...artifacts, ...parents]
     .map((a) => getSketchBlockForArtifact(a, graph, true))
@@ -845,17 +853,7 @@ function distanceSourcePlane(
   if (plane !== 'XY' && plane !== 'XZ' && plane !== 'YZ') return undefined
   if (planes.some((p) => p !== plane)) return undefined
   const caps = artifacts.filter((a) => a?.type === 'cap')
-  const single = selections.graphSelections.length === 1
-  if (
-    (single &&
-      !caps.length &&
-      !artifacts.some(
-        (a) =>
-          a?.type === 'segment' ||
-          (a?.type === 'sweepEdge' && a.subType === 'opposite')
-      )) ||
-    (caps.length >= 2 && caps.some((a) => a?.id !== caps[0]?.id))
-  )
+  if (caps.length >= 2 && caps.some((a) => a?.id !== caps[0]?.id))
     return getFramePlaneForFeaturePlane(plane)
   return plane
 }
@@ -948,20 +946,62 @@ async function getDistanceTargets(
     y: p.y / scale,
     z: p.z / scale,
   })
+  const picked = getEdgeSelections(selections)
   const targets = await Promise.all(
-    selections.graphSelections.map(async (selection) => {
-      const id = getEngineEntityIdsForGdtSelections({
-        graphSelections: [selection],
-        otherSelections: [],
-      })[0]
-      const isEdge = isDistanceEdge(selection)
-      const sides =
-        selection?.entityRef?.type === 'edge'
+    picked.map(async (selection) => {
+      const primitive = isEnginePrimitiveSelection(selection)
+      let id = primitive
+        ? selection.entityId
+        : getEngineEntityIdsForGdtSelections({
+            graphSelections: [selection],
+            otherSelections: [],
+          })[0]
+      const isEdge = isEdgeSelection(selection)
+      let sides = primitive
+        ? []
+        : selection.entityRef?.type === 'edge'
           ? selection.entityRef.side_faces
-          : selection?.artifact?.type === 'segment' ||
-              selection?.artifact?.type === 'sweepEdge'
+          : selection.artifact?.type === 'segment' ||
+              selection.artifact?.type === 'sweepEdge'
             ? (selection.artifact.commonSurfaceIds ?? [])
             : []
+      if (primitive && picked.length === 2) {
+        const parent = await queryModelingCommand(engine, {
+          type: 'entity_get_parent_id',
+          entity_id: id,
+        })
+        const adjacent =
+          parent?.type === 'entity_get_parent_id' &&
+          (await queryModelingCommand(engine, {
+            type: 'solid3d_get_all_edge_faces',
+            object_id: parent.data.entity_id,
+            edge_id: id,
+          }))
+        if (adjacent && adjacent.type === 'solid3d_get_all_edge_faces')
+          sides = adjacent.data.faces
+      }
+      if (
+        !primitive &&
+        !id &&
+        selection.entityRef?.type === 'edge' &&
+        sides.length &&
+        !selection.entityRef.end_faces?.length &&
+        selection.entityRef.index === undefined
+      ) {
+        const parent = await queryModelingCommand(engine, {
+          type: 'entity_get_parent_id',
+          entity_id: sides[0],
+        })
+        const edge =
+          parent?.type === 'entity_get_parent_id' &&
+          (await queryModelingCommand(engine, {
+            type: 'solid3d_get_common_edge',
+            object_id: parent.data.entity_id,
+            face_ids: sides,
+          }))
+        if (edge && edge.type === 'solid3d_get_common_edge' && edge.data.edge)
+          id = edge.data.edge
+      }
       const bounds = id ? await boundingBox([id]) : undefined
       const endpoints =
         isEdge && id
@@ -1163,7 +1203,9 @@ export async function getDistanceFrameDefaults({
     outputUnit,
     boundingBox
   )
-  const ids = getEngineEntityIdsForGdtSelections(data.objects)
+  const ids = [
+    ...new Set(targets.flatMap((target) => (target.id ? [target.id] : []))),
+  ]
   const selectedBounds =
     ids.length === 1
       ? targets[0]?.bounds

@@ -1438,20 +1438,18 @@ export function buildSolidsAndFacesExprs(
 // Adds all the faceId calls needed in the AST so we can refer to them,
 // keeps track of their names as faces,
 // and gathers the corresponding solid expressions.
-export function insertFacePrimitiveVariablesAndOffsetPathToNode({
+function insertFacePrimitiveVariablesAndOffsetPathToNode({
   enginePrimitives,
   modifiedAst,
   artifactGraph,
   wasmInstance,
   useLatestBody = false,
-  bodyExpr,
 }: {
   enginePrimitives: EnginePrimitiveSelection[]
   modifiedAst: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
   useLatestBody?: boolean
-  bodyExpr?: Expr
 }): Error | { solidsExprs: Expr[]; faceExprs: Expr[] } {
   if (enginePrimitives.length === 0) {
     return { solidsExprs: [], faceExprs: [] }
@@ -1518,7 +1516,7 @@ export function insertFacePrimitiveVariablesAndOffsetPathToNode({
       return bodyVars
     }
 
-    let solidExpr = bodyExpr ?? createVariableExpressionsArray(bodyVars.exprs)
+    let solidExpr = createVariableExpressionsArray(bodyVars.exprs)
     if (solidExpr === null && bodyVars.exprs.length === 1) {
       solidExpr = bodyVars.exprs[0]
     }
