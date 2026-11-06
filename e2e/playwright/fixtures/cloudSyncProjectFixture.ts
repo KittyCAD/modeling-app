@@ -1,8 +1,9 @@
 import { randomUUID } from 'node:crypto'
 import { test as base, expect } from '@e2e/playwright/base-test'
 import { token } from '@e2e/playwright/test-utils'
+import { Client, projects } from '@kittycad/lib'
 import type { Response } from '@playwright/test'
-import { collectApiList } from '@src/lib/apiPagination'
+import { collectApiPages } from '@src/lib/apiPagination'
 
 interface FirstUploadProject {
   name: string
@@ -70,15 +71,27 @@ export const test = base.extend<{ firstUploadProject: FirstUploadProject }>({
         releaseUpload.resolve(undefined)
         page.off('response', onResponse)
         // Stop the app's sync loop before deleting only this run's projects.
-        const projects = await collectApiList<{ id: string; title: string }>(
-          '/user/projects',
-          async (path) => {
-            const listed = await request.get(`${apiUrl}${path}`, { headers })
+        const client = new Client({
+          baseUrl: apiUrl,
+          token,
+          fetch: async (input, init) => {
+            const requested = new Request(input, init)
+            const listed = await request.get(requested.url, {
+              headers: Object.fromEntries(requested.headers),
+            })
             await expect(listed).toBeOK()
-            return listed.json()
-          }
+            return new globalThis.Response(await listed.text(), {
+              status: listed.status(),
+              headers: listed.headers(),
+            })
+          },
+        })
+        const remoteProjects = await collectApiPages(
+          projects.list_projects_pager({ client })
         )
-        for (const project of projects.filter((p) => p.title === projectName)) {
+        for (const project of remoteProjects.filter(
+          (p) => p.title === projectName
+        )) {
           const url = `${apiUrl}/user/projects/${project.id}`
           await expect(await request.delete(url, { headers })).toBeOK()
           expect((await request.get(url, { headers })).status()).toBe(404)

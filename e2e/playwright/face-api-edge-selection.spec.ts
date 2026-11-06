@@ -46,7 +46,6 @@ sketch001 = startSketchOn(YZ)
  */
 test.describe('Face API edge selection', { tag: '@web' }, () => {
   test('Can select Solid3D edges and Surface edges for revolve', async ({
-    context,
     scene,
     modelingDialog,
     page,
@@ -54,17 +53,11 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     editor,
     homePage,
   }) => {
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, testCode)
-
     await homePage.goToModelingScene()
     await scene.settled()
-    if ((await editor.getCurrentCode()).trim() !== testCode.trim()) {
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', testCode)
-      )
-    }
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', testCode)
+    )
     await editor.expectEditor.toContain('solid001 = subtract')
 
     // Set camera so that we can select what we need to.
@@ -86,6 +79,10 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await scene.settled()
 
       await toolbar.expectSelection('No selection')
+      await expect(modelingDialog.selection('Profiles')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
       await clickProfile()
       await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
 
@@ -131,6 +128,10 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await scene.settled()
 
       await toolbar.expectSelection('1 edge')
+      await expect(modelingDialog.selection('Profiles')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
       await clickProfile2()
       await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
       await page.waitForTimeout(500)
@@ -174,7 +175,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Can select split edges for fillet ${rendererTag}`, async ({
-      context,
       scene,
       modelingDialog,
       page,
@@ -182,17 +182,11 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       editor,
       homePage,
     }) => {
-      await context.addInitScript((code) => {
-        localStorage.setItem('persistCode', code)
-      }, testCode)
-
       await homePage.goToModelingScene()
       await scene.settled()
-      if ((await editor.getCurrentCode()).trim() !== testCode.trim()) {
-        await scene.waitForExecutionDoneAfter(() =>
-          editor.replaceCode('', testCode)
-        )
-      }
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', testCode)
+      )
       await editor.expectEditor.toContain('solid001 = subtract')
 
       // Set camera position for optimal edge viewing
@@ -227,7 +221,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
   }
 
   test('Can use an edge-extruded surface boundary as a Helix axis', async ({
-    context,
     page,
     scene,
     modelingDialog,
@@ -249,20 +242,10 @@ surface001 = extrude(
 )
 hide(sketch001)`
 
-    await context.addInitScript(
-      ({ initialCode }) => {
-        localStorage.setItem('persistCode', initialCode)
-      },
-      {
-        initialCode: code,
-      }
-    )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
-    if ((await editor.getCurrentCode()).trim() !== code.trim()) {
-      await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
-    }
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('surface001 = extrude')
     await editor.closePane()
 
