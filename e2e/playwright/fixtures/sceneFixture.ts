@@ -169,13 +169,16 @@ export class SceneFixture {
   }: {
     kind: 'edge' | 'face'
     index: number
-    stream: { x: number; y: number; format: 'pixels' | 'ratio' }
+    stream: { x: number; y: number; format: 'pixels' | 'ratio'; steps?: number }
     timeout?: number
     visible?: boolean
   }) =>
     (await this.usesLocalRenderer())
       ? this.findEntity(kind, index, { timeout, visible })
-      : this.makeMouseHelpers(stream.x, stream.y, { format: stream.format })
+      : this.makeMouseHelpers(stream.x, stream.y, {
+          format: stream.format,
+          steps: stream.steps,
+        })
 
   private usesLocalRenderer = async () =>
     this.expectedLocalRenderer ??
