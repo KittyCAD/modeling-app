@@ -394,13 +394,14 @@ describe('FilesSnapshot', () => {
 })
 
 describe('Thinking', () => {
+  const activity = (payload: object): MlCopilotServerMessage => ({
+    reasoning: {
+      type: 'markdown',
+      content: ZOOKEEPER_ACTIVITY_PREFIX + JSON.stringify(payload),
+    },
+  })
+
   test('shows commentary and keeps tool details folded as the tool finishes', () => {
-    const activity = (payload: object): MlCopilotServerMessage => ({
-      reasoning: {
-        type: 'markdown',
-        content: ZOOKEEPER_ACTIVITY_PREFIX + JSON.stringify(payload),
-      },
-    })
     const thoughts: MlCopilotServerMessage[] = [
       activity({ kind: 'commentary', text: 'Checking the project.' }),
       {
@@ -464,6 +465,92 @@ describe('Thinking', () => {
     expect(screen.getAllByText('read project file · Finished')).toHaveLength(1)
   })
 
+  test('collapses previous tool actions when new commentary arrives', () => {
+    const thoughts: MlCopilotServerMessage[] = [
+      activity({ kind: 'commentary', text: 'Inspecting the project.' }),
+      activity({
+        kind: 'tool',
+        call_id: 'read-1',
+        name: 'read_project_file',
+        status: 'started',
+        arguments: '{"path":"main.kcl"}',
+      }),
+      activity({
+        kind: 'tool',
+        call_id: 'read-1',
+        name: 'read_project_file',
+        status: 'completed',
+        output: 'Found main.kcl',
+        ok: true,
+      }),
+      activity({
+        kind: 'tool',
+        call_id: 'write-1',
+        name: 'write_project_file',
+        status: 'completed',
+        output: 'Wrote main.kcl',
+        ok: true,
+      }),
+      {
+        reasoning: {
+          type: 'updated_project_file',
+          file_name: 'main.kcl',
+          content: 'thickness = 4',
+        },
+      },
+    ]
+    const view = (isDone = false) => (
+      <Thinking
+        thoughts={thoughts}
+        isDone={isDone}
+        onlyShowImmediateThought={false}
+      />
+    )
+    const { rerender } = render(view())
+
+    expect(screen.getByText('read project file · Finished')).toBeVisible()
+    expect(screen.getByText('write project file · Finished')).toBeVisible()
+    expect(
+      screen.queryByText('Read files, edited files')
+    ).not.toBeInTheDocument()
+
+    thoughts.push(
+      activity({ kind: 'commentary', text: 'Validating the model.' })
+    )
+    rerender(view())
+
+    const group = screen
+      .getByText('Read files, edited files')
+      .closest('details')
+    expect(group).not.toHaveAttribute('open')
+    expect(screen.getByText('Validating the model.')).toBeVisible()
+    expect(screen.getByText('read project file · Finished')).not.toBeVisible()
+    fireEvent.click(screen.getByText('Read files, edited files'))
+    expect(group).toHaveAttribute('open')
+    expect(screen.getByText('read project file · Finished')).toBeVisible()
+    expect(screen.getByText('Updated Project File (main.kcl)')).toBeVisible()
+    const readDetails = screen
+      .getByText('read project file · Finished')
+      .closest('details')
+    expect(readDetails).not.toHaveAttribute('open')
+
+    thoughts.push(
+      activity({
+        kind: 'tool',
+        call_id: 'execute-1',
+        name: 'execute_project',
+        status: 'completed',
+        ok: true,
+      })
+    )
+    rerender(view())
+    expect(screen.getByText('execute project · Finished')).toBeVisible()
+
+    rerender(view(true))
+    expect(screen.getByText('Ran project checks')).toBeVisible()
+    expect(screen.getByText('execute project · Finished')).not.toBeVisible()
+  })
+
   test('labels unfinished tool activity as stopped after an interrupted turn', () => {
     render(
       <Thinking
@@ -487,7 +574,8 @@ describe('Thinking', () => {
       />
     )
 
-    expect(screen.getByText('read project file · Stopped')).toBeVisible()
+    expect(screen.getByText('Read files · Stopped')).toBeVisible()
+    expect(screen.getByText('read project file · Stopped')).not.toBeVisible()
   })
 
   test('shows thinking after a tool status when markdown reasoning arrives', () => {

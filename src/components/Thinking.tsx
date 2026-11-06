@@ -23,6 +23,7 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
   collectActivityItems,
+  type ActivityItem,
   type ZookeeperActivity,
 } from '@src/lib/zookeeper/activityMessages'
 
@@ -382,7 +383,7 @@ const ToolActivityRow = (props: {
         : 'Finished'
 
   return (
-    <details className="group py-2">
+    <details className="group/tool py-2">
       <summary className="flex cursor-pointer list-none items-center gap-2 text-sm text-chalkboard-70 dark:text-chalkboard-30 [&::-webkit-details-marker]:hidden">
         <span aria-hidden="true">
           <CustomIcon name={icon} className="h-4 w-4 shrink-0" />
@@ -393,7 +394,7 @@ const ToolActivityRow = (props: {
         <span aria-hidden="true" className="ml-auto">
           <CustomIcon
             name="caretDown"
-            className="h-4 w-4 shrink-0 opacity-60 transition-transform group-open:rotate-180"
+            className="h-4 w-4 shrink-0 opacity-60 transition-transform group-open/tool:rotate-180"
           />
         </span>
       </summary>
@@ -418,6 +419,111 @@ const ToolActivityRow = (props: {
           <div>{ms(props.tool.duration_ms, { long: true })}</div>
         )}
       </div>
+    </details>
+  )
+}
+
+type ActionItem = Exclude<ActivityItem, { kind: 'commentary' }>
+type ActivitySection =
+  | Extract<ActivityItem, { kind: 'commentary' }>
+  | { kind: 'actions'; items: ActionItem[]; startIndex: number }
+
+const groupActivityItems = (items: ActivityItem[]): ActivitySection[] => {
+  const sections: ActivitySection[] = []
+  items.forEach((item, index) => {
+    if (item.kind === 'commentary') {
+      sections.push(item)
+      return
+    }
+    const last = sections.at(-1)
+    if (last?.kind === 'actions') {
+      last.items.push(item)
+    } else {
+      sections.push({ kind: 'actions', items: [item], startIndex: index })
+    }
+  })
+  return sections
+}
+
+const actionLabel = (item: ActionItem): string => {
+  if (item.kind === 'legacy') {
+    if ('files' in item.message) return 'Viewed files'
+    if (!('reasoning' in item.message)) return 'Viewed activity'
+    const type = item.message.reasoning.type
+    if (type.endsWith('_file') || type === 'generated_kcl_code')
+      return 'Edited files'
+    if (type === 'kcl_docs') return 'Read documentation'
+    if (type === 'kcl_code_error') return 'KCL error'
+    return 'Viewed project details'
+  }
+  const name = item.name.toLowerCase()
+  if (name === 'read_user_selections') return 'Read selections'
+  if (name === 'retrieve_kcl_code_examples') return 'Read KCL examples'
+  if (name === 'search_knowledge') return 'Searched knowledge'
+  if (name.includes('web_search')) return 'Searched the web'
+  if (name.includes('search')) return 'Searched'
+  if (name.startsWith('read_')) return 'Read files'
+  if (name.startsWith('list_')) return 'Listed files'
+  if (
+    name.startsWith('write_') ||
+    name.startsWith('edit_') ||
+    name.startsWith('delete_')
+  )
+    return 'Edited files'
+  if (
+    name.startsWith('execute_') ||
+    name.startsWith('format_') ||
+    name.startsWith('lint_')
+  )
+    return 'Ran project checks'
+  return `Used ${item.name.replaceAll('_', ' ')}`
+}
+
+const ActionGroup = (props: {
+  items: ActionItem[]
+  isCurrent: boolean
+  isDone: boolean
+  children: ReactNode
+}) => {
+  if (props.isCurrent) return <div>{props.children}</div>
+
+  const labels = [...new Set(props.items.map(actionLabel))]
+  const summary = labels
+    .slice(0, 3)
+    .map((label, index) =>
+      index === 0 ? label : label[0].toLowerCase() + label.slice(1)
+    )
+    .join(', ')
+  const outcome = props.items.some(
+    (item) => item.kind === 'tool' && item.ok === false
+  )
+    ? ' · Failed'
+    : props.isDone &&
+        props.items.some(
+          (item) => item.kind === 'tool' && item.status === 'started'
+        )
+      ? ' · Stopped'
+      : ''
+
+  return (
+    <details className="group/actions py-2">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm text-chalkboard-70 dark:text-chalkboard-30 [&::-webkit-details-marker]:hidden">
+        <span aria-hidden="true">
+          <CustomIcon name="gear" className="h-4 w-4 shrink-0" />
+        </span>
+        <span className="min-w-0 truncate">
+          {summary}
+          {labels.length > 3 ? ', ...' : ''}
+          {outcome}
+        </span>
+        <span aria-hidden="true" className="ml-auto">
+          <CustomIcon
+            name="caretDown"
+            className="h-4 w-4 shrink-0 opacity-60 transition-transform group-open/actions:rotate-180"
+          />
+        </span>
+      </summary>
+      <div className="pl-6 pt-2">{props.children}</div>
     </details>
   )
 }
@@ -1066,31 +1172,55 @@ export const Thinking = (
             item.message.reasoning.type !== 'markdown')
       )
     : activityItems
-  const componentThoughts = displayedItems.map((item, index) => {
-    if (item.kind === 'commentary') {
-      return (
-        <div key={index} className="py-2 text-sm">
-          <MarkdownText text={item.text} />
-        </div>
-      )
-    }
-    if (item.kind === 'tool') {
-      return (
-        <ToolActivityRow
-          key={`${item.call_id}-${index}`}
-          tool={item}
-          isDone={props.isDone}
-        />
-      )
-    }
-    return fromDataToComponent(item.message, {
-      key: index,
-      setAnyRowCollapse,
-      keyIndex: index,
-      attachmentFetches: props.attachmentFetches,
-      onFetchAttachment: props.onFetchAttachment,
-    })
-  })
+  const sections = hasStructuredActivity
+    ? groupActivityItems(displayedItems)
+    : undefined
+  const componentThoughts = sections
+    ? sections.map((section, sectionIndex) => {
+        if (section.kind === 'commentary') {
+          return (
+            <div key={sectionIndex} className="py-2 text-sm">
+              <MarkdownText text={section.text} />
+            </div>
+          )
+        }
+        return (
+          <ActionGroup
+            key={`${section.startIndex}-${sectionIndex}`}
+            items={section.items}
+            isCurrent={!props.isDone && sectionIndex === sections.length - 1}
+            isDone={props.isDone}
+          >
+            {section.items.map((item, actionIndex) =>
+              item.kind === 'tool' ? (
+                <ToolActivityRow
+                  key={`${item.call_id}-${actionIndex}`}
+                  tool={item}
+                  isDone={props.isDone}
+                />
+              ) : (
+                fromDataToComponent(item.message, {
+                  key: actionIndex,
+                  setAnyRowCollapse,
+                  keyIndex: section.startIndex + actionIndex,
+                  attachmentFetches: props.attachmentFetches,
+                  onFetchAttachment: props.onFetchAttachment,
+                })
+              )
+            )}
+          </ActionGroup>
+        )
+      })
+    : displayedItems.map((item, index) => {
+        if (item.kind !== 'legacy') return null
+        return fromDataToComponent(item.message, {
+          key: index,
+          setAnyRowCollapse,
+          keyIndex: index,
+          attachmentFetches: props.attachmentFetches,
+          onFetchAttachment: props.onFetchAttachment,
+        })
+      })
 
   if (props.isDone && !hasStructuredActivity) {
     componentThoughts.push(<End key={reasoningThoughts.length} />)

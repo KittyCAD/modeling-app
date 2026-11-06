@@ -563,7 +563,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         <div className="mx-8 flex flex-row items-center justify-start gap-2 border-b border-chalkboard-30 pb-2 dark:border-chalkboard-70">
           <button
             type="button"
-            className="flex items-center gap-2 py-1 text-chalkboard-70 dark:text-chalkboard-30"
+            className="m-0 flex items-center gap-2 rounded-none border-none bg-transparent px-0 py-1 text-sm text-chalkboard-70 hover:border-none hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground dark:text-chalkboard-30 dark:hover:bg-transparent"
             aria-expanded={showFullReasoning}
             onClick={onSeeReasoning}
           >
