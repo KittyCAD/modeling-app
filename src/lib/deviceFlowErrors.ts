@@ -1,22 +1,29 @@
 import { isErr } from '@src/lib/trap'
 
-// Electron IPC only preserves an error's message, so include network causes there.
+const MAX_DEVICE_FLOW_ERRORS = 10
+
 export function getDeviceFlowError(error: unknown): Error {
   const details: string[] = []
   const seen = new Set<Error>()
 
+  // A little defensive but they can technically be nested sometimes and repeated
+  // so here we're bubbling up to 10 unique ones.
   const append = (value: unknown) => {
-    if (!isErr(value) || seen.has(value) || details.length >= 8) return
-    seen.add(value)
+    if (
+      !isErr(value) ||
+      seen.has(value) ||
+      details.length >= MAX_DEVICE_FLOW_ERRORS
+    ) {
+      return
+    }
 
+    seen.add(value)
     const code =
       'code' in value && typeof value.code === 'string'
         ? ` [${value.code}]`
         : ''
     details.push(`${value.name}${code}: ${value.message}`)
     append(value.cause)
-
-    // Node can wrap multiple failed IPv4/IPv6 connection attempts in one error.
     if (value instanceof AggregateError) {
       for (const nested of value.errors) {
         append(nested)
