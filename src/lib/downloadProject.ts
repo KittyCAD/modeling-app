@@ -106,7 +106,7 @@ async function downloadProjectArchiveById(
     return result
   }
 
-  // The fetch wrapper replaces the SDK's JSON response with the ZIP payload.
+  // Needs to be fixed upstream in kittycad.ts
   return result as unknown as DownloadedProjectArchive
 }
 
