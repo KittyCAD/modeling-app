@@ -1177,19 +1177,20 @@ impl ExecutorContext {
             &self.settings.project_directory,
             &exec_state.mod_local.path,
         )?;
-        if matches!(&module_path, ModulePath::Std { value } if value == "view")
+        if let ModulePath::Std { value } = &module_path
+            && matches!(value.as_str(), "view" | "drawing")
             && !exec_state.entry_point_version_is_v3_or_higher()
         {
             if matches!(&exec_state.mod_local.path, ModulePath::Std { value } if value == "prelude") {
-                // The prelude must remain usable before V3, but its view module
+                // The prelude must remain usable before V3, but these modules
                 // must be absent from those programs.
                 let added_in = annotations::VersionConstraint::new(3, 0);
-                exec_state.record_not_yet_added(format!("{}view", memory::MODULE_PREFIX), added_in, true);
+                exec_state.record_not_yet_added(format!("{}{value}", memory::MODULE_PREFIX), added_in, true);
                 return Ok(());
             }
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
-                    "The `std::view` module requires KCL 3.0-preview, but this program uses KCL {}.",
+                    "The `std::{value}` module requires KCL 3.0-preview, but this program uses KCL {}.",
                     exec_state.entry_point_kcl_version().as_str()
                 ),
                 vec![source_range],
