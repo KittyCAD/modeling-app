@@ -20,6 +20,7 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 
 * [`appearance::appearance`](/docs/kcl-std/modules/std-appearance)
 * [`array`](/docs/kcl-std/modules/std-array)
+* [`drawing::drawing`](/docs/kcl-std/modules/std-drawing)
 * [`gdt::gdt`](/docs/kcl-std/modules/std-gdt)
 * [`gear::gear`](/docs/kcl-std/modules/std-gear)
 * [`hole::hole`](/docs/kcl-std/modules/std-hole)
