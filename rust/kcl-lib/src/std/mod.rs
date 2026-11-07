@@ -9,6 +9,7 @@ pub mod chamfer;
 pub mod clone;
 pub mod constraints;
 pub mod csg;
+pub mod drawing;
 pub mod edge;
 pub mod extrude;
 pub mod faces;
@@ -903,6 +904,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> Result<(crate::std::StdFn, St
         ("solid", "joinSurfaces") => (
             |e, a| Box::pin(crate::std::surfaces::join(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::solid::joinSurfaces"),
+        ),
+        ("drawing", "sheetOrientation") => (
+            |e, a| Box::pin(crate::std::drawing::sheet_orientation(e, a).map(|r| r.map(KclValue::normal))),
+            StdFnProps::default("std::drawing::sheetOrientation"),
         ),
         ("view", "oriented") => (
             |e, a| Box::pin(crate::std::view::oriented(e, a).map(|r| r.map(KclValue::normal))),
