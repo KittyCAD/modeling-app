@@ -54,7 +54,7 @@ vi.mock('@src/lib/projectSession/projectFiles', async (importOriginal) => ({
   collectProjectFiles: projectFilesMocks.collect,
 }))
 
-vi.mock('@src/lib/zookeeper/registry/ZookeeperEditPatchHistory', () => ({
+vi.mock('@src/lib/zookeeper/registry/legacy/ZookeeperEditPatchHistory', () => ({
   ZookeeperEditPatchHistory: class MockZookeeperEditPatchHistory {
     readonly dispose = vi.fn()
     readonly finishPending = vi.fn()
@@ -67,23 +67,26 @@ vi.mock('@src/lib/zookeeper/registry/ZookeeperEditPatchHistory', () => ({
   },
 }))
 
-vi.mock('@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor', () => ({
-  ZookeeperFileRequestProcessor: class MockZookeeperFileRequestProcessor {
-    hasPendingRequests = false
-    readonly fileWriteProgress = signal<BulkFileWriteProgress | undefined>(
-      undefined
-    )
-    readonly onQueueIdle: () => void
-    readonly dispose = vi.fn(async () => undefined)
-    readonly handleActorSnapshot = vi.fn()
-    readonly reset = vi.fn(async () => undefined)
+vi.mock(
+  '@src/lib/zookeeper/registry/legacy/ZookeeperFileRequestProcessor',
+  () => ({
+    ZookeeperFileRequestProcessor: class MockZookeeperFileRequestProcessor {
+      hasPendingRequests = false
+      readonly fileWriteProgress = signal<BulkFileWriteProgress | undefined>(
+        undefined
+      )
+      readonly onQueueIdle: () => void
+      readonly dispose = vi.fn(async () => undefined)
+      readonly handleActorSnapshot = vi.fn()
+      readonly reset = vi.fn(async () => undefined)
 
-    constructor(deps: { onQueueIdle: () => void }) {
-      this.onQueueIdle = deps.onQueueIdle
-      workerMocks.processors.push(this)
-    }
-  },
-}))
+      constructor(deps: { onQueueIdle: () => void }) {
+        this.onQueueIdle = deps.onQueueIdle
+        workerMocks.processors.push(this)
+      }
+    },
+  })
+)
 
 import type { ZDSProject } from '@src/lib/projectSession'
 import { BillingTransition } from '@src/lib/billing'
@@ -342,6 +345,35 @@ describe('Zookeeper session controller', () => {
     vi.restoreAllMocks()
   })
 
+  it.each(['local', 'cloud'] as const)(
+    'keeps legacy content and history handling active for %s projects',
+    async (storage) => {
+      const h = createHarness({
+        cloudProjectId: storage === 'cloud' ? 'remote-one' : undefined,
+      })
+      const response = {
+        tool_output: {
+          result: {
+            type: 'edit_kcl_code',
+            status_code: 200,
+            outputs: { 'main.kcl': 'new contents' },
+          },
+        },
+      }
+      h.actor.emit('ready', {
+        lastMessageId: 1,
+        lastMessageType: 'tool_output',
+        conversation: {
+          exchanges: [{ responses: [response], deltasAggregated: '' }],
+        } as SnapshotContext['conversation'],
+      })
+      await flushPromises()
+      expect(workerMocks.histories[0].handleActorSnapshot).toHaveBeenCalled()
+      expect(workerMocks.processors[0].handleActorSnapshot).toHaveBeenCalled()
+      expect(h.refreshProject).not.toHaveBeenCalled()
+    }
+  )
+
   it('refreshes a cloud mutation once and ignores another project', async () => {
     const h = createHarness({ cloudProjectId: 'remote-one' })
     const change = { callId: 'call-1', projectId: 'remote-one', revision: '2' }
@@ -461,7 +493,7 @@ describe('Zookeeper session controller', () => {
     expect(h.refreshProject).not.toHaveBeenCalled()
     expect(h.reloadFiles).not.toHaveBeenCalled()
     expect(h.readFolders).not.toHaveBeenCalled()
-    expect(workerMocks.histories[0].handleActorSnapshot).not.toHaveBeenCalled()
+    expect(workerMocks.histories[0].handleActorSnapshot).toHaveBeenCalled()
   })
 
   it('waits for a pending cloud refresh before continuing a restored turn', async () => {

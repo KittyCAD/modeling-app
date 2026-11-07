@@ -5,7 +5,7 @@ import type { MlCopilotServerMessage, MlToolResult } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
 import fsZds from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
-import type { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
+import type { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/legacy/ZookeeperEditPatchHistory'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { normalizeKCLFileDeletePath } from '@src/lib/projectSession/projectFiles'
 import {
@@ -41,8 +41,10 @@ type QueuedZookeeperFileRequest = {
 }
 
 /**
- * Applies file edits emitted by one Zookeeper session. The session controller
- * forwards actor snapshots; this helper owns the serialized write queue.
+ * Temporary client-side handling for legacy edit_kcl_code/text_to_cad replies.
+ * Works for local and cloud projects until Zookeeper writes through project_*
+ * tools everywhere. Those tools are handled separately by cloud refresh; this
+ * queue must never apply their results as file contents.
  */
 export class ZookeeperFileRequestProcessor {
   private disposed = false
@@ -93,7 +95,6 @@ export class ZookeeperFileRequestProcessor {
   ) {
     if (
       this.disposed ||
-      Boolean(this.deps.getProject()?.cloudProjectId) ||
       snapshot.context.lastMessageId === this.lastMessageId
     ) {
       return
@@ -114,6 +115,10 @@ export class ZookeeperFileRequestProcessor {
       return
     }
 
+    const result = lastResponse.tool_output.result
+    if (result.type !== 'edit_kcl_code' && result.type !== 'text_to_cad') {
+      return
+    }
     const projectName = snapshot.context.projectNameCurrentlyOpened
     if (!projectName) {
       return
@@ -181,7 +186,7 @@ export class ZookeeperFileRequestProcessor {
   /** Queues an edit whose orderedId was assigned when it was received. */
   enqueue(request: ZookeeperNewFileRequest, onApplied: () => void) {
     // Re-ordering of the queue happens at the end of this function
-    if (this.disposed || this.deps.getProject()?.cloudProjectId) {
+    if (this.disposed) {
       return
     }
     const project = this.deps.getProject()
