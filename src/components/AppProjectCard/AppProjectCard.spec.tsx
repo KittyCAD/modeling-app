@@ -98,7 +98,7 @@ function createProjectActions({
     canOpen,
     canRename: () => true,
     canDelete: () => true,
-    canMoveToLibrary: () => true,
+    canCloneToLibrary: () => true,
     canReviewDuplicateRealizations: (project) =>
       Boolean(project.duplicateRealizations?.length),
     canSeparateProjectCopies: (project) =>
@@ -111,8 +111,8 @@ function createProjectActions({
     duplicate: vi.fn().mockResolvedValue(undefined),
     rename,
     delete: vi.fn().mockResolvedValue(undefined),
-    getMoveToLibraryTargets: vi.fn(() => []),
-    moveToLibrary: vi.fn().mockResolvedValue(undefined),
+    getCloneToLibraryTargets: vi.fn(() => []),
+    cloneToLibrary: vi.fn().mockResolvedValue(undefined),
     deleteDuplicateRealizations: vi.fn().mockResolvedValue(undefined),
     separateProjectCopies: vi.fn().mockResolvedValue(undefined),
   }
@@ -224,7 +224,7 @@ describe('ProjectCard', () => {
         fileOperations,
         projectStatuses: new Map<string, ProjectStatus>(),
         showCloudSyncUi: true,
-        onMoveToLibrary: vi.fn(),
+        onCloneToLibrary: vi.fn(),
       }
       const { unmount } = render(
         <BrowserRouter>
@@ -699,22 +699,22 @@ describe('ProjectCard', () => {
   })
 
   test('opens move to library from the card context menu', () => {
-    const onMoveToLibrary = vi.fn()
+    const onCloneToLibrary = vi.fn()
     render(
       <BrowserRouter>
         <AppProjectCard
           project={cloudProject}
           projectActions={createProjectActions()}
           fileOperations={fileOperations}
-          onMoveToLibrary={onMoveToLibrary}
+          onCloneToLibrary={onCloneToLibrary}
         />
       </BrowserRouter>
     )
 
     fireEvent.contextMenu(screen.getByTestId('project-link'))
-    fireEvent.click(screen.getByTestId('project-card-context-move-to-library'))
+    fireEvent.click(screen.getByTestId('project-card-context-clone-to-library'))
 
-    expect(onMoveToLibrary).toHaveBeenCalledWith(cloudProject)
+    expect(onCloneToLibrary).toHaveBeenCalledWith(cloudProject)
   })
 
   test('clarifies that deleting a cloud-backed non-cloud library project keeps the cloud version', () => {

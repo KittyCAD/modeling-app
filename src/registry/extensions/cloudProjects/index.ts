@@ -1,6 +1,3 @@
-import toast from 'react-hot-toast'
-import fsZds from '@src/lib/fs-zds'
-
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 
 import { computed, effect } from '@preact/signals-core'
@@ -214,8 +211,8 @@ export default defineRegistryItemFactory((ctx) => {
               }
             },
           },
-          moveProjectFrom: {
-            canMoveProject: ({ project }) =>
+          cloneProjectFrom: {
+            canCloneProject: ({ project }) =>
               Boolean(project.remoteProjectId && project.readWriteAccess),
             run: async ({ project }) => {
               if (!project.remoteProjectId) return undefined
@@ -227,44 +224,17 @@ export default defineRegistryItemFactory((ctx) => {
               }
             },
           },
-          moveProjectTo: {
-            run: async ({ source, project }) => {
+          cloneProjectTo: {
+            run: async ({ source, project, requestedProjectTitle }) => {
               const archive = await collectProjectFilesForUpload({
                 fileOperations: operations(),
                 projectRoot: source.localProjectPath,
               })
               const created = await cloud().createProject(
-                getHomeProjectDisplayName(project),
+                requestedProjectTitle ?? getHomeProjectDisplayName(project),
                 archive
               )
               const info = await projectInfo(created.id)
-              // The source is removed only after the destination is acknowledged and readable.
-              const included = new Set(archive.map((file) => file.relativePath))
-              const containsExcludedFiles = async (
-                directory: string
-              ): Promise<boolean> => {
-                for (const name of await operations().readDirectory(
-                  directory
-                )) {
-                  const path = fsZds.join(directory, name)
-                  if ((await operations().stat(path)).kind === 'directory') {
-                    if (await containsExcludedFiles(path)) return true
-                  } else if (
-                    !included.has(
-                      fsZds
-                        .relative(source.localProjectPath, path)
-                        .replaceAll('\\', '/')
-                    )
-                  )
-                    return true
-                }
-                return false
-              }
-              if (await containsExcludedFiles(source.localProjectPath))
-                toast(
-                  'Cloud project saved. Local files were kept because the upload excludes some files.'
-                )
-              else await operations().remove(source.localProjectPath)
               invalidateProjectLibraryRealizations()
               return {
                 localProjectPath: info.path,

@@ -169,43 +169,44 @@ export interface ProjectLibraryRenameProjectInput
 
 export type ProjectLibraryDeleteProjectInput = ProjectLibraryProjectInput
 
-export interface ProjectLibraryMoveProjectFromInput
+export interface ProjectLibraryCloneProjectFromInput
   extends ProjectLibraryProjectInput {
   targetLibrary: ProjectLibrary
 }
 
-export interface ProjectLibraryMoveProjectSource {
+export interface ProjectLibraryCloneProjectSource {
   localProjectPath: string
   localProjectName: string
   defaultFile?: string
 }
 
-export interface ProjectLibraryMoveProjectToInput
+export interface ProjectLibraryCloneProjectToInput
   extends ProjectLibraryProjectInput {
   sourceLibrary: ProjectLibrary
-  source: ProjectLibraryMoveProjectSource
+  source: ProjectLibraryCloneProjectSource
+  requestedProjectTitle?: string
 }
 
-export interface ProjectLibraryMoveProjectResult {
+export interface ProjectLibraryCloneProjectResult {
   localProjectPath?: string
   defaultFile?: string
 }
 
-export interface ProjectLibraryMoveProjectFromOperation
+export interface ProjectLibraryCloneProjectFromOperation
   extends ProjectLibraryOperation<
-    ProjectLibraryMoveProjectFromInput,
-    ProjectLibraryMoveProjectSource | undefined
+    ProjectLibraryCloneProjectFromInput,
+    ProjectLibraryCloneProjectSource | undefined
   > {
-  canMoveProject?: (input: ProjectLibraryProjectInput) => boolean
+  canCloneProject?: (input: ProjectLibraryProjectInput) => boolean
 }
 
-export interface ProjectLibraryMoveProjectToOperation
+export interface ProjectLibraryCloneProjectToOperation
   extends ProjectLibraryOperation<
-    ProjectLibraryMoveProjectToInput,
-    ProjectLibraryMoveProjectResult | undefined
+    ProjectLibraryCloneProjectToInput,
+    ProjectLibraryCloneProjectResult | undefined
   > {
   canReceiveProject?: (
-    input: Omit<ProjectLibraryMoveProjectToInput, 'source'>
+    input: Omit<ProjectLibraryCloneProjectToInput, 'source'>
   ) => boolean
 }
 
@@ -224,8 +225,8 @@ export interface ProjectLibraryTypeOperations {
   >
   renameProject?: ProjectLibraryOperation<ProjectLibraryRenameProjectInput>
   deleteProject?: ProjectLibraryOperation<ProjectLibraryDeleteProjectInput>
-  moveProjectFrom?: ProjectLibraryMoveProjectFromOperation
-  moveProjectTo?: ProjectLibraryMoveProjectToOperation
+  cloneProjectFrom?: ProjectLibraryCloneProjectFromOperation
+  cloneProjectTo?: ProjectLibraryCloneProjectToOperation
 }
 
 export interface ProjectLibrarySettingsDetailsProps {

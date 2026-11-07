@@ -4,11 +4,11 @@ import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
 } from '@src/lib/projectLibraries'
-import { moveOpenedProjectToCloudLibrary } from '@src/lib/projectLibraries/moveOpenedProjectToCloudLibrary'
+import { cloneOpenedProjectToCloudLibrary } from '@src/lib/projectLibraries/cloneOpenedProjectToCloudLibrary'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
-  HomeProjectMoveToLibraryTarget,
+  HomeProjectCloneToLibraryTarget,
 } from '@src/registry/contracts/homeProjects'
 import {
   homeProjectActionsService,
@@ -24,7 +24,7 @@ vi.mock('@src/lib/desktop', () => ({
   writeProjectTitleToProjectToml,
 }))
 
-test('moves an open directory project before navigating directly to its new file', async () => {
+test('clones an open directory project without closing or retitling the source', async () => {
   const project = {
     path: '/projects/example',
     libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -38,14 +38,14 @@ test('moves an open directory project before navigating directly to its new file
       id: 'personal-cloud',
       type: CLOUD_PROJECT_LIBRARY_TYPE,
     },
-  } as HomeProjectMoveToLibraryTarget
-  const moveToLibrary = vi.fn().mockResolvedValue({
+  } as HomeProjectCloneToLibraryTarget
+  const cloneToLibrary = vi.fn().mockResolvedValue({
     defaultFile: '/cloud/example/main.kcl',
     localProjectPath: '/cloud/example',
   })
   const actions = {
-    getMoveToLibraryTargets: vi.fn().mockReturnValue([cloudLibraryTarget]),
-    moveToLibrary,
+    getCloneToLibraryTargets: vi.fn().mockReturnValue([cloudLibraryTarget]),
+    cloneToLibrary,
   } as unknown as HomeProjectActionsService
   const closeProject = vi.fn()
   const clearProjectSettings = vi.fn()
@@ -64,7 +64,7 @@ test('moves an open directory project before navigating directly to its new file
   const navigate = vi.fn().mockResolvedValue(undefined)
 
   await expect(
-    moveOpenedProjectToCloudLibrary({
+    cloneOpenedProjectToCloudLibrary({
       app,
       project,
       navigate,
@@ -75,15 +75,13 @@ test('moves an open directory project before navigating directly to its new file
     projectPath: '/cloud/example',
   })
 
-  expect(closeProject).toHaveBeenCalledOnce()
-  expect(clearProjectSettings).toHaveBeenCalledWith({ type: 'clear.project' })
-  expect(writeProjectTitleToProjectToml).toHaveBeenCalledWith(
-    fileOperations,
-    '/projects/example',
-    'Published example'
-  )
-  expect(moveToLibrary).toHaveBeenCalledWith(homeProject, 'personal-cloud')
+  expect(closeProject).not.toHaveBeenCalled()
+  expect(clearProjectSettings).not.toHaveBeenCalled()
+  expect(writeProjectTitleToProjectToml).not.toHaveBeenCalled()
+  expect(cloneToLibrary).toHaveBeenCalledWith(homeProject, 'personal-cloud', {
+    title: 'Published example',
+  })
   expect(navigate).toHaveBeenCalledOnce()
   expect(navigate).toHaveBeenCalledWith('/file/%2Fcloud%2Fexample%2Fmain.kcl')
-  expect(moveToLibrary).toHaveBeenCalledBefore(navigate)
+  expect(cloneToLibrary).toHaveBeenCalledBefore(navigate)
 })

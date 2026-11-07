@@ -1,6 +1,5 @@
 import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import type { App } from '@src/lib/app'
-import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
@@ -12,14 +11,8 @@ import {
 } from '@src/registry/contracts/homeProjects'
 import type { NavigateFunction } from 'react-router-dom'
 
-/**
- * Releases the open project, relocates it, then routes directly to the moved
- * file so no intermediate Home navigation is visible to the user.
- *
- * The move must finish before navigation because the destination library may
- * choose a different directory name to avoid a collision.
- */
-export async function moveOpenedProjectToCloudLibrary({
+/** Create a cloud project without changing the source, then open the new project. */
+export async function cloneOpenedProjectToCloudLibrary({
   app,
   project,
   navigate,
@@ -43,7 +36,7 @@ export async function moveOpenedProjectToCloudLibrary({
     )
   const cloudLibraryTarget = homeProject
     ? actions
-        ?.getMoveToLibraryTargets(homeProject)
+        ?.getCloneToLibraryTargets(homeProject)
         .find((target) => target.library.type === CLOUD_PROJECT_LIBRARY_TYPE)
     : undefined
 
@@ -51,43 +44,29 @@ export async function moveOpenedProjectToCloudLibrary({
     return new Error('No cloud library is available for the open project.')
   }
 
-  app.closeProject()
-  app.settings.actor.send({ type: 'clear.project' })
-
   try {
-    // Persist through the project metadata API after closing the editor. The
-    // destination library uses this title for the final directory name, while
-    // the closed project cannot mistake the relocation for an external reload.
-    await writeProjectTitleToProjectToml(
-      app.fileOperations,
-      project.path,
-      title
-    )
-    const moved = await actions.moveToLibrary(
+    const created = await actions.cloneToLibrary(
       homeProject,
-      cloudLibraryTarget.library.id
+      cloudLibraryTarget.library.id,
+      { title }
     )
-    if (!moved?.defaultFile) {
-      await navigate(PATHS.HOME)
+    if (!created?.defaultFile) {
       return new Error(
-        'Moving the open project did not return its new file path.'
+        'Creating the cloud project did not return its file path.'
       )
     }
 
     const projectPath =
-      moved.localProjectPath ?? fsZds.dirname(moved.defaultFile)
-    await navigate(`${PATHS.FILE}/${encodeURIComponent(moved.defaultFile)}`)
+      created.localProjectPath ?? fsZds.dirname(created.defaultFile)
+    await navigate(`${PATHS.FILE}/${encodeURIComponent(created.defaultFile)}`)
     return {
-      defaultFile: moved.defaultFile,
+      defaultFile: created.defaultFile,
       projectPath,
     }
   } catch (error) {
-    // The old route no longer has an active project session. Fall back to Home
-    // only when relocation fails; successful publication never renders it.
-    await navigate(PATHS.HOME)
     return error instanceof Error
       ? error
-      : new Error('Moving the open project to Personal Cloud failed.')
+      : new Error('Creating a cloud project from the open project failed.')
   }
 }
 

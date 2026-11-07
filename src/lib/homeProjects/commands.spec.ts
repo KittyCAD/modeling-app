@@ -107,7 +107,7 @@ function createHomeProjectActions(
     canDuplicate: vi.fn(() => true),
     canRename: vi.fn(() => true),
     canDelete: vi.fn(() => true),
-    canMoveToLibrary: vi.fn(() => false),
+    canCloneToLibrary: vi.fn(() => false),
     canReviewDuplicateRealizations: vi.fn(() => false),
     canSeparateProjectCopies: vi.fn(() => false),
     open: vi.fn(async (project) => ({
@@ -116,8 +116,8 @@ function createHomeProjectActions(
     duplicate: vi.fn(async () => undefined),
     rename: vi.fn(async () => undefined),
     delete: vi.fn(async () => undefined),
-    getMoveToLibraryTargets: vi.fn(() => []),
-    moveToLibrary: vi.fn(async () => undefined),
+    getCloneToLibraryTargets: vi.fn(() => []),
+    cloneToLibrary: vi.fn(async () => undefined),
     deleteDuplicateRealizations: vi.fn(async () => undefined),
     separateProjectCopies: vi.fn(async () => undefined),
     ...overrides,
@@ -467,7 +467,7 @@ describe('project command config', () => {
     { commandName: 'Open project', argName: 'name' },
     { commandName: 'Rename project', argName: 'oldName' },
     { commandName: 'Delete project', argName: 'name' },
-    { commandName: 'Move project', argName: 'project' },
+    { commandName: 'Clone project', argName: 'project' },
   ])(
     'disambiguates projects across libraries in $commandName',
     ({ commandName, argName }) => {
@@ -508,7 +508,7 @@ describe('project command config', () => {
         getProjectLibraries: () => libraries,
         getHomeProjectActions: () =>
           createHomeProjectActions({
-            canMoveToLibrary: () => true,
+            canCloneToLibrary: () => true,
           }),
         getHomeProjectEntries: () => [
           localProject,
@@ -645,7 +645,7 @@ describe('project command config', () => {
     ).toBeInTheDocument()
   })
 
-  it('moves home project entries to a selected library through project actions', async () => {
+  it('clones home project entries to a selected library through project actions', async () => {
     const dependencies = createCommandDependencies()
     const sourceLibrary = createLibrary('client-projects', 'Client Projects')
     const targetLibrary = createLibrary(
@@ -661,14 +661,14 @@ describe('project command config', () => {
       libraryIds: [sourceLibrary.id],
     })
     const homeProjectActions = createHomeProjectActions({
-      canMoveToLibrary: vi.fn(() => true),
-      getMoveToLibraryTargets: vi.fn(() => [
+      canCloneToLibrary: vi.fn(() => true),
+      getCloneToLibraryTargets: vi.fn(() => [
         {
           sourceLibrary,
           library: targetLibrary,
         },
       ]),
-      moveToLibrary: vi.fn(async () => ({
+      cloneToLibrary: vi.fn(async () => ({
         defaultFile: '/cloud/bracket/main.kcl',
       })),
     })
@@ -678,7 +678,7 @@ describe('project command config', () => {
       getHomeProjectEntries: () => [homeProject],
     })
     const moveCommand = commands.find(
-      (command) => command.name === 'Move project'
+      (command) => command.name === 'Clone project'
     )
     const projectArg = moveCommand?.args?.project as unknown as {
       hidden: (context: {
@@ -761,7 +761,7 @@ describe('project command config', () => {
       library: targetLibrary.id,
     })
 
-    expect(homeProjectActions.moveToLibrary).toHaveBeenCalledWith(
+    expect(homeProjectActions.cloneToLibrary).toHaveBeenCalledWith(
       homeProject,
       targetLibrary.id
     )
