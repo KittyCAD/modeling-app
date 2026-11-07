@@ -2551,3 +2551,182 @@ describe('zookeeperManagerMachine', () => {
     })
   })
 })
+
+describe('mirrored conversation messages', () => {
+  const actors: ReturnType<typeof createZookeeperManagerActor>[] = []
+  beforeEach(() => {
+    ControllableSetupWebSocket.instances = []
+    vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+  })
+  afterEach(() => {
+    for (const actor of actors.splice(0)) actor.stop()
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+  })
+
+  const user = (content: string, correlation_id = 'peer-prompt') => ({
+    type: 'user',
+    content,
+    correlation_id,
+    current_files: {},
+    source_ranges: [],
+  })
+  const reasoning = {
+    reasoning: { type: 'markdown', content: 'Checking the model.' },
+  }
+  const final = { end_of_stream: { whole_response: 'Finished.' } }
+  const toolOutput = {
+    tool_output: {
+      result: {
+        type: 'project_write_file',
+        call_id: 'peer-write',
+        project_id: 'cloud:one',
+        ok: true,
+        output: {
+          id: 'one',
+          revision: '2',
+          path: 'main.kcl',
+          contents: 'x = 2',
+          encoding: 'utf-8',
+        },
+      },
+    },
+  }
+
+  async function connect(format: 'json' | 'msgpack') {
+    const actor = createActor(zookeeperManagerMachine, {
+      input: { apiToken: 'token' },
+    }).start()
+    actors.push(actor)
+    actor.send({
+      type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      conversationId: 'conversation-id',
+      refParentSend: (event) => actor.send(event),
+    })
+    const socket = ControllableSetupWebSocket.instances[0]
+    socket.open()
+    await vi.waitFor(() =>
+      expect(socket.sentPayloads).toContain(
+        JSON.stringify({ type: 'list_modes' })
+      )
+    )
+    const receive = (payload: unknown) => {
+      if (format === 'json') socket.receive(payload)
+      else
+        socket.dispatchEvent(
+          new MessageEvent('message', {
+            data: Uint8Array.from(msgpack.encode(payload)).buffer,
+          })
+        )
+    }
+    const finishSetup = async () => {
+      receive({ conversation_id: { conversation_id: 'conversation-id' } })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+    }
+    const ready = async () => {
+      await finishSetup()
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+    }
+    return { actor, socket, receive, finishSetup, ready }
+  }
+
+  it.each(['json', 'msgpack'] as const)(
+    'reflects a user, reasoning, and replies over %s without resending them',
+    async (format) => {
+      const { actor, socket, receive, ready } = await connect(format)
+      await ready()
+      receive(user('Previous question', 'previous-prompt'))
+      receive({ delta: { delta: 'Previous answer' } })
+      receive({ end_of_stream: { whole_response: 'Previous answer' } })
+      const sent = [...socket.sentPayloads]
+
+      receive(user('Make it brown'))
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
+      receive(reasoning)
+      const active = actor.getSnapshot().context.conversation?.exchanges.at(-1)
+      expect(active?.request).toMatchObject({ content: 'Make it brown' })
+      expect(active?.responses).toEqual([reasoning])
+      receive(toolOutput)
+      expect(actor.getSnapshot().context.cloudProjectChange).toEqual({
+        callId: 'peer-write',
+        projectId: 'one',
+        revision: '2',
+      })
+      expect(
+        actor.getSnapshot().context.conversation?.exchanges.at(-1)?.responses
+      ).toEqual([reasoning, toolOutput])
+      receive({ delta: { delta: 'Finished.' } })
+      receive(final)
+
+      const context = actor.getSnapshot().context
+      expect(context.conversation?.exchanges).toHaveLength(2)
+      expect(context.conversation?.exchanges[0].request).toMatchObject({
+        content: 'Previous question',
+      })
+      expect(context.conversation?.exchanges[0].deltasAggregated).toBe(
+        'Previous answer'
+      )
+      expect(context.conversation?.exchanges[1]).toMatchObject({
+        request: user('Make it brown'),
+        responses: [reasoning, toolOutput, final],
+        deltasAggregated: 'Finished.',
+      })
+      expect(context.awaitingResponse).toBe(false)
+      expect(socket.sentPayloads).toEqual(sent)
+
+      receive(user('Make it brown'))
+      expect(actor.getSnapshot().context.conversation?.exchanges).toHaveLength(
+        2
+      )
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+    }
+  )
+
+  it.each(['json', 'msgpack'] as const)(
+    'buffers reflected user messages and reasoning during %s setup',
+    async (format) => {
+      const { actor, receive, finishSetup } = await connect(format)
+      receive(user('Make it brown'))
+      receive(reasoning)
+      receive({ delta: { delta: 'Finished.' } })
+      receive(final)
+      await finishSetup()
+      expect(actor.getSnapshot().context.conversation?.exchanges).toMatchObject(
+        [
+          {
+            request: user('Make it brown'),
+            responses: [reasoning, final],
+            deltasAggregated: 'Finished.',
+          },
+        ]
+      )
+    }
+  )
+
+  it('keeps reasoning and replies received before the editor is Ready', async () => {
+    const { actor, receive, finishSetup } = await connect('json')
+    await finishSetup()
+    receive(user('Make it brown'))
+    receive(reasoning)
+    expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
+    receive({ delta: { delta: 'Finished.' } })
+    receive(final)
+    expect(actor.getSnapshot().context.conversation?.exchanges).toMatchObject([
+      {
+        request: user('Make it brown'),
+        responses: [reasoning, final],
+        deltasAggregated: 'Finished.',
+      },
+    ])
+    expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+  })
+})

@@ -221,7 +221,7 @@ export function parseMlCopilotModesResult(
 export function isMlCopilotUserRequest(
   x: unknown
 ): x is MlCopilotClientMessageUser {
-  return typeof x === 'object' && x !== null && 'type' in x && x.type === 'user'
+  return isRecord(x) && x.type === 'user' && typeof x.content === 'string'
 }
 
 export enum ZookeeperManagerStates {
@@ -236,6 +236,7 @@ export enum ZookeeperManagerStates {
 export enum ZookeeperManagerTransitions {
   AuthTokenChanged = 'auth-token-changed',
   MessageSend = 'message-send',
+  UserReceive = 'user-receive',
   ResponseReceive = 'response-receive',
   EditApplied = 'edit-applied',
   CloudProjectChanged = 'cloud-project-changed',
@@ -391,6 +392,10 @@ export type ZookeeperManagerEvents =
       projectFiles: FileMeta[]
       activeFile?: string
       engineApiCallId?: string
+    }
+  | {
+      type: ZookeeperManagerTransitions.UserReceive
+      request: MlCopilotUserRequest
     }
   | {
       type: ZookeeperManagerTransitions.ResponseReceive
@@ -847,6 +852,25 @@ function isMlCopilotServerMessage(
   return true
 }
 
+function appendReceivedUser(
+  exchanges: Exchange[],
+  request: MlCopilotUserRequest
+): Exchange[] {
+  if (
+    request.correlation_id &&
+    exchanges.some(
+      (exchange) =>
+        isMlCopilotUserRequest(exchange.request) &&
+        exchange.request.correlation_id === request.correlation_id
+    )
+  )
+    return exchanges
+  return [
+    ...exchanges,
+    { request, responses: [], deltasAggregated: '', startedAt: new Date() },
+  ]
+}
+
 export const hasBeenInterruptedOnLast = (exchanges: Exchange[]) => {
   const lastExchange = exchanges.at(-1)
   if (lastExchange === undefined) {
@@ -908,6 +932,156 @@ export const zookeeperManagerMachine = setup({
     },
   },
   actions: {
+    receiveResponse: assign(({ event, context }) => {
+      assertEvent(event, [ZookeeperManagerTransitions.ResponseReceive])
+
+      if ('attachments_error' in event.response) {
+        const { prompt_id, seq, indices, detail } =
+          event.response.attachments_error
+
+        const attachmentFetches = { ...context.attachmentFetches }
+
+        for (const index of indices) {
+          const key = getZookeeperAttachmentKey({
+            prompt_id,
+            seq,
+            index,
+          })
+
+          if (attachmentFetches[key]?.status !== 'loading') {
+            continue
+          }
+
+          attachmentFetches[key] = {
+            status: 'error',
+            message: detail,
+          }
+        }
+
+        // Attachment failures must not change conversation or generation state.
+        return { attachmentFetches }
+      }
+
+      if ('attachments' in event.response) {
+        const attachmentFetches: Record<string, ZookeeperAttachmentFetchState> =
+          {
+            ...context.attachmentFetches,
+          }
+
+        for (const file of event.response.attachments.files) {
+          if (file.attachment_ref === undefined) {
+            continue
+          }
+
+          const key = getZookeeperAttachmentKey(file.attachment_ref)
+
+          attachmentFetches[key] = {
+            status: 'loaded',
+            file,
+          }
+        }
+        // This early return is needed because attachment response
+        // is just a bookkeeping, not a message.
+        // It should not create a conversation exchange, increment lastMessageId,
+        // change awaitingResponse, or affect active Zookeeper generation.
+        return { attachmentFetches }
+      }
+
+      const lastMessageId = (context.lastMessageId ?? -1) + 1
+      const responseComplete = isResponseComplete(event.response)
+
+      const conversation: Conversation = {
+        exchanges: Array.from(context.conversation?.exchanges ?? []),
+      }
+
+      // Errors are considered their own
+      // exchanges because they have no end_of_stream signal.
+      // It is assumed `info` messages are followed up
+      // with an end_of_stream signal.
+      if ('error' in event.response) {
+        conversation.exchanges.push({
+          responses: [event.response],
+          deltasAggregated: '',
+        })
+        return {
+          conversation,
+          lastMessageId,
+          awaitingResponse: false,
+          attachmentsLoadedForCurrentPrompt: true,
+          pendingBackendShutdown: responseComplete
+            ? false
+            : context.pendingBackendShutdown,
+        }
+      }
+
+      if (isAttachmentsLoadedMessage(event.response)) {
+        return {
+          lastMessageId,
+          attachmentsLoadedForCurrentPrompt: true,
+          awaitingResponse: context.awaitingResponse,
+          pendingBackendShutdown: responseComplete
+            ? false
+            : context.pendingBackendShutdown,
+        }
+      }
+
+      let lastExchange: Exchange | undefined =
+        conversation.exchanges[conversation.exchanges.length - 1]
+
+      if (lastExchange === undefined) {
+        lastExchange = {
+          responses: [event.response],
+          deltasAggregated: '',
+        }
+        conversation.exchanges.push(lastExchange)
+
+        // OPTIMIZATION: `delta` responses are aggregated instead
+        // of being included in the responses list.
+      } else if ('delta' in event.response) {
+        lastExchange.deltasAggregated += event.response.delta.delta
+      } else {
+        lastExchange.responses.push(event.response)
+      }
+
+      if ('end_of_stream' in event.response) {
+        conversation.exchanges[conversation.exchanges.length - 1] =
+          compactAppliedEdits(lastExchange)
+      }
+
+      // This sucks but must be done because we can't
+      // enumerate the message types.
+      const r = event.response
+      const ts: TypeVariant<MlCopilotServerMessage>[] = [
+        'info',
+        'error',
+        'end_of_stream',
+        'session_data',
+        'conversation_id',
+        'delta',
+        'tool_output',
+        'reasoning',
+        'files',
+        'replay',
+      ]
+      const lastMessageType: TypeVariant<MlCopilotServerMessage> | undefined =
+        ts.find((t) => t in r)
+
+      // Defensive: possible we hit messages we don't handle -
+      // don't add to context!
+      if (lastMessageType === undefined) {
+        return context
+      }
+
+      return {
+        conversation,
+        lastMessageId,
+        lastMessageType,
+        awaitingResponse: responseComplete ? false : context.awaitingResponse,
+        pendingBackendShutdown: responseComplete
+          ? false
+          : context.pendingBackendShutdown,
+      }
+    }),
     assignApiToken: assign(({ event }) => {
       assertEvent(event, ZookeeperManagerTransitions.AuthTokenChanged)
       return { apiToken: event.apiToken }
@@ -1350,6 +1524,23 @@ export const zookeeperManagerMachine = setup({
               })
             }
 
+            // Other sockets' accepted prompts are client frames, not replies.
+            if (isRecord(response) && 'type' in response) {
+              if (!isMlCopilotUserRequest(response)) return
+              if (!setupResolved) {
+                maybeReplayedExchanges = appendReceivedUser(
+                  maybeReplayedExchanges,
+                  response
+                )
+              } else {
+                theRefParentSend({
+                  type: ZookeeperManagerTransitions.UserReceive,
+                  request: response,
+                })
+              }
+              return
+            }
+
             const modesResult = parseMlCopilotModesResult(response)
             if (modesResult !== null) {
               maybeModeOptions = modesResult.modeOptions
@@ -1407,7 +1598,6 @@ export const zookeeperManagerMachine = setup({
                 type: ZookeeperManagerTransitions.CloudProjectChanged,
                 change: cloudChange,
               })
-              return
             }
             if (
               isRecord(response) &&
@@ -1504,6 +1694,30 @@ export const zookeeperManagerMachine = setup({
                 }
                 lastExchange.responses.push(responseReplay)
               }
+            }
+
+            // Fanout may arrive while replay/setup is still completing.
+            if (
+              !setupResolved &&
+              !('conversation_id' in response) &&
+              !('replay' in response)
+            ) {
+              let exchange = maybeReplayedExchanges.at(-1)
+              if (!exchange) {
+                exchange = { responses: [], deltasAggregated: '' }
+                maybeReplayedExchanges.push(exchange)
+              }
+              if ('delta' in response) {
+                exchange.deltasAggregated += response.delta.delta
+              } else {
+                exchange.responses.push(response)
+                if ('end_of_stream' in response) {
+                  exchange.deltasAggregated =
+                    response.end_of_stream.whole_response ??
+                    exchange.deltasAggregated
+                }
+              }
+              return
             }
 
             // We're only considered setup when a conversation_id is assigned
@@ -1813,6 +2027,23 @@ export const zookeeperManagerMachine = setup({
     closeZookeeperWebSocket(args.context?.ws)
   },
   on: {
+    [ZookeeperManagerTransitions.ResponseReceive]: {
+      actions: ['disconnectIfPendingBackendShutdown', 'receiveResponse'],
+    },
+    [ZookeeperManagerTransitions.UserReceive]: {
+      actions: assign(({ context, event }) => {
+        const previous = context.conversation?.exchanges ?? []
+        const exchanges = appendReceivedUser(previous, event.request)
+        if (exchanges === previous) return {}
+        return {
+          conversation: { ...context.conversation, exchanges },
+          awaitingResponse: true,
+          attachmentsLoadedForCurrentPrompt: true,
+          lastMessageId: (context.lastMessageId ?? -1) + 1,
+          lastMessageType: undefined,
+        }
+      }),
+    },
     [ZookeeperManagerTransitions.EditApplied]: {
       actions: assign(({ context, event }) => {
         // Identity fences late acknowledgements after clear/reconnect. An
@@ -2093,169 +2324,7 @@ export const zookeeperManagerMachine = setup({
                 target: S.Await,
                 actions: [
                   'disconnectIfPendingBackendShutdown',
-                  assign(({ event, context }) => {
-                    assertEvent(event, [
-                      ZookeeperManagerTransitions.ResponseReceive,
-                    ])
-
-                    if ('attachments_error' in event.response) {
-                      const { prompt_id, seq, indices, detail } =
-                        event.response.attachments_error
-
-                      const attachmentFetches = { ...context.attachmentFetches }
-
-                      for (const index of indices) {
-                        const key = getZookeeperAttachmentKey({
-                          prompt_id,
-                          seq,
-                          index,
-                        })
-
-                        if (attachmentFetches[key]?.status !== 'loading') {
-                          continue
-                        }
-
-                        attachmentFetches[key] = {
-                          status: 'error',
-                          message: detail,
-                        }
-                      }
-
-                      // Attachment failures must not change conversation or generation state.
-                      return { attachmentFetches }
-                    }
-
-                    if ('attachments' in event.response) {
-                      const attachmentFetches: Record<
-                        string,
-                        ZookeeperAttachmentFetchState
-                      > = {
-                        ...context.attachmentFetches,
-                      }
-
-                      for (const file of event.response.attachments.files) {
-                        if (file.attachment_ref === undefined) {
-                          continue
-                        }
-
-                        const key = getZookeeperAttachmentKey(
-                          file.attachment_ref
-                        )
-
-                        attachmentFetches[key] = {
-                          status: 'loaded',
-                          file,
-                        }
-                      }
-                      // This early return is needed because attachment response
-                      // is just a bookkeeping, not a message.
-                      // It should not create a conversation exchange, increment lastMessageId,
-                      // change awaitingResponse, or affect active Zookeeper generation.
-                      return { attachmentFetches }
-                    }
-
-                    const lastMessageId = (context.lastMessageId ?? -1) + 1
-                    const responseComplete = isResponseComplete(event.response)
-
-                    const conversation: Conversation = {
-                      exchanges: Array.from(
-                        context.conversation?.exchanges ?? []
-                      ),
-                    }
-
-                    // Errors are considered their own
-                    // exchanges because they have no end_of_stream signal.
-                    // It is assumed `info` messages are followed up
-                    // with an end_of_stream signal.
-                    if ('error' in event.response) {
-                      conversation.exchanges.push({
-                        responses: [event.response],
-                        deltasAggregated: '',
-                      })
-                      return {
-                        conversation,
-                        lastMessageId,
-                        awaitingResponse: false,
-                        attachmentsLoadedForCurrentPrompt: true,
-                        pendingBackendShutdown: responseComplete
-                          ? false
-                          : context.pendingBackendShutdown,
-                      }
-                    }
-
-                    if (isAttachmentsLoadedMessage(event.response)) {
-                      return {
-                        lastMessageId,
-                        attachmentsLoadedForCurrentPrompt: true,
-                        awaitingResponse: context.awaitingResponse,
-                        pendingBackendShutdown: responseComplete
-                          ? false
-                          : context.pendingBackendShutdown,
-                      }
-                    }
-
-                    let lastExchange: Exchange | undefined =
-                      conversation.exchanges[conversation.exchanges.length - 1]
-
-                    if (lastExchange === undefined) {
-                      lastExchange = {
-                        responses: [event.response],
-                        deltasAggregated: '',
-                      }
-                      conversation.exchanges.push(lastExchange)
-
-                      // OPTIMIZATION: `delta` responses are aggregated instead
-                      // of being included in the responses list.
-                    } else if ('delta' in event.response) {
-                      lastExchange.deltasAggregated +=
-                        event.response.delta.delta
-                    } else {
-                      lastExchange.responses.push(event.response)
-                    }
-
-                    if ('end_of_stream' in event.response) {
-                      conversation.exchanges[
-                        conversation.exchanges.length - 1
-                      ] = compactAppliedEdits(lastExchange)
-                    }
-
-                    // This sucks but must be done because we can't
-                    // enumerate the message types.
-                    const r = event.response
-                    const ts: TypeVariant<MlCopilotServerMessage>[] = [
-                      'info',
-                      'error',
-                      'end_of_stream',
-                      'session_data',
-                      'conversation_id',
-                      'delta',
-                      'tool_output',
-                      'reasoning',
-                      'files',
-                      'replay',
-                    ]
-                    const lastMessageType:
-                      | TypeVariant<MlCopilotServerMessage>
-                      | undefined = ts.find((t) => t in r)
-
-                    // Defensive: possible we hit messages we don't handle -
-                    // don't add to context!
-                    if (lastMessageType === undefined) {
-                      return context
-                    }
-
-                    return {
-                      conversation,
-                      lastMessageId,
-                      lastMessageType,
-                      awaitingResponse: responseComplete
-                        ? false
-                        : context.awaitingResponse,
-                      pendingBackendShutdown: responseComplete
-                        ? false
-                        : context.pendingBackendShutdown,
-                    }
-                  }),
+                  'receiveResponse',
                 ],
               },
             },
