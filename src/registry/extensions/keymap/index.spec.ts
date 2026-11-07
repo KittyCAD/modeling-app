@@ -7,6 +7,7 @@ import {
   Slot,
 } from '@kittycad/registry'
 import type { Command } from '@src/lib/commandTypes'
+import savingExtension from '@src/lib/save/registry'
 import editorsExtension from '@src/lib/editors/registry'
 import { editorsService } from '@src/lib/editors/registry/contract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -55,6 +56,54 @@ const testFileOperations = {} as FileOperationsRegistryService
 vi.mock('@src/registry/extensions/keymap/persistence', () => persistenceMocks)
 
 describe('keymap extension', () => {
+  it('leaves save with the focused contributed editor instead of invoking legacy save', async () => {
+    await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
+    const send = vi.fn()
+    const writeFile = vi.fn().mockResolvedValue(undefined)
+    const registry = createRegistryWithKeymapItems(
+      [
+        {
+          id: 'legacy-save',
+          title: 'Legacy save',
+          source: 'test',
+          command: 'legacy-save',
+          keystrokes: ['mod+s'],
+          when: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        },
+      ],
+      {
+        send,
+        extraItems: [editorsExtension, savingExtension],
+        fileOperations: { ...testFileOperations, writeFile },
+      }
+    )
+    const editor = registry
+      .get(editorsService)
+      .openEditor('/notes.txt', 'save me')
+    document.body.append(editor.view.dom)
+    try {
+      editor.view.focus()
+      editor.view.contentDOM.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 's',
+          code: 'KeyS',
+          keyCode: 83,
+          ctrlKey: !/Mac/.test(navigator.platform),
+          metaKey: /Mac/.test(navigator.platform),
+          bubbles: true,
+          cancelable: true,
+        })
+      )
+      await vi.waitFor(() =>
+        expect(writeFile).toHaveBeenCalledWith('/notes.txt', 'save me')
+      )
+      expect(send).not.toHaveBeenCalled()
+    } finally {
+      editor.view.dom.remove()
+      registry[Symbol.dispose]()
+    }
+  })
+
   it('keeps undo and redo with the focused editor', async () => {
     await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
     const send = vi.fn()
@@ -1033,6 +1082,7 @@ describe('keymap extension', () => {
 function createRegistryWithKeymapItems(
   items: Parameters<typeof provideKeymapItem>[0][],
   options: {
+    fileOperations?: FileOperationsRegistryService
     commands?: Command[]
     send?: CommandSystemService['send']
     extraItems?: Parameters<Registry['configure']>[0]
@@ -1048,7 +1098,10 @@ function createRegistryWithKeymapItems(
     defineRegistryItem({
       id: 'test-file-operations',
       providesServices: [
-        provideService(fileOperationsService, testFileOperations),
+        provideService(
+          fileOperationsService,
+          options.fileOperations ?? testFileOperations
+        ),
       ],
     }),
     keymapExtension,
