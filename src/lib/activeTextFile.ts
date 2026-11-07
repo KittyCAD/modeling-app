@@ -68,6 +68,16 @@ const outgoingWrites = new Map<
 const fileGenerations = new Map<string, number>()
 let pendingWriteTimeout: ReturnType<typeof setTimeout> | undefined
 
+/** Include debounced and failed writes when deciding whether a remote refresh is safe. */
+export function hasPendingActiveTextFileWrite(projectPath: string): boolean {
+  const belongs = (path: string) =>
+    path.startsWith(`${projectPath}/`) || path.startsWith(`${projectPath}\\`)
+  return (
+    Boolean(pendingWrite && belongs(pendingWrite.path)) ||
+    [...outgoingWrites.keys()].some(belongs)
+  )
+}
+
 async function performWrite(
   fileOperations: FileOperationsRegistryService,
   path: string,

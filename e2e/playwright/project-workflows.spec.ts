@@ -467,6 +467,8 @@ for (const kind of ['local', 'cloud'] as const) {
         await storage.refresh()
         const card = (title: string) =>
           storage.home.projectCard.filter({ hasText: title })
+        const originalHref = await card('Rename me').getAttribute('href')
+        if (!originalHref) throw new Error('Missing project link')
         await card('Rename me').click({ button: 'right' })
         await page.getByTestId('project-card-context-rename').click()
         await page.getByTestId('project-rename-input').fill('Renamed project')
@@ -474,12 +476,10 @@ for (const kind of ['local', 'cloud'] as const) {
         await expect(card('Renamed project')).toBeVisible()
         await expect(card('Rename me')).toBeHidden()
         await expect(page.getByTestId('project-rename-input')).toBeHidden()
-        // Directory libraries synchronize their physical directory name after metadata changes.
-        if (kind === 'local')
-          await expect(card('Renamed project')).toHaveAttribute(
-            'href',
-            /renamed-project/
-          )
+        await expect(card('Renamed project')).toHaveAttribute(
+          'href',
+          originalHref
+        )
         await storage.home.openProject('Renamed project')
         await expectEditor(page, blankCode)
         await storage.refresh()

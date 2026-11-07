@@ -31,6 +31,7 @@ export async function uploadedProject(route: Route) {
   const metadata = JSON.parse(await metadataPart.text()) as {
     title: string
     expected_revision?: string
+    deleted_paths?: string[]
   }
   return { title: metadata.title, files, metadata }
 }
@@ -73,6 +74,8 @@ export async function mockCloudStorage(
   const creates: CloudProject[] = []
   const uploads: string[] = []
   const downloads: string[] = []
+  const deletions: { parentRevision: string; paths: string[] }[] = []
+  const reads = { metadata: 0, downloads: 0 }
   await context.route('**/user', (route) =>
     route.fulfill({
       json: {
@@ -118,6 +121,7 @@ export async function mockCloudStorage(
         ),
       })
     if (url.pathname.endsWith('/download')) {
+      reads.downloads += 1
       downloads.push(requestedProject.id)
       return route.fulfill({
         contentType: 'application/zip',
@@ -132,6 +136,11 @@ export async function mockCloudStorage(
           status: 409,
           json: { message: 'Revision changed' },
         })
+      if (upload.metadata.deleted_paths?.length)
+        deletions.push({
+          parentRevision: requestedProject.revision,
+          paths: upload.metadata.deleted_paths,
+        })
       requestedProject.files = upload.files
       requestedProject.title = upload.title
       requestedProject.revision = String(Number(requestedProject.revision) + 1)
@@ -140,7 +149,8 @@ export async function mockCloudStorage(
       projects.splice(projects.indexOf(requestedProject), 1)
       return route.fulfill({ status: 204 })
     }
+    if (request.method() === 'GET') reads.metadata += 1
     return route.fulfill({ json: cloudProjectResponse(requestedProject) })
   })
-  return { project, projects, uploads, creates, downloads }
+  return { project, projects, uploads, creates, downloads, reads, deletions }
 }

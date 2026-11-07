@@ -71,6 +71,25 @@ beforeEach(async () => {
   mod = await importModule()
 })
 
+it('protects debounced and outstanding text edits from remote project refreshes', async () => {
+  const gate = Promise.withResolvers<undefined>()
+  mocks.writeFile.mockReturnValueOnce(gate.promise)
+  mod.activeTextFileSignal.value = {
+    path: '/project/note.md',
+    name: 'note.md',
+    text: '',
+    status: 'ready',
+  }
+  mod.scheduleActiveTextFileWrite(fileOperations, '/project/note.md', 'unsaved')
+  expect(mod.hasPendingActiveTextFileWrite('/project')).toBe(true)
+  expect(mod.hasPendingActiveTextFileWrite('/project-copy')).toBe(false)
+  const write = mod.flushActiveTextFileWrite()
+  expect(mod.hasPendingActiveTextFileWrite('/project')).toBe(true)
+  gate.resolve(undefined)
+  await write
+  expect(mod.hasPendingActiveTextFileWrite('/project')).toBe(false)
+})
+
 afterEach(() => {
   vi.useRealTimers()
 })
