@@ -3,6 +3,7 @@
 // such as whether we need to create a new variable for it.
 // This function extracts the value field from those arg payloads and returns
 import type { Command, KclCommandValue } from '@src/lib/commandTypes'
+import { unsafeTypedKeys } from '@src/lib/utils'
 
 // The arg object with all its field as natural values that the command to be executed will expect.
 export function getCommandArgumentKclValuesOnly(args: Record<string, unknown>) {
@@ -79,15 +80,10 @@ export function isKclCommandValue(value: unknown): value is KclCommandValue {
 }
 
 export function enumOptions<Value extends string>(
-  values: readonly Value[],
-  defaultValue: Value,
-  labels: Partial<Record<Value, string>> = {}
+  labels: Record<Value, string>
 ) {
-  return values
-    .map((value) => ({
-      name: labels[value] ?? value,
-      value,
-      isCurrent: value === defaultValue,
-    }))
-    .sort((a, b) => Number(b.isCurrent) - Number(a.isCurrent))
+  return unsafeTypedKeys(labels).map((value) => ({
+    name: labels[value],
+    value,
+  }))
 }
