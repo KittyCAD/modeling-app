@@ -1,7 +1,7 @@
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import { doAndWaitForImageDiff } from '@e2e/playwright/test-utils'
+import { resetView } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import {
@@ -12,24 +12,6 @@ import {
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
-
-// Restore the camera used when these files were preloaded.
-async function resetView(scene: SceneFixture) {
-  // The camera may already face this way, so no image change is guaranteed.
-  await scene.moveCameraTo({ x: 0, y: -128, z: 64 }, undefined, {
-    waitForImageChange: false,
-  })
-  await doAndWaitForImageDiff(scene.streamWrapper, async () => {
-    await scene.streamWrapper.click({
-      button: 'right',
-      position: { x: 10, y: 100 },
-    })
-    await scene.page
-      .getByTestId('view-controls-menu')
-      .getByRole('button', { name: 'Reset view' })
-      .click()
-  })
-}
 
 test.describe('Point-and-click tests', { tag: '@web' }, () => {
   test.use({

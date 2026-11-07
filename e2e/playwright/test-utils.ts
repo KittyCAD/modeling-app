@@ -58,6 +58,7 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
@@ -1438,6 +1439,24 @@ export function testsInputPath(fileName: string): string {
 
 export function kclSamplesPath(fileName: string): string {
   return path.join('public', 'kcl-samples', fileName)
+}
+
+// Restore the camera used when a model is initially loaded.
+export async function resetView(scene: SceneFixture) {
+  // The camera may already face this way, so no image change is guaranteed.
+  await scene.moveCameraTo({ x: 0, y: -128, z: 64 }, undefined, {
+    waitForImageChange: false,
+  })
+  await doAndWaitForImageDiff(scene.streamWrapper, async () => {
+    await scene.streamWrapper.click({
+      button: 'right',
+      position: { x: 10, y: 100 },
+    })
+    await scene.page
+      .getByTestId('view-controls-menu')
+      .getByRole('button', { name: 'Reset view' })
+      .click()
+  })
 }
 
 export async function doAndWaitForImageDiff(
