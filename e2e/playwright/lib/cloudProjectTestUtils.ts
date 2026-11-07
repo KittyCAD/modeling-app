@@ -120,7 +120,10 @@ export async function routeCloudProjects(
     remoteArchives?: Map<string, Buffer>
     remoteListGate?: RemoteListGate
     brokenArchiveProjectIds?: Iterable<string>
-    createProject?: (postData: string) => MaybePromise<CloudProject>
+    createProject?: (
+      postData: string,
+      route: Route
+    ) => MaybePromise<CloudProject>
     updateProject?: (
       request: ProjectRequest
     ) => MaybePromise<JsonRouteResponse | undefined>
@@ -178,7 +181,7 @@ export async function routeCloudProjects(
     if (pathname === '/user/projects' && request.method() === 'POST') {
       const postData = request.postData() || ''
       calls.creates.push(postData)
-      const createdProject = await options.createProject?.(postData)
+      const createdProject = await options.createProject?.(postData, route)
       await fulfillJson(
         route,
         cloudProjectResponse(

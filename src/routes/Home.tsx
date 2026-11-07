@@ -115,7 +115,7 @@ function writeHomeProjectCardDragData(
   project: HomeProjectEntry
 ) {
   dataTransfer.clearData()
-  dataTransfer.effectAllowed = 'move'
+  dataTransfer.effectAllowed = 'copy'
   dataTransfer.setData(
     HOME_PROJECT_CARD_DRAG_MIME,
     JSON.stringify({
@@ -146,13 +146,13 @@ function readHomeProjectCardDragData(
 interface UseProjectLibraryDragOptions {
   projects: HomeProjectEntry[]
   projectActions: HomeProjectActionsService
-  onMoveToLibrary: (project: HomeProjectEntry, libraryId: string) => void
+  onCloneToLibrary: (project: HomeProjectEntry, libraryId: string) => void
 }
 
 function useProjectLibraryDrag({
   projects,
   projectActions,
-  onMoveToLibrary,
+  onCloneToLibrary,
 }: UseProjectLibraryDragOptions): ProjectLibraryDragController {
   const [draggedProjectId, setDraggedProjectId] = useState<string>()
   const [dragOverLibraryId, setDragOverLibraryId] = useState<string>()
@@ -168,31 +168,31 @@ function useProjectLibraryDrag({
     setDraggedProjectId(undefined)
     setDragOverLibraryId(undefined)
   }, [])
-  const canMoveProjectToLibrary = useCallback(
+  const canCloneProjectToLibrary = useCallback(
     (project: HomeProjectEntry | undefined, library: ProjectLibrary) =>
       Boolean(
         project &&
           projectActions
-            .getMoveToLibraryTargets(project)
+            .getCloneToLibraryTargets(project)
             .some((target) => target.library.id === library.id)
       ),
     [projectActions]
   )
   const canDropOnLibrary = useCallback(
     (library: ProjectLibrary) =>
-      canMoveProjectToLibrary(draggedProject, library),
-    [canMoveProjectToLibrary, draggedProject]
+      canCloneProjectToLibrary(draggedProject, library),
+    [canCloneProjectToLibrary, draggedProject]
   )
   const getProjectCardDragProps = useCallback(
     (project: HomeProjectEntry): ProjectCardDragProps => {
-      if (!projectActions.canMoveToLibrary(project)) {
+      if (!projectActions.canCloneToLibrary(project)) {
         return { draggable: false }
       }
 
       return {
         draggable: true,
         onDragStart: (event) => {
-          if (!projectActions.canMoveToLibrary(project)) {
+          if (!projectActions.canCloneToLibrary(project)) {
             event.preventDefault()
             return
           }
@@ -201,7 +201,7 @@ function useProjectLibraryDrag({
           writeHomeProjectCardDragData(event.dataTransfer, project)
           setDragPreview(event.dataTransfer, {
             id: HOME_PROJECT_CARD_DRAG_PREVIEW_ID,
-            text: `Move ${projectDisplayName}`,
+            text: `Clone ${projectDisplayName}`,
             offsetX: 12,
             offsetY: 12,
           })
@@ -221,7 +221,7 @@ function useProjectLibraryDrag({
         }
 
         event.preventDefault()
-        event.dataTransfer.dropEffect = 'move'
+        event.dataTransfer.dropEffect = 'copy'
         setDragOverLibraryId(library.id)
       },
       onDragLeave: (event) => {
@@ -245,24 +245,24 @@ function useProjectLibraryDrag({
           readHomeProjectCardDragData(event.dataTransfer)?.projectId ??
           draggedProject?.id
         const project = projects.find((entry) => entry.id === droppedProjectId)
-        if (!project || !canMoveProjectToLibrary(project, library)) {
+        if (!project || !canCloneProjectToLibrary(project, library)) {
           finishProjectDrag()
           return
         }
 
         event.preventDefault()
         event.stopPropagation()
-        event.dataTransfer.dropEffect = 'move'
-        onMoveToLibrary(project, library.id)
+        event.dataTransfer.dropEffect = 'copy'
+        onCloneToLibrary(project, library.id)
         finishProjectDrag()
       },
     }),
     [
       canDropOnLibrary,
-      canMoveProjectToLibrary,
+      canCloneProjectToLibrary,
       draggedProject?.id,
       finishProjectDrag,
-      onMoveToLibrary,
+      onCloneToLibrary,
       projects,
     ]
   )
@@ -402,9 +402,9 @@ const Home = () => {
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
-  const moveProjectToLibrary = useCallback(
+  const cloneProjectToLibrary = useCallback(
     (project: HomeProjectEntry, libraryId?: string) => {
-      if (!homeProjectActions.canMoveToLibrary(project)) {
+      if (!homeProjectActions.canCloneToLibrary(project)) {
         return
       }
 
@@ -412,7 +412,7 @@ const Home = () => {
         type: 'Find and select command',
         data: {
           groupId: 'projects',
-          name: 'Move project',
+          name: 'Clone project',
           argDefaultValues: {
             project: project.id,
             ...(libraryId ? { library: libraryId } : {}),
@@ -425,7 +425,7 @@ const Home = () => {
   const projectLibraryDrag = useProjectLibraryDrag({
     projects: homeProjectEntries,
     projectActions: homeProjectActions,
-    onMoveToLibrary: moveProjectToLibrary,
+    onCloneToLibrary: cloneProjectToLibrary,
   })
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
@@ -771,7 +771,7 @@ const Home = () => {
             fileOperations={app.fileOperations}
             showCloudSyncUi
             showSourceStatusBadges={false}
-            onMoveToLibrary={moveProjectToLibrary}
+            onCloneToLibrary={cloneProjectToLibrary}
             projectLibraryEmptyTestId="project-library-empty"
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
           />
@@ -788,7 +788,7 @@ const Home = () => {
             projectActions={homeProjectActions}
             fileOperations={app.fileOperations}
             showCloudSyncUi
-            onMoveToLibrary={moveProjectToLibrary}
+            onCloneToLibrary={cloneProjectToLibrary}
             projectLibraryDrag={projectLibraryDrag}
             projectLibraryTypes={projectLibraryTypes}
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
@@ -834,7 +834,7 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   projectActions: HomeProjectActionsService
   fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
-  onMoveToLibrary: (project: HomeProjectEntry) => void
+  onCloneToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
@@ -851,7 +851,7 @@ function ProjectLibraryOverview({
   projectActions,
   fileOperations,
   showCloudSyncUi,
-  onMoveToLibrary,
+  onCloneToLibrary,
   projectLibraryDrag,
   projectLibraryTypes,
   ...rest
@@ -906,7 +906,7 @@ function ProjectLibraryOverview({
                   projectActions={projectActions}
                   fileOperations={fileOperations}
                   showCloudSyncUi={showCloudSyncUi}
-                  onMoveToLibrary={onMoveToLibrary}
+                  onCloneToLibrary={onCloneToLibrary}
                   projectLibraryDrag={projectLibraryDrag}
                   projectLibraryTypes={projectLibraryTypes}
                 />
@@ -973,7 +973,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projectActions: HomeProjectActionsService
   fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
-  onMoveToLibrary: (project: HomeProjectEntry) => void
+  onCloneToLibrary: (project: HomeProjectEntry) => void
   showSourceStatusBadges?: boolean
   projectLibraryEmptyTestId?: string
 }
@@ -989,7 +989,7 @@ function ProjectGrid({
   projectActions,
   fileOperations,
   showCloudSyncUi,
-  onMoveToLibrary,
+  onCloneToLibrary,
   showSourceStatusBadges = true,
   projectLibraryEmptyTestId,
   ...rest
@@ -1015,7 +1015,7 @@ function ProjectGrid({
               projectActions={projectActions}
               fileOperations={fileOperations}
               showCloudSyncUi={showCloudSyncUi}
-              onMoveToLibrary={onMoveToLibrary}
+              onCloneToLibrary={onCloneToLibrary}
               showSourceStatusBadges={showSourceStatusBadges}
             />
           ) : (

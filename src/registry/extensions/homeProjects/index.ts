@@ -33,7 +33,7 @@ import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
   type HomeProjectEntryContribution,
-  type HomeProjectMoveToLibraryTarget,
+  type HomeProjectCloneToLibraryTarget,
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
@@ -176,24 +176,25 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       : []
   }
 
-  const getMoveToLibraryTargets = (
+  const getCloneToLibraryTargets = (
     project: HomeProjectEntry
-  ): HomeProjectMoveToLibraryTarget[] => {
+  ): HomeProjectCloneToLibraryTarget[] => {
     const projectLibraryIds = new Set(project.libraryIds ?? [])
     const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
     const libraries = getConfiguredProjectLibraries()
-    const targets: HomeProjectMoveToLibraryTarget[] = []
+    const targets: HomeProjectCloneToLibraryTarget[] = []
     const targetLibraryIds = new Set<string>()
 
     for (const sourceLibrary of getProjectLibraries(project)) {
-      const moveFrom = getProjectLibraryOperation(
+      const cloneFrom = getProjectLibraryOperation(
         libraryTypes.get(sourceLibrary.type),
         sourceLibrary,
-        'moveProjectFrom'
+        'cloneProjectFrom'
       )
       if (
-        !moveFrom ||
-        moveFrom.canMoveProject?.({ library: sourceLibrary, project }) === false
+        !cloneFrom ||
+        cloneFrom.canCloneProject?.({ library: sourceLibrary, project }) ===
+          false
       ) {
         continue
       }
@@ -206,14 +207,14 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
           continue
         }
 
-        const moveTo = getProjectLibraryOperation(
+        const cloneTo = getProjectLibraryOperation(
           libraryTypes.get(library.type),
           library,
-          'moveProjectTo'
+          'cloneProjectTo'
         )
         if (
-          !moveTo ||
-          moveTo.canReceiveProject?.({
+          !cloneTo ||
+          cloneTo.canReceiveProject?.({
             library,
             sourceLibrary,
             project,
@@ -233,11 +234,11 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     return targets
   }
 
-  const getMoveToLibraryTarget = (
+  const getCloneToLibraryTarget = (
     project: HomeProjectEntry,
     targetLibraryId: string
   ) =>
-    getMoveToLibraryTargets(project).find(
+    getCloneToLibraryTargets(project).find(
       (target) => target.library.id === targetLibraryId
     )
 
@@ -269,7 +270,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       Boolean(
         project.readWriteAccess && getProjectOperation(project, 'deleteProject')
       ),
-    canMoveToLibrary: (project) => getMoveToLibraryTargets(project).length > 0,
+    canCloneToLibrary: (project) =>
+      getCloneToLibraryTargets(project).length > 0,
     canReviewDuplicateRealizations: (project) => false,
     canSeparateProjectCopies: (project) =>
       Boolean(
@@ -347,29 +349,29 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         `Successfully deleted "${getHomeProjectDisplayName(project)}"`
       )
     },
-    getMoveToLibraryTargets,
-    moveToLibrary: async (project, targetLibraryId) => {
-      const target = getMoveToLibraryTarget(project, targetLibraryId)
+    getCloneToLibraryTargets,
+    cloneToLibrary: async (project, targetLibraryId, options) => {
+      const target = getCloneToLibraryTarget(project, targetLibraryId)
       if (!target) {
         return undefined
       }
 
       const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
-      const moveFrom = getProjectLibraryOperation(
+      const cloneFrom = getProjectLibraryOperation(
         libraryTypes.get(target.sourceLibrary.type),
         target.sourceLibrary,
-        'moveProjectFrom'
+        'cloneProjectFrom'
       )
-      const moveTo = getProjectLibraryOperation(
+      const cloneTo = getProjectLibraryOperation(
         libraryTypes.get(target.library.type),
         target.library,
-        'moveProjectTo'
+        'cloneProjectTo'
       )
-      if (!moveFrom || !moveTo) {
+      if (!cloneFrom || !cloneTo) {
         return undefined
       }
 
-      const source = await moveFrom.run({
+      const source = await cloneFrom.run({
         library: target.sourceLibrary,
         project,
         targetLibrary: target.library,
@@ -378,14 +380,15 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return undefined
       }
 
-      const result = await moveTo.run({
+      const result = await cloneTo.run({
         library: target.library,
         sourceLibrary: target.sourceLibrary,
         project,
         source,
+        requestedProjectTitle: options?.title,
       })
       toast.success(
-        `Moved "${getHomeProjectDisplayName(project)}" to "${target.library.title}".`
+        `Created a clone of "${getHomeProjectDisplayName(project)}" in "${target.library.title}".`
       )
 
       return result?.defaultFile
@@ -447,66 +450,69 @@ const homeProjectEntryViewModels = defineRegistryItemFactory((ctx) => {
     ],
   }
 }, 'home-projects.view-models')
-const moveProjectToLibraryProjectMenuItem = defineRegistryItemFactory((ctx) => {
-  const findProject = (projectPath: string) =>
-    ctx.valueSpecs
-      .get(homeProjectEntriesValueSpec)
-      .find(
-        (entry) =>
-          entry.localProjectPath === projectPath ||
-          (entry.remoteProjectId &&
-            ctx.services
-              .get(cloudStorageService)
-              .pathFor(entry.remoteProjectId) === projectPath)
-      )
+const cloneProjectToLibraryProjectMenuItem = defineRegistryItemFactory(
+  (ctx) => {
+    const findProject = (projectPath: string) =>
+      ctx.valueSpecs
+        .get(homeProjectEntriesValueSpec)
+        .find(
+          (entry) =>
+            entry.localProjectPath === projectPath ||
+            (entry.remoteProjectId &&
+              ctx.services
+                .get(cloudStorageService)
+                .pathFor(entry.remoteProjectId) === projectPath)
+        )
 
-  return {
-    id: 'home-projects.move-to-library-project-menu-item',
-    provides: [
-      provide(
-        projectExplorerProjectMenuItemsValueSpec,
-        {
-          id: 'home-projects.move-to-library-project-menu-item',
-          order: 10,
-          label: 'Move project',
-          dataTestId: 'project-sidebar-move-to-library',
-          isVisible: ({ projectPath }) => {
-            const project = findProject(projectPath)
-            const actions = ctx.services.optional(homeProjectActionsService)
+    return {
+      id: 'home-projects.clone-to-library-project-menu-item',
+      provides: [
+        provide(
+          projectExplorerProjectMenuItemsValueSpec,
+          {
+            id: 'home-projects.clone-to-library-project-menu-item',
+            order: 10,
+            label: 'Clone project',
+            dataTestId: 'project-sidebar-clone-to-library',
+            isVisible: ({ projectPath }) => {
+              const project = findProject(projectPath)
+              const actions = ctx.services.optional(homeProjectActionsService)
 
-            return Boolean(project && actions?.canMoveToLibrary(project))
-          },
-          onSelect: ({ projectPath }) => {
-            const project = findProject(projectPath)
-            const commandSystem = ctx.services.optional(commandSystemService)
-            if (!project || !commandSystem) {
-              return
-            }
+              return Boolean(project && actions?.canCloneToLibrary(project))
+            },
+            onSelect: ({ projectPath }) => {
+              const project = findProject(projectPath)
+              const commandSystem = ctx.services.optional(commandSystemService)
+              if (!project || !commandSystem) {
+                return
+              }
 
-            commandSystem.send({
-              type: 'Find and select command',
-              data: {
-                groupId: 'projects',
-                name: 'Move project',
-                argDefaultValues: {
-                  project: project.id,
+              commandSystem.send({
+                type: 'Find and select command',
+                data: {
+                  groupId: 'projects',
+                  name: 'Clone project',
+                  argDefaultValues: {
+                    project: project.id,
+                  },
                 },
-              },
-            })
+              })
+            },
           },
-        },
-        { key: 'home-projects.move-to-library-project-menu-item' }
-      ),
-    ],
-  }
-}, 'home-projects.move-to-library-project-menu-item')
+          { key: 'home-projects.clone-to-library-project-menu-item' }
+        ),
+      ],
+    }
+  },
+  'home-projects.clone-to-library-project-menu-item'
+)
 
 const homeProjectsExtension = defineRegistryItem({
   id: 'home-projects',
   uses: [
     homeProjectActions,
     homeProjectEntryViewModels,
-    moveProjectToLibraryProjectMenuItem,
+    cloneProjectToLibraryProjectMenuItem,
   ],
 })
 

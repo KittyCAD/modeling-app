@@ -116,13 +116,13 @@ describe('PublishDialog', () => {
         <PublishDialog
           onSubmit={vi.fn()}
           accountUrl="https://zoo.dev/account"
-          willMoveProjectToCloud={true}
+          willCloneProjectToCloud={true}
         />
       </Popover>
     )
 
     const cloudMoveWarning = screen.getByText(
-      /Publishing will also move this project from its current folder to your Personal Cloud library/
+      /Publishing creates a new project in Personal Cloud/
     )
     expect(cloudMoveWarning).toBeInTheDocument()
     expect(cloudMoveWarning).toHaveClass(
