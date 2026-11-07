@@ -368,11 +368,8 @@ sketch002 = startSketchOn(plane001)
       'loft001 = loft([sketch001, sketch002], vDegree = 3, bodyType = SURFACE)'
 
     async function selectSketches() {
-      const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
       await editor.selectText(circleCode1)
-      await page.keyboard.down(multiCursorKey)
-      await page.getByText(circleCode2).click()
-      await page.keyboard.up(multiCursorKey)
+      await page.getByText(circleCode2).click({ modifiers: ['ControlOrMeta'] })
     }
 
     await test.step(`Fill the modeling dialog without preselected sketches`, async () => {
