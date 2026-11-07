@@ -1,8 +1,7 @@
-import {
-  DUPLICATE_PROJECT_TEMPORARY_PREFIX,
-  PROJECT_SETTINGS_FILE_NAME,
-} from '@src/lib/constants'
-import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
+import { writeFileWithParents } from '@src/lib/fileSystem/writeFile'
+import { createStagedProject } from '@src/lib/fileSystem/createStagedProject'
+import { getRelativePathIfContained } from '@src/lib/paths'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import {
   getProjectDirectoryNameFromTitle,
@@ -38,17 +37,12 @@ function getProjectRelativeCurrentFilePath({
     return undefined
   }
 
-  const relativeCurrentFilePath = fsZds.relative(sourcePath, currentFilePath)
-  const isContainedFile =
-    relativeCurrentFilePath &&
-    relativeCurrentFilePath !== '..' &&
-    !relativeCurrentFilePath.startsWith(`..${fsZds.sep}`) &&
-    !relativeCurrentFilePath.startsWith('/') &&
-    !relativeCurrentFilePath.startsWith('\\') &&
-    !/^[a-zA-Z]:/.test(relativeCurrentFilePath)
-
+  const relativeCurrentFilePath = getRelativePathIfContained(
+    sourcePath,
+    currentFilePath
+  )
   if (
-    !isContainedFile ||
+    !relativeCurrentFilePath ||
     relativeCurrentFilePath === PROJECT_SETTINGS_FILE_NAME
   ) {
     return undefined
@@ -64,8 +58,8 @@ async function writeProjectRelativeFile(
   contents: string
 ) {
   const filePath = fsZds.join(projectPath, relativePath)
-  await ensureDirectory(fileOperations, fsZds.dirname(filePath))
-  await fileOperations.writeFile(filePath, contents)
+
+  await writeFileWithParents(fileOperations, filePath, contents)
 }
 
 export async function duplicateProjectInDirectory({
@@ -114,40 +108,33 @@ export async function duplicateProjectInDirectory({
     return Promise.reject(duplicatedProjectToml)
   }
 
-  // Copy through a hidden temporary directory so cloud sync only sees the duplicate
-  // after its project metadata no longer points at the source cloud project.
-  const temporaryPath = fsZds.join(
-    projectDirectoryPath,
-    `${DUPLICATE_PROJECT_TEMPORARY_PREFIX}${uuid.v4()}`
-  )
   const targetPath = fsZds.join(projectDirectoryPath, name)
   const relativeCurrentFilePath = getProjectRelativeCurrentFilePath({
     sourcePath: source.path,
     currentFilePath,
   })
-  try {
-    await fileOperations.createDirectory(temporaryPath)
-    await fileOperations.copy(source.path, temporaryPath)
-    // Overlay the editor snapshot on the copy without bypassing source-file
-    // conflict detection or racing its pending autosave.
-    if (relativeCurrentFilePath && currentFileContents !== undefined) {
-      await writeProjectRelativeFile(
-        fileOperations,
-        temporaryPath,
-        relativeCurrentFilePath,
-        currentFileContents
+  await createStagedProject(
+    fileOperations,
+    targetPath,
+    async (temporaryPath) => {
+      await fileOperations.copy(source.path, temporaryPath)
+      // Overlay the editor snapshot on the copy without bypassing source-file
+      // conflict detection or racing its pending autosave.
+      if (relativeCurrentFilePath && currentFileContents !== undefined) {
+        await writeProjectRelativeFile(
+          fileOperations,
+          temporaryPath,
+          relativeCurrentFilePath,
+          currentFileContents
+        )
+      }
+
+      await fileOperations.writeFile(
+        fsZds.join(temporaryPath, PROJECT_SETTINGS_FILE_NAME),
+        duplicatedProjectToml
       )
     }
-
-    await fileOperations.writeFile(
-      fsZds.join(temporaryPath, PROJECT_SETTINGS_FILE_NAME),
-      duplicatedProjectToml
-    )
-    await fileOperations.rename(temporaryPath, targetPath)
-  } catch (error) {
-    await fileOperations.remove(temporaryPath).catch(() => undefined)
-    return Promise.reject(error)
-  }
+  )
 
   return {
     message: `Successfully duplicated "${source.displayName}" as "${title}"`,

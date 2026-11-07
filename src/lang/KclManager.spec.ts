@@ -1,3 +1,4 @@
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { effect, signal } from '@preact/signals-core'
 import { createProjectForTest } from '@src/unitTestUtils'
 import * as screenshot from '@src/lib/screenshot'
@@ -62,6 +63,10 @@ import { defaultNodePath, emptyExecState, parse } from '@src/lang/wasm'
 import { getOperationVariableName } from '@src/lib/operations'
 import { createSceneGraphDelta } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
+function waitForSettingsIdle(actor: SettingsActorType) {
+  return waitFor(actor, (snapshot) => snapshot.matches('idle'))
+}
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void
@@ -320,7 +325,7 @@ describe('KclManager line wrapping settings', () => {
       lineWrappingCompartment.get(kclManager.editorView.state) ===
       EditorView.lineWrapping
     try {
-      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      await waitForSettingsIdle(app.settings.actor)
       const originalSetting =
         app.settings.actor.getSnapshot().context.textEditor.textWrapping
       originalSetting.user = true
@@ -442,7 +447,7 @@ describe('KclManager settings ownership', () => {
   it('updates each editor and its local scene directly from settings', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {
-      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      await waitForSettingsIdle(app.settings.actor)
       const settings = app.settings.get()
       const blink = vi.spyOn(kclManager, 'setCursorBlinking')
       const theme = vi.spyOn(kclManager, 'setEditorTheme')
@@ -482,7 +487,7 @@ describe('KclManager settings ownership', () => {
   it('applies the latest scene settings when an inactive editor becomes active', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {
-      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      await waitForSettingsIdle(app.settings.actor)
       const mocks = mockEngineSettings(kclManager)
       const settings = app.settings.get()
       settings.app.theme.user = Themes.Light
@@ -513,7 +518,7 @@ describe('KclManager settings ownership', () => {
   it('follows replacement settings without resending unchanged engine values', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {
-      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      await waitForSettingsIdle(app.settings.actor)
       const mocks = mockEngineSettings(kclManager)
       kclManager.setSceneSettingsActive(true)
       for (const mock of Object.values(mocks)) mock.mockClear()
@@ -550,9 +555,7 @@ describe('KclManager settings ownership', () => {
       const { app, kclManager } = createKclManagerTestHarness()
       const other = new KclManager('other.kcl', '', kclManager.systemDeps)
       try {
-        await waitFor(app.settings.actor, (snapshot) =>
-          snapshot.matches('idle')
-        )
+        await waitForSettingsIdle(app.settings.actor)
         const mocks = mockEngineSettings(kclManager)
         const otherExecute = vi
           .spyOn(other, 'executeCode')
@@ -584,9 +587,7 @@ describe('KclManager settings ownership', () => {
     async (name) => {
       const { app, kclManager } = createKclManagerTestHarness()
       try {
-        await waitFor(app.settings.actor, (snapshot) =>
-          snapshot.matches('idle')
-        )
+        await waitForSettingsIdle(app.settings.actor)
         const mocks = mockEngineSettings(kclManager)
         kclManager.setSceneSettingsActive(true)
         const grid = vi.spyOn(
@@ -610,9 +611,7 @@ describe('KclManager settings ownership', () => {
     async (mode) => {
       const { app, kclManager } = createKclManagerTestHarness()
       try {
-        await waitFor(app.settings.actor, (snapshot) =>
-          snapshot.matches('idle')
-        )
+        await waitForSettingsIdle(app.settings.actor)
         const controls = kclManager.sceneInfra.camControls
         const projection = vi.spyOn(controls, 'engineCameraProjection', 'set')
         kclManager.modelingState = {
@@ -635,9 +634,7 @@ describe('KclManager settings ownership', () => {
     async (state) => {
       const { app, kclManager } = createKclManagerTestHarness()
       try {
-        await waitFor(app.settings.actor, (snapshot) =>
-          snapshot.matches('idle')
-        )
+        await waitForSettingsIdle(app.settings.actor)
         const mocks = mockEngineSettings(kclManager)
         const pending = createDeferred<KclManager['execState']>()
         mocks.clearScene.mockReturnValue(pending.promise)
@@ -661,7 +658,7 @@ describe('KclManager settings ownership', () => {
   it('waits for a backface cache clear before rendering newer engine settings', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {
-      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      await waitForSettingsIdle(app.settings.actor)
       const mocks = mockEngineSettings(kclManager)
       const pending = createDeferred<KclManager['execState']>()
       mocks.clearScene.mockReturnValue(pending.promise)
@@ -682,7 +679,7 @@ describe('KclManager settings ownership', () => {
   it('restarts subscriptions when a closed manager is reused for another file', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {
-      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      await waitForSettingsIdle(app.settings.actor)
       kclManager.close()
       const settings = app.settings.get()
       settings.textEditor.textWrapping.user = false

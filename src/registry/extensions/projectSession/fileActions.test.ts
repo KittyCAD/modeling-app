@@ -1,3 +1,4 @@
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { posix } from '@chainner/node-path'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import {
@@ -43,17 +44,13 @@ vi.mock('@src/lib/activeTextFile', () => ({
   adoptStorageTextSnapshot: vi.fn(),
 }))
 
-const metadata = (title = 'Project'): Project => ({
-  name: 'project',
-  path: '/project',
-  title,
-  children: [],
-  default_file: '/project/main.kcl',
-  directory_count: 0,
-  kcl_file_count: 1,
-  metadata: null,
-  readWriteAccess: true,
-})
+const metadata = (title = 'Project'): Project =>
+  createProjectForTest('/project', {
+    name: 'project',
+    title,
+    default_file: '/project/main.kcl',
+    kcl_file_count: 1,
+  })
 const registries: Registry[] = []
 afterEach(() => {
   for (const registry of registries.splice(0)) registry[Symbol.dispose]()

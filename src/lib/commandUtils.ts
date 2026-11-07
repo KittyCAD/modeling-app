@@ -1,3 +1,7 @@
+import type {
+  CommandBarActorType,
+  CommandBarMachineEvent,
+} from '@src/machines/commandBarMachine'
 // Some command argument payloads are objects with a value field that is a KCL expression.
 // That object also contains some metadata about what to do with the KCL expression,
 // such as whether we need to create a new variable for it.
@@ -76,4 +80,15 @@ export function isKclCommandValue(value: unknown): value is KclCommandValue {
     'valueAst' in value &&
     'valueCalculated' in value
   )
+}
+
+/** Select a command with optional initial arguments. */
+export function selectCommand(
+  actor: Pick<CommandBarActorType, 'send'>,
+  data: Extract<
+    CommandBarMachineEvent,
+    { type: 'Find and select command' }
+  >['data']
+): void {
+  actor.send({ type: 'Find and select command', data })
 }

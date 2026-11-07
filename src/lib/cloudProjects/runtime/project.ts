@@ -1,3 +1,4 @@
+import { base64ToBytes } from '@src/lib/base64'
 import { projects } from '@kittycad/lib'
 import JSZip from 'jszip'
 
@@ -314,7 +315,7 @@ function coerceJsonFiles(
           requestedFileName,
           requestedData:
             file.encoding === 'base64'
-              ? Uint8Array.from(atob(contents), (char) => char.charCodeAt(0))
+              ? base64ToBytes(contents)
               : new TextEncoder().encode(contents),
         },
       ]

@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-core'
 import { createCloudProjectStorageProvider } from '@src/lib/cloudProjects/storage'
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import type * as ArchiveModule from '@src/lib/cloudProjects/runtime/archive'
 import { parseProjectArchive } from '@src/lib/cloudProjects/runtime/archive'
 import { posix } from '@chainner/node-path'
@@ -121,9 +122,7 @@ describe('memory cloud storage', () => {
     expect(finished).toBe(false)
     expect(storage.saves.value.get('one')?.state).toBe('saving')
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('changed')
     gate.resolve({ ...remote, revision: '2' })
     await write
@@ -180,9 +179,7 @@ describe('memory cloud storage', () => {
       gate.reject(new api.CloudApiError(409, 'Revision changed'))
       await first
       await canceled
-      expect(
-        new TextDecoder().decode(await storage.operations.readFile(file))
-      ).toBe('cloud truth')
+      expect(await readTextFile(storage.operations, file)).toBe('cloud truth')
       expect(api.updateRemoteProject).toHaveBeenCalledOnce()
       expect(storage.saves.value.get('one')?.state).toBe('saved')
       await storage.operations.writeFile(file, 'fresh edit')
@@ -205,9 +202,7 @@ describe('memory cloud storage', () => {
     })
     expect(storage.saves.value.get('one')?.state).toBe('failed')
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('unsaved')
     await storage.retry('one')
     expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
@@ -275,9 +270,7 @@ describe('memory cloud storage', () => {
       )
       expect(await storage.operations.exists(target)).toBe(false)
       expect(
-        new TextDecoder().decode(
-          await storage.operations.readFile(posix.join(root, 'main.kcl'))
-        )
+        await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
       ).toBe('main')
       expect(diskWrite).not.toHaveBeenCalled()
     }
@@ -306,9 +299,7 @@ describe('memory cloud storage', () => {
     gate.resolve({ ...remote, revision: '2' })
     await Promise.all([first, second])
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('second')
     expect(
       vi
@@ -360,9 +351,7 @@ describe('memory cloud storage', () => {
       expect.objectContaining({ deletedPaths: ['main.kcl'] })
     )
     expect(await storage.operations.exists(source)).toBe(false)
-    expect(
-      new TextDecoder().decode(await storage.operations.readFile(destination))
-    ).toBe('original')
+    expect(await readTextFile(storage.operations, destination)).toBe('original')
     expect(storage.saves.value.get('one')?.state).toBe('failed')
   })
 
@@ -381,9 +370,7 @@ describe('memory cloud storage', () => {
         'project.toml',
       ])
       expect(
-        new TextDecoder().decode(
-          await args.fileOperations.readFile(posix.join(root, 'main.kcl'))
-        )
+        await readTextFile(args.fileOperations, posix.join(root, 'main.kcl'))
       ).toBe('original')
       return { remoteProjectId: 'one' }
     })
@@ -590,9 +577,7 @@ describe('memory cloud storage', () => {
       'preserve unsaved changes'
     )
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('unsaved')
     expect(api.downloadRemoteProjectArchive).not.toHaveBeenCalled()
     expect(storage.saves.value.get('one')?.state).toBe('failed')
@@ -614,9 +599,7 @@ describe('memory cloud storage', () => {
       'does not match the selected version files'
     )
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('original')
     expect(storage.saves.value.get('one')?.state).toBe('saved')
   })
@@ -642,16 +625,12 @@ describe('memory cloud storage', () => {
     await vi.advanceTimersByTimeAsync(7_000)
     expect(storage.projects.value[0].revision).toBe('1')
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('original')
     gate.resolve(new ArrayBuffer(0))
     await refresh
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('original')
     expect(storage.projects.value[0].revision).toBe('1')
   })

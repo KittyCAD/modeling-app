@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { useSignals } from '@preact/signals-react/runtime'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
@@ -70,12 +71,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   }, [layout])
 
   const downloadProjectZip = useCallback(() => {
-    commands.send({
-      type: 'Find and select command',
-      data: {
-        name: 'export-project-zip',
-        groupId: 'application',
-      },
+    selectCommand(commands, {
+      name: 'export-project-zip',
+      groupId: 'application',
     })
   }, [commands])
 

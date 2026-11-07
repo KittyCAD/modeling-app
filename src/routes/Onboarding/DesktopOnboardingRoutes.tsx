@@ -1,4 +1,6 @@
 import { newKclFile } from '@src/lang/project'
+import type { App } from '@src/lib/app'
+import { selectCommand } from '@src/lib/commandUtils'
 import fsZds from '@src/lib/fs-zds'
 import { isErr, reportRejection } from '@src/lib/trap'
 import { Spinner } from '@src/components/Spinner'
@@ -79,21 +81,8 @@ function Welcome() {
     // Navigate to the `main.kcl` file
     app.projectSession
       .openFile(
-        fsZds.join(
-          app.projectLibraries.projectDirectoryPath,
-          projectName,
-          'main.kcl'
-        ),
-        {
-          projectPath: fsZds.join(
-            app.projectLibraries.projectDirectoryPath,
-            projectName
-          ),
-          subRoute: joinRouterPaths(
-            String(PATHS.ONBOARDING),
-            thisOnboardingStatus
-          ),
-        }
+        fsZds.join(app.projectLibraries.projectDirectoryPath, projectName, 'main.kcl'),
+        onboardingProjectOpenOptions(app, projectName, thisOnboardingStatus)
       )
       .catch(reportRejection)
   }, [app, projectName])
@@ -164,11 +153,12 @@ function Scene() {
         await app.projectLibraries.refreshProjects()
         if (cancelled || app.project !== project) return
         await app.projectSession.openFile(paths[0], {
-          projectPath: project.path,
-          subRoute: joinRouterPaths(
-            String(PATHS.ONBOARDING),
+          ...onboardingProjectOpenOptions(
+            app,
+            projectName,
             thisOnboardingStatus
           ),
+          projectPath: project.path,
         })
         if (!cancelled) setIsBlankSceneReady(true)
       })
@@ -315,21 +305,8 @@ function FeatureTreePane() {
     }
     app.projectSession
       .openFile(
-        fsZds.join(
-          app.projectLibraries.projectDirectoryPath,
-          projectName,
-          generatedFileName
-        ),
-        {
-          projectPath: fsZds.join(
-            app.projectLibraries.projectDirectoryPath,
-            projectName
-          ),
-          subRoute: joinRouterPaths(
-            String(PATHS.ONBOARDING),
-            thisOnboardingStatus
-          ),
-        }
+        fsZds.join(app.projectLibraries.projectDirectoryPath, projectName, generatedFileName),
+        onboardingProjectOpenOptions(app, projectName, thisOnboardingStatus)
       )
       .catch(reportRejection)
   }, [app, projectName])
@@ -456,21 +433,8 @@ function PromptToEdit() {
     }
     app.projectSession
       .openFile(
-        fsZds.join(
-          app.projectLibraries.projectDirectoryPath,
-          projectName,
-          'main.kcl'
-        ),
-        {
-          projectPath: fsZds.join(
-            app.projectLibraries.projectDirectoryPath,
-            projectName
-          ),
-          subRoute: joinRouterPaths(
-            String(PATHS.ONBOARDING),
-            thisOnboardingStatus
-          ),
-        }
+        fsZds.join(app.projectLibraries.projectDirectoryPath, projectName, 'main.kcl'),
+        onboardingProjectOpenOptions(app, projectName, thisOnboardingStatus)
       )
       .catch(reportRejection)
   }, [app, projectName])
@@ -521,18 +485,15 @@ function PromptToEditPrompt() {
   )
   useOnModelingCmdGroupReadyOnce(() => {
     setIsReady(true)
-    commands.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'modeling',
-        name: 'Prompt-to-edit',
-        argDefaultValues: {
-          selection: {
-            graphSelections: [],
-            otherSelections: [],
-          } satisfies Selections,
-          prompt,
-        },
+    selectCommand(commands, {
+      groupId: 'modeling',
+      name: 'Prompt-to-edit',
+      argDefaultValues: {
+        selection: {
+          graphSelections: [],
+          otherSelections: [],
+        } satisfies Selections,
+        prompt,
       },
     })
   }, [])
@@ -592,16 +553,7 @@ function PromptToEditResult() {
         await app.projectLibraries.refreshProjects()
         await app.projectSession.openFile(
           fsZds.join(app.projectLibraries.projectDirectoryPath, projectName),
-          {
-            projectPath: fsZds.join(
-              app.projectLibraries.projectDirectoryPath,
-              projectName
-            ),
-            subRoute: joinRouterPaths(
-              String(PATHS.ONBOARDING),
-              thisOnboardingStatus
-            ),
-          }
+          onboardingProjectOpenOptions(app, projectName, thisOnboardingStatus)
         )
       })
       .catch(reportRejection)
@@ -747,3 +699,14 @@ export const desktopOnboardingRoutes: DesktopOnboardingRoute[] = [
     element: onboardingComponents[path],
   })),
 ]
+
+function onboardingProjectOpenOptions(
+  app: App,
+  projectName: string,
+  onboardingStatus: string
+) {
+  return {
+    projectPath: fsZds.join(app.projectLibraries.projectDirectoryPath, projectName),
+    subRoute: joinRouterPaths(String(PATHS.ONBOARDING), onboardingStatus),
+  }
+}

@@ -1,4 +1,6 @@
 import type { EditorSelection } from '@codemirror/state'
+import { getFileRoute } from '@src/lib/paths'
+import { selectCommand } from '@src/lib/commandUtils'
 import type { Diagnostic } from '@codemirror/lint'
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
@@ -82,7 +84,6 @@ import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
 } from '@src/lib/layout'
-import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import {
@@ -1082,7 +1083,7 @@ const OperationItem = ({
             path: targetPath,
             range: providedSourceRange ?? item.sourceRange,
           }
-          await navigate(`${PATHS.FILE}/${encodeURIComponent(targetPath)}`)
+          await navigate(getFileRoute(targetPath))
           return
         }
       }
@@ -1157,9 +1158,9 @@ const OperationItem = ({
           item.type === 'StdLibCall' ||
           (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
         ) {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Appearance', groupId: 'modeling' },
+          selectCommand(commandBarActor, {
+            name: 'Appearance',
+            groupId: 'modeling',
           })
         }
       })
@@ -1171,9 +1172,9 @@ const OperationItem = ({
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Translate', groupId: 'modeling' },
+          selectCommand(commandBarActor, {
+            name: 'Translate',
+            groupId: 'modeling',
           })
         }
       })
@@ -1185,9 +1186,9 @@ const OperationItem = ({
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Rotate', groupId: 'modeling' },
+          selectCommand(commandBarActor, {
+            name: 'Rotate',
+            groupId: 'modeling',
           })
         }
       })
@@ -1199,10 +1200,7 @@ const OperationItem = ({
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Scale', groupId: 'modeling' },
-          })
+          selectCommand(commandBarActor, { name: 'Scale', groupId: 'modeling' })
         }
       })
       .catch((e) => toast.error(e))
@@ -1213,10 +1211,7 @@ const OperationItem = ({
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Clone', groupId: 'modeling' },
-          })
+          selectCommand(commandBarActor, { name: 'Clone', groupId: 'modeling' })
         }
       })
       .catch((e) => toast.error(e))

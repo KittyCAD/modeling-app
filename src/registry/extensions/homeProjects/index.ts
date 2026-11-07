@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   defineRegistryItem,
@@ -9,6 +10,7 @@ import {
 import { computed } from '@preact/signals-core'
 
 import {
+  findHomeProjectByPath,
   getHomeProjectDisplayName,
   homeProjectDisplayNameExists,
 } from '@src/lib/homeProjects'
@@ -453,13 +455,10 @@ const homeProjectEntryViewModels = defineRegistryItemFactory((ctx) => {
 const cloneProjectToLibraryProjectMenuItem = defineRegistryItemFactory(
   (ctx) => {
     const findProject = (projectPath: string) =>
-      ctx.valueSpecs
-        .get(homeProjectEntriesValueSpec)
-        .find(
-          (entry) =>
-            entry.localProjectPath === projectPath ||
-            entry.projectPath === projectPath
-        )
+      findHomeProjectByPath(
+        ctx.valueSpecs.get(homeProjectEntriesValueSpec),
+        projectPath,
+      )
 
     return {
       id: 'home-projects.clone-to-library-project-menu-item',
@@ -484,14 +483,11 @@ const cloneProjectToLibraryProjectMenuItem = defineRegistryItemFactory(
                 return
               }
 
-              commandSystem.send({
-                type: 'Find and select command',
-                data: {
-                  groupId: 'projects',
-                  name: 'Clone project',
-                  argDefaultValues: {
-                    project: project.id,
-                  },
+              selectCommand(commandSystem, {
+                groupId: 'projects',
+                name: 'Clone project',
+                argDefaultValues: {
+                  project: project.id,
                 },
               })
             },

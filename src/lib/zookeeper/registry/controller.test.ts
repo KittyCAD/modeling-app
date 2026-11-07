@@ -1,3 +1,4 @@
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import fsZds from '@src/lib/fs-zds'
 import { waitFor } from '@testing-library/react'
 import { signal, type Signal } from '@preact/signals-core'
@@ -226,18 +227,13 @@ function createHarness({
     getProjectConversationId: vi.fn().mockReturnValue(storeGet),
     saveProjectConversationId: vi.fn().mockResolvedValue(undefined),
   }
-  const project: Project = {
-    children: [],
+  const project: Project = createProjectForTest(projectPath, {
     default_file: `${projectPath}/main.kcl`,
-    directory_count: 0,
     kcl_file_count: 1,
-    metadata: null,
     name: 'bracket',
-    path: projectPath,
     projectId: initialProjectId,
     cloudProjectId,
-    readWriteAccess: true,
-  }
+  })
   const loaderFile = {
     children: [],
     name: 'main.kcl',

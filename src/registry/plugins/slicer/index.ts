@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
@@ -142,12 +143,9 @@ const exportToSlicerSidebarItem = defineRegistryItemFactory((ctx) => {
           useHidden: () => !isDesktop(),
           useDisabled: useExportToSlicerDisabled,
           execute: () => {
-            getCommandSystem().send({
-              type: 'Find and select command',
-              data: {
-                name: EXPORT_TO_SLICER_COMMAND_NAME,
-                groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
-              },
+            selectCommand(getCommandSystem(), {
+              name: EXPORT_TO_SLICER_COMMAND_NAME,
+              groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
             })
           },
         },

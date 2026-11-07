@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { Menu } from '@headlessui/react'
 
 import { useApp } from '@src/lib/boot'
@@ -12,12 +13,9 @@ export const FeatureTreeMenu = () => {
         <button
           type="button"
           onClick={() =>
-            commands.send({
-              type: 'Find and select command',
-              data: {
-                groupId: 'code',
-                name: 'parameter.create',
-              },
+            selectCommand(commands, {
+              groupId: 'code',
+              name: 'parameter.create',
             })
           }
           className="menuButton"
@@ -29,12 +27,9 @@ export const FeatureTreeMenu = () => {
         <button
           type="button"
           onClick={() =>
-            commands.send({
-              type: 'Find and select command',
-              data: {
-                groupId: 'code',
-                name: 'Import',
-              },
+            selectCommand(commands, {
+              groupId: 'code',
+              name: 'Import',
             })
           }
           className="menuButton"

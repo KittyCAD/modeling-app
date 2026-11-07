@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
@@ -450,13 +451,10 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       ? item.arguments
       : undefined
 
-    return commandSystem.send({
-      type: 'Find and select command',
-      data: {
-        groupId: command.groupId,
-        name: String(command.name),
-        ...(argDefaultValues ? { argDefaultValues } : {}),
-      },
+    return selectCommand(commandSystem, {
+      groupId: command.groupId,
+      name: String(command.name),
+      ...(argDefaultValues ? { argDefaultValues } : {}),
     })
   }
 

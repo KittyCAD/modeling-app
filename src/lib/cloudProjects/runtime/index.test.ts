@@ -1,4 +1,5 @@
 import { CLOUD_DIRECTORIES_FILE } from '@src/lib/cloudProjects/runtime/directories'
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { posix, win32 } from '@chainner/node-path'
 import * as api from '@src/lib/cloudProjects/runtime/api'
 import { parseProjectArchive } from '@src/lib/cloudProjects/runtime/archive'
@@ -255,11 +256,9 @@ describe.each([
     ])
     await fs.refreshProject('one')
     expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
-    expect(
-      new TextDecoder().decode(
-        await fs.readFile(paths.join(fs.root, 'one', 'main.kcl'))
-      )
-    ).toBe('updated remotely')
+    expect(await readTextFile(fs, paths.join(fs.root, 'one', 'main.kcl'))).toBe(
+      'updated remotely'
+    )
     expect(api.updateRemoteProject).not.toHaveBeenCalled()
   })
 
@@ -282,7 +281,8 @@ describe.each([
       expect.anything(),
       'one',
       'refresh-revision',
-      ['new-1']
+      ['new-1'],
+      undefined
     )
     await fs.writeFile(paths.join(root, 'main.kcl'), encoder.encode('edited'))
     expect(api.updateRemoteProject).toHaveBeenLastCalledWith(

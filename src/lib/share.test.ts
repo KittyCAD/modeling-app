@@ -1,3 +1,4 @@
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import type { ProjectResponse } from '@kittycad/lib'
 import type { Project } from '@src/lib/project'
 import type { ProjectArchiveFile } from '@src/lib/cloudProjects/runtime/types'
@@ -193,12 +194,9 @@ const getCurrentProjectPublicationDetails = (
   })
 
 function makeProject(): Project {
-  return {
-    metadata: null,
+  return createProjectForTest('/projects/bracket', {
     kcl_file_count: 1,
-    directory_count: 0,
     default_file: '/projects/bracket/main.kcl',
-    path: '/projects/bracket',
     name: 'bracket',
     children: [
       {
@@ -212,8 +210,7 @@ function makeProject(): Project {
         children: null,
       },
     ],
-    readWriteAccess: true,
-  }
+  })
 }
 
 describe('publishCurrentProject', () => {

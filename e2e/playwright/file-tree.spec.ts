@@ -914,31 +914,9 @@ test.describe(
       scene,
       cmdBar,
     }, testInfo) => {
-      const { dir } = await folderSetupFn(async (dir) => {
-        await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
-        await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToRename'), {
-          recursive: true,
-        })
-        const testData = await nodeFsP.readFile(
-          executorInputPath('basic_fillet_cube_end.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(dir, 'Test Project', 'main.kcl'),
-          testData
-        )
-        const testData2 = await nodeFsP.readFile(
-          executorInputPath('cylinder.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(
-            dir,
-            'Test Project',
-            'folderToRename',
-            'someFileWithin.kcl'
-          ),
-          testData2
-        )
-      })
+      const { dir } = await folderSetupFn((dir) =>
+        seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToRename')
+      )
 
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -954,11 +932,7 @@ test.describe(
       const renameInput = page.getByPlaceholder(originalFolderName)
       const newFolderName = 'newFolderName'
       const checkUnRenamedFolderFS = async () => {
-        const folderPath = await fs.join(
-          dir,
-          'Test Project',
-          originalFolderName
-        )
+        const folderPath = await fs.join(dir, 'Test Project', originalFolderName)
         return await exists(fs, folderPath)
       }
       const checkRenamedFolderFS = async () => {
@@ -1011,31 +985,9 @@ test.describe(
       scene,
       cmdBar,
     }, testInfo) => {
-      const { dir } = await folderSetupFn(async (dir) => {
-        await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
-        await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToRename'), {
-          recursive: true,
-        })
-        const testData = await nodeFsP.readFile(
-          executorInputPath('basic_fillet_cube_end.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(dir, 'Test Project', 'main.kcl'),
-          testData
-        )
-        const testData2 = await nodeFsP.readFile(
-          executorInputPath('cylinder.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(
-            dir,
-            'Test Project',
-            'folderToRename',
-            'someFileWithin.kcl'
-          ),
-          testData2
-        )
-      })
+      const { dir } = await folderSetupFn((dir) =>
+        seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToRename')
+      )
 
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -1052,11 +1004,7 @@ test.describe(
       const renameInput = page.getByPlaceholder(originalFolderName)
       const newFolderName = 'newFolderName'
       const checkUnRenamedFolderFS = async () => {
-        const folderPath = await fs.join(
-          dir,
-          'Test Project',
-          originalFolderName
-        )
+        const folderPath = await fs.join(dir, 'Test Project', originalFolderName)
         return await exists(fs, folderPath)
       }
       const checkRenamedFolderFS = async () => {
@@ -1228,32 +1176,9 @@ test.describe(
       scene,
       cmdBar,
     }, testInfo) => {
-      await folderSetupFn(async (dir) => {
-        await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
-        await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToDelete'), {
-          recursive: true,
-        })
-        const testData = await nodeFsP.readFile(
-          executorInputPath('basic_fillet_cube_end.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(dir, 'Test Project', 'main.kcl'),
-          testData
-        )
-
-        const testData2 = await nodeFsP.readFile(
-          executorInputPath('cylinder.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(
-            dir,
-            'Test Project',
-            'folderToDelete',
-            'someFileWithin.kcl'
-          ),
-          testData2
-        )
-      })
+      await folderSetupFn((dir) =>
+        seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToDelete')
+      )
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
@@ -1299,32 +1224,9 @@ test.describe(
       scene,
       cmdBar,
     }, testInfo) => {
-      await folderSetupFn(async (dir) => {
-        await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
-        await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToDelete'), {
-          recursive: true,
-        })
-        const testData = await nodeFsP.readFile(
-          executorInputPath('basic_fillet_cube_end.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(dir, 'Test Project', 'main.kcl'),
-          testData
-        )
-
-        const testData2 = await nodeFsP.readFile(
-          executorInputPath('cylinder.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(
-            dir,
-            'Test Project',
-            'folderToDelete',
-            'someFileWithin.kcl'
-          ),
-          testData2
-        )
-      })
+      await folderSetupFn((dir) =>
+        seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToDelete')
+      )
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
@@ -1376,34 +1278,9 @@ test(
   { tag: ['@desktop', '@localRenderer'] },
   async ({ folderSetupFn, page, fs, scene, cmdBar }, testInfo) => {
     const TEST_PROJECT_NAME = 'Test Project'
-    const { dir: projectsDirName } = await folderSetupFn(async (dir) => {
-      await fs.mkdir(await fs.join(dir, TEST_PROJECT_NAME), {
-        recursive: true,
-      })
-      await fs.mkdir(await fs.join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
-        recursive: true,
-      })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(dir, TEST_PROJECT_NAME, 'main.kcl'),
-        testData
-      )
-
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('cylinder.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(
-          dir,
-          TEST_PROJECT_NAME,
-          'folderToDelete',
-          'someFileWithin.kcl'
-        ),
-        testData2
-      )
-    })
+    const { dir: projectsDirName } = await folderSetupFn((dir) =>
+      seedProjectWithNestedFile(fs, dir, TEST_PROJECT_NAME, 'folderToDelete')
+    )
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
@@ -1620,3 +1497,24 @@ test.describe(
     })
   }
 )
+
+async function seedProjectWithNestedFile(
+  fs: PromisifiedZooDesignStudioFS,
+  dir: string,
+  projectName: string,
+  folderName: string
+) {
+  await fs.mkdir(await fs.join(dir, projectName), { recursive: true })
+  await fs.mkdir(await fs.join(dir, projectName, folderName), {
+    recursive: true,
+  })
+  const main = await nodeFsP.readFile(
+    executorInputPath('basic_fillet_cube_end.kcl')
+  )
+  await fs.writeFile(await fs.join(dir, projectName, 'main.kcl'), main)
+  const nested = await nodeFsP.readFile(executorInputPath('cylinder.kcl'))
+  await fs.writeFile(
+    await fs.join(dir, projectName, folderName, 'someFileWithin.kcl'),
+    nested
+  )
+}

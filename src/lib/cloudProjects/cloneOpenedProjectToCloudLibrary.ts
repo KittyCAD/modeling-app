@@ -1,6 +1,9 @@
 import fsZds from '@src/lib/fs-zds'
-import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
-import { PATHS } from '@src/lib/paths'
+import {
+  findHomeProjectByPath,
+  getHomeProjectDisplayName,
+} from '@src/lib/homeProjects'
+import { getFileRoute } from '@src/lib/paths'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import type {
   HomeProjectActionsService,
@@ -27,11 +30,7 @@ export async function cloneOpenedProjectToCloudLibrary({
   navigate: NavigateFunction
   title: string
 }): Promise<{ defaultFile: string; projectPath: string } | Error> {
-  const homeProject = entries.find(
-    (entry) =>
-      entry.localProjectPath === projectPath ||
-      entry.projectPath === projectPath
-  )
+  const homeProject = findHomeProjectByPath(entries, projectPath)
   const cloudLibraryTarget = homeProject
     ? actions
         ?.getCloneToLibraryTargets(homeProject)
@@ -56,7 +55,7 @@ export async function cloneOpenedProjectToCloudLibrary({
 
     const projectPath =
       created.localProjectPath ?? fsZds.dirname(created.defaultFile)
-    await navigate(`${PATHS.FILE}/${encodeURIComponent(created.defaultFile)}`)
+    await navigate(getFileRoute(created.defaultFile))
     return {
       defaultFile: created.defaultFile,
       projectPath,
@@ -85,11 +84,7 @@ export async function updateProjectTitleForPublication({
   title: string
 }): Promise<true | Error> {
   try {
-    const homeProject = entries.find(
-      (entry) =>
-        entry.localProjectPath === projectPath ||
-        entry.projectPath === projectPath
-    )
+  const homeProject = findHomeProjectByPath(entries, projectPath)
     if (!actions || !homeProject || !actions.canRename(homeProject)) {
       return new Error('The open project title could not be updated.')
     }

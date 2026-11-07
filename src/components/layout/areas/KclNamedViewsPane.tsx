@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { ArtifactCameraLook } from '@rust/kcl-lib/bindings/Artifact'
 import type { ComponentProps, ReactNode } from 'react'
@@ -232,9 +233,9 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
               }}
               className="h-6 w-6 shrink-0 justify-center !p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none disabled:opacity-40"
               onClick={() => {
-                app.commands.actor.send({
-                  type: 'Find and select command',
-                  data: { name: 'Named View', groupId: 'modeling' },
+                selectCommand(app.commands.actor, {
+                  name: 'Named View',
+                  groupId: 'modeling',
                 })
               }}
             />

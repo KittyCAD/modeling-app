@@ -1,4 +1,5 @@
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   closeOnboardingModalIfPresent,
@@ -112,15 +113,7 @@ test(
   async ({ scene, cmdBar, context, page, fs, folderSetupFn }, testInfo) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
+      await seedProjectFromFixture(fs, bracketDir, 'cylinder-inches.kcl')
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -243,14 +236,7 @@ test(
   }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
+      await seedProjectFromFixture(fs, bracketDir, 'cylinder-inches.kcl')
       const emptyDir = path.join(dir, 'empty')
       await fs.mkdir(emptyDir, { recursive: true })
       await fs.writeFile(path.join(emptyDir, 'main.kcl'), new Uint8Array())
@@ -291,14 +277,7 @@ test(
   }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
+      await seedProjectFromFixture(fs, bracketDir, 'cylinder-inches.kcl')
       await fs.writeFile(path.join(bracketDir, 'empty.kcl'), new Uint8Array())
     })
 
@@ -342,14 +321,7 @@ test(
   }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
+      await seedProjectFromFixture(fs, bracketDir, 'cylinder-inches.kcl')
 
       const brokenFileData = await nodeFs.readFile(
         executorInputPath('broken-code-test.kcl')
@@ -2014,3 +1986,13 @@ test.describe('Project id', { tag: ['@desktop', '@localRenderer'] }, () => {
     })
   })
 })
+
+async function seedProjectFromFixture(
+  fs: PromisifiedZooDesignStudioFS,
+  projectPath: string,
+  fixtureName: string
+) {
+  await fs.mkdir(projectPath, { recursive: true })
+  const data = await nodeFs.readFile(executorInputPath(fixtureName))
+  await fs.writeFile(path.join(projectPath, 'main.kcl'), new Uint8Array(data))
+}

@@ -3,7 +3,10 @@ import {
   decodeCloudDirectories,
   encodeCloudDirectories,
 } from '@src/lib/cloudProjects/runtime/directories'
+import { subscribeToSet } from '@src/lib/utils'
+import { incrementMapCounter } from '@src/lib/utils'
 import { planCloudRefresh } from '@src/lib/cloudProjects/runtime/refresh'
+import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
 import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import { computed, signal } from '@preact/signals-core'
 import { v4 } from 'uuid'
@@ -51,6 +54,10 @@ export interface CloudProjectUpdate {
   readonly refreshed: boolean
 }
 
+const downloadArchive = async (
+  ...args: Parameters<typeof api.downloadRemoteProjectArchive>
+) => parseProjectArchive(await api.downloadRemoteProjectArchive(...args))
+
 /** A cloud filesystem backed by memory, with serialized revision-checked saves. */
 export function createCloudProjectRuntime(
   paths: IZooDesignStudioFS,
@@ -71,7 +78,7 @@ export function createCloudProjectRuntime(
   const projectChangeSubscribers = new Set<(id: string) => void>()
   const polling = new Map<string, Promise<CloudProjectUpdate>>()
   const recordProjectChange = (id: string) => {
-    projectChangeCounters.set(id, (projectChangeCounters.get(id) ?? 0) + 1)
+    incrementMapCounter(projectChangeCounters, id)
     for (const listener of projectChangeSubscribers) listener(id)
   }
   const pendingThumbnails = new Map<
@@ -139,6 +146,30 @@ export function createCloudProjectRuntime(
     }
     return result
   }
+  const downloadRefresh = async (
+    requestConfig: CloudApiConfig,
+    id: string,
+    remote: RemoteProject,
+    canDownload: () => boolean = () => true,
+    signal?: AbortSignal
+  ) => {
+    const plan = planCloudRefresh(
+      opened.get(id)!.remote,
+      remote,
+      await collect(pathFor(id))
+    )
+    if (!canDownload()) return
+    const downloaded = plan.selected.length
+      ? await downloadArchive(
+          requestConfig,
+          id,
+          String(remote.revision ?? ''),
+          plan.selected.map((file) => file.id),
+          signal
+        )
+      : []
+    return plan.merge(downloaded)
+  }
   const hydrate = async (
     id: string,
     archive: readonly ProjectArchiveFile[]
@@ -147,12 +178,7 @@ export function createCloudProjectRuntime(
     // Validate the complete archive before inserting any bytes.
     const entries = archive.map((file) => {
       const path = paths.resolve(projectRoot, file.relativePath)
-      const relative = paths.relative(projectRoot, path)
-      if (
-        !relative ||
-        relative === '..' ||
-        relative.startsWith(`..${paths.sep}`)
-      ) {
+      if (!getContainedRelativePath(paths, projectRoot, path)) {
         // eslint-disable-next-line suggest-no-throw/suggest-no-throw
         throw new Error('Cloud archive contains a path outside its project.')
       }
@@ -212,12 +238,10 @@ export function createCloudProjectRuntime(
     project.needsReconciliation = true
     clearThumbnail(id)
     const remote = await api.getRemoteProject(requestConfig, id)
-    const archive = await parseProjectArchive(
-      await api.downloadRemoteProjectArchive(
-        requestConfig,
-        id,
-        String(remote.revision ?? '')
-      )
+    const archive = await downloadArchive(
+      requestConfig,
+      id,
+      String(remote.revision ?? '')
     )
     if (
       config().accountId !== requestConfig.accountId ||
@@ -505,12 +529,10 @@ export function createCloudProjectRuntime(
     const result = (async () => {
       await ready
       const remote = await api.getRemoteProject(requestConfig, id)
-      const archive = await parseProjectArchive(
-        await api.downloadRemoteProjectArchive(
-          requestConfig,
-          id,
-          String(remote.revision ?? '')
-        )
+      const archive = await downloadArchive(
+        requestConfig,
+        id,
+        String(remote.revision ?? '')
       )
       if (config().accountId !== requestConfig.accountId)
         return Promise.reject(
@@ -652,21 +674,14 @@ export function createCloudProjectRuntime(
       recordProjectChange(id)
       deferThumbnail(id)
     },
-    subscribeProjectChanges: (listener: (id: string) => void) => {
-      projectChangeSubscribers.add(listener)
-      return () => projectChangeSubscribers.delete(listener)
-    },
+    subscribeProjectChanges: (listener: (id: string) => void) =>
+      subscribeToSet(projectChangeSubscribers, listener),
     pending: () => pendingRequests,
     subscribeReconciled: (
       listener: (root: string, files: readonly ProjectArchiveFile[]) => void
-    ) => {
-      reconciliationListeners.add(listener)
-      return () => reconciliationListeners.delete(listener)
-    },
-    subscribe: (listener: (changes: readonly CloudFileChange[]) => void) => {
-      listeners.add(listener)
-      return () => listeners.delete(listener)
-    },
+    ) => subscribeToSet(reconciliationListeners, listener),
+    subscribe: (listener: (changes: readonly CloudFileChange[]) => void) =>
+      subscribeToSet(listeners, listener),
     openProject,
     checkForUpdates: (
       id: string,
@@ -711,25 +726,14 @@ export function createCloudProjectRuntime(
         if (!safe()) return { changed, refreshed: false }
         // Download without holding the mutation queue so slow networks cannot
         // block local saves. Activity invalidates the snapshot before commit.
-        const plan = planCloudRefresh(
-          activeProject.remote,
+        const archive = await downloadRefresh(
+          requestConfig,
+          id,
           remote,
-          await collect(pathFor(id))
+          safe,
+          controller.signal
         )
-        if (!safe()) return { changed, refreshed: false }
-        const downloaded = plan.selected.length
-          ? await parseProjectArchive(
-              await api.downloadRemoteProjectArchive(
-                requestConfig,
-                id,
-                String(remote.revision),
-                plan.selected.map((file) => file.id),
-                controller.signal
-              )
-            )
-          : []
-        const archive = plan.merge(downloaded)
-        if (!safe()) return { changed, refreshed: false }
+        if (!archive || !safe()) return { changed, refreshed: false }
         let refreshed = false
         await enqueue(
           id,
@@ -784,27 +788,12 @@ export function createCloudProjectRuntime(
                   opened.get(id)!.remote,
                   revision
                 )
-          const plan = planCloudRefresh(
-            opened.get(id)!.remote,
-            remote,
-            await collect(pathFor(id))
-          )
-          const downloaded = plan.selected.length
-            ? await parseProjectArchive(
-                await api.downloadRemoteProjectArchive(
-                  requestConfig,
-                  id,
-                  String(remote.revision ?? ''),
-                  plan.selected.map((file) => file.id)
-                )
-              )
-            : []
-          const archive = plan.merge(downloaded)
+          const archive = await downloadRefresh(requestConfig, id, remote)
           if (config().accountId !== requestConfig.accountId)
             return Promise.reject(
               new Error('Cloud account changed during refresh.')
             )
-          if (!isCurrent()) return
+          if (!archive || !isCurrent()) return
           clearThumbnail(id)
           await hydrate(id, archive)
           acknowledge(id, remote, archive)

@@ -1,3 +1,4 @@
+import { posix } from 'node:path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
@@ -6,6 +7,12 @@ import {
   getDefaultKclFileForDir,
   getProjectInfo,
   listProjects,
+  writeEnvironmentFile,
+  writeTelemetryFile,
+  writeRawTelemetryFile,
+  writeEnvironmentConfigurationToken,
+  writeEnvironmentConfigurationKittycadWebSocketUrl,
+  writeEnvironmentConfigurationZookeeperWebSocketUrl,
   readEnvironmentConfigurationFile,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
@@ -645,6 +652,98 @@ describe('desktop utilities', () => {
       const actual = await readEnvironmentFile(testFileOperations)
       mockElectron.packageJson.name = ''
       expect(actual).toBe(expected)
+    })
+  })
+
+  it('places environment and telemetry files beside the test settings file', async () => {
+    const operations = {
+      ...testFileOperations,
+      createDirectory: vi.fn().mockResolvedValue(undefined),
+    }
+    for (const write of [
+      writeEnvironmentFile,
+      writeTelemetryFile,
+      writeRawTelemetryFile,
+    ]) {
+      mockElectron.getAppTestProperty.mockResolvedValueOnce(
+        '/isolated/settings.toml'
+      )
+      mockElectron.path.resolve.mockImplementationOnce((...parts: string[]) =>
+        posix.resolve(...parts)
+      )
+      await write(operations, 'contents')
+    }
+    expect(mockElectron.writeFile.mock.calls.map(([path]) => path)).toEqual([
+      '/isolated/environment.txt',
+      '/isolated/boot.txt',
+      '/isolated/raw-metrics.txt',
+    ])
+  })
+
+  describe('environment configuration updates', () => {
+    const cases = [
+      {
+        setter: writeEnvironmentConfigurationToken,
+        field: 'token',
+        value: ' value ',
+        environment: 'development',
+      },
+      {
+        setter: writeEnvironmentConfigurationKittycadWebSocketUrl,
+        field: 'kittycadWebSocketUrl',
+        value: 'value',
+        environment: ' development ',
+      },
+      {
+        setter: writeEnvironmentConfigurationZookeeperWebSocketUrl,
+        field: 'zookeeperWebSocketUrl',
+        value: 'value',
+        environment: ' development ',
+      },
+    ]
+    const original = {
+      domain: 'existing-domain',
+      token: 'old-token',
+      kittycadWebSocketUrl: 'old-engine',
+      zookeeperWebSocketUrl: 'old-zookeeper',
+    }
+
+    it.each(cases)(
+      'preserves other fields and the trimming policy for $field',
+      async ({ setter, field, value, environment }) => {
+        mockElectron.readFile.mockResolvedValue(JSON.stringify(original))
+        const operations = {
+          ...testFileOperations,
+          createDirectory: vi.fn().mockResolvedValue(undefined),
+        }
+        await setter(operations, ' development ', ' value ')
+        const [path, contents] = mockElectron.writeFile.mock.calls[0]
+        expect(path).toBe(`/appData/-local/envs/${environment}.json`)
+        expect(JSON.parse(contents)).toEqual({ ...original, [field]: value })
+      }
+    )
+
+    it('propagates a failed write without reporting success', async () => {
+      mockElectron.readFile.mockResolvedValue(JSON.stringify(original))
+      const failure = new Error('write denied')
+      const operations = {
+        ...testFileOperations,
+        createDirectory: vi.fn().mockResolvedValue(undefined),
+        writeFile: vi.fn().mockRejectedValue(failure),
+      }
+      const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+      try {
+        await expect(
+          writeEnvironmentConfigurationToken(
+            operations,
+            'development',
+            'new-token'
+          )
+        ).rejects.toBe(failure)
+        expect(log).not.toHaveBeenCalled()
+      } finally {
+        log.mockRestore()
+      }
     })
   })
 

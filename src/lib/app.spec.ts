@@ -32,10 +32,8 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem, loadWasm } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
-const mockProject: Project = {
-  name: 'test',
+const mockProject: Project = createProjectForTest('/some-dir/test', {
   default_file: 'main.kcl',
-  directory_count: 0,
   kcl_file_count: 1,
   metadata: {
     accessed: null,
@@ -45,8 +43,6 @@ const mockProject: Project = {
     size: 100,
     type: null,
   },
-  path: '/some-dir/test',
-  readWriteAccess: true,
   children: [
     {
       name: 'main.kcl',
@@ -54,7 +50,7 @@ const mockProject: Project = {
       children: [],
     },
   ],
-}
+})
 
 // wasm-bindgen owns one module-scoped instance. Share initialization so app
 // startup cannot replace it while older Rust closures are still alive.
@@ -1029,15 +1025,11 @@ describe('project system', () => {
 
     try {
       await writeText(mainPath, 'main = true\n')
-      const project: Project = {
+      const project: Project = createProjectForTest(projectPath, {
         name: fsZds.basename(projectPath),
         default_file: mainPath,
-        directory_count: 0,
         kcl_file_count: 1,
-        metadata: null,
-        path: projectPath,
         libraryPath,
-        readWriteAccess: true,
         children: [
           {
             name: 'main.kcl',
@@ -1045,7 +1037,7 @@ describe('project system', () => {
             children: null,
           },
         ],
-      }
+      })
       const openedProject = await app.openProject(project)
       const kclManager = await openedProject.openEditor(mainPath)
       await Promise.resolve()
@@ -1112,20 +1104,16 @@ describe('project system', () => {
     try {
       await writeText(mainPath, '@settings(kclVersion = 3.0)\nwidth = 1\n')
       await writeText(oldPath, '@settings(kclVersion = 3.0)\nsize = 1\n')
-      const project: Project = {
+      const project: Project = createProjectForTest(projectPath, {
         name: fsZds.basename(projectPath),
-        path: projectPath,
         default_file: mainPath,
         cloudProjectId: 'remote-one',
-        metadata: null,
-        directory_count: 0,
         kcl_file_count: 2,
-        readWriteAccess: true,
         children: [
           { name: 'main.kcl', path: mainPath, children: null },
           { name: 'old.kcl', path: oldPath, children: null },
         ],
-      }
+      })
       const opened = await app.openProject(project)
       const editor = await opened.openEditor(mainPath)
       editor.engineCommandManager.connection = {
@@ -1171,14 +1159,10 @@ describe('project system', () => {
     try {
       await writeText(mainPath, 'main = true\n')
       await writeText(alternatePath, 'alternate = true\n')
-      const project: Project = {
+      const project: Project = createProjectForTest(projectPath, {
         name: fsZds.basename(projectPath),
         default_file: mainPath,
-        directory_count: 0,
         kcl_file_count: 2,
-        metadata: null,
-        path: projectPath,
-        readWriteAccess: true,
         children: [
           {
             name: 'main.kcl',
@@ -1191,7 +1175,7 @@ describe('project system', () => {
             children: null,
           },
         ],
-      }
+      })
       const openedProject = await app.openProject(project)
       const kclManager = await openedProject.openEditor(mainPath)
       const calls: string[] = []
@@ -1341,19 +1325,15 @@ describe('project system', () => {
     try {
       await writeText(mainPath, 'main = true\n')
       await writeText(alternatePath, 'alternate = true\n')
-      const project: Project = {
+      const project: Project = createProjectForTest(projectPath, {
         name: fsZds.basename(projectPath),
         default_file: mainPath,
-        directory_count: 0,
         kcl_file_count: 2,
-        metadata: null,
-        path: projectPath,
-        readWriteAccess: true,
         children: [
           { name: 'main.kcl', path: mainPath, children: null },
           { name: 'alternate.kcl', path: alternatePath, children: null },
         ],
-      }
+      })
       const openedProject = await app.openProject(project)
       const kclManager = await openedProject.openEditor(
         mainPath,
