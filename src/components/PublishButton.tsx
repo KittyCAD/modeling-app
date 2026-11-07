@@ -24,9 +24,9 @@ import type { Project } from '@src/lib/project'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 
 import {
-  moveOpenedProjectToCloudLibrary,
+  cloneOpenedProjectToCloudLibrary,
   updateProjectTitleForPublication,
-} from '@src/lib/projectLibraries/moveOpenedProjectToCloudLibrary'
+} from '@src/lib/projectLibraries/cloneOpenedProjectToCloudLibrary'
 
 import { type CurrentProjectPublicationDetails } from '@src/registry/contracts/fileOperations'
 
@@ -116,7 +116,7 @@ function PublishPopoverContent({
   const accountUrl = withSiteBaseURL('/account')
   const buttonDisabled = kclEmpty || hasKclErrors
   const cloudStorage = app.registry.optional(cloudStorageService)
-  const willMoveProjectToCloud = Boolean(
+  const willCloneProjectToCloud = Boolean(
     cloudStorage &&
       project &&
       project.libraryType !== CLOUD_PROJECT_LIBRARY_TYPE
@@ -209,34 +209,41 @@ function PublishPopoverContent({
       const publicationTitle = submission.title.trim()
       let publicationProject = project
       let publicationFilePath = kclManager.path
+      let publicationFileContents = kclManager.code
 
-      if (willMoveProjectToCloud) {
+      if (willCloneProjectToCloud) {
         const relativeFilePath = fsZds.relative(
           project.path,
           publicationFilePath
         )
-        const moved = await moveOpenedProjectToCloudLibrary({
+        const created = await cloneOpenedProjectToCloudLibrary({
           app,
           project,
           navigate,
           title: publicationTitle,
         })
-        if (err(moved)) {
-          console.error('Project could not be moved to Personal Cloud', moved)
-          toast.error('The project could not be moved to Personal Cloud.', {
+        if (err(created)) {
+          console.error(
+            'Project could not be cloned to Personal Cloud',
+            created
+          )
+          toast.error('The project could not be cloned to Personal Cloud.', {
             duration: 5000,
           })
           return false
         }
 
-        publicationFilePath = fsZds.join(moved.projectPath, relativeFilePath)
+        publicationFilePath = fsZds.join(created.projectPath, relativeFilePath)
+        publicationFileContents = new TextDecoder().decode(
+          await app.fileOperations.readFile(publicationFilePath)
+        )
         publicationProject = {
           ...project,
           title: publicationTitle,
-          name: fsZds.basename(moved.projectPath),
-          path: moved.projectPath,
-          default_file: moved.defaultFile,
-          libraryPath: fsZds.dirname(moved.projectPath),
+          name: fsZds.basename(created.projectPath),
+          path: created.projectPath,
+          default_file: created.defaultFile,
+          libraryPath: fsZds.dirname(created.projectPath),
           libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
         }
       } else {
@@ -259,7 +266,7 @@ function PublishPopoverContent({
       }
 
       let remoteProjectId: string | undefined
-      if (willMoveProjectToCloud && cloudStorage) {
+      if (willCloneProjectToCloud && cloudStorage) {
         remoteProjectId = cloudStorage.idFor(publicationProject.path)
       }
 
@@ -270,7 +277,7 @@ function PublishPopoverContent({
           token,
           project: publicationProject,
           currentFilePath: publicationFilePath,
-          currentFileContents: kclManager.code,
+          currentFileContents: publicationFileContents,
           wasmInstance,
           submission,
           remoteProjectId,
@@ -307,7 +314,7 @@ function PublishPopoverContent({
       navigate,
       project,
       token,
-      willMoveProjectToCloud,
+      willCloneProjectToCloud,
     ]
   )
 
@@ -338,7 +345,7 @@ function PublishPopoverContent({
           initialTitle={''}
           publishDisabled={isCheckingUser || publishRequiresUsername}
           publishRequiresUsername={publishRequiresUsername}
-          willMoveProjectToCloud={willMoveProjectToCloud}
+          willCloneProjectToCloud={willCloneProjectToCloud}
           accountUrl={accountUrl}
           publicationDetails={publicationDetails}
           isLoadingPublicationDetails={isLoadingPublicationDetails}

@@ -1,5 +1,6 @@
 import * as fsp from 'node:fs/promises'
 import path from 'node:path'
+import { uploadedProject } from '@e2e/playwright/lib/cloudStorageFixture'
 import {
   type CloudProject,
   cloudProjectResponse,
@@ -13,6 +14,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import { DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH } from '@src/lib/projectLibraries'
 
 const FLOW_TIMEOUT = 30_000
+const publicationCode = '@settings(kclVersion = 3.0)\npublishedPart = 42\n'
 
 declare global {
   interface Window {
@@ -38,7 +40,7 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
     }, originalDesktopPaths)
   })
 
-  test('publishes an open directory-library project and moves the same project into Personal Cloud', async ({
+  test('publishes an independent cloud clone and preserves the directory project', async ({
     context,
     homePage,
     page,
@@ -72,9 +74,9 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
     const sourceProjectToml = path.join(sourceProjectPath, 'project.toml')
     const publicationTitle = 'Published directory project'
     const remoteProjectId = '12945000-0000-4000-8000-000000000101'
-    const movedProjectPath = path.resolve('/__zoo_cloud__', remoteProjectId)
-    const movedMainFile = path.join(movedProjectPath, 'main.kcl')
-    const movedProjectToml = path.join(movedProjectPath, 'project.toml')
+    const clonedProjectPath = path.resolve('/__zoo_cloud__', remoteProjectId)
+    const clonedMainFile = path.join(clonedProjectPath, 'main.kcl')
+    const clonedProjectToml = path.join(clonedProjectPath, 'project.toml')
     const categoryId = '12945000-0000-4000-8000-000000000201'
     const remoteProjects: CloudProject[] = []
     const remoteArchives = new Map<string, Buffer>()
@@ -82,20 +84,7 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
       id: remoteProjectId,
       title: publicationTitle,
       revision: 'directory-publish-rev-1',
-      files: {
-        'main.kcl': 'publishedPart = 42\n',
-        'project.toml': [
-          `title = "${publicationTitle}"`,
-          'default_file = "main.kcl"',
-          '',
-          '[custom]',
-          'keep = "yes"',
-          '',
-          '[cloud."dev.zoo.dev"]',
-          `project_id = "${remoteProjectId}"`,
-          '',
-        ].join('\n'),
-      },
+      files: {},
     }
     await tronApp.electron.evaluate(
       ({ app }, testPaths) => {
@@ -123,7 +112,7 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
     })
     await fsp.mkdir(sourceProjectPath, { recursive: true })
     await fsp.mkdir(cloudLibraryPath, { recursive: true })
-    await fsp.writeFile(sourceMainFile, 'publishedPart = 42\n')
+    await fsp.writeFile(sourceMainFile, publicationCode)
     await fsp.writeFile(
       sourceProjectToml,
       [
@@ -137,6 +126,10 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
     )
 
     await mockClientErrorReports(context)
+    // Electron reuses its context; publication needs a live modeling connection.
+    await context.routeWebSocket('**/ws/modeling/commands**', (socket) => {
+      socket.connectToServer()
+    })
     await context.route('**/user', async (route) => {
       if (
         new URL(route.request().url()).pathname !== '/user' ||
@@ -183,7 +176,9 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
     const { calls: apiCalls } = await routeCloudProjects(context, {
       remoteProjects,
       remoteArchives,
-      createProject: async () => {
+      createProject: async (_postData, route) => {
+        const uploaded = await uploadedProject(route)
+        createdProject.files = uploaded.files
         if (!remoteProjects.includes(createdProject)) {
           remoteProjects.push(createdProject)
         }
@@ -252,8 +247,9 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
     await expect(page).toHaveURL(/\/file\/.*main\.kcl/, {
       timeout: FLOW_TIMEOUT,
     })
-    await expect(page.getByTestId('publish-button')).toBeEnabled()
-
+    await expect(page.getByTestId('publish-button')).toBeEnabled({
+      timeout: FLOW_TIMEOUT,
+    })
     await page.getByTestId('publish-button').click()
     await expect(
       page.getByRole('heading', { name: 'Publish project' })
@@ -273,13 +269,13 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
           ),
         { timeout: FLOW_TIMEOUT }
       )
-      .toBe(movedProjectPath)
+      .toBe(clonedProjectPath)
     await expect(page.getByTestId('app-header-project-name')).toHaveText(
       publicationTitle
     )
     await expect
       .poll(() => page.url())
-      .toContain(encodeURIComponent(movedMainFile))
+      .toContain(encodeURIComponent(clonedMainFile))
 
     await expect.poll(() => apiCalls.creates.length).toBe(1)
     await expect
@@ -294,10 +290,14 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
     await expect
       .poll(() => apiCalls.publishes, { timeout: FLOW_TIMEOUT })
       .toEqual([remoteProjectId])
-    expect(await pathExists(sourceProjectPath)).toBe(false)
-    expect(await pathExists(movedMainFile)).toBe(false)
+    expect(await pathExists(sourceProjectPath)).toBe(true)
+    expect(await fsp.readFile(sourceMainFile, 'utf8')).toBe(publicationCode)
+    expect(await fsp.readFile(sourceProjectToml, 'utf8')).toContain(
+      'title = "Directory publish source"'
+    )
+    expect(await pathExists(clonedMainFile)).toBe(false)
 
-    const [movedMainContents, movedTomlContents] = await page.evaluate(
+    const [clonedMainContents, clonedTomlContents] = await page.evaluate(
       async (paths) =>
         Promise.all(
           paths.map(async (file) =>
@@ -306,13 +306,13 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
             )
           )
         ),
-      [movedMainFile, movedProjectToml]
+      [clonedMainFile, clonedProjectToml]
     )
-    expect(movedMainContents).toBe('publishedPart = 42\n')
-    expect(movedTomlContents).toContain(`title = "${publicationTitle}"`)
-    expect(movedTomlContents).toContain('default_file = "main.kcl"')
-    expect(movedTomlContents).toContain('[custom]')
-    expect(movedTomlContents).toContain('keep = "yes"')
+    expect(clonedMainContents).toBe(publicationCode)
+    expect(clonedTomlContents).toContain(`title = "${publicationTitle}"`)
+    expect(clonedTomlContents).toContain('default_file = "main.kcl"')
+    expect(clonedTomlContents).toContain('[custom]')
+    expect(clonedTomlContents).toContain('keep = "yes"')
 
     expect(await page.evaluate(() => window.__publishFlowMessages)).toEqual([
       'Project submitted for review.',

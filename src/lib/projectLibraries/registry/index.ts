@@ -22,7 +22,7 @@ import {
 import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import {
   createProjectInLocalDirectory,
-  moveProjectIntoLocalDirectory,
+  cloneProjectIntoLocalDirectory,
 } from '@src/lib/projectLibraries/operations'
 import { projectLibraryRealizationFromProject } from '@src/lib/projectLibraries/realizations'
 import {
@@ -511,7 +511,7 @@ const projectLibraryRealizationsRegistryService = defineRegistryItem({
   ],
 })
 
-function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
+function getProjectCloneSource({ project }: { project: HomeProjectEntry }) {
   if (!project.localProjectPath || !project.readWriteAccess) {
     return undefined
   }
@@ -593,9 +593,9 @@ function withReportedDirectoryProjectOperations(
       operation: 'delete project',
       risk: 'destructive',
     }),
-    moveProjectTo: report(operations.moveProjectTo, {
-      operation: 'move project',
-      risk: 'destructive',
+    cloneProjectTo: report(operations.cloneProjectTo, {
+      operation: 'clone project',
+      risk: 'write',
     }),
   }
 }
@@ -724,21 +724,27 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
         refreshLocalProjectRealizations(library)
       },
     },
-    moveProjectFrom: {
-      canMoveProject: ({ project }) =>
+    cloneProjectFrom: {
+      canCloneProject: ({ project }) =>
         Boolean(project.localProjectPath && project.readWriteAccess),
-      run: ({ project }) => getProjectMoveSource({ project }),
+      run: ({ project }) => getProjectCloneSource({ project }),
     },
-    moveProjectTo: {
-      run: async ({ library, sourceLibrary, source }) => {
-        const result = await moveProjectIntoLocalDirectory({
+    cloneProjectTo: {
+      run: async ({ library, source, project, requestedProjectTitle }) => {
+        const wasmInstancePromise = getWasmPromise()
+        if (wasmInstancePromise instanceof Error)
+          return Promise.reject(wasmInstancePromise)
+        const result = await cloneProjectIntoLocalDirectory({
           fileOperations: fileOperations(),
           projectDirectoryPath: library.path,
           sourceProjectPath: source.localProjectPath,
           sourceProjectName: source.localProjectName,
           defaultFile: source.defaultFile,
+          requestedProjectTitle:
+            requestedProjectTitle ?? getHomeProjectDisplayName(project),
+          wasmInstancePromise,
         })
-        refreshLocalProjectRealizations(sourceLibrary, library)
+        refreshLocalProjectRealizations(library)
 
         return result
       },

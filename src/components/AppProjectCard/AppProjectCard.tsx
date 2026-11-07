@@ -43,7 +43,7 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   showCloudSyncUi?: boolean
   showDetails?: boolean
   showSourceStatusBadges?: boolean
-  onMoveToLibrary?: (project: HomeProjectEntry) => void
+  onCloneToLibrary?: (project: HomeProjectEntry) => void
 }
 
 const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
@@ -156,7 +156,7 @@ function AppProjectCard({
   showCloudSyncUi = true,
   showDetails = true,
   showSourceStatusBadges = true,
-  onMoveToLibrary,
+  onCloneToLibrary,
   ...props
 }: AppProjectCardProps) {
   const cardRef = useRef<HTMLLIElement>(null)
@@ -302,8 +302,8 @@ function AppProjectCard({
   const projectCopyPaths = project.localProjectPath
     ? [project.localProjectPath, ...(project.duplicateProjectIdPaths ?? [])]
     : []
-  const canMoveToLibrary = Boolean(
-    onMoveToLibrary && projectActions.canMoveToLibrary(project)
+  const canCloneToLibrary = Boolean(
+    onCloneToLibrary && projectActions.canCloneToLibrary(project)
   )
   const deleteProjectDisplayName = projectName || 'this file'
   const deleteWarningMessage = getHomeProjectDeleteWarningMessage(
@@ -556,13 +556,13 @@ function AppProjectCard({
               Rename project
             </ContextMenuItem>,
             <ContextMenuItem
-              key="move-to-library"
+              key="clone-to-library"
               icon="folder"
-              disabled={!canMoveToLibrary}
-              data-testid="project-card-context-move-to-library"
-              onClick={() => onMoveToLibrary?.(project)}
+              disabled={!canCloneToLibrary}
+              data-testid="project-card-context-clone-to-library"
+              onClick={() => onCloneToLibrary?.(project)}
             >
-              Move to another library
+              Clone to another library
             </ContextMenuItem>,
             ...(hasDuplicateRealizations
               ? [
