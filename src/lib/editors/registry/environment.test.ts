@@ -14,6 +14,7 @@ import {
   type UserFeaturesRegistryService,
 } from '@src/registry/contracts/userFeatures'
 import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
+import pngExtension from '@src/lib/png/registry'
 import editorsExtension from '@src/lib/editors/registry'
 import markdownExtension from '@src/lib/markdown/registry'
 import {
@@ -54,6 +55,7 @@ describe('experimental editor registration', () => {
         featureFlags,
         editorsExtension,
         savingExtension,
+        pngExtension,
         markdownExtension,
       ])
       registry.get(userFeaturesService)
@@ -63,6 +65,9 @@ describe('experimental editor registration', () => {
         registry
           .get(editorOnSaveValueSpec)
           .some(({ id }) => id === 'save.persistToDisk')
+      ).toBe(enabled)
+      expect(
+        registry.get(editorViewValueSpec).some(({ id }) => id === 'png.image')
       ).toBe(enabled)
       expect(registry.get(editorViewValueSpec).length > 0).toBe(enabled)
       expect(registry.get(editorTabIndicatorValueSpec).length > 0).toBe(enabled)

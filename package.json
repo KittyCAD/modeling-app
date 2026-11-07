@@ -73,6 +73,7 @@
     "react-modal-promise": "^1.0.2",
     "react-resizable-panels": "^3.0.6",
     "react-router-dom": "^7.11.0",
+    "react-zoom-pan-pinch": "^4.2.0",
     "sketch-helpers": "^0.0.4",
     "smol-toml": "^1.6.1",
     "tailwind-merge": "^2.6.1",
