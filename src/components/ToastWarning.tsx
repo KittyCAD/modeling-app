@@ -4,17 +4,26 @@ import { ActionButton } from '@src/components/ActionButton'
 
 export function ToastWarning({
   toastId,
+  visible,
   title,
   message,
   onDismiss,
 }: {
   toastId: string
+  visible: boolean
   title?: string
   message: string
   onDismiss?: () => void
 }) {
   return (
-    <div className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-110/50 shadow-md border border-destroy-80">
+    <div
+      className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-110/50 shadow-md border border-destroy-80"
+      data-toast-id={toastId}
+      data-toast-type="custom"
+      data-toast-visible={visible}
+      hidden={!visible}
+      style={{ display: visible ? 'grid' : 'none' }}
+    >
       <div className="max-w-3xl min-w-[20rem] px-4 py-3 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         {title && (
           <h2 className="text-base font-semibold text-destroy-80 dark:text-destroy-70 mb-1">
@@ -71,6 +80,7 @@ export function showWarningToast(
     (t) => (
       <ToastWarning
         toastId={t.id}
+        visible={t.visible}
         title={options?.title}
         message={message}
         onDismiss={options?.onDismiss}

@@ -44,7 +44,6 @@ import {
   DEFAULT_PROJECT_LIBRARY_ID,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
-import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
@@ -429,9 +428,7 @@ export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
     type: 'set.app.onboardingStatus',
     data: { level: 'user', value: 'dismissed' },
   })
-  void waitForToastAnimationEnd(ONBOARDING_TOAST_ID, () => {
-    toast.dismiss(ONBOARDING_TOAST_ID)
-  })
+  toast.dismiss(ONBOARDING_TOAST_ID)
   toast.success(
     'Click the question mark in the lower-right corner if you ever want to do the tutorial!',
     {
