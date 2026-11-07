@@ -392,7 +392,7 @@ export function getCapForPathId(
   return new Error(`No cap found for path ${pathId}`)
 }
 
-export function getSweepFromSuspectedSweepSurface(
+export function getBodyFromSurface(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'sweep' | 'compositeSolid' }> | Error {
@@ -645,10 +645,7 @@ export function getSweepArtifactFromSelection(
         artifactGraph
       )
     }
-    const sweep = getSweepFromSuspectedSweepSurface(
-      selection.artifact.id,
-      artifactGraph
-    )
+    const sweep = getBodyFromSurface(selection.artifact.id, artifactGraph)
     if (err(sweep)) {
       return sweep.message === 'edgeCut has no consumed segment'
         ? new Error(
@@ -682,7 +679,7 @@ export function getCodeRefsByArtifactId(
     if (err(codeRef)) return null
     return [codeRef]
   } else if (artifact?.type === 'wall') {
-    const extrusion = getSweepFromSuspectedSweepSurface(id, artifactGraph)
+    const extrusion = getBodyFromSurface(id, artifactGraph)
     const codeRef = getWallCodeRef(artifact, artifactGraph)
     if (err(codeRef)) return null
     return err(extrusion) ? [codeRef] : [codeRef, extrusion.codeRef]
@@ -1227,10 +1224,7 @@ export function coerceSelectionsToBody(
       )
     }
     if (selection.artifact.type === 'edgeCut') {
-      const body = getSweepFromSuspectedSweepSurface(
-        selection.artifact.id,
-        artifactGraph
-      )
+      const body = getBodyFromSurface(selection.artifact.id, artifactGraph)
       if (err(body)) return body
       if (body.type === 'compositeSolid') {
         if (!seenBodyIds.has(body.id)) {

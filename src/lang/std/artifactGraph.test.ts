@@ -7,7 +7,7 @@ import {
   getCommonFacesForEdge,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
-  getSweepFromSuspectedSweepSurface,
+  getBodyFromSurface,
   getMergedSweepBodyArtifact,
   getSegmentArtifactForEdgeCut,
   getEdgeCutConsumedCodeRef,
@@ -938,7 +938,7 @@ it('resolves a treatment face to its Boolean output rather than a contributing s
     codeRef,
   }
   artifactGraph.set(cut.id, cut)
-  expect(getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)).toBe(body)
+  expect(getBodyFromSurface(cut.id, artifactGraph)).toBe(body)
   expect(
     coerceSelectionsToBody(
       { graphSelections: [{ artifact: cut, codeRef }], otherSelections: [] },
@@ -977,27 +977,23 @@ it('keeps the source sweep distinct from the later Boolean owner of a treatment 
     codeRef,
   }
   artifactGraph.set(cut.id, cut)
-  expect(getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)).toBe(body)
+  expect(getBodyFromSurface(cut.id, artifactGraph)).toBe(body)
   expect(
     getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
   ).toBe(sourceSweep)
 })
-describe('getSweepFromSuspectedSweepSurface', () => {
+describe('getBodyFromSurface', () => {
   it('resolves path fallback and direct faces without logging failed probes', () => {
     const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
     addMappedRegion(artifactGraph, sourceSegment, 'fallback', true)
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     try {
       const sweep = artifactGraph.get('sweep-fallback')
-      expect(
-        getSweepFromSuspectedSweepSurface('region-path-fallback', artifactGraph)
-      ).toBe(sweep)
-      expect(
-        getSweepFromSuspectedSweepSurface('cap-fallback', artifactGraph)
-      ).toBe(sweep)
-      expect(
-        getSweepFromSuspectedSweepSurface('wall-fallback', artifactGraph)
-      ).toBe(sweep)
+      expect(getBodyFromSurface('region-path-fallback', artifactGraph)).toBe(
+        sweep
+      )
+      expect(getBodyFromSurface('cap-fallback', artifactGraph)).toBe(sweep)
+      expect(getBodyFromSurface('wall-fallback', artifactGraph)).toBe(sweep)
       expect(consoleError).not.toHaveBeenCalled()
     } finally {
       consoleError.mockRestore()
@@ -1005,7 +1001,7 @@ describe('getSweepFromSuspectedSweepSurface', () => {
   })
 
   it('returns a meaningful error when neither lookup resolves a face', () => {
-    expect(getSweepFromSuspectedSweepSurface('missing', new Map())).toEqual(
+    expect(getBodyFromSurface('missing', new Map())).toEqual(
       new Error('No artifact found with key missing')
     )
   })

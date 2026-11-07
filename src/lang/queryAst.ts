@@ -25,7 +25,7 @@ import {
   getSegmentArtifactForEdgeCut,
   getSegmentForEdgeCut,
   getSweepEdgeCodeRef,
-  getSweepFromSuspectedSweepSurface,
+  getBodyFromSurface,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -1547,10 +1547,7 @@ export function getVariableExprsFromSelection(
         artifact.type === 'wall' ||
         artifact.type === 'edgeCut')
     ) {
-      const owningBody = getSweepFromSuspectedSweepSurface(
-        artifact.id,
-        artifactGraph
-      )
+      const owningBody = getBodyFromSurface(artifact.id, artifactGraph)
       if (!err(owningBody) && owningBody.codeRef) {
         pathToNodeForVariable = owningBody.codeRef.pathToNode
         const bodyArtifact = artifactGraph.get(owningBody.id)

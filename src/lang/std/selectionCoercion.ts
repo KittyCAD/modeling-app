@@ -3,7 +3,7 @@ import {
   getArtifactFromRange,
   getArtifactOfTypes,
   getSweepArtifactFromSelection,
-  getSweepFromSuspectedSweepSurface,
+  getBodyFromSurface,
   getMergedSweepBodyArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
@@ -145,10 +145,7 @@ export function coerceSelectionsToBody(
     }
 
     if (selection.artifact.type === 'edgeCut') {
-      const owner = getSweepFromSuspectedSweepSurface(
-        selection.artifact.id,
-        artifactGraph
-      )
+      const owner = getBodyFromSurface(selection.artifact.id, artifactGraph)
       if (err(owner)) return owner
       const body =
         owner.type === 'sweep'

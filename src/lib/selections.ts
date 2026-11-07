@@ -77,7 +77,7 @@ import {
   getSketchBlockForPathArtifact,
   getSolid2dCodeRef,
   getSweepArtifactFromSelection,
-  getSweepFromSuspectedSweepSurface,
+  getBodyFromSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
@@ -234,7 +234,7 @@ async function resolveSweepParentEntityIdForEdge(
         artifact.type === 'cap' ||
         artifact.type === 'edgeCut')
     ) {
-      const sweep = getSweepFromSuspectedSweepSurface(node.id, artifactGraph)
+      const sweep = getBodyFromSurface(node.id, artifactGraph)
       if (!err(sweep)) {
         return sweep.id
       }
@@ -3619,7 +3619,7 @@ function getSweepForFace(
   wasmInstance: ModuleType
 ) {
   const artifact = artifactGraph.get(faceId)
-  let sweep = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
+  let sweep = getBodyFromSurface(faceId, artifactGraph)
   if (isErr(sweep) && artifact?.type === 'edgeCut') {
     sweep = getOwningSweepForEdgeCut(artifact, artifactGraph, ast, wasmInstance)
   }
@@ -3899,10 +3899,7 @@ export function getCodeRefsFromEntityReference(
         }
       }
       // Also get the extrude (sweep) codeRef, like getCodeRefsByArtifactId does
-      const extrusion = getSweepFromSuspectedSweepSurface(
-        entityRef.face_id,
-        artifactGraph
-      )
+      const extrusion = getBodyFromSurface(entityRef.face_id, artifactGraph)
       if (!err(extrusion) && extrusion.codeRef) {
         codeRefs.push({ range: extrusion.codeRef.range })
       }
@@ -3914,10 +3911,7 @@ export function getCodeRefsFromEntityReference(
         codeRefs.push({ range: capCodeRef.range })
       }
       // Also get the extrude (sweep) codeRef
-      const extrusion = getSweepFromSuspectedSweepSurface(
-        entityRef.face_id,
-        artifactGraph
-      )
+      const extrusion = getBodyFromSurface(entityRef.face_id, artifactGraph)
       if (!err(extrusion) && extrusion.codeRef) {
         codeRefs.push({ range: extrusion.codeRef.range })
       }
