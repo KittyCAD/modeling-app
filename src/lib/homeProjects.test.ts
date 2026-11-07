@@ -1,5 +1,7 @@
+import fc from 'fast-check'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
 import {
+  homeProjectDisplayNameExists,
   findHomeProjectByPath,
   homeProjectEntryFromProject,
   shouldDeleteRemoteOnHomeProjectDelete,
@@ -127,5 +129,54 @@ describe('Home project deletion policy', () => {
         deleteRemoteOnDelete: true,
       })
     ).toBe(false)
+  })
+})
+
+describe('project title uniqueness within libraries', () => {
+  test('renaming away and back accepts a title shared with another library', () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1 }),
+        fc.uuid(),
+        fc.uuid(),
+        (title, localLibrary, cloudLibrary) => {
+          fc.pre(localLibrary !== cloudLibrary)
+          const local: HomeProjectEntry = {
+            id: 'local',
+            source: 'local',
+            status: 'local',
+            name: 'local',
+            title: 'Renamed',
+            libraryIds: [localLibrary],
+            readWriteAccess: true,
+          }
+          const cloud: HomeProjectEntry = {
+            id: 'cloud',
+            source: 'remote',
+            status: 'cloud-only',
+            name: 'cloud',
+            title,
+            libraryIds: [cloudLibrary],
+            readWriteAccess: true,
+          }
+          const entries = [local, cloud]
+          expect(
+            homeProjectDisplayNameExists({
+              entries,
+              requestedName: title.replace('.kcl', ''),
+              projectId: local.id,
+            })
+          ).toBe(false)
+          cloud.libraryIds = [localLibrary, cloudLibrary]
+          expect(
+            homeProjectDisplayNameExists({
+              entries,
+              requestedName: title.replace('.kcl', ''),
+              projectId: local.id,
+            })
+          ).toBe(true)
+        }
+      )
+    )
   })
 })

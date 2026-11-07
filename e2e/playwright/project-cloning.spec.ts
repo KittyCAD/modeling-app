@@ -126,6 +126,19 @@ async function prepare(
     const next = page.getByTestId('command-bar-continue')
     if (await next.isVisible()) await next.click()
     await expect(page.getByText('The original', { exact: false })).toBeVisible()
+    await expect(page.getByTestId('header-arg-value')).toHaveText([
+      'Original',
+      destinationLibrary.title,
+    ])
+    // Review remains reversible, including when arguments were prepopulated.
+    await page.getByRole('button', { name: /Step back/ }).click()
+    await expect(next).toBeVisible()
+    await expect(page.getByTestId('header-arg-value')).toHaveText([
+      'Original',
+      destinationLibrary.title,
+    ])
+    await next.click()
+    await expect(page.getByText('The original', { exact: false })).toBeVisible()
     await page.getByTestId('command-bar-submit').click()
   }
   const readSource = async (file: string) =>
@@ -152,6 +165,34 @@ async function prepare(
       await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     },
     destinationDirectory: localDestination.path,
+    renameCloneRoundTrip: async () => {
+      await navigate('/home')
+      await expect(page.getByTestId('home-header')).toBeVisible()
+      const library = page.getByRole('link', {
+        name: `Open ${destinationLibrary.title} library`,
+        exact: true,
+      })
+      await expect(library).toBeVisible()
+      await library.click()
+      let title = 'Original'
+      for (const nextTitle of ['Renamed clone', 'Original']) {
+        const clonedCard = page.getByTestId('project-link').filter({
+          has: page.getByText(title, { exact: true }),
+        })
+        await expect(clonedCard).toBeVisible()
+        await clonedCard.click({ button: 'right' })
+        await page.getByTestId('project-card-context-rename').click()
+        await page.getByTestId('project-rename-input').fill(nextTitle)
+        await page.getByTestId('project-rename-input').press('Enter')
+        await expect(page.getByTestId('project-rename-input')).toBeHidden()
+        await expect(
+          page.getByTestId('project-link').filter({
+            has: page.getByText(nextTitle, { exact: true }),
+          })
+        ).toBeVisible()
+        title = nextTitle
+      }
+    },
   }
 }
 
@@ -240,6 +281,7 @@ for (const [source, destination] of [
         await expect(page.locator('.cm-content').first()).toContainText(
           '// original'
         )
+        await storage.renameCloneRoundTrip()
         await storage.openProject(storage.root)
         await expect(page.locator('.cm-content').first()).toContainText(
           destination === 'cloud' ? '// edited during clone' : '// original'

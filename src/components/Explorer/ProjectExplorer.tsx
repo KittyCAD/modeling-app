@@ -1154,8 +1154,19 @@ export const ProjectExplorer = ({
               if (result && result.src && result.target) {
                 const { src, target } = result
                 void runFileTreeMutation(async () => {
-                  await fileOperations.move(src, target)
+                  const activePath = file?.path
+                  await app.projectSession.rename(src, target)
                   setLastRecursiveMoveTarget(target)
+                  if (
+                    activePath &&
+                    isPathWithinFileExplorerEntry(activePath, src) &&
+                    canNavigate &&
+                    app.project?.path === project.path
+                  )
+                    await app.projectSession.openFile(
+                      fsZds.join(target, fsZds.relative(src, activePath)),
+                      { projectPath: project.path }
+                    )
                   toast.success('Moved successfully')
                 })
                 kclManager.addGlobalHistoryEvent(
@@ -1225,7 +1236,7 @@ export const ProjectExplorer = ({
                   const shouldWeNavigate =
                     oldPath !== undefined &&
                     newPath !== undefined &&
-                    file?.path?.startsWith(oldPath) &&
+                    isPathWithinFileExplorerEntry(file?.path, oldPath) &&
                     canNavigate
 
                   if (shouldWeNavigate && file && file.path) {

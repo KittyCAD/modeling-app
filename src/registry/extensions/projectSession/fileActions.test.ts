@@ -61,9 +61,7 @@ function createProject(path = '/project/parts/main.kcl') {
   const flush = vi.fn(async () => true)
   const resetForFileSwitch = vi.fn()
   const editor = {
-    get path() {
-      return filePath.value
-    },
+    path,
     flushWriteToFile: flush,
     resetForFileSwitch,
   } as unknown as KclManager
@@ -89,6 +87,10 @@ function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
   }
   const exists = vi.fn(async () => false)
   const rename = vi.fn(async () => {})
+  const readFile = vi.fn(async () =>
+    new TextEncoder().encode('title = "Project"\ndefault_file = "main.kcl"\n')
+  )
+  const writeFile = vi.fn(async () => {})
   const router = createRouterRegistryService()
   const navigate = vi.fn(async (_path?: unknown, _options?: unknown) => {})
   router.setNavigate(navigate)
@@ -109,6 +111,8 @@ function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
         provideService(fileOperationsService, {
           exists,
           rename,
+          readFile,
+          writeFile,
         } as unknown as FileOperationsRegistryService),
         provideService(routerService, router),
         ...(cloud ? [provideService(cloudStorageService, cloud)] : []),
@@ -125,6 +129,8 @@ function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
     session,
     exists,
     rename,
+    readFile,
+    writeFile,
     router,
     navigate,
     ...current,
@@ -371,6 +377,80 @@ describe('direct project session file actions', () => {
     expect(s.filePath.value).toBe('/project/renamed/main.kcl')
   })
 
+  it('rebinds both the editor and navigation path after moving an open file', async () => {
+    const s = setup()
+    await s.session.rename('/project/parts/main.kcl', '/project/moved.kcl')
+    expect(s.project.executingEditor.peek()!.path).toBe('/project/moved.kcl')
+    expect(s.filePath.value).toBe('/project/moved.kcl')
+  })
+
+  it('does not rebind an active file when an unrelated sibling prefix is renamed', async () => {
+    const s = setup()
+    s.filePath.value = '/project/parts-extra/main.kcl'
+    s.project.executingEditor.peek()!.path = s.filePath.value
+    await s.session.rename('/project/parts', '/project/components')
+    expect(s.filePath.value).toBe('/project/parts-extra/main.kcl')
+    expect(s.project.executingEditor.peek()!.path).toBe(s.filePath.value)
+    expect(s.flush).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    [
+      '/project/main.kcl',
+      '/project/components/main.kcl',
+      'components/main.kcl',
+    ],
+  ])(
+    'updates entrypoint metadata when moving %s',
+    async (source, destination, relative) => {
+      const s = setup()
+      await s.session.rename(source, destination)
+      expect(s.writeFile).toHaveBeenCalledWith(
+        '/project/project.toml',
+        expect.stringContaining(`default_file = "${relative}"`)
+      )
+    }
+  )
+
+  it('keeps the old path while a cloud move takes seven seconds, then rebinds before persistence', async () => {
+    vi.useFakeTimers()
+    const gate = Promise.withResolvers<undefined>()
+    const persisted = Promise.withResolvers<undefined>()
+    const rename = vi.fn(async () => {
+      await gate.promise
+    })
+    const batch = vi.fn(
+      async (
+        _path: string,
+        run: (operations: FileOperationsRegistryService) => Promise<void>
+      ) => {
+        await run({ rename } as unknown as FileOperationsRegistryService)
+        await persisted.promise
+      }
+    )
+    const s = setup({ root: '/cloud', batch } as unknown as CloudStorageService)
+    s.filePath.value = '/cloud/project/parts/main.kcl'
+    s.project.executingEditor.peek()!.path = s.filePath.value
+    const moving = s.session.rename(
+      '/cloud/project/parts',
+      '/cloud/project/components'
+    )
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(rename).toHaveBeenCalledOnce()
+    expect(s.project.executingEditor.peek()!.path).toBe(
+      '/cloud/project/parts/main.kcl'
+    )
+    gate.resolve(undefined)
+    await vi.advanceTimersByTimeAsync(0)
+    expect(s.project.executingEditor.peek()!.path).toBe(
+      '/cloud/project/components/main.kcl'
+    )
+    expect(s.filePath.value).toBe('/cloud/project/components/main.kcl')
+    persisted.resolve(undefined)
+    await moving
+    vi.useRealTimers()
+  })
+
   it('cancels a rename when pending edits cannot be saved', async () => {
     const s = setup()
     s.flush.mockResolvedValueOnce(false)
@@ -419,6 +499,7 @@ describe('direct project session file actions', () => {
     )
     const s = setup({ root: '/cloud', batch } as unknown as CloudStorageService)
     s.filePath.value = '/cloud/project/parts/main.kcl'
+    s.project.executingEditor.peek()!.path = s.filePath.value
     await expect(
       s.session.rename('/cloud/project/parts', '/cloud/project/renamed')
     ).rejects.toBe(error)
