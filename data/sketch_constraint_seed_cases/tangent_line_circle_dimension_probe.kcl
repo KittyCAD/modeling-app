@@ -1,0 +1,17 @@
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  l = line(start = [var -10mm, var 0mm], end = [var 10mm, var 0mm])
+  c = circle(start = [var 0mm, var 7.03mm], center = [var 0mm, var 3.03mm])
+
+  fixed([l.start, [-10mm, 0mm]])
+  fixed([l.end, [10mm, 0mm]])
+
+  radius(c) == 4mm
+  c.center.at[0] == 0mm
+  c.start.at[0] == 0mm
+  tangent([l, c])
+}
+
+assert(s.c.center.at[1], isEqualTo = 4mm, tolerance = 0.001)
+assert(s.c.start.at[1], isEqualTo = 8mm, tolerance = 0.001)

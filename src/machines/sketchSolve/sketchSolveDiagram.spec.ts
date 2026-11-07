@@ -217,6 +217,53 @@ describe('sketchSolveMachine selection clearing', () => {
   })
 })
 
+describe('sketchSolveMachine suggested constraints', () => {
+  it('applies the exact symmetry payload after the selection and graph checks', async () => {
+    const objects = [
+      createSketchApiObject({ id: 0, segments: [1, 2, 6] }),
+      createPointApiObject({ id: 1, x: -5, y: 2 }),
+      createPointApiObject({ id: 2, x: 5, y: 2 }),
+      createPointApiObject({ id: 4, x: 0, y: -5 }),
+      createPointApiObject({ id: 5, x: 0, y: 5 }),
+      createLineApiObject({ id: 6, start: 4, end: 5 }),
+    ]
+    const { actor, rustContext } = createSketchSolveHarness(objects)
+    const addConstraint = vi.spyOn(rustContext, 'addConstraint')
+    actor.send({
+      type: 'update selected ids',
+      data: { selectedIds: [1, 2, 6] },
+    })
+    const sceneGraphDelta =
+      actor.getSnapshot().context.sketchExecOutcome?.sceneGraphDelta
+    expect(sceneGraphDelta).toBeDefined()
+    if (!sceneGraphDelta) {
+      return
+    }
+    const payload = { type: 'Symmetric' as const, input: [1, 2], axis: 6 }
+    const data = {
+      payload,
+      selectedIds: [1, 2, 6],
+      sceneGraphDelta,
+    }
+
+    actor.send({
+      type: 'apply suggested constraint',
+      data: { ...data, sceneGraphDelta: createSceneGraphDelta(objects) },
+    })
+    actor.send({
+      type: 'apply suggested constraint',
+      data: { ...data, selectedIds: [1, 2, 7] },
+    })
+    expect(addConstraint).not.toHaveBeenCalled()
+
+    actor.send({ type: 'apply suggested constraint', data })
+    await vi.waitFor(() => {
+      expect(addConstraint).toHaveBeenCalledWith(0, 0, payload, {}, true)
+    })
+    expect(actor.getSnapshot().matches('move and select')).toBe(true)
+  })
+})
+
 describe('sketchSolveMachine hovered tool picker', () => {
   it('equips the point tool over a standalone point', () => {
     const objects = [

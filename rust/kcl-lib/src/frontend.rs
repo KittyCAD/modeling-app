@@ -308,6 +308,21 @@ impl Default for FrontendState {
 }
 
 impl FrontendState {
+    /// Solve a proposed constraint in this cloned frontend using an independent
+    /// mock executor cache. Warm the cache with the current program first so
+    /// sketch-scoped values and generated IDs match the real sketch.
+    pub async fn preview_constraint(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint: Constraint,
+    ) -> ExecResult<SceneGraphDelta> {
+        ctx.run_mock(&self.program, &MockConfig::default()).await?;
+        let (_, delta) = self.add_constraint(ctx, version, sketch, constraint).await?;
+        Ok(delta)
+    }
+
     pub fn new() -> Self {
         Self {
             program: Program::empty(),
@@ -13663,6 +13678,328 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_on_cloned_frontend_does_not_change_live_sketch() {
+        let initial_source = "\
+targetLength = 10mm
+sketch(on = XY) {
+  line(start = [var 0, var 0], end = [var 10, var 0.4])
+  line(start = [var 0mm, var 5mm], end = [targetLength, var 5mm])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_id = *sketch.segments.get(2).unwrap();
+        let original_scene = frontend.scene_graph.clone();
+        let original_program = format!("{:?}", frontend.program);
+        let original_checkpoints = frontend.sketch_checkpoints.len();
+
+        let original_memory = format!("{:?}", ctx.cache.read_old_memory().await);
+        let mut preview = frontend.clone();
+        let preview_delta = preview
+            .preview_constraint(
+                &mock_ctx,
+                Version(0),
+                sketch_id,
+                Constraint::Horizontal(Horizontal::Line { line: line_id }),
+            )
+            .await
+            .unwrap();
+
+        assert!(preview_delta.new_graph.objects.iter().any(|object| {
+            matches!(
+                &object.kind,
+                ObjectKind::Constraint {
+                    constraint: Constraint::Horizontal(_)
+                }
+            )
+        }));
+        assert_eq!(frontend.scene_graph, original_scene);
+        assert_eq!(format!("{:?}", frontend.program), original_program);
+        assert_eq!(frontend.sketch_checkpoints.len(), original_checkpoints);
+        assert!(
+            format!("{:?}", ctx.cache.read_old_memory().await) == original_memory,
+            "constraint preview changed live mock memory"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_suggested_axis_survives_dimension_edit() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var 0mm, var 0mm], end = [var 9.9mm, var 0.1mm])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let start_id = sketch.segments[0];
+        let end_id = sketch.segments[1];
+        let line_id = sketch.segments[2];
+
+        frontend
+            .add_constraint(
+                &mock_ctx,
+                Version(0),
+                sketch_id,
+                Constraint::Horizontal(Horizontal::Line { line: line_id }),
+            )
+            .await
+            .unwrap();
+        frontend
+            .add_constraint(
+                &mock_ctx,
+                Version(0),
+                sketch_id,
+                Constraint::Distance(Distance {
+                    segments: vec![start_id.into(), end_id.into()],
+                    distance: Number {
+                        value: 10.0,
+                        units: NumericSuffix::Mm,
+                    },
+                    label_position: None,
+                    source: Default::default(),
+                }),
+            )
+            .await
+            .unwrap();
+
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let dimension_id = *sketch
+            .constraints
+            .iter()
+            .find(|id| {
+                matches!(
+                    frontend.scene_graph.objects.get(id.0).map(|object| &object.kind),
+                    Some(ObjectKind::Constraint {
+                        constraint: Constraint::Distance(_)
+                    })
+                )
+            })
+            .unwrap();
+        let (_, edited) = frontend
+            .edit_constraint_value(&mock_ctx, Version(0), sketch_id, dimension_id, "15mm".to_owned())
+            .await
+            .unwrap();
+        let start = point_position(&edited.new_graph, start_id);
+        let end = point_position(&edited.new_graph, end_id);
+        assert!((end.y.value - start.y.value).abs() < 1e-6);
+        assert!(((end.x.value - start.x.value).abs() - 15.0).abs() < 1e-6);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_suggested_tangent_survives_diameter_edit() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var -5mm, var 10.1mm], end = [var 5mm, var 10.1mm])
+  circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_id = sketch.segments[2];
+        let circle_id = sketch.segments[5];
+
+        frontend
+            .add_constraint(
+                &mock_ctx,
+                Version(0),
+                sketch_id,
+                Constraint::Tangent(Tangent {
+                    input: vec![line_id, circle_id],
+                }),
+            )
+            .await
+            .unwrap();
+        frontend
+            .add_constraint(
+                &mock_ctx,
+                Version(0),
+                sketch_id,
+                Constraint::Diameter(Diameter {
+                    arc: circle_id,
+                    diameter: Number {
+                        value: 20.0,
+                        units: NumericSuffix::Mm,
+                    },
+                    label_position: None,
+                    source: Default::default(),
+                }),
+            )
+            .await
+            .unwrap();
+
+        let sketch = expect_sketch(find_first_sketch_object(&frontend.scene_graph).unwrap());
+        let diameter_id = *sketch
+            .constraints
+            .iter()
+            .find(|id| {
+                matches!(
+                    frontend.scene_graph.objects.get(id.0).map(|object| &object.kind),
+                    Some(ObjectKind::Constraint {
+                        constraint: Constraint::Diameter(_)
+                    })
+                )
+            })
+            .unwrap();
+        let (_, edited) = frontend
+            .edit_constraint_value(&mock_ctx, Version(0), sketch_id, diameter_id, "30mm".to_owned())
+            .await
+            .unwrap();
+        let ObjectKind::Segment {
+            segment: Segment::Line(line),
+        } = &edited.new_graph.objects[line_id.0].kind
+        else {
+            panic!("expected line segment");
+        };
+        let ObjectKind::Segment {
+            segment: Segment::Circle(circle),
+        } = &edited.new_graph.objects[circle_id.0].kind
+        else {
+            panic!("expected circle segment");
+        };
+        let start = point_position(&edited.new_graph, line.start);
+        let end = point_position(&edited.new_graph, line.end);
+        let center = point_position(&edited.new_graph, circle.center);
+        let circle_start = point_position(&edited.new_graph, circle.start);
+        let dx = end.x.value - start.x.value;
+        let dy = end.y.value - start.y.value;
+        let line_length = libm::hypot(dx, dy);
+        let center_to_line =
+            ((center.x.value - start.x.value) * dy - (center.y.value - start.y.value) * dx).abs() / line_length;
+        let radius = libm::hypot(
+            circle_start.x.value - center.x.value,
+            circle_start.y.value - center.y.value,
+        );
+        assert!((radius - 15.0).abs() < 1e-5);
+        assert!((center_to_line - radius).abs() < 1e-5);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_suggested_symmetry_survives_distance_edit() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var -5mm, var 2mm])
+  point(at = [var 5.1mm, var 2mm])
+  line(start = [var 0mm, var -5mm], end = [var 0mm, var 5mm])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let first_id = sketch.segments[0];
+        let second_id = sketch.segments[1];
+        let axis_id = sketch.segments[4];
+
+        frontend
+            .add_constraint(
+                &mock_ctx,
+                Version(0),
+                sketch_id,
+                Constraint::Symmetric(Symmetric {
+                    input: vec![first_id, second_id],
+                    axis: axis_id,
+                }),
+            )
+            .await
+            .unwrap();
+        frontend
+            .add_constraint(
+                &mock_ctx,
+                Version(0),
+                sketch_id,
+                Constraint::Distance(Distance {
+                    segments: vec![first_id.into(), second_id.into()],
+                    distance: Number {
+                        value: 10.0,
+                        units: NumericSuffix::Mm,
+                    },
+                    label_position: None,
+                    source: Default::default(),
+                }),
+            )
+            .await
+            .unwrap();
+
+        let sketch = expect_sketch(find_first_sketch_object(&frontend.scene_graph).unwrap());
+        let distance_id = *sketch
+            .constraints
+            .iter()
+            .find(|id| {
+                matches!(
+                    frontend.scene_graph.objects.get(id.0).map(|object| &object.kind),
+                    Some(ObjectKind::Constraint {
+                        constraint: Constraint::Distance(_)
+                    })
+                )
+            })
+            .unwrap();
+        let (_, edited) = frontend
+            .edit_constraint_value(&mock_ctx, Version(0), sketch_id, distance_id, "15mm".to_owned())
+            .await
+            .unwrap();
+        let ObjectKind::Segment {
+            segment: Segment::Line(axis),
+        } = &edited.new_graph.objects[axis_id.0].kind
+        else {
+            panic!("expected symmetry axis");
+        };
+        let first = point_position(&edited.new_graph, first_id);
+        let second = point_position(&edited.new_graph, second_id);
+        let axis_start = point_position(&edited.new_graph, axis.start);
+        let axis_end = point_position(&edited.new_graph, axis.end);
+        let dx = axis_end.x.value - axis_start.x.value;
+        let dy = axis_end.y.value - axis_start.y.value;
+        let axis_length = libm::hypot(dx, dy);
+        let midpoint_x = (first.x.value + second.x.value) / 2.0 - axis_start.x.value;
+        let midpoint_y = (first.y.value + second.y.value) / 2.0 - axis_start.y.value;
+        let midpoint_to_axis = (midpoint_x * dy - midpoint_y * dx).abs() / axis_length;
+        let pair_dx = second.x.value - first.x.value;
+        let pair_dy = second.y.value - first.y.value;
+        assert!((libm::hypot(pair_dx, pair_dy) - 15.0).abs() < 1e-5);
+        assert!(midpoint_to_axis < 1e-5);
+        assert!((pair_dx * dx + pair_dy * dy).abs() / axis_length < 1e-5);
 
         ctx.close().await;
         mock_ctx.close().await;

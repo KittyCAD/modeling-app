@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "feature_names": [
+    "intercept",
+    "normalizedResidual",
+    "previewMovementRatio / 0.05",
+    "freePointFraction",
+    "type:Horizontal",
+    "type:Vertical",
+    "type:Parallel",
+    "type:Perpendicular",
+    "type:LinesEqualLength",
+    "type:EqualRadius",
+    "type:Tangent",
+    "type:Symmetric",
+    "type:Distance",
+    "type:Radius",
+    "type:Diameter"
+  ],
+  "weights": [
+    0,
+    -1.037213778400318,
+    0.0034012652959186976,
+    0,
+    0.2223370034438362,
+    0.2492888260715203,
+    -0.27777389642367845,
+    0,
+    0.27777389642367845,
+    0.22302795306854414,
+    -0.22302795306854414,
+    0,
+    -0.4716258295153559,
+    0,
+    0
+  ],
+  "training_provenance": "masked_internal_kcl_constraints",
+  "training_selections": 56,
+  "training_candidates": 90,
+  "training_source_families": 6,
+  "experimental_only": true
+}

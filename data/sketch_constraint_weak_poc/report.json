@@ -1,0 +1,98 @@
+{
+  "purpose": "recover the constraint type omitted from a source-derived sketch",
+  "label_provenance": "omitted_constraint_in_internal_test_fixture",
+  "cad_reviewed_labels": 0,
+  "selections": 40,
+  "candidates": 60,
+  "target_candidates": 40,
+  "non_target_candidates": 20,
+  "source_families": 3,
+  "in_sample": {
+    "baseline": {
+      "with_target": 40,
+      "top_one": 39,
+      "ambiguous": 20,
+      "ambiguous_top_one": 19
+    },
+    "learned": {
+      "with_target": 40,
+      "top_one": 40,
+      "ambiguous": 20,
+      "ambiguous_top_one": 20
+    }
+  },
+  "leave_one_source_out": [
+    {
+      "held_out_source": "modeling-app@8e8c76d2af3788a5c6902361d694154decd57186:rust/kcl-lib/tests/equal_radius_circle_circle_native/input.kcl#sha256:86c34af5b99cfb4c9eb09254ba388e7d6f0022248037915c99254d2946d3bfd5",
+      "train_selections": 30,
+      "test_selections": 10,
+      "baseline": {
+        "with_target": 10,
+        "top_one": 10,
+        "ambiguous": 10,
+        "ambiguous_top_one": 10
+      },
+      "learned": {
+        "with_target": 10,
+        "top_one": 0,
+        "ambiguous": 10,
+        "ambiguous_top_one": 0
+      }
+    },
+    {
+      "held_out_source": "modeling-app@8e8c76d2af3788a5c6902361d694154decd57186:rust/kcl-lib/tests/tangent_line_circle/input.kcl#sha256:2462649f16490af868f7f9c982ea55a9f7738a0745032f91fb908c3790386f00",
+      "train_selections": 30,
+      "test_selections": 10,
+      "baseline": {
+        "with_target": 10,
+        "top_one": 10,
+        "ambiguous": 0,
+        "ambiguous_top_one": 0
+      },
+      "learned": {
+        "with_target": 10,
+        "top_one": 10,
+        "ambiguous": 0,
+        "ambiguous_top_one": 0
+      }
+    },
+    {
+      "held_out_source": "modeling-app@8e8c76d2af3788a5c6902361d694154decd57186:rust/kcl-lib/tests/sketch_block_region_triangle/input.kcl#sha256:ca9af620fff4d79144c2056bbaaacd4d4c685277075c7d6b985ffdd90eebfc4a",
+      "train_selections": 20,
+      "test_selections": 20,
+      "baseline": {
+        "with_target": 20,
+        "top_one": 19,
+        "ambiguous": 10,
+        "ambiguous_top_one": 9
+      },
+      "learned": {
+        "with_target": 20,
+        "top_one": 10,
+        "ambiguous": 10,
+        "ambiguous_top_one": 0
+      }
+    }
+  ],
+  "leave_one_source_out_summary": {
+    "baseline": {
+      "with_target": 40,
+      "top_one": 39,
+      "ambiguous": 20,
+      "ambiguous_top_one": 19
+    },
+    "learned": {
+      "with_target": 40,
+      "top_one": 20,
+      "ambiguous": 20,
+      "ambiguous_top_one": 0
+    }
+  },
+  "enable_in_app": false,
+  "enable_reason": "The weak-label model lost to the rules baseline on source-family holdouts and has no CAD-reviewed labels.",
+  "limitations": [
+    "Non-target candidates are weak negatives; they may encode valid alternative design intent.",
+    "Perturbed variants share source geometry and do not form independent CAD examples.",
+    "This experiment does not measure user acceptance or dimension-edit design intent."
+  ]
+}
