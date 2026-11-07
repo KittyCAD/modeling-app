@@ -1245,13 +1245,26 @@ export class ConnectionManager extends EventTarget {
         fps: 60, // This is required but it does next to nothing
       },
     }
-    await this.sendCommand(
-      cmdId,
-      { command: resizeCmd, idToRangeMap: {}, range: defaultSourceRange() },
-      true
-    )
-    if (this.connection === connection)
-      this.streamDimensions = { width, height }
+    const previousDimensions = this.streamDimensions
+    const dimensions = { width, height }
+    // The viewport observer serializes resizes. Later reliable pointer commands
+    // must use the viewport of the resize queued ahead of them, before its ACK.
+    this.streamDimensions = dimensions
+    try {
+      await this.sendCommand(
+        cmdId,
+        { command: resizeCmd, idToRangeMap: {}, range: defaultSourceRange() },
+        true
+      )
+    } catch (error) {
+      if (
+        this.connection === connection &&
+        this.streamDimensions === dimensions
+      ) {
+        this.streamDimensions = previousDimensions
+      }
+      return Promise.reject(error)
+    }
   }
 
   recordShutdownTrigger(options: ManagerTearDown) {
