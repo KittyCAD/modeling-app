@@ -258,7 +258,7 @@ describe('export requests', () => {
     ['obj', undefined],
     ['stl', 'binary'],
     ['ply', 'binary_big_endian'],
-    ['fbx', undefined],
+    ['fbx', 'binary'],
   ] as const
   it.each(otherFormats)(
     'sends only the selected format options when exporting %s',
@@ -266,6 +266,7 @@ describe('export requests', () => {
       const format = await exportFormat({
         type,
         schema: StepSchema.Ap214,
+        fbxStorage: 'binary',
         gltfStorage: 'embedded',
         stlStorage: 'binary',
         plyStorage: 'binary_big_endian',
@@ -275,6 +276,7 @@ describe('export requests', () => {
       else expect(format).toHaveProperty('storage', storage)
       for (const field of [
         'schema',
+        'fbxStorage',
         'gltfStorage',
         'stlStorage',
         'plyStorage',
