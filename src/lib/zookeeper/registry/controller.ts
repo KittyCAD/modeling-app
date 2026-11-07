@@ -11,8 +11,8 @@ import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
 import { getParentAbsolutePath } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection, trap } from '@src/lib/trap'
-import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
-import { ZookeeperFileRequestProcessor } from '@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor'
+import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/legacy/ZookeeperEditPatchHistory'
+import { ZookeeperFileRequestProcessor } from '@src/lib/zookeeper/registry/legacy/ZookeeperFileRequestProcessor'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   createZookeeperManagerActor,
@@ -136,21 +136,21 @@ class SessionController implements ZookeeperSessionController {
   private lastCloudChange?: CloudProjectToolChange
   private readonly cloudToolCalls = new Set<string>()
 
-  private readonly history: ZookeeperEditPatchHistory
-  private readonly fileRequestProcessor: ZookeeperFileRequestProcessor
+  private readonly legacyHistory: ZookeeperEditPatchHistory
+  private readonly legacyFileRequestProcessor: ZookeeperFileRequestProcessor
 
   constructor(private readonly deps: ZookeeperSessionControllerDependencies) {
     this.apiToken = deps.apiToken
     this.projectId = deps.projectId
     this.projectPath = deps.projectPath
     this.actor = createZookeeperManagerActor(deps.apiToken)
-    this.history = new ZookeeperEditPatchHistory(
+    this.legacyHistory = new ZookeeperEditPatchHistory(
       deps.kclManager,
       deps.fileOperations
     )
-    this.fileRequestProcessor = new ZookeeperFileRequestProcessor({
+    this.legacyFileRequestProcessor = new ZookeeperFileRequestProcessor({
       getProject: () => this.getProject(),
-      history: this.history,
+      history: this.legacyHistory,
       isEditorCurrent: () => {
         const editor = this.getZdsProject()?.executingEditor.value
         return (
@@ -176,7 +176,7 @@ class SessionController implements ZookeeperSessionController {
     })
 
     this.stopFileWriteProgressEffect = effect(() => {
-      const progress = this.fileRequestProcessor.fileWriteProgress.value
+      const progress = this.legacyFileRequestProcessor.fileWriteProgress.value
       if (!progress) {
         toast.dismiss(this.fileWriteToastId)
         return
@@ -418,12 +418,12 @@ class SessionController implements ZookeeperSessionController {
         return
       }
       startingFreshConversation = true
-      this.history.finishPending()
-      void this.fileRequestProcessor.reset().then(() => {
+      this.legacyHistory.finishPending()
+      void this.legacyFileRequestProcessor.reset().then(() => {
         if (!isCurrentOperation()) {
           return
         }
-        this.history.reset()
+        this.legacyHistory.reset()
         this.actor.send({
           type: ZookeeperManagerTransitions.CacheSetupAndConnect,
           refParentSend: this.actor.send,
@@ -477,10 +477,10 @@ class SessionController implements ZookeeperSessionController {
       })
     }
     zookeeperPromptRunningSignal.value = false
-    this.history.finishPending()
-    const workerDisposal = this.fileRequestProcessor
+    this.legacyHistory.finishPending()
+    const workerDisposal = this.legacyFileRequestProcessor
       .dispose()
-      .finally(() => this.history.dispose())
+      .finally(() => this.legacyHistory.dispose())
     this.disposal = Promise.allSettled([
       workerDisposal,
       this.cloudRefreshQueue,
@@ -618,23 +618,27 @@ class SessionController implements ZookeeperSessionController {
 
     this.refreshCloudProjectFromSnapshot(snapshot)
 
-    try {
-      if (!this.getProject()?.cloudProjectId)
-        this.history.handleActorSnapshot(snapshot)
-    } catch (error: unknown) {
-      console.error('Failed to update Zookeeper history.', error)
-    }
-    try {
-      this.fileRequestProcessor.handleActorSnapshot(snapshot)
-    } catch (error: unknown) {
-      console.error('Failed to process Zookeeper file updates.', error)
-    }
+    this.handleLegacyContentUpdates(snapshot)
     this.updateBilling(snapshot.context.awaitingResponse)
     this.saveConversationId(snapshot)
     this.continueCheck(snapshot)
     this.tryConnectWhenIdle(snapshot)
     this.reconcileReconnect(snapshot)
     this.flushQueue(snapshot)
+  }
+
+  /** Remove this path with registry/legacy after the Zookeeper tool rollout. */
+  private handleLegacyContentUpdates(snapshot: ZookeeperSnapshot) {
+    try {
+      this.legacyHistory.handleActorSnapshot(snapshot)
+    } catch (error: unknown) {
+      console.error('Failed to update Zookeeper history.', error)
+    }
+    try {
+      this.legacyFileRequestProcessor.handleActorSnapshot(snapshot)
+    } catch (error: unknown) {
+      console.error('Failed to process Zookeeper file updates.', error)
+    }
   }
 
   private refreshCloudProjectFromSnapshot(snapshot: ZookeeperSnapshot) {
@@ -866,7 +870,7 @@ class SessionController implements ZookeeperSessionController {
     }
     if (
       this.continueCheckInFlight ||
-      this.fileRequestProcessor.hasPendingRequests ||
+      this.legacyFileRequestProcessor.hasPendingRequests ||
       this.pendingCloudRefreshes > 0
     ) {
       return
@@ -978,7 +982,7 @@ class SessionController implements ZookeeperSessionController {
 
   private isReadyForPrompt(snapshot: ZookeeperSnapshot) {
     return (
-      !this.fileRequestProcessor.hasPendingRequests &&
+      !this.legacyFileRequestProcessor.hasPendingRequests &&
       this.pendingCloudRefreshes === 0 &&
       snapshot.matches({
         [ZookeeperManagerStates.Ready]: {
