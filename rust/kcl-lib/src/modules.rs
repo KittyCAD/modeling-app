@@ -103,6 +103,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "hole" => Some(include_str!("../std/hole.kcl")),
         "gear" => Some(include_str!("../std/gear.kcl")),
         "view" => Some(include_str!("../std/view.kcl")),
+        "drawing" => Some(include_str!("../std/drawing.kcl")),
         "operation" => Some(include_str!("../std/operation.kcl")),
         _ => None,
     }
@@ -336,6 +337,49 @@ pub struct ModuleSource {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn drawing_sheets_keep_physical_dimensions_in_any_default_unit() {
+        for unit in ["mm", "in"] {
+            let program = format!(
+                r#"
+@settings(kclVersion = 3.0, defaultLengthUnit = {unit})
+fn check(@size: drawing::PaperSize, width: number(mm), height: number(mm)) {{
+  paper = drawing::sheet(size, orientation = drawing::Orientation::Portrait)
+  assertIs(paper.size == size)
+  assert(paper.width, isEqualTo = width)
+  assert(paper.height, isEqualTo = height)
+  assertIs(paper.orientation == drawing::Orientation::Portrait)
+  landscape = drawing::sheet(size)
+  assertIs(landscape.orientation == drawing::Orientation::Landscape)
+  assert(landscape.width, isEqualTo = height)
+  assert(landscape.height, isEqualTo = width)
+  return paper
+}}
+check(drawing::PaperSize::A3, width = 297mm, height = 420mm)
+check(drawing::PaperSize::A4, width = 210mm, height = 297mm)
+check(drawing::PaperSize::Letter, width = 215.9mm, height = 279.4mm)
+check(drawing::PaperSize::Legal, width = 215.9mm, height = 355.6mm)
+"#
+            );
+            crate::execution::parse_execute(&program)
+                .await
+                .expect("standard sheets execute without an engine");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn drawing_module_does_not_break_legacy_programs() {
+        crate::execution::parse_execute("@settings(kclVersion = 2.0)\nx = 1mm")
+            .await
+            .expect("the legacy prelude remains usable");
+        let error = crate::execution::parse_execute(
+            "@settings(kclVersion = 2.0, experimentalFeatures = allow)\nimport \"std::drawing\"",
+        )
+        .await
+        .expect_err("drawings require KCL 3.0");
+        assert!(error.message().contains("requires KCL 3.0"), "{error}");
+    }
 
     #[test]
     fn import_name_prefers_the_path_as_written() {
