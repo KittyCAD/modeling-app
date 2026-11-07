@@ -2021,22 +2021,24 @@ fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
     assert!(matches!(
         &updated[0],
         Artifact::EdgeCut(EdgeCut {
+            body_id: Some(owner_id),
             id,
             sub_type: EdgeCutSubType::Fillet,
             source_selector_index: Some(0),
             consumed_edge_id: None,
             ..
-        }) if *id == ArtifactId::new(cmd_id)
+        }) if *id == ArtifactId::new(cmd_id) && *owner_id == body_id
     ));
     assert!(matches!(
         &updated[1],
         Artifact::EdgeCut(EdgeCut {
+            body_id: Some(owner_id),
             id,
             sub_type: EdgeCutSubType::Fillet,
             source_selector_index: Some(1),
             consumed_edge_id: None,
             ..
-        }) if *id == ArtifactId::new(extra_face_id)
+        }) if *id == ArtifactId::new(extra_face_id) && *owner_id == body_id
     ));
     let Some(Artifact::Sweep(body_update)) = updated.last() else {
         panic!("Missing treatment body update");

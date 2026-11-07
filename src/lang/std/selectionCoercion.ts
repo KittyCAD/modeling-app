@@ -3,6 +3,8 @@ import {
   getArtifactFromRange,
   getArtifactOfTypes,
   getSweepArtifactFromSelection,
+  getSweepFromSuspectedSweepSurface,
+  getMergedSweepBodyArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
@@ -138,6 +140,24 @@ export function coerceSelectionsToBody(
         0
       ) {
         codeRefOnlyV2.push({ codeRef: selection.artifact.codeRef })
+      }
+      continue
+    }
+
+    if (selection.artifact.type === 'edgeCut') {
+      const owner = getSweepFromSuspectedSweepSurface(
+        selection.artifact.id,
+        artifactGraph
+      )
+      if (err(owner)) return owner
+      const body =
+        owner.type === 'sweep'
+          ? getMergedSweepBodyArtifact(owner, artifactGraph)
+          : owner
+      if (err(body)) return body
+      if (!seenBodyIds.has(body.id)) {
+        seenBodyIds.add(body.id)
+        bodySelections.push({ artifact: body, codeRef: body.codeRef })
       }
       continue
     }

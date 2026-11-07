@@ -916,6 +916,72 @@ describe('edge-independent artifact traversal', () => {
   })
 })
 
+it('resolves a treatment face to its Boolean output rather than a contributing sweep', () => {
+  const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+  addMappedRegion(artifactGraph, sourceSegment, 'boolean', true)
+  const body: Artifact = {
+    type: 'compositeSolid',
+    id: 'boolean-output',
+    subType: 'subtract',
+    consumed: false,
+    solidIds: ['sweep-boolean'],
+    toolIds: [],
+    codeRef,
+  }
+  artifactGraph.set(body.id, body)
+  const cut: Artifact = {
+    type: 'edgeCut',
+    id: 'chamfer-face',
+    subType: 'chamfer',
+    bodyId: body.id,
+    edgeIds: [],
+    codeRef,
+  }
+  artifactGraph.set(cut.id, cut)
+  expect(getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)).toBe(body)
+  expect(
+    coerceSelectionsToBody(
+      { graphSelections: [{ artifact: cut, codeRef }], otherSelections: [] },
+      artifactGraph
+    )
+  ).toEqual({
+    graphSelections: [{ artifact: body, codeRef }],
+    otherSelections: [],
+  })
+})
+
+it('keeps the source sweep distinct from the later Boolean owner of a treatment face', () => {
+  const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+  addMappedRegion(artifactGraph, sourceSegment, 'boolean', true)
+  const sourcePath = artifactGraph.get('region-path-boolean')
+  const sourceSweep = artifactGraph.get('sweep-boolean')
+  if (sourcePath?.type !== 'path' || sourceSweep?.type !== 'sweep')
+    throw new Error('Missing source sweep')
+  const body: Artifact = {
+    type: 'compositeSolid',
+    id: 'boolean-output',
+    subType: 'subtract',
+    consumed: false,
+    solidIds: [sourceSweep.id],
+    toolIds: [],
+    codeRef,
+  }
+  artifactGraph.set(body.id, body)
+  sourcePath.compositeSolidId = body.id
+  const cut: Artifact = {
+    type: 'edgeCut',
+    id: 'retained-chamfer',
+    subType: 'chamfer',
+    bodyId: sourcePath.id,
+    edgeIds: [],
+    codeRef,
+  }
+  artifactGraph.set(cut.id, cut)
+  expect(getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)).toBe(body)
+  expect(
+    getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
+  ).toBe(sourceSweep)
+})
 describe('getSweepFromSuspectedSweepSurface', () => {
   it('resolves path fallback and direct faces without logging failed probes', () => {
     const { artifactGraph, sourceSegment } = createSourceSegmentGraph()

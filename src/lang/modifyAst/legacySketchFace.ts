@@ -59,7 +59,9 @@ export function sketchBlockOnExtrudedFace(
     },
     artifactGraph,
     modifiedAst,
-    wasmInstance
+    wasmInstance,
+    undefined,
+    { artifactTypeFilter: ['sweep', 'compositeSolid'] }
   )
   if (err(result)) return result
 

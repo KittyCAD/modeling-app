@@ -22,6 +22,7 @@ import { isArray } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { isErr } from '@src/lib/trap'
+import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -545,6 +546,7 @@ hide(sketch001)`
     removeObsoleteEdges(artifactGraph)
     const body = getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)
     if (isErr(body)) throw body
+    if (body.type !== 'sweep') throw new Error('Expected sweep body')
     expect(body.surfaceIds).toContain(cut.id)
     const originalCode = recast(ast, world.instance)
     const x = await stringToKclExpression('5', world.rustContext)
@@ -751,3 +753,166 @@ it('rejects a copied chamfer face rather than materializing a different face', a
   )
   expect(recast(ast, world.instance)).toBe(original)
 }, 60_000)
+
+it.each([
+  { beforeBoolean: false, tagged: false, secondBoolean: false },
+  { beforeBoolean: true, tagged: true, secondBoolean: false },
+  { beforeBoolean: true, tagged: false, secondBoolean: false },
+  { beforeBoolean: false, tagged: true, secondBoolean: false },
+  { beforeBoolean: false, tagged: true, secondBoolean: true },
+])(
+  'sketches on the Boolean treatment face (treatment before Boolean: $beforeBoolean, tagged: $tagged, second Boolean: $secondBoolean)',
+  async ({ beforeBoolean, tagged, secondBoolean }) => {
+    const booleanCall = `plateWithHole = subtract(${beforeBoolean ? 'chamfer001' : 'plate'}, tools = hole)`
+    const chamferCall = `chamfer001 = chamfer(${beforeBoolean ? 'plate' : 'plateWithHole'}, length = 1mm, edges = [{ sideFaces = [plate.sketch.tags.bottom, plate.faces.plateTop] }]${tagged ? ', tag = $chamferFace' : ''})`
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+plateSketch = sketch(on = XY) {
+  bottom = line(start = [0mm, 0mm], end = [20mm, 0mm])
+  right = line(start = [20mm, 0mm], end = [20mm, 20mm])
+  top = line(start = [20mm, 20mm], end = [0mm, 20mm])
+  left = line(start = [0mm, 20mm], end = [0mm, 0mm])
+}
+plate = extrude(region(point = [10mm, 10mm], sketch = plateSketch), length = 5mm, tagEnd = $plateTop)
+holeSketch = sketch(on = XY) {
+  circle(start = [13mm, 10mm], center = [10mm, 10mm])
+}
+hole = extrude(region(point = [10mm, 10mm], sketch = holeSketch), length = 20mm, symmetric = true)
+${beforeBoolean ? chamferCall : booleanCall}
+${beforeBoolean ? booleanCall : chamferCall}
+${
+  secondBoolean
+    ? `extraHoleSketch = sketch(on = XY) { circle(start = [6mm, 5mm], center = [5mm, 5mm]) }
+extraHole = extrude(region(point = [5mm, 5mm], sketch = extraHoleSketch), length = 20mm, symmetric = true)
+finalPlate = subtract(chamfer001, tools = extraHole)`
+    : ''
+}
+hide(plateSketch)
+hide(holeSketch)
+`
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    const cut = [...artifactGraph.values()].find((a) => a.type === 'edgeCut')
+    if (cut?.type !== 'edgeCut')
+      throw new Error('Missing Boolean treatment face')
+    const body = getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)
+    if (isErr(body)) throw body
+    expect(body.type).toBe('compositeSolid')
+    if (!beforeBoolean) expect(cut.bodyId).toBe(body.id)
+    const result = sketchBlockOnExtrudedFace(
+      ast,
+      {
+        artifact: cut,
+        codeRef: cut.codeRef,
+        entityRef: { type: 'face', face_id: cut.id },
+      },
+      cut.codeRef.pathToNode,
+      body.codeRef.pathToNode,
+      artifactGraph,
+      world.instance
+    )
+    if (isErr(result)) throw result
+    const output = recast(result.modifiedAst, world.instance)
+    if (isErr(output)) throw output
+    await getAstAndArtifactGraph(
+      output.replace(
+        /(sketch\d+ = sketch\(on = faceOf[^\n]+\) \{)\n/,
+        '$1\n  circle(start = [0.1mm, 0mm], center = [0mm, 0mm])\n'
+      ),
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    expect(output).toContain(
+      `faceOf(${secondBoolean ? 'finalPlate' : beforeBoolean ? 'plateWithHole' : 'chamfer001'}, face = `
+    )
+    expect(world.kclManager.variables.sketch001).toMatchObject({
+      type: 'Object',
+      value: { meta: { value: { sketch: { value: { on: { id: cut.id } } } } } },
+    })
+  },
+  60_000
+)
+
+it.each([
+  { treatment: 'chamfer', beforeBoolean: true },
+  { treatment: 'fillet', beforeBoolean: true },
+  { treatment: 'chamfer', beforeBoolean: false },
+  { treatment: 'fillet', beforeBoolean: false },
+])(
+  'translates the Boolean output from a feature-tree $treatment selection (treatment before Boolean: $beforeBoolean)',
+  async ({ treatment, beforeBoolean }) => {
+    const cutName = `${treatment}001`
+    const cutCall = `${cutName} = ${treatment}(${beforeBoolean ? 'plate' : 'plateWithHole'}, ${treatment === 'chamfer' ? 'length' : 'radius'} = 1mm, edges = [{ sideFaces = [plate.sketch.tags.bottom, plate.faces.plateTop] }])`
+    const booleanCall = `plateWithHole = subtract(${beforeBoolean ? cutName : 'plate'}, tools = hole)`
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+profile = sketch(on = XY) {
+  bottom = line(start = [0mm, 0mm], end = [20mm, 0mm])
+  right = line(start = [20mm, 0mm], end = [20mm, 20mm])
+  top = line(start = [20mm, 20mm], end = [0mm, 20mm])
+  left = line(start = [0mm, 20mm], end = [0mm, 0mm])
+}
+plate = extrude(region(point = [10mm, 10mm], sketch = profile), length = 5mm, tagEnd = $plateTop)
+holeSketch = sketch(on = XY) {
+  circle(start = [13mm, 10mm], center = [10mm, 10mm])
+}
+hole = extrude(region(point = [10mm, 10mm], sketch = holeSketch), length = 20mm, symmetric = true)
+${beforeBoolean ? cutCall : booleanCall}
+${beforeBoolean ? booleanCall : cutCall}
+hide(profile)
+hide(holeSketch)
+`
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    const cut = [...artifactGraph.values()].find((a) => a.type === 'edgeCut')
+    const body = [...artifactGraph.values()].find(
+      (a) => a.type === 'compositeSolid'
+    )
+    if (cut?.type !== 'edgeCut' || body?.type !== 'compositeSolid')
+      throw new Error('Missing treatment or Boolean body')
+    // Feature-tree selections have no engine topology fallback. Use the same
+    // normalization as the command bar and modeling dialog.
+    const objects = coerceSelectionsForBodyOnlySelectionTypes(
+      {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: cut.id },
+            codeRef: cut.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      ['path', 'sweep', 'compositeSolid'],
+      artifactGraph
+    )
+    if (!objects) throw new Error('Missing body selection')
+    expect(objects.graphSelections[0].entityRef).toEqual({
+      type: 'solid3d',
+      solid3d_id: body.id,
+    })
+    const x = await stringToKclExpression('5mm', world.rustContext)
+    if (isErr(x) || 'errors' in x)
+      throw new Error('Invalid translation distance')
+    const result = await modelingCommandCodemods.Translate.run({
+      ast,
+      kclManager: world.kclManager,
+      wasmInstance: world.instance,
+      args: { objects, x },
+    })
+    if (isErr(result)) throw result
+    const output = recast(result.modifiedAst, world.instance)
+    if (isErr(output)) throw output
+    expect(output).toContain('translate(plateWithHole, x = 5mm)')
+    expect(output).not.toContain('translate(plate,')
+    await getAstAndArtifactGraph(output, world.instance, world.kclManager)
+    expect(world.kclManager.errors).toEqual([])
+  },
+  60_000
+)

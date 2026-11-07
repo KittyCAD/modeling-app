@@ -1445,7 +1445,22 @@ export function getVariableExprsFromSelection(
           ? resolvedForSegment.artifact
           : null
     const edgeCutCodeRef = s.codeRef ?? resolvedForSegment?.codeRef
-    if (selectedEdgeCut && edgeCutCodeRef) {
+    const edgeCutOwner = selectedEdgeCut?.bodyId
+      ? artifactGraph.get(selectedEdgeCut.bodyId)
+      : undefined
+    const edgeCutBodyWasConsumed =
+      edgeCutOwner?.type === 'path'
+        ? Boolean(edgeCutOwner.compositeSolidId)
+        : (edgeCutOwner?.type === 'sweep' ||
+            edgeCutOwner?.type === 'compositeSolid') &&
+          edgeCutOwner.consumed
+    // A treatment's defining variable can be stale after a Boolean. When
+    // requested, resolve its current body through the normal ownership traversal.
+    if (
+      selectedEdgeCut &&
+      edgeCutCodeRef &&
+      !(lastChildLookup && edgeCutBodyWasConsumed)
+    ) {
       const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
         ast,
         edgeCutCodeRef.pathToNode,
@@ -1532,15 +1547,18 @@ export function getVariableExprsFromSelection(
         artifact.type === 'wall' ||
         artifact.type === 'edgeCut')
     ) {
-      const sweep = getSweepFromSuspectedSweepSurface(
+      const owningBody = getSweepFromSuspectedSweepSurface(
         artifact.id,
         artifactGraph
       )
-      if (!err(sweep) && sweep.codeRef) {
-        pathToNodeForVariable = sweep.codeRef.pathToNode
-        const sweepArtifact = artifactGraph.get(sweep.id)
-        if (sweepArtifact?.type === 'sweep') {
-          artifactForLastChildLookup = sweepArtifact
+      if (!err(owningBody) && owningBody.codeRef) {
+        pathToNodeForVariable = owningBody.codeRef.pathToNode
+        const bodyArtifact = artifactGraph.get(owningBody.id)
+        if (
+          bodyArtifact?.type === 'sweep' ||
+          bodyArtifact?.type === 'compositeSolid'
+        ) {
+          artifactForLastChildLookup = bodyArtifact
         }
       }
     }
@@ -2601,7 +2619,7 @@ export function findAllChildrenAndOrderByPlaceInCode(
     return artifactsWithCodeRefs
   }
 
-  const pushToSomething = (
+  const pushRelatedArtifactIds = (
     resultId: string,
     childrenIdOrIds: string | string[] | null | undefined
   ) => {
@@ -2621,32 +2639,33 @@ export function findAllChildrenAndOrderByPlaceInCode(
     if (result.has(currentId)) continue
     const current = artifactGraph.get(currentId)
     if (current?.type === 'path') {
-      pushToSomething(currentId, current.sweepId)
-      pushToSomething(currentId, current.segIds)
-      pushToSomething(currentId, current.compositeSolidId)
-      pushToSomething(currentId, current.patternIds)
+      pushRelatedArtifactIds(currentId, current.sweepId)
+      pushRelatedArtifactIds(currentId, current.segIds)
+      pushRelatedArtifactIds(currentId, current.compositeSolidId)
+      pushRelatedArtifactIds(currentId, current.patternIds)
     } else if (current?.type === 'sweep') {
-      pushToSomething(currentId, current.surfaceIds)
-      pushToSomething(currentId, current.pathId)
-      pushToSomething(currentId, current.patternIds)
+      pushRelatedArtifactIds(currentId, current.surfaceIds)
+      pushRelatedArtifactIds(currentId, current.pathId)
+      pushRelatedArtifactIds(currentId, current.patternIds)
     } else if (current?.type === 'wall' || current?.type === 'cap') {
-      pushToSomething(currentId, current?.pathIds)
+      pushRelatedArtifactIds(currentId, current?.pathIds)
     } else if (current?.type === 'segment') {
-      pushToSomething(currentId, current.edgeCutId)
-      pushToSomething(currentId, current.surfaceId)
+      pushRelatedArtifactIds(currentId, current.edgeCutId)
+      pushRelatedArtifactIds(currentId, current.surfaceId)
     } else if (current?.type === 'edgeCut') {
-      pushToSomething(currentId, current.surfaceId)
+      pushRelatedArtifactIds(currentId, current.bodyId)
+      pushRelatedArtifactIds(currentId, current.surfaceId)
     } else if (current?.type === 'startSketchOnPlane') {
-      pushToSomething(currentId, current.planeId)
+      pushRelatedArtifactIds(currentId, current.planeId)
     } else if (current?.type === 'plane') {
-      pushToSomething(currentId, current.pathIds)
+      pushRelatedArtifactIds(currentId, current.pathIds)
     } else if (current?.type === 'compositeSolid') {
-      pushToSomething(currentId, current.compositeSolidId)
-      pushToSomething(currentId, current.patternIds)
+      pushRelatedArtifactIds(currentId, current.compositeSolidId)
+      pushRelatedArtifactIds(currentId, current.patternIds)
     } else if (current?.type === 'pattern') {
-      pushToSomething(currentId, current.copyIds)
-      pushToSomething(currentId, current.copyFaceIds)
-      pushToSomething(currentId, current.copyEdgeIds)
+      pushRelatedArtifactIds(currentId, current.copyIds)
+      pushRelatedArtifactIds(currentId, current.copyFaceIds)
+      pushRelatedArtifactIds(currentId, current.copyEdgeIds)
     }
     result.add(currentId)
   }

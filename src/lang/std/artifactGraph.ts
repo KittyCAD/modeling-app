@@ -395,7 +395,7 @@ export function getCapForPathId(
 export function getSweepFromSuspectedSweepSurface(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
-): SweepArtifact | Error {
+): Extract<Artifact, { type: 'sweep' | 'compositeSolid' }> | Error {
   let faceArtifact:
     | Extract<Artifact, { type: 'wall' | 'cap' | 'edgeCut' }>
     | undefined
@@ -419,6 +419,20 @@ export function getSweepFromSuspectedSweepSurface(
       return new Error('wall/cap has no sweepId')
     }
     return getArtifactOfTypes({ key: sweepId, types: ['sweep'] }, artifactGraph)
+  }
+  if (faceArtifact.bodyId) {
+    const body = artifactGraph.get(faceArtifact.bodyId)
+    if (body?.type === 'sweep' || body?.type === 'compositeSolid') return body
+    if (body?.type === 'path') {
+      const ownerId = body.compositeSolidId ?? body.sweepId
+      if (ownerId) {
+        return getArtifactOfTypes(
+          { key: ownerId, types: ['sweep', 'compositeSolid'] },
+          artifactGraph
+        )
+      }
+    }
+    return new Error(`No body found for treatment face ${faceArtifact.id}`)
   }
   // Treatment faces belong to the same body as the original sweep faces.
   for (const artifact of artifactGraph.values()) {
@@ -620,6 +634,17 @@ export function getSweepArtifactFromSelection(
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
   } else if (selection.artifact?.type === 'edgeCut') {
+    // Sweep-specific callers need the originating sweep, even when its path
+    // now belongs to a Boolean result. Body selection resolves that result separately.
+    const owner = selection.artifact.bodyId
+      ? artifactGraph.get(selection.artifact.bodyId)
+      : undefined
+    if (owner?.type === 'path' && owner.sweepId) {
+      return getArtifactOfTypes(
+        { key: owner.sweepId, types: ['sweep'] },
+        artifactGraph
+      )
+    }
     const sweep = getSweepFromSuspectedSweepSurface(
       selection.artifact.id,
       artifactGraph
@@ -1200,6 +1225,20 @@ export function coerceSelectionsToBody(
       return new Error(
         `Unable to find source range for selected artifact: ${selection.artifact.type}`
       )
+    }
+    if (selection.artifact.type === 'edgeCut') {
+      const body = getSweepFromSuspectedSweepSurface(
+        selection.artifact.id,
+        artifactGraph
+      )
+      if (err(body)) return body
+      if (body.type === 'compositeSolid') {
+        if (!seenBodyIds.has(body.id)) {
+          seenBodyIds.add(body.id)
+          bodySelections.push({ artifact: body, codeRef: body.codeRef })
+        }
+        continue
+      }
     }
     const maybeSweep = getSweepArtifactFromSelection(
       { artifact: selection.artifact, codeRef: selection.codeRef },

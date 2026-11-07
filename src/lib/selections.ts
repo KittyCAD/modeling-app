@@ -3750,7 +3750,7 @@ export async function selectionBodyFace(
   }
 
   const children = findAllChildrenAndOrderByPlaceInCode(
-    { type: 'sweep', ...extrusion },
+    extrusion,
     artifactGraph
   )
   const lastChildVariable = getLastVariable(
