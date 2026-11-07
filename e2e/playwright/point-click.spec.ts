@@ -220,17 +220,17 @@ openSketch = sketch(on = XY) {
       )
       // Match the cursor position of an initially loaded file.
       await editor.scrollToText('closedSketch = sketch(on = XZ) {')
+      await resetView(scene)
 
       await test.step(`Double-click on the closed sketch`, async () => {
         await scene.settled()
         await editor.closePane()
         // Selecting the closed region keeps the sketch header active on entry.
-        const [, moveToCircle, dblClickCircle] =
-          await scene.makeSelectionHelpers({
-            kind: 'face',
-            index: 0,
-            stream: { x: 0.63, y: 0.5, format: 'ratio' },
-          })
+        const [, moveToCircle, dblClickCircle] = test
+          .info()
+          .tags.includes('@localRenderer')
+          ? await scene.findFace(0)
+          : await scene.makeMouseHelpersAtWorldPoint({ x: 8, y: 0, z: 5 })
         await moveToCircle()
         await dblClickCircle()
         await expect(toolbar.exitSketchBtn).toBeVisible()
@@ -246,12 +246,15 @@ openSketch = sketch(on = XY) {
       })
 
       await test.step(`Double-click on the open sketch`, async () => {
-        const [, moveToOpenPath, dblClickOpenPath] =
-          await scene.makeSelectionHelpers({
-            kind: 'edge',
-            index: 3,
-            stream: { x: 0.65, y: 0.5, format: 'ratio' },
-          })
+        const [, moveToOpenPath, dblClickOpenPath] = test
+          .info()
+          .tags.includes('@localRenderer')
+          ? await scene.findEdge(3)
+          : await scene.makeMouseHelpersAtWorldPoint({
+              x: 5 + 5 * Math.SQRT1_2,
+              y: 5 * Math.SQRT1_2,
+              z: 0,
+            })
         await moveToOpenPath()
         await dblClickOpenPath()
         await expect(toolbar.exitSketchBtn).toBeVisible()
@@ -297,6 +300,7 @@ sketch001 = extrude(region001, length = -12)`
         await scene.waitForExecutionDoneAfter(() =>
           editor.replaceCode('', initialCode)
         )
+        await resetView(scene)
         await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
