@@ -1,3 +1,4 @@
+import { CLOUD_DIRECTORIES_FILE } from '@src/lib/fs-zds/cloud/directories'
 import { posix, win32 } from '@chainner/node-path'
 import * as api from '@src/lib/fs-zds/cloud/api'
 import { parseProjectArchive } from '@src/lib/fs-zds/cloud/archive'
@@ -56,6 +57,49 @@ describe.each([
     return { fs, diskWrite, diskRemove }
   }
 
+  it('persists empty directories through a fresh cloud filesystem, then renames and removes them', async () => {
+    vi.useFakeTimers()
+    const first = setup().fs
+    const root = await first.openProject('one')
+    const response = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.updateRemoteProject).mockReturnValueOnce(response.promise)
+    const creating = first.mkdir(paths.join(root, 'parts', 'empty'), {
+      recursive: true,
+    })
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(first.saves.value.get('one')?.state).toBe('saving')
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    response.resolve({ ...remote, revision: '2' })
+    await creating
+    let archive = vi.mocked(api.updateRemoteProject).mock.calls.at(-1)![0].files
+    expect(archive).toContainEqual({
+      relativePath: CLOUD_DIRECTORIES_FILE,
+      data: encoder.encode('["parts/empty"]'),
+    })
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce(
+      archive.map((file) => ({ ...file, data: new Uint8Array(file.data) }))
+    )
+    const reopened = setup().fs
+    const nextRoot = await reopened.openProject('one')
+    expect(await reopened.readdir(paths.join(nextRoot, 'parts'))).toEqual([
+      'empty',
+    ])
+    await reopened.rename(
+      paths.join(nextRoot, 'parts', 'empty'),
+      paths.join(nextRoot, 'parts', 'renamed')
+    )
+    archive = vi.mocked(api.updateRemoteProject).mock.calls.at(-1)![0].files
+    expect(archive).toContainEqual({
+      relativePath: CLOUD_DIRECTORIES_FILE,
+      data: encoder.encode('["parts/renamed"]'),
+    })
+    await reopened.rm(paths.join(nextRoot, 'parts'), { recursive: true })
+    expect(
+      vi.mocked(api.updateRemoteProject).mock.calls.at(-1)![0].deletedPaths
+    ).toContain(CLOUD_DIRECTORIES_FILE)
+    vi.useRealTimers()
+  })
+
   it('downloads once on the first refresh and fetches new bytes when reopening', async () => {
     const { fs } = setup()
     await fs.refreshProject('one')
@@ -71,6 +115,185 @@ describe.each([
       )
     ).toBe('updated remotely')
     expect(api.updateRemoteProject).not.toHaveBeenCalled()
+  })
+
+  it('polls metadata without downloading unchanged project files', async () => {
+    const { fs } = setup()
+    await fs.openProject('one')
+    vi.mocked(api.downloadRemoteProjectArchive).mockClear()
+    expect(await fs.checkForUpdates('one', () => true)).toEqual({
+      changed: false,
+      refreshed: false,
+    })
+    expect(api.downloadRemoteProjectArchive).not.toHaveBeenCalled()
+    expect(api.updateRemoteProject).not.toHaveBeenCalled()
+  })
+
+  it('coalesces probes and refreshes changed files once, including a matching Zookeeper notification', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    const gate = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.getRemoteProject)
+      .mockReturnValueOnce(gate.promise)
+      .mockResolvedValue({ ...remote, revision: '2' })
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+      { relativePath: 'main.kcl', data: encoder.encode('remote edit') },
+    ])
+    vi.mocked(api.downloadRemoteProjectArchive).mockClear()
+    const first = fs.checkForUpdates('one', () => true)
+    const second = fs.checkForUpdates('one', () => true)
+    expect(second).toBe(first)
+    gate.resolve({ ...remote, revision: '2' })
+    expect(await first).toEqual({ changed: true, refreshed: true })
+    await fs.refreshProject('one', () => true, '2')
+    expect(api.downloadRemoteProjectArchive).toHaveBeenCalledOnce()
+    expect(await fs.readFile(paths.join(root, 'main.kcl'), 'utf8')).toBe(
+      'remote edit'
+    )
+    expect(await fs.checkForUpdates('one', () => true)).toEqual({
+      changed: false,
+      refreshed: false,
+    })
+  })
+
+  it('observes remote changes while dirty or Zookeeper is working, then refreshes when safe', async () => {
+    const { fs } = setup()
+    await fs.openProject('one')
+    vi.mocked(api.getRemoteProject).mockResolvedValue({
+      ...remote,
+      revision: '2',
+    })
+    vi.mocked(api.downloadRemoteProjectArchive).mockClear()
+    expect(await fs.checkForUpdates('one', () => false)).toEqual({
+      changed: true,
+      refreshed: false,
+    })
+    expect(await fs.checkForUpdates('one', () => false)).toEqual({
+      changed: false,
+      refreshed: false,
+    })
+    expect(api.downloadRemoteProjectArchive).not.toHaveBeenCalled()
+    expect(await fs.checkForUpdates('one', () => true)).toEqual({
+      changed: false,
+      refreshed: true,
+    })
+  })
+
+  it('discards a downloaded snapshot when editing or switching projects during the request', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    const file = paths.join(root, 'main.kcl')
+    const original = await fs.readFile(file, 'utf8')
+    vi.mocked(api.getRemoteProject).mockResolvedValue({
+      ...remote,
+      revision: '2',
+    })
+    const gate = Promise.withResolvers<ArrayBuffer>()
+    vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
+      gate.promise
+    )
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+      { relativePath: 'main.kcl', data: encoder.encode('remote edit') },
+    ])
+    const request = fs.checkForUpdates('one', () => true)
+    await vi.waitFor(() =>
+      expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
+    )
+    fs.editorChanged(file)
+    gate.resolve(new ArrayBuffer(0))
+    expect(await request).toEqual({ changed: true, refreshed: false })
+    expect(await fs.readFile(file, 'utf8')).toBe(original)
+
+    let current = true
+    const metadata = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.getRemoteProject).mockReturnValueOnce(metadata.promise)
+    const stale = fs.checkForUpdates('one', () => current)
+    current = false
+    metadata.resolve({ ...remote, revision: '3' })
+    expect(await stale).toEqual({ changed: true, refreshed: false })
+    expect(await fs.readFile(file, 'utf8')).toBe(original)
+  })
+
+  it('does not pair a moving download with an older revision or overwrite a failed save', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    const file = paths.join(root, 'main.kcl')
+    const original = await fs.readFile(file, 'utf8')
+    vi.mocked(api.getRemoteProject)
+      .mockResolvedValueOnce({ ...remote, revision: '2' })
+      .mockResolvedValue({ ...remote, revision: '3' })
+    expect(await fs.checkForUpdates('one', () => true)).toEqual({
+      changed: true,
+      refreshed: false,
+    })
+    expect(await fs.readFile(file, 'utf8')).toBe(original)
+    vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+      new Error('Conflict')
+    )
+    await expect(
+      fs.writeFile(file, encoder.encode('unsaved edit'))
+    ).rejects.toThrow('Conflict')
+    vi.mocked(api.downloadRemoteProjectArchive).mockClear()
+    expect(await fs.checkForUpdates('one', () => true)).toEqual({
+      changed: false,
+      refreshed: false,
+    })
+    expect(await fs.readFile(file, 'utf8')).toBe('unsaved edit')
+    expect(api.downloadRemoteProjectArchive).not.toHaveBeenCalled()
+    expect(fs.saves.peek().get('one')?.state).toBe('failed')
+    await expect(fs.refreshProject('one', () => true, '1')).rejects.toThrow(
+      'preserve unsaved changes'
+    )
+  })
+
+  it('ignores metadata returned after a local save or account switch', async () => {
+    let account = 'first'
+    const { fs } = setup(() => account)
+    const root = await fs.openProject('one')
+    const gate = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.getRemoteProject).mockReturnValueOnce(gate.promise)
+    const request = fs.checkForUpdates('one', () => true)
+    await fs.writeFile(
+      paths.join(root, 'main.kcl'),
+      encoder.encode('local edit')
+    )
+    gate.resolve(remote)
+    expect(await request).toEqual({ changed: false, refreshed: false })
+    const other = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.getRemoteProject).mockReturnValueOnce(other.promise)
+    const stale = fs.checkForUpdates('one', () => true)
+    account = 'second'
+    other.resolve({ ...remote, revision: '3' })
+    expect(await stale).toEqual({ changed: false, refreshed: false })
+    await expect(fs.checkForUpdates('one', () => true)).rejects.toThrow(
+      'not open for this account'
+    )
+  })
+
+  it('allows local saving during a slow download and discards the superseded snapshot', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    const file = paths.join(root, 'main.kcl')
+    vi.mocked(api.getRemoteProject).mockResolvedValue({
+      ...remote,
+      revision: 'remote',
+    })
+    const gate = Promise.withResolvers<ArrayBuffer>()
+    vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
+      gate.promise
+    )
+    const poll = fs.checkForUpdates('one', () => true)
+    await vi.waitFor(() =>
+      expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
+    )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(await fs.readFile(file, 'utf8')).toBe('@settings(kclVersion = 3.0)\n')
+    await fs.writeFile(file, encoder.encode('saved while downloading'))
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    gate.resolve(new ArrayBuffer(0))
+    expect(await poll).toEqual({ changed: true, refreshed: false })
+    expect(await fs.readFile(file, 'utf8')).toBe('saved while downloading')
   })
 
   it('works through the filesystem interface and waits for acknowledged saves without blocking memory reads', async () => {

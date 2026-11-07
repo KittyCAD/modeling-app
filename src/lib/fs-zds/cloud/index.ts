@@ -1,3 +1,8 @@
+import {
+  CLOUD_DIRECTORIES_FILE,
+  decodeCloudDirectories,
+  encodeCloudDirectories,
+} from '@src/lib/fs-zds/cloud/directories'
 import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import { signal } from '@preact/signals-core'
 import { v4 } from 'uuid'
@@ -33,6 +38,12 @@ interface OpenCloudProject {
   queue: Promise<unknown>
   generation: number
   needsReconciliation: boolean
+  observedRevision: RemoteProject['revision']
+}
+
+export interface CloudProjectUpdate {
+  readonly changed: boolean
+  readonly refreshed: boolean
 }
 
 /** A cloud filesystem backed by memory, with serialized revision-checked saves. */
@@ -47,6 +58,13 @@ export function createCloudFileSystem(
   const projects = signal<readonly RemoteProjectSummary[]>([])
   let listGeneration = 0
   const opened = new Map<string, OpenCloudProject>()
+  const activityVersions = new Map<string, number>()
+  const activityListeners = new Set<(id: string) => void>()
+  const polling = new Map<string, Promise<CloudProjectUpdate>>()
+  const activity = (id: string) => {
+    activityVersions.set(id, (activityVersions.get(id) ?? 0) + 1)
+    for (const listener of activityListeners) listener(id)
+  }
   const pendingThumbnails = new Map<
     string,
     { bytes: Uint8Array<ArrayBuffer>; timer?: ReturnType<typeof setTimeout> }
@@ -79,18 +97,36 @@ export function createCloudFileSystem(
   }
   const collect = async (
     directory: string,
-    base = directory
+    base = directory,
+    emptyDirectories: string[] = []
   ): Promise<ProjectArchiveFile[]> => {
     const result: ProjectArchiveFile[] = []
-    for (const name of await memory.readdir(directory)) {
+    const names = (await memory.readdir(directory)).filter(
+      (name) => directory !== base || name !== CLOUD_DIRECTORIES_FILE
+    )
+    if (directory !== base && names.length === 0)
+      emptyDirectories.push(
+        paths.relative(base, directory).replaceAll('\\', '/')
+      )
+    for (const name of names) {
       const path = paths.join(directory, name)
       if (((await memory.stat(path)).mode & 0o170000) === 0o040000)
-        result.push(...(await collect(path, base)))
+        result.push(...(await collect(path, base, emptyDirectories)))
       else
         result.push({
           relativePath: paths.relative(base, path).replaceAll('\\', '/'),
           data: await memory.readFile(path),
         })
+    }
+    if (directory === base) {
+      const metadataPath = paths.join(base, CLOUD_DIRECTORIES_FILE)
+      if (emptyDirectories.length) {
+        const data = encodeCloudDirectories(emptyDirectories)
+        await memory.writeFile(metadataPath, data)
+        result.push({ relativePath: CLOUD_DIRECTORIES_FILE, data })
+      } else {
+        await memory.rm(metadataPath, { force: true })
+      }
     }
     return result
   }
@@ -113,7 +149,29 @@ export function createCloudFileSystem(
       }
       return { path, data: file.data }
     })
+    const directoryMetadata = archive.find(
+      (file) => file.relativePath === CLOUD_DIRECTORIES_FILE
+    )
+    const directories = directoryMetadata
+      ? decodeCloudDirectories(directoryMetadata.data)
+      : []
+    // Validate file/directory collisions before replacing the live snapshot.
+    for (const directory of directories)
+      if (
+        archive.some(
+          (file) =>
+            directory === file.relativePath ||
+            directory.startsWith(`${file.relativePath}/`)
+        )
+      )
+        return Promise.reject(
+          new Error('Cloud directory metadata conflicts with a file.')
+        )
     memory.replaceDirectory(projectRoot, entries)
+    for (const directory of directories)
+      await memory.mkdir(paths.join(projectRoot, directory), {
+        recursive: true,
+      })
   }
   const acknowledge = (
     id: string,
@@ -128,6 +186,7 @@ export function createCloudFileSystem(
       queue: project?.queue ?? Promise.resolve(),
       generation: project?.generation ?? 0,
       needsReconciliation: false,
+      observedRevision: remote.revision,
     })
     listGeneration += 1
     projects.value = [
@@ -135,6 +194,7 @@ export function createCloudFileSystem(
       remote,
     ]
     state(id, { state: 'saved' })
+    if (project?.remote.revision !== remote.revision) activity(id)
   }
   const reconcile = async (id: string, requestConfig: CloudApiConfig) => {
     const project = opened.get(id)!
@@ -320,8 +380,11 @@ export function createCloudFileSystem(
       void flushThumbnail(id).catch(() => undefined)
     }, 3_000)
   }
-  const mutate = <T>(path: string, work: () => Promise<T>) =>
-    enqueue(idFor(path), work)
+  const mutate = <T>(path: string, work: () => Promise<T>) => {
+    const id = idFor(path)
+    activity(id)
+    return enqueue(id, work)
+  }
   const read = async <T>(path: string, run: () => Promise<T>): Promise<T> => {
     path = paths.resolve(path)
     if (path !== root) {
@@ -374,6 +437,7 @@ export function createCloudFileSystem(
       await ready
     },
     detach: async () => {
+      await Promise.allSettled([...polling.values()])
       await Promise.all(
         [...pendingThumbnails.keys()].map((id) => {
           clearTimeout(pendingThumbnails.get(id)?.timer)
@@ -438,6 +502,7 @@ export function createCloudFileSystem(
       await memory.rm(pathFor(id), { recursive: true, force: true })
     clearThumbnail(id)
     opened.delete(id)
+    activityVersions.delete(id)
     const remainingSaves = new Map(saves.peek())
     remainingSaves.delete(id)
     saves.value = remainingSaves
@@ -527,7 +592,15 @@ export function createCloudFileSystem(
       pendingThumbnails.set(id, { bytes: new Uint8Array(bytes) })
       deferThumbnail(id)
     },
-    editorChanged: (path: string) => deferThumbnail(idFor(path)),
+    editorChanged: (path: string) => {
+      const id = idFor(path)
+      activity(id)
+      deferThumbnail(id)
+    },
+    subscribeActivity: (listener: (id: string) => void) => {
+      activityListeners.add(listener)
+      return () => activityListeners.delete(listener)
+    },
     pending: () => pendingRequests,
     subscribeReconciled: (
       listener: (root: string, files: readonly ProjectArchiveFile[]) => void
@@ -540,6 +613,93 @@ export function createCloudFileSystem(
       return () => listeners.delete(listener)
     },
     openProject,
+    checkForUpdates: (
+      id: string,
+      canApply: () => boolean
+    ): Promise<CloudProjectUpdate> => {
+      const pending = polling.get(id)
+      if (pending) return pending
+      const requestConfig = config()
+      const project = opened.get(id)
+      if (!project || project.owner !== requestConfig.accountId)
+        return Promise.reject(
+          new Error('Cloud project is not open for this account.')
+        )
+      const startingRevision = project.remote.revision
+      const version = activityVersions.get(id)
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 60_000)
+      const current = () =>
+        config().accountId === requestConfig.accountId && opened.has(id)
+      const unchanged: CloudProjectUpdate = { changed: false, refreshed: false }
+      const request = (async (): Promise<CloudProjectUpdate> => {
+        const remote = await api.getRemoteProject(
+          requestConfig,
+          id,
+          controller.signal
+        )
+        if (!current()) return unchanged
+        const activeProject = opened.get(id)!
+        // A push refresh or local save can finish while metadata is in flight.
+        if (activeProject.remote.revision !== startingRevision) return unchanged
+        let changed = remote.revision !== activeProject.observedRevision
+        activeProject.observedRevision = remote.revision
+        if (remote.revision === activeProject.remote.revision)
+          return { changed, refreshed: false }
+        if (!remote.revision) return { changed, refreshed: false }
+        const safe = () =>
+          current() &&
+          canApply() &&
+          activityVersions.get(id) === version &&
+          saves.peek().get(id)?.state !== 'failed' &&
+          !opened.get(id)?.needsReconciliation
+        if (!safe()) return { changed, refreshed: false }
+        // Download without holding the mutation queue so slow networks cannot
+        // block local saves. Activity invalidates the snapshot before commit.
+        const archive = await parseProjectArchive(
+          await api.downloadRemoteProjectArchive(
+            requestConfig,
+            id,
+            controller.signal
+          )
+        )
+        // Downloads serve the latest revision, rather than a pinned revision.
+        const latest = await api.getRemoteProject(
+          requestConfig,
+          id,
+          controller.signal
+        )
+        if (!current()) return { changed, refreshed: false }
+        if (opened.get(id)!.remote.revision !== startingRevision)
+          return { changed, refreshed: false }
+        if (latest.revision !== remote.revision) {
+          const currentProject = opened.get(id)!
+          changed ||= latest.revision !== currentProject.observedRevision
+          currentProject.observedRevision = latest.revision
+          return { changed, refreshed: false }
+        }
+        if (!safe()) return { changed, refreshed: false }
+        let refreshed = false
+        await enqueue(
+          id,
+          async (previousState) => {
+            if (previousState?.state === 'failed' || !safe()) return
+            clearThumbnail(id)
+            await hydrate(id, archive)
+            acknowledge(id, remote, archive)
+            refreshed = true
+          },
+          false,
+          false
+        )
+        return { changed, refreshed }
+      })().finally(() => {
+        clearTimeout(timeout)
+        polling.delete(id)
+      })
+      polling.set(id, request)
+      return request
+    },
     refreshProject: async (
       id: string,
       isCurrent: () => boolean = () => true,
@@ -560,6 +720,11 @@ export function createCloudFileSystem(
                 'Cloud refresh skipped to preserve unsaved changes. Retry saving before refreshing.'
               )
             )
+          if (
+            revision !== undefined &&
+            String(opened.get(id)?.remote.revision) === revision
+          )
+            return
           const requestConfig = config()
           const remote =
             revision === undefined
@@ -608,7 +773,11 @@ export function createCloudFileSystem(
     batch: <T>(
       path: string,
       run: (backing: IZooDesignStudioFS) => Promise<T>
-    ) => enqueue(idFor(path), () => run(memory)),
+    ) => {
+      const id = idFor(path)
+      activity(id)
+      return enqueue(id, () => run(memory))
+    },
     retry: (id: string) =>
       enqueue(
         id,

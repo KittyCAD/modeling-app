@@ -1,3 +1,4 @@
+import { collectApiPages } from '@src/lib/apiPagination'
 import { ApiError, type Client, projects } from '@kittycad/lib'
 import { createKCClient } from '@src/lib/kcClient'
 import {
@@ -39,13 +40,16 @@ export class CloudApiError extends CloudStorageError {
 
 async function cloudCall<T>(
   config: CloudApiConfig,
-  call: (client: Client) => Promise<T>
+  call: (client: Client) => Promise<T>,
+  signal?: AbortSignal
 ): Promise<T> {
   return withCloudFailureContext(
     { stage: 'network', point: 'cloud-api-request' },
     async () => {
       try {
-        return await call(createKCClient(config.token, config.baseUrl))
+        return await call(
+          createKCClient(config.token, config.baseUrl, { signal })
+        )
       } catch (error) {
         if (error instanceof ApiError) {
           return Promise.reject(
@@ -76,7 +80,7 @@ export async function listRemoteProjects(
 ): Promise<RemoteProjectSummary[]> {
   await beforeRequest()
   const response: unknown = await cloudCall(config, (client) =>
-    projects.list_projects({ client })
+    collectApiPages(projects.list_projects_pager({ client }))
   )
   if (!isArray(response) || !response.every(isRemoteProjectSummary)) {
     return Promise.reject(
@@ -91,10 +95,13 @@ export async function listRemoteProjects(
 
 export async function getRemoteProject(
   config: CloudApiConfig,
-  projectId: string
+  projectId: string,
+  signal?: AbortSignal
 ): Promise<RemoteProject> {
-  return cloudCall(config, (client) =>
-    projects.get_project({ client, id: projectId })
+  return cloudCall(
+    config,
+    (client) => projects.get_project({ client, id: projectId }),
+    signal
   )
 }
 
@@ -139,10 +146,14 @@ export async function deleteRemoteProject(
 
 export async function downloadRemoteProjectArchive(
   config: CloudApiConfig,
-  projectId: string
+  projectId: string,
+  signal?: AbortSignal
 ) {
-  const response = await cloudCall(config, (client) =>
-    projects.download_project({ client, id: projectId, format: 'zip' })
+  const response = await cloudCall(
+    config,
+    (client) =>
+      projects.download_project({ client, id: projectId, format: 'zip' }),
+    signal
   )
   return response.arrayBuffer()
 }

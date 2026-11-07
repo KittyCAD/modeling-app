@@ -267,7 +267,15 @@ describe('cloud project inventory contract (SDK with mocked fetch)', () => {
     }))
     const fetchMock = vi
       .fn<typeof fetch>()
-      .mockResolvedValueOnce(Response.json(inventory))
+      .mockResolvedValueOnce(
+        Response.json({
+          items: inventory.slice(0, 100),
+          next_page: 'remaining',
+        })
+      )
+      .mockResolvedValueOnce(
+        Response.json({ items: inventory.slice(100), next_page: null })
+      )
     vi.stubGlobal('fetch', fetchMock)
     const beforeRequest = vi.fn(async () =>
       expect(fetchMock).not.toHaveBeenCalled()
@@ -276,13 +284,33 @@ describe('cloud project inventory contract (SDK with mocked fetch)', () => {
       inventory
     )
     expect(beforeRequest).toHaveBeenCalledOnce()
-    expect(fetchMock).toHaveBeenCalledExactlyOnceWith(
+    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
       'https://example.test/user/projects',
-      expect.objectContaining({ credentials: 'include' })
-    )
+      'https://example.test/user/projects?page_token=remaining',
+    ])
+    for (const [, options] of fetchMock.mock.calls) {
+      expect(options).toMatchObject({ credentials: 'include' })
+    }
     expect(
       new Headers(fetchMock.mock.calls[0][1]?.headers).get('Authorization')
     ).toBe('Bearer test-token')
+  })
+
+  test('does not publish a partial inventory when a later page fails', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn<typeof fetch>()
+        .mockResolvedValueOnce(
+          Response.json({ items: [{ id: 'one' }], next_page: 'remaining' })
+        )
+        .mockResolvedValueOnce(
+          Response.json({ message: 'Unavailable' }, { status: 503 })
+        )
+    )
+    await expect(listRemoteProjects(config)).rejects.toMatchObject({
+      status: 503,
+    })
   })
 
   test.each(['success', 'failure'] as const)(
@@ -304,7 +332,7 @@ describe('cloud project inventory contract (SDK with mocked fetch)', () => {
         expect(fetchMock).toHaveBeenCalledTimes(1)
         gate.resolve(
           outcome === 'success'
-            ? Response.json([{ id: 'one' }])
+            ? Response.json({ items: [{ id: 'one' }], next_page: null })
             : Response.json({ message: 'Unavailable' }, { status: 503 })
         )
         await pending
@@ -326,9 +354,9 @@ describe('cloud project inventory contract (SDK with mocked fetch)', () => {
   test.each([
     null,
     {},
-    { items: [], next_page: null },
-    [null],
-    [{ title: 'missing id' }],
+    [],
+    { items: [null], next_page: null },
+    { items: [{ title: 'missing id' }], next_page: null },
   ])(
     'rejects malformed inventory rather than exposing an empty catalog: %j',
     async (body) => {
@@ -337,8 +365,10 @@ describe('cloud project inventory contract (SDK with mocked fetch)', () => {
         vi.fn<typeof fetch>().mockResolvedValueOnce(Response.json(body))
       )
       await expect(listRemoteProjects(config)).rejects.toMatchObject({
-        message: expect.stringContaining('Invalid remote project'),
-        context: { stage: 'network', point: 'parse-cloud-api-response' },
+        message: expect.stringMatching(
+          /Invalid (remote project|paginated response)/
+        ),
+        context: expect.objectContaining({ stage: 'network' }),
       })
     }
   )
@@ -495,4 +525,19 @@ describe('SDK multipart and session invariants', () => {
     })
     expect(sessionExpiredNotice.value?.source).toBe('fetch')
   })
+})
+
+test('passes cancellation through metadata and archive requests', async () => {
+  const controller = new AbortController()
+  const fetchMock = vi.fn<typeof fetch>(async () =>
+    projectResponse('one', 'revision')
+  )
+  vi.stubGlobal('fetch', fetchMock)
+  const config = { enabled: true, baseUrl: 'https://api.dev.zoo.dev' }
+  await getRemoteProject(config, 'one', controller.signal)
+  await downloadRemoteProjectArchive(config, 'one', controller.signal)
+  expect(fetchMock.mock.calls.map(([, init]) => init?.signal)).toEqual([
+    controller.signal,
+    controller.signal,
+  ])
 })
