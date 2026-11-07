@@ -6,7 +6,7 @@ export interface ProjectDirectory extends FileEntry {
   children: FileEntry[]
 }
 
-/** Project data observed at open time; storage operations and editors live in the session. */
+/** Observable project data; storage operations and editors live in the session. */
 export interface Project {
   contents: ProjectDirectory
   metadata: {

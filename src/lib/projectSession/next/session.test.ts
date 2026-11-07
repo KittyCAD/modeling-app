@@ -174,3 +174,22 @@ it('gives each opening a lifetime that aborts once on replacement or close', () 
   expect(secondClosed).toHaveBeenCalledOnce()
   expect(firstClosed).toHaveBeenCalledOnce()
 })
+
+it('publishes metadata updates only to the captured current opening and preserves storage metadata', () => {
+  const { service } = setup()
+  const data = project('/project', false)
+  data.metadata.defaultFile = 'old.kcl'
+  const first = service.openProject(data)
+  service.updateMetadata(first, { title: 'Updated', defaultFile: undefined })
+  expect(service.currentProject.value?.metadata).toEqual({
+    title: 'Updated',
+    defaultFile: undefined,
+    readWriteAccess: false,
+  })
+  const second = service.openProject(project('/project'))
+  service.updateMetadata(first, { title: 'Stale update' })
+  expect(second.project.value.metadata.title).toBe('Project')
+  service.closeProject()
+  service.updateMetadata(second, { title: 'Closed update' })
+  expect(second.project.value.metadata.title).toBe('Project')
+})

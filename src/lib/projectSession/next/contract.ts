@@ -28,6 +28,11 @@ export interface ProjectSessionService {
   /** Flatten the current project's file tree, excluding directories; no filesystem I/O. */
   listFiles: () => readonly FileEntry[]
   openProject: (project: Project) => OpenProjectSession
+  /** Refresh descriptive metadata for the captured opening; closed/replaced openings are ignored. */
+  updateMetadata: (
+    session: OpenProjectSession,
+    metadata: Pick<Project['metadata'], 'title' | 'defaultFile'>
+  ) => void
   /** Clear the selection; captured sessions remain usable. */
   closeProject: () => void
 }

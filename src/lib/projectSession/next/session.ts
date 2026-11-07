@@ -1,4 +1,4 @@
-import { batch, computed, signal } from '@preact/signals-core'
+import { batch, computed, signal, type Signal } from '@preact/signals-core'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/projectSession/next/types'
 import type { FileEntry } from '@src/lib/project'
@@ -7,6 +7,11 @@ import type {
   OpenProjectSession,
   ProjectSessionService,
 } from '@src/lib/projectSession/next/contract'
+
+/** Only this service can publish project changes; consumers receive a readonly signal. */
+interface MutableProjectSession extends OpenProjectSession {
+  readonly project: Signal<Project>
+}
 
 type ProjectStorage = Pick<
   FileOperationsRegistryService,
@@ -21,7 +26,7 @@ function createSession(
   project: Project,
   storage: () => ProjectStorage,
   lifetime: AbortSignal
-): OpenProjectSession {
+): MutableProjectSession {
   const root = project.contents.path
   const canWrite = project.metadata.readWriteAccess
 
@@ -73,7 +78,7 @@ function createSession(
 export function createProjectSessionService(
   storage: () => ProjectStorage
 ): ProjectSessionService {
-  const currentSession = signal<OpenProjectSession | undefined>(undefined)
+  const currentSession = signal<MutableProjectSession | undefined>(undefined)
   let lifetime: AbortController | undefined
   const currentProject = computed(() => currentSession.value?.project.value)
   return {
@@ -100,6 +105,15 @@ export function createProjectSessionService(
         previous?.abort()
       })
       return next
+    },
+    updateMetadata: (session, metadata) => {
+      const current = currentSession.peek()
+      if (current !== session || current.signal.aborted) return
+      const project = current.project.peek()
+      current.project.value = {
+        ...project,
+        metadata: { ...project.metadata, ...metadata },
+      }
     },
     closeProject: () => {
       const previous = lifetime
