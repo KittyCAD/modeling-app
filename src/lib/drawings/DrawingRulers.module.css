@@ -1,0 +1,35 @@
+.rulers {
+  @apply pointer-events-none absolute inset-0 overflow-hidden;
+}
+.topRuler,
+.rightRuler,
+.rulerUnit {
+  @apply absolute bg-chalkboard-10 text-chalkboard-60;
+}
+:global(.dark) .topRuler,
+:global(.dark) .rightRuler,
+:global(.dark) .rulerUnit {
+  @apply bg-chalkboard-90 text-chalkboard-40;
+}
+.topRuler {
+  @apply left-0 top-0 border-b border-chalkboard-60/30;
+}
+.rightRuler {
+  @apply right-0 border-l border-chalkboard-60/30;
+  top: 24px;
+}
+.rulers line {
+  stroke: currentColor;
+  stroke-width: 1;
+}
+.rulers text {
+  fill: currentColor;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.sheetEdge {
+  @apply text-primary;
+}
+.rulerUnit {
+  @apply right-0 top-0 grid h-6 w-6 place-items-center text-[9px];
+}

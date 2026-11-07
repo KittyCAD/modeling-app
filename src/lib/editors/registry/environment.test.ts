@@ -1,4 +1,5 @@
 import kclExtension from '@src/lib/kcl/registry'
+import drawingsPlugin from '@src/lib/drawings/registry/plugin'
 import executorsExtension from '@src/lib/executors/registry'
 import {
   executorsService,
@@ -61,6 +62,7 @@ describe('experimental editor registration', () => {
         featureFlags,
         editorsExtension,
         kclExtension,
+        drawingsPlugin,
         executorsExtension,
         savingExtension,
         markdownExtension,
@@ -74,6 +76,11 @@ describe('experimental editor registration', () => {
           .some(({ id }) => id === 'save.persistToDisk')
       ).toBe(enabled)
       expect(registry.get(editorViewValueSpec).length > 0).toBe(enabled)
+      expect(
+        registry
+          .get(editorViewValueSpec)
+          .some(({ id }) => id === 'drawings.sheet')
+      ).toBe(enabled)
       expect(registry.get(editorTabIndicatorValueSpec).length > 0).toBe(enabled)
       expect(
         registry
