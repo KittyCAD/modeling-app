@@ -39,6 +39,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
   OutputFormat3d,
   Point3d,
+  System,
 } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
@@ -4527,12 +4528,64 @@ export const modelingMachine = setup({
         }
 
         const { up, scale, schema } = data
-        const format: Partial<OutputFormat3d> = { type: data.type }
         const exportScale =
           scale ??
           defaultUnit?.current ??
           // Fall back to app default units if the project setting is absent.
           DEFAULT_DEFAULT_LENGTH_UNIT
+        const coords: System =
+          up === 'y'
+            ? {
+                forward: { axis: 'z', direction: 'positive' },
+                up: { axis: 'y', direction: 'positive' },
+              }
+            : {
+                forward: { axis: 'y', direction: 'negative' },
+                up: { axis: 'z', direction: 'positive' },
+              }
+
+        let format: Partial<OutputFormat3d>
+        switch (data.type) {
+          case 'fbx':
+            format = { type: data.type, storage: data.fbxStorage }
+            break
+          case 'gltf':
+            format = {
+              type: data.type,
+              storage: data.gltfStorage,
+              presentation: 'pretty',
+            }
+            break
+          case 'obj':
+            format = { type: data.type, coords, units: exportScale }
+            break
+          case 'ply':
+            format = {
+              type: data.type,
+              storage: data.plyStorage,
+              coords,
+              units: exportScale,
+              selection: { type: 'default_scene' },
+            }
+            break
+          case 'step':
+            format = {
+              type: data.type,
+              schema: schema ?? StepSchema.Ap242,
+              coords,
+              units: exportScale,
+            }
+            break
+          case 'stl':
+            format = {
+              type: data.type,
+              storage: data.stlStorage,
+              coords,
+              units: exportScale,
+              selection: { type: 'default_scene' },
+            }
+            break
+        }
 
         if (format.type === 'gltf' || format.type === 'step') {
           const { camControls } = kclManager.sceneInfra
@@ -4543,72 +4596,6 @@ export const modelingMachine = setup({
               camControls.target
             ),
           })
-        }
-
-        // Apply the options for the selected format.
-        if (format.type === 'fbx') {
-          format.storage = data.fbxStorage
-        }
-
-        if (format.type === 'gltf') {
-          format.storage = data.gltfStorage
-          format.presentation = 'pretty'
-        }
-
-        if (format.type === 'stl') {
-          format.storage = data.stlStorage
-        }
-
-        if (format.type === 'ply') {
-          format.storage = data.plyStorage
-        }
-
-        if (format.type === 'step') {
-          format.schema = schema ?? StepSchema.Ap242
-        }
-
-        if (
-          format.type === 'obj' ||
-          format.type === 'ply' ||
-          format.type === 'step' ||
-          format.type === 'stl'
-        ) {
-          // Configure output orientation from export options.
-          format.coords =
-            up === 'y'
-              ? {
-                  forward: {
-                    axis: 'z',
-                    direction: 'positive',
-                  },
-                  up: {
-                    axis: 'y',
-                    direction: 'positive',
-                  },
-                }
-              : {
-                  forward: {
-                    axis: 'y',
-                    direction: 'negative',
-                  },
-                  up: {
-                    axis: 'z',
-                    direction: 'positive',
-                  },
-                }
-        }
-
-        if (
-          format.type === 'obj' ||
-          format.type === 'stl' ||
-          format.type === 'ply' ||
-          format.type === 'step'
-        ) {
-          format.units = exportScale
-        }
-
-        if (format.type === 'ply' || format.type === 'stl') {
-          format.selection = { type: 'default_scene' }
         }
 
         const toastId = toast.loading(EXPORT_TOAST_MESSAGES.START)
