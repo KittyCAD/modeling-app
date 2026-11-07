@@ -11,6 +11,7 @@ import type {
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
+import { exportOptions } from '@src/lib/commandBarConfigs/exportOptions'
 import {
   COOKIE_NAME_PREFIX,
   IS_PLAYWRIGHT_KEY,
@@ -977,7 +978,9 @@ export const doExport = async (
     await expect(exportCommand).toBeVisible()
     await exportCommand.click()
   }
-  await modelingDialog.options('type').selectOption(output.type)
+  await modelingDialog
+    .options('type')
+    .selectOption({ label: exportOptions.type[output.type] })
   if ('storage' in output) {
     await modelingDialog
       .options('storage')

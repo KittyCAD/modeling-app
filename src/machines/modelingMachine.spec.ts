@@ -256,6 +256,7 @@ describe('export requests', () => {
   const otherFormats = [
     ['gltf', 'embedded'],
     ['obj', undefined],
+    ['rhino', undefined],
     ['stl', 'binary'],
     ['ply', 'binary_big_endian'],
     ['fbx', 'binary'],
