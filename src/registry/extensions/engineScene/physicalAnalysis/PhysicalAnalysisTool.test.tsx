@@ -83,12 +83,12 @@ function setupModelingContext(defaultLengthUnit: string | undefined) {
   )
 
   const path = signal('/project/main.kcl')
-  const project = signal({ path: '/project' })
+  const projectPath = signal('/project')
   const kclManager = {
     fileSettings: { defaultLengthUnit },
     isExecutingSignal: signal(false),
     engineSceneGenerationSignal: signal(1),
-    systemDeps: { project },
+    systemDeps: { projectPath },
     get path() {
       return path.value
     },
@@ -113,7 +113,7 @@ function setupModelingContext(defaultLengthUnit: string | undefined) {
     engineCommandManager,
     kclManager,
     path,
-    project,
+    projectPath,
     state,
   }
 }
@@ -184,7 +184,7 @@ describe('physical analysis tool', () => {
     {
       name: 'project',
       change: (fixture: ReturnType<typeof setupModelingContext>) => {
-        fixture.project.value = { path: '/other-project' }
+        fixture.projectPath.value = '/other-project'
       },
     },
     {
