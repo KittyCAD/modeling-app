@@ -24,6 +24,7 @@ import {
 } from '@src/lib/engineConnection/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { createSettings } from '@src/lib/settings/initialSettings'
+import { getNormalisedCoordinates, promiseFactory } from '@src/lib/utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 class ReconnectTestWebSocket extends EventTarget {
@@ -142,6 +143,20 @@ const sceneCameraBatchResponse = {
 
 function message(response: WebSocketResponse) {
   return new MessageEvent('message', { data: JSON.stringify(response) })
+}
+
+function createTransport(manager: ConnectionManager) {
+  return new Connection({
+    url: 'ws://localhost/modeling-test',
+    token: 'test-token',
+    handleOnDataChannelMessage: vi.fn(),
+    recordShutdownTrigger: manager.recordShutdownTrigger.bind(manager),
+    tearDownManager: manager.tearDown.bind(manager),
+    onReconnectRequested: vi.fn(),
+    rejectPendingCommand: vi.fn(),
+    handleMessage: vi.fn(),
+    getCloudProjectId: () => undefined,
+  })
 }
 
 function pendingStartup(manager: ConnectionManager) {
@@ -738,6 +753,137 @@ describe('ConnectionManager', () => {
     expect(manager.streamDimensions).toEqual({ width: 256, height: 256 })
     expect(send).not.toHaveBeenCalled()
   })
+
+  it.each(['replaced', 'retired'])(
+    'does not resize a %s connection after waiting for readiness',
+    async (transition) => {
+      const manager = createConnectionManager()
+      const connection = createTransport(manager)
+      const replacement = createTransport(manager)
+      const ready = promiseFactory<boolean>()
+      connection.deferredConnection = ready
+      manager.connection = connection
+      const send = vi.spyOn(connection, 'send')
+      const replacementSend = vi.spyOn(replacement, 'send')
+
+      const resize = manager.handleResize({ width: 512, height: 512 })
+      manager.connection = transition === 'replaced' ? replacement : undefined
+      ready.resolve(true)
+
+      await expect(resize).resolves.toBeUndefined()
+      expect(manager.streamDimensions).toEqual({ width: 256, height: 256 })
+      expect(send).not.toHaveBeenCalled()
+      expect(replacementSend).not.toHaveBeenCalled()
+    }
+  )
+
+  it.each(['same', 'replaced', 'retired'])(
+    'publishes pointer coordinates before awaiting the resize acknowledgement (%s)',
+    async (transition) => {
+      vi.useFakeTimers()
+      const manager = createConnectionManager()
+      const connection = createTransport(manager)
+      manager.connection = connection
+      const send = vi.spyOn(connection, 'send').mockImplementation(() => {})
+      let completed = false
+      const resize = manager
+        .handleResize({ width: 512, height: 512 })
+        .then(() => {
+          completed = true
+        })
+
+      await vi.waitFor(() => expect(send).toHaveBeenCalledOnce())
+      const [request] = send.mock.calls[0]
+      if (request.type !== 'modeling_cmd_req')
+        expect.fail('Expected a resize modeling command')
+      expect(request.cmd).toEqual({
+        type: 'reconfigure_stream',
+        width: 512,
+        height: 512,
+        fps: 60,
+      })
+      expect(completed).toBe(false)
+      const video = document.createElement('video')
+      video.getBoundingClientRect = () => new DOMRect(0, 0, 512, 512)
+      expect(
+        getNormalisedCoordinates(
+          new PointerEvent('pointerup', { clientX: 256, clientY: 256 }),
+          video,
+          manager.streamDimensions
+        )
+      ).toEqual({ x: 256, y: 256 })
+      expect(manager.streamDimensions).toEqual({ width: 512, height: 512 })
+      expect(manager.pendingCommands[request.cmd_id].isSceneCommand).toBe(true)
+      if (transition !== 'same') {
+        manager.connection =
+          transition === 'replaced' ? createTransport(manager) : undefined
+        manager.streamDimensions = { width: 768, height: 768 }
+      }
+
+      manager.createMessageHandler()(
+        message({
+          success: true,
+          request_id: request.cmd_id,
+          resp: {
+            type: 'modeling',
+            data: {
+              modeling_response: { type: 'reconfigure_stream', data: {} },
+            },
+          },
+        } satisfies WebSocketResponse)
+      )
+      await resize
+      expect(completed).toBe(true)
+      expect(manager.pendingCommands).toEqual({})
+      expect(manager.streamDimensions).toEqual(
+        transition === 'same'
+          ? { width: 512, height: 512 }
+          : { width: 768, height: 768 }
+      )
+      if (transition === 'same') {
+        // A confirmed size must not restart the encoder a second time.
+        await manager.handleResize({ width: 512, height: 512 })
+        expect(send).toHaveBeenCalledOnce()
+      }
+    }
+  )
+
+  it.each(['same', 'replaced', 'retired'])(
+    'rolls back a failed resize only while it owns the pointer coordinates (%s)',
+    async (transition) => {
+      vi.useFakeTimers()
+      const manager = createConnectionManager()
+      const connection = createTransport(manager)
+      manager.connection = connection
+      const send = vi.spyOn(connection, 'send').mockImplementation(() => {})
+      const resize = manager.handleResize({ width: 512, height: 512 })
+      await vi.waitFor(() => expect(send).toHaveBeenCalledOnce())
+      const [request] = send.mock.calls[0]
+      if (request.type !== 'modeling_cmd_req')
+        expect.fail('Expected a resize modeling command')
+      expect(manager.streamDimensions).toEqual({ width: 512, height: 512 })
+      if (transition !== 'same') {
+        manager.connection =
+          transition === 'replaced' ? createTransport(manager) : undefined
+        manager.streamDimensions = { width: 768, height: 768 }
+      }
+
+      const failure = {
+        success: false,
+        request_id: request.cmd_id,
+        errors: [{ error_code: 'internal_api', message: 'Resize rejected' }],
+      } satisfies WebSocketResponse
+      const rejected = expect(resize).rejects.toEqual([failure])
+      manager.createMessageHandler()(message(failure))
+      await rejected
+      expect(manager.streamDimensions).toEqual(
+        transition === 'same'
+          ? { width: 256, height: 256 }
+          : { width: 768, height: 768 }
+      )
+      expect(manager.pendingCommands).toEqual({})
+    }
+  )
 
   it('reports a locally initiated shutdown before clearing connection state', () => {
     const manager = createConnectionManager()
