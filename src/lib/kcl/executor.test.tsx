@@ -1,3 +1,4 @@
+import type { KclSceneViewExtension } from '@src/lib/kcl/registry/contract'
 import '@src/lib/projectSession/next/testFeature'
 import { Registry, defineRegistryItem, provide } from '@kittycad/registry'
 import editorsExtension from '@src/lib/editors/registry'
@@ -12,7 +13,14 @@ import { createKclExecution } from '@src/lib/kcl/executor'
 import { KclScene } from '@src/lib/kcl/KclScene'
 import type { KclStreamView } from '@src/lib/kcl/session'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { act, cleanup, render, screen } from '@testing-library/react'
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from '@testing-library/react'
 import { StrictMode } from 'react'
 import { afterEach, beforeAll, expect, expectTypeOf, it, vi } from 'vitest'
 
@@ -64,6 +72,18 @@ it.each([false, true])(
     const executors = registry.get(executorsService)
     const first = executors.createExecutor(editor)
     const second = executors.createExecutor(editor)
+    const selected = vi.fn()
+    const extensions: KclSceneViewExtension[] = [
+      {
+        id: 'test.modeling-tool',
+        zone: 'top',
+        Component: ({ executor, session }) => (
+          <button onClick={() => selected(executor, session)}>
+            Modeling tool
+          </button>
+        ),
+      },
+    ]
     const firstSession = execution.getSession(first)
     const secondSession = execution.getSession(second)
     const view = render(
@@ -72,6 +92,7 @@ it.each([false, true])(
           executor={first}
           capability={execution.capability}
           session={firstSession}
+          extensions={extensions}
         />
       </StrictMode>
     )
@@ -88,6 +109,23 @@ it.each([false, true])(
       await vi.waitFor(() => expect(first.output.value.running).toBe(false))
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
       expect(firstSession.element).toBeInTheDocument()
+      fireEvent.click(view.getByRole('button', { name: 'Modeling tool' }))
+      expect(selected).toHaveBeenCalledExactlyOnceWith(first, firstSession)
+      const secondView = render(
+        <KclScene
+          executor={second}
+          capability={execution.capability}
+          session={secondSession}
+          extensions={extensions}
+        />
+      )
+      fireEvent.click(
+        within(secondView.container).getByRole('button', {
+          name: 'Modeling tool',
+        })
+      )
+      expect(selected).toHaveBeenLastCalledWith(second, secondSession)
+      secondView.unmount()
       act(() => {
         editor.view.dispatch({
           changes: {

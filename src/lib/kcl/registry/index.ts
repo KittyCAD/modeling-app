@@ -1,3 +1,5 @@
+import { useSignals } from '@preact/signals-react/runtime'
+import { kclSceneViewExtensionsValueSpec } from '@src/lib/kcl/registry/contract'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
@@ -23,7 +25,7 @@ import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { createElement } from 'react'
 
 /** KCL contributes syntax, execution, and a standalone engine stream without legacy modeling services. */
-const extension = defineRegistryItemFactory(({ services }) => {
+const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
   const sceneSettings = createKclSceneSettings(
     () => services.get(settingsService).current.value
   )
@@ -78,6 +80,16 @@ const extension = defineRegistryItemFactory(({ services }) => {
         services.optional(editorsService)?.editors.peek() ?? []
       )
   )
+  const sceneExtensions = valueSpecs.signal(kclSceneViewExtensionsValueSpec)
+  function ModelingView({ executor }: { executor: Executor }) {
+    useSignals()
+    return createElement(KclScene, {
+      executor,
+      capability,
+      session: getSession(executor),
+      extensions: sceneExtensions.value,
+    })
+  }
   return {
     id: 'kcl',
     dispose: sceneSettings.dispose,
@@ -93,12 +105,7 @@ const extension = defineRegistryItemFactory(({ services }) => {
         label: 'Modeling',
         matches: '.kcl',
         capabilityId: capability.id,
-        Component: ({ executor }: { executor: Executor }) =>
-          createElement(KclScene, {
-            executor,
-            capability,
-            session: getSession(executor),
-          }),
+        Component: ModelingView,
       }),
     ],
   }

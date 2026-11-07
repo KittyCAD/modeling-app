@@ -29,13 +29,15 @@ export type EngineSceneExtensionContext = {
 export type EngineSceneViewExtensionProps = EngineSceneExtensionContext
 export type EngineSceneStreamLayerProps = EngineSceneExtensionContext
 
-export type EngineSceneViewExtension = {
+export type EngineSceneViewExtension<
+  Context extends object = EngineSceneExtensionContext,
+> = {
   id: string
   zone: EngineSceneViewExtensionZone
   order?: number
-  Component: ComponentType<EngineSceneViewExtensionProps>
+  Component: ComponentType<Context>
   wrapperClassName?: string
-  shouldRegister?: (context: EngineSceneExtensionContext) => boolean
+  shouldRegister?: (context: Context) => boolean
 }
 
 export type EngineSceneStreamClassName = {
@@ -55,9 +57,9 @@ const zoneOrder = Object.fromEntries(
   engineSceneViewExtensionZones.map((zone, index) => [zone, index])
 ) as Record<EngineSceneViewExtensionZone, number>
 
-const sortByZoneAndOrder = (
-  inputs: readonly EngineSceneViewExtension[]
-): readonly EngineSceneViewExtension[] =>
+const sortByZoneAndOrder = <Context extends object>(
+  inputs: readonly EngineSceneViewExtension<Context>[]
+): readonly EngineSceneViewExtension<Context>[] =>
   inputs.toSorted(
     (a, b) =>
       zoneOrder[a.zone] - zoneOrder[b.zone] || (a.order ?? 0) - (b.order ?? 0)
@@ -116,12 +118,14 @@ export const {
   engineSceneStreamLayersValueSpec,
 } = engineSceneContract
 
-export function resolveEngineSceneViewExtensions(
-  extensions: readonly EngineSceneViewExtension[],
-  context: EngineSceneExtensionContext
+export function resolveEngineSceneViewExtensions<Context extends object>(
+  extensions: readonly EngineSceneViewExtension<Context>[],
+  context: Context
 ) {
-  return extensions.filter(
-    (extension) => extension.shouldRegister?.(context) ?? true
+  return sortByZoneAndOrder(
+    extensions.filter(
+      (extension) => extension.shouldRegister?.(context) ?? true
+    )
   )
 }
 
@@ -143,6 +147,17 @@ export function EngineSceneViewExtensionOverlay({
   extensions,
   ...context
 }: EngineSceneViewExtensionOverlayProps) {
+  return <EngineSceneZones extensions={extensions} context={context} />
+}
+
+/** Shared zone geometry and hit testing; callers supply their own scene context. */
+export function EngineSceneZones<Context extends object>({
+  extensions,
+  context,
+}: {
+  extensions: readonly EngineSceneViewExtension<Context>[]
+  context: Context
+}) {
   const registeredExtensions = resolveEngineSceneViewExtensions(
     extensions,
     context
