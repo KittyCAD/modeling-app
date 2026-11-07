@@ -80,7 +80,12 @@ function setTestWorld(world: TestWorld) {
  */
 function useEngineWorld() {
   beforeAll(async () => {
-    setTestWorld(await buildTheWorldAndConnectToEngine({ webrtc: false }))
+    setTestWorld(
+      await buildTheWorldAndConnectToEngine({
+        webrtc: false,
+        geometryOnly: true,
+      })
+    )
   })
 
   afterAll(() => {
@@ -159,6 +164,7 @@ describe('STEP schema export requests', () => {
           forward: { axis: 'z', direction: 'positive' },
           up: { axis: 'y', direction: 'positive' },
         },
+        views: {},
       })
     }
   )
