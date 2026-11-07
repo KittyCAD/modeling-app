@@ -56,17 +56,26 @@ pub mod ws_transport;
 pub struct ResponseInformation {
     /// The responses from the engine.
     responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>>,
+    /// Wakes tasks waiting for a response (or a connection state change).
+    #[cfg(not(target_arch = "wasm32"))]
+    notify: Arc<tokio::sync::Notify>,
 }
 
 impl ResponseInformation {
     /// Basic constructor.
     pub fn new(responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>>) -> Self {
-        Self { responses }
+        Self {
+            responses,
+            #[cfg(not(target_arch = "wasm32"))]
+            notify: Default::default(),
+        }
     }
 
     /// Add a new response from the engine.
     pub async fn add(&self, id: Uuid, response: WebSocketResponse) {
         self.responses.write().await.insert(id, response);
+        #[cfg(not(target_arch = "wasm32"))]
+        self.notify.notify_waiters();
     }
 }
 
@@ -155,9 +164,7 @@ impl EngineManager {
         let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> = Arc::new(RwLock::new(IndexMap::new()));
         let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
         let pending_errors = Arc::new(RwLock::new(Vec::new()));
-        let responses = ResponseInformation {
-            responses: Arc::new(RwLock::new(IndexMap::new())),
-        };
+        let responses = ResponseInformation::new(Arc::new(RwLock::new(IndexMap::new())));
 
         let transport = WebSocketTransport::spawn(
             ws,
@@ -191,9 +198,7 @@ impl EngineManager {
         let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> = Arc::new(RwLock::new(IndexMap::new()));
         let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
         let pending_errors = Arc::new(RwLock::new(Vec::new()));
-        let responses = ResponseInformation {
-            responses: Arc::new(RwLock::new(IndexMap::new())),
-        };
+        let responses = ResponseInformation::new(Arc::new(RwLock::new(IndexMap::new())));
         Self {
             transport: Arc::new(Box::new(mock_transport::MockTransport::new(responses.clone()))),
             responses,
