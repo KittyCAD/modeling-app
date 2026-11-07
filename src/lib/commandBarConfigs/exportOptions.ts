@@ -1,5 +1,6 @@
 import type {
   AxisDirectionPair,
+  FbxStorage,
   GltfStorage,
   OutputFormat3d,
   PlyStorage,
@@ -13,9 +14,12 @@ export const exportOptions = {
     stl: 'STL',
     step: 'STEP',
     ply: 'PLY',
-    // FBX export is not offered in the UI.
-    fbx: null,
-  } satisfies Record<OutputFormat3d['type'], string | null>,
+    fbx: 'FBX',
+  } satisfies Record<OutputFormat3d['type'], string>,
+  fbxStorage: {
+    binary: 'binary',
+    ascii: 'ascii',
+  } satisfies Record<FbxStorage, string>,
   gltfStorage: {
     binary: 'binary',
     embedded: 'embedded',

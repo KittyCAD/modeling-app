@@ -4546,6 +4546,10 @@ export const modelingMachine = setup({
         }
 
         // Apply the options for the selected format.
+        if (format.type === 'fbx') {
+          format.storage = data.fbxStorage
+        }
+
         if (format.type === 'gltf') {
           format.storage = data.gltfStorage
           format.presentation = 'pretty'

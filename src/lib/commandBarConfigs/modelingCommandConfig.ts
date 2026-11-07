@@ -83,6 +83,10 @@ type ExportOptionalArg = 'up' | 'scale'
 const exportOptionalArgSupportByType: Partial<
   Record<OutputTypeKey, Partial<Record<ExportOptionalArg, boolean>>>
 > = {
+  fbx: {
+    up: false,
+    scale: false,
+  },
   gltf: {
     up: false,
     scale: false,
@@ -260,6 +264,7 @@ export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
   Export: {
     type: OutputTypeKey
+    fbxStorage?: Extract<OutputFormat, { type: 'fbx' }>['storage']
     gltfStorage?: Extract<OutputFormat, { type: 'gltf' }>['storage']
     stlStorage?: Extract<OutputFormat, { type: 'stl' }>['storage']
     plyStorage?: Extract<OutputFormat, { type: 'ply' }>['storage']
@@ -472,12 +477,26 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         defaultValue: 'gltf',
         required: true,
-        options: unsafeTypedKeys(exportOptions.type).flatMap((value) => {
-          const name = exportOptions.type[value]
-          return name === null
-            ? []
-            : [{ name, value, isCurrent: value === 'gltf' }]
-        }),
+        options: enumOptions(
+          unsafeTypedKeys(exportOptions.type),
+          'gltf',
+          exportOptions.type
+        ),
+      },
+      fbxStorage: {
+        displayName: 'Storage',
+        inputType: 'options',
+        defaultValue: 'binary',
+        skip: true,
+        required: (commandContext) =>
+          commandContext.argumentsToSubmit.type === 'fbx',
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'fbx',
+        options: enumOptions(
+          unsafeTypedKeys(exportOptions.fbxStorage),
+          'binary',
+          exportOptions.fbxStorage
+        ),
       },
       gltfStorage: {
         displayName: 'Storage',
