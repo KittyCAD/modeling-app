@@ -14,6 +14,26 @@ use kittycad_modeling_cmds::KclVersion;
 use kittycad_modeling_cmds::units::UnitLength as KcmcUnitLength;
 use wasm_bindgen::prelude::*;
 
+/// Evaluate a fresh file snapshot without an engine connection or shared editor state.
+/// The caller supplies a snapshot filesystem so imports see the same revision as the entry point.
+#[wasm_bindgen]
+pub async fn evaluate_kcl_mock(
+    source: &str,
+    path: &str,
+    fs_manager: kcl_lib::wasm_engine::FileSystemManager,
+) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+    let program = Program::parse_no_errs(source).map_err(|e| e.to_string())?;
+    let mut settings = kcl_lib::ExecutorSettings::default();
+    settings.with_current_file(path.into());
+    let context = kcl_lib::ExecutorContext::new_mock_for_lsp(fs_manager, settings)?;
+    let outcome = context
+        .run_mock(&program, &kcl_lib::MockConfig::default())
+        .await
+        .map_err(|e| e.to_string())?;
+    JsValue::from_serde(&outcome.variables).map_err(|e| e.to_string())
+}
+
 // wasm_bindgen wrapper for lint
 #[wasm_bindgen]
 pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
