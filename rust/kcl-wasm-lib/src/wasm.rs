@@ -14,6 +14,15 @@ use kittycad_modeling_cmds::KclVersion;
 use kittycad_modeling_cmds::units::UnitLength as KcmcUnitLength;
 use wasm_bindgen::prelude::*;
 
+// E2E fault injection ONLY. NEVER expose this export in shipped builds.
+// The Cargo feature is compile-time opt-in, not a runtime/debug setting.
+#[cfg(feature = "e2e-fault-injection")]
+#[wasm_bindgen]
+pub fn e2e_panic() {
+    console_error_panic_hook::set_once();
+    panic!("E2E fault injection: intentional Rust/Wasm panic");
+}
+
 // wasm_bindgen wrapper for lint
 #[wasm_bindgen]
 pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {

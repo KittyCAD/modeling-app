@@ -6,11 +6,9 @@ import {
 } from '@kittycad/codemirror-lsp-client'
 import type * as jsrpc from 'json-rpc-2.0'
 
-import init, {
-  LspServerConfig,
-  lsp_run_kcl,
-  set_kcl_runtime_flags,
-} from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import type { LspServerConfig } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { loadWasmModule } from '@src/lib/wasmRuntime'
 
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { LspWorkerEvent } from '@src/lang/lsp/workerTypes'
@@ -23,17 +21,18 @@ const fromServer: FromServer | Error = FromServer.create()
 const initialise = async (wasmUrl: string) => {
   const input = await fetch(wasmUrl)
   const buffer = await input.arrayBuffer()
-  return init(buffer)
+  return loadWasmModule({ module_or_path: buffer })
 }
 
 export async function kclLspRun(
+  module: ModuleType,
   config: LspServerConfig,
   token: string,
   baseUrl: string
 ) {
   try {
     console.log('start kcl lsp')
-    await lsp_run_kcl(config, token, baseUrl)
+    await module.lsp_run_kcl(config, token, baseUrl)
   } catch (e: unknown) {
     console.log('kcl lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
@@ -57,14 +56,16 @@ onmessage = (event: MessageEvent) => {
           // Install the runtime flags before starting the server: lsp_run_kcl
           // constructs the LSP's ExecutorContext, which resolves the KCL
           // executor from these flags at construction time.
-          set_kcl_runtime_flags(JSON.stringify(kclRuntimeFlags))
-          const config = new LspServerConfig(
+          instantiatedModule.set_kcl_runtime_flags(
+            JSON.stringify(kclRuntimeFlags)
+          )
+          const config = new instantiatedModule.LspServerConfig(
             intoServer,
             fromServer,
             projectFsManager
           )
           console.log('Starting worker', worker)
-          await kclLspRun(config, token, apiBaseUrl)
+          await kclLspRun(instantiatedModule, config, token, apiBaseUrl)
         })
         .catch((error) => {
           console.error('Worker: Error loading wasm module', worker, error)

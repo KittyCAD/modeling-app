@@ -18,6 +18,91 @@ import noInternalFileSystemImports from './src/eslint/rules/no-internal-file-sys
 import noReactRouterHooks from './src/eslint/rules/no-react-router-hooks.mjs'
 import interactionExpectations from './src/eslint/rules/interaction-expectations.mjs'
 
+// These are capabilities, not general-purpose utilities. Keep their import
+// surface at the runtime owners; public module objects cannot allocate contexts.
+const wasmCapabilities = [
+  {
+    regex: 'kcl-wasm-lib/pkg/',
+    owners: ['src/lib/wasmRuntime.ts'],
+    message: 'Import Wasm utilities from @src/lib/wasm_lib_wrapper.',
+  },
+  {
+    regex: '(^|/)wasmRuntime(\\.ts)?$',
+    owners: [
+      'src/lib/wasm_lib_wrapper.ts',
+      'src/lang/wasmUtils.ts',
+      'src/lang/wasmUtilsNode.ts',
+      'src/lang/lsp/worker.ts',
+      'src/lib/rustContext/index.ts',
+      'src/lib/exceptions.ts',
+    ],
+    message:
+      'The native Wasm runtime is private to initialization and recovery.',
+  },
+  {
+    regex: '(^|/)rustContext(/index)?(\\.ts)?$',
+    importNames: ['createRustContext'],
+    owners: [
+      'src/lib/rustContext/registry/extension.ts',
+      'src/unitTestUtils.ts',
+    ],
+    message: 'Use the registry-owned RustContext service.',
+  },
+  {
+    regex: '(^|/)rustContext(/index)?(\\.ts)?$',
+    importNames: ['recoverRustContext'],
+    owners: ['src/lib/exceptions.ts'],
+    message: 'Only genuine Wasm crash recovery may replace the runtime.',
+  },
+  {
+    regex: '(^|/)wasmUtils(\\.ts)?$',
+    importNames: ['initialiseWasm', 'startWasmFromBuffer'],
+    owners: ['src/registry/extensions/wasm/index.ts'],
+    message: 'Wasm initialization belongs to registry bootstrap.',
+  },
+  {
+    regex: '(^|/)wasmUtilsNode(\\.ts)?$',
+    importNames: ['initialiseWasmNode', 'loadAndInitialiseWasmInstance'],
+    owners: ['src/main.ts', 'src/unitTestUtils.ts'],
+    message:
+      'Node Wasm initialization belongs to startup and integration fixtures.',
+  },
+]
+const wasmOwners = [
+  ...new Set(wasmCapabilities.flatMap(({ owners }) => owners)),
+]
+
+const restrictedSyntax = [
+  'error',
+  {
+    selector:
+      "CallExpression[callee.object.name='Array'][callee.property.name='isArray']",
+    message: 'Use isArray() in lib/utils.ts instead of Array.isArray().',
+  },
+  {
+    selector:
+      "CallExpression[callee.object.name='TOML'][callee.property.name='stringify']",
+    message:
+      'Do not use TOML.stringify directly. Use the wrappers in test-utils instead like settingsToToml.',
+  },
+  {
+    selector:
+      "CallExpression[callee.object.name='TOML'][callee.property.name='parse']",
+    message:
+      'Do not use TOML.parse directly. Use the wrappers in test-utils instead like tomlToSettings.',
+  },
+  {
+    selector:
+      "CallExpression[callee.property.name='split'] > Literal[value='/']",
+    message: "Avoid using split with '/'.",
+  },
+  {
+    selector:
+      "CallExpression[callee.property.name='join'] > Literal[value='/']",
+    message: "Avoid using join with '/'.",
+  },
+]
+
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
   recommendedConfig: js.configs.recommended,
@@ -148,36 +233,7 @@ export default defineConfig([
         },
       ],
 
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector:
-            "CallExpression[callee.object.name='Array'][callee.property.name='isArray']",
-          message: 'Use isArray() in lib/utils.ts instead of Array.isArray().',
-        },
-        {
-          selector:
-            "CallExpression[callee.object.name='TOML'][callee.property.name='stringify']",
-          message:
-            'Do not use TOML.stringify directly. Use the wrappers in test-utils instead like settingsToToml.',
-        },
-        {
-          selector:
-            "CallExpression[callee.object.name='TOML'][callee.property.name='parse']",
-          message:
-            'Do not use TOML.parse directly. Use the wrappers in test-utils instead like tomlToSettings.',
-        },
-        {
-          selector:
-            "CallExpression[callee.property.name='split'] > Literal[value='/']",
-          message: "Avoid using split with '/'.",
-        },
-        {
-          selector:
-            "CallExpression[callee.property.name='join'] > Literal[value='/']",
-          message: "Avoid using join with '/'.",
-        },
-      ],
+      'no-restricted-syntax': restrictedSyntax,
 
       'no-restricted-imports': [
         'error',
@@ -228,6 +284,7 @@ export default defineConfig([
       'zds/no-internal-file-system-imports': 'error',
     },
   },
+
   {
     files: ['e2e/**/*.ts'],
     extends: compat.extends('plugin:testing-library/react'),
@@ -268,5 +325,43 @@ export default defineConfig([
     rules: {
       'suggest-no-throw/suggest-no-throw': 'off',
     },
-  },
+  }, // Disjoint scopes prevent a privileged owner from disabling unrelated rules.
+  ...[
+    { files: ['**/*.{ts,tsx}'], syntax: restrictedSyntax },
+    { files: ['**/*.{js,jsx}'], syntax: ['error'] },
+    ...wasmOwners.map((owner) => ({
+      files: [owner],
+      owner,
+      syntax: restrictedSyntax,
+    })),
+  ].map(({ files, owner, syntax }) => {
+    const restrictions = wasmCapabilities.filter(
+      ({ owners }) => !owner || !owners.includes(owner)
+    )
+    return {
+      files,
+      ignores: owner
+        ? []
+        : [...wasmOwners, '**/*.{test,spec,stories}.{ts,tsx,js,jsx}'],
+      plugins: { '@typescript-eslint': typescriptEslint },
+      rules: {
+        '@typescript-eslint/no-restricted-imports': [
+          'error',
+          {
+            patterns: restrictions.map(({ owners, ...restriction }) => ({
+              ...restriction,
+              allowTypeImports: true,
+            })),
+          },
+        ],
+        'no-restricted-syntax': [
+          ...syntax,
+          ...restrictions.map(({ regex, message }) => ({
+            selector: `ImportExpression[source.value=/${regex.replaceAll('/', '\\u002F')}/]`,
+            message,
+          })),
+        ],
+      },
+    }
+  }),
 ])

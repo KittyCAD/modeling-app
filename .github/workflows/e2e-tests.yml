@@ -331,6 +331,44 @@ jobs:
           retention-days: 30
           overwrite: true
 
+      # Run once against an isolated fault build, never the prepared shipping Wasm.
+      - name: Use Rust toolchain for Wasm recovery
+        if: matrix.config.label == 'ubuntu' && matrix.shardIndex == 1
+        run: cp rust/rust-toolchain.toml rust-toolchain.toml
+
+      - name: Install Rust for Wasm recovery
+        if: matrix.config.label == 'ubuntu' && matrix.shardIndex == 1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        with:
+          cache: false
+          rustflags: ''
+
+      - name: Install Wasm pack for recovery
+        if: matrix.config.label == 'ubuntu' && matrix.shardIndex == 1
+        uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
+        with:
+          tool: wasm-pack
+
+      - name: Build isolated Wasm recovery app
+        if: matrix.config.label == 'ubuntu' && matrix.shardIndex == 1
+        run: bash scripts/build-wasm-fault-injection.sh
+
+      - name: Test genuine Wasm panic recovery
+        if: matrix.config.label == 'ubuntu' && matrix.shardIndex == 1
+        run: npx playwright test --config=playwright.wasm-recovery.config.ts
+        env:
+          NODE_ENV: development
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+
+      - name: Upload Wasm recovery evidence
+        if: ${{ !cancelled() && matrix.config.label == 'ubuntu' && matrix.shardIndex == 1 }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-wasm-recovery-${{ github.sha }}
+          path: test-results/wasm-recovery/
+          include-hidden-files: true
+          retention-days: 30
+
       - name: Track teardown (web)
         if: always()
         shell: bash
