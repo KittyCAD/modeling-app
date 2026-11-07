@@ -1,3 +1,4 @@
+import { kclSceneViewExtensionsValueSpec } from '@src/lib/kcl/registry/contract'
 import {
   executorCapabilityValueSpec,
   executorViewValueSpec,
@@ -40,5 +41,10 @@ it.each([false, true])(
     expect(registry.get(editorCapabilityValueSpec).length > 0).toBe(enabled)
     expect(registry.get(executorCapabilityValueSpec).length > 0).toBe(enabled)
     expect(registry.get(executorViewValueSpec).length > 0).toBe(enabled)
+    expect(
+      registry
+        .get(kclSceneViewExtensionsValueSpec)
+        .some((item) => item.id === 'kcl.gizmo')
+    ).toBe(enabled)
   }
 )

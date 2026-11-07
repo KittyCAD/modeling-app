@@ -22,7 +22,10 @@ import { KclScene } from '@src/lib/kcl/KclScene'
 import env from '@src/env'
 import { authService } from '@src/registry/contracts/auth'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
-import { createElement } from 'react'
+import { createElement, lazy, Suspense } from 'react'
+import type { KclSceneContext } from '@src/lib/kcl/registry/contract'
+
+const KclGizmo = lazy(() => import('@src/lib/kcl/KclGizmo'))
 
 /** KCL contributes syntax, execution, and a standalone engine stream without legacy modeling services. */
 const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
@@ -90,10 +93,29 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
       extensions: sceneExtensions.value,
     })
   }
+  function GizmoView({ session }: KclSceneContext) {
+    useSignals()
+    return createElement(
+      Suspense,
+      { fallback: null },
+      createElement(KclGizmo, {
+        session,
+        settings: services.get(settingsService),
+        theme: sceneSettings.current.value.theme,
+      })
+    )
+  }
   return {
     id: 'kcl',
     dispose: sceneSettings.dispose,
     provides: [
+      provide(kclSceneViewExtensionsValueSpec, {
+        id: 'kcl.gizmo',
+        zone: 'bottom',
+        order: 20,
+        wrapperClassName: 'ml-auto',
+        Component: GizmoView,
+      }),
       provide(editorCapabilityValueSpec, {
         id: 'editors.kcl',
         matches: '.kcl',

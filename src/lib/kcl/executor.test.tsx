@@ -38,11 +38,19 @@ it.each([false, true])(
     const submit = vi.fn(async () => ({ values: {} }))
     const execution = createKclExecution(
       async () => {
+        const worker = new EventTarget()
         const viewer = Object.assign(new EventTarget(), {
           el: document.createElement('div'),
           start: vi.fn(),
           rtc: Object.assign(new EventTarget(), {
-            executor: () => ({ submit }),
+            executor: () => ({
+              submit,
+              addEventListener: worker.addEventListener.bind(worker, 'message'),
+              removeEventListener: worker.removeEventListener.bind(
+                worker,
+                'message'
+              ),
+            }),
             send: vi.fn(async () => ({})),
           }),
           deconstructor: vi.fn(),

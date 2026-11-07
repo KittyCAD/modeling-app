@@ -10,11 +10,16 @@ import { afterEach, expect, it, vi } from 'vitest'
 
 /** A controllable transport exercises lifecycle and ordering without a remote engine or WASM. */
 function fakeViewer() {
+  const worker = new EventTarget()
   const rtc = Object.assign(new EventTarget(), {
     send: vi.fn(
       async (_message: string): Promise<unknown> => ({ success: true })
     ),
-    executor: () => ({ submit }),
+    executor: () => ({
+      submit,
+      addEventListener: worker.addEventListener.bind(worker, 'message'),
+      removeEventListener: worker.removeEventListener.bind(worker, 'message'),
+    }),
   })
   const submit = vi.fn(
     async (

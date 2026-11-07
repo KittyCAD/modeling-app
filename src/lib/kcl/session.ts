@@ -1,3 +1,8 @@
+import {
+  createKclCamera,
+  type KclCamera,
+  type KclCameraConnection,
+} from '@src/lib/kcl/camera'
 import { readKclResult } from '@src/lib/kcl/result'
 import { effect, signal, type ReadonlySignal } from '@preact/signals-core'
 import { kclSceneCommands, type KclSceneSettings } from '@src/lib/kcl/settings'
@@ -10,8 +15,8 @@ export type KclSources = string | Map<string, string>
 export interface KclStreamView extends EventTarget {
   el: HTMLElement
   start: () => void
-  rtc?: EventTarget & {
-    executor: () => {
+  rtc?: Omit<KclCameraConnection, 'executor'> & {
+    executor: () => ReturnType<KclCameraConnection['executor']> & {
       submit: (
         contents: KclSources,
         options: { mainKclPathName: string }
@@ -37,6 +42,7 @@ export function createKclSession(
 ) {
   const element = document.createElement('div')
   element.className = 'h-full min-h-0 min-w-0 w-full overflow-hidden'
+  const camera = signal<KclCamera | undefined>(undefined)
   const state = signal<ConnectionState>({ type: 'connecting' })
   const ready = Promise.withResolvers<KclStreamView | Error>()
   const closed = Promise.withResolvers<Error>()
@@ -60,6 +66,8 @@ export function createKclSession(
 
   const stopViewer = () => {
     if (!view) return
+    camera.peek()?.dispose()
+    camera.value = undefined
     const current = view
     view = undefined
     current.removeEventListener('ready', onReady)
@@ -143,6 +151,7 @@ export function createKclSession(
     }
     clearTimeout(timeout)
     view.rtc.addEventListener('close', onDisconnect, { once: true })
+    camera.value = createKclCamera(view.rtc)
     state.value = { type: 'ready' }
     ready.resolve(view)
     scheduleSettings()
@@ -192,6 +201,7 @@ export function createKclSession(
   return {
     element,
     state,
+    camera,
     mount: (container: HTMLElement) => {
       container.appendChild(element)
       // Inactive tab panels mount with display:none. Wait for a usable layout
