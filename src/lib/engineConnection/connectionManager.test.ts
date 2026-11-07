@@ -6,6 +6,11 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 })
 
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
+import type {
+  BatchResponse,
+  WebSocketRequest,
+  WebSocketResponse,
+} from '@kittycad/lib'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
@@ -84,6 +89,95 @@ function startConnectionManager(
   })
 }
 
+function sceneCameraBatch(
+  responses = true
+): Extract<WebSocketRequest, { type: 'modeling_cmd_batch_req' }> {
+  return {
+    type: 'modeling_cmd_batch_req',
+    batch_id: 'scene-batch',
+    responses,
+    requests: [
+      {
+        cmd_id: 'enable',
+        cmd: {
+          type: 'enable_sketch_mode',
+          entity_id: 'plane',
+          animated: false,
+          ortho: true,
+          adjust_camera: true,
+        },
+      },
+      { cmd_id: 'settings', cmd: { type: 'default_camera_get_settings' } },
+    ],
+  }
+}
+
+const sceneCameraBatchResponse = {
+  success: true,
+  request_id: 'scene-batch',
+  resp: {
+    type: 'modeling_batch',
+    data: {
+      responses: {
+        // Deliberately reversed: callbacks must follow requests, not map order.
+        settings: {
+          response: {
+            type: 'default_camera_get_settings',
+            data: {
+              settings: {
+                center: { x: 0, y: 0, z: 0 },
+                pos: { x: 0, y: 0, z: 10 },
+                up: { x: 0, y: 1, z: 0 },
+                orientation: { x: 0, y: 0, z: 0, w: 1 },
+                ortho: true,
+              },
+            },
+          },
+        },
+        enable: { response: { type: 'enable_sketch_mode', data: {} } },
+      },
+    },
+  },
+} satisfies WebSocketResponse
+
+function message(response: WebSocketResponse) {
+  return new MessageEvent('message', { data: JSON.stringify(response) })
+}
+
+function pendingStartup(manager: ConnectionManager) {
+  const startup = startConnectionManager(manager, {
+    width: 256,
+    height: 256,
+  }).catch((error: unknown) => error)
+  const websocket = ReconnectTestWebSocket.instances.at(-1)
+  if (!websocket) expect.fail('Expected the startup WebSocket')
+  return { startup, websocket }
+}
+
+function pendingWasmCommand(manager: ConnectionManager, requestId: string) {
+  const response = manager
+    .sendModelingCommandFromWasm(
+      requestId,
+      '[0,0,0]',
+      JSON.stringify({
+        type: 'modeling_cmd_req',
+        cmd_id: requestId,
+        cmd: { type: 'begin_execution', enable_render: true },
+      }),
+      '{}'
+    )
+    .catch(() => undefined)
+  const acknowledgement = message({
+    success: true,
+    request_id: requestId,
+    resp: {
+      type: 'modeling',
+      data: { modeling_response: { type: 'empty' } },
+    },
+  })
+  return { response, acknowledgement }
+}
+
 describe('ConnectionManager', () => {
   afterEach(() => {
     vi.useRealTimers()
@@ -91,6 +185,199 @@ describe('ConnectionManager', () => {
     vi.unstubAllGlobals()
     reportClientError.mockClear()
     ReconnectTestWebSocket.instances = []
+  })
+
+  it('awaits a scene batch and delivers subscriptions once in request order before completion', async () => {
+    vi.useFakeTimers()
+    const manager = createConnectionManager()
+    const connection = addConnectedState(manager)
+    connection.send = vi.fn()
+    const order: string[] = []
+    manager.subscribeTo({
+      event: 'enable_sketch_mode',
+      callback: () => order.push('enable'),
+    })
+    manager.subscribeTo({
+      event: 'default_camera_get_settings',
+      callback: () => order.push('settings'),
+    })
+    const result = manager
+      .sendSceneCommand(sceneCameraBatch())
+      .then((response) => {
+        order.push('complete')
+        return response
+      })
+    expect(Object.keys(manager.pendingCommands)).toEqual(['scene-batch'])
+    expect(manager.pendingCommands['scene-batch'].isSceneCommand).toBe(true)
+    expect(order).toEqual([])
+    const receive = manager.createMessageHandler()
+    const event = message(sceneCameraBatchResponse)
+    receive(event)
+    expect(order).toEqual(['enable', 'settings'])
+    expect(await result).toEqual(sceneCameraBatchResponse)
+    expect(order).toEqual(['enable', 'settings', 'complete'])
+    receive(event)
+    expect(order).toEqual(['enable', 'settings', 'complete'])
+    expect(
+      manager.commandLogs.filter(({ type }) => type === 'receive-reliable')
+    ).toHaveLength(2)
+    expect(manager.pendingCommands).toEqual({})
+  })
+
+  it('keeps responses:false scene batches fire-and-forget without pending work', async () => {
+    const manager = createConnectionManager()
+    const connection = addConnectedState(manager)
+    const send = vi.fn()
+    connection.send = send
+    const batch = sceneCameraBatch(false)
+    expect(await manager.sendSceneCommand(batch)).toBeNull()
+    expect(send).toHaveBeenCalledExactlyOnceWith(batch)
+    expect(manager.pendingCommands).toEqual({})
+  })
+
+  it.each(['acknowledged', 'missing', 'failed'])(
+    'waits for an %s object-visibility batch',
+    async (outcome) => {
+      vi.useFakeTimers()
+      const manager = createConnectionManager()
+      const connection = addConnectedState(manager)
+      const send = vi.fn<(command: WebSocketRequest) => void>()
+      connection.send = send
+      const visibility = new Map([
+        ['first-plane', true],
+        ['second-plane', false],
+      ])
+      let settled = false
+      const operation = manager.setObjectsHidden(visibility)
+      void operation.then(
+        () => {
+          settled = true
+        },
+        () => {
+          settled = true
+        }
+      )
+      const request = send.mock.calls[0]?.[0]
+      expect(request?.type).toBe('modeling_cmd_batch_req')
+      if (request?.type !== 'modeling_cmd_batch_req') {
+        throw new Error('Expected an object-visibility batch')
+      }
+      expect(request.responses).toBe(true)
+      expect(request.requests.map(({ cmd }) => cmd)).toEqual([
+        { type: 'object_visible', object_id: 'first-plane', hidden: true },
+        { type: 'object_visible', object_id: 'second-plane', hidden: false },
+      ])
+      await Promise.resolve()
+      expect(settled).toBe(false)
+      expect(Object.keys(manager.pendingCommands)).toEqual([request.batch_id])
+
+      const responses: Record<string, BatchResponse> = {}
+      for (const [index, { cmd_id }] of request.requests.entries()) {
+        if (index === 1 && outcome === 'missing') continue
+        responses[cmd_id] =
+          index === 1 && outcome === 'failed'
+            ? {
+                errors: [
+                  { error_code: 'internal_api', message: 'Missing plane' },
+                ],
+              }
+            : { response: { type: 'object_visible', data: {} } }
+      }
+      const response: WebSocketResponse = {
+        success: true,
+        request_id: request.batch_id,
+        resp: { type: 'modeling_batch', data: { responses } },
+      }
+      const result =
+        outcome === 'acknowledged'
+          ? expect(operation).resolves.toBeUndefined()
+          : expect(operation).rejects.toThrow(
+              outcome === 'failed' ? 'Missing plane' : /not acknowledged/
+            )
+      manager.createMessageHandler()(message(response))
+      await result
+      expect(settled).toBe(true)
+      expect(manager.pendingCommands).toEqual({})
+    }
+  )
+
+  it('rejects a retired scene batch and ignores its late acknowledgement after replacement', async () => {
+    vi.useFakeTimers()
+    const manager = createConnectionManager()
+    addConnectedState(manager).send = vi.fn()
+    const callback = vi.fn()
+    manager.subscribeTo({ event: 'default_camera_get_settings', callback })
+    const receive = manager.createMessageHandler()
+    const retired = manager.sendSceneCommand(sceneCameraBatch())
+    const rejected = expect(retired).rejects.toMatchObject([
+      { errors: [{ error_code: 'connection_problem' }] },
+    ])
+    manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+    await rejected
+    addConnectedState(manager).send = vi.fn()
+    const currentBatch = { ...sceneCameraBatch(), batch_id: 'new-scene-batch' }
+    const current = manager.sendSceneCommand(currentBatch)
+    receive(message(sceneCameraBatchResponse))
+    expect(callback).not.toHaveBeenCalled()
+    expect(Object.keys(manager.pendingCommands)).toEqual(['new-scene-batch'])
+    receive(
+      message({
+        ...sceneCameraBatchResponse,
+        request_id: currentBatch.batch_id,
+      })
+    )
+    await current
+    expect(callback).toHaveBeenCalledOnce()
+    expect(manager.pendingCommands).toEqual({})
+  })
+
+  it('settles modeling responses before the WebRTC readiness handoff', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
+    const manager = createConnectionManager()
+    const { startup, websocket } = pendingStartup(manager)
+    const requestId = '00000000-0000-4000-8000-000000000001'
+    const { response, acknowledgement } = pendingWasmCommand(manager, requestId)
+
+    try {
+      expect(manager.connection?.connected).toBe(false)
+      expect(Object.keys(manager.pendingCommands)).toEqual([requestId])
+      websocket.dispatchEvent(acknowledgement)
+      expect(Object.keys(manager.pendingCommands)).toEqual([])
+      expect(await response).toBeInstanceOf(Uint8Array)
+      expect(
+        manager.commandLogs.filter(({ type }) => type === 'receive-reliable')
+      ).toHaveLength(1)
+    } finally {
+      manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+      await Promise.all([response, startup])
+    }
+  })
+
+  it('removes the early response listener before replacing its connection', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
+    const manager = createConnectionManager()
+    const { startup: firstStartup, websocket: retiredWebsocket } =
+      pendingStartup(manager)
+    manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+    await firstStartup
+
+    const { startup, websocket } = pendingStartup(manager)
+    const requestId = '00000000-0000-4000-8000-000000000002'
+    const { response, acknowledgement } = pendingWasmCommand(manager, requestId)
+    try {
+      retiredWebsocket.dispatchEvent(acknowledgement)
+      expect(Object.keys(manager.pendingCommands)).toEqual([requestId])
+      expect(manager.responseMap[requestId]).toBeUndefined()
+
+      websocket.dispatchEvent(acknowledgement)
+      expect(Object.keys(manager.pendingCommands)).toEqual([])
+      expect(await response).toBeInstanceOf(Uint8Array)
+    } finally {
+      manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+      await Promise.all([response, startup])
+    }
   })
 
   it('warns when Engine rejects a modeling command', async () => {

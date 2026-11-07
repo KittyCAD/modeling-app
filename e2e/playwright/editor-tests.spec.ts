@@ -766,7 +766,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if you write invalid kcl you get inlined errors',
     { tag: '@web' },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, scene }) => {
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -794,6 +794,8 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.keyboard.press('Enter')
       await page.keyboard.type('bottomAng = 25')
       await page.keyboard.press('Enter')
+
+      await scene.connectionEstablished()
 
       // error in guter
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()

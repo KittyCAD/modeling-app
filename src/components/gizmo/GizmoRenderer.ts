@@ -436,9 +436,7 @@ export default class GizmoRenderer {
     const pickedName = obj?.name || this.hoveringMesh.name
     const targetQuat = orientationQuaternionForName(pickedName)
     if (targetQuat) {
-      animateCameraToQuaternion(targetQuat, this.sceneInfra).catch(
-        reportRejection
-      )
+      setCameraToQuaternion(targetQuat, this.sceneInfra).catch(reportRejection)
     }
   }
 
@@ -606,7 +604,7 @@ function orientationQuaternionForName(name: string): Quaternion | null {
   return q.setFromRotationMatrix(m)
 }
 
-async function animateCameraToQuaternion(
+async function setCameraToQuaternion(
   targetQuat: Quaternion,
   sceneInfra: SceneInfra
 ) {
@@ -614,16 +612,13 @@ async function animateCameraToQuaternion(
   camControls.syncDirection = 'clientToEngine'
   camControls.enableRotate = false
   try {
-    sceneInfra.animate()
-    await camControls.tweenCameraToQuaternion(
+    await camControls.setCameraToQuaternion(
       targetQuat,
-      camControls.target.clone(),
-      500
+      camControls.target.clone()
     )
   } catch (e) {
     console.warn(e)
   } finally {
-    sceneInfra.stop()
     camControls.enableRotate = true
     camControls.syncDirection = 'engineToClient'
   }
