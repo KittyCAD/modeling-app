@@ -8,6 +8,7 @@ import noopfs from '@src/lib/fs-zds/noopfs'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { describe, expect, it, vi } from 'vitest'
+import fc from 'fast-check'
 
 describe('project storage routing', () => {
   it('keeps a replacement mount when an older registration is disposed', async () => {
@@ -63,7 +64,7 @@ describe('project storage routing', () => {
     expect(localRead).toHaveBeenCalledTimes(2)
   })
 
-  it('never removes a transfer source when destination persistence fails', async () => {
+  it('never removes a clone source when destination persistence fails', async () => {
     const remove = vi.fn()
     const router = createMountedFileOperations(
       {
@@ -92,12 +93,14 @@ describe('project storage routing', () => {
       },
     })
     await expect(
-      router.operations.move('/local/main.kcl', '/cloud/project/main.kcl')
+      router.operations.copy('/local/main.kcl', '/cloud/project/main.kcl', {
+        overwrite: false,
+      })
     ).rejects.toThrow('Save failed')
     expect(remove).not.toHaveBeenCalled()
   })
 
-  it('creates nested archive parents before moving a file between backends', async () => {
+  it('copies between backends without removing the source', async () => {
     const local = createMemoryFileSystem({ ...noopfs.impl, ...posix })
     const cloud = createMemoryFileSystem({ ...noopfs.impl, ...posix })
     await cloud.mkdir('/cloud/project/parts', { recursive: true })
@@ -109,144 +112,142 @@ describe('project storage routing', () => {
       const router = createMountedFileOperations(localRuntime.operations, posix)
       router.mount({ root: '/cloud', operations: cloudRuntime.operations })
       const destination = '/archive/cloud/project/parts/main.kcl'
-      await router.operations.move('/cloud/project/parts/main.kcl', destination)
+      await router.operations.copy(
+        '/cloud/project/parts/main.kcl',
+        destination,
+        { overwrite: false }
+      )
       expect(await local.readFile(destination)).toEqual(bytes)
-      await expect(
-        cloud.readFile('/cloud/project/parts/main.kcl')
-      ).rejects.toMatchObject({ code: 'ENOENT' })
+      expect(await cloud.readFile('/cloud/project/parts/main.kcl')).toEqual(
+        bytes
+      )
     } finally {
       await Promise.all([localRuntime.dispose(), cloudRuntime.dispose()])
     }
   })
 
-  it.each([
-    { kind: 'file', fail: false },
-    { kind: 'directory', fail: false },
-    { kind: 'file', fail: true },
-    { kind: 'directory', fail: true },
-  ])(
-    'protects a moving $kind from saves until persistence completes (upload failure: $fail)',
-    async ({ kind, fail }) => {
+  it('rejects cross-backing moves and renames without changing either project', async () => {
+    await fc.assert(
+      fc.asyncProperty(
+        fc.uint8Array(),
+        fc.uint8Array(),
+        fc.boolean(),
+        async (sourceBytes, destinationBytes, destinationExists) => {
+          const local = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+          const cloud = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+          await local.mkdir('/local', { recursive: true })
+          await cloud.mkdir('/cloud', { recursive: true })
+          await local.writeFile('/local/main.kcl', sourceBytes)
+          if (destinationExists)
+            await cloud.writeFile('/cloud/main.kcl', destinationBytes)
+          const a = createFileOperationsRuntime(local)
+          const b = createFileOperationsRuntime(cloud)
+          const router = createMountedFileOperations(a.operations, posix)
+          router.mount({ root: '/cloud', operations: b.operations })
+          try {
+            for (const operation of [
+              router.operations.move,
+              router.operations.rename,
+            ]) {
+              await expect(
+                operation('/local/main.kcl', '/cloud/main.kcl')
+              ).rejects.toThrow('cannot cross project storage backends')
+              await expect(
+                operation('/cloud/main.kcl', '/local/main.kcl')
+              ).rejects.toThrow('cannot cross project storage backends')
+            }
+            if (destinationExists)
+              await expect(
+                router.operations.copy('/local/main.kcl', '/cloud/main.kcl', {
+                  overwrite: false,
+                })
+              ).rejects.toThrow()
+            expect(await local.readFile('/local/main.kcl')).toEqual(sourceBytes)
+            if (destinationExists)
+              expect(await cloud.readFile('/cloud/main.kcl')).toEqual(
+                destinationBytes
+              )
+            else
+              await expect(cloud.stat('/cloud/main.kcl')).rejects.toMatchObject(
+                { code: 'ENOENT' }
+              )
+            await router.operations.move(
+              '/local/main.kcl',
+              '/local/renamed.kcl'
+            )
+            expect(await local.readFile('/local/renamed.kcl')).toEqual(
+              sourceBytes
+            )
+            await expect(local.stat('/local/main.kcl')).rejects.toMatchObject({
+              code: 'ENOENT',
+            })
+          } finally {
+            await Promise.all([a.dispose(), b.dispose()])
+          }
+        }
+      )
+    )
+  })
+
+  it.each([false, true])(
+    'keeps source saves usable during a seven-second clone (upload failure: %s)',
+    async (fail) => {
       const local = createMemoryFileSystem({ ...noopfs.impl, ...posix })
       const cloud = createMemoryFileSystem({ ...noopfs.impl, ...posix })
-      await local.mkdir('/local/project', { recursive: true })
+      await local.mkdir('/local', { recursive: true })
       await cloud.mkdir('/cloud', { recursive: true })
-      const file = '/local/project/main.kcl'
-      await local.writeFile(file, new TextEncoder().encode('old'))
-      const source = kind === 'file' ? file : '/local/project'
-      const destination = kind === 'file' ? '/cloud/main.kcl' : '/cloud/project'
-      const localRuntime = createFileOperationsRuntime(local)
-      const cloudRuntime = createFileOperationsRuntime(cloud)
-      let releaseUpload = () => {}
-      const uploading = new Promise<void>((resolve) => {
-        releaseUpload = resolve
-      })
-      let markStarted = () => {}
-      const started = new Promise<void>((resolve) => {
-        markStarted = resolve
-      })
-      const router = createMountedFileOperations(localRuntime.operations, posix)
+      await local.writeFile(
+        '/local/main.kcl',
+        new TextEncoder().encode('captured')
+      )
+      const a = createFileOperationsRuntime(local)
+      const b = createFileOperationsRuntime(cloud)
+      const started = Promise.withResolvers<undefined>()
+      const upload = Promise.withResolvers<undefined>()
+      const router = createMountedFileOperations(a.operations, posix)
       router.mount({
         root: '/cloud',
         operations: {
-          ...cloudRuntime.operations,
-          createFile: async (path, contents) => {
-            markStarted()
-            await uploading
+          ...b.operations,
+          createFile: async (path, bytes) => {
+            started.resolve(undefined)
+            await upload.promise
             if (fail) return Promise.reject(new Error('Upload failed'))
-            await cloudRuntime.operations.createFile(path, contents)
+            await b.operations.createFile(path, bytes)
           },
         },
       })
-      const move = router.operations.move(source, destination)
-      let save: Promise<void> | undefined
-      let saveSettled = false
+      const copy = router.operations.copy(
+        '/local/main.kcl',
+        '/cloud/main.kcl',
+        { overwrite: false }
+      )
       try {
-        await started
-        const contents = new TextEncoder().encode('new')
-        save = router.operations.writeFile(file, contents)
-        contents.fill(0)
-        void save.then(
-          () => {
-            saveSettled = true
-          },
-          () => {
-            saveSettled = true
-          }
-        )
-        // Unrelated paths stay usable while the upload and overlapping save wait.
-        await router.operations.writeFile('/local/unrelated.kcl', 'unrelated')
-        expect(saveSettled).toBe(false)
-        expect(await router.operations.pending()).toBeGreaterThan(0)
-      } finally {
-        releaseUpload()
-        const results = await Promise.allSettled([move, save])
-        await Promise.all([localRuntime.dispose(), cloudRuntime.dispose()])
-        expect(results[0].status).toBe(fail ? 'rejected' : 'fulfilled')
-        // Removing the parent makes a queued directory save fail explicitly.
-        expect(results[1].status).toBe(
-          fail || kind === 'file' ? 'fulfilled' : 'rejected'
-        )
-      }
-      if (!fail)
-        expect(
-          new TextDecoder().decode(
-            await cloud.readFile(
-              kind === 'file'
-                ? destination
-                : posix.join(destination, 'main.kcl')
-            )
+        await started.promise
+        vi.useFakeTimers()
+        await vi.advanceTimersByTimeAsync(7_000)
+        await router.operations.writeFile('/local/main.kcl', 'new edit')
+        expect(await local.readFile('/local/main.kcl', 'utf8')).toBe('new edit')
+        await expect(cloud.stat('/cloud/main.kcl')).rejects.toMatchObject({
+          code: 'ENOENT',
+        })
+        upload.resolve(undefined)
+        if (fail) await expect(copy).rejects.toThrow('Upload failed')
+        else {
+          await copy
+          expect(await cloud.readFile('/cloud/main.kcl', 'utf8')).toBe(
+            'captured'
           )
-        ).toBe('old')
-      if (fail || kind === 'file')
-        expect(new TextDecoder().decode(await local.readFile(file))).toBe('new')
+        }
+        expect(await local.readFile('/local/main.kcl', 'utf8')).toBe('new edit')
+      } finally {
+        upload.resolve(undefined)
+        await Promise.allSettled([copy])
+        vi.useRealTimers()
+        await Promise.all([a.dispose(), b.dispose()])
+      }
     }
   )
-
-  it('waits for an earlier save before transferring its source directory', async () => {
-    const local = createMemoryFileSystem({ ...noopfs.impl, ...posix })
-    const cloud = createMemoryFileSystem({ ...noopfs.impl, ...posix })
-    await local.mkdir('/local/project', { recursive: true })
-    await cloud.mkdir('/cloud', { recursive: true })
-    const file = '/local/project/main.kcl'
-    await local.writeFile(file, new TextEncoder().encode('old'))
-    const localRuntime = createFileOperationsRuntime(local)
-    const cloudRuntime = createFileOperationsRuntime(cloud)
-    const saving = Promise.withResolvers<undefined>()
-    const releaseSave = Promise.withResolvers<undefined>()
-    const router = createMountedFileOperations(
-      {
-        ...localRuntime.operations,
-        writeFile: async (path, contents) => {
-          if (path === file) {
-            saving.resolve(undefined)
-            await releaseSave.promise
-          }
-          await localRuntime.operations.writeFile(path, contents)
-        },
-      },
-      posix
-    )
-    const upload = vi.fn(cloudRuntime.operations.createFile)
-    router.mount({
-      root: '/cloud',
-      operations: { ...cloudRuntime.operations, createFile: upload },
-    })
-    const save = router.operations.writeFile(file, 'new')
-    await saving.promise
-    const move = router.operations.move('/local/project', '/cloud/project')
-    try {
-      await router.operations.writeFile('/local/unrelated.kcl', 'unrelated')
-      expect(upload).not.toHaveBeenCalled()
-    } finally {
-      releaseSave.resolve(undefined)
-      await Promise.all([save, move])
-      await Promise.all([localRuntime.dispose(), cloudRuntime.dispose()])
-    }
-    expect(
-      new TextDecoder().decode(await cloud.readFile('/cloud/project/main.kcl'))
-    ).toBe('new')
-  })
 
   it('uses prefixes without network requests and propagates ambiguous lookup failures', async () => {
     const exists = vi.fn(async () => true)

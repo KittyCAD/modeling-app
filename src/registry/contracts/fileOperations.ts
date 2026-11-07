@@ -31,7 +31,7 @@ export interface FileOperationsRegistryService {
     destination: string,
     options?: CopyOptions
   ) => Promise<void>
-  /** Move, falling back to copy-and-remove when rename is unavailable. */
+  /** Move within one backing filesystem. Cross-backing moves must reject. */
   readonly move: (source: string, destination: string) => Promise<void>
   /** Write bytes, or encode a string as UTF-8, without retaining caller data. */
   readonly writeFile: (path: string, contents: FileContents) => Promise<void>
