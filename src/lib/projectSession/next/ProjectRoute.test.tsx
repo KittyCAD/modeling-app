@@ -1,25 +1,32 @@
 import '@src/lib/projectSession/next/testFeature'
-import { signal } from '@preact/signals-core'
+import { Popover } from '@headlessui/react'
 import {
-  Registry,
   defineRegistryItem,
   provideService,
+  Registry,
 } from '@kittycad/registry'
+import { signal } from '@preact/signals-core'
 import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
 import editorsExtension from '@src/lib/editors/registry'
-import markdownExtension from '@src/lib/markdown/registry'
 import { editorsService } from '@src/lib/editors/registry/contract'
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import executorsExtension from '@src/lib/executors/registry'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import { commandsValueSpec } from '@src/registry/contracts/commands'
-import projectSessionNextExtension from '@src/lib/projectSession/registry'
-import type { Project } from '@src/lib/projectSession/next/types'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import markdownExtension from '@src/lib/markdown/registry'
 import type { OpenProjectSession } from '@src/lib/projectSession/next/contract'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { ProjectRoute } from '@src/lib/projectSession/next/ProjectRoute'
 import { ProjectView } from '@src/lib/projectSession/next/ProjectView'
+import type { Project } from '@src/lib/projectSession/next/types'
+import projectSessionNextExtension from '@src/lib/projectSession/registry'
+import savingExtension from '@src/lib/save/registry'
+import { editorSaveService } from '@src/lib/save/registry/contract'
+import settingsExtension from '@src/lib/settings/registry'
+import tomlExtension from '@src/lib/toml/registry'
+import { commandsValueSpec } from '@src/registry/contracts/commands'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import type { PropsWithChildren } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import {
   afterEach,
@@ -35,6 +42,15 @@ const registry = vi.hoisted(() => ({ get: vi.fn(), signal: vi.fn() }))
 const commands = vi.hoisted(() => ({ send: vi.fn() }))
 // "Next"-era panes can access ordinary editor views, but no modeling singleton.
 vi.mock('@src/lib/boot', () => ({ useApp: () => ({ registry, commands }) }))
+
+// Native popover placement is covered by ToolbarDropdownPanel's browser checks.
+vi.mock('@src/components/ToolbarDropdownPanel', () => ({
+  ToolbarDropdownPanel: ({ children }: PropsWithChildren) => (
+    <Popover.Panel>
+      <ul>{children}</ul>
+    </Popover.Panel>
+  ),
+}))
 
 function createSession(
   title: string,
@@ -55,6 +71,7 @@ describe('project screen', () => {
   const readFile = vi.fn(async (_src: string) =>
     new TextEncoder().encode('loaded contents')
   )
+  const writeFile = vi.fn(async (_path: string, _contents: unknown) => {})
   beforeAll(async () => {
     await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
   })
@@ -63,13 +80,18 @@ describe('project screen', () => {
     services = new Registry()
     services.configure([
       editorsExtension,
+      executorsExtension,
       markdownExtension,
+      savingExtension,
+      settingsExtension,
+      tomlExtension,
       projectSessionNextExtension,
       defineRegistryItem({
         providesServices: [
           provideService(fileOperationsService, {
             ...testFileOperations,
             readFile,
+            writeFile,
           }),
         ],
       }),
@@ -80,6 +102,95 @@ describe('project screen', () => {
   afterEach(() => {
     cleanup()
     services[Symbol.dispose]()
+  })
+
+  it('refreshes the real project header only after its root settings file saves successfully', async () => {
+    const projects = services.get(projectSessionService)
+    const session = projects.openProject({
+      contents: { name: 'folder', path: '/projects/folder', children: [] },
+      metadata: {
+        title: 'Before',
+        defaultFile: 'old.kcl',
+        readWriteAccess: true,
+      },
+    })
+    const editor = services
+      .get(editorsService)
+      .openEditor('/projects/folder/project.toml', 'title = "Before"')
+    render(
+      <MemoryRouter>
+        <ProjectView session={session} />
+      </MemoryRouter>
+    )
+    const title = await screen.findByRole('textbox', { name: 'title' })
+    fireEvent.change(title, { target: { value: 'After' } })
+    fireEvent.blur(title)
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Before' })
+    ).toBeVisible()
+    writeFile.mockRejectedValueOnce(new Error('Write failed'))
+    await act(async () => {
+      await services.get(editorSaveService).save(editor)
+    })
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Before' })
+    ).toBeVisible()
+    fireEvent.click(screen.getByRole('button', { name: 'Save file' }))
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'After' })
+    ).toBeVisible()
+    expect(session.project.value.metadata.defaultFile).toBeUndefined()
+    expect(writeFile).toHaveBeenLastCalledWith(
+      '/projects/folder/project.toml',
+      'title = "After"'
+    )
+    const nested = services
+      .get(editorsService)
+      .openEditor('/projects/folder/sub/project.toml', 'title = "Nested"')
+    await act(async () => {
+      await services.get(editorSaveService).save(nested)
+    })
+    expect(session.project.value.metadata.title).toBe('After')
+    // Removing the title follows the same directory-name fallback as opening a project.
+    act(() =>
+      editor.view.dispatch({
+        changes: {
+          from: 0,
+          to: editor.view.state.doc.length,
+          insert: '# no metadata',
+        },
+      })
+    )
+    await act(async () => {
+      await services.get(editorSaveService).save(editor)
+    })
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'folder' })
+    ).toBeVisible()
+  })
+
+  it('does not apply a completed save to a replacement opening of the same project', async () => {
+    const projects = services.get(projectSessionService)
+    const data = {
+      contents: { name: 'folder', path: '/projects/folder', children: [] },
+      metadata: { title: 'Before', readWriteAccess: true },
+    }
+    projects.openProject(data)
+    const editor = services
+      .get(editorsService)
+      .openEditor('/projects/folder/project.toml', 'title = "Stale"')
+    let finish!: () => void
+    writeFile.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        finish = resolve
+      })
+    )
+    const save = services.get(editorSaveService).save(editor)
+    await Promise.resolve()
+    const replacement = projects.openProject(data)
+    finish()
+    await save
+    expect(replacement.project.value.metadata.title).toBe('Before')
   })
 
   it('shows the captured project without reading or writing files', () => {
@@ -108,7 +219,7 @@ describe('project screen', () => {
     expect(readFile).not.toHaveBeenCalled()
   })
 
-  it('shows the workspace and follows the project session selection', () => {
+  it('shows the editor area and follows the project session selection', () => {
     const first = createSession('First')
     const second = createSession('Second')
     const currentSession = signal<OpenProjectSession | undefined>(first)
@@ -144,14 +255,14 @@ describe('project screen', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('launches the open-editor command and preserves buffers when the workspace remounts', async () => {
+  it('launches the open-editor command and preserves buffers across project-view remounts', async () => {
     const project = createSession('Bracket', [
       { name: 'main.kcl', path: '/projects/Bracket/main.kcl', children: null },
     ])
     const session = services
       .get(projectSessionService)
       .openProject(project.project.value)
-    const workspace = render(
+    const mounted = render(
       <MemoryRouter>
         <ProjectView session={session} />
       </MemoryRouter>
@@ -179,7 +290,7 @@ describe('project screen', () => {
     )
     expect(screen.getByRole('tabpanel')).toContainElement(editor.view.dom)
     const destroy = vi.spyOn(editor.view, 'destroy')
-    workspace.unmount()
+    mounted.unmount()
     expect(destroy).not.toHaveBeenCalled()
     render(
       <MemoryRouter>
@@ -187,5 +298,59 @@ describe('project screen', () => {
       </MemoryRouter>
     )
     expect(screen.getByRole('tabpanel')).toContainElement(editor.view.dom)
+  })
+
+  it('opens Markdown as an editor mode and updates its contributed preview from unsaved edits', async () => {
+    readFile.mockResolvedValueOnce(
+      new TextEncoder().encode('# Project notes\n\n**Live** preview')
+    )
+    const project = createSession('Notes', [
+      { name: 'README.md', path: '/projects/Notes/README.md', children: null },
+      { name: 'main.kcl', path: '/projects/Notes/main.kcl', children: null },
+    ])
+    const session = services
+      .get(projectSessionService)
+      .openProject(project.project.value)
+    render(
+      <MemoryRouter>
+        <ProjectView session={session} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Open editor' }))
+    expect(commands.send).toHaveBeenCalledWith({
+      type: 'Find and select command',
+      data: {
+        name: OPEN_EDITOR_COMMAND.name,
+        groupId: OPEN_EDITOR_COMMAND.groupId,
+      },
+    })
+    const command = services
+      .get(commandsValueSpec)
+      .find(({ id }) => id === OPEN_EDITOR_COMMAND.id)!
+    await act(async () => {
+      await command.onSubmit({ src: '/projects/Notes/README.md' })
+    })
+    expect(screen.getByRole('tab', { name: 'README.md' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    expect(
+      await screen.findByRole('heading', { name: 'Project notes' })
+    ).toBeVisible()
+    const editor = services.get(editorsService).editors.value[0]
+    expect(editor.src.value).toBe('/projects/Notes/README.md')
+    act(() => {
+      editor.view.dispatch({
+        changes: {
+          from: 0,
+          to: editor.view.state.doc.length,
+          insert: '# Updated notes',
+        },
+      })
+    })
+    expect(
+      await screen.findByRole('heading', { name: 'Updated notes' })
+    ).toBeVisible()
+    expect(readFile).toHaveBeenCalledOnce()
   })
 })
