@@ -26,9 +26,9 @@ pub enum Operation {
         /// The unlabeled argument to the function.
         unlabeled_arg: Option<OpArg>,
         /// The labeled keyword arguments to the function.
-        labeled_args: IndexMap<String, OpArg>,
+        labeled_args: Arc<IndexMap<String, OpArg>>,
         /// The node path of the operation in the source code.
-        node_path: NodePath,
+        node_path: Arc<NodePath>,
         /// The true source range of the operation in the source code.
         source_range: SourceRange,
         /// The source range that's the boundary of calling the standard
@@ -49,7 +49,7 @@ pub enum Operation {
         /// means there is no visibility modifier.
         visibility: ItemVisibility,
         /// The node path of the operation in the source code.
-        node_path: NodePath,
+        node_path: Arc<NodePath>,
         /// The source range of the operation in the source code.
         source_range: SourceRange,
     },
@@ -58,7 +58,7 @@ pub enum Operation {
         /// The details of the group.
         group: Group,
         /// The node path of the operation in the source code.
-        node_path: NodePath,
+        node_path: Arc<NodePath>,
         /// The source range of the operation in the source code.
         source_range: SourceRange,
     },
@@ -72,7 +72,7 @@ pub enum Operation {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         glob: bool,
         /// The node path of the operation in the source code.
-        node_path: NodePath,
+        node_path: Arc<NodePath>,
         /// The source range of the operation in the source code.
         source_range: SourceRange,
     },
@@ -80,6 +80,11 @@ pub enum Operation {
 }
 
 impl Operation {
+    pub fn placeholder_node_path() -> Arc<NodePath> {
+        static EMPTY: std::sync::LazyLock<Arc<NodePath>> = std::sync::LazyLock::new(Arc::default);
+        Arc::clone(&EMPTY)
+    }
+
     /// If the variant is `StdLibCall`, set the `is_error` field.
     pub fn set_std_lib_call_is_error(&mut self, is_err: bool) {
         match self {
@@ -108,7 +113,7 @@ pub enum Group {
         /// The unlabeled argument to the function.
         unlabeled_arg: Option<OpArg>,
         /// The labeled keyword arguments to the function.
-        labeled_args: IndexMap<String, OpArg>,
+        labeled_args: Arc<IndexMap<String, OpArg>>,
     },
     /// A sketch block.
     #[allow(dead_code)]

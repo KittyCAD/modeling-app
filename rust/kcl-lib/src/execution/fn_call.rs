@@ -1,10 +1,12 @@
+use std::sync::Arc;
+use std::sync::LazyLock;
+
 use indexmap::IndexMap;
 use kcl_api::Group;
 use kcl_api::OpArg;
 
 use crate::CompilationIssue;
 use crate::NodePath;
-use crate::NodePathExt;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -346,11 +348,17 @@ impl FunctionSource {
         // self.include_in_feature_tree is set by the KCL annotation `@(feature_tree = true)`.
         let should_track_operation = !would_trace_stdlib_internals && self.include_in_feature_tree;
         let op = if should_track_operation {
-            let op_labeled_args = args
+            let op_labeled_args: IndexMap<String, OpArg> = args
                 .labeled
                 .iter()
                 .map(|(k, arg)| (k.clone(), OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)))
                 .collect();
+            let op_labeled_args = if op_labeled_args.is_empty() {
+                static EMPTY: LazyLock<Arc<IndexMap<String, OpArg>>> = LazyLock::new(Arc::default);
+                Arc::clone(&EMPTY)
+            } else {
+                Arc::new(op_labeled_args)
+            };
 
             // If you're calling a stdlib function, track that call as an operation.
             if self.is_std() {
@@ -360,7 +368,7 @@ impl FunctionSource {
                         .unlabeled_kw_arg_unconverted()
                         .map(|arg| OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)),
                     labeled_args: op_labeled_args,
-                    node_path: NodePath::placeholder(),
+                    node_path: Operation::placeholder_node_path(),
                     source_range: callsite,
                     stdlib_entry_source_range: exec_state.mod_local.stdlib_entry_source_range,
                     is_error: false,
@@ -376,7 +384,7 @@ impl FunctionSource {
                             .map(|arg| OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                     },
-                    node_path: NodePath::placeholder(),
+                    node_path: Operation::placeholder_node_path(),
                     source_range: callsite,
                 });
 
