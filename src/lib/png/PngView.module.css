@@ -1,0 +1,57 @@
+.viewport {
+  @apply relative min-h-0 min-w-0 flex-1 overflow-hidden bg-chalkboard-20;
+}
+:global(.dark) .viewport {
+  @apply bg-chalkboard-100;
+}
+.canvas.canvas {
+  @apply h-full w-full cursor-grab;
+  touch-action: none;
+}
+.canvas:active {
+  @apply cursor-grabbing;
+}
+.image {
+  @apply block max-w-none select-none shadow-lg;
+  background-color: #fff;
+  background-image: conic-gradient(
+    #ddd 25%,
+    transparent 0 50%,
+    #ddd 0 75%,
+    transparent 0
+  );
+  background-size: 16px 16px;
+}
+:global(.dark) .image {
+  background-color: #444;
+  background-image: conic-gradient(
+    #555 25%,
+    transparent 0 50%,
+    #555 0 75%,
+    transparent 0
+  );
+}
+.controls {
+  @apply absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center overflow-hidden rounded border border-chalkboard-30 bg-chalkboard-10 shadow-sm;
+}
+:global(.dark) .controls {
+  @apply border-chalkboard-70 bg-chalkboard-90;
+}
+.controls button {
+  @apply m-0 rounded-none border-0 bg-transparent px-3 py-1 text-xs text-inherit shadow-none;
+}
+.controls button:hover {
+  @apply bg-chalkboard-30/50;
+}
+.controls button:focus-visible {
+  @apply outline outline-1 -outline-offset-2 outline-primary;
+}
+.hint {
+  @apply pointer-events-none absolute top-3 left-3 m-0 text-xs text-chalkboard-60;
+}
+:global(.dark) .hint {
+  @apply text-chalkboard-40;
+}
+.status {
+  @apply absolute inset-x-0 top-0 m-0 p-4 text-sm;
+}
