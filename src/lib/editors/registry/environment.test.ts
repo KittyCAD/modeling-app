@@ -1,3 +1,4 @@
+import drawingsExtension from '@src/lib/drawings/registry/plugin'
 import executorsExtension from '@src/lib/executors/registry'
 import { signal } from '@preact/signals-core'
 import savingExtension from '@src/lib/save/registry'
@@ -46,12 +47,14 @@ describe('experimental editor registration', () => {
         savingExtension,
         markdownExtension,
         kclExtension,
+        drawingsExtension,
       ])
       registry.required(userFeaturesService)
       for (const active of [enabled, !enabled]) {
         granted.value = active
         await vi.waitFor(() => {
           expect(registry!.get(editorViewsFacet).length > 0).toBe(active)
+          expect(registry!.get(editorViewsFacet).some(({ id }) => id === 'drawings.sheet')).toBe(active)
           expect(registry!.optional(editorsService) !== undefined).toBe(active)
           expect(registry!.optional(editorSaveService) !== undefined).toBe(
             active
