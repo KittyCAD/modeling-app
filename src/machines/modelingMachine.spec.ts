@@ -96,7 +96,6 @@ function useEngineWorld() {
     setTestWorld(
       await buildTheWorldAndConnectToEngine({
         webrtc: false,
-        geometryOnly: true,
       })
     )
   })
