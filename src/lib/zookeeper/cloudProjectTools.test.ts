@@ -50,6 +50,8 @@ describe('cloud MCP mutation returns', () => {
     'project_stat',
     'project_access',
     'edit_project_file',
+    'edit_kcl_code',
+    'text_to_cad',
     'unrelated__project_rm',
   ])('ignores %s', (name) =>
     expect(parseCloudProjectToolChange(result(name))).toBeUndefined()

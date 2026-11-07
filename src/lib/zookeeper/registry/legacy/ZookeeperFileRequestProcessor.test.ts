@@ -1,11 +1,12 @@
+import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { posix } from '@chainner/node-path'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 import {
   ZookeeperFileRequestProcessor,
   type ZookeeperNewFileRequest,
-} from '@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor'
-import type { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
+} from '@src/lib/zookeeper/registry/legacy/ZookeeperFileRequestProcessor'
+import type { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/legacy/ZookeeperEditPatchHistory'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
@@ -23,14 +24,16 @@ afterEach(async () => {
   await Promise.all(
     processors.splice(0).map((processor) => processor.dispose())
   )
+  vi.useRealTimers()
   vi.restoreAllMocks()
 })
 
-function setup() {
+function setupProcessor(storage: 'local' | 'cloud') {
   const project = {
     name: 'demo',
     path: '/workspace/demo',
     default_file: '/workspace/demo/main.kcl',
+    cloudProjectId: storage === 'cloud' ? 'remote' : undefined,
   } as Project
   const state = { project, editorCurrent: true, sessionCurrent: true }
   const editor = {
@@ -73,7 +76,7 @@ function setup() {
     onEditApplied: onApplied,
   })
   processors.push(processor)
-  const enqueue = (
+  const requestFor = (
     id: number,
     options: {
       files?: Record<string, string>
@@ -117,7 +120,28 @@ function setup() {
             }),
       },
     }
+    return request
+  }
+  const enqueue = (id: number, options?: Parameters<typeof requestFor>[1]) => {
+    const request = requestFor(id, options)
     processor.enqueue(request, () => onApplied(request.toolOutput))
+  }
+  const receive = (
+    id: number,
+    toolOutput: unknown = requestFor(id).toolOutput
+  ) => {
+    const snapshot = {
+      context: {
+        lastMessageId: id,
+        lastMessageType: 'tool_output',
+        projectNameCurrentlyOpened: 'demo',
+        conversation: {
+          exchanges: [{ responses: [{ tool_output: { result: toolOutput } }] }],
+        },
+      },
+    } as unknown as ReturnType<ZookeeperManagerActor['getSnapshot']>
+    processor.handleActorSnapshot(snapshot)
+    return snapshot
   }
   const idle = () =>
     vi.waitFor(() => expect(processor.hasPendingRequests).toBe(false))
@@ -130,19 +154,76 @@ function setup() {
     session,
     onApplied,
     enqueue,
+    receive,
     idle,
   }
 }
 
-describe('promise-based Zookeeper file edits', () => {
-  it('ignores cloud snapshots without writing or changing the editor', async () => {
+describe.each(['local', 'cloud'] as const)('legacy edits (%s)', (storage) => {
+  const setup = () => setupProcessor(storage)
+
+  it('applies streamed content once even when actor snapshots repeat', async () => {
     const s = setup()
-    s.state.project = { ...s.state.project, cloudProjectId: 'remote' }
-    s.enqueue(1)
+    const snapshot = s.receive(1)
+    s.processor.handleActorSnapshot(snapshot)
+    await s.idle()
+    s.processor.handleActorSnapshot(snapshot)
+    expect(s.applyEdits).toHaveBeenCalledOnce()
+    expect(s.applyEdits.mock.calls[0][1]).toEqual([
+      { path: '/workspace/demo/main.kcl', contents: 'edit-1' },
+    ])
+    expect(s.editor.updateCodeEditor).toHaveBeenCalled()
+    expect(s.onApplied).toHaveBeenCalledOnce()
+  })
+
+  it.each([
+    'project_write_file',
+    'project_mkdir',
+    'project_rm',
+    'project_cp',
+    'project_mv',
+  ])('leaves %s results to the cloud refresh handler', async (type) => {
+    const s = setup()
+    s.receive(1, {
+      type,
+      call_id: 'modern-1',
+      ok: true,
+      project_id: 'cloud:remote',
+      output: { id: 'remote', revision: '2' },
+    })
     await s.idle()
     expect(s.applyEdits).not.toHaveBeenCalled()
+    expect(s.history.reserve).not.toHaveBeenCalled()
     expect(s.editor.updateCodeEditor).not.toHaveBeenCalled()
+    expect(s.editor.engineCommandManager.modelingSend).not.toHaveBeenCalled()
+    expect(s.onApplied).not.toHaveBeenCalled()
   })
+
+  it.each([false, true])(
+    'waits for a seven-second write before processing the next legacy edit (failure: %s)',
+    async (fail) => {
+      const s = setup()
+      const written = gate()
+      s.applyEdits.mockImplementationOnce(async () => {
+        await written.promise
+        if (fail) throw new Error('Write unavailable')
+      })
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      vi.useFakeTimers()
+      s.receive(1)
+      s.receive(2)
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(s.processor.hasPendingRequests).toBe(true)
+      expect(s.applyEdits).toHaveBeenCalledOnce()
+      expect(s.onApplied).not.toHaveBeenCalled()
+      written.resolve(undefined)
+      await s.idle()
+      expect(
+        s.applyEdits.mock.calls.map(([, edits]) => edits[0].contents)
+      ).toEqual(['edit-1', 'edit-2'])
+      expect(s.onApplied).toHaveBeenCalledTimes(fail ? 1 : 2)
+    }
+  )
 
   it('applies creates before deletions and protects the project entrypoint', async () => {
     const s = setup()

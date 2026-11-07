@@ -1,5 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
-import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
+import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/legacy/ZookeeperEditPatchHistory'
 import type {
   ZookeeperEditPatch,
   ZookeeperEditPatchFile,
