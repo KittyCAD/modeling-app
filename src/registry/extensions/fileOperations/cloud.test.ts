@@ -198,6 +198,52 @@ describe('memory cloud storage', () => {
     )
   })
 
+  it.each(['file', 'directory'])(
+    'deletes a cloud %s against the parent project revision without writing a local archive',
+    async (kind) => {
+      vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+        { relativePath: 'main.kcl', data: new TextEncoder().encode('main') },
+        {
+          relativePath: 'parts/handle.kcl',
+          data: new TextEncoder().encode('handle'),
+        },
+        {
+          relativePath: 'parts/nested/note.md',
+          data: new TextEncoder().encode('note'),
+        },
+      ])
+      const { storage, diskWrite } = setup()
+      const root = await storage.openProject('one')
+      const deletedPaths =
+        kind === 'file'
+          ? ['parts/handle.kcl']
+          : ['parts/handle.kcl', 'parts/nested/note.md']
+      const target = posix.join(
+        root,
+        kind === 'file' ? 'parts/handle.kcl' : 'parts'
+      )
+
+      await storage.operations.remove(target)
+
+      expect(api.updateRemoteProject).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining({
+          expectedRevision: '1',
+          deletedPaths,
+          files: expect.not.arrayContaining([
+            expect.objectContaining({ relativePath: 'parts/handle.kcl' }),
+          ]),
+        })
+      )
+      expect(await storage.operations.exists(target)).toBe(false)
+      expect(
+        new TextDecoder().decode(
+          await storage.operations.readFile(posix.join(root, 'main.kcl'))
+        )
+      ).toBe('main')
+      expect(diskWrite).not.toHaveBeenCalled()
+    }
+  )
+
   it('serializes saves against the latest acknowledged revision', async () => {
     const { storage } = setup()
     const root = await storage.openProject('one')
