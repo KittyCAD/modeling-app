@@ -1,4 +1,4 @@
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { GizmoCamera } from '@src/components/gizmo/camera'
 import { DprDetector } from '@src/lib/DprDetector'
 import { btnName } from '@src/lib/cameraControls'
 import { reportRejection } from '@src/lib/trap'
@@ -38,7 +38,8 @@ export default class GizmoRenderer {
   private readonly renderer: WebGLRenderer
   private readonly scene: Scene
   private readonly dprDetector: DprDetector
-  private readonly sceneInfra: SceneInfra
+  private readonly sourceCamera: GizmoCamera
+  private unsubscribeOrientation?: () => void
   private camera: PerspectiveCamera | OrthographicCamera
   private clickableObjects: StandardMesh[] = []
   private theme: 'light' | 'dark'
@@ -75,7 +76,7 @@ export default class GizmoRenderer {
     canvas: HTMLCanvasElement,
     isPerspective: boolean,
     theme: 'light' | 'dark',
-    sceneInfra: SceneInfra
+    sourceCamera: GizmoCamera
   ) {
     this.canvas = canvas
     this.renderer = new WebGLRenderer({
@@ -87,7 +88,7 @@ export default class GizmoRenderer {
     this.renderer.setSize(82, 82) // CANVAS_SIZE + border
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.dprDetector = new DprDetector(this.onDprChange)
-    this.sceneInfra = sceneInfra
+    this.sourceCamera = sourceCamera
 
     this.scene = new Scene()
     const ambient = new AmbientLight(0xffffff, 1.8)
@@ -314,7 +315,9 @@ export default class GizmoRenderer {
     this.canvas.addEventListener('mousedown', this.onMouseDown)
     this.canvas.addEventListener('contextmenu', this.onContextMenu)
     this.canvas.addEventListener('click', this.onClick)
-    this.sceneInfra.camControls.cameraChange.add(this.onCameraChange)
+    this.unsubscribeOrientation = this.sourceCamera.subscribeOrientation(
+      this.onCameraChange
+    )
   }
 
   public dispose() {
@@ -323,10 +326,11 @@ export default class GizmoRenderer {
     this.canvas.removeEventListener('mousedown', this.onMouseDown)
     this.canvas.removeEventListener('contextmenu', this.onContextMenu)
     this.canvas.removeEventListener('click', this.onClick)
-    this.sceneInfra.camControls.cameraChange.remove(this.onCameraChange)
+    this.unsubscribeOrientation?.()
 
     window.removeEventListener('mousemove', this.onWindowMouseMove)
     window.removeEventListener('mouseup', this.onMouseUp)
+    if (this.isDragging) this.sourceCamera.endOrbit()
 
     if (this.raf > -1) {
       cancelAnimationFrame(this.raf)
@@ -337,7 +341,7 @@ export default class GizmoRenderer {
   }
 
   private onCameraChange = () => {
-    const currentQuaternion = this.sceneInfra.camControls.camera.quaternion
+    const currentQuaternion = this.sourceCamera.getOrientation()
     this.camera.position.set(0, 0, 2.2).applyQuaternion(currentQuaternion)
     this.camera.quaternion.copy(currentQuaternion)
 
@@ -367,7 +371,6 @@ export default class GizmoRenderer {
   private onWindowMouseMove = (event: MouseEvent) => {
     // Drag to rotate main camera
     if (this.isDragging) {
-      this.sceneInfra.camControls.wasDragging = true
       const last = this.dragLast
       const now = new Vector2(event.clientX, event.clientY)
       this.dragLast = now
@@ -380,10 +383,7 @@ export default class GizmoRenderer {
           this.updateHoveringMesh(null)
         }
 
-        this.sceneInfra.camControls.rotateCamera(dx, dy)
-        this.sceneInfra.camControls.safeLookAtTarget()
-
-        this.sceneInfra.camControls.onCameraChange(true)
+        this.sourceCamera.orbitBy(dx, dy)
       }
     }
   }
@@ -391,6 +391,7 @@ export default class GizmoRenderer {
   private onMouseDown = (event: MouseEvent) => {
     const btnNames = btnName(event)
     if (btnNames.right || btnNames.left) {
+      this.sourceCamera.beginOrbit()
       this.isDragging = true
       this.didDrag = false
       this.dragLast = new Vector2(event.clientX, event.clientY)
@@ -402,7 +403,7 @@ export default class GizmoRenderer {
   private onMouseUp = (_e: MouseEvent) => {
     this.isDragging = false
     this.dragLast = null
-    this.sceneInfra.camControls.wasDragging = false
+    this.sourceCamera.endOrbit()
 
     window.removeEventListener('mousemove', this.onWindowMouseMove)
     window.removeEventListener('mouseup', this.onMouseUp)
@@ -436,9 +437,7 @@ export default class GizmoRenderer {
     const pickedName = obj?.name || this.hoveringMesh.name
     const targetQuat = orientationQuaternionForName(pickedName)
     if (targetQuat) {
-      animateCameraToQuaternion(targetQuat, this.sceneInfra).catch(
-        reportRejection
-      )
+      this.sourceCamera.orientTo(targetQuat).catch(reportRejection)
     }
   }
 
@@ -604,27 +603,4 @@ function orientationQuaternionForName(name: string): Quaternion | null {
         : defaultUp
   const m = new Matrix4().lookAt(eye, target, up)
   return q.setFromRotationMatrix(m)
-}
-
-async function animateCameraToQuaternion(
-  targetQuat: Quaternion,
-  sceneInfra: SceneInfra
-) {
-  const camControls = sceneInfra.camControls
-  camControls.syncDirection = 'clientToEngine'
-  camControls.enableRotate = false
-  try {
-    sceneInfra.animate()
-    await camControls.tweenCameraToQuaternion(
-      targetQuat,
-      camControls.target.clone(),
-      500
-    )
-  } catch (e) {
-    console.warn(e)
-  } finally {
-    sceneInfra.stop()
-    camControls.enableRotate = true
-    camControls.syncDirection = 'engineToClient'
-  }
 }

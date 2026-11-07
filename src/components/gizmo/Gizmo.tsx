@@ -1,25 +1,36 @@
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { useViewControlMenuItems } from '@src/components/ViewControlMenu'
 import AxisGizmo from '@src/components/gizmo/AxisGizmo'
 import CubeGizmo from '@src/components/gizmo/CubeGizmo'
-import { useApp, useSingletons } from '@src/lib/boot'
+import type { GizmoCamera } from '@src/components/gizmo/camera'
+import type { ReactElement } from 'react'
 
-export default function Gizmo() {
-  const { settings } = useApp()
-  const { kclManager } = useSingletons()
-  const menuItems = useViewControlMenuItems()
-  const settingsValues = settings.useSettings()
-  const gizmoType = settingsValues.modeling.gizmoType.current
-  // Disposing a gizmo loses its WebGL context; a new scene needs a new canvas.
-  const sceneKey = kclManager.sceneInfra.scene.uuid
+/** Scene-bound inputs. Remount the gizmo when replacing its camera to renew its WebGL canvas. */
+export interface GizmoProps {
+  camera: GizmoCamera
+  gizmoType: 'axis' | 'cube'
+  theme: 'light' | 'dark'
+  orbitEnabled: boolean
+  menuItems: ReactElement[]
+}
 
+export default function Gizmo({
+  camera,
+  gizmoType,
+  theme,
+  orbitEnabled,
+  menuItems,
+}: GizmoProps) {
   return (
     <div className="relative">
       {gizmoType === 'axis' ? (
-        <AxisGizmo key={sceneKey} />
+        <AxisGizmo
+          camera={camera}
+          orbitEnabled={orbitEnabled}
+          menuItems={menuItems}
+        />
       ) : (
-        <CubeGizmo key={sceneKey} />
+        <CubeGizmo camera={camera} orbitEnabled={orbitEnabled} theme={theme} />
       )}
       <GizmoDropdown items={menuItems} />
     </div>

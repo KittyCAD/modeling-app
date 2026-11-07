@@ -1,12 +1,12 @@
-import { useApp, useSingletons } from '@src/lib/boot'
 import { useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 
-import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
-import { useModelingContext } from '@src/hooks/useModelingContext'
+import { ContextMenu } from '@src/components/ContextMenu'
+import type { GizmoProps } from '@src/components/gizmo/Gizmo'
+import { orientToAxis } from '@src/components/gizmo/camera'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
-import type { ColorRepresentation, Intersection } from 'three'
+import type { ColorRepresentation, Intersection, Quaternion } from 'three'
 import {
   BoxGeometry,
   CanvasTexture,
@@ -15,7 +15,6 @@ import {
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
-  Quaternion,
   Raycaster,
   SRGBColorSpace,
   Scene,
@@ -25,12 +24,11 @@ import {
   WebGLRenderer,
 } from 'three'
 
-export default function AxisGizmo() {
-  const { settings } = useApp()
-  const { kclManager } = useSingletons()
-  const { sceneInfra } = kclManager
-  const { state: modelingState } = useModelingContext()
-  const settingsValues = settings.useSettings()
+export default function AxisGizmo({
+  camera: sourceCamera,
+  orbitEnabled,
+  menuItems,
+}: Pick<GizmoProps, 'camera' | 'orbitEnabled' | 'menuItems'>) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection | null>(null)
@@ -39,24 +37,9 @@ export default function AxisGizmo() {
   const isPointerOverRef = useRef(false)
   const isHoverRefreshPausedRef = useRef(false)
 
-  // Temporary fix for #4040:
-  // Disable gizmo orbiting in sketch mode
-  // This effect updates disableOrbitRef whenever the user
-  // toggles between Sketch mode and 3D mode
   useEffect(() => {
-    disableOrbitRef.current =
-      modelingState.matches('Sketch') &&
-      !settingsValues.app.allowOrbitInSketchMode.current
-    if (wrapperRef.current) {
-      wrapperRef.current.style.filter = disableOrbitRef.current
-        ? 'grayscale(100%)'
-        : 'none'
-      wrapperRef.current.style.cursor = disableOrbitRef.current
-        ? 'not-allowed'
-        : 'auto'
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [modelingState, settingsValues.app.allowOrbitInSketchMode.current])
+    disableOrbitRef.current = !orbitEnabled
+  }, [orbitEnabled])
 
   useEffect(() => {
     if (!canvasRef.current || !wrapperRef.current) {
@@ -116,8 +99,7 @@ export default function AxisGizmo() {
     }
 
     const clock = new Clock()
-    const clientCamera = sceneInfra.camControls.camera
-    const currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
+    const currentQuaternion = sourceCamera.getOrientation()
     const mouse = new Vector2()
     mouse.x = 1 // fix initial mouse position issue
     let isDisposed = false
@@ -127,7 +109,7 @@ export default function AxisGizmo() {
       }
 
       isHoverRefreshPausedRef.current = false
-      currentQuaternion.copy(sceneInfra.camControls.camera.quaternion)
+      currentQuaternion.copy(sourceCamera.getOrientation())
       camera.position.set(0, 0, 1).applyQuaternion(currentQuaternion)
       camera.quaternion.copy(currentQuaternion)
       if (isPointerOverRef.current) {
@@ -139,8 +121,7 @@ export default function AxisGizmo() {
     const onAxisClick = (axisName: AxisNames) => {
       isHoverRefreshPausedRef.current = true
       resetRayCast()
-      void sceneInfra.camControls
-        .updateCameraToAxis(axisName)
+      void orientToAxis(sourceCamera, axisName)
         .catch(reportRejection)
         .finally(refreshHoverAfterCameraUpdate)
     }
@@ -162,7 +143,7 @@ export default function AxisGizmo() {
       updateCameraOrientation(
         camera,
         currentQuaternion,
-        sceneInfra.camControls.camera.quaternion,
+        sourceCamera.getOrientation(),
         delta,
         cameraPassiveUpdateTimer
       )
@@ -172,10 +153,10 @@ export default function AxisGizmo() {
         renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
       }
     }
-    sceneInfra.camControls.cameraChange.add(animate)
+    const unsubscribe = sourceCamera.subscribeOrientation(animate)
 
     // Initialize camera orientation/position to match main camera for immediate render
-    const q = sceneInfra.camControls.camera.quaternion
+    const q = sourceCamera.getOrientation()
     camera.position.set(0, 0, 1).applyQuaternion(q)
     camera.quaternion.copy(q)
     renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
@@ -187,19 +168,27 @@ export default function AxisGizmo() {
       renderer.forceContextLoss()
       renderer.dispose()
       disposeMouseEvents()
-      sceneInfra.camControls.cameraChange.remove(animate)
+      unsubscribe()
     }
-  }, [sceneInfra])
+  }, [sourceCamera])
 
   return (
     <div
       ref={wrapperRef}
       aria-label="View orientation gizmo"
-      data-testid={`gizmo${disableOrbitRef.current ? '-disabled' : ''}`}
+      data-testid={`gizmo${orbitEnabled ? '' : '-disabled'}`}
+      style={{
+        filter: orbitEnabled ? 'none' : 'grayscale(100%)',
+        cursor: orbitEnabled ? 'auto' : 'not-allowed',
+      }}
       className="relative grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-auto bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm"
     >
       <canvas ref={canvasRef} />
-      <ViewControlContextMenu menuTargetElement={wrapperRef} />
+      <ContextMenu
+        data-testid="view-controls-menu"
+        menuTargetElement={wrapperRef}
+        items={menuItems}
+      />
     </div>
   )
 }

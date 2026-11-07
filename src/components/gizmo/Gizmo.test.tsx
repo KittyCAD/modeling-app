@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { PerspectiveCamera, Scene } from 'three'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { PerspectiveCamera, Quaternion, Scene } from 'three'
 import type * as Three from 'three'
 import { Signal } from '@src/lib/signal'
 import { afterEach, expect, it, vi } from 'vitest'
@@ -34,6 +34,7 @@ vi.mock('@src/components/ViewControlMenu', () => ({
   useViewControlMenuItems: () => [],
   ViewControlContextMenu: () => null,
 }))
+vi.mock('@src/components/ContextMenu', () => ({ ContextMenu: () => null }))
 vi.mock('@src/components/CustomIcon', () => ({ CustomIcon: () => null }))
 vi.mock('@src/components/gizmo/GizmoRenderer', () => ({
   default: class {
@@ -66,7 +67,9 @@ vi.mock('three', async () => {
   }
 })
 
-import Gizmo from '@src/components/gizmo/Gizmo'
+import Gizmo from '@src/components/gizmo/LegacyGizmo'
+import StandaloneGizmo from '@src/components/gizmo/Gizmo'
+import type { GizmoCamera } from '@src/components/gizmo/camera'
 
 function createScene() {
   return {
@@ -136,3 +139,47 @@ it.each(['cube', 'axis'])(
     expect(currentRenderer?.dispose).toHaveBeenCalledTimes(1)
   }
 )
+
+it('renders from explicit inputs and invokes supplied menu actions', () => {
+  const camera: GizmoCamera = {
+    getOrientation: () => new Quaternion(),
+    subscribeOrientation: () => () => {},
+    orientTo: async () => {},
+    beginOrbit: () => {},
+    orbitBy: () => {},
+    endOrbit: () => {},
+  }
+  const onClick = vi.fn()
+  const menuItems = [
+    <button key="reset" onClick={onClick}>
+      Reset this view
+    </button>,
+  ]
+  const mounted = render(
+    <StandaloneGizmo
+      camera={camera}
+      gizmoType="cube"
+      theme="dark"
+      orbitEnabled={false}
+      menuItems={menuItems}
+    />
+  )
+  expect(screen.getByLabelText('View orientation gizmo').style.cursor).toBe(
+    'not-allowed'
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'View settings' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Reset this view' }))
+  expect(onClick).toHaveBeenCalledTimes(1)
+  mounted.rerender(
+    <StandaloneGizmo
+      camera={camera}
+      gizmoType="cube"
+      theme="light"
+      orbitEnabled
+      menuItems={menuItems}
+    />
+  )
+  expect(screen.getByLabelText('View orientation gizmo').style.cursor).toBe(
+    'auto'
+  )
+})

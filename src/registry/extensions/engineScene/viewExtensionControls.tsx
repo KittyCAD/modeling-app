@@ -8,7 +8,7 @@ const Toolbar = lazy(async () => {
 })
 
 const Gizmo = lazy(async () => {
-  const { default: Gizmo } = await import('@src/components/gizmo/Gizmo')
+  const { default: Gizmo } = await import('@src/components/gizmo/LegacyGizmo')
   return { default: Gizmo }
 })
 

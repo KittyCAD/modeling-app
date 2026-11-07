@@ -1,65 +1,43 @@
 import GizmoRenderer from '@src/components/gizmo/GizmoRenderer'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import type { GizmoProps } from '@src/components/gizmo/Gizmo'
 
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
-
-export default function CubeGizmo() {
-  const { settings } = useApp()
-  const { kclManager } = useSingletons()
-  const { state: modelingState } = useModelingContext()
-  const settingsValues = settings.useSettings()
-
-  const resolvedTheme = useResolvedTheme()
-
-  // Hardcoded to orthographic, the model doesn't look good in perspective
-  const isPerspective = false //settings.modeling.cameraProjection.current === 'perspective'
-  const initialIsPerspectiveRef = useRef(isPerspective)
-  const initialResolvedThemeRef = useRef(resolvedTheme)
-
+export default function CubeGizmo({
+  camera,
+  theme,
+  orbitEnabled,
+}: Pick<GizmoProps, 'camera' | 'theme' | 'orbitEnabled'>) {
+  const initialTheme = useRef(theme)
   const wrapperRef = useRef<HTMLDivElement>(null!)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const renderer = useRef<GizmoRenderer | null>(null)
 
-  const [disableOrbit, setDisabledOrbit] = useState(false)
+  const disableOrbit = !orbitEnabled
 
   // onMount
   useEffect(() => {
     if (canvasRef.current) {
       renderer.current = new GizmoRenderer(
         canvasRef.current,
-        initialIsPerspectiveRef.current,
-        initialResolvedThemeRef.current,
-        kclManager.sceneInfra
+        false, // The cube uses an orthographic camera regardless of the main projection.
+        initialTheme.current,
+        camera
       )
     }
     return () => {
       renderer.current?.dispose()
       renderer.current = null
     }
-  }, [kclManager.sceneInfra])
-
-  // perspective changed
-  // useEffect(() => {
-  //   renderer.current?.setPerspective(isPerspective)
-  // }, [isPerspective])
-
-  // theme changed
-  useEffect(() => {
-    renderer.current?.setTheme(resolvedTheme)
-  }, [resolvedTheme])
+  }, [camera])
 
   useEffect(() => {
-    const disabled =
-      modelingState.matches('Sketch') &&
-      !settingsValues.app.allowOrbitInSketchMode.current
+    renderer.current?.setTheme(theme)
+  }, [theme])
 
-    setDisabledOrbit(disabled)
-    renderer.current?.setDisabled(disabled)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [modelingState, settingsValues.app.allowOrbitInSketchMode.current])
+  useEffect(() => {
+    renderer.current?.setDisabled(!orbitEnabled)
+  }, [camera, orbitEnabled])
 
   return (
     <div
