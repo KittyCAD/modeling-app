@@ -3,6 +3,13 @@ import {
   editorSaveService,
   editorOnSaveValueSpec,
 } from '@src/lib/save/registry/contract'
+import executorsExtension from '@src/lib/executors/registry'
+import {
+  executorsService,
+  executorCapabilityValueSpec,
+  executorViewValueSpec,
+} from '@src/lib/executors/registry/contract'
+import { OPEN_EXECUTOR_COMMAND } from '@src/lib/executors/commands'
 import {
   Registry,
   defineRegistryItem,
@@ -55,6 +62,7 @@ describe('experimental editor registration', () => {
         editorsExtension,
         savingExtension,
         markdownExtension,
+        executorsExtension,
       ])
       registry.get(userFeaturesService)
       await Promise.resolve()
@@ -70,6 +78,14 @@ describe('experimental editor registration', () => {
         registry
           .get(commandsValueSpec)
           .some(({ id }) => id === SAVE_EDITOR_COMMAND.id)
+      ).toBe(enabled)
+      expect(registry.optional(executorsService) !== undefined).toBe(enabled)
+      expect(registry.get(executorCapabilityValueSpec).length > 0).toBe(enabled)
+      expect(registry.get(executorViewValueSpec).length > 0).toBe(enabled)
+      expect(
+        registry
+          .get(commandsValueSpec)
+          .some(({ id }) => id === OPEN_EXECUTOR_COMMAND.id)
       ).toBe(enabled)
       expect(registry.optional(editorsService) !== undefined).toBe(enabled)
       expect(registry.get(editorCapabilityValueSpec).length > 0).toBe(enabled)

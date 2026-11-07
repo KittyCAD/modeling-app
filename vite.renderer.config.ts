@@ -1,3 +1,4 @@
+import { kclViewerWasm } from './vite.kcl-viewer'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 import type { ConfigEnv, UserConfig } from 'vite'
@@ -55,6 +56,7 @@ export default defineConfig((env) => {
       esbuildOptions: { target: 'es2022' },
     },
     plugins: [
+      kclViewerWasm(),
       nodePolyfills({
         include: ['path'],
       }),

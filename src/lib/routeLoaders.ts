@@ -1,3 +1,4 @@
+import { editorMatchContext } from '@src/lib/editors/matching'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
@@ -38,6 +39,12 @@ import { loadProjectEditor } from '@src/lib/editors/loadProjectEditor'
 import { editorsService } from '@src/lib/editors/registry/contract'
 import fsZds from '@src/lib/fs-zds'
 import { isErr } from '@src/lib/trap'
+import {
+  executorCapabilityValueSpec,
+  executorsService,
+  executorViewValueSpec,
+} from '@src/lib/executors/registry/contract'
+import { viewsForSource } from '@src/lib/executors/views'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -107,7 +114,7 @@ export const projectLoader =
   }
 
 /**
- * Open the directory identified by `/local/:path` and its initial editor.
+ * Open the directory identified by `/local/:path` and its initial editor/executor view.
  * Reading assembles the full tree and optional TOML metadata without creating files
  * or applying project settings. Files are rejected rather than promoted to their
  * parent directory. Failed or cancelled discovery leaves the selection intact.
@@ -163,6 +170,12 @@ export const localLoader =
       )
       assertCurrent()
       if (isErr(editor)) return Promise.reject(editor)
+      const view = viewsForSource(
+        editorMatchContext(editor),
+        app.registry.get(executorCapabilityValueSpec),
+        app.registry.get(executorViewValueSpec)
+      )[0]
+      if (view) app.registry.get(executorsService).openView(editor, view.id)
     }
     return session
   }

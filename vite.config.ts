@@ -1,3 +1,4 @@
+import { kclViewerWasm } from './vite.kcl-viewer'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 import react from '@vitejs/plugin-react'
@@ -108,6 +109,7 @@ export default defineConfig(({ command, mode }) => {
       ],
     },
     plugins: [
+      kclViewerWasm(),
       nodePolyfills({
         include: ['path'],
       }),

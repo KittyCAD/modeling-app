@@ -1,7 +1,13 @@
 import '@src/lib/projectSession/next/testFeature'
-import { Registry } from '@kittycad/registry'
+import { Registry, defineRegistryItem, provide } from '@kittycad/registry'
 import editorsExtension from '@src/lib/editors/registry'
 import { editorsService } from '@src/lib/editors/registry/contract'
+import executorsExtension from '@src/lib/executors/registry'
+import {
+  executorCapabilityValueSpec,
+  executorViewValueSpec,
+  executorsService,
+} from '@src/lib/executors/registry/contract'
 import projectSessionExtension from '@src/lib/projectSession/registry'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -103,7 +109,27 @@ describe('local directory loader', () => {
   function setup() {
     const app = new App(App.getDefaultSystems())
     registry = new Registry()
-    registry.configure([editorsExtension, projectSessionExtension])
+    registry.configure([
+      editorsExtension,
+      executorsExtension,
+      projectSessionExtension,
+      defineRegistryItem({
+        provides: [
+          provide(executorCapabilityValueSpec, {
+            id: 'preview',
+            matches: '*',
+            execute: () => ({}),
+          }),
+          provide(executorViewValueSpec, {
+            id: 'preview.view',
+            capabilityId: 'preview',
+            matches: '*',
+            label: 'Preview',
+            Component: () => null,
+          }),
+        ],
+      }),
+    ])
     const projectSession = registry.get(projectSessionService)
     const openProject = vi.fn(projectSession.openProject)
     const sessions = { ...projectSession, openProject }
@@ -128,6 +154,7 @@ describe('local directory loader', () => {
       operations,
       sessions,
       editors: registry.get(editorsService),
+      executors: registry.get(executorsService),
     }
   }
 
@@ -177,9 +204,9 @@ describe('local directory loader', () => {
     { configured: 'missing.kcl', expected: 'main.kcl' },
     { configured: undefined, expected: 'main.kcl' },
   ])(
-    'opens $expected as an editor (configured: $configured)',
+    'opens $expected as an editor and executor (configured: $configured)',
     async ({ configured, expected }) => {
-      const { app, data, editors, operations } = setup()
+      const { app, data, editors, executors, operations } = setup()
       data.metadata.defaultFile = configured
       data.contents.children = [
         {
@@ -218,12 +245,20 @@ describe('local directory loader', () => {
       expect(operations.readFile).toHaveBeenCalledExactlyOnceWith(
         editor.src.peek()
       )
+      expect(executors.viewTabs.peek()).toEqual([
+        { executor: executors.executors.peek()[0], viewId: 'preview.view' },
+      ])
+      expect(executors.executors.peek()[0].editor).toBe(editor)
     }
   )
 
-  it('falls back to an existing KCL file', async () => {
-    const { app, data, editors } = setup()
-    registry.configure([editorsExtension, projectSessionExtension])
+  it('falls back to an existing KCL file and leaves it editor-only without a matching view', async () => {
+    const { app, data, editors, executors } = setup()
+    registry.configure([
+      editorsExtension,
+      executorsExtension,
+      projectSessionExtension,
+    ])
     data.contents.children = [
       {
         name: 'part.kcl',
@@ -241,12 +276,13 @@ describe('local directory loader', () => {
     expect(editors.editors.peek()[0].src.peek()).toBe(
       `${data.contents.path}/part.kcl`
     )
+    expect(executors.executors.peek()).toEqual([])
   })
 
   it.each(['cancel', 'replace'] as const)(
-    'does not open stale editors when a default-file read is superseded: %s',
+    'does not open stale editors or executors when a default-file read is superseded: %s',
     async (action) => {
-      const { app, data, operations, sessions, editors } = setup()
+      const { app, data, operations, sessions, editors, executors } = setup()
       data.contents.children = [
         {
           name: 'main.kcl',
@@ -276,6 +312,7 @@ describe('local directory loader', () => {
         })
       ).rejects.toBeInstanceOf(Error)
       expect(editors.editors.peek()).toEqual([])
+      expect(executors.viewTabs.peek()).toEqual([])
     }
   )
 

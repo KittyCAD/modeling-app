@@ -7,9 +7,10 @@ import { useApp } from '@src/lib/boot'
 import { EditorsPane } from '@src/lib/editors/EditorsPane'
 import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
 import {
-  editorsService,
   editorTabIndicatorValueSpec,
+  editorsService,
 } from '@src/lib/editors/registry/contract'
+import { ExecutorArea } from '@src/lib/executors/ExecutorArea'
 import { LayoutRootNode } from '@src/lib/layout/components'
 import {
   LayoutType,
@@ -51,10 +52,10 @@ const tempLayout: Layout = {
       ],
     },
     {
-      id: 'next-workspace',
-      label: 'Workspace',
+      id: 'next-modeling',
+      label: 'Modeling',
       type: LayoutType.Simple,
-      areaType: 'workspace',
+      areaType: 'modeling',
     },
   ],
 }
@@ -89,15 +90,6 @@ function ProjectFilesPane({
         )}
       </div>
     </LayoutPanel>
-  )
-}
-
-function EmptyWorkspace() {
-  return (
-    <main className="grid min-w-0 flex-1 place-content-center gap-2 p-6 text-center">
-      <h2 className="text-lg font-semibold">Project open</h2>
-      <p>No editor is executing for this project.</p>
-    </main>
   )
 }
 
@@ -147,7 +139,7 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
           />
         ),
       },
-      workspace: { hide: () => false, Component: EmptyWorkspace },
+      modeling: { hide: () => false, Component: ExecutorArea },
     }),
     [session, editors, commands, registry]
   )

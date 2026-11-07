@@ -1,4 +1,8 @@
 import {
+  executorCapabilityValueSpec,
+  executorViewValueSpec,
+} from '@src/lib/executors/registry/contract'
+import {
   Registry,
   defineRegistryItem,
   provideService,
@@ -27,12 +31,14 @@ const registry = new Registry()
 afterEach(() => registry[Symbol.dispose]())
 
 it.each([false, true])(
-  'gates KCL editor contributions with the project-shell flag: %s',
+  'gates KCL editor and executor contributions with the project-shell flag: %s',
   async (enabled) => {
     granted.value = enabled
     registry.configure([featureFlags, kclExtension])
     registry.get(userFeaturesService)
     await Promise.resolve()
     expect(registry.get(editorCapabilityValueSpec).length > 0).toBe(enabled)
+    expect(registry.get(executorCapabilityValueSpec).length > 0).toBe(enabled)
+    expect(registry.get(executorViewValueSpec).length > 0).toBe(enabled)
   }
 )
