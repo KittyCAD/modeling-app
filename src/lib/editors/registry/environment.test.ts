@@ -16,7 +16,10 @@ import {
   editorCapabilityValueSpec,
   editorsService,
 } from '@src/lib/editors/registry/contract'
-import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
+import {
+  OPEN_EDITOR_COMMAND,
+  NEW_EDITOR_COMMAND,
+} from '@src/lib/editors/commands'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { afterEach, describe, expect, it } from 'vitest'
 
@@ -47,11 +50,11 @@ describe('experimental editor registration', () => {
       expect(registry.get(editorViewValueSpec).length > 0).toBe(enabled)
       expect(registry.optional(editorsService) !== undefined).toBe(enabled)
       expect(registry.get(editorCapabilityValueSpec).length > 0).toBe(enabled)
-      expect(
-        registry
-          .get(commandsValueSpec)
-          .some(({ id }) => id === OPEN_EDITOR_COMMAND.id)
-      ).toBe(enabled)
+      for (const command of [OPEN_EDITOR_COMMAND, NEW_EDITOR_COMMAND]) {
+        expect(
+          registry.get(commandsValueSpec).some(({ id }) => id === command.id)
+        ).toBe(enabled)
+      }
     }
   )
 })

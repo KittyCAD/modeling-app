@@ -170,6 +170,28 @@ describe('EditorsPane', () => {
     expect(service.viewState(second).value.selected?.id).toBe('editors.code')
   })
 
+  it('creates independent unnamed buffers and updates their tabs after naming', () => {
+    render(<EditorsPane editors={service} layout={layout} />)
+    fireEvent.click(screen.getByRole('button', { name: 'New editor' }))
+    const first = service.editors.value[0]
+    expect(screen.getByRole('tab', { name: 'Untitled' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    expect(screen.getByRole('tabpanel')).toContainElement(first.view.dom)
+    fireEvent.click(screen.getByRole('button', { name: 'New editor' }))
+    const second = service.editors.value[1]
+    expect(second).not.toBe(first)
+    act(() => service.setSource(second.id, '/project/new.md'))
+    expect(screen.getByRole('tab', { name: 'new.md' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    expect(screen.getByRole('tabpanel')).toContainElement(second.view.dom)
+    fireEvent.click(screen.getByRole('button', { name: 'Close Untitled' }))
+    expect(service.editors.value).toEqual([second])
+  })
+
   it('offers an open-editor action even when no editors are open', () => {
     const onOpenEditor = vi.fn()
     render(

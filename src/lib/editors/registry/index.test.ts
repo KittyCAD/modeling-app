@@ -10,7 +10,10 @@ import {
   Slot,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
+import {
+  OPEN_EDITOR_COMMAND,
+  NEW_EDITOR_COMMAND,
+} from '@src/lib/editors/commands'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
@@ -406,12 +409,38 @@ describe('editors extension', () => {
     expect(view.state.doc.toString()).toBe('')
   })
 
+  it('names a new buffer without replacing its document, history, or default surface', async () => {
+    const service = registry.get(editorsService)
+    const command = registry
+      .get(commandsValueSpec)
+      .find((command) => command.id === NEW_EDITOR_COMMAND.id)!
+    await command.onSubmit?.()
+    const editor = service.editors.value[0]
+    const view = editor.view
+    expect(editor.src.value).toBeUndefined()
+    expect(editor.type.value).toBe('')
+    expect(service.viewState(editor).value.selected?.id).toBe('editors.code')
+    view.dispatch({
+      changes: { from: 0, insert: '# New buffer' },
+      selection: { anchor: 3 },
+    })
+    service.setSource(editor.id, '/new.MD')
+    expect(editor.src.value).toBe('/new.MD')
+    expect(editor.type.value).toBe('.md')
+    expect(view.state.facet(language)?.name).toBe('markdown')
+    expect(editor.view).toBe(view)
+    expect(view.state.selection.main.anchor).toBe(3)
+    expect(readFile).not.toHaveBeenCalled()
+    expect(undo(view)).toBe(true)
+    expect(editor.contents.value).toBe('')
+  })
+
   it('derives file type from renamed sources and preserves the view, contents, and history', () => {
     const service = registry.get(editorsService)
     const editor = service.openEditor('/notes.MD', '# Heading')
     const view = editor.view
     expect(view.state.facet(language)?.name).toBe('markdown')
-    const sources: string[] = []
+    const sources: (string | undefined)[] = []
     const types: string[] = []
     const stopSource = editor.src.subscribe((src) => sources.push(src))
     const stopType = editor.type.subscribe((type) => types.push(type))

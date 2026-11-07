@@ -14,7 +14,8 @@ export type EditorMatcher =
   | ((context: EditorMatchContext) => boolean)
 
 export function editorMatchContext(editor: Editor): EditorMatchContext {
-  return { src: editor.src.value, contents: editor.contents.value }
+  // Unnamed buffers have no file extension; wildcard and content predicates still apply.
+  return { src: editor.src.value ?? '', contents: editor.contents.value }
 }
 
 export function matchesEditor(

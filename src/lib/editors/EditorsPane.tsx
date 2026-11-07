@@ -73,6 +73,15 @@ export function EditorsPane({
         postfixAlign="end"
         postfix={
           <>
+            <button
+              type="button"
+              aria-label="New editor"
+              className={styles.iconButton}
+              onClick={() => service.createEditor()}
+            >
+              <CustomIcon name="plus" className="h-3.5 w-3.5" aria-hidden />
+              <Tooltip position="bottom-right">New editor</Tooltip>
+            </button>
             {onOpenEditor && (
               <button
                 type="button"
@@ -80,7 +89,11 @@ export function EditorsPane({
                 onClick={onOpenEditor}
                 className={styles.iconButton}
               >
-                <CustomIcon name="plus" className="h-3.5 w-3.5" aria-hidden />
+                <CustomIcon
+                  name="folderOpen"
+                  className="h-3.5 w-3.5"
+                  aria-hidden
+                />
                 <Tooltip position="bottom-right">Open editor</Tooltip>
               </button>
             )}
@@ -105,17 +118,21 @@ export function EditorsPane({
           label: (
             <span className="inline-flex min-w-0 items-center gap-1.5">
               <span className="truncate">
-                {fsZds.basename(editor.src.value) || editor.src.value}
+                {editor.src.value
+                  ? fsZds.basename(editor.src.value)
+                  : 'Untitled'}
               </span>
               {tabIndicators.map(({ id, component: Indicator }) => (
                 <Indicator key={id} editor={editor} />
               ))}
             </span>
           ),
-          title: editor.src.value,
+          title: editor.src.value ?? 'Untitled',
           accessory: (
             <TabViewPicker
-              name={fsZds.basename(editor.src.value)}
+              name={
+                editor.src.value ? fsZds.basename(editor.src.value) : 'Untitled'
+              }
               view={service.viewState(editor).value.selected}
               views={service.viewState(editor).value.available}
               onFocus={() => setActiveId(editor.id)}
@@ -123,7 +140,7 @@ export function EditorsPane({
             />
           ),
           close: {
-            label: `Close ${editor.src.value}`,
+            label: `Close ${editor.src.value ?? 'Untitled'}`,
             tooltip: 'Close editor',
             onClose: () => service.closeEditor(editor.id),
           },

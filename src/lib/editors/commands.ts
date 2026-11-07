@@ -6,6 +6,12 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 import type { ProjectSessionService } from '@src/lib/projectSession/next/contract'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
+export const NEW_EDITOR_COMMAND = {
+  id: 'zds.editors.new',
+  name: 'new-editor',
+  groupId: 'editors',
+} as const
+
 export const OPEN_EDITOR_COMMAND = {
   id: 'zds.editors.open',
   name: 'open-editor',

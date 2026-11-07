@@ -13,10 +13,16 @@ import {
 } from '@preact/signals-core'
 import fsZds from '@src/lib/fs-zds'
 import { editorMatchContext, matchesEditor } from '@src/lib/editors/matching'
-import { createOpenEditorCommand } from '@src/lib/editors/commands'
+import {
+  createOpenEditorCommand,
+  NEW_EDITOR_COMMAND,
+} from '@src/lib/editors/commands'
 import { CodeMirrorView } from '@src/lib/editors/CodeMirrorView'
 import { defaultEditorExtensions } from '@src/lib/editors/defaults'
-import { provideCommand } from '@src/registry/contracts/commands'
+import {
+  provideCommand,
+  GLOBAL_COMMAND_SCOPES,
+} from '@src/registry/contracts/commands'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { keymapEventOwnersValueSpec } from '@src/registry/contracts/keymap'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
@@ -65,14 +71,15 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
     return presentation
   }
   const subscriptions = new Map<symbol, () => void>()
-  const sources = new Map<symbol, Signal<string>>()
+  const sources = new Map<symbol, Signal<string | undefined>>()
   const service: EditorsService = {
     editors,
+    createEditor: (contents = '') => service.openEditor(undefined, contents),
     openEditor: (src, contents) => {
       const current = editors.peek()
       const source = signal(src)
       const editorType = computed(() =>
-        fsZds.extname(source.value).toLowerCase()
+        source.value ? fsZds.extname(source.value).toLowerCase() : ''
       )
       const text = signal(contents)
       let publishingContents = false
@@ -218,6 +225,15 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
         id: 'editors.defaults',
         matches: '*',
         capabilities: defaultEditorExtensions(),
+      }),
+      provideCommand({
+        ...NEW_EDITOR_COMMAND,
+        displayName: 'New editor',
+        description: 'Create an empty, unsaved buffer.',
+        scopes: GLOBAL_COMMAND_SCOPES,
+        icon: 'code',
+        needsReview: false,
+        onSubmit: () => service.createEditor(),
       }),
       provideCommand(
         createOpenEditorCommand(

@@ -12,8 +12,8 @@ import type { ComponentType } from 'react'
 /** One live buffer with owned CodeMirror state and interchangeable contributed surfaces. */
 export interface Editor {
   readonly id: symbol
-  /** A local path, or a cloud ID plus relative path; multiple editors may share it. */
-  readonly src: ReadonlySignal<string>
+  /** Undefined for a new buffer; otherwise a local path or cloud ID plus relative path. */
+  readonly src: ReadonlySignal<string | undefined>
   /** Lowercase file extension, derived from src; empty when the source has no extension. */
   readonly type: ReadonlySignal<string>
   /** Current buffer text, independent of mounted panes and execution results. */
@@ -55,8 +55,10 @@ export interface EditorTabIndicator {
 /** Owns open editors independently of executors and mounted editor panes. */
 export interface EditorsService {
   editors: ReadonlySignal<readonly Editor[]>
+  /** Create an unsaved buffer, without reading or creating a file. */
+  createEditor: (contents?: string) => Editor
   /** Synchronously create a distinct view from contents already loaded by the caller. */
-  openEditor: (src: string, contents: string) => Editor
+  openEditor: (src: string | undefined, contents: string) => Editor
   /** Update an editor's source after a rename or reassociation; performs no file IO. */
   setSource: (id: symbol, src: string) => void
   /** Observe contributed surfaces and the retained choice independently of mounted panes. */
