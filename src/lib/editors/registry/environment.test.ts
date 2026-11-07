@@ -1,4 +1,9 @@
 import kclExtension from '@src/lib/kcl/registry'
+import savingExtension, { SAVE_EDITOR_COMMAND } from '@src/lib/save/registry'
+import {
+  editorSaveService,
+  editorOnSaveValueSpec,
+} from '@src/lib/save/registry/contract'
 import {
   Registry,
   defineRegistryItem,
@@ -13,6 +18,7 @@ import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
 import editorsExtension from '@src/lib/editors/registry'
 import markdownExtension from '@src/lib/markdown/registry'
 import {
+  editorTabIndicatorValueSpec,
   editorViewValueSpec,
   editorCapabilityValueSpec,
   editorsService,
@@ -48,12 +54,25 @@ describe('experimental editor registration', () => {
       registry.configure([
         featureFlags,
         editorsExtension,
-        markdownExtension,
         kclExtension,
+        savingExtension,
+        markdownExtension,
       ])
       registry.get(userFeaturesService)
       await Promise.resolve()
+      expect(registry.optional(editorSaveService) !== undefined).toBe(enabled)
+      expect(
+        registry
+          .get(editorOnSaveValueSpec)
+          .some(({ id }) => id === 'save.persistToDisk')
+      ).toBe(enabled)
       expect(registry.get(editorViewValueSpec).length > 0).toBe(enabled)
+      expect(registry.get(editorTabIndicatorValueSpec).length > 0).toBe(enabled)
+      expect(
+        registry
+          .get(commandsValueSpec)
+          .some(({ id }) => id === SAVE_EDITOR_COMMAND.id)
+      ).toBe(enabled)
       expect(registry.optional(editorsService) !== undefined).toBe(enabled)
       expect(registry.get(editorCapabilityValueSpec).length > 0).toBe(enabled)
       for (const command of [OPEN_EDITOR_COMMAND, NEW_EDITOR_COMMAND]) {
