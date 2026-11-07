@@ -9,6 +9,7 @@ import {
 } from '@src/components/Thinking'
 import Tooltip from '@src/components/Tooltip'
 import { isImageMimetype } from '@src/lib/mimeTypes'
+import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import {
   type Exchange,
@@ -329,12 +330,6 @@ export const RequestCard = (props: RequestCardProps) => {
                     getZookeeperAttachmentKey(attachmentRef)
                   ]
                 : undefined
-              const canFetch =
-                file.data.length === 0 &&
-                attachmentRef !== undefined &&
-                props.onFetchAttachment !== undefined &&
-                fetchState?.status !== 'loaded'
-
               const contents = (
                 <>
                   <ZookeeperAttachmentPreview
@@ -362,20 +357,20 @@ export const RequestCard = (props: RequestCardProps) => {
               )
               const className = `m-0 flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 text-xs ${isImage ? 'p-0' : 'px-2 py-1'}`
 
-              return canFetch ? (
-                <button
-                  type="button"
+              return (
+                <ZookeeperAttachment
                   key={`${file.name}-${index}`}
+                  file={file}
                   className={className}
-                  disabled={fetchState?.status === 'loading'}
-                  onClick={() => props.onFetchAttachment?.(attachmentRef)}
+                  fetchState={fetchState}
+                  onFetch={
+                    attachmentRef && props.onFetchAttachment
+                      ? () => props.onFetchAttachment?.(attachmentRef)
+                      : undefined
+                  }
                 >
                   {contents}
-                </button>
-              ) : (
-                <div key={`${file.name}-${index}`} className={className}>
-                  {contents}
-                </div>
+                </ZookeeperAttachment>
               )
             })}
             {hasHiddenAttachments && (

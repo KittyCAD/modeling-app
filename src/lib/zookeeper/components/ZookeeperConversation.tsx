@@ -16,6 +16,7 @@ import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
+import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
 import type { QueuedMessage } from '@src/lib/zookeeper/registry/controller'
@@ -639,10 +640,15 @@ export const ZookeeperConversationInput = (
                 className={`relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs ${isImageMimetype(file.type) ? '' : 'py-1 pl-2 pr-8'}`}
                 title={file.name}
               >
-                <ZookeeperAttachmentPreview
+                <ZookeeperAttachment
                   file={file}
-                  isPastedText={isPastedText}
-                />
+                  className="m-0 flex min-w-0 items-center gap-1 border-0 bg-transparent p-0 text-left text-xs focus-visible:ring-2 focus-visible:ring-ml-green"
+                >
+                  <ZookeeperAttachmentPreview
+                    file={file}
+                    isPastedText={isPastedText}
+                  />
+                </ZookeeperAttachment>
                 <button
                   type="button"
                   onClick={() => onRemoveAttachment(index)}
