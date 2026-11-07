@@ -8,6 +8,402 @@ import { decode } from '@msgpack/msgpack'
 const projectId = '12902000-0000-4000-8000-000000000091'
 
 test(
+  'polls revisions and reflects remote edits and deletions without reloading the page',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    const remote = await mockCloudStorage(context)
+    await setup(context, page, testInfo)
+    const root = `/__zoo_cloud__/${projectId}`
+    await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
+    await expect(page.locator('.cm-content').first()).toBeVisible()
+    await page.evaluate(
+      (id) => window.app.layout.openPane(id),
+      DefaultLayoutPaneID.Files
+    )
+    const clockStart = new Date()
+    await page.clock.install({ time: clockStart })
+    await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+    const initialReads = { ...remote.reads }
+    await page.clock.runFor(8_000)
+    await expect
+      .poll(() => remote.reads.metadata)
+      .toBeGreaterThan(initialReads.metadata)
+    expect(remote.reads.downloads).toBe(initialReads.downloads)
+
+    remote.project.files['main.kcl'] =
+      '@settings(kclVersion = 3.0)\n// edited from another client\n'
+    remote.project.files['new.kcl'] =
+      '@settings(kclVersion = 3.0)\n// new remote file\n'
+    remote.project.revision = 'remote-edit'
+    // Refocusing performs an immediate check even after backing off.
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+    await page.clock.runFor(1)
+    await expect(page.locator('.cm-content').first()).toContainText(
+      'edited from another client'
+    )
+    await expect(
+      page.getByRole('treeitem', { name: 'new.kcl', exact: true })
+    ).toBeVisible()
+    expect(remote.reads.downloads).toBe(initialReads.downloads + 1)
+    const metadataAfterChange = remote.reads.metadata
+    await page.clock.runFor(4_000)
+    await expect
+      .poll(() => remote.reads.metadata)
+      .toBeGreaterThan(metadataAfterChange)
+
+    await page.getByRole('treeitem', { name: 'new.kcl', exact: true }).click()
+    await expect(page).toHaveURL(/new\.kcl/)
+    delete remote.project.files['new.kcl']
+    remote.project.revision = 'remote-delete'
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+    await page.clock.runFor(1)
+    await expect(page).toHaveURL(/main\.kcl/)
+    await expect(
+      page.getByRole('treeitem', { name: 'new.kcl', exact: true })
+    ).not.toBeVisible()
+
+    await page.getByRole('treeitem', { name: 'parts', exact: true }).click()
+    await page.getByRole('treeitem', { name: 'note.md', exact: true }).click()
+    await expect(page.locator('#code-pane').getByRole('textbox')).toContainText(
+      'original'
+    )
+    remote.project.files['parts/note.md'] = 'text changed on another client'
+    remote.project.revision = 'remote-text'
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+    await page.clock.runFor(1)
+    await expect(page.locator('#code-pane').getByRole('textbox')).toContainText(
+      'text changed on another client'
+    )
+  }
+)
+
+test(
+  'keeps repeated remote updates responsive while rebuilding the modeling snapshot',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    const remote = await mockCloudStorage(context)
+    await setup(context, page, testInfo)
+    await page.goto(
+      `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
+    )
+    await expect(page.locator('.cm-content').first()).toBeVisible()
+    const release = await page.evaluateHandle(() => {
+      const project = window.app.project
+      if (!project) throw new Error('Missing project')
+      const original = project.reloadFilesFromStorage.bind(project)
+      project.reloadFilesFromStorage = async (...args) => {
+        await new Promise((resolve) => setTimeout(resolve, 2_000))
+        return original(...args)
+      }
+      return () => {
+        project.reloadFilesFromStorage = original
+      }
+    })
+    try {
+      remote.project.files['main.kcl'] =
+        '@settings(kclVersion = 3.0)\n// first external save\n'
+      remote.project.revision = 'save-1'
+      const firstDownload = remote.reads.downloads + 1
+      await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+      await expect.poll(() => remote.reads.downloads).toBe(firstDownload)
+      for (let save = 2; save <= 3; save++) {
+        remote.project.files['main.kcl'] =
+          `@settings(kclVersion = 3.0)\n// external save ${save}\n`
+        remote.project.revision = `save-${save}`
+        // Polling must not add another three seconds after a slow model reload.
+        await expect
+          .poll(() => remote.reads.downloads, {
+            timeout: 4_200,
+            intervals: [50],
+          })
+          .toBe(firstDownload + save - 1)
+        await expect(page.locator('.cm-content').first()).toContainText(
+          `external save ${save}`
+        )
+      }
+    } finally {
+      await release.evaluate((restore) => restore())
+    }
+  }
+)
+
+test(
+  'pauses cloud polling while hidden or offline and checks immediately on return',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    const remote = await mockCloudStorage(context)
+    await setup(context, page, testInfo)
+    await page.goto(
+      `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
+    )
+    await expect(page.locator('.cm-content').first()).toBeVisible()
+    const clockStart = new Date()
+    await page.clock.install({ time: clockStart })
+    await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+    for (const state of ['hidden', 'offline']) {
+      await page.evaluate((state) => {
+        if (state === 'hidden') {
+          Object.defineProperty(document, 'visibilityState', {
+            configurable: true,
+            value: 'hidden',
+          })
+          document.dispatchEvent(new Event('visibilitychange'))
+        } else {
+          Object.defineProperty(navigator, 'onLine', {
+            configurable: true,
+            value: false,
+          })
+          window.dispatchEvent(new Event('offline'))
+        }
+      }, state)
+      // Allow a probe that was already in flight to settle before counting.
+      await expect
+        .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
+        .toBe(0)
+      const before = remote.reads.metadata
+      await page.clock.runFor(120_000)
+      expect(remote.reads.metadata).toBe(before)
+      await page.evaluate((state) => {
+        if (state === 'hidden') {
+          Object.defineProperty(document, 'visibilityState', {
+            configurable: true,
+            value: 'visible',
+          })
+          document.dispatchEvent(new Event('visibilitychange'))
+        } else {
+          Object.defineProperty(navigator, 'onLine', {
+            configurable: true,
+            value: true,
+          })
+          window.dispatchEvent(new Event('online'))
+        }
+      }, state)
+      await page.clock.runFor(1)
+      await expect.poll(() => remote.reads.metadata).toBeGreaterThan(before)
+    }
+  }
+)
+
+test(
+  'detects remote revisions during Zookeeper work or unsaved edits and applies them when safe',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    const remote = await mockCloudStorage(context)
+    await setup(context, page, testInfo)
+    await page.goto(
+      `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
+    )
+    await expect(page.locator('.cm-content').first()).toBeVisible()
+    const promptState = await page.evaluateHandle(async () => {
+      const modulePath = '/src/lib/zookeeper/zookeeperPromptState.ts'
+      const { zookeeperPromptRunningSignal } = await import(modulePath)
+      return zookeeperPromptRunningSignal
+    })
+    await promptState.evaluate((state) => {
+      state.value = true
+    })
+    remote.project.files['main.kcl'] =
+      '@settings(kclVersion = 3.0)\n// remote while busy\n'
+    remote.project.revision = 'remote-busy'
+    const initialDownloads = remote.reads.downloads
+    const initialMetadata = remote.reads.metadata
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+    await expect
+      .poll(() => remote.reads.metadata)
+      .toBeGreaterThan(initialMetadata)
+    expect(remote.reads.downloads).toBe(initialDownloads)
+    await expect(page.locator('.cm-content').first()).not.toContainText(
+      'remote while busy'
+    )
+    await promptState.evaluate((state) => {
+      state.value = false
+    })
+    await expect(page.locator('.cm-content').first()).toContainText(
+      'remote while busy'
+    )
+
+    await page.evaluate(() =>
+      window.app.singletons.kclManager.updateCodeEditor(
+        '@settings(kclVersion = 3.0)\n// unsaved local edits\n',
+        {
+          shouldExecute: false,
+          shouldWriteToDisk: false,
+          shouldResetCamera: false,
+        }
+      )
+    )
+    remote.project.files['main.kcl'] =
+      '@settings(kclVersion = 3.0)\n// competing remote edits\n'
+    remote.project.revision = 'remote-dirty'
+    const before = { ...remote.reads }
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+    await expect
+      .poll(() => remote.reads.metadata)
+      .toBeGreaterThan(before.metadata)
+    expect(remote.reads.downloads).toBe(before.downloads)
+    await expect(page.locator('.cm-content').first()).toContainText(
+      'unsaved local edits'
+    )
+  }
+)
+
+for (const kind of ['file', 'directory']) {
+  test(
+    `deletes a cloud ${kind} using the parent revision without a local archive`,
+    { tag: '@web' },
+    async ({ context, page }, testInfo) => {
+      await mockClientErrorReports(context)
+      const remote = await mockCloudStorage(context)
+      remote.project.files['parts/handle.kcl'] =
+        '@settings(kclVersion = 3.0)\n// handle\n'
+      await setup(context, page, testInfo)
+      const root = `/__zoo_cloud__/${projectId}`
+      await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
+      await expect(page.locator('.cm-content').first()).toBeVisible()
+      await page.evaluate(
+        (id) => window.app.layout.openPane(id),
+        DefaultLayoutPaneID.Files
+      )
+      const parts = page.getByRole('treeitem', { name: 'parts', exact: true })
+      await parts.click()
+      const handle = page.getByRole('treeitem', {
+        name: 'handle.kcl',
+        exact: true,
+      })
+      // Exercise navigation when deleting the executing file or its parent folder.
+      await handle.click()
+      await expect(page).toHaveURL(/handle\.kcl/)
+      const history = await page.evaluateHandle(() => {
+        const manager = window.app.singletons.kclManager
+        const original = manager.addGlobalHistoryEvent.bind(manager)
+        let recorded = 0
+        manager.addGlobalHistoryEvent = (...args) => {
+          recorded += 1
+          return original(...args)
+        }
+        return {
+          count: () => recorded,
+          restore: () => {
+            manager.addGlobalHistoryEvent = original
+          },
+        }
+      })
+      const target = kind === 'file' ? handle : parts
+      try {
+        await target.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await page.getByTestId('delete-confirmation').click()
+        await expect(target).not.toBeVisible()
+        await expect(page).toHaveURL(/main\.kcl/)
+        await expect.poll(() => remote.deletions.length).toBe(1)
+        expect(remote.deletions[0].paths.toSorted()).toEqual(
+          (kind === 'file'
+            ? ['parts/handle.kcl']
+            : ['parts/handle.kcl', 'parts/note.md']
+          ).toSorted()
+        )
+        expect(remote.uploads).toContain(remote.deletions[0].parentRevision)
+        expect(remote.project.files['main.kcl']).toBe(
+          '@settings(kclVersion = 3.0)\n'
+        )
+        expect(await history.evaluate((h) => h.count())).toBe(0)
+        expect(
+          await page.evaluate(async () => {
+            const storage = await navigator.storage.getDirectory()
+            try {
+              const userData = await storage.getDirectoryHandle('userData')
+              const archive = await userData.getDirectoryHandle('archive')
+              await archive.getDirectoryHandle('__zoo_cloud__')
+              return true
+            } catch (error) {
+              if (
+                error instanceof DOMException &&
+                error.name === 'NotFoundError'
+              )
+                return false
+              throw error
+            }
+          })
+        ).toBe(false)
+        await page.reload({ waitUntil: 'domcontentloaded' })
+        await expect(page.locator('.cm-content').first()).toBeVisible()
+        await expect
+          .poll(() =>
+            page.evaluate(
+              (path) => window.app.fileOperations.exists(path),
+              `${root}/${kind === 'file' ? 'parts/handle.kcl' : 'parts'}`
+            )
+          )
+          .toBe(false)
+      } finally {
+        // The page may have reloaded, replacing the captured manager.
+        await history.evaluate((h) => h.restore()).catch(() => {})
+      }
+    }
+  )
+}
+
+test(
+  'keeps the local archive and undo history for local file deletion',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    await mockCloudStorage(context)
+    await setup(context, page, testInfo)
+    await page.goto('/home')
+    await expect(page.getByTestId('project-link').first()).toBeVisible()
+    const root = await page.evaluate(async () => {
+      const fs = window.fsZds
+      const root = fs.join(window.app.projectDirectoryPath, 'local-delete')
+      await fs.mkdir(root, { recursive: true })
+      await fs.writeFile(
+        fs.join(root, 'main.kcl'),
+        new TextEncoder().encode('@settings(kclVersion = 3.0)\n')
+      )
+      await fs.writeFile(
+        fs.join(root, 'note.md'),
+        new TextEncoder().encode('local backup contents')
+      )
+      return root
+    })
+    await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
+    await expect(page.locator('.cm-content').first()).toBeVisible()
+    await page.evaluate(
+      (id) => window.app.layout.openPane(id),
+      DefaultLayoutPaneID.Files
+    )
+    const note = page.getByRole('treeitem', { name: 'note.md', exact: true })
+    const historyBefore = await page.evaluate(
+      () => window.app.singletons.kclManager.globalHistoryView.undoDepth
+    )
+    await note.click({ button: 'right' })
+    await page.getByTestId('context-menu-delete').click()
+    await page.getByTestId('delete-confirmation').click()
+    await expect(note).not.toBeVisible()
+    expect(
+      await page.evaluate(
+        async (root) =>
+          new TextDecoder().decode(
+            await window.fsZds.readFile(
+              window.fsZds.join('/userData/archive', root, 'note.md')
+            )
+          ),
+        root
+      )
+    ).toBe('local backup contents')
+    expect(
+      await page.evaluate(
+        () => window.app.singletons.kclManager.globalHistoryView.undoDepth
+      )
+    ).toBe(historyBefore + 1)
+  }
+)
+
+test(
   'opens, saves, and reloads cloud files without modifying a historical disk mirror',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
