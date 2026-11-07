@@ -936,7 +936,7 @@ describe('ProjectCard', () => {
       await waitFor(() =>
         expect(window.location.pathname).toBe(
           standalone
-            ? `${PATHS.PROJECT_NEXT}/${encodeURIComponent('/projects/Bracket demo')}`
+            ? `${PATHS.LOCAL}/${encodeURIComponent('/projects/Bracket demo')}`
             : `${PATHS.FILE}/${encodeURIComponent(cloudProject.defaultFile)}`
         )
       )

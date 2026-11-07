@@ -629,7 +629,7 @@ function AppProjectCard({
 
         if (projectShellEnabled && e.shiftKey && project.localProjectPath) {
           void navigate(
-            `${PATHS.PROJECT_NEXT}/${encodeURIComponent(project.localProjectPath)}`
+            `${PATHS.LOCAL}/${encodeURIComponent(project.localProjectPath)}`
           )
           return
         }

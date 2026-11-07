@@ -1,10 +1,6 @@
 import { App } from '@src/lib/app'
 import { PATHS } from '@src/lib/paths'
-import {
-  fileLoader,
-  projectLoader,
-  parseProjectLoaderId,
-} from '@src/lib/routeLoaders'
+import { fileLoader, projectLoader, localLoader } from '@src/lib/routeLoaders'
 import { readProject } from '@src/lib/projectSession/next/utils'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -80,30 +76,7 @@ describe('fileLoader legacy web bookmarks', () => {
   )
 })
 
-describe('project loader IDs', () => {
-  it('parses cloud project IDs', () => {
-    expect(parseProjectLoaderId('cloud:remote-123')).toEqual({
-      type: 'cloud',
-      projectId: 'remote-123',
-    })
-  })
-
-  it.each(['/Users/example/project', 'C:\\Users\\example\\project'])(
-    'treats filesystem path %s as a path ID',
-    (path) => {
-      expect(parseProjectLoaderId(path)).toEqual({ type: 'path', path })
-    }
-  )
-
-  it('does not classify an empty cloud ID as a project ID', () => {
-    expect(parseProjectLoaderId('cloud:')).toEqual({
-      type: 'path',
-      path: 'cloud:',
-    })
-  })
-})
-
-describe('project loader', () => {
+describe('local directory loader', () => {
   beforeEach(() => vi.clearAllMocks())
 
   function setup() {
@@ -127,11 +100,11 @@ describe('project loader', () => {
     const app = new App(App.getDefaultSystems())
     environment.projectRouteEnabled = false
     try {
-      const result = await projectLoader({ app })({
-        request: new Request('https://app.zoo.dev/project/test'),
-        params: { id: '/projects/test' },
+      const result = await localLoader({ app })({
+        request: new Request('https://app.zoo.dev/local/test'),
+        params: { path: '/projects/test' },
         context: undefined,
-        unstable_pattern: '/project/:id',
+        unstable_pattern: '/local/:path',
       })
       expect(result).toBeInstanceOf(Response)
       if (!(result instanceof Response)) throw new Error('Expected a redirect')
@@ -146,12 +119,12 @@ describe('project loader', () => {
   it('publishes project data without settings initialization or an editor', async () => {
     const { app, openProject, closeProject, data, owner } = setup()
     vi.mocked(readProject).mockResolvedValueOnce(data)
-    const request = new Request('https://app.zoo.dev/project/test')
-    const result = await projectLoader({ app })({
+    const request = new Request('https://app.zoo.dev/local/test')
+    const result = await localLoader({ app })({
       request,
-      params: { id: data.contents.path },
+      params: { path: data.contents.path },
       context: undefined,
-      unstable_pattern: '/project/:id',
+      unstable_pattern: '/local/:path',
     })
     expect(result).toBe(owner)
     expect(openProject).toHaveBeenCalledExactlyOnceWith(data)
@@ -164,19 +137,22 @@ describe('project loader', () => {
     })
   })
 
-  it('rejects unsupported cloud IDs without reading or selecting a project', async () => {
-    const { app, openProject, closeProject } = setup()
-    await expect(
-      projectLoader({ app })({
-        request: new Request('https://app.zoo.dev/project/cloud'),
-        params: { id: 'cloud:remote-123' },
-        context: undefined,
-        unstable_pattern: '/project/:id',
-      })
-    ).rejects.toThrow('Cloud project IDs not yet handled')
-    expect(readProject).not.toHaveBeenCalled()
-    expect(openProject).not.toHaveBeenCalled()
-    expect(closeProject).not.toHaveBeenCalled()
+  it.each([
+    '/projects/524db2e0-53c9-4c6c-9d41-182755a692e6',
+    'C:\\Users\\example\\Bracket demo',
+    'cloud:local-directory',
+  ])('treats the local route path literally: %s', async (path) => {
+    const { app, data } = setup()
+    vi.mocked(readProject).mockResolvedValueOnce(data)
+    await localLoader({ app })({
+      request: new Request(
+        `https://app.zoo.dev/local/${encodeURIComponent(path)}`
+      ),
+      params: { path },
+      context: undefined,
+      unstable_pattern: '/local/:path',
+    })
+    expect(readProject).toHaveBeenCalledWith({}, path, expect.anything())
   })
 
   it.each(['revoked', 'replaced'] as const)(
@@ -185,11 +161,11 @@ describe('project loader', () => {
       const { app, openProject, data } = setup()
       const discovery = Promise.withResolvers<typeof data>()
       vi.mocked(readProject).mockReturnValueOnce(discovery.promise)
-      const loading = projectLoader({ app })({
-        request: new Request('https://app.zoo.dev/project/test'),
-        params: { id: data.contents.path },
+      const loading = localLoader({ app })({
+        request: new Request('https://app.zoo.dev/local/test'),
+        params: { path: data.contents.path },
         context: undefined,
-        unstable_pattern: '/project/:id',
+        unstable_pattern: '/local/:path',
       })
       // Wait until discovery has actually started, after ownership lookup.
       await vi.waitFor(() => expect(readProject).toHaveBeenCalledOnce())
@@ -216,11 +192,11 @@ describe('project loader', () => {
     const failure = new Error('Invalid project.toml')
     vi.mocked(readProject).mockRejectedValueOnce(failure)
     await expect(
-      projectLoader({ app })({
-        request: new Request('https://app.zoo.dev/project/test'),
-        params: { id: data.contents.path },
+      localLoader({ app })({
+        request: new Request('https://app.zoo.dev/local/test'),
+        params: { path: data.contents.path },
         context: undefined,
-        unstable_pattern: '/project/:id',
+        unstable_pattern: '/local/:path',
       })
     ).rejects.toBe(failure)
     expect(openProject).not.toHaveBeenCalled()
@@ -235,16 +211,59 @@ describe('project loader', () => {
       return data
     })
     await expect(
-      projectLoader({ app })({
-        request: new Request('https://app.zoo.dev/project/test', {
+      localLoader({ app })({
+        request: new Request('https://app.zoo.dev/local/test', {
           signal: controller.signal,
         }),
-        params: { id: data.contents.path },
+        params: { path: data.contents.path },
         context: undefined,
-        unstable_pattern: '/project/:id',
+        unstable_pattern: '/local/:path',
       })
     ).rejects.toMatchObject({ name: 'AbortError' })
     expect(openProject).not.toHaveBeenCalled()
     expect(closeProject).not.toHaveBeenCalled()
+  })
+})
+
+describe('cloud project loader', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it.each(['remote-123', '/projects/not-a-cloud-id', 'cloud:remote-123'])(
+    'never treats a cloud-route ID as a local path: %s',
+    async (id) => {
+      const app = new App(App.getDefaultSystems())
+      await expect(
+        projectLoader({ app })({
+          request: new Request(
+            `https://app.zoo.dev/project/${encodeURIComponent(id)}`
+          ),
+          params: { id },
+          context: undefined,
+          unstable_pattern: '/project/:id',
+        })
+      ).rejects.toThrow('Cloud projects are not yet supported')
+      expect(vi.spyOn(app.registry, 'get')).not.toHaveBeenCalled()
+      expect(readProject).not.toHaveBeenCalled()
+      expect(loadAndValidateSettings).not.toHaveBeenCalled()
+    }
+  )
+
+  it('retains the feature gate without reading local storage', async () => {
+    const app = new App(App.getDefaultSystems())
+    environment.projectRouteEnabled = false
+    try {
+      const result = await projectLoader({ app })({
+        request: new Request('https://app.zoo.dev/project/remote-123'),
+        params: { id: 'remote-123' },
+        context: undefined,
+        unstable_pattern: '/project/:id',
+      })
+      expect(result).toBeInstanceOf(Response)
+      if (!(result instanceof Response)) throw new Error('Expected a redirect')
+      expect(result.headers.get('Location')).toBe(PATHS.HOME)
+      expect(vi.spyOn(app.registry, 'get')).not.toHaveBeenCalled()
+    } finally {
+      environment.projectRouteEnabled = true
+    }
   })
 })

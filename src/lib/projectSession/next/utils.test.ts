@@ -1,3 +1,4 @@
+import type { FileStat } from '@src/lib/fileSystem/fileOperations'
 import { readProject } from '@src/lib/projectSession/next/utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -18,16 +19,18 @@ vi.mock('@src/lib/desktop', () => ({
 
 const root = { name: 'bracket', path: '/projects/bracket', children: [] }
 const operations = {
-  stat: vi.fn(async () => ({
-    kind: 'directory' as const,
-    device: 0,
-    inode: 0,
-    size: 0,
-    accessedAt: 0,
-    modifiedAt: 0,
-    changedAt: 0,
-    createdAt: 0,
-  })),
+  stat: vi.fn(
+    async (): Promise<FileStat> => ({
+      kind: 'directory' as const,
+      device: 0,
+      inode: 0,
+      size: 0,
+      accessedAt: 0,
+      modifiedAt: 0,
+      changedAt: 0,
+      createdAt: 0,
+    })
+  ),
   readDirectory: vi.fn(async (): Promise<string[]> => []),
   readFile: vi.fn(async () => new TextEncoder().encode('title = "Bracket"')),
   canReadWrite: vi.fn(async () => true),
@@ -43,6 +46,18 @@ describe('readProject', () => {
       new TextEncoder().encode('title = "Bracket"')
     )
     operations.canReadWrite.mockResolvedValue(true)
+  })
+
+  it('rejects a file instead of opening its containing directory', async () => {
+    const stats = await operations.stat()
+    operations.stat.mockResolvedValueOnce({ ...stats, kind: 'file' })
+    await expect(
+      readProject(operations, '/projects/bracket/main.kcl')
+    ).rejects.toThrow('not a directory')
+    expect(operations.readDirectory).not.toHaveBeenCalled()
+    expect(operations.readFile).not.toHaveBeenCalled()
+    expect(operations.createFile).not.toHaveBeenCalled()
+    expect(operations.createDirectory).not.toHaveBeenCalled()
   })
 
   it('reads root configuration and retains library/access metadata without writes', async () => {

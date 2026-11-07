@@ -18,6 +18,7 @@ import {
   baseLoader,
   fileLoader,
   homeLoader,
+  localLoader,
   projectLoader,
 } from '@src/lib/routeLoaders'
 import Home from '@src/routes/Home'
@@ -61,10 +62,16 @@ export const Router = () => {
               loader: baseLoader({ app }),
             },
             {
-              id: PATHS.PROJECT_NEXT,
-              path: PATHS.PROJECT_NEXT.concat('/:id'),
+              id: PATHS.PROJECT,
+              path: PATHS.PROJECT.concat('/:id'),
               errorElement: <ErrorPage />,
               loader: projectLoader({ app }),
+            },
+            {
+              id: PATHS.LOCAL,
+              path: PATHS.LOCAL.concat('/:path'),
+              errorElement: <ErrorPage />,
+              loader: localLoader({ app }),
               element: (
                 <>
                   <ProjectRoute />

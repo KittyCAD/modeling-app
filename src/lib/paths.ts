@@ -88,8 +88,9 @@ export const PATHS = {
   HOME,
   LIBRARY,
   FILE: '/file',
-  // The project shell rearchitecture is isolated here.
-  PROJECT_NEXT: '/project-next',
+  // Experimental directory and cloud-project shells use separate namespaces.
+  LOCAL: '/local',
+  PROJECT: '/project',
   SETTINGS,
   SETTINGS_USER: `${SETTINGS}?tab=user` as const,
   SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,

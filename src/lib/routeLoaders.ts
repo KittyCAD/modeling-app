@@ -10,7 +10,6 @@ import {
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
-import { parseCloudProjectRelationshipId } from '@src/lib/cloudSync/relationships'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import {
   getOnboardingChildRoute,
@@ -37,17 +36,6 @@ import { readProject } from '@src/lib/projectSession/next/utils'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
-
-/** A project location parsed from the decoded route ID, before storage is accessed. */
-export type ParsedProjectLoaderId =
-  | { type: 'cloud'; projectId: string }
-  | { type: 'path'; path: string }
-
-/** Interpret the router-decoded ID as a cloud relationship ID or a filesystem path. */
-export function parseProjectLoaderId(id: string): ParsedProjectLoaderId {
-  const projectId = parseCloudProjectRelationshipId(id)
-  return projectId ? { type: 'cloud', projectId } : { type: 'path', path: id }
-}
 
 function loadRouteSettings(
   app: App,
@@ -90,24 +78,46 @@ export const baseLoader =
     return redirect(PATHS.HOME + routerSearch)
   }
 
+/** Settle the shared feature grant before either experimental route accesses resources. */
+async function canOpenProjectShell(app: App, signal: AbortSignal) {
+  await waitForUserFeaturesSettled(app.userFeatures.actor, undefined, signal)
+  signal.throwIfAborted()
+  return hasProjectShellFeature(app.userFeatures)
+}
+
 /**
- * Open a local project when the project-shell feature is granted.
- * The route ID identifies the project directory, without opening an editor runtime.
- * Reading assembles the full tree and optional TOML metadata without creating files
- * or applying project settings. Failed or cancelled discovery leaves the selection intact.
- * Cloud IDs are recognized but unsupported; the legacy editor session is untouched.
+ * `/project/:id` identifies a cloud project by its API ID, never a disk path or
+ * an internal cloud relationship ID. Cloud opening is reserved for a follow-up;
+ * this route must not fall through to filesystem discovery in the meantime.
  */
 export const projectLoader =
   ({ app }: { app: App }): LoaderFunction =>
-  async (routerData) => {
-    await waitForUserFeaturesSettled(
-      app.userFeatures.actor,
-      undefined,
-      routerData.request.signal
+  async ({ request, params }) => {
+    if (!(await canOpenProjectShell(app, request.signal)))
+      return redirect(PATHS.HOME)
+    if (!params.id)
+      return Promise.reject(new Error('No cloud project ID provided'))
+    return Promise.reject(
+      new Error('Cloud projects are not yet supported by this route')
     )
-    if (!hasProjectShellFeature(app.userFeatures)) return redirect(PATHS.HOME)
+  }
 
-    const assertCurrent = () => routerData.request.signal.throwIfAborted()
+/**
+ * Open the directory identified by `/local/:path`, without opening an editor.
+ * Reading assembles the full tree and optional TOML metadata without creating files
+ * or applying project settings. Files are rejected rather than promoted to their
+ * parent directory. Failed or cancelled discovery leaves the selection intact.
+ */
+export const localLoader =
+  ({ app }: { app: App }): LoaderFunction =>
+  async ({ request, params }) => {
+    if (!(await canOpenProjectShell(app, request.signal)))
+      return redirect(PATHS.HOME)
+    const { path } = params
+    if (!path)
+      return Promise.reject(new Error('No local directory path provided'))
+
+    const assertCurrent = () => request.signal.throwIfAborted()
     const fileOperations = app.registry.get(fileOperationsService)
     const projectSessions = app.registry.get(projectSessionService)
     // A grant can be revoked (and granted again) while discovery is awaiting IO.
@@ -116,39 +126,20 @@ export const projectLoader =
       hasProjectShellFeature(app.userFeatures) &&
       app.registry.optional(projectSessionService) === projectSessions
 
-    const { id } = routerData.params
-    if (id === undefined) {
-      return Promise.reject(new Error('No project ID provided'))
-    }
-
-    const projectIdCategorized = parseProjectLoaderId(id)
-
-    switch (projectIdCategorized.type) {
-      case 'cloud':
-        return Promise.reject(
-          new Error('Cloud project IDs not yet handled by this route')
-        )
-      case 'path': {
-        const library = await getProjectLibraryOwnership(
-          app.settings.get().app.libraries.current,
-          projectIdCategorized.path
-        )
-        assertCurrent()
-        if (!ownsSession()) return redirect(PATHS.HOME)
-        const project = await readProject(
-          fileOperations,
-          projectIdCategorized.path,
-          {
-            signal: routerData.request.signal,
-            library,
-          }
-        )
-        assertCurrent()
-        if (!ownsSession()) return redirect(PATHS.HOME)
-        // Consumers retain this session instead of resolving the global selection again.
-        return projectSessions.openProject(project)
-      }
-    }
+    const library = await getProjectLibraryOwnership(
+      app.settings.get().app.libraries.current,
+      path
+    )
+    assertCurrent()
+    if (!ownsSession()) return redirect(PATHS.HOME)
+    const project = await readProject(fileOperations, path, {
+      signal: request.signal,
+      library,
+    })
+    assertCurrent()
+    if (!ownsSession()) return redirect(PATHS.HOME)
+    // Consumers retain this session instead of resolving the global selection again.
+    return projectSessions.openProject(project)
   }
 
 export const fileLoader =
