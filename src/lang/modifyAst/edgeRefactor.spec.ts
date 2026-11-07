@@ -52,6 +52,7 @@ import type {
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
@@ -1789,6 +1790,55 @@ part = bracket()
       return refactored
     }
 
+    async function measureScene() {
+      const responses = await Promise.allSettled([
+        engineCommandManagerInThisFile.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: crypto.randomUUID(),
+          cmd: { type: 'volume', entity_ids: [], output_unit: 'mm3' },
+        }),
+        engineCommandManagerInThisFile.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: crypto.randomUUID(),
+          cmd: { type: 'surface_area', entity_ids: [], output_unit: 'mm2' },
+        }),
+        engineCommandManagerInThisFile.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: crypto.randomUUID(),
+          cmd: { type: 'center_of_mass', entity_ids: [], output_unit: 'mm' },
+        }),
+      ])
+      for (const response of responses) {
+        if (response.status === 'rejected') throw response.reason
+      }
+      const [volumeResponse, areaResponse, centerResponse] = responses.map(
+        (response) =>
+          response.status === 'fulfilled' ? response.value : undefined
+      )
+      if (
+        !isModelingResponse(volumeResponse) ||
+        !isModelingResponse(areaResponse) ||
+        !isModelingResponse(centerResponse)
+      ) {
+        throw new Error('The real engine must return all model measurements')
+      }
+      const volume = volumeResponse.resp.data.modeling_response
+      const area = areaResponse.resp.data.modeling_response
+      const center = centerResponse.resp.data.modeling_response
+      if (
+        volume.type !== 'volume' ||
+        area.type !== 'surface_area' ||
+        center.type !== 'center_of_mass'
+      ) {
+        throw new Error('The real engine returned the wrong measurement types')
+      }
+      return {
+        volume: volume.data.volume,
+        area: area.data.surface_area,
+        center: center.data.center_of_mass,
+      }
+    }
+
     const deprecatedFilletCases = [
       {
         name: 'refactors getOppositeEdge in fillet to edgeRefs with tag names (e1, capEnd001) not UUIDs',
@@ -2178,6 +2228,9 @@ surface001 = extrude(
       it(name, { timeout: 30_000 }, async () => {
         const ast = assertParse(kcl, instanceInThisFile)
         await kclManagerInThisFile.executeAst({ ast })
+        expect(kclManagerInThisFile.errors).toEqual([])
+        const original = await measureScene()
+        expect(original.volume).toBeGreaterThan(0)
         const execState = kclManagerInThisFile.execState
         expect(
           execState.edgeRefactorMetadata?.length ?? 0
@@ -2203,10 +2256,21 @@ surface001 = extrude(
         )
         expect(n).toContain('endFaces = [')
         expect(n).not.toContain(removed)
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
 
-        const refactoredAst = assertParse(refactored, instanceInThisFile)
-        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        // Either bounding face can identify this cut edge. Execute the actual
+        // generated selector and prove it preserves the asymmetric solid,
+        // rather than requiring the engine to choose one endpoint's spelling.
+        await kclManagerInThisFile.executeAst({
+          ast: assertParse(refactored, instanceInThisFile),
+        })
         expect(kclManagerInThisFile.errors).toEqual([])
+        const converted = await measureScene()
+        expect(converted.volume).toBeCloseTo(original.volume, 6)
+        expect(converted.area).toBeCloseTo(original.area, 6)
+        expect(converted.center.x).toBeCloseTo(original.center.x, 6)
+        expect(converted.center.y).toBeCloseTo(original.center.y, 6)
+        expect(converted.center.z).toBeCloseTo(original.center.z, 6)
       })
     }
 
