@@ -1,0 +1,147 @@
+.row {
+  --inline-fg: var(--chalkboard-90);
+  --inline-muted: var(--chalkboard-70);
+  --inline-hover: color-mix(in oklch, var(--primary) 6%, transparent);
+  --inline-selected: color-mix(in oklch, var(--primary) 10%, transparent);
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 30px;
+  padding: 0 4px;
+  border-radius: 5px;
+  color: var(--inline-fg);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 400;
+  white-space: normal;
+  user-select: none;
+}
+
+:global(.dark) .row {
+  --inline-fg: var(--chalkboard-20);
+  --inline-muted: var(--chalkboard-50);
+}
+
+.row:hover {
+  background: var(--inline-hover);
+}
+.row[data-selected] {
+  background: var(--inline-selected);
+  box-shadow: inset 2px 0 var(--primary);
+}
+.row[data-disabled] {
+  opacity: 0.5;
+}
+
+/* Two local classes outrank the app's generic button and dark-button rules. */
+.row .main,
+.row .action {
+  appearance: none;
+  margin: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  box-shadow: none;
+  cursor: pointer;
+}
+.row .main {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  min-height: 30px;
+  padding: 4px;
+  text-align: left;
+}
+.row .main:hover {
+  border: 0;
+  background: transparent;
+}
+.row .main:disabled {
+  background: transparent;
+  color: inherit;
+  cursor: not-allowed;
+}
+.row .main:focus-visible,
+.row .action:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+.icon {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  color: var(--inline-muted);
+}
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.detail {
+  margin-left: auto;
+  padding-left: 8px;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--inline-muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: 2px;
+  padding-left: 4px;
+}
+.row .action {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  color: var(--inline-muted);
+}
+.row .action svg {
+  width: 16px;
+  height: 16px;
+}
+.row .action:hover,
+.row .action[aria-expanded="true"] {
+  background: var(--inline-hover);
+  color: var(--inline-fg);
+  border: 0;
+}
+.quiet {
+  opacity: 0;
+}
+.row:hover .quiet,
+.row:focus-within .quiet {
+  opacity: 1;
+}
+.error {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--destroy-70);
+}
+@media (hover: none) {
+  .quiet {
+    opacity: 1;
+  }
+}
+@media (forced-colors: active) {
+  .row[data-selected] {
+    outline: 1px solid Highlight;
+  }
+}
