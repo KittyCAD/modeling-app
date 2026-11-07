@@ -3,6 +3,7 @@ import {
   editorSaveService,
   editorOnSaveValueSpec,
 } from '@src/lib/save/registry/contract'
+import drawingsPlugin from '@src/lib/drawings/registry/plugin'
 import executorsExtension from '@src/lib/executors/registry'
 import {
   executorsService,
@@ -63,6 +64,7 @@ describe('experimental editor registration', () => {
         savingExtension,
         markdownExtension,
         executorsExtension,
+        drawingsPlugin,
       ])
       registry.get(userFeaturesService)
       await Promise.resolve()
