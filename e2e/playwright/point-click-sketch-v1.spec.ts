@@ -1587,7 +1587,10 @@ extrude001 = extrude(sketch001, length = 30)
     await test.step('Edit GDT Flatness', async () => {
       await test.step('Open edit mode from feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
+        const gdtOperation = await toolbar.getFeatureTreeOperation(
+          'annotation001',
+          0
+        )
         await gdtOperation.dblclick()
         // Should open the modeling dialog in edit mode
         await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
@@ -1660,7 +1663,10 @@ extrude001 = extrude(sketch001, length = 30)
 
     await test.step('Delete GDT Flatness', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
+      const gdtOperation = await toolbar.getFeatureTreeOperation(
+        'annotation001',
+        0
+      )
       // Delete the GDT operation
       await gdtOperation.click({ button: 'left' })
       await page.keyboard.press('Delete')

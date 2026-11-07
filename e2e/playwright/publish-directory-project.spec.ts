@@ -169,16 +169,19 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            id: categoryId,
-            slug: 'fixtures',
-            display_name: 'Fixtures',
-            description: 'Projects used by end-to-end tests.',
-            sort_order: 1,
-            is_active: true,
-          },
-        ]),
+        body: JSON.stringify({
+          items: [
+            {
+              id: categoryId,
+              slug: 'fixtures',
+              display_name: 'Fixtures',
+              description: 'Projects used by end-to-end tests.',
+              sort_order: 1,
+              is_active: true,
+            },
+          ],
+          next_page: null,
+        }),
       })
     })
 
