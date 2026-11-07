@@ -38,6 +38,7 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
   projectStatus?: ProjectStatus
   density?: 'default' | 'compact'
+  projectShellEnabled?: boolean
   showCloudSyncUi?: boolean
   showDetails?: boolean
   showSourceStatusBadges?: boolean
@@ -150,6 +151,7 @@ function AppProjectCard({
   fileOperations,
   projectStatus,
   density = 'default',
+  projectShellEnabled = false,
   showCloudSyncUi = true,
   showDetails = true,
   showSourceStatusBadges = true,
@@ -628,6 +630,13 @@ function AppProjectCard({
           return
         }
 
+        if (projectShellEnabled && e.shiftKey && project.localProjectPath) {
+          void navigate(
+            `${PATHS.LOCAL}/${encodeURIComponent(project.localProjectPath)}`
+          )
+          return
+        }
+
         void projectActions
           .open(project)
           .then((result) => {
@@ -640,7 +649,15 @@ function AppProjectCard({
           .catch(reportRejection)
       }}
       renderOpenLink={({ href: _href, ...linkProps }) => (
-        <Link {...linkProps} to={openHref} />
+        <Link
+          {...linkProps}
+          to={openHref}
+          title={
+            projectShellEnabled && canOpen && project.localProjectPath
+              ? 'Shift-click to open without an editor'
+              : undefined
+          }
+        />
       )}
     />
   )
