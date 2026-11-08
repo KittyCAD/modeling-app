@@ -171,6 +171,7 @@ fn plane_visibility_commands_update_cached_planes() {
                 plane_info: None,
                 size: None,
                 hidden: false,
+                color: None,
             }),
         )]),
         0,

@@ -146,20 +146,21 @@ async fn inner_appearance(
             }
         }
         let opacity = (opacity.unwrap_or(50.0) / 100.0) as f32;
-        // Geometry-only engines reject PlaneSetColor until
-        // https://github.com/KittyCAD/engine/pull/5127 is merged.
-        if !exec_state.geometry_only() {
-            exec_state
-                .batch_modeling_cmd(
-                    ModelingCmdMeta::from_args(exec_state, &args),
-                    ModelingCmd::from(
-                        mcmd::PlaneSetColor::builder()
-                            .color(Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity))
-                            .plane_id(plane.id)
-                            .build(),
-                    ),
-                )
-                .await?;
+        let meta = ModelingCmdMeta::from_args(exec_state, &args);
+        let cmd = ModelingCmd::from(
+            mcmd::PlaneSetColor::builder()
+                .color(Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity))
+                .plane_id(plane.id)
+                .build(),
+        );
+        if exec_state.geometry_only() {
+            // Geometry-only engines reject PlaneSetColor until
+            // https://github.com/KittyCAD/engine/pull/5127 is merged.
+            // Record it so the local renderer can still read the color.
+            // Once merged, always send it and delete record_modeling_cmd.
+            exec_state.record_modeling_cmd(meta, cmd);
+        } else {
+            exec_state.batch_modeling_cmd(meta, cmd).await?;
         }
 
         return Ok(geometry);
