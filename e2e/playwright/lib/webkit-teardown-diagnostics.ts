@@ -1,3 +1,4 @@
+import type { EventEmitter } from 'node:events'
 import type { BrowserContext, TestInfo } from '@playwright/test'
 
 // Temporary diagnostics: preserve teardown behavior and log timings, never URLs,
@@ -6,6 +7,7 @@ export async function closeWithWebKitTeardownDiagnostics(
   context: BrowserContext,
   testInfo: TestInfo
 ) {
+  const diagnosticEvents = process as EventEmitter
   const started = performance.now()
   const emit = (phase: string, details: Record<string, unknown> = {}) => {
     console.log(
@@ -21,6 +23,29 @@ export async function closeWithWebKitTeardownDiagnostics(
         ...details,
       })
     )
+  }
+  const label = `${testInfo.workerIndex}:${testInfo.repeatEachIndex}:${testInfo.retry}:${testInfo.title}`
+  for (const [pageIndex, page] of context.pages().entries()) {
+    let timer: ReturnType<typeof setTimeout> | undefined
+    try {
+      const resources = await Promise.race([
+        page
+          .evaluate(() => {
+            const diagnostics = Reflect.get(
+              window,
+              '__webkitResourceDiagnostics'
+            ) as { snapshot: () => unknown } | undefined
+            return diagnostics?.snapshot() ?? null
+          })
+          .catch(() => null),
+        new Promise<null>((resolve) => {
+          timer = setTimeout(() => resolve(null), 1000)
+        }),
+      ])
+      emit('resources.beforeClose', { pageIndex, resources })
+    } finally {
+      clearTimeout(timer)
+    }
   }
   const onContextClosed = () => emit('context.closed')
   const onBrowserDisconnected = () => emit('browser.disconnected')
@@ -57,8 +82,13 @@ export async function closeWithWebKitTeardownDiagnostics(
     timed('trace.stop', () => originalStop(options))
 
   try {
+    diagnosticEvents.emit('webkit-teardown-diagnostic', {
+      stage: 'start',
+      label,
+    })
     await timed('context.close', () => context.close())
   } finally {
+    diagnosticEvents.emit('webkit-teardown-diagnostic', { stage: 'end', label })
     context.request.dispose = originalDispose
     context.tracing.stopChunk = originalStopChunk
     context.tracing.stop = originalStop

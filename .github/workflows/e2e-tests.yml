@@ -313,10 +313,12 @@ jobs:
         if: github.head_ref == 'kurt-zookeeper-teardown-diagnostics'
         shell: bash
         run: |
-          DEBUG=pw:browser npm run test:e2e:web:webkit -- e2e/playwright/zookeeper.spec.ts --repeat-each=3 \
+          NODE_OPTIONS="${NODE_OPTIONS:+$NODE_OPTIONS }--require=$PWD/.github/ci-cd-scripts/webkit-native-diagnostics.cjs" \
+            DEBUG=pw:browser npm run test:e2e:web:webkit -- e2e/playwright/zookeeper.spec.ts --repeat-each=3 \
             2> >(python3 .github/ci-cd-scripts/filter-webkit-browser-log.py)
         env:
           PLAYWRIGHT_WEBKIT_TEARDOWN_DIAGNOSTICS: '1'
+          WEBKIT_TEARDOWN_DIAGNOSTICS_DIR: ${{ github.workspace }}/test-results/webkit-shutdown-diagnostics
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
@@ -324,6 +326,15 @@ jobs:
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:web
           TARGET: web
+
+      - name: Upload native shutdown diagnostics
+        if: ${{ !cancelled() && github.head_ref == 'kurt-zookeeper-teardown-diagnostics' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: webkit-shutdown-diagnostics-${{ github.sha }}
+          path: test-results/webkit-shutdown-diagnostics/
+          retention-days: 7
+          if-no-files-found: warn
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v7

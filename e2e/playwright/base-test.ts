@@ -1,6 +1,7 @@
 import { devices, expect, test as playwrightTest } from '@playwright/test'
 import type { Page } from '@playwright/test'
 import { closeWithWebKitTeardownDiagnostics } from '@e2e/playwright/lib/webkit-teardown-diagnostics'
+import { installWebKitResourceDiagnostics } from '@e2e/playwright/lib/webkit-resource-diagnostics'
 
 const usePersistentWebKitContext =
   process.env.PLAYWRIGHT_WEBKIT_PERSISTENT_CONTEXT === '1'
@@ -63,6 +64,9 @@ const persistentWebKitTest = playwrightTest.extend({
     })
 
     try {
+      if (process.env.PLAYWRIGHT_WEBKIT_TEARDOWN_DIAGNOSTICS === '1') {
+        await context.addInitScript(installWebKitResourceDiagnostics)
+      }
       const page = context.pages()[0] ?? (await context.newPage())
       // Persistent WebKit OPFS is shared by origin across contexts and even
       // user-data directories, so reset it before each serial WebKit test.
