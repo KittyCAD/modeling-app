@@ -104,7 +104,7 @@ export class HomePageFixture {
   expectIsCurrentPage = async () => {
     await expect(this.page).toHaveURL(/.*home/)
     await expect(
-      this.page.getByRole('heading', { name: 'Project Libraries' })
+      this.page.getByTestId('home-header').getByRole('heading', { level: 1 })
     ).toBeVisible()
   }
 
