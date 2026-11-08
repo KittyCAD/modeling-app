@@ -1,4 +1,6 @@
 import kclExtension from '@src/lib/kcl/registry'
+import collaborationExtension from '@src/lib/collaboration/registry'
+import { collaborationService } from '@src/lib/collaboration/registry/contract'
 import executorsExtension from '@src/lib/executors/registry'
 import {
   executorsService,
@@ -61,6 +63,7 @@ describe('experimental editor registration', () => {
         featureFlags,
         editorsExtension,
         kclExtension,
+        collaborationExtension,
         executorsExtension,
         savingExtension,
         markdownExtension,
@@ -82,6 +85,9 @@ describe('experimental editor registration', () => {
       ).toBe(enabled)
       expect(registry.optional(editorsService) !== undefined).toBe(enabled)
       expect(registry.get(codeEditorExtensionValueSpec).length > 0).toBe(
+        enabled
+      )
+      expect(registry.optional(collaborationService) !== undefined).toBe(
         enabled
       )
       expect(registry.optional(executorsService) !== undefined).toBe(enabled)

@@ -20,6 +20,8 @@
     "rust/kcl-language-server"
   ],
   "dependencies": {
+    "@automerge/automerge": "^3.5.0",
+    "@automerge/automerge-repo": "~2.5.0",
     "@chainner/node-path": "^0.1.1",
     "@codemirror/autocomplete": "^6.20.1",
     "@codemirror/commands": "^6.10.3",
@@ -86,7 +88,8 @@
     "web-vitals": "^3.5.2",
     "why-is-node-running": "^3.2.2",
     "xstate": "^5.32.5",
-    "yargs": "^18.0.0"
+    "yargs": "^18.0.0",
+    "zod": "^4.6.7"
   },
   "scripts": {
     "prepare": "husky",
@@ -241,6 +244,7 @@
     "vite": "^7.3.2",
     "vite-plugin-package-version": "^1.1.0",
     "vite-plugin-top-level-await": "^1.5.0",
+    "vite-plugin-wasm": "^3.6.0",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^4.1.11",
     "vitest-webgl-canvas-mock": "^1.1.0",

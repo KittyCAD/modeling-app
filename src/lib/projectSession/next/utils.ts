@@ -25,7 +25,7 @@ function convertFileStatToFileMetadata(stats: FileStat): FileMetadata {
 }
 
 /**
- * Read a directory tree, including configuration, hidden, and gitignored entries.
+ * Read project source, including configuration, hidden, and gitignored entries except .zoo.
  * Unlike the explorer reader, this does not filter for display or require write access.
  * File bytes are read separately; symlinks are recorded as leaf entries, not followed.
  * The request signal stops a cancelled opening from traversing the remaining tree.
@@ -47,6 +47,8 @@ export async function getProjectContents(
 
   const children: FileEntry[] = []
   for (const name of await fileOperations.readDirectory(projectPath)) {
+    // Application-owned history is not project source and may contain many binary snapshots.
+    if (name === '.zoo') continue
     signal?.throwIfAborted()
     const path = fsZds.join(projectPath, name)
     const childStats = await fileOperations.stat(path, {

@@ -1,3 +1,4 @@
+import wasm from 'vite-plugin-wasm'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 import type { ConfigEnv, UserConfig } from 'vite'
@@ -30,6 +31,8 @@ export default defineConfig((env) => {
       },
     },
     build: {
+      // The TLA worker plugin reads this before Vite supplies its default.
+      assetsDir: 'assets',
       outDir: `.vite/renderer/${name}`,
       target: 'es2022',
     },
@@ -55,6 +58,7 @@ export default defineConfig((env) => {
       esbuildOptions: { target: 'es2022' },
     },
     plugins: [
+      wasm(),
       nodePolyfills({
         include: ['path'],
       }),
@@ -71,7 +75,7 @@ export default defineConfig((env) => {
       }),
     ],
     worker: {
-      plugins: () => [viteTsconfigPaths()],
+      plugins: () => [wasm(), topLevelAwait(), viteTsconfigPaths()],
     },
     resolve: {
       preserveSymlinks: true,

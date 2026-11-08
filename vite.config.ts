@@ -1,3 +1,4 @@
+import wasm from 'vite-plugin-wasm'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 import react from '@vitejs/plugin-react'
@@ -65,6 +66,8 @@ export default defineConfig(({ command, mode }) => {
       retry: 5,
     },
     build: {
+      // The TLA worker plugin reads this before Vite supplies its default.
+      assetsDir: 'assets',
       outDir: 'build',
       target: 'es2022',
     },
@@ -108,6 +111,7 @@ export default defineConfig(({ command, mode }) => {
       ],
     },
     plugins: [
+      wasm(),
       nodePolyfills({
         include: ['path'],
       }),
@@ -128,7 +132,7 @@ export default defineConfig(({ command, mode }) => {
       }),
     ],
     worker: {
-      plugins: () => [viteTsconfigPaths()],
+      plugins: () => [wasm(), topLevelAwait(), viteTsconfigPaths()],
     },
   }
 })

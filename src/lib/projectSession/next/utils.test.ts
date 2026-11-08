@@ -1,5 +1,8 @@
 import type { FileStat } from '@src/lib/fileSystem/fileOperations'
-import { readProject } from '@src/lib/projectSession/next/utils'
+import {
+  readProject,
+  getProjectContents,
+} from '@src/lib/projectSession/next/utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds', async () => {
@@ -46,6 +49,14 @@ describe('readProject', () => {
       new TextEncoder().encode('title = "Bracket"')
     )
     operations.canReadWrite.mockResolvedValue(true)
+  })
+
+  it('excludes application history without traversing its binary contents', async () => {
+    operations.readDirectory.mockResolvedValueOnce(['.zoo'])
+    const contents = await getProjectContents(operations, root.path)
+    expect(contents.children).toEqual([])
+    expect(operations.stat).toHaveBeenCalledTimes(1)
+    expect(operations.readDirectory).toHaveBeenCalledExactlyOnceWith(root.path)
   })
 
   it('rejects a file instead of opening its containing directory', async () => {

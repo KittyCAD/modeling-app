@@ -62,11 +62,22 @@ describe('project sessions', () => {
       main,
       { name: 'assets', path: '/project/assets', children: [image, unknown] },
       { name: 'empty.txt', path: '/project/empty.txt', children: [] },
+      {
+        name: '.zoo',
+        path: '/project/.zoo',
+        children: [
+          {
+            name: 'history.automerge',
+            path: '/project/.zoo/history.automerge',
+            children: null,
+          },
+        ],
+      },
     ]
     service.openProject(current)
     expect(service.listFiles()).toEqual([main, image, unknown])
     expect(service.listFiles()[0]).toBe(main)
-    expect(current.contents.children).toHaveLength(3)
+    expect(current.contents.children).toHaveLength(4)
     expect(storage.readFile).not.toHaveBeenCalled()
     expect(storage.writeFile).not.toHaveBeenCalled()
   })

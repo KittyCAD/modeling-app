@@ -88,6 +88,7 @@ export function createProjectSessionService(
       const files: FileEntry[] = []
       const visit = (entries: readonly FileEntry[]) => {
         for (const entry of entries) {
+          if (entry.name === '.zoo') continue
           if (entry.children === null) files.push(entry)
           else visit(entry.children)
         }
