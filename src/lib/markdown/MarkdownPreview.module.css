@@ -1,0 +1,44 @@
+.document {
+  @apply break-words text-sm leading-relaxed;
+}
+.document h1 {
+  @apply mb-4 mt-6 text-2xl font-semibold;
+}
+.document h2 {
+  @apply mb-3 mt-5 text-xl font-semibold;
+}
+.document h3,
+.document h4,
+.document h5,
+.document h6 {
+  @apply mb-2 mt-4 text-base font-semibold;
+}
+.document p {
+  @apply my-3;
+}
+.document > :first-child {
+  @apply mt-0;
+}
+.document blockquote {
+  @apply my-3 border-l-2 b-3 pl-4;
+}
+.document pre {
+  @apply my-3 overflow-x-auto rounded-sm bg-2 p-3;
+}
+.document pre code,
+:global(.dark) .document pre code {
+  @apply bg-transparent p-0;
+}
+.document a {
+  @apply text-primary underline;
+}
+.document img {
+  @apply max-w-full;
+}
+.document table {
+  @apply my-3 block max-w-full overflow-x-auto border-collapse text-left;
+}
+.document th,
+.document td {
+  @apply border b-4 px-3 py-1;
+}
