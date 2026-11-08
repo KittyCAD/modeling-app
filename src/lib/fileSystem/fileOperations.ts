@@ -59,9 +59,12 @@ function snapshotFileContents(contents: FileContents): OwnedFileContents {
  * The coordinated workspace storage boundary above the raw filesystem.
  *
  * This boundary covers both project directories and the files within them.
- * Reads take shared path locks while mutations take exclusive target locks,
- * allowing unrelated paths to proceed concurrently without exposing a file
- * while a coordinated mutation of that path is in progress.
+ * By default, reads take shared path locks while mutations take exclusive
+ * target locks, allowing unrelated paths to proceed concurrently without
+ * exposing a file during a coordinated mutation. Backends that guarantee
+ * complete file snapshots may opt out of file-read locking below.
+ * Locks coordinate only operations through this runtime; they cannot exclude
+ * external programs or other runtimes accessing the same backing storage.
  */
 export interface FileOperationsService {
   readonly pending: Effect.Effect<number>
@@ -148,8 +151,12 @@ export class FileOperations extends Context.Tag('zds/FileOperations')<
 
 export interface FileOperationsOptions {
   /**
-   * The backing replaces each file's bytes atomically before awaiting persistence.
-   * File reads may proceed while a write waits for remote acknowledgement.
+   * Allow cloud file reads while an upload waits for remote acknowledgement.
+   * The cloud backing replaces the complete in-memory byte array before awaiting
+   * the upload, so reads can see those bytes without waiting for the network.
+   * Enable only for backends that guarantee complete file versions during
+   * concurrent mutations.
+   * This declares a backend guarantee; it does not make underlying reads atomic.
    * Directory reads and all mutations remain coordinated. Disk and browser
    * storage retain coordinated file reads by default.
    */
