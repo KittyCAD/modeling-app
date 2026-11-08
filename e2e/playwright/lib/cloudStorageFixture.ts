@@ -50,6 +50,29 @@ export async function mockCloudStorage(
     beforeCreate?: () => Promise<void>
   } = {}
 ) {
+  if (context.browser()?.browserType().name() === 'webkit') {
+    await context.addInitScript(() => {
+      const fetch = window.fetch.bind(window)
+      window.fetch = async (input, init) => {
+        const request = new Request(
+          input instanceof Request ? input.clone() : input,
+          init
+        )
+        if (
+          /\/user\/projects(?:\/[^/]+)?\/?$/.test(
+            new URL(request.url).pathname
+          ) &&
+          ['POST', 'PUT'].includes(request.method) &&
+          request.headers.get('content-type')?.startsWith('multipart/form-data')
+        ) {
+          // WebKit's request interception omits Blob parts; preserve their encoded bytes.
+          const body = await request.clone().arrayBuffer()
+          return fetch(new Request(request, { body }))
+        }
+        return fetch(input, init)
+      }
+    })
+  }
   if (mockModeling) {
     await context.routeWebSocket('**/ws/modeling/commands**', () => {})
     mockedModelingContexts.add(context)
