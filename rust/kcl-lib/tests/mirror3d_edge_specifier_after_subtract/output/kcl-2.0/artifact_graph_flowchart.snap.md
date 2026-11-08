@@ -82,20 +82,34 @@ flowchart LR
   42["SweepEdge Adjacent"]
   43["CompositeSolid Subtract<br>[766, 803, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  44["CompositeSolid Subtract<br>[805, 936, 0]<br>Consumed: false"]
+  44["PrimitiveFace<br>[805, 936, 0]"]
     %% [ProgramBodyItem { index: 8 }, ExpressionStatementExpr]
-  45["SketchBlock<br>[117, 279, 0]"]
+  45["PrimitiveFace<br>[805, 936, 0]"]
+    %% [ProgramBodyItem { index: 8 }, ExpressionStatementExpr]
+  46["PrimitiveFace<br>[805, 936, 0]"]
+    %% [ProgramBodyItem { index: 8 }, ExpressionStatementExpr]
+  47["PrimitiveFace<br>[805, 936, 0]"]
+    %% [ProgramBodyItem { index: 8 }, ExpressionStatementExpr]
+  48["PrimitiveFace<br>[805, 936, 0]"]
+    %% [ProgramBodyItem { index: 8 }, ExpressionStatementExpr]
+  49["PrimitiveFace<br>[805, 936, 0]"]
+    %% [ProgramBodyItem { index: 8 }, ExpressionStatementExpr]
+  50["PrimitiveFace<br>[805, 936, 0]"]
+    %% [ProgramBodyItem { index: 8 }, ExpressionStatementExpr]
+  51["CompositeSolid Subtract<br>[805, 936, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 8 }, ExpressionStatementExpr]
+  52["SketchBlock<br>[117, 279, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  46["SketchBlock<br>[448, 638, 0]"]
+  53["SketchBlock<br>[448, 638, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 <--x 6
-  1 <--x 45
+  1 <--x 52
   2 --- 3
   2 --- 4
   2 --- 5
   2 <--x 6
-  45 --- 2
+  52 --- 2
   3 <--x 7
   4 <--x 8
   5 <--x 9
@@ -104,7 +118,7 @@ flowchart LR
   6 --- 9
   6 ---- 10
   6 --- 43
-  6 <--x 44
+  6 <--x 51
   7 --- 11
   7 x--> 14
   7 --- 16
@@ -142,12 +156,12 @@ flowchart LR
   20 <--x 15
   22 --- 23
   22 <--x 27
-  22 <--x 46
+  22 <--x 53
   23 --- 24
   23 --- 25
   23 --- 26
   23 <--x 27
-  46 --- 23
+  53 --- 23
   24 <--x 28
   25 <--x 29
   26 <--x 30
@@ -156,7 +170,7 @@ flowchart LR
   27 --- 30
   27 ---- 31
   27 --- 43
-  27 <--x 44
+  27 <--x 51
   28 --- 32
   28 x--> 35
   28 --- 37
@@ -192,4 +206,11 @@ flowchart LR
   37 <--x 36
   39 <--x 36
   41 <--x 36
+  51 x--> 44
+  51 x--> 45
+  51 x--> 46
+  51 x--> 47
+  51 x--> 48
+  51 x--> 49
+  51 x--> 50
 ```

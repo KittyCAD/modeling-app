@@ -45,6 +45,30 @@ flowchart LR
   24["SweepEdge Adjacent"]
   25["Pattern Transform<br>[301, 355, 0]<br>Copies: 2<br>Faces: 12<br>Edges: 24"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  26["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  27["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  28["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  29["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  30["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  31["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  32["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  33["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  34["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  35["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  36["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  37["PrimitiveFace<br>[301, 355, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
   1 --- 2
   1 --- 3
   3 --- 4
@@ -102,4 +126,16 @@ flowchart LR
   19 <--x 16
   21 <--x 16
   23 <--x 16
+  25 x--> 26
+  25 x--> 27
+  25 x--> 28
+  25 x--> 29
+  25 x--> 30
+  25 x--> 31
+  25 x--> 32
+  25 x--> 33
+  25 x--> 34
+  25 x--> 35
+  25 x--> 36
+  25 x--> 37
 ```

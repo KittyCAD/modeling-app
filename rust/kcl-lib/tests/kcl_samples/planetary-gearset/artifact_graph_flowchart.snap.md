@@ -122,14 +122,50 @@ flowchart LR
   67["SweepEdge Adjacent"]
   68["Pattern Circular<br>[1136, 1301, 0]<br>Copies: 3<br>Faces: 150<br>Edges: 432"]
     %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-  69["StartSketchOnPlane<br>[884, 937, 17]"]
+  69["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  70["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  71["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  72["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  73["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  74["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  75["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  76["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  77["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  78["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  79["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  80["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  81["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  82["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  83["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  84["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  85["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  86["PrimitiveFace<br>[1136, 1301, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  87["StartSketchOnPlane<br>[884, 937, 17]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
-  70["StartSketchOnPlane<br>[884, 937, 17]"]
+  88["StartSketchOnPlane<br>[884, 937, 17]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
-  71["StartSketchOnPlane<br>[884, 937, 17]"]
+  89["StartSketchOnPlane<br>[884, 937, 17]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   1 --- 2
-  1 <--x 69
+  1 <--x 87
   2 --- 3
   2 --- 4
   2 --- 5
@@ -156,7 +192,7 @@ flowchart LR
   15 --- 19
   18 <--x 17
   20 --- 21
-  20 <--x 70
+  20 <--x 88
   21 --- 22
   21 --- 23
   21 --- 24
@@ -211,7 +247,7 @@ flowchart LR
   40 <--x 35
   42 <--x 35
   44 --- 45
-  44 <--x 71
+  44 <--x 89
   45 --- 46
   45 --- 47
   45 --- 48
@@ -267,4 +303,22 @@ flowchart LR
   62 <--x 59
   64 <--x 59
   66 <--x 59
+  68 x--> 69
+  68 x--> 70
+  68 x--> 71
+  68 x--> 72
+  68 x--> 73
+  68 x--> 74
+  68 x--> 75
+  68 x--> 76
+  68 x--> 77
+  68 x--> 78
+  68 x--> 79
+  68 x--> 80
+  68 x--> 81
+  68 x--> 82
+  68 x--> 83
+  68 x--> 84
+  68 x--> 85
+  68 x--> 86
 ```

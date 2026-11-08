@@ -32,12 +32,12 @@ flowchart LR
     34["Segment<br>[823, 836, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
-  subgraph path52 [Path]
-    52["Path Region<br>[915, 928, 0]<br>Consumed: true"]
+  subgraph path56 [Path]
+    56["Path Region<br>[915, 928, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    53["Segment<br>[915, 928, 0]"]
+    57["Segment<br>[915, 928, 0]"]
       %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    54["Segment<br>[915, 928, 0]"]
+    58["Segment<br>[915, 928, 0]"]
       %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   1["Plane<br>[68, 305, 0]"]
@@ -102,32 +102,32 @@ flowchart LR
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   51["Sweep Extrusion<br>[915, 928, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  55[Wall]
-    %% face_code_ref=Missing NodePath
-  56[Wall]
-    %% face_code_ref=Missing NodePath
-  57[Wall]
-    %% face_code_ref=Missing NodePath
-  58[Wall]
-    %% face_code_ref=Missing NodePath
-  59["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  60["Cap End"]
-    %% face_code_ref=Missing NodePath
-  61["SweepEdge Adjacent"]
-  62["SweepEdge Opposite"]
-  63["SweepEdge Adjacent"]
-  64["SweepEdge Adjacent"]
-  65["SweepEdge Opposite"]
-  66["SweepEdge Adjacent"]
-  67["EdgeCut Chamfer<br>[915, 928, 0]"]
+  52["EdgeCut Chamfer<br>[915, 928, 0]"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  68["EdgeCut Chamfer<br>[915, 928, 0]"]
+  53["EdgeCut Chamfer<br>[915, 928, 0]"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  69["EdgeCut Chamfer<br>[915, 928, 0]"]
+  54["EdgeCut Chamfer<br>[915, 928, 0]"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  70["EdgeCut Chamfer<br>[915, 928, 0]"]
+  55["EdgeCut Chamfer<br>[915, 928, 0]"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  59[Wall]
+    %% face_code_ref=Missing NodePath
+  60[Wall]
+    %% face_code_ref=Missing NodePath
+  61[Wall]
+    %% face_code_ref=Missing NodePath
+  62[Wall]
+    %% face_code_ref=Missing NodePath
+  63["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  64["Cap End"]
+    %% face_code_ref=Missing NodePath
+  65["SweepEdge Adjacent"]
+  66["SweepEdge Opposite"]
+  67["SweepEdge Adjacent"]
+  68["SweepEdge Adjacent"]
+  69["SweepEdge Opposite"]
+  70["SweepEdge Adjacent"]
   71["EdgeCut Chamfer<br>[938, 1134, 0]"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   72["EdgeCut Chamfer<br>[938, 1134, 0]"]
@@ -137,7 +137,7 @@ flowchart LR
   1 --- 2
   1 <--x 7
   1 <--x 32
-  1 <--x 52
+  1 <--x 56
   1 <--x 73
   2 --- 3
   2 --- 4
@@ -145,15 +145,15 @@ flowchart LR
   2 --- 6
   2 <--x 7
   2 <--x 32
-  2 <--x 52
+  2 <--x 56
   73 --- 2
   3 <--x 8
   3 <--x 33
-  3 <--x 53
+  3 <--x 57
   4 <--x 9
   5 <--x 10
   5 <--x 34
-  5 <--x 54
+  5 <--x 58
   6 <--x 11
   7 --- 8
   7 --- 9
@@ -171,9 +171,9 @@ flowchart LR
   32 <--x 8
   8 <--x 35
   8 <--x 41
-  52 <--x 8
-  8 <--x 55
-  8 <--x 61
+  56 <--x 8
+  8 <--x 59
+  8 <--x 65
   9 --- 15
   9 x--> 17
   9 --- 23
@@ -181,9 +181,9 @@ flowchart LR
   32 <--x 9
   9 <--x 37
   9 <--x 44
-  52 <--x 9
-  9 <--x 57
-  9 <--x 64
+  56 <--x 9
+  9 <--x 61
+  9 <--x 68
   10 --- 14
   10 x--> 17
   10 --- 21
@@ -226,14 +226,10 @@ flowchart LR
   21 <--x 18
   23 <--x 18
   25 <--x 18
-  31 <--x 19
   35 <--x 19
-  51 <--x 19
-  55 <--x 19
-  31 <--x 23
+  59 <--x 19
   37 <--x 23
-  51 <--x 23
-  57 <--x 23
+  61 <--x 23
   32 ---- 31
   31 --- 35
   31 --- 36
@@ -247,16 +243,12 @@ flowchart LR
   31 --- 44
   31 --- 45
   31 --- 46
-  31 x--> 47
-  31 x--> 48
-  31 x--> 49
-  31 x--> 50
+  31 --- 47
+  31 --- 48
+  31 --- 49
+  31 --- 50
   32 --- 33
   32 --- 34
-  32 <--x 47
-  32 <--x 48
-  32 <--x 49
-  32 <--x 50
   33 --- 36
   33 x--> 39
   33 --- 42
@@ -277,11 +269,11 @@ flowchart LR
   38 --- 46
   42 <--x 40
   45 <--x 40
-  52 ---- 51
+  51 --- 52
+  51 --- 53
+  51 --- 54
   51 --- 55
-  51 --- 56
-  51 --- 57
-  51 --- 58
+  56 ---- 51
   51 --- 59
   51 --- 60
   51 --- 61
@@ -290,38 +282,34 @@ flowchart LR
   51 --- 64
   51 --- 65
   51 --- 66
-  51 x--> 67
-  51 x--> 68
-  51 x--> 69
-  51 x--> 70
+  51 --- 67
+  51 --- 68
+  51 --- 69
+  51 --- 70
   51 x--> 71
   51 x--> 72
-  52 --- 53
-  52 --- 54
-  52 <--x 67
-  52 <--x 68
-  52 <--x 69
-  52 <--x 70
-  52 <--x 71
-  52 <--x 72
-  53 --- 56
-  53 x--> 59
-  53 --- 62
-  53 --- 63
-  54 --- 58
-  54 x--> 59
-  54 --- 65
-  54 --- 66
-  55 --- 61
-  63 <--x 55
-  56 --- 62
-  56 --- 63
-  64 <--x 56
-  57 --- 64
-  66 <--x 57
-  61 <--x 58
-  58 --- 65
-  58 --- 66
-  62 <--x 60
-  65 <--x 60
+  56 --- 57
+  56 --- 58
+  56 <--x 71
+  56 <--x 72
+  57 --- 60
+  57 x--> 63
+  57 --- 66
+  57 --- 67
+  58 --- 62
+  58 x--> 63
+  58 --- 69
+  58 --- 70
+  59 --- 65
+  67 <--x 59
+  60 --- 66
+  60 --- 67
+  68 <--x 60
+  61 --- 68
+  70 <--x 61
+  65 <--x 62
+  62 --- 69
+  62 --- 70
+  66 <--x 64
+  69 <--x 64
 ```

@@ -60,7 +60,61 @@ flowchart LR
   33["SweepEdge Adjacent"]
   34["Pattern Transform<br>[469, 639, 0]<br>Copies: 9<br>Faces: 27<br>Edges: 27"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  35["CompositeSolid Subtract<br>[641, 685, 0]<br>Consumed: false"]
+  35["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  36["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  37["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  38["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  39["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  40["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  41["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  42["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  43["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  44["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  45["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  46["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  47["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  48["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  49["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  50["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  51["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  52["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  53["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  54["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  55["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  56["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  57["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  58["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  59["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  60["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  61["PrimitiveFace<br>[469, 639, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  62["CompositeSolid Subtract<br>[641, 685, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -70,7 +124,7 @@ flowchart LR
   2 --- 7
   2 --- 8
   2 ---- 9
-  2 --- 35
+  2 --- 62
   3 --- 13
   3 x--> 14
   3 --- 22
@@ -122,7 +176,7 @@ flowchart LR
   25 --- 27
   25 ---- 28
   25 --- 34
-  25 --- 35
+  25 --- 62
   26 --- 29
   26 x--> 30
   26 --- 32
@@ -136,4 +190,31 @@ flowchart LR
   29 --- 32
   29 --- 33
   32 <--x 31
+  34 x--> 35
+  34 x--> 36
+  34 x--> 37
+  34 x--> 38
+  34 x--> 39
+  34 x--> 40
+  34 x--> 41
+  34 x--> 42
+  34 x--> 43
+  34 x--> 44
+  34 x--> 45
+  34 x--> 46
+  34 x--> 47
+  34 x--> 48
+  34 x--> 49
+  34 x--> 50
+  34 x--> 51
+  34 x--> 52
+  34 x--> 53
+  34 x--> 54
+  34 x--> 55
+  34 x--> 56
+  34 x--> 57
+  34 x--> 58
+  34 x--> 59
+  34 x--> 60
+  34 x--> 61
 ```

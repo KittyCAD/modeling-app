@@ -41,6 +41,62 @@ flowchart LR
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
   24["Pattern Circular<br>[344, 488, 0]<br>Copies: 4<br>Faces: 28<br>Edges: 60"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  25["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  26["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  27["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  28["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  29["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  30["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  31["EdgeCut Chamfer<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  32["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  33["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  34["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  35["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  36["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  37["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  38["EdgeCut Chamfer<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  39["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  40["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  41["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  42["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  43["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  44["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  45["EdgeCut Chamfer<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  46["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  47["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  48["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  49["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  50["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  51["PrimitiveFace<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  52["EdgeCut Chamfer<br>[344, 488, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -99,4 +155,36 @@ flowchart LR
   19 <--x 14
   21 <--x 14
   15 <--x 23
+  15 <--x 31
+  15 <--x 38
+  15 <--x 45
+  15 <--x 52
+  24 x--> 25
+  24 x--> 26
+  24 x--> 27
+  24 x--> 28
+  24 x--> 29
+  24 x--> 30
+  24 x--> 31
+  24 x--> 32
+  24 x--> 33
+  24 x--> 34
+  24 x--> 35
+  24 x--> 36
+  24 x--> 37
+  24 x--> 38
+  24 x--> 39
+  24 x--> 40
+  24 x--> 41
+  24 x--> 42
+  24 x--> 43
+  24 x--> 44
+  24 x--> 45
+  24 x--> 46
+  24 x--> 47
+  24 x--> 48
+  24 x--> 49
+  24 x--> 50
+  24 x--> 51
+  24 x--> 52
 ```

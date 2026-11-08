@@ -96,12 +96,12 @@ flowchart LR
     139["Segment<br>[6116, 6134, 0]"]
       %% [ProgramBodyItem { index: 51 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   end
-  subgraph path153 [Path]
-    153["Path Region<br>[6221, 6238, 0]<br>Consumed: true"]
+  subgraph path155 [Path]
+    155["Path Region<br>[6221, 6238, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 52 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-    154["Segment<br>[6221, 6238, 0]"]
+    156["Segment<br>[6221, 6238, 0]"]
       %% [ProgramBodyItem { index: 52 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-    155["Segment<br>[6221, 6238, 0]"]
+    157["Segment<br>[6221, 6238, 0]"]
       %% [ProgramBodyItem { index: 52 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   end
   subgraph path169 [Path]
@@ -112,12 +112,12 @@ flowchart LR
     171["Segment<br>[6326, 6344, 0]"]
       %% [ProgramBodyItem { index: 53 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   end
-  subgraph path185 [Path]
-    185["Path Region<br>[6432, 6449, 0]<br>Consumed: true"]
+  subgraph path187 [Path]
+    187["Path Region<br>[6432, 6449, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 54 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-    186["Segment<br>[6432, 6449, 0]"]
+    188["Segment<br>[6432, 6449, 0]"]
       %% [ProgramBodyItem { index: 54 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-    187["Segment<br>[6432, 6449, 0]"]
+    189["Segment<br>[6432, 6449, 0]"]
       %% [ProgramBodyItem { index: 54 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   end
   subgraph path214 [Path]
@@ -510,25 +510,25 @@ flowchart LR
     %% [ProgramBodyItem { index: 51 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   152["Sweep Extrusion<br>[6221, 6238, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 52 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  156[Wall]
-    %% face_code_ref=Missing NodePath
-  157[Wall]
-    %% face_code_ref=Missing NodePath
+  153["EdgeCut Chamfer<br>[6221, 6238, 0]"]
+    %% [ProgramBodyItem { index: 52 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  154["EdgeCut Chamfer<br>[6221, 6238, 0]"]
+    %% [ProgramBodyItem { index: 52 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   158[Wall]
     %% face_code_ref=Missing NodePath
-  159["Cap Start"]
+  159[Wall]
     %% face_code_ref=Missing NodePath
-  160["Cap End"]
+  160[Wall]
     %% face_code_ref=Missing NodePath
-  161["SweepEdge Adjacent"]
-  162["SweepEdge Opposite"]
+  161["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  162["Cap End"]
+    %% face_code_ref=Missing NodePath
   163["SweepEdge Adjacent"]
   164["SweepEdge Opposite"]
   165["SweepEdge Adjacent"]
-  166["EdgeCut Chamfer<br>[6221, 6238, 0]"]
-    %% [ProgramBodyItem { index: 52 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  167["EdgeCut Chamfer<br>[6221, 6238, 0]"]
-    %% [ProgramBodyItem { index: 52 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  166["SweepEdge Opposite"]
+  167["SweepEdge Adjacent"]
   168["Sweep Extrusion<br>[6326, 6344, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 53 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   172[Wall]
@@ -552,25 +552,25 @@ flowchart LR
     %% [ProgramBodyItem { index: 53 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   184["Sweep Extrusion<br>[6432, 6449, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 54 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  188[Wall]
-    %% face_code_ref=Missing NodePath
-  189[Wall]
-    %% face_code_ref=Missing NodePath
+  185["EdgeCut Chamfer<br>[6432, 6449, 0]"]
+    %% [ProgramBodyItem { index: 54 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  186["EdgeCut Chamfer<br>[6432, 6449, 0]"]
+    %% [ProgramBodyItem { index: 54 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   190[Wall]
     %% face_code_ref=Missing NodePath
-  191["Cap Start"]
+  191[Wall]
     %% face_code_ref=Missing NodePath
-  192["Cap End"]
+  192[Wall]
     %% face_code_ref=Missing NodePath
-  193["SweepEdge Adjacent"]
-  194["SweepEdge Opposite"]
+  193["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  194["Cap End"]
+    %% face_code_ref=Missing NodePath
   195["SweepEdge Adjacent"]
   196["SweepEdge Opposite"]
   197["SweepEdge Adjacent"]
-  198["EdgeCut Chamfer<br>[6432, 6449, 0]"]
-    %% [ProgramBodyItem { index: 54 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  199["EdgeCut Chamfer<br>[6432, 6449, 0]"]
-    %% [ProgramBodyItem { index: 54 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  198["SweepEdge Opposite"]
+  199["SweepEdge Adjacent"]
   200["CompositeSolid Union<br>[6655, 6799, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 58 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   201["EdgeCut Fillet<br>[6819, 7348, 0]"]
@@ -1236,17 +1236,11 @@ flowchart LR
   51 <--x 48
   53 <--x 48
   55 <--x 48
-  61 <--x 49
   64 <--x 49
-  79 <--x 49
   82 <--x 49
-  61 <--x 51
   65 <--x 51
-  79 <--x 51
   83 <--x 51
-  61 <--x 53
   66 <--x 53
-  79 <--x 53
   84 <--x 53
   62 ---- 61
   61 --- 64
@@ -1260,15 +1254,11 @@ flowchart LR
   61 --- 72
   61 --- 73
   61 --- 74
-  61 x--> 75
-  61 x--> 76
-  61 x--> 77
-  61 x--> 78
+  61 --- 75
+  61 --- 76
+  61 --- 77
+  61 --- 78
   62 --- 63
-  62 <--x 75
-  62 <--x 76
-  62 <--x 77
-  62 <--x 78
   62 --- 200
   63 --- 67
   63 x--> 68
@@ -1296,15 +1286,11 @@ flowchart LR
   79 --- 90
   79 --- 91
   79 --- 92
-  79 x--> 93
-  79 x--> 94
-  79 x--> 95
-  79 x--> 96
+  79 --- 93
+  79 --- 94
+  79 --- 95
+  79 --- 96
   80 --- 81
-  80 <--x 93
-  80 <--x 94
-  80 <--x 95
-  80 <--x 96
   80 --- 200
   81 --- 85
   81 x--> 86
@@ -1324,9 +1310,9 @@ flowchart LR
   97 <--x 102
   97 <--x 121
   97 <--x 137
-  97 <--x 153
+  97 <--x 155
   97 <--x 169
-  97 <--x 185
+  97 <--x 187
   97 <--x 472
   98 --- 99
   98 --- 100
@@ -1334,23 +1320,23 @@ flowchart LR
   98 <--x 102
   98 <--x 121
   98 <--x 137
-  98 <--x 153
+  98 <--x 155
   98 <--x 169
-  98 <--x 185
+  98 <--x 187
   472 --- 98
   99 <--x 103
   99 <--x 122
   99 <--x 138
-  99 <--x 154
+  99 <--x 156
   99 <--x 170
-  99 <--x 186
+  99 <--x 188
   100 <--x 104
   101 <--x 105
   101 <--x 123
   101 <--x 139
-  101 <--x 155
+  101 <--x 157
   101 <--x 171
-  101 <--x 187
+  101 <--x 189
   102 --- 103
   102 --- 104
   102 --- 105
@@ -1367,15 +1353,15 @@ flowchart LR
   137 <--x 103
   103 <--x 140
   103 <--x 145
-  153 <--x 103
-  103 <--x 156
-  103 <--x 161
+  155 <--x 103
+  103 <--x 158
+  103 <--x 163
   169 <--x 103
   103 <--x 172
   103 <--x 177
-  185 <--x 103
-  103 <--x 188
-  103 <--x 193
+  187 <--x 103
+  103 <--x 190
+  103 <--x 195
   104 --- 108
   104 x--> 110
   104 --- 114
@@ -1409,16 +1395,11 @@ flowchart LR
   112 <--x 111
   114 <--x 111
   116 <--x 111
-  120 <--x 112
   124 <--x 112
-  136 <--x 112
   140 <--x 112
-  152 <--x 112
-  156 <--x 112
-  168 <--x 112
+  158 <--x 112
   172 <--x 112
-  184 <--x 112
-  188 <--x 112
+  190 <--x 112
   121 ---- 120
   120 --- 124
   120 --- 125
@@ -1430,12 +1411,10 @@ flowchart LR
   120 --- 131
   120 --- 132
   120 --- 133
-  120 x--> 134
-  120 x--> 135
+  120 --- 134
+  120 --- 135
   121 --- 122
   121 --- 123
-  121 <--x 134
-  121 <--x 135
   122 --- 125
   122 x--> 127
   122 --- 130
@@ -1465,12 +1444,10 @@ flowchart LR
   136 --- 147
   136 --- 148
   136 --- 149
-  136 x--> 150
-  136 x--> 151
+  136 --- 150
+  136 --- 151
   137 --- 138
   137 --- 139
-  137 <--x 150
-  137 <--x 151
   137 --- 200
   138 --- 141
   138 x--> 143
@@ -1490,9 +1467,9 @@ flowchart LR
   142 --- 149
   146 <--x 144
   148 <--x 144
-  153 ---- 152
-  152 --- 156
-  152 --- 157
+  152 --- 153
+  152 --- 154
+  155 ---- 152
   152 --- 158
   152 --- 159
   152 --- 160
@@ -1501,31 +1478,29 @@ flowchart LR
   152 --- 163
   152 --- 164
   152 --- 165
-  152 x--> 166
-  152 x--> 167
-  153 --- 154
-  153 --- 155
-  153 <--x 166
-  153 <--x 167
-  153 --- 200
-  154 --- 157
-  154 x--> 159
-  154 --- 162
-  154 --- 163
-  155 --- 158
-  155 x--> 159
-  155 --- 164
-  155 --- 165
-  156 --- 161
-  163 <--x 156
-  157 --- 162
-  157 --- 163
-  165 <--x 157
-  161 <--x 158
-  158 --- 164
-  158 --- 165
-  162 <--x 160
-  164 <--x 160
+  152 --- 166
+  152 --- 167
+  155 --- 156
+  155 --- 157
+  155 --- 200
+  156 --- 159
+  156 x--> 161
+  156 --- 164
+  156 --- 165
+  157 --- 160
+  157 x--> 161
+  157 --- 166
+  157 --- 167
+  158 --- 163
+  165 <--x 158
+  159 --- 164
+  159 --- 165
+  167 <--x 159
+  163 <--x 160
+  160 --- 166
+  160 --- 167
+  164 <--x 162
+  166 <--x 162
   169 ---- 168
   168 --- 172
   168 --- 173
@@ -1537,12 +1512,10 @@ flowchart LR
   168 --- 179
   168 --- 180
   168 --- 181
-  168 x--> 182
-  168 x--> 183
+  168 --- 182
+  168 --- 183
   169 --- 170
   169 --- 171
-  169 <--x 182
-  169 <--x 183
   169 --- 200
   170 --- 173
   170 x--> 175
@@ -1562,9 +1535,9 @@ flowchart LR
   174 --- 181
   178 <--x 176
   180 <--x 176
-  185 ---- 184
-  184 --- 188
-  184 --- 189
+  184 --- 185
+  184 --- 186
+  187 ---- 184
   184 --- 190
   184 --- 191
   184 --- 192
@@ -1573,31 +1546,29 @@ flowchart LR
   184 --- 195
   184 --- 196
   184 --- 197
-  184 x--> 198
-  184 x--> 199
-  185 --- 186
-  185 --- 187
-  185 <--x 198
-  185 <--x 199
-  185 --- 200
-  186 --- 189
-  186 x--> 191
-  186 --- 194
-  186 --- 195
-  187 --- 190
-  187 x--> 191
-  187 --- 196
-  187 --- 197
-  188 --- 193
-  195 <--x 188
-  189 --- 194
-  189 --- 195
-  197 <--x 189
-  193 <--x 190
-  190 --- 196
-  190 --- 197
-  194 <--x 192
-  196 <--x 192
+  184 --- 198
+  184 --- 199
+  187 --- 188
+  187 --- 189
+  187 --- 200
+  188 --- 191
+  188 x--> 193
+  188 --- 196
+  188 --- 197
+  189 --- 192
+  189 x--> 193
+  189 --- 198
+  189 --- 199
+  190 --- 195
+  197 <--x 190
+  191 --- 196
+  191 --- 197
+  199 <--x 191
+  195 <--x 192
+  192 --- 198
+  192 --- 199
+  196 <--x 194
+  198 <--x 194
   200 <--x 201
   200 <--x 202
   200 <--x 203
