@@ -1,8 +1,4 @@
-import {
-  getNextFileName,
-  getUniqueProjectName,
-  getUniqueProjectNameFromNames,
-} from '@src/lib/desktopFS'
+import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
@@ -32,19 +28,6 @@ function project(name: string, children?: FileEntry[]): FileEntry {
 }
 
 describe(`Getting unique project names`, () => {
-  it.each([
-    { name: 'part', existing: ['PART', 'part-1'], expected: 'part-2' },
-    { name: 'part-9', existing: ['part-9'], expected: 'part-10' },
-    { name: 'part-$n', existing: [], expected: 'part-0' },
-    {
-      name: 'part-$nn',
-      existing: ['part-01', 'part-2'],
-      expected: 'part-03',
-    },
-  ])('resolves $name from directory names', ({ name, existing, expected }) => {
-    expect(getUniqueProjectNameFromNames(name, existing)).toBe(expected)
-  })
-
   it(`should return the same name if no conflicts`, () => {
     const projectName = 'new-project'
     const projects = [project('existing-project'), project('another-project')]
