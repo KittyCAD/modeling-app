@@ -5,6 +5,7 @@ import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useIsOffline } from '@src/hooks/network/useIsOffline'
 import {
   clearActiveTextFile,
   openActiveTextFile,
@@ -26,6 +27,8 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const metadata = project?.projectIORefSignal.value
+  const offline = useIsOffline()
+  const readOnly = Boolean(metadata?.cloudProjectId && offline)
   const projects = useMemo(() => (metadata ? [metadata] : []), [metadata])
   const projectRef = useRef(project?.projectIORefSignal)
   const [theProject, setTheProject] = useState<Project | null>(null)
@@ -152,6 +155,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         title={props.layout.label}
         Menu={
           <FileExplorerHeaderActions
+            readOnly={readOnly}
             onCreateFile={() => {
               setCreateFilePressed(performance.now())
             }}
@@ -185,7 +189,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onRowDoubleClicked={onRowDoubleClicked}
             onRowEnter={onRowClicked}
             canNavigate={true}
-            readOnly={false}
+            readOnly={readOnly}
             overrideApplicationProjectDirectory={
               app.projectLibraries.projectDirectoryPath
             }

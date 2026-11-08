@@ -2531,6 +2531,37 @@ describe('KclManager diagnostics', () => {
     expect(reopened.code).toBe('recovered newer')
     expect((reopened as any).hasUnsavedLocalChanges()).toBe(true)
   })
+  it.each([
+    { draft: 'unsaved edit', cloud: 'newer cloud edit', warns: true },
+    { draft: 'unsaved edit', cloud: undefined, warns: true },
+    { draft: 'accepted edit', cloud: 'accepted edit', warns: false },
+    { draft: 'base', cloud: 'newer cloud edit', warns: false },
+  ])(
+    'explains cloud replacement only when unsaved contents differ: $draft / $cloud',
+    ({ draft, cloud, warns }) => {
+      const { app, kclManager } = createKclManagerTestHarness('base')
+      kclManager.path = '/cloud/project/main.kcl'
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: kclManager.path,
+        nextContent: 'base',
+        shouldSyncRust: false,
+      })
+      kclManager.updateCodeEditor(draft, {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      kclManager.adoptCloudSnapshot('/cloud/project', cloud)
+      expect(kclManager.code).toBe(cloud ?? '')
+      expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+      if (warns)
+        expect(toastMocks.error).toHaveBeenCalledExactlyOnceWith(
+          'This project changed in the cloud. The latest cloud version replaced your unsaved edits.',
+          { id: 'cloud-project-conflict' }
+        )
+      else expect(toastMocks.error).not.toHaveBeenCalled()
+      app.dispose()
+    }
+  )
 })
 
 describe('reconnect execution queue', () => {

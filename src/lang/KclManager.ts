@@ -79,6 +79,7 @@ import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
+import { isOffline } from '@src/lib/networkStatus'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -763,6 +764,7 @@ export class KclManager extends File {
   >()
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
+  readonly cloudReadOnlyCompartment = new Compartment()
   private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
@@ -1793,6 +1795,20 @@ export class KclManager extends File {
 
     return [
       baseEditorExtensions(),
+      this.cloudReadOnlyCompartment.of([]),
+      EditorState.transactionFilter.of((transaction) => {
+        const loadingContents =
+          transaction.annotation(updateOutsideEditorEvent.type) &&
+          transaction.effects.some(
+            (effect) => effect.is(requestWriteToFile) && !effect.value
+          )
+        return transaction.docChanged &&
+          this.systemDeps.project.peek()?.cloudProjectId &&
+          isOffline() &&
+          !loadingContents
+          ? []
+          : transaction
+      }),
       this.systemDeps.keymap
         ? Prec.highest(
             EditorView.domEventHandlers({
@@ -2026,6 +2042,15 @@ export class KclManager extends File {
 
   /** Discard buffers and saves based on a cloud revision that has been superseded. */
   adoptCloudSnapshot(root: string, contents: string | undefined) {
+    if (
+      this.hasUnsavedLocalChanges() &&
+      !isCodeTheSame(this.code, contents ?? '')
+    ) {
+      toast.error(
+        'This project changed in the cloud. The latest cloud version replaced your unsaved edits.',
+        { id: 'cloud-project-conflict' }
+      )
+    }
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.timeoutWriter = undefined
@@ -3806,6 +3831,13 @@ export class KclManager extends File {
       structuredClone(KclManager.defaultUpdateCodeEditorOptions),
       options
     )
+
+    if (
+      resolvedOptions.shouldWriteToDisk &&
+      this.systemDeps.project.peek()?.cloudProjectId &&
+      isOffline()
+    )
+      return
 
     // If the code hasn't changed, skip the full update to preserve cursor position
     const currentCode = this.editorState.doc.toString()

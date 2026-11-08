@@ -1,4 +1,5 @@
 import { signal } from '@preact/signals-core'
+import toast from 'react-hot-toast'
 
 import { MAX_TEXT_FILE_BYTES } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
@@ -131,6 +132,26 @@ export function adoptCloudTextSnapshot(
     ...(pendingWrite ? [pendingWrite.path] : []),
     ...(active ? [active.path] : []),
   ])
+  const discardedEdits = [...paths].some((path) => {
+    if (!belongs(path)) return false
+    const draft =
+      pendingWrite?.path === path
+        ? pendingWrite.text
+        : outgoingWrites.get(path)?.text
+    if (draft === undefined) return false
+    const submitted = new TextEncoder().encode(draft)
+    const remote = files.get(path)
+    return (
+      remote === undefined ||
+      submitted.length !== remote.length ||
+      submitted.some((byte, index) => byte !== remote[index])
+    )
+  })
+  if (discardedEdits)
+    toast.error(
+      'This project changed in the cloud. The latest cloud version replaced your unsaved edits.',
+      { id: 'cloud-project-conflict' }
+    )
   for (const path of paths)
     if (belongs(path)) {
       fileGenerations.set(path, (fileGenerations.get(path) ?? 0) + 1)

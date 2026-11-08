@@ -110,6 +110,32 @@ function setup(cloud?: CloudStorageService) {
 }
 
 describe('direct project session file actions', () => {
+  it.each([false, true])(
+    'retries cloud storage before flushing the live editor on reconnect (switch project: %s)',
+    async (switchProject) => {
+      vi.useFakeTimers()
+      const gate = Promise.withResolvers<undefined>()
+      const retry = vi.fn(() => gate.promise)
+      const s = setup({ retry } as unknown as CloudStorageService)
+      s.project.projectIORefSignal.value = {
+        ...metadata(),
+        cloudProjectId: 'remote',
+      }
+      try {
+        window.dispatchEvent(new Event('online'))
+        expect(retry).toHaveBeenCalledExactlyOnceWith('remote')
+        await vi.advanceTimersByTimeAsync(7_000)
+        expect(s.flush).not.toHaveBeenCalled()
+        if (switchProject) s.session.clearProject()
+        gate.resolve(undefined)
+        await vi.advanceTimersByTimeAsync(0)
+        expect(s.flush).toHaveBeenCalledTimes(switchProject ? 0 : 1)
+      } finally {
+        vi.useRealTimers()
+      }
+    }
+  )
+
   it('subscribes when cloud storage becomes available and applies its authoritative snapshot', async () => {
     const s = setup()
     const adopt = vi.fn()

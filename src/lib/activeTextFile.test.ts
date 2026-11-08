@@ -9,7 +9,10 @@ const mocks = vi.hoisted(() => ({
   writeFile: vi.fn<(path: string, data: Uint8Array) => Promise<void>>(),
   basename: vi.fn((path: string) => path.slice(path.lastIndexOf('/') + 1)),
   reportFileOperationError: vi.fn(),
+  toastError: vi.fn(),
 }))
+
+vi.mock('react-hot-toast', () => ({ default: { error: mocks.toastError } }))
 
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
@@ -455,6 +458,10 @@ describe('switching files', () => {
       '/proj',
       new Map([['/proj/note.md', new TextEncoder().encode('cloud truth')]])
     )
+    expect(mocks.toastError).toHaveBeenCalledExactlyOnceWith(
+      'This project changed in the cloud. The latest cloud version replaced your unsaved edits.',
+      { id: 'cloud-project-conflict' }
+    )
     await vi.advanceTimersByTimeAsync(7_000)
     gate.resolve(undefined)
     await Promise.all([first, second])
@@ -467,6 +474,27 @@ describe('switching files', () => {
     await mod.openActiveTextFile(fileOperations, '/proj/note.md')
     expect(mod.activeTextFileSignal.value).toMatchObject({
       text: 'cloud truth',
+    })
+  })
+
+  it('does not warn when a cloud conflict confirms an already accepted text save', async () => {
+    vi.useFakeTimers()
+    mocks.readFile.mockResolvedValue('old')
+    await mod.openActiveTextFile(fileOperations, '/proj/note.md')
+    mod.scheduleActiveTextFileWrite(
+      fileOperations,
+      '/proj/note.md',
+      'accepted edit'
+    )
+    mod.adoptCloudTextSnapshot(
+      '/proj',
+      new Map([['/proj/note.md', new TextEncoder().encode('accepted edit')]])
+    )
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(mocks.toastError).not.toHaveBeenCalled()
+    expect(mocks.writeFile).not.toHaveBeenCalled()
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      text: 'accepted edit',
     })
   })
 

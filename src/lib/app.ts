@@ -92,7 +92,6 @@ import {
   coreRegistryItems,
 } from '@src/registry/registry'
 import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
-import type { SnapshotFrom } from 'xstate'
 
 const appCommandsSlot = new Slot()
 const appViewportScreenshotSlot = new Slot()

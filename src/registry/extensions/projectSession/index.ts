@@ -1,5 +1,6 @@
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
+import { isOffline } from '@src/lib/networkStatus'
 import { getProjectInfo, writeProjectThumbnailFile } from '@src/lib/desktop'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -253,6 +254,23 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
 
   const cloudService = ctx.services.signal(cloudStorageService)
   let disposed = false
+  const resumeCloudSaves = async () => {
+    const current = project.peek()
+    const cloud = cloudService.peek()
+    const id = current?.projectIORefSignal.peek().cloudProjectId
+    if (disposed || isOffline() || !current || !cloud || !id) return
+    // Retry the staged snapshot first: a failed acknowledgement can leave the
+    // storage buffer equal to the editor even though saving is not confirmed.
+    await cloud.retry(id)
+    if (disposed || isOffline() || project.peek() !== current) return
+    await current.executingEditor.peek()?.flushWriteToFile()
+    if (disposed || isOffline() || project.peek() !== current) return
+    await flushActiveTextFileWrite()
+  }
+  const onOnline = () => {
+    void resumeCloudSaves().catch(reportRejection)
+  }
+  window.addEventListener('online', onOnline)
   let stopReconciliation: (() => void) | undefined
   queueMicrotask(() => {
     if (disposed) return
@@ -300,6 +318,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     providesServices: [provideService(projectSession, serviceImpl)],
     dispose: () => {
       disposed = true
+      window.removeEventListener('online', onOnline)
       stopReconciliation?.()
       for (const stop of cloudWatchers.values()) stop()
       cloudWatchers.clear()
