@@ -1301,10 +1301,12 @@ test(
     })
 
     await test.step('Check the app is back on the home view', async () => {
-      const projectsDirLink = page.getByTestId(
-        'project-directory-settings-link'
-      )
-      await expect(projectsDirLink).toBeVisible()
+      await expect(
+        page.getByRole('heading', { name: 'Project Libraries' })
+      ).toBeVisible()
+      await expect(
+        page.getByRole('region', { name: 'Projects library', exact: true })
+      ).toContainText('No projects')
     })
   }
 )
