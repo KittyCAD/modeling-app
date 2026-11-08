@@ -115,16 +115,15 @@ export class HomePageFixture {
     await this.page.waitForFunction(() =>
       window.app?.settings.actor.getSnapshot().matches('idle')
     )
-    const heading = this.page.getByRole('heading', { level: 1 })
-    await expect(heading).toBeVisible()
-    if ((await heading.innerText()) === 'Project Libraries') {
-      await this.page
-        .getByRole('link', { name: /^Open .+ library$/ })
-        .first()
-        .click()
-    }
+    const libraryLink = this.page
+      .getByRole('link', { name: /^Open .+ library$/ })
+      .first()
     const projectLink = this.page.getByTestId('project-link').first()
     const noProjects = this.page.getByTestId('projects-none')
+    await expect(
+      projectLink.or(noProjects).or(libraryLink).first()
+    ).toBeVisible()
+    if (await libraryLink.isVisible()) await libraryLink.click()
     await expect(projectLink.or(noProjects)).toBeVisible()
   }
 
