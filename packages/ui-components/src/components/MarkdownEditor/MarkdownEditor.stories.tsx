@@ -19,6 +19,7 @@ const meta = {
     layout: 'centered',
   },
   args: {
+    onChange: () => {},
     id: 'storybook-markdown-editor',
     value: sampleMarkdown,
     placeholder: 'Write a description...',
