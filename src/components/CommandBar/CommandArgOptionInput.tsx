@@ -187,7 +187,13 @@ function CommandArgOptionInput({
           >
             {filteredOptions?.map((option) => (
               <Combobox.Option
-                key={option.name}
+                key={
+                  typeof option.value === 'string' ||
+                  typeof option.value === 'number' ||
+                  typeof option.value === 'boolean'
+                    ? `${typeof option.value}:${option.value}`
+                    : option.name
+                }
                 value={option}
                 disabled={option.disabled}
                 className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
