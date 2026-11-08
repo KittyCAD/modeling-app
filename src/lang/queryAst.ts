@@ -2635,34 +2635,61 @@ export function findAllChildrenAndOrderByPlaceInCode(
     const currentId = stack.pop()!
     if (result.has(currentId)) continue
     const current = artifactGraph.get(currentId)
-    if (current?.type === 'path') {
-      pushRelatedArtifactIds(currentId, current.sweepId)
-      pushRelatedArtifactIds(currentId, current.segIds)
-      pushRelatedArtifactIds(currentId, current.compositeSolidId)
-      pushRelatedArtifactIds(currentId, current.patternIds)
-    } else if (current?.type === 'sweep') {
-      pushRelatedArtifactIds(currentId, current.surfaceIds)
-      pushRelatedArtifactIds(currentId, current.pathId)
-      pushRelatedArtifactIds(currentId, current.patternIds)
-    } else if (current?.type === 'wall' || current?.type === 'cap') {
-      pushRelatedArtifactIds(currentId, current?.pathIds)
-    } else if (current?.type === 'segment') {
-      pushRelatedArtifactIds(currentId, current.edgeCutId)
-      pushRelatedArtifactIds(currentId, current.surfaceId)
-    } else if (current?.type === 'edgeCut') {
-      pushRelatedArtifactIds(currentId, current.bodyId)
-      pushRelatedArtifactIds(currentId, current.surfaceId)
-    } else if (current?.type === 'startSketchOnPlane') {
-      pushRelatedArtifactIds(currentId, current.planeId)
-    } else if (current?.type === 'plane') {
-      pushRelatedArtifactIds(currentId, current.pathIds)
-    } else if (current?.type === 'compositeSolid') {
-      pushRelatedArtifactIds(currentId, current.compositeSolidId)
-      pushRelatedArtifactIds(currentId, current.patternIds)
-    } else if (current?.type === 'pattern') {
-      pushRelatedArtifactIds(currentId, current.copyIds)
-      pushRelatedArtifactIds(currentId, current.copyFaceIds)
-      pushRelatedArtifactIds(currentId, current.copyEdgeIds)
+    switch (current?.type) {
+      case 'path':
+        pushRelatedArtifactIds(currentId, current.sweepId)
+        pushRelatedArtifactIds(currentId, current.segIds)
+        pushRelatedArtifactIds(currentId, current.compositeSolidId)
+        pushRelatedArtifactIds(currentId, current.patternIds)
+        break
+      case 'sweep':
+        pushRelatedArtifactIds(currentId, current.surfaceIds)
+        pushRelatedArtifactIds(currentId, current.pathId)
+        pushRelatedArtifactIds(currentId, current.patternIds)
+        break
+      case 'wall':
+      case 'cap':
+        pushRelatedArtifactIds(currentId, current.pathIds)
+        break
+      case 'segment':
+        pushRelatedArtifactIds(currentId, current.edgeCutId)
+        pushRelatedArtifactIds(currentId, current.surfaceId)
+        break
+      case 'edgeCut':
+        pushRelatedArtifactIds(currentId, current.bodyId)
+        pushRelatedArtifactIds(currentId, current.surfaceId)
+        break
+      case 'startSketchOnPlane':
+        pushRelatedArtifactIds(currentId, current.planeId)
+        break
+      case 'plane':
+        pushRelatedArtifactIds(currentId, current.pathIds)
+        break
+      case 'compositeSolid':
+        pushRelatedArtifactIds(currentId, current.compositeSolidId)
+        pushRelatedArtifactIds(currentId, current.patternIds)
+        break
+      case 'pattern':
+        pushRelatedArtifactIds(currentId, current.copyIds)
+        pushRelatedArtifactIds(currentId, current.copyFaceIds)
+        pushRelatedArtifactIds(currentId, current.copyEdgeIds)
+        break
+      // These artifacts have no related IDs followed by this traversal.
+      case 'solid2d':
+      case 'primitiveFace':
+      case 'primitiveEdge':
+      case 'planeOfFace':
+      case 'startSketchOnFace':
+      case 'sketchBlock':
+      case 'sketchBlockConstraint':
+      case 'sweepEdge':
+      case 'edgeCutEdge':
+      case 'helix':
+      case 'importedGeometry':
+      case 'gdtAnnotation':
+      case 'namedView':
+      case undefined:
+        break
     }
     result.add(currentId)
   }
