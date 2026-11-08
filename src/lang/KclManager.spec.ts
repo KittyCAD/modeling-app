@@ -553,9 +553,14 @@ describe('KclManager settings ownership', () => {
 })
 
 describe('KclManager live operation updates', () => {
-  it.each([false, true])(
-    'updates a cloud buffer without relying on its watcher, preserving unsaved edits: %s',
-    async (dirty) => {
+  it.each([
+    { dirty: false, connected: false },
+    { dirty: true, connected: false },
+    { dirty: false, connected: true },
+    { dirty: true, connected: true },
+  ])(
+    'refreshes cloud contents without rendering through a disconnected engine: %j',
+    async ({ dirty, connected }) => {
       const { app } = createKclManagerTestHarness()
       const metadata = createProjectForTest('/project')
       metadata.cloudProjectId = 'remote'
@@ -578,6 +583,9 @@ describe('KclManager live operation updates', () => {
           false
         )
         project.executingPath = editor.path
+        editor.engineCommandManager.connection = {
+          connected,
+        } as typeof editor.engineCommandManager.connection
         if (dirty)
           editor.updateCodeEditor('local draft', {
             shouldExecute: false,
@@ -609,9 +617,11 @@ describe('KclManager live operation updates', () => {
           ])
         )
         expect(editor.code).toBe(dirty ? 'local draft' : 'downloaded source')
-        expect(execute).toHaveBeenCalledWith(editor.code, {
-          updateThumbnail: false,
-        })
+        if (connected)
+          expect(execute).toHaveBeenCalledWith(editor.code, {
+            updateThumbnail: false,
+          })
+        else expect(execute).not.toHaveBeenCalled()
         expect(write).not.toHaveBeenCalled()
       } finally {
         execution.resolve(undefined)
