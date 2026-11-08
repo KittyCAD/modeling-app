@@ -143,6 +143,7 @@ ${treatment}001 = ${treatment}(
         kind === 'annotation' ? 'gdt::annotation(' : 'gdt::profileSurface('
       )
       expect(output).toContain('faces = [')
+      expect(output).toContain(`tag = $${treatment}Face01`)
       await getAstAndArtifactGraph(output, world.instance, world.kclManager)
       expect(world.kclManager.errors).toEqual([])
     }
@@ -825,17 +826,23 @@ sketch001 = sketch(on = faceOf(chamfer001, face = chamfer001.faces.chamferFace01
     )
     const unsupportedCut = structuredClone(cut)
     delete unsupportedCut.sourceEdgeCutId
+    // Older graphs without runtime bindings still need defining-feature lineage
+    // before they can materialize a missing tag.
+    const legacyGraph: ArtifactGraph = new Map(artifactGraph)
+    legacyGraph.set(unsupportedCut.id, unsupportedCut)
     expect(
       sketchBlockOnExtrudedFace(
         ast,
         { ...selection, artifact: unsupportedCut },
         cut.codeRef.pathToNode,
         cut.codeRef.pathToNode,
-        artifactGraph,
+        legacyGraph,
         world.instance
       )
     ).toEqual(
-      new Error('Cannot create a sketch on this copied treatment face.')
+      new Error(
+        'Failed to resolve solid and face expressions for selected face.'
+      )
     )
     if (treatment !== 'chamfer') return
     for (const faceSelection of [originalSelection, selection]) {
@@ -1049,6 +1056,12 @@ ${setup ? `gdt::annotation(faces = [${body}.faces.seedSideChamfer], annotation =
       throw new Error('Missing copied body')
     const bodyId =
       owner.type === 'sweep' ? owner.id : owner.copyIds[copyIndex - 1]
+    const copyValue = world.kclManager.variables.copy
+    const selectedValue =
+      copyValue?.type === 'HomArray' ? copyValue.value[copyIndex] : copyValue
+    if (selectedValue?.type !== 'Solid')
+      throw new Error('Missing runtime copy body')
+    const physicalBodyId = selectedValue.value.id
     const wallCommand = getCommands().find(
       (command) =>
         command.type === 'new_annotation' &&
@@ -1131,7 +1144,7 @@ ${setup ? `gdt::annotation(faces = [${body}.faces.seedSideChamfer], annotation =
       )
       expect(bodies?.graphSelections[0].entityRef).toEqual({
         type: 'solid3d',
-        solid3d_id: bodyId,
+        solid3d_id: physicalBodyId,
       })
       treatmentFaceIds.set(`Copied ${treatment}`, face.id)
       const note = await modelingCommandCodemods['GDT Annotation'].run({
@@ -1434,7 +1447,9 @@ ${
           ? 'copies[2]'
           : selectionKind === 'whole-pattern'
             ? 'copies'
-            : 'plateWithHole'
+            : beforeBoolean
+              ? 'plateWithHole'
+              : `${treatment}001`
     expect(output).toContain(`translate(${expectedVariable}, x = 5mm)`)
     const sent = vi.spyOn(world.engineCommandManager, 'sendCommand')
     await getAstAndArtifactGraph(output, world.instance, world.kclManager)
@@ -1584,7 +1599,7 @@ it.each([0, 1, 2])(
       })
 
       expect(refs[0]?.code).toBe(
-        `${type}Id(${index === 0 ? 'body' : `copies[${index}]`}, index = 0)`
+        `${type}Id(${index === 0 ? 'fillet001' : `copies[${index}]`}, index = 0)`
       )
       await getAstAndArtifactGraph(
         code +

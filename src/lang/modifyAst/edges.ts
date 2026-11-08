@@ -745,7 +745,7 @@ export function createEdgeRefObjectExpression(
   fallbackCodeRef?: Pick<CodeRef, 'range' | 'pathToNode'>,
   tagsBaseExpr?: Expr | null,
   owningBodyExpr?: Expr | null,
-  options?: { requireEveryFace?: boolean }
+  options?: { requireEveryFace?: boolean; nodeToEdit?: PathToNode }
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
   const sideFaceExprs: Expr[] = []
   // Solid2D tagging mutates its AST argument. The popover path must not tag
@@ -993,7 +993,8 @@ export function createEdgeRefObjectExpression(
           codeRef: codeRefs[0],
         },
         artifactGraph,
-        wasmInstance
+        wasmInstance,
+        { nodeToEdit: options?.nodeToEdit }
       )
       if (err(tagResult)) {
         return new Error(
@@ -1029,7 +1030,8 @@ export function createEdgeRefObjectExpression(
           codeRef: codeRefs[0],
         },
         artifactGraph,
-        wasmInstance
+        wasmInstance,
+        { nodeToEdit: options?.nodeToEdit }
       )
       if (err(tagResult)) {
         continue
@@ -2152,7 +2154,12 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
       payload,
       wasmInstance,
       modifiedAst,
-      artifactGraph
+      artifactGraph,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      { nodeToEdit: path }
     )
     if (err(result)) continue
     modifiedAst = result.modifiedAst
@@ -2197,7 +2204,12 @@ function refactorExtrudeEdgeArgumentsInPlace(
           item,
           wasmInstance,
           nextAst,
-          artifactGraph
+          artifactGraph,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          { nodeToEdit: pathToCall }
         )
         if (err(result)) {
           failedToCreateEdgeRef = true
@@ -2281,7 +2293,12 @@ function refactorGdtEdgesToEdgeSpecifiersInPlace(
         payload,
         wasmInstance,
         nextAst,
-        artifactGraph
+        artifactGraph,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        { nodeToEdit: path }
       )
       if (err(result)) {
         failedToCreateEdgeRef = true
@@ -2342,7 +2359,12 @@ function refactorGdtDistanceEndpointsToEdgeSpecifiersInPlace(
         endpoint.payload,
         wasmInstance,
         nextAst,
-        artifactGraph
+        artifactGraph,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        { nodeToEdit: path }
       )
       if (err(result)) {
         failedToCreateEndpointRef = true
@@ -2393,7 +2415,12 @@ function refactorBoundedEdgeEdgeArgToEdgeSpecifierInPlace(
       payload,
       wasmInstance,
       modifiedAst,
-      artifactGraph
+      artifactGraph,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      { nodeToEdit: path }
     )
     if (err(result)) continue
 
@@ -2502,7 +2529,8 @@ export function refactorZ0006Unified(
         undefined,
         undefined,
         tagsBaseExpr,
-        owningBodyExpr
+        owningBodyExpr,
+        { nodeToEdit: path }
       )
       if (err(result)) {
         failedToCreateEdgeRef = true
@@ -2758,7 +2786,8 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
           undefined,
           undefined,
           undefined,
-          vars.exprs[0]
+          vars.exprs[0],
+          { nodeToEdit }
         )
         if (err(result)) {
           console.warn('Failed to create edgeRef expression:', result)
@@ -2812,7 +2841,12 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
               payload,
               wasmInstance,
               modifiedAst,
-              artifactGraph
+              artifactGraph,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              { nodeToEdit }
             )
             if (err(result)) {
               console.warn('Failed to create edgeRef expression:', result)
@@ -2840,7 +2874,12 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
             payload,
             wasmInstance,
             modifiedAst,
-            artifactGraph
+            artifactGraph,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            { nodeToEdit }
           )
           if (err(result)) {
             console.warn('Failed to create edgeRef expression:', result)

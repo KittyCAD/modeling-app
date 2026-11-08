@@ -1302,6 +1302,11 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub(crate) pattern_source_artifact_id: Option<ArtifactId>,
+    /// Qualified tags have been remapped independently of legacy source surfaces.
+    /// Unlike pattern provenance, this remains true after a Boolean replacement.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) tags_are_instance_local: bool,
     /// Body type known from the KCL operation that created this value.
     ///
     /// Mock execution cannot query the engine for this, so retain it when it

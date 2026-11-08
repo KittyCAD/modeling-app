@@ -1,3 +1,4 @@
+import { resolveNamedFaceReference } from '@src/lang/std/selectionReferences'
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type {
@@ -760,6 +761,14 @@ function createExistingFaceReferenceExpr(
     return null
   }
 
+  const reference = resolveNamedFaceReference(
+    primitiveSelection.entityId,
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance
+  )
+  if (reference instanceof Error) return null
+  if (reference) return reference.faceExpr
   const graphSelection = primitiveSelection.graphSelection
   const artifact = graphSelection?.artifact
   if (
@@ -3698,6 +3707,30 @@ export async function selectionBodyFace(
     return
   }
 
+  const reference = resolveNamedFaceReference(
+    planeOrFaceId,
+    artifactGraph,
+    ast,
+    systemDeps.wasmInstance
+  )
+  if (reference instanceof Error) return Promise.reject(reference)
+  if (reference) {
+    const details =
+      await systemDeps.sceneEntitiesManager.getFaceDetails(planeOrFaceId)
+    if (!details?.origin || !details.z_axis || !details.y_axis) return
+    return {
+      type: 'extrudeFace',
+      zAxis: [details.z_axis.x, details.z_axis.y, details.z_axis.z],
+      yAxis: [details.y_axis.x, details.y_axis.y, details.y_axis.z],
+      position: [details.origin.x, details.origin.y, details.origin.z].map(
+        (n) => n / sceneInfra.baseUnitMultiplier
+      ) as [number, number, number],
+      sketchPathToNode: reference.path,
+      extrudePathToNode: reference.path,
+      faceInfo: { type: 'wall' },
+      faceId: planeOrFaceId,
+    }
+  }
   const instance = artifactGraph.get(planeOrFaceId)
   const source =
     instance?.type === 'primitiveFace' && instance.sourceFaceId

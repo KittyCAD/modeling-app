@@ -1739,7 +1739,7 @@ extrude001 = extrude(profile001, length = 5)
       )
       expect(newCode).toContain(
         `extrude001 = extrude(profile001, length = 5)
-sketch002 = sketch(on = faceOf(extrude001, face = seg01)) {
+sketch002 = sketch(on = faceOf(extrude001, face = extrude001.sketch.tags.seg01)) {
 }`
       )
 

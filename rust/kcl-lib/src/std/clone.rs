@@ -297,6 +297,7 @@ pub(super) async fn fix_pattern_face_tags(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<()> {
+    solid.tags_are_instance_local = true;
     if args.ctx.no_engine_commands().await {
         return Ok(());
     }

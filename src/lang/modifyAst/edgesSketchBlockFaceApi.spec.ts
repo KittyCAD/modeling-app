@@ -47,12 +47,10 @@ cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
 extrude001 = extrude(cutRegion, length = 5)
 solid001 = subtract(myExtrude, tools = extrude001)`
 
-function getRegionTagName(expr: Expr): string | null {
+function getFaceTagName(expr: Expr): string | null {
   if (
     expr.type !== 'MemberExpression' ||
     expr.object.type !== 'MemberExpression' ||
-    expr.object.object.type !== 'Name' ||
-    expr.object.object.name.name !== 'baseRegion' ||
     expr.object.property.type !== 'Name' ||
     expr.object.property.name.name !== 'tags' ||
     expr.property.type !== 'Name'
@@ -84,7 +82,7 @@ describeWithEngine('edges sketch block face api regression', () => {
     })
   })
 
-  it('emits baseRegion.tags.* sideFaces for sketch block boolean fillet codemod', async () => {
+  it('emits body-qualified sketch tags in sideFaces for sketch block boolean fillet codemod', async () => {
     const { artifactGraph, ast } = await getAstAndArtifactGraph(
       sketchBlockBooleanFilletFaceApi,
       instanceInThisFile,
@@ -111,7 +109,7 @@ describeWithEngine('edges sketch block face api regression', () => {
         instanceInThisFile
       )
       if (err(tagResult)) continue
-      const tagName = getRegionTagName(tagResult.exprs[0])
+      const tagName = getFaceTagName(tagResult.exprs[0])
       if (tagName === 'yoyo' || tagName === 'hi') {
         taggedWalls.set(tagName, wall)
       }
@@ -156,7 +154,7 @@ describeWithEngine('edges sketch block face api regression', () => {
     const newCode = recast(result.modifiedAst, instanceInThisFile)
     if (err(newCode)) throw newCode
     expect(newCode.replace(/\s+/g, ' ')).toContain(
-      'edges = [ { sideFaces = [ baseRegion.tags.yoyo, baseRegion.tags.hi ] } ]'
+      'edges = [ { sideFaces = [ solid001.sketch.tags.yoyo, solid001.sketch.tags.hi ] } ]'
     )
     await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
   }, 30_000)

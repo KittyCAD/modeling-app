@@ -2353,3 +2353,69 @@ fn extrusion_queries_preserve_copied_face_ownership() {
         Some(Artifact::Wall(_))
     ));
 }
+
+const BODY_BINDING_FIXTURE: &str = r#"@settings(kclVersion = 3.0)
+fn make() {
+  profile = sketch(on = XY) {
+    bottom = line(start = [0mm, 0mm], end = [10mm, 0mm])
+    right = line(start = [10mm, 0mm], end = [10mm, 10mm])
+    top = line(start = [10mm, 10mm], end = [0mm, 10mm])
+    left = line(start = [0mm, 10mm], end = [0mm, 0mm])
+  }
+  body = extrude(region(point = [5mm, 5mm], sketch = profile), length = 10mm, tagEnd = $endCap)
+  return body
+}
+"#;
+
+#[tokio::test]
+async fn body_bindings_use_public_names_and_array_outputs() {
+    let code = format!("{BODY_BINDING_FIXTURE}\noutputs = [make(), make()]\ncaller = outputs[1]");
+    let result = crate::execution::parse_execute(&code).await.unwrap();
+    let outcome = result
+        .exec_state
+        .into_exec_outcome(result.mem_env, &result.exec_ctxt)
+        .await
+        .unwrap();
+    let bindings = &outcome.artifact_graph.body_bindings;
+    assert!(bindings.iter().any(|b| b.variable == "outputs" && b.indices == [0]));
+    let second = bindings
+        .iter()
+        .find(|b| b.variable == "outputs" && b.indices == [1])
+        .unwrap();
+    let caller = bindings.iter().find(|b| b.variable == "caller").unwrap();
+    assert_eq!(second.body_id, caller.body_id);
+    assert!(bindings.iter().all(|b| b.variable != "body" && b.variable != "profile"));
+    assert!(caller.faces.iter().any(|f| f.tag == "endCap" && !f.sketch));
+    // The untagged start cap still has an owner, so tag materialization can
+    // resolve its body independently from the existence of a named selector.
+    assert!(caller.face_ids.len() > caller.faces.len());
+}
+
+#[tokio::test]
+async fn body_bindings_exclude_consumed_values() {
+    let code = format!(
+        "{BODY_BINDING_FIXTURE}\nsource = make()\ntool = clone(source) |> translate(x = 2mm)\noutput = subtract(source, tools = tool)"
+    );
+    let result = crate::execution::parse_execute(&code).await.unwrap();
+    let outcome = result
+        .exec_state
+        .into_exec_outcome(result.mem_env, &result.exec_ctxt)
+        .await
+        .unwrap();
+    assert!(
+        outcome
+            .artifact_graph
+            .body_bindings
+            .iter()
+            .any(|b| b.variable == "output")
+    );
+    assert!(
+        outcome
+            .artifact_graph
+            .body_bindings
+            .iter()
+            .all(|b| b.variable != "source" && b.variable != "tool"),
+        "{:?}",
+        outcome.artifact_graph.body_bindings
+    );
+}

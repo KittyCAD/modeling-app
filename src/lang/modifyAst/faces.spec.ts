@@ -17,7 +17,12 @@ import {
   getEdgeCutMeta,
   resolveToCodeRef,
 } from '@src/lang/queryAst'
-import { type PlaneArtifact, getAllOperations, recast } from '@src/lang/wasm'
+import {
+  type PlaneArtifact,
+  getAllOperations,
+  recast,
+  assertParse,
+} from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { bracket } from '@src/lib/exampleKcl'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -214,7 +219,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(cylinderWithEndTag)
       expect(newCode).toContain(
-        `shell001 = shell(extrude001, faces = capEnd001, thickness = 1)`
+        recast(
+          assertParse(
+            `shell001 = shell(extrude001, faces = extrude001.faces.capEnd001, thickness = 1)`,
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -261,7 +272,7 @@ profile001 = startProfile(sketch001, at = [0, 2358.24])
   |> line(endAbsolute = [0, -3434.42])
 p = mirror2d([profile001], axis = Y)
 extrude(p, length = 1000, tagEnd = $capEnd001)
-  |> shell(faces = capEnd001, thickness = 1)`)
+  |> shell(faces = %.faces.capEnd001, thickness = 1)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -324,7 +335,14 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${boxWithTwoTags}
-shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
+shell001 = shell(
+  extrude001,
+  faces = [
+    extrude001.sketch.tags.seg01,
+    extrude001.sketch.tags.seg02
+  ],
+  thickness = 1,
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -375,7 +393,13 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
       if (err(newCode)) throw newCode
       expect(newCode).toContain('face001 = faceId(extrude001, index = 2)')
       expect(newCode).toContain(
-        'shell001 = shell(extrude001, faces = [seg01, face001], thickness = 1)'
+        recast(
+          assertParse(
+            'shell001 = shell(extrude001, faces = [extrude001.sketch.tags.seg01, face001], thickness = 1)',
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
       )
     })
 
@@ -437,7 +461,19 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(multiSolidsShell)
+      expect(newCode).toContain(
+        multiSolidsShell.replace(
+          'shell001 = shell([thing1, thing2], faces = [capEnd001, capEnd002], thickness = 5)',
+          `shell001 = shell(
+  thing2,
+  faces = [
+    thing1.faces.capEnd001,
+    thing2.faces.capEnd002
+  ],
+  thickness = 5,
+)`
+        )
+      )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -500,7 +536,7 @@ profile002 = startProfile(sketch002, at = [-108.39, 85.39])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = 200)
-shell001 = shell(extrude002, faces = capEnd001, thickness = 0.1)`)
+shell001 = shell(extrude002, faces = extrude001.faces.capEnd001, thickness = 0.1)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
@@ -525,7 +561,7 @@ shell001 = shell(extrude002, faces = capEnd001, thickness = 0.1)`)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${cylinderWithEndTag}
-surface001 = deleteFace(extrude001, faces = capEnd001)`)
+surface001 = deleteFace(extrude001, faces = extrude001.faces.capEnd001)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -593,7 +629,13 @@ solid001 = subtract(extrude001, tools = extrude002)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `surface001 = deleteFace(solid001, faces = capEnd001)`
+        recast(
+          assertParse(
+            `surface001 = deleteFace(solid001, faces = solid001.faces.capEnd001)`,
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -678,7 +720,13 @@ solid001 = subtract(extrude001, tools = extrude002)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `surface001 = deleteFace(solid001, faces = region001.tags.line1)`
+        recast(
+          assertParse(
+            `surface001 = deleteFace(solid001, faces = solid001.sketch.tags.line1)`,
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -735,7 +783,13 @@ extrude001 = extrude(region001, length = 5)`
         `extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)`
       )
       expect(newCode).toContain(
-        `surface001 = deleteFace(extrude001, faces = [region001.tags.line4, capEnd001])`
+        recast(
+          assertParse(
+            `surface001 = deleteFace(extrude001, faces = [extrude001.sketch.tags.line4, extrude001.faces.capEnd001])`,
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -790,7 +844,13 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`tag = $chamferFace01`)
       expect(newCode).toContain(
-        `surface001 = deleteFace(chamfer001, faces = chamferFace01)`
+        recast(
+          assertParse(
+            `surface001 = deleteFace(chamfer001, faces = chamfer001.faces.chamferFace01)`,
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -875,7 +935,13 @@ fillet001 = fillet(
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `${bracket}surface001 = deleteFace(finalBracket, faces = bracketProfileRegion.tags.line5)`
+        recast(
+          assertParse(
+            `${bracket}surface001 = deleteFace(finalBracket, faces = finalBracket.sketch.tags.line5)`,
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     }, 15_000)
@@ -920,8 +986,14 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${shell}
-face001 = faceId(extrude001, index = 6)
-surface001 = deleteFace(extrude001, faces = [rectangleSegmentA001, face001])`)
+face001 = faceId(shell001, index = 6)
+surface001 = deleteFace(
+  shell001,
+  faces = [
+    extrude001.sketch.tags.rectangleSegmentA001,
+    face001
+  ],
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -999,7 +1071,7 @@ loft002 = loft([profile001, profile002], tagStart = $capStart001)
 
 surface001 = deleteFace(loft002, faces = seg02)
 surface002 = deleteFace(loft002, faces = seg03)
-surface003 = deleteFace(loft002, faces = capStart001)`)
+surface003 = deleteFace(surface002, faces = loft002.faces.capStart001)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
@@ -1060,9 +1132,17 @@ surface003 = deleteFace(loft002, faces = capStart001)`)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
-      expect(newCode).toBe(`${cylinderWithEndTag}
-${simpleHole}
-`)
+      expect(newCode).toBe(
+        recast(
+          assertParse(
+            `${cylinderWithEndTag}
+${simpleHole.replace('face = capEnd001', 'face = extrude001.faces.capEnd001')}
+`,
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
+      )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -1105,16 +1185,22 @@ ${simpleHole}`,
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `${cylinderWithEndTag}
+        recast(
+          assertParse(
+            `${cylinderWithEndTag}
 ${simpleHole}
 hole002 = hole::hole(
   hole001,
-  face = capEnd001,
+  face = hole001.faces.capEnd001,
   cutAt = [3, 3],
   holeBottom = hole::flat(),
   holeBody = hole::blind(depth = 3, diameter = 2),
   holeType = hole::simple(),
-)`
+)`,
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -1168,14 +1254,20 @@ hole002 = hole::hole(
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(cylinderWithEndTag)
       expect(newCode).toContain(
-        `hole001 = hole::hole(
+        recast(
+          assertParse(
+            `hole001 = hole::hole(
   extrude001,
-  face = capEnd001,
+  face = extrude001.faces.capEnd001,
   cutAt = [0, 0],
   holeBottom = hole::flat(),
   holeBody = hole::blind(depth = 5, diameter = 1),
   holeType = hole::counterbore(depth = 1, diameter = 2),
-)`
+)`,
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -1842,7 +1934,7 @@ plane002 = offsetPlane(plane001, offset = 3)`)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${cylinderWithEndTag}
-plane001 = offsetPlane(planeOf(extrude001, face = capEnd001), offset = 2)`)
+plane001 = offsetPlane(planeOf(extrude001, face = extrude001.faces.capEnd001), offset = 2)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
 
       const newOffset = (await stringToKclExpression(
@@ -1865,7 +1957,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = capEnd001), offset = 2)`)
       const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
       expect(newCode2).not.toContain(`offset = 2`)
       expect(newCode2).toContain(`${cylinderWithEndTag}
-plane001 = offsetPlane(planeOf(extrude001, face = capEnd001), offset = 3)`)
+plane001 = offsetPlane(planeOf(extrude001, face = extrude001.faces.capEnd001), offset = 3)`)
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })
 
@@ -1894,7 +1986,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = capEnd001), offset = 3)`)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${boxWithOneTag}
-plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
+plane001 = offsetPlane(planeOf(extrude001, face = extrude001.sketch.tags.seg01), offset = 10)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
 
       const newOffset = (await stringToKclExpression(
@@ -1917,7 +2009,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
       const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
       expect(newCode2).not.toContain(`offset = 10`)
       expect(newCode2).toContain(`${boxWithOneTag}
-plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
+plane001 = offsetPlane(planeOf(extrude001, face = extrude001.sketch.tags.seg01), offset = 20)`)
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })
 
@@ -1948,7 +2040,12 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(boxWithOneTagAndChamferAndPlane)
+      expect(newCode).toContain(
+        boxWithOneTagAndChamferAndPlane.replace(
+          'face = chamferFace01',
+          'face = extrude001.faces.chamferFace01'
+        )
+      )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
 
       const newOffset = (await stringToKclExpression(
@@ -1971,7 +2068,13 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
       expect(newCode2).not.toContain(`offset = 1`)
       expect(newCode2).toContain(
-        `plane001 = offsetPlane(planeOf(extrude001, face = chamferFace01), offset = 2)`
+        recast(
+          assertParse(
+            `plane001 = offsetPlane(planeOf(extrude001, face = extrude001.faces.chamferFace01), offset = 2)`,
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
       )
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })

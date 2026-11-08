@@ -140,7 +140,7 @@ pub(super) fn record_consumed_solids(
     let returned_solid_keys = output_solids.iter().map(consumed_solid_key).collect::<Vec<_>>();
     for solid in solids {
         let info = ConsumedSolidInfo::new(operation, returned_solid_keys.clone());
-        exec_state.mark_solid_consumed(consumed_solid_key(solid), info.clone());
+        exec_state.mark_solid_consumed(consumed_solid_key(solid), solid.artifact_id, info.clone());
         exec_state.mark_solid_id_consumed(solid.id, info);
     }
 }
@@ -223,6 +223,7 @@ mod tests {
             topology_id: id,
             tag_update_source_artifact_id: None,
             pattern_source_artifact_id: None,
+            tags_are_instance_local: false,
             best_guess_body_type: None,
             artifact_id: ArtifactId::new(id),
             value: vec![],

@@ -1,3 +1,4 @@
+import { resolveFaceBodySelection } from '@src/lang/std/selectionReferences'
 import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
 import {
   getArtifactFromRange,
@@ -67,6 +68,16 @@ export function coerceSelectionsToBody(
   const seenBodyIds = new Set<string>()
 
   for (const selV2 of selections.graphSelections) {
+    const body = resolveFaceBodySelection(selV2, artifactGraph)
+    if (body instanceof Error) return body
+    if (body) {
+      if (!seenBodyIds.has(body.engineEntityId)) {
+        seenBodyIds.add(body.engineEntityId)
+        passthroughSelections.push(body)
+      }
+      continue
+    }
+
     const topologyFallback = getEngineTopologyFallbackNormalized(selV2)
     if (topologyFallback) {
       const bodySelection = getBodySelectionFromPrimitiveParentEntityId(

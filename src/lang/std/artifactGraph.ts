@@ -1,3 +1,4 @@
+import { resolveFaceBodySelection } from '@src/lang/std/selectionReferences'
 import type { OkWebSocketResponseData, WebSocketRequest } from '@kittycad/lib'
 
 import type {
@@ -1298,6 +1299,16 @@ export function coerceSelectionsToBody(
   const seenBodyIds = new Set<string>()
 
   for (const selection of selections.graphSelections) {
+    const body = resolveFaceBodySelection(selection, artifactGraph)
+    if (body instanceof Error) return body
+    if (body) {
+      if (!seenBodyIds.has(body.engineEntityId)) {
+        seenBodyIds.add(body.engineEntityId)
+        bodySelections.push(body)
+      }
+      continue
+    }
+
     if (!selection.artifact) {
       if (
         selection.codeRef &&

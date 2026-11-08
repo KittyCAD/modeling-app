@@ -1126,7 +1126,8 @@ export function getFacesExprsFromSelection(
   ast: Node<Program>,
   faces: Selections,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode
 ) {
   let modifiedAst = ast
   const exprs = faces.graphSelections.flatMap((v2Sel) => {
@@ -1146,7 +1147,8 @@ export function getFacesExprsFromSelection(
         modifiedAst,
         { ...resolved, artifact },
         artifactGraph,
-        wasmInstance
+        wasmInstance,
+        { nodeToEdit }
       )
       if (err(result)) {
         console.warn('Failed to generate face reference', result)
@@ -1419,7 +1421,8 @@ export function buildSolidsAndFacesExprs(
     modifiedAst,
     faces,
     artifactGraph,
-    wasmInstance
+    wasmInstance,
+    nodeToEdit
   )
   modifiedAst = taggedFacesResult.modifiedAst
   const taggedFacesExprs = taggedFacesResult.exprs
@@ -1511,6 +1514,7 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
       undefined,
       {
         artifactTypeFilter: ['sweep', 'compositeSolid'],
+        lastChildLookup: true,
       }
     )
     if (err(bodyVars)) {

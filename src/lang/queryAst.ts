@@ -1,3 +1,7 @@
+import {
+  resolveBodyReference,
+  resolveFaceOwner,
+} from '@src/lang/std/selectionReferences'
 import type { Block } from '@rust/kcl-lib/bindings/Block'
 import type { ElseIf } from '@rust/kcl-lib/bindings/ElseIf'
 import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
@@ -1408,7 +1412,63 @@ export function getVariableExprsFromSelection(
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
+  const bodyReferenceAllowed =
+    !preferDirectSegment &&
+    (!artifactTypeFilter ||
+      artifactTypeFilter.includes('sweep') ||
+      artifactTypeFilter.includes('compositeSolid'))
   for (const s of selection.graphSelections) {
+    const faceId =
+      s.entityRef?.type === 'face' ? s.entityRef.face_id : s.artifact?.id
+    const bodyId =
+      s.entityRef?.type === 'solid3d'
+        ? s.entityRef.solid3d_id
+        : (s.engineEntityId ?? s.artifact?.id)
+    const faceArtifact = faceId ? artifactGraph.get(faceId) : undefined
+    const faceOwner = faceArtifact ? getFaceBodyId(faceArtifact) : undefined
+    const runtimeOwner =
+      faceId && bodyReferenceAllowed
+        ? resolveFaceOwner(faceId, artifactGraph)
+        : undefined
+    if (runtimeOwner instanceof Error) return runtimeOwner
+    const publicBody =
+      (runtimeOwner
+        ? resolveBodyReference(
+            runtimeOwner.bodyId,
+            artifactGraph,
+            ast,
+            wasmInstance,
+            nodeToEdit
+          )
+        : undefined) ??
+      (faceOwner && bodyReferenceAllowed
+        ? resolveBodyReference(
+            faceOwner,
+            artifactGraph,
+            ast,
+            wasmInstance,
+            nodeToEdit
+          )
+        : undefined) ??
+      (bodyReferenceAllowed && lastChildLookup && !preservePathInput && bodyId
+        ? resolveBodyReference(
+            bodyId,
+            artifactGraph,
+            ast,
+            wasmInstance,
+            nodeToEdit
+          )
+        : undefined)
+    if (publicBody instanceof Error) return publicBody
+    if (publicBody) {
+      const key = splitOutputExprKey(publicBody)
+      if (!pushedNames[key]) {
+        exprs.push(publicBody)
+        pushedNames[key] = true
+      }
+      continue
+    }
+
     const resolvedForSegment = resolveToCodeRef(s, artifactGraph)
     const patternExpr = getPatternExprFromSelection(
       s,

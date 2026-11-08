@@ -66,7 +66,7 @@ command: ModelingCmd,
  */
 omitFromGraph?: boolean, };
 
-export type ArtifactGraph = { map: { [key in ArtifactId]: Artifact }, itemCount: number, };
+export type ArtifactGraph = { bodyReplacements?: Array<BodyReplacement>, bodyBindings?: Array<BodyBinding>, map: { [key in ArtifactId]: Artifact }, itemCount: number, };
 
 /**
  * API-owned camera orientation used by named-view artifacts, equivalent to
@@ -105,6 +105,21 @@ export type ArtifactSweepMethod = "new" | "merge";
  * except those the view's hide list names; `Hide` means the reverse.
  */
 export type ArtifactVisibility = "show" | "hide";
+
+/**
+ * A caller-visible body binding and its instance-qualified named faces.
+ * Source feature code refs remain on artifacts; these paths describe use sites.
+ */
+export type BodyBinding = { bodyId: ArtifactId, artifactId: ArtifactId, variable: string, indices: Array<number>, 
+/**
+ * Ownership is independent of whether a face already has a public tag.
+ */
+faceIds: Array<ArtifactId>, faces: Array<FaceBinding>, };
+
+/**
+ * An operation can replace one body with zero, one, or several outputs.
+ */
+export type BodyReplacement = { sourceId: ArtifactId, sourceArtifactId: ArtifactId, outputIds: Array<ArtifactId>, };
 
 export type Cap = { id: ArtifactId, subType: CapSubType, edgeCutEdgeIds: Array<ArtifactId>, sweepId: ArtifactId, pathIds: Array<ArtifactId>, 
 /**
@@ -169,6 +184,12 @@ sourceSelectorIndex?: number | null, consumedEdgeId?: ArtifactId | null, edgeIds
 export type EdgeCutEdge = { id: ArtifactId, edgeCutId: ArtifactId, surfaceId: ArtifactId, };
 
 export type EdgeCutSubType = "fillet" | "chamfer" | "custom";
+
+export type FaceBinding = { id: ArtifactId, tag: string, 
+/**
+ * True for sketch-derived walls; false for body-created faces.
+ */
+sketch: boolean, };
 
 export type GdtAnnotationArtifact = { id: ArtifactId, codeRef: CodeRef, consumed: boolean, };
 

@@ -456,6 +456,173 @@ fn code_ref_for_range(
     )
 }
 
+fn consumption_events(
+    root: &crate::execution::state::ModuleArtifactState,
+    modules: &ModuleInfoMap,
+) -> IndexMap<crate::execution::ConsumedSolidKey, crate::execution::state::BodyReplacementEvent> {
+    let mut events = root.body_replacements.clone();
+    for module in modules.values() {
+        if let crate::modules::ModuleRepr::Kcl(_, Some(outcome)) = &module.repr {
+            events.extend(outcome.artifacts.body_replacements.clone());
+        }
+    }
+    events
+}
+
+pub(super) fn body_replacements(
+    root: &crate::execution::state::ModuleArtifactState,
+    modules: &ModuleInfoMap,
+) -> Vec<BodyReplacement> {
+    consumption_events(root, modules)
+        .into_iter()
+        .map(|(source, outputs)| BodyReplacement {
+            source_id: source.engine_id().into(),
+            source_artifact_id: outputs.source_artifact_id,
+            output_ids: outputs.outputs.into_iter().map(|id| id.engine_id().into()).collect(),
+        })
+        .collect()
+}
+
+/// Build references from root-module runtime values, never from a feature's source scope.
+/// Arrays retain their output indices, and aliases retain their public caller names.
+pub(super) async fn body_bindings(
+    variables: &IndexMap<String, crate::execution::KclValue>,
+    state: &crate::execution::ExecState,
+    ctx: &crate::ExecutorContext,
+) -> Vec<BodyBinding> {
+    use crate::execution::ConsumedSolidKey;
+    use crate::execution::KclValue;
+    fn collect(
+        value: &KclValue,
+        variable: &str,
+        indices: &mut Vec<usize>,
+        events: &IndexMap<ConsumedSolidKey, crate::execution::state::BodyReplacementEvent>,
+        out: &mut Vec<BodyBinding>,
+    ) {
+        match value {
+            KclValue::Solid { value: solid } => {
+                let key = ConsumedSolidKey::new(solid.id, solid.value_id);
+                if events.contains_key(&key)
+                    || (events.keys().any(|source| source.engine_id() == solid.id)
+                        && !events.values().any(|event| event.outputs.contains(&key)))
+                {
+                    return;
+                }
+                let mut faces = Vec::new();
+                let mut add = |tag: &crate::execution::TagIdentifier, sketch: bool| {
+                    if let Some(surface) = tag.get_cur_info().and_then(|info| info.surface.as_ref()) {
+                        faces.push(FaceBinding {
+                            id: surface.face_id().into(),
+                            tag: tag.value.clone(),
+                            sketch,
+                        });
+                    }
+                };
+                for tag in solid.faces.values() {
+                    add(tag, false);
+                }
+                if let Some(sketch) = solid.sketch() {
+                    for (name, tag) in &sketch.tags {
+                        if !solid.faces.contains_key(name) {
+                            add(tag, true);
+                        }
+                    }
+                }
+                out.push(BodyBinding {
+                    body_id: solid.id.into(),
+                    artifact_id: solid.artifact_id,
+                    variable: variable.to_owned(),
+                    indices: indices.clone(),
+                    face_ids: solid
+                        .value
+                        .iter()
+                        .map(|surface| surface.face_id().into())
+                        .chain(solid.edge_cuts.iter().map(|cut| ArtifactId::new(cut.id())))
+                        .chain(solid.pending_edge_cut_ids.iter().copied().map(ArtifactId::new))
+                        .chain(solid.start_cap_id.map(ArtifactId::new))
+                        .chain(solid.end_cap_id.map(ArtifactId::new))
+                        .chain(faces.iter().map(|face| face.id))
+                        .collect::<indexmap::IndexSet<_>>()
+                        .into_iter()
+                        .collect(),
+                    faces,
+                });
+            }
+            KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => {
+                for (index, value) in value.iter().enumerate() {
+                    indices.push(index);
+                    collect(value, variable, indices, events, out);
+                    indices.pop();
+                }
+            }
+            _ => {}
+        }
+    }
+    let mut bindings = Vec::new();
+    let events = consumption_events(&state.global.root_module_artifacts, &state.global.module_infos);
+    for (name, value) in variables {
+        collect(value, name, &mut Vec::new(), &events, &mut bindings);
+    }
+
+    // A split can retain the same old tag on several outputs, although that
+    // face survives on only one. Verify ambiguous and replaced topology for this
+    // auxiliary metadata; failure leaves those named references unavailable.
+    let mut owners: AHashMap<ArtifactId, AHashSet<ArtifactId>> = AHashMap::default();
+    for body in &bindings {
+        for id in &body.face_ids {
+            owners.entry(*id).or_default().insert(body.body_id);
+        }
+    }
+    let mut verify: AHashSet<_> = owners
+        .values()
+        .filter(|ids| ids.len() > 1)
+        .flat_map(|ids| ids.iter().copied())
+        .collect();
+    // Replacement operations can also invalidate a tag that is not ambiguous.
+    verify.extend(
+        events
+            .values()
+            .flat_map(|event| event.outputs.iter().map(|key| ArtifactId::new(key.engine_id()))),
+    );
+    verify.retain(|id| bindings.iter().any(|body| body.body_id == *id));
+    if !verify.is_empty() && !ctx.no_engine_commands().await {
+        use futures::StreamExt;
+        let topology: AHashMap<_, _> = futures::stream::iter(verify)
+            .map(|id| async move {
+                let cmd = ModelingCmd::from(
+                    kcmc::EntityGetAllChildUuids::builder()
+                        .entity_id(Uuid::from(id))
+                        .build(),
+                );
+                let ids = match ctx
+                    .engine
+                    .send_modeling_cmd(&ctx.engine_batch, Uuid::new_v4(), SourceRange::default(), &cmd)
+                    .await
+                {
+                    Ok(OkWebSocketResponseData::Modeling {
+                        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(info),
+                    }) => info
+                        .entity_ids
+                        .into_iter()
+                        .map(ArtifactId::new)
+                        .collect::<AHashSet<_>>(),
+                    _ => AHashSet::default(),
+                };
+                (id, ids)
+            })
+            .buffer_unordered(16)
+            .collect()
+            .await;
+        for body in &mut bindings {
+            if let Some(ids) = topology.get(&body.body_id) {
+                body.face_ids.retain(|id| ids.contains(id));
+                body.faces.retain(|face| ids.contains(&face.id));
+            }
+        }
+    }
+    bindings
+}
+
 /// Build the artifact graph from the artifact commands and the responses.  The
 /// initial graph is the graph cached from a previous execution.  NodePaths of
 /// `exec_artifacts` are filled in from the AST.
