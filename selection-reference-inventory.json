@@ -253,7 +253,7 @@
     "cache": "Cached and fresh execution share the same outcome conversion."
   },
   "validation": {
-    "status": "All selected integration cases verified across the combined run and focused reruns; native baseline exceptions documented",
+    "status": "Selected integration and focused native checks passed; the three former clone failures are now resolved",
     "integration": {
       "cases_verified": 493,
       "combined_run": {
@@ -288,7 +288,14 @@
         "std::clone::tests::kcl_test_clone_pattern_copy_with_face_tags",
         "std::clone::tests::kcl_test_clone_imported_patterned_composite_uses_composite_topology"
       ],
-      "comparison": "All three fail on both the refactor and the unchanged follow-up baseline. No baseline assertions or snapshots were altered."
+      "comparison": "All three fail on both the refactor and the unchanged follow-up baseline. No baseline assertions or snapshots were altered.",
+      "resolution": {
+        "status": "Resolved with stronger engine topology checks",
+        "pattern_copy": "The old assertion used original_id() as prototype identity and required Wall/Cap subtrees. Instance-local original_id now identifies the copy; topology_id retains the source. Copied PrimitiveFace records reference the semantic body artifact; independent engine checks verify their physical face ownership.",
+        "imported_patterned_composite": "The old helper required duplicated Wall/Cap sweep subtrees. The graph deliberately represents copied faces with direct body ownership and source-face provenance. Tests now validate both supported representations against actual engine child UUIDs.",
+        "face_creator": "A real bug remapped the support body through the retained prototype map while leaving its external support face unchanged. Cloning now preserves the external face/owner pair when the support face is not part of cloned topology. The regression checks that the face belongs to the original support body and is absent from both source and cloned output bodies.",
+        "production_change": "Only CreatorFace remapping changed; pattern/composite fixes update outdated assertions and add independent geometry checks."
+      }
     },
     "static_checks": [
       "TypeScript",
@@ -298,7 +305,8 @@
       "Clippy for kcl-lib and kcl-api",
       "Regenerated Rust bindings and development Wasm"
     ],
-    "delivery": "Local follow-up branch commit; no push"
+    "delivery": "Local follow-up branch commit; no push",
+    "native_clone_pattern_cache_tests_passed": 42
   },
   "bounds_and_remaining_gaps": [
     "This is bounded interaction coverage, not a proof over all KCL programs or every possible selector.",
