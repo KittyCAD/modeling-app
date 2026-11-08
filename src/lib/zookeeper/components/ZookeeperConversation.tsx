@@ -712,7 +712,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     if (exchangesLength === 0 || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: 'instant',
     })
   }, [exchangesLength])
 
@@ -721,7 +721,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     if (!isEndOfStream || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: 'instant',
     })
   }, [isEndOfStream])
 
