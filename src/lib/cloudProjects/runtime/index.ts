@@ -1,4 +1,9 @@
 import {
+  downloadDeletedCloudEntries,
+  isDeletedCloudPath,
+  type CloudFileDeletion,
+} from '@src/lib/cloudProjects/runtime/deletion'
+import {
   CLOUD_DIRECTORIES_FILE,
   decodeCloudDirectories,
   encodeCloudDirectories,
@@ -460,6 +465,140 @@ export function createCloudProjectRuntime(
     }
     return read(path, () => memory.readFile(path))
   }
+  const memoryEntryExists = async (path: string) => {
+    try {
+      await memory.access(path, 0)
+      return true
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && error.code === 'ENOENT')
+        return false
+      return Promise.reject(error)
+    }
+  }
+  const deletionOwner = (deletion: CloudFileDeletion) => {
+    const project = opened.get(deletion.projectId)
+    if (
+      !project ||
+      project.owner !== deletion.accountId ||
+      config().accountId !== deletion.accountId
+    )
+      return undefined
+    return project
+  }
+  const deletePathWithRevision = (path: string): Promise<CloudFileDeletion> => {
+    const id = idFor(path)
+    const relative = getContainedRelativePath(
+      paths,
+      pathFor(id),
+      paths.resolve(path)
+    )
+    if (!relative)
+      return Promise.reject(
+        new Error('Delete a cloud project through project management.')
+      )
+    activity(id)
+    return enqueue(id, async (previous) => {
+      const project = opened.get(id)!
+      if (previous?.state === 'failed' || !project.remote.revision)
+        return Promise.reject(
+          new Error('Save the cloud project before deleting files.')
+        )
+      const stat = await memory.stat(path)
+      const deletion: CloudFileDeletion = {
+        projectId: id,
+        revision: String(project.remote.revision),
+        relativePath: relative.replaceAll('\\', '/'),
+        directory: (stat.mode & 0o170000) === 0o040000,
+        accountId: project.owner,
+      }
+      await memory.rm(path, { recursive: true })
+      return deletion
+    })
+  }
+  const replayDeletion = async (
+    deletion: CloudFileDeletion,
+    restore: boolean
+  ) => {
+    const project = deletionOwner(deletion)
+    if (!project)
+      return Promise.reject(
+        new Error('Cloud deletion belongs to a different project or account.')
+      )
+    const requestConfig = config()
+    const entries = await downloadDeletedCloudEntries(
+      requestConfig,
+      project.remote,
+      deletion
+    )
+    if (!deletionOwner(deletion))
+      return Promise.reject(
+        new Error('Cloud account changed during file restoration.')
+      )
+    activity(deletion.projectId)
+    const result = await enqueue(deletion.projectId, async (previous) => {
+      if (!deletionOwner(deletion) || previous?.state === 'failed')
+        return Promise.reject(
+          new Error('Save the cloud project before replaying file deletion.')
+        )
+      const projectRoot = pathFor(deletion.projectId)
+      const target = paths.resolve(projectRoot, deletion.relativePath)
+      if (!getContainedRelativePath(paths, projectRoot, target))
+        return new Error('Deleted path is outside its cloud project.')
+      const snapshot = await collect(projectRoot)
+      const current = snapshot.filter((file) =>
+        isDeletedCloudPath(deletion, file.relativePath)
+      )
+      const directoryFile = snapshot.find(
+        (file) => file.relativePath === CLOUD_DIRECTORIES_FILE
+      )
+      const directories = directoryFile
+        ? decodeCloudDirectories(directoryFile.data).filter((path) =>
+            isDeletedCloudPath(deletion, path)
+          )
+        : []
+      const sameDirectories =
+        directories.length === entries.directories.length &&
+        directories.every((path) => entries.directories.includes(path))
+      const sameFiles =
+        current.length === entries.files.length &&
+        current.every((file) => {
+          const old = entries.files.find(
+            (entry) => entry.relativePath === file.relativePath
+          )
+          return (
+            old &&
+            file.data.length === old.data.length &&
+            file.data.every((byte, index) => byte === old.data[index])
+          )
+        })
+      if (restore) {
+        if (await memoryEntryExists(target)) {
+          if (sameFiles && sameDirectories) return
+          return new Error(
+            'Cannot restore: another entry now occupies the deleted path.'
+          )
+        }
+        if (deletion.directory) await memory.mkdir(target, { recursive: true })
+        for (const directory of entries.directories)
+          await memory.mkdir(paths.join(projectRoot, directory), {
+            recursive: true,
+          })
+        for (const file of entries.files) {
+          const path = paths.resolve(projectRoot, file.relativePath)
+          await memory.mkdir(paths.dirname(path), { recursive: true })
+          await memory.writeFile(path, file.data)
+        }
+      } else {
+        if (!(await memoryEntryExists(target))) return
+        if (!sameFiles || !sameDirectories)
+          return new Error(
+            'Cannot redo deletion: the restored files have changed.'
+          )
+        await memory.rm(target, { recursive: true })
+      }
+    })
+    if (result instanceof Error) return Promise.reject(result)
+  }
   const sameProject = (source: string, destination: string) =>
     idFor(source) === idFor(destination)
   const fs: IZooDesignStudioFS = {
@@ -845,6 +984,11 @@ export function createCloudProjectRuntime(
         },
         { persist: false, allowReconciliation: true }
       ),
+    deletePathWithRevision,
+    restoreDeletedPath: (deletion: CloudFileDeletion) =>
+      replayDeletion(deletion, true),
+    redoPathDeletion: (deletion: CloudFileDeletion) =>
+      replayDeletion(deletion, false),
     snapshot: async (id: string) => {
       await openProject(id)
       return collect(pathFor(id))
