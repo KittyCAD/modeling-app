@@ -31,6 +31,9 @@ import {
 } from '@src/registry/contracts/fileOperations'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
+const loadPublication = () =>
+  import('@src/registry/extensions/fileOperations/publication')
+
 /** Own the mounted filesystem runtimes and compose project operations from their primitives. */
 export function createFileOperationsServices(
   paths: IZooDesignStudioFS,
@@ -137,13 +140,9 @@ export function createFileOperationsServices(
       run: (operations: FileOperationsRegistryService) => Promise<T>
     ) => fileSystem.batch(path, (memory) => withFileOperations(memory, run)),
     getProjectStatus: async (id: string) =>
-      (
-        await import('@src/registry/extensions/fileOperations/publication')
-      ).getCloudPublicationStatus(id, config().token),
+      (await loadPublication()).getCloudPublicationStatus(id, config().token),
     getProjectStatuses: async () =>
-      (
-        await import('@src/registry/extensions/fileOperations/publication')
-      ).getCloudPublicationStatuses(config().token),
+      (await loadPublication()).getCloudPublicationStatuses(config().token),
     downloadProjectById: async (id: string) =>
       (await import('@src/lib/fs-zds/cloud/project')).downloadProjectById(
         id
@@ -162,9 +161,7 @@ export function createFileOperationsServices(
         )
       return fileSystem.withProject(id, (snapshot) =>
         withFileOperations(snapshot.backing, async (fileOperations) => {
-          const publication = await import(
-            '@src/registry/extensions/fileOperations/publication'
-          )
+          const publication = await loadPublication()
           const result = await publication.publishCurrentProject({
             ...args,
             fileOperations,
@@ -182,9 +179,7 @@ export function createFileOperationsServices(
         typeof Publication.getCurrentProjectPublicationDetails
       >[0]
     ) => {
-      const publication = await import(
-        '@src/registry/extensions/fileOperations/publication'
-      )
+      const publication = await loadPublication()
       return publication.getCurrentProjectPublicationDetails(args)
     },
   }
