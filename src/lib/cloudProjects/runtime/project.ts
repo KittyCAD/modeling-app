@@ -1,6 +1,9 @@
 import { base64ToBytes } from '@src/lib/base64'
 import { projects } from '@kittycad/lib'
-import JSZip from 'jszip'
+import {
+  firstExistingProjectFile,
+  readProjectZip,
+} from '@src/lib/cloudProjects/runtime/archiveContents'
 
 import env from '@src/env'
 import {
@@ -141,16 +144,15 @@ async function parseZipArchive({
     }
   | Error
 > {
-  const zip = await JSZip.loadAsync(archive)
-  const entries = Object.values(zip.files).filter((entry) => {
-    return !entry.dir && !entry.name.startsWith('__MACOSX/')
-  })
+  const entries = await readProjectZip(archive)
 
   if (entries.length === 0) {
     return new Error('The shared project download did not contain any files.')
   }
 
-  const rootDirectory = getCommonArchiveRoot(entries.map((entry) => entry.name))
+  const rootDirectory = getCommonArchiveRoot(
+    entries.map((entry) => entry.relativePath)
+  )
   const projectName = sanitizeProjectName(
     rootDirectory ||
       getFilenameStemFromContentDisposition(contentDisposition) ||
@@ -158,16 +160,11 @@ async function parseZipArchive({
     DEFAULT_IMPORTED_PROJECT_NAME
   )
 
-  const files = await Promise.all(
-    entries.map(async (entry) => {
-      const requestedFileName = stripArchiveRoot(entry.name, rootDirectory)
-      return {
-        requestedProjectName: projectName,
-        requestedFileName,
-        requestedData: Uint8Array.from(await entry.async('uint8array')),
-      }
-    })
-  )
+  const files = entries.map((entry) => ({
+    requestedProjectName: projectName,
+    requestedFileName: stripArchiveRoot(entry.relativePath, rootDirectory),
+    requestedData: entry.data,
+  }))
 
   const entrypointFilePath = getRequiredProjectEntrypoint(files)
   if (err(entrypointFilePath)) {
@@ -242,29 +239,15 @@ function getRequiredProjectEntrypoint(files: RequestedProjectFile[]) {
     ? getProjectTomlDefaultFile(projectSettingsFile.requestedData)
     : undefined
 
-  if (
-    configuredEntrypoint &&
-    files.some((file) => file.requestedFileName === configuredEntrypoint)
-  ) {
-    return configuredEntrypoint
-  }
-
-  const mainFile = files.find((file) => {
-    return file.requestedFileName === PROJECT_ENTRYPOINT
-  })
-  if (mainFile) {
-    return mainFile.requestedFileName
-  }
-
-  const firstKclFile = files.find((file) =>
-    file.requestedFileName.endsWith('.kcl')
-  )
-  if (firstKclFile) {
-    return firstKclFile.requestedFileName
-  }
-
-  return new Error(
-    'The shared project did not include an openable KCL entry file.'
+  return (
+    firstExistingProjectFile(
+      new Set(files.map((file) => file.requestedFileName)),
+      configuredEntrypoint,
+      PROJECT_ENTRYPOINT
+    ) ??
+    files.find((file) => file.requestedFileName.endsWith('.kcl'))
+      ?.requestedFileName ??
+    new Error('The shared project did not include an openable KCL entry file.')
   )
 }
 

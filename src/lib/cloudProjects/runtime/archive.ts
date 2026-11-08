@@ -16,7 +16,10 @@ import {
   getProjectTitleFromProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
-import JSZip from 'jszip'
+import {
+  firstExistingProjectFile,
+  readProjectZip,
+} from '@src/lib/cloudProjects/runtime/archiveContents'
 
 type PrepareProjectFilesForCloudUploadOptions = {
   expectedRevision?: Revision
@@ -105,36 +108,23 @@ export function getProjectArchiveEntrypointPath(
   preferredEntrypointPath?: string
 ) {
   const filePaths = new Set(files.map((file) => file.relativePath))
-  const normalizedPreferredEntrypointPath = preferredEntrypointPath
-    ? normalizeRelativePath(preferredEntrypointPath)
-    : undefined
-  if (
-    normalizedPreferredEntrypointPath &&
-    filePaths.has(normalizedPreferredEntrypointPath)
-  ) {
-    return normalizedPreferredEntrypointPath
-  }
-
-  const projectTomlDefaultFile = getProjectTomlDefaultFile(files)
-  if (projectTomlDefaultFile && filePaths.has(projectTomlDefaultFile)) {
-    return projectTomlDefaultFile
-  }
-  if (filePaths.has(PROJECT_ENTRYPOINT)) {
-    return PROJECT_ENTRYPOINT
-  }
-
-  const fallbackKclFile = files
-    .map((file) => file.relativePath)
-    .filter(
-      (relativePath) =>
-        archivePaths.extname(relativePath).toLowerCase() === '.kcl'
-    )
-    .toSorted((a, b) => a.localeCompare(b))[0]
-  if (fallbackKclFile) {
-    return fallbackKclFile
-  }
-
-  return undefined
+  return (
+    firstExistingProjectFile(
+      filePaths,
+      preferredEntrypointPath
+        ? normalizeRelativePath(preferredEntrypointPath)
+        : undefined
+    ) ??
+    firstExistingProjectFile(
+      filePaths,
+      getProjectTomlDefaultFile(files),
+      PROJECT_ENTRYPOINT
+    ) ??
+    files
+      .map((file) => file.relativePath)
+      .filter((path) => archivePaths.extname(path).toLowerCase() === '.kcl')
+      .toSorted((a, b) => a.localeCompare(b))[0]
+  )
 }
 
 function getUploadEntrypointPath(
@@ -243,16 +233,10 @@ export function toArrayBuffer(data: Uint8Array): ArrayBuffer {
 export async function parseProjectArchive(archive: ArrayBuffer) {
   return withCloudFailureContext(
     { stage: 'archive', point: 'parse-project-archive' },
-    async () => {
-      const zip = await JSZip.loadAsync(archive)
-      return Promise.all(
-        Object.values(zip.files)
-          .filter((entry) => !entry.dir && !entry.name.startsWith('__MACOSX/'))
-          .map(async (entry) => ({
-            relativePath: normalizeRelativePath(entry.name),
-            data: Uint8Array.from(await entry.async('uint8array')),
-          }))
-      )
-    }
+    async () =>
+      (await readProjectZip(archive)).map((file) => ({
+        ...file,
+        relativePath: normalizeRelativePath(file.relativePath),
+      }))
   )
 }
