@@ -28,7 +28,6 @@ import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { getProjectSubdirectories } from '@src/lib/projectSession/projectTree'
 import {
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
   GLOBAL_COMMAND_SCOPES,
@@ -48,30 +47,39 @@ async function onSubmitKCLSampleCreation({
   app: App
   isProjectNew: boolean
 }) {
-  const { requestedProjectName: sampleName, initialProject } =
-    await downloadKclSample(sample, { assetUrlPrefix: isDesktop() ? '.' : '' })
+  const openedProject = app.project
   const existing = app.projectOperations.projects.value.find(
     (project) => project.name === uniqueNameIfNeeded
   )
-  const directory =
-    !isProjectNew && initialProject.files.length > 1
-      ? fsZds.join(
-          uniqueNameIfNeeded,
-          getUniqueProjectName(sampleName, getProjectSubdirectories(existing))
-        )
-      : uniqueNameIfNeeded
-  const root = fsZds.join(app.projectDirectoryPath, directory)
-  const paths = await app.projectOperations.writeFiles(
-    root,
+  const projectRoot =
+    openedProject?.name === uniqueNameIfNeeded
+      ? openedProject.path
+      : (existing?.path ??
+        fsZds.join(app.projectDirectoryPath, uniqueNameIfNeeded))
+  const { requestedProjectName: sampleName, initialProject } =
+    await downloadKclSample(sample, { assetUrlPrefix: isDesktop() ? '.' : '' })
+  // Every sample gets its own folder in an existing project, including samples
+  // containing only main.kcl. Allocate against storage so repeated imports and
+  // collisions with either files or folders cannot overwrite existing contents.
+  const sampleRoot = isProjectNew
+    ? projectRoot
+    : await app.fileOperations.createUniqueDirectory(projectRoot, sampleName)
+  await app.projectOperations.writeFiles(
+    projectRoot,
     initialProject.files.map((file) => ({
-      path: file.requestedFileName,
+      path: fsZds.relative(
+        projectRoot,
+        fsZds.join(sampleRoot, file.requestedFileName)
+      ),
       contents: file.requestedData,
     }))
   )
   await app.refreshProjects()
-  await app.projectSession.openFile(paths.length === 1 ? paths[0] : root, {
-    projectPath: root,
-  })
+  if (app.project !== openedProject) return
+  await app.projectSession.openFile(
+    fsZds.join(sampleRoot, initialProject.entrypointFilePath),
+    { projectPath: projectRoot }
+  )
 }
 
 export function createApplicationCommands({
@@ -227,7 +235,15 @@ export function createApplicationCommands({
         defaultValue: () => app.project?.name,
         options: (_, _context) => {
           const folders = app.projectOperations.projects.value
-          return getProjectDirectoryOptions(folders)
+          const current = app.project?.projectIORefSignal.value
+          return getProjectDirectoryOptions(
+            current
+              ? [
+                  current,
+                  ...folders.filter((folder) => folder.name !== current.name),
+                ]
+              : folders
+          )
         },
       },
       newProjectName: {
