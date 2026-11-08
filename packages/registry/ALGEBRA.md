@@ -1,9 +1,9 @@
 # Registry algebra — first sketch
 
 The proposal lives in `src/algebra.ts`, with a small example in
-`src/examples/algebra.ts`. It is an independent design sketch, not an implemented
-replacement registry or a new public entrypoint. The existing runtime still uses
-ValueSpecs; **Facet** is the proposed name going forward.
+`src/examples/algebra.ts`. This experimental core has its own planner and
+reconciler, separate from the app's registry and public entrypoint. The existing
+runtime still uses ValueSpecs; **Facet** is the proposed name going forward.
 
 | Concept | Essence | Responsibility |
 | --- | --- | --- |
@@ -99,10 +99,10 @@ Their adapters, effects, and cleanup belong at the subtree/lifetime boundary.
 
 ## Decisions before a runtime rewrite
 
-1. Implement interpretation of the proposed Item sum and binding registration.
-   No registry interpreter is implemented in this sketch.
-2. Implement staged child discovery and reconciliation: replacement retains the
-   owner, while unmount releases children before owner resources.
+1. Exercise the experimental interpreter in `src/reconciler.ts` before migrating
+   app consumers. The existing registry is unchanged.
+2. Establish any remaining application policies, including service-surface guards
+   and contribution precedence; neither belongs to the current reconciler.
 3. Separate singleton capability lookup from multiple-provider composition.
    Today `multiple: true` returns an array cast to `T`; that cardinality needs a
    type-level representation or an explicit Facet of capabilities. The sketch
@@ -138,8 +138,8 @@ input graph to check exact item identity and index validity. Five properties run
 undiscovered slot contents. The DAG fixtures are frozen, and acquisition/installation
 callbacks throw if invoked.
 
-The planner is not yet wired into the existing registry. Staged acquisition and
-reconciliation remain the next layer.
+The planner feeds the experimental reconciler; the existing registry remains
+separate.
 
 ## Laws checked before interpretation
 
@@ -154,7 +154,7 @@ labels, escaping, and Unicode; frozen inputs catch attempted mutation.
 
 These laws apply to the supplied service and binding operations. Arbitrary Facet
 combiners need not be associative, commutative, or incrementally mergeable. Subtree
-execution, graph identity, and disposal ordering await an interpreter. Type errors
+execution and disposal are checked by the reconciler tests described below. Type errors
 are checked separately by the negative cases in `src/algebra.test.ts` and `tsc`.
 
 ## Authoring conveniences
@@ -173,5 +173,54 @@ are checked separately by the negative cases in `src/algebra.test.ts` and `tsc`.
 - The slot helper copies and freezes its initial array. Neither helper freezes nested items,
   token objects, or capability implementations.
 
-The interpreter still needs to assign ownership, acquire subtrees, and register
-bindings. These conveniences do not implement those graph or lifetime policies.
+## Experimental reconciler
+
+`Reconciler` in `src/reconciler.ts` implements `ScopeHost`:
+
+- `configure(items)` reconciles roots; `configure([])` unmounts everything.
+- `replace(subtree, items)` replaces only a mounted owner's current children.
+- `observe(facet)` returns a live readonly signal, including service resolutions.
+
+Acquisition is synchronous. The planner expands declared dependencies without
+running user code; acquired children are planned in turn. Returned instances and
+bindings are staged until acquisition succeeds. Existing owners and their current
+children survive by object identity. Reordering a retained owner preserves its
+original acquisition Origin. Bindings receive their owning acquisition Origin;
+root bindings receive their own planning path.
+
+Each `Facet<I, O>` owns a typed cell per registry, with private `Source<I>` lists
+and a computed `O` output. The `contribute` callback stages sources in that cell
+and receives a parameterless commit closure. The reconciler collects those closures
+without storing untyped token/source pairs or asserting an input type later.
+Failed transactions leave their drafts unpublished. Successful transactions batch
+all commits and clear cells that no longer have contributions, so observations
+across several Facets cannot see a partially published graph. Cells are separate
+for each registry even when they share the same Facet objects.
+
+On acquisition failure, only newly returned instances are released, in reverse
+acquisition order, and the old graph stays published and reactive. A factory is
+responsible for resources it allocates before throwing without returning an
+Instance. Binding installation must only register contributions; arbitrary side
+effects in installation cannot be undone.
+
+Successful publication precedes cleanup of removed instances. Cleanup awaits each
+child/consumer before its owner/dependency, continues after failures, and reports
+an AggregateError. A cleanup failure does not revert a committed graph. Rollback
+cleanup failures are reported together with the original acquisition failure.
+
+Mutations are rejected while another transaction or cleanup is in progress.
+Factories may obtain observations during acquisition but must defer reading them
+until construction completes. Sources remain live reads rather than acquisition
+snapshots. Subtree acquisition cycles are rejected as well as declared cycles.
+
+Three properties run 150 generated histories/cases each, checking retained
+owners and dependencies, surviving child identity, teardown order, rollback,
+absence of partial publication, and continued use of the old graph. Targeted
+examples cover asynchronous cleanup barriers, cleanup failures, cycles, binding
+failures, provenance, and provider replacement. Mixed-type transactions also check
+per-registry isolation, atomic observations, discarded drafts, lazy sources, and
+clearing removed contributions.
+
+`src/examples/algebra.ts` includes `mountWorkspace()`; its returned reconciler can
+replace panels and observe contract tokens. App migration, plugin adapters, and
+service-surface/purity enforcement remain separate from this experimental core.

@@ -12,6 +12,7 @@ import {
   service,
   slot,
 } from '../algebra'
+import { Reconciler } from '../reconciler'
 
 /** View templates and CodeMirror extensions can replace strings in this example. */
 export const editor = contract({
@@ -64,4 +65,10 @@ export const workspace = {
 
 export function showSearchPanel(scope: Scope): Promise<void> {
   return scope.replace(panels, [contribute(editor.panels, () => 'search')])
+}
+
+export async function mountWorkspace(): Promise<Reconciler> {
+  const reconciler = new Reconciler()
+  await reconciler.configure([workspace])
+  return reconciler
 }
