@@ -1216,8 +1216,8 @@ for (const kind of ['local', 'cloud'] as const) {
           await item('parts').click()
         await item('source.kcl').click()
         await expectEditor(page, nestedCode)
-        const rename = async (name: string) => {
-          await item('source.kcl').click({ button: 'right' })
+        const rename = async (name: string, from = 'source.kcl') => {
+          await item(from).click({ button: 'right' })
           await page.getByTestId('context-menu-rename').click()
           await page.getByTestId('file-rename-field').fill(name)
           await page.keyboard.press('Enter')
@@ -1229,7 +1229,16 @@ for (const kind of ['local', 'cloud'] as const) {
         expect(await storage.read(root, 'parts/existing.kcl')).toBe(
           `${blankCode}// Keep existing\n`
         )
-        await rename('renamed.kcl')
+        await rename('Source.kcl')
+        await expect(item('Source.kcl')).toBeVisible()
+        await expect(page).toHaveURL(/Source\.kcl$/)
+        await expectEditor(page, nestedCode)
+        await rename('caf\u00e9.kcl', 'Source.kcl')
+        await expect(item('caf\u00e9.kcl')).toBeVisible()
+        await rename('cafe\u0301.kcl', 'caf\u00e9.kcl')
+        await expect(item('cafe\u0301.kcl')).toBeVisible()
+        await expectEditor(page, nestedCode)
+        await rename('renamed.kcl', 'cafe\u0301.kcl')
         await expect(item('renamed.kcl')).toBeVisible()
         await expect(item('source.kcl')).toBeHidden()
         await expect(page).toHaveURL(/renamed\.kcl$/)

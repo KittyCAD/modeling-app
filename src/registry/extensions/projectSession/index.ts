@@ -1,5 +1,6 @@
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { FileSaveStatus } from '@src/components/FileSaveStatus'
+import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
 import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
 import { setProjectDefaultFileInProjectTomlContents } from '@src/lib/projectTomlMetadata'
@@ -258,10 +259,6 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         )
       await flushActiveTextFileWrite()
       const operations = ctx.services.get(fileOperationsService)
-      if (await operations.exists(destination))
-        return Promise.reject(
-          new ExpectedFileOperationError('Name already exists.')
-        )
       const metadata = current?.projectIORefSignal.peek()
       const entrypointRelative = metadata
         ? getContainedRelativePath(
@@ -285,7 +282,15 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
             )
           : undefined
       const rename = async (operations: FileOperationsRegistryService) => {
-        await operations.rename(source, destination)
+        await operations
+          .rename(source, destination)
+          .catch((error: unknown) =>
+            Promise.reject(
+              error instanceof FileAlreadyExists
+                ? new ExpectedFileOperationError('Name already exists.')
+                : error
+            )
+          )
         // Rebind immediately after the move, even if persisting metadata fails.
         if (
           affected &&

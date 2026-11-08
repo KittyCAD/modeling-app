@@ -1,3 +1,7 @@
+import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
+import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
+import noopfs from '@src/lib/fs-zds/noopfs'
+import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { posix } from '@chainner/node-path'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
@@ -86,7 +90,7 @@ function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
     )
   }
   const exists = vi.fn(async () => false)
-  const rename = vi.fn(async () => {})
+  const rename = vi.fn(async (_source: string, _destination: string) => {})
   const readFile = vi.fn(async () =>
     new TextEncoder().encode('title = "Project"\ndefault_file = "main.kcl"\n')
   )
@@ -463,11 +467,54 @@ describe('direct project session file actions', () => {
 
   it('refuses a destination collision', async () => {
     const s = setup()
-    s.exists.mockResolvedValueOnce(true)
+    s.rename.mockRejectedValueOnce(
+      new FileAlreadyExists({
+        operation: 'rename',
+        path: '/project/parts',
+        cause: { code: 'EEXIST' },
+        message: 'Name already exists.',
+      })
+    )
     await expect(
       s.session.rename('/project/parts', '/project/existing')
     ).rejects.toThrow('already exists')
-    expect(s.rename).not.toHaveBeenCalled()
+    expect(s.filePath.value).toBe('/project/parts/main.kcl')
+  })
+
+  it('rebinds the live editor after a case-only rename on a case-insensitive backing', async () => {
+    const memory = createMemoryFileSystem({
+      ...noopfs.impl,
+      ...posix,
+      resolve: (...parts) =>
+        posix
+          .resolve(...parts)
+          .normalize('NFD')
+          .toLowerCase(),
+    })
+    await memory.mkdir('/project/parts', { recursive: true })
+    await memory.writeFile('/project/parts/main.kcl', new Uint8Array([42]))
+    const runtime = createFileOperationsRuntime({
+      ...memory,
+      resolve: (...parts) => posix.resolve(...parts),
+    })
+    const s = setup()
+    s.exists.mockResolvedValue(true)
+    s.rename.mockImplementation((...args) => runtime.operations.rename(...args))
+    try {
+      await s.session.rename(
+        '/project/parts/main.kcl',
+        '/project/parts/Main.kcl'
+      )
+      expect(s.filePath.value).toBe('/project/parts/Main.kcl')
+      expect(s.project.executingEditor.peek()?.path).toBe(
+        '/project/parts/Main.kcl'
+      )
+      expect(
+        await runtime.operations.readFile('/project/parts/Main.kcl')
+      ).toEqual(new Uint8Array([42]))
+    } finally {
+      await runtime.dispose()
+    }
   })
 
   it('does not update a replaced project after a captured rename completes', async () => {
