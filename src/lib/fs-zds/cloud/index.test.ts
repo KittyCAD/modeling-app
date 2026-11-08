@@ -12,6 +12,7 @@ vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
   getRemoteProject: vi.fn(),
   downloadRemoteProjectArchive: vi.fn(),
   updateRemoteProject: vi.fn(),
+  createRemoteProject: vi.fn(),
   deleteRemoteProject: vi.fn(),
 }))
 vi.mock('@src/lib/fs-zds/cloud/archive', () => ({
@@ -56,6 +57,49 @@ describe.each([
     instances.push(fs)
     return { fs, diskWrite, diskRemove }
   }
+
+  it('rejects offline mutations before staging them and permits editing after reconnect', async () => {
+    vi.useFakeTimers()
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    const path = paths.join(root, 'main.kcl')
+    const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+    try {
+      await vi.advanceTimersByTimeAsync(7_000)
+      const submittedOffline = fs.captureMutationGuard([path])
+      for (const mutate of [
+        () => fs.writeFile(path, encoder.encode('offline edit')),
+        () => fs.mkdir(paths.join(root, 'parts')),
+        () => fs.rename(path, paths.join(root, 'other.kcl')),
+        () => fs.rm(path),
+        () =>
+          fs.batch(root, (backing) =>
+            backing.writeFile(path, encoder.encode('batch edit'))
+          ),
+        () => fs.createProject('Offline project', []),
+        () => fs.deleteProject('one'),
+      ])
+        await expect(mutate()).rejects.toThrow('read-only while offline')
+      expect(await fs.readFile(path, 'utf8')).toBe(
+        '@settings(kclVersion = 3.0)\n'
+      )
+      expect(api.updateRemoteProject).not.toHaveBeenCalled()
+      expect(api.createRemoteProject).not.toHaveBeenCalled()
+      expect(api.deleteRemoteProject).not.toHaveBeenCalled()
+      online.mockReturnValue(true)
+      expect(submittedOffline()).toBeInstanceOf(Error)
+      const submittedOnline = fs.captureMutationGuard([path])
+      online.mockReturnValue(false)
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(submittedOnline()).toBeInstanceOf(Error)
+      online.mockReturnValue(true)
+      await fs.writeFile(path, encoder.encode('online edit'))
+      expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+      expect(await fs.readFile(path, 'utf8')).toBe('online edit')
+    } finally {
+      online.mockRestore()
+    }
+  })
 
   it('persists empty directories through a fresh cloud filesystem, then renames and removes them', async () => {
     vi.useFakeTimers()
