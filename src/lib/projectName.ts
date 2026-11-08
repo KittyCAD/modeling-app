@@ -1,3 +1,5 @@
+import { INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
+
 export function sanitizeProjectName(name: string, fallback: string) {
   const sanitized = name.trim().replace(/[\\/]/g, '-')
   return sanitized || fallback
@@ -66,4 +68,73 @@ export function getUniqueDuplicateProjectName(
     `${sourceName}-copy`,
     existingProjectNames
   )
+}
+
+// create a regex to match the project name
+// replacing any instances of "$n" with a regex to match any number
+function interpolateProjectName(projectName: string) {
+  const regex = new RegExp(
+    projectName.replace(getPaddedIdentifierRegExp(), '([0-9]+)')
+  )
+  return regex
+}
+
+export function getNextProjectIndexFromNames(
+  projectName: string,
+  existingNames: readonly string[]
+) {
+  const regex = interpolateProjectName(projectName)
+  const matches = existingNames.map((name) => name.match(regex))
+  const indices = matches
+    .filter(Boolean)
+    .map((match) => (match !== null ? match[1] : '-1'))
+    .map((maybeMatchIndex) => {
+      return parseInt(maybeMatchIndex || '0', 10)
+    })
+  const maxIndex = Math.max(...indices, -1)
+  return maxIndex + 1
+}
+
+// Interpolates the project name with the next available index,
+// padding the index with 0s if necessary
+export function interpolateProjectNameWithIndex(
+  projectName: string,
+  index: number
+) {
+  const regex = getPaddedIdentifierRegExp()
+
+  const matches = projectName.match(regex)
+  const padStartLength = Math.min(
+    matches !== null ? matches[1]?.length || 0 : 0,
+    MAX_PADDING
+  )
+  return projectName.replace(
+    regex,
+    index.toString().padStart(padStartLength + 1, '0')
+  )
+}
+
+export function doesProjectNameNeedInterpolated(projectName: string) {
+  return projectName.includes(INDEX_IDENTIFIER)
+}
+
+export function getUniqueProjectNameFromNames(
+  name: string,
+  existingNames: readonly string[]
+) {
+  if (doesProjectNameNeedInterpolated(name)) {
+    const nextIndex = getNextProjectIndexFromNames(name, existingNames)
+    return interpolateProjectNameWithIndex(name, nextIndex)
+  }
+
+  return getUniqueProjectNameFromExistingNames(name, existingNames)
+}
+
+function escapeRegExpChars(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function getPaddedIdentifierRegExp() {
+  const escapedIdentifier = escapeRegExpChars(INDEX_IDENTIFIER)
+  return new RegExp(`${escapedIdentifier}(${escapedIdentifier.slice(-1)}*)`)
 }
