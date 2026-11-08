@@ -1070,7 +1070,7 @@ export const ProjectExplorer = ({
                   runFileTreeMutation(async () => {
                     await fileOperations.move(src, target)
                     setLastRecursiveMoveTarget(target)
-                    toast.success('Moved successfully')
+                    toast.success('Archived successfully')
                   })
                   kclManager.addGlobalHistoryEvent(
                     fsArchiveFile({
