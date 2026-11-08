@@ -43,14 +43,18 @@
     "@preact/signals-react": "^3.10.2",
     "@react-hook/resize-observer": "^2.0.1",
     "@replit/codemirror-interact": "^6.3.1",
+    "@ts-graphviz/ast": "^3.0.10",
     "@ts-stack/markdown": "^1.5.0",
     "@tweenjs/tween.js": "^23.1.1",
+    "@viz-js/lang-dot": "^1.0.5",
+    "@viz-js/viz": "^3.31.0",
     "@xstate/react": "^4.1.1",
     "bonjour-service": "^1.4.4",
     "chokidar": "^5.0.0",
     "codemirror": "^6.0.2",
     "decamelize": "^6.0.1",
     "diff": "^9.0.0",
+    "dragology": "^0.2.0",
     "effect": "^3.22.2",
     "electron-updater": "^6.8.9",
     "fuse.js": "^7.4.2",
@@ -86,7 +90,8 @@
     "web-vitals": "^3.5.2",
     "why-is-node-running": "^3.2.2",
     "xstate": "^5.32.5",
-    "yargs": "^18.0.0"
+    "yargs": "^18.0.0",
+    "zod": "^4.6.7"
   },
   "scripts": {
     "prepare": "husky",

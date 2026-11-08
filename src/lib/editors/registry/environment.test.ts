@@ -1,4 +1,5 @@
 import kclExtension from '@src/lib/kcl/registry'
+import dotExtension from '@src/lib/dot/registry'
 import executorsExtension from '@src/lib/executors/registry'
 import {
   executorsService,
@@ -61,6 +62,7 @@ describe('experimental editor registration', () => {
         featureFlags,
         editorsExtension,
         kclExtension,
+        dotExtension,
         executorsExtension,
         savingExtension,
         markdownExtension,
@@ -84,6 +86,9 @@ describe('experimental editor registration', () => {
       expect(registry.get(codeEditorExtensionValueSpec).length > 0).toBe(
         enabled
       )
+      expect(
+        registry.get(editorViewValueSpec).some(({ id }) => id === 'dot.graph')
+      ).toBe(enabled)
       expect(registry.optional(executorsService) !== undefined).toBe(enabled)
       expect(registry.get(executorCapabilityValueSpec).length > 0).toBe(enabled)
       expect(registry.get(editorCapabilityValueSpec).length > 0).toBe(enabled)
