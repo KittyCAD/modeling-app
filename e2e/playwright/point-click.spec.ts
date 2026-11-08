@@ -1384,12 +1384,8 @@ extrude001 = extrude(region001, length = -12)`
       await toolbar.chamferButton.click()
       await modelingDialog.selection('Selection').click()
 
-      await page.waitForTimeout(1000)
       await expect(modelingDialog.input('length')).toHaveText('5')
 
-      await page.waitForTimeout(1000)
-
-      await page.waitForTimeout(1000)
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
     })
