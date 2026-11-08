@@ -1,3 +1,5 @@
+import executorsExtension from '@src/lib/executors/registry'
+import { executorsService } from '@src/lib/executors/registry/contract'
 import savingExtension from '@src/lib/save/registry'
 import { editorSaveService } from '@src/lib/save/registry/contract'
 import kclExtension from '@src/lib/kcl/registry'
@@ -50,6 +52,7 @@ describe('experimental editor registration', () => {
       registry.configure([
         featureFlags,
         editorsExtension,
+        executorsExtension,
         savingExtension,
         markdownExtension,
         kclExtension,
@@ -58,6 +61,7 @@ describe('experimental editor registration', () => {
       await Promise.resolve()
       expect(registry.get(editorViewsValueSpec).length > 0).toBe(enabled)
       expect(registry.optional(editorsService) !== undefined).toBe(enabled)
+      expect(registry.optional(executorsService) !== undefined).toBe(enabled)
       expect(registry.optional(editorSaveService) !== undefined).toBe(enabled)
       expect(registry.get(codeEditorsExtensionValueSpec).length > 0).toBe(
         enabled
