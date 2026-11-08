@@ -81,34 +81,44 @@ export function ProjectFileWatcher() {
             (file) => editor.getPendingFileCode(file.path) !== undefined
           )
       )
+    let snapshotGeneration = 0
+    let snapshotRefresh = Promise.resolve()
+    const refreshSnapshot = async (isSnapshotCurrent: () => boolean) => {
+      if (!isSnapshotCurrent()) return
+      await project.reloadFilesFromStorage(isSnapshotCurrent)
+      if (!isSnapshotCurrent()) return
+      const editorPath = project.executingPath
+      const text = activeTextFileSignal.peek()
+      const selectedPath = text?.path ?? editorPath
+      const stillSelected = () =>
+        isSnapshotCurrent() &&
+        project.executingPath === editorPath &&
+        activeTextFileSignal.peek() === text
+      if (selectedPath && !(await app.fileOperations.exists(selectedPath))) {
+        const entrypoint = project.projectIORefSignal.peek().default_file
+        const exists = await app.fileOperations.exists(entrypoint)
+        if (stillSelected() && exists) {
+          clearActiveTextFile()
+          await app.projectSession.openFile(entrypoint, {
+            projectPath: project.path,
+          })
+        }
+      } else if (text && stillSelected()) {
+        await openActiveTextFile(app.fileOperations, text.path)
+      }
+    }
     const poller = createProjectPoller({
       check: async () => {
         const update = await cloud.checkForUpdates(id, canApply)
-        if (update.refreshed && canApply()) {
-          await project.reloadFilesFromStorage(canApply)
-          if (!canApply()) return update.changed
-          const editorPath = project.executingPath
-          const text = activeTextFileSignal.peek()
-          const selectedPath = text?.path ?? editorPath
-          const stillSelected = () =>
-            canApply() &&
-            project.executingPath === editorPath &&
-            activeTextFileSignal.peek() === text
-          if (
-            selectedPath &&
-            !(await app.fileOperations.exists(selectedPath))
-          ) {
-            const entrypoint = project.projectIORefSignal.peek().default_file
-            const exists = await app.fileOperations.exists(entrypoint)
-            if (stillSelected() && exists) {
-              clearActiveTextFile()
-              await app.projectSession.openFile(entrypoint, {
-                projectPath: project.path,
-              })
-            }
-          } else if (text && stillSelected()) {
-            await openActiveTextFile(app.fileOperations, text.path)
-          }
+        if (update.refreshed) {
+          const generation = ++snapshotGeneration
+          const isSnapshotCurrent = () =>
+            generation === snapshotGeneration && canApply()
+          // Rust snapshot rebuilding can take much longer than a metadata poll.
+          // Keep downloads responsive, serialize rebuilds, and skip superseded ones.
+          snapshotRefresh = snapshotRefresh
+            .then(() => refreshSnapshot(isSnapshotCurrent))
+            .catch(reportRejection)
         }
         return update.changed
       },
