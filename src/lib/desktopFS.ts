@@ -47,8 +47,18 @@ export function getNextProjectIndex(
   projectName: string,
   projects: FileEntry[]
 ) {
+  return getNextProjectIndexFromNames(
+    projectName,
+    projects.map((project) => project.name)
+  )
+}
+
+function getNextProjectIndexFromNames(
+  projectName: string,
+  existingNames: readonly string[]
+) {
   const regex = interpolateProjectName(projectName)
-  const matches = projects.map((project) => project.name?.match(regex))
+  const matches = existingNames.map((name) => name.match(regex))
   const indices = matches
     .filter(Boolean)
     .map((match) => (match !== null ? match[1] : '-1'))
@@ -91,18 +101,22 @@ export function doesProjectNameNeedInterpolated(projectName: string) {
  * @returns
  */
 export function getUniqueProjectName(name: string, projects: FileEntry[]) {
-  // The name may have our magic index interpolation string in it
-  const needsInterpolation = doesProjectNameNeedInterpolated(name)
-
-  if (needsInterpolation) {
-    const nextIndex = getNextProjectIndex(name, projects)
-    return interpolateProjectNameWithIndex(name, nextIndex)
-  }
-
-  return getUniqueProjectNameFromExistingNames(
+  return getUniqueProjectNameFromNames(
     name,
     projects.map((project) => project.name)
   )
+}
+
+export function getUniqueProjectNameFromNames(
+  name: string,
+  existingNames: readonly string[]
+) {
+  if (doesProjectNameNeedInterpolated(name)) {
+    const nextIndex = getNextProjectIndexFromNames(name, existingNames)
+    return interpolateProjectNameWithIndex(name, nextIndex)
+  }
+
+  return getUniqueProjectNameFromExistingNames(name, existingNames)
 }
 
 function escapeRegExpChars(string: string) {
