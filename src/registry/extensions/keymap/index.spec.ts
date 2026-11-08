@@ -1,3 +1,5 @@
+import { codeSurface } from '@src/lib/editors/testViews'
+import '@src/lib/projectSession/next/testFeature'
 import {
   defineRegistryItem,
   provide,
@@ -6,6 +8,9 @@ import {
   Slot,
 } from '@kittycad/registry'
 import type { Command } from '@src/lib/commandTypes'
+import editorsExtension from '@src/lib/editors/registry'
+import { editorsService } from '@src/lib/editors/registry/contract'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { kclCommands } from '@src/lib/kclCommands'
 import {
   type CommandSystemService,
@@ -51,6 +56,89 @@ const testFileOperations = {} as FileOperationsRegistryService
 vi.mock('@src/registry/extensions/keymap/persistence', () => persistenceMocks)
 
 describe('keymap extension', () => {
+  it('keeps undo and redo with the focused editor', async () => {
+    await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
+    const send = vi.fn()
+    const registry = createRegistryWithKeymapItems(
+      [
+        {
+          id: 'legacy-undo',
+          title: 'Legacy undo',
+          source: 'test',
+          command: 'legacy-undo',
+          keystrokes: ['mod+z'],
+          when: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        },
+        {
+          id: 'legacy-redo',
+          title: 'Legacy redo',
+          source: 'test',
+          command: 'legacy-redo',
+          keystrokes: ['mod+shift+z'],
+          when: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        },
+        {
+          id: 'other-shortcut',
+          title: 'Other shortcut',
+          source: 'test',
+          command: 'other-shortcut',
+          keystrokes: ['mod+k'],
+          when: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        },
+      ],
+      { send, extraItems: [editorsExtension] }
+    )
+    const editors = registry.get(editorsService)
+    const first = editors.openEditor('first.txt', 'original')
+    const second = editors.openEditor('second.txt', 'separate')
+    document.body.append(
+      codeSurface(registry.get(editorsService), first).dom,
+      codeSurface(registry.get(editorsService), second).dom
+    )
+    try {
+      first.dispatch({ changes: { from: 0, to: 8, insert: 'edited' } })
+      codeSurface(registry.get(editorsService), first).focus()
+      const press = (key: string, shiftKey = false) =>
+        codeSurface(
+          registry.get(editorsService),
+          first
+        ).contentDOM.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key,
+            code: `Key${key.toUpperCase()}`,
+            keyCode: key.toUpperCase().charCodeAt(0),
+            shiftKey,
+            ctrlKey: !/Mac/.test(navigator.platform),
+            metaKey: /Mac/.test(navigator.platform),
+            bubbles: true,
+            cancelable: true,
+          })
+        )
+      press('z')
+      expect(
+        codeSurface(registry.get(editorsService), first).state.doc.toString()
+      ).toBe('original')
+      press('Z', true)
+      expect(
+        codeSurface(registry.get(editorsService), first).state.doc.toString()
+      ).toBe('edited')
+      press('z')
+      press('y')
+      expect(
+        codeSurface(registry.get(editorsService), first).state.doc.toString()
+      ).toBe('edited')
+      expect(
+        codeSurface(registry.get(editorsService), second).state.doc.toString()
+      ).toBe('separate')
+      expect(send).not.toHaveBeenCalled()
+      press('k')
+      expect(send).toHaveBeenCalledOnce()
+    } finally {
+      codeSurface(registry.get(editorsService), first).dom.remove()
+      codeSurface(registry.get(editorsService), second).dom.remove()
+      registry[Symbol.dispose]()
+    }
+  })
   it('leaves widget keys local while allowing explicitly scoped editable bindings', () => {
     const send = vi.fn()
     const tree = document.createElement('zoo-feature-tree')
