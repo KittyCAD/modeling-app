@@ -1444,45 +1444,33 @@ export async function doAndWaitForImageDiff(
   fn: () => Promise<unknown>,
   diffCount = 200
 ) {
-  return new Promise<boolean>((resolve, reject) => {
-    ;(async () => {
-      await pageOrLocator.screenshot({
-        path: './e2e/playwright/temp1.png',
-        fullPage: true,
-      })
-      await fn()
-      const isImageDiff = async () => {
-        await pageOrLocator.screenshot({
-          path: './e2e/playwright/temp2.png',
-          fullPage: true,
-        })
-        const screenshot1 = PNG.sync.read(
-          await fsp.readFile('./e2e/playwright/temp1.png')
-        )
-        const screenshot2 = PNG.sync.read(
-          await fsp.readFile('./e2e/playwright/temp2.png')
-        )
-        const actualDiffCount = pixelMatch(
-          screenshot1.data,
-          screenshot2.data,
-          null,
-          screenshot1.width,
-          screenshot2.height
-        )
-        return actualDiffCount > diffCount
-      }
+  const screenshot1 = PNG.sync.read(
+    await pageOrLocator.screenshot({ fullPage: true })
+  )
+  await fn()
 
-      // Run sequentially so slow screenshots do not overlap and starve Electron.
-      for (let count = 0; count <= 100; count++) {
-        if (await isImageDiff()) {
-          resolve(true)
-          return
-        }
-        await new Promise((resolve) => setTimeout(resolve, 50))
-      }
-      resolve(false)
-    })().catch(reject)
-  })
+  // Keep screenshots private to this invocation when tests run in parallel.
+  // Capture sequentially so slow screenshots do not overlap and starve Electron.
+  for (let count = 0; count <= 100; count++) {
+    const screenshot2 = PNG.sync.read(
+      await pageOrLocator.screenshot({ fullPage: true })
+    )
+    if (
+      screenshot1.width !== screenshot2.width ||
+      screenshot1.height !== screenshot2.height ||
+      pixelMatch(
+        screenshot1.data,
+        screenshot2.data,
+        null,
+        screenshot1.width,
+        screenshot1.height
+      ) > diffCount
+    ) {
+      return true
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+  return false
 }
 
 export async function openAndClearDebugPanel(page: Page) {
