@@ -13,7 +13,7 @@ vi.mock('@src/lib/clientErrors', () => ({
 
 it.each([
   ['Part.kcl', 'part.kcl'],
-  ['caf\u00e9.kcl', 'cafe\u0301.kcl'],
+  ['cafe\u0301.kcl'.normalize('NFC'), 'cafe\u0301.kcl'],
 ])(
   'preserves bytes renaming %s to %s on the actual volume',
   async (from, to) => {
