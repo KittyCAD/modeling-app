@@ -1,6 +1,7 @@
 import type { MachinesListing } from 'components/MachineManagerProvider'
 import 'electron'
 import type { Stats } from 'fs'
+import type { StatOptions } from '@src/lib/fs-zds/interface'
 import type fs from 'node:fs/promises'
 import type path from 'path'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
@@ -60,7 +61,7 @@ export interface IElectronAPI {
   ) => Promise<string>
   rm: typeof fs.rm
   access: typeof fs.access
-  stat: (path: string) => Promise<Stats>
+  stat: (path: string, options?: StatOptions) => Promise<Stats>
   statIsDirectory: (path: string) => Promise<boolean>
   canReadWriteDirectory: (
     path: string
