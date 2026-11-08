@@ -50,16 +50,19 @@ export function createRegionMeshes(
     }
     const mesh = new Mesh(geometry, material)
     mesh.name = `region_${region.regionId}`
+    mesh.userData.faceUuid = region.regionId
+
     const path = region.sketchId && artifactGraph.get(region.sketchId)
-    // Legacy profiles export internal regions that the engine cannot query.
-    // Select their existing profile face; sketch-block regions keep their own IDs.
-    mesh.userData.faceUuid =
+    if (
       path &&
       path.type === 'path' &&
       path.subType === 'sketch' &&
       !path.sketchBlockId
-        ? (path.solid2dId ?? region.regionId)
-        : region.regionId
+    ) {
+      // Legacy profiles export internal regions that the engine cannot query.
+      // Select their existing profile face instead.
+      mesh.userData.faceUuid = path.solid2dId ?? region.regionId
+    }
     mesh.userData.isSketchRegion = true
     return [mesh]
   })
