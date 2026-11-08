@@ -35,6 +35,8 @@
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
     "@kittycad/lib": "^4.5.28",
+    "@kittycad/viewer-sdk": "npm:@kittycad/lib@4.5.26",
+    "@kittycad/web-view": "1.2.21",
     "@lezer/highlight": "^1.2.4",
     "@lezer/lr": "^1.4.10",
     "@microlink/react-json-view": "^1.31.38",

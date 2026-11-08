@@ -21,3 +21,7 @@ this execution context. Editing its Code view updates a Modeling view immediatel
 saving only updates persistence and dirty state, not the execution input. Closing
 one tab leaves the document and its remaining contexts alive. Closing the last
 view disposes the document and interrupts its executors.
+
+A mode that owns a native rendering surface can pass `{ shared: false }` to
+`executionContext`. KCL uses this option so each Modeling view owns its engine
+session and stream element while all views still edit the same document.

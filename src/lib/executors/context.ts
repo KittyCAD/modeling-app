@@ -5,16 +5,20 @@ import type {
   ExecutorsService,
 } from '@src/lib/executors/registry/contract'
 
-/** Retain one executor per editor instance; modes share coalesced results and release their leases. */
+/** Share document computations by default; modes with owned render resources can request their own executor. */
 export function executionContext<C extends ExecutorCapability>(
   capability: C,
-  getExecutors: () => ExecutorsService
+  getExecutors: () => ExecutorsService,
+  options: { shared?: boolean } = {}
 ) {
   return ({ editor, onDispose }: EditorViewHost) => {
-    const lease = getExecutors().acquireExecutor(editor)
-    onDispose(lease.release)
+    const service = getExecutors()
+    const lease =
+      options.shared === false ? undefined : service.acquireExecutor(editor)
+    const executor = lease?.executor ?? service.createExecutor(editor)
+    onDispose(lease?.release ?? (() => service.closeExecutor(executor.id)))
     const result = computed(() => {
-      const output = lease.executor.output.value
+      const output = executor.output.value
       return {
         data: output.get(capability),
         error: output.errors[capability.id],
@@ -23,6 +27,6 @@ export function executionContext<C extends ExecutorCapability>(
         contents: output.contents,
       }
     })
-    return { executor: lease.executor, result }
+    return { executor, result }
   }
 }
