@@ -1,0 +1,9 @@
+.root {
+  @apply flex min-h-0 flex-1 flex-col items-center justify-center overflow-auto p-6 text-center text-default;
+}
+.icon {
+  @apply mb-4 grid h-12 w-12 shrink-0 place-items-center rounded-full bg-primary/10 text-primary;
+}
+.heading {
+  @apply max-w-sm text-lg font-semibold;
+}
