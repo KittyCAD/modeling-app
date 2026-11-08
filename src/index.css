@@ -1,4 +1,5 @@
 @import "./colors.css";
+@import "./semanticColors.css";
 
 @tailwind base;
 @tailwind components;
@@ -435,113 +436,23 @@ code,
 }
 
 @layer utilities {
-  /** "Foreground" utilities */
-  .text-default {
-    @apply text-chalkboard-100 dark:text-chalkboard-10;
-  }
-
-  .text-2 {
-    @apply text-chalkboard-70 dark:text-chalkboard-30;
-  }
-
-  .text-3 {
-    @apply text-chalkboard-50;
-  }
-
-  .text-4 {
-    @apply text-chalkboard-30 dark:text-chalkboard-70;
-  }
-
-  .text-5 {
-    @apply text-chalkboard-20 dark:text-chalkboard-90;
-  }
-
-  .text-6 {
-    @apply text-chalkboard-10 dark:text-chalkboard-100;
-  }
-
-  .b-default {
-    @apply border-chalkboard-100 dark:border-chalkboard-10;
-  }
-
-  .b-2 {
-    @apply border-chalkboard-70 dark:border-chalkboard-30;
-  }
-
-  .b-3 {
-    @apply border-chalkboard-50;
-  }
-
-  .b-4 {
-    @apply border-chalkboard-30 dark:border-chalkboard-80;
-  }
-
-  .b-5 {
-    @apply border-chalkboard-20 dark:border-chalkboard-90;
-  }
-
+  /* Legacy outline color names also overlap Tailwind's width utilities.
+   * Use outline-color-* for new code to keep color and width independent.
+   */
   .outline-default {
-    @apply outline-chalkboard-100 dark:outline-chalkboard-10;
+    @apply outline-color-default;
   }
-
   .outline-2 {
-    @apply outline-chalkboard-70 dark:outline-chalkboard-30;
+    @apply outline-color-2;
   }
-
   .outline-3 {
-    @apply outline-chalkboard-50;
+    @apply outline-color-3;
   }
-
   .outline-4 {
-    @apply outline-chalkboard-30 dark:outline-chalkboard-80;
+    @apply outline-color-4;
   }
-
   .outline-5 {
-    @apply outline-chalkboard-20 dark:outline-chalkboard-90;
-  }
-
-  .bg-default {
-    @apply bg-chalkboard-10 dark:bg-chalkboard-100;
-  }
-
-  .bg-2 {
-    @apply bg-chalkboard-20 dark:bg-chalkboard-90;
-  }
-
-  .bg-3 {
-    @apply bg-chalkboard-30 dark:bg-chalkboard-70;
-  }
-
-  .bg-4 {
-    @apply bg-chalkboard-70 dark:bg-chalkboard-30;
-  }
-
-  .bg-5 {
-    @apply bg-chalkboard-90 dark:bg-chalkboard-20;
-  }
-
-  .bg-6 {
-    @apply bg-chalkboard-100 dark:bg-chalkboard-10;
-  }
-
-  .border-bg-2 {
-    @apply border-chalkboard-20 dark:border-chalkboard-90;
-  }
-
-  .border-bg-3 {
-    @apply border-chalkboard-30 dark:border-chalkboard-70;
-  }
-
-  .border-bg-4 {
-    @apply border-chalkboard-70 dark:border-chalkboard-30;
-  }
-
-  .border-bg-5 {
-    @apply border-chalkboard-90 dark:border-chalkboard-20;
-  }
-
-  .border-bg-6 {
-    @apply border-chalkboard-100 dark:border-chalkboard-10;
+    @apply outline-color-5;
   }
 
   /*

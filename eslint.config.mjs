@@ -17,6 +17,8 @@ import noDirectFsZdsIo from './src/eslint/rules/no-direct-fszds-io.mjs'
 import noInternalFileSystemImports from './src/eslint/rules/no-internal-file-system-imports.mjs'
 import noReactRouterHooks from './src/eslint/rules/no-react-router-hooks.mjs'
 import interactionExpectations from './src/eslint/rules/interaction-expectations.mjs'
+import preferThemeUtilities from './src/eslint/rules/prefer-theme-utilities.mjs'
+import * as cssParser from './src/eslint/css-parser.mjs'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -56,6 +58,7 @@ export default defineConfig([
       zds: {
         rules: {
           'interaction-expectations': interactionExpectations,
+          'prefer-theme-utilities': preferThemeUtilities,
           'no-codemirror-printable-keymap-keystrokes':
             noCodemirrorPrintableKeymapKeystrokes,
           'no-direct-fszds-io': noDirectFsZdsIo,
@@ -268,5 +271,28 @@ export default defineConfig([
     rules: {
       'suggest-no-throw/suggest-no-throw': 'off',
     },
+  },
+  // Expand this scope as components migrate; central palettes and test fixtures remain explicit.
+  {
+    files: [
+      'src/lib/{editors,executors,kcl,markdown,png,toml,dot,collaboration}/**/*.{ts,tsx}',
+      'src/lib/settings/registry/**/*.{ts,tsx}',
+      'src/lib/projectSession/next/ProjectView.tsx',
+      'src/components/{Tabs,TabViewPicker,FilePaneEmptyState}.tsx',
+    ],
+    ignores: ['**/*.test.*', '**/*.spec.*'],
+    rules: { 'zds/prefer-theme-utilities': 'warn' },
+  },
+  {
+    files: [
+      'src/lib/{editors,executors,kcl,markdown,png,toml,dot,collaboration}/**/*.css',
+      'src/lib/settings/registry/**/*.css',
+      'src/components/{Tabs,TabViewPicker,FilePaneEmptyState}.module.css',
+    ],
+    languageOptions: { parser: cssParser },
+    plugins: {
+      zds: { rules: { 'prefer-theme-utilities': preferThemeUtilities } },
+    },
+    rules: { 'zds/prefer-theme-utilities': 'warn' },
   },
 ])

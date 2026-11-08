@@ -25,6 +25,19 @@ const themeColors = Object.fromEntries(
   ])
 )
 
+// Keep role families separate: background level 2 is not foreground level 2.
+const roleColors = (family, levels) =>
+  Object.fromEntries([
+    ['default', toOKLCHVar(`--_${family}-default`)],
+    ['1', toOKLCHVar(`--_${family}-default`)],
+    ...levels.map((level) => [level, toOKLCHVar(`--_${family}-${level}`)]),
+  ])
+const surfaces = roleColors('surface', [2, 3, 4, 5, 6])
+const foregrounds = roleColors('foreground', [2, 3, 4, 5, 6])
+const borders = roleColors('border', [2, 3, 4, 5])
+const colorValue = (value, opacityValue = 1) =>
+  typeof value === 'function' ? value({ opacityValue }) : value
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: 'jit',
@@ -42,6 +55,9 @@ module.exports = {
         'ml-grey': 'var(--chalkboard-80)',
         ...themeColors,
       },
+      backgroundColor: surfaces,
+      textColor: foregrounds,
+      borderColor: { bg: surfaces },
       fontFamily: {
         sans: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -66,6 +82,20 @@ module.exports = {
   },
   darkMode: 'class',
   plugins: [
+    plugin(({ matchUtilities }) => {
+      matchUtilities(
+        {
+          b: (value) => ({
+            borderColor: colorValue(value, 'var(--tw-border-opacity, 1)'),
+          }),
+        },
+        { values: borders, type: 'color' }
+      )
+      matchUtilities(
+        { 'outline-color': (value) => ({ outlineColor: colorValue(value) }) },
+        { values: borders, type: 'color' }
+      )
+    }),
     require('@headlessui/tailwindcss'),
     // custom plugin to add variants for aria-pressed
     // To use, just add a class of 'group-pressed:<some-tailwind-class>' or 'pressed:<some-tailwind-class>'
