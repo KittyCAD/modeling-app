@@ -294,3 +294,37 @@ export const isErrorWhitelisted = (exception: Error) => {
 
   return foundItem !== undefined
 }
+
+export function isInterruptedWebKitRequest(
+  exception: Pick<Error, 'name' | 'message' | 'stack'>,
+  project: string | undefined,
+  isNavigating: boolean
+): boolean {
+  if (
+    project !== 'webkit' ||
+    !isNavigating ||
+    !exception.message.includes('due to access control checks')
+  ) {
+    return false
+  }
+  const stack = exception.stack ?? ''
+  if (exception.name === 'Cannot load blob') {
+    return (
+      stack.includes('/src/lib/fs-zds/opfs.ts:') ||
+      stack.includes('/src/lib/screenshot.ts:')
+    )
+  }
+  if (exception.name === 'Fetch API cannot load http') {
+    return (
+      exception.message.endsWith(
+        '/clientSideSceneAssets/gizmo_cube/gizmo_cube.glb due to access control checks.'
+      ) &&
+      stack.includes('/src/components/gizmo/GizmoRenderer.ts:') &&
+      stack.includes('three_examples_jsm_loaders_GLTFLoader')
+    )
+  }
+  return (
+    exception.name === 'Cannot load http' &&
+    stack.includes('/src/lib/fs-zds/opfsWorker.ts?worker&inline:')
+  )
+}
