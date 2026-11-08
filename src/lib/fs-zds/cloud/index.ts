@@ -280,9 +280,15 @@ export function createCloudFileSystem(
   const enqueue = <T>(
     id: string,
     work: (previousState: CloudSaveState | undefined) => Promise<T>,
-    persist = true,
-    reportSaveFailure = true,
-    allowReconciliation = false
+    {
+      persist = true,
+      reportSaveFailure = true,
+      allowReconciliation = false,
+    }: {
+      persist?: boolean
+      reportSaveFailure?: boolean
+      allowReconciliation?: boolean
+    } = {}
   ): Promise<T> => {
     if (isOffline()) return Promise.reject(offlineError())
     const project = opened.get(id)
@@ -378,7 +384,7 @@ export function createCloudFileSystem(
         // A preceding editor save may already have included the staged thumbnail.
         if (pendingThumbnails.has(id)) await commit(id)
       },
-      false
+      { persist: false }
     )
   const deferThumbnail = (id: string) => {
     const thumbnail = pendingThumbnails.get(id)
@@ -406,16 +412,28 @@ export function createCloudFileSystem(
     }
     return run()
   }
+  function readFile(
+    path: string,
+    options: { encoding: 'utf-8' }
+  ): Promise<string>
+  function readFile(path: string, options: 'utf8'): Promise<string>
+  function readFile(path: string, options?: object): Promise<Uint8Array>
+  function readFile(
+    path: string,
+    options?: 'utf8' | object
+  ): Promise<string | Uint8Array> {
+    if (options) {
+      return read(path, () => memory.readFile(path, 'utf8'))
+    }
+    return read(path, () => memory.readFile(path))
+  }
   const sameProject = (source: string, destination: string) =>
     idFor(source) === idFor(destination)
   const fs: IZooDesignStudioFS = {
     ...memory,
     access: (path, flags) => read(path, () => memory.access(path, flags)),
     stat: (path, options) => read(path, () => memory.stat(path, options)),
-    readFile: ((path: string, options?: unknown) =>
-      read<string | Uint8Array>(path, () =>
-        options ? memory.readFile(path, 'utf8') : memory.readFile(path)
-      )) as IZooDesignStudioFS['readFile'],
+    readFile,
     readdir: (path, options) =>
       read(path, async () =>
         paths.resolve(path) === root
@@ -707,8 +725,7 @@ export function createCloudFileSystem(
             acknowledge(id, remote, archive)
             refreshed = true
           },
-          false,
-          false
+          { persist: false, reportSaveFailure: false }
         )
         return { changed, refreshed }
       })().finally(() => {
@@ -760,8 +777,7 @@ export function createCloudFileSystem(
           await hydrate(id, archive)
           acknowledge(id, remote, archive)
         },
-        false,
-        false
+        { persist: false, reportSaveFailure: false }
       )
     },
     deleteProject,
@@ -806,9 +822,7 @@ export function createCloudFileSystem(
           )
             await commit(id)
         },
-        false,
-        true,
-        true
+        { persist: false, allowReconciliation: true }
       ),
     snapshot: async (id: string) => {
       await openProject(id)
@@ -849,7 +863,7 @@ export function createCloudFileSystem(
             },
           })
         },
-        false
+        { persist: false }
       )
     },
   }
