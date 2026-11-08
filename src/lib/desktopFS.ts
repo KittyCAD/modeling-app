@@ -1,5 +1,5 @@
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
+import { FILE_EXT } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import {
   getEXTWithPeriod,
@@ -7,9 +7,18 @@ import {
   isExtensionARelevantExtension,
 } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { getUniqueProjectNameFromExistingNames } from '@src/lib/projectName'
+import {
+  getNextProjectIndexFromNames,
+  getUniqueProjectNameFromNames,
+} from '@src/lib/projectName'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+
+export {
+  doesProjectNameNeedInterpolated,
+  getUniqueProjectNameFromNames,
+  interpolateProjectNameWithIndex,
+} from '@src/lib/projectName'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -33,15 +42,6 @@ export function sortFilesAndDirectories(files: FileEntry[]): FileEntry[] {
   })
 }
 
-// create a regex to match the project name
-// replacing any instances of "$n" with a regex to match any number
-function interpolateProjectName(projectName: string) {
-  const regex = new RegExp(
-    projectName.replace(getPaddedIdentifierRegExp(), '([0-9]+)')
-  )
-  return regex
-}
-
 // Returns the next available index for a project name
 export function getNextProjectIndex(
   projectName: string,
@@ -53,79 +53,12 @@ export function getNextProjectIndex(
   )
 }
 
-function getNextProjectIndexFromNames(
-  projectName: string,
-  existingNames: readonly string[]
-) {
-  const regex = interpolateProjectName(projectName)
-  const matches = existingNames.map((name) => name.match(regex))
-  const indices = matches
-    .filter(Boolean)
-    .map((match) => (match !== null ? match[1] : '-1'))
-    .map((maybeMatchIndex) => {
-      return parseInt(maybeMatchIndex || '0', 10)
-    })
-  const maxIndex = Math.max(...indices, -1)
-  return maxIndex + 1
-}
-
-// Interpolates the project name with the next available index,
-// padding the index with 0s if necessary
-export function interpolateProjectNameWithIndex(
-  projectName: string,
-  index: number
-) {
-  const regex = getPaddedIdentifierRegExp()
-
-  const matches = projectName.match(regex)
-  const padStartLength = Math.min(
-    matches !== null ? matches[1]?.length || 0 : 0,
-    MAX_PADDING
-  )
-  return projectName.replace(
-    regex,
-    index.toString().padStart(padStartLength + 1, '0')
-  )
-}
-
-export function doesProjectNameNeedInterpolated(projectName: string) {
-  return projectName.includes(INDEX_IDENTIFIER)
-}
-
-/**
- * Given a target name, which may include our magic index interpolation string,
- * and a list of projects, return a unique name that doesn't conflict with any
- * of the existing projects, incrementing any ending number if necessary.
- * @param name
- * @param projects
- * @returns
- */
+/** Return an available project name, including index interpolation. */
 export function getUniqueProjectName(name: string, projects: FileEntry[]) {
   return getUniqueProjectNameFromNames(
     name,
     projects.map((project) => project.name)
   )
-}
-
-export function getUniqueProjectNameFromNames(
-  name: string,
-  existingNames: readonly string[]
-) {
-  if (doesProjectNameNeedInterpolated(name)) {
-    const nextIndex = getNextProjectIndexFromNames(name, existingNames)
-    return interpolateProjectNameWithIndex(name, nextIndex)
-  }
-
-  return getUniqueProjectNameFromExistingNames(name, existingNames)
-}
-
-function escapeRegExpChars(string: string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
-function getPaddedIdentifierRegExp() {
-  const escapedIdentifier = escapeRegExpChars(INDEX_IDENTIFIER)
-  return new RegExp(`${escapedIdentifier}(${escapedIdentifier.slice(-1)}*)`)
 }
 
 export async function getSettingsFolderPaths(projectPath?: string) {

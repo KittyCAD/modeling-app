@@ -7,13 +7,13 @@ import {
   getProjectInfo,
   isPathNotFoundError,
 } from '@src/lib/desktop'
-import { getUniqueProjectNameFromNames } from '@src/lib/desktopFS'
 import { collectProjectFilesForUpload } from '@src/lib/projectSession/projectFiles'
 import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { ProjectLibraryInitialProject } from '@src/lib/projectLibraries'
 import {
+  getUniqueProjectNameFromNames,
   getProjectDirectoryNameFromTitle,
   getProjectTitleFromUniqueDirectoryName,
 } from '@src/lib/projectName'
