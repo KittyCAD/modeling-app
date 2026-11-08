@@ -1,9 +1,18 @@
+import { createElement } from 'react'
+import { defineEditorView } from '@src/lib/editors/views'
+import { executionContext } from '@src/lib/executors/context'
 import { markdown } from '@codemirror/lang-markdown'
 import { editorMarkdownHighlight } from '@src/editor/plugins/theme'
 import {
   codeEditorsExtensionFacet,
   editorLanguagesFacet,
 } from '@src/lib/editors/registry/contract'
+import {
+  executorsService,
+  executorCapabilityValueSpec,
+} from '@src/lib/executors/registry/contract'
+import { markdownExecutorCapability } from '@src/lib/markdown/executor'
+import { MarkdownPreview } from '@src/lib/markdown/MarkdownPreview'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { contribute, type Extension, type InputOf } from 'plankton'
 

@@ -41,6 +41,7 @@ describe('experimental editor registration', () => {
       await registry.configure([
         featureFlags,
         editorsExtension,
+        executorsExtension,
         savingExtension,
         markdownExtension,
         kclExtension,
