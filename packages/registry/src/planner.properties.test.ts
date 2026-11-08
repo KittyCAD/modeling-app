@@ -2,6 +2,7 @@ import fc from 'fast-check'
 import { expect, it } from 'vitest'
 import type { Item, Subtree } from './algebra'
 import { slot } from './algebra'
+import { formatPath } from './path'
 import { DependencyCycleError, plan } from './planner'
 
 const runs = { numRuns: 300 }
@@ -74,7 +75,7 @@ it('matches expanded declaration order with first occurrence retained', () => {
       expect(actual).toHaveLength(expected.length)
       for (const [index, entry] of expected.entries()) {
         expect(actual[index].item).toBe(nodes[entry.index])
-        expect(actual[index].path).toBe(entry.path)
+        expect(formatPath(actual[index].path)).toBe(entry.path)
       }
     }),
     runs
@@ -177,10 +178,13 @@ it('reports the active path for cycles through groups and dependencies', () => {
   }
   expect(failure).toBeInstanceOf(DependencyCycleError)
   if (!(failure instanceof DependencyCycleError)) throw failure
+  expect(failure.message).toBe(
+    'Cyclic item dependency: root[0] -> root[0]/dependencies[0] -> root[0]/dependencies[0]/items[0]'
+  )
   expect(failure.paths).toEqual([
-    'root[0]',
-    'root[0]/dependencies[0]',
-    'root[0]/dependencies[0]/items[0]',
+    [0],
+    [0, ['dependencies', 0]],
+    [0, ['dependencies', 0], ['items', 0]],
   ])
 })
 
@@ -191,7 +195,7 @@ it('rejects recursive groups without mistaking shared groups for cycles', () => 
   const binding = { install: neverInstall }
   const shared = [binding]
   expect(plan([shared, shared])).toEqual([
-    { item: binding, path: 'root[0]/items[0]' },
+    { item: binding, path: [0, ['items', 0]] },
   ])
 })
 
@@ -206,7 +210,34 @@ it('does not inspect slot children or invoke even a create getter', () => {
     },
   }
   expect(plan([owner])).toEqual([
-    { item: container, path: 'root[0]/dependencies[0]' },
-    { item: owner, path: 'root[0]' },
+    { item: container, path: [0, ['dependencies', 0]] },
+    { item: owner, path: [0] },
   ])
+})
+
+it('structured paths navigate back to their exact item using valid traversal indices', () => {
+  fc.assert(
+    fc.property(dag, ({ nodes, roots }) => {
+      const items = roots.map((root) => nodes[root])
+      for (const entry of plan(items)) {
+        const [root, ...steps] = entry.path
+        expect(Number.isInteger(root) && root >= 0).toBe(true)
+        let item = items[root]
+        for (const [edge, index] of steps) {
+          expect(Number.isInteger(index) && index >= 0).toBe(true)
+          if (edge === 'dependencies') {
+            if (!('create' in item))
+              throw new Error('Dependency edge requires a subtree')
+            item = item.dependencies![index]
+          } else {
+            if ('create' in item || 'install' in item)
+              throw new Error('Item edge requires a group')
+            item = item[index]
+          }
+        }
+        expect(item).toBe(entry.item)
+      }
+    }),
+    runs
+  )
 })

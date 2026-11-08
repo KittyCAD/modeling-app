@@ -118,8 +118,12 @@ provides a seam for examining these choices before migrating existing consumers.
 `plan(items)` in `src/planner.ts` returns ordered `{ item, path }` entries for
 Bindings and Subtrees. Groups are flattened. Every identity is visited once;
 dependencies precede their owners, and unrelated items retain traversal order.
-The first encounter supplies each entry's diagnostic path. Identity is reference
-identity, so structurally identical definitions remain distinct.
+The first encounter supplies each entry's structured `ItemPath`: a root index
+followed by `['items' | 'dependencies', index]` steps. Traversal constructs
+nonnegative integer indices. Paths locate occurrences in this input, not persistent
+identities; `formatPath` in `src/path.ts` renders them for diagnostics. Origin paths
+remain human-readable strings at the provider diagnostic boundary. Identity is
+reference identity, so structurally identical definitions remain distinct.
 
 An edge into the active traversal throws `DependencyCycleError`, whose `paths`
 describe the cycle. Completed shared dependencies are not cycles. Recursive
@@ -128,9 +132,11 @@ slot contents and other acquired children are deliberately outside this plan.
 
 `src/planner.properties.test.ts` compares ordering and provenance against a small
 expand-then-deduplicate model and checks reachable cycles against independent
-dependency elimination. Four properties run 300 cases each, alongside examples
-covering group cycles, shared groups, and undiscovered slot contents. The DAG
-fixtures are frozen, and acquisition/installation callbacks throw if invoked.
+dependency elimination. Structured paths are also followed back through the
+input graph to check exact item identity and index validity. Five properties run
+300 cases each, alongside examples covering group cycles, shared groups, and
+undiscovered slot contents. The DAG fixtures are frozen, and acquisition/installation
+callbacks throw if invoked.
 
 The planner is not yet wired into the existing registry. Staged acquisition and
 reconciliation remain the next layer.
