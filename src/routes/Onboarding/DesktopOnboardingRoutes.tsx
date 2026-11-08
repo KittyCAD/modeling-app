@@ -1,5 +1,6 @@
+import { newKclFile } from '@src/lang/project'
 import fsZds from '@src/lib/fs-zds'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import { Spinner } from '@src/components/Spinner'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useApp } from '@src/lib/boot'
@@ -128,20 +129,32 @@ function Scene() {
     if (isBlankFileOpen) {
       return
     }
+    const project = app.project
+    if (!project) return
     let cancelled = false
     setIsBlankSceneReady(false)
     // Create if necessary and navigate to the `blank.kcl` file
-    app.projectOperations
-      .writeFiles(
-        fsZds.join(app.projectDirectoryPath, projectName),
-        [{ path: 'blank.kcl', contents: '' }],
-        { overwrite: true }
-      )
+    app.wasmPromise
+      .then((wasm) => {
+        if (cancelled || app.project !== project) return []
+        const contents = newKclFile(
+          undefined,
+          app.settings.actor.getSnapshot().context.modeling.defaultUnit.current,
+          wasm
+        )
+        if (isErr(contents)) return Promise.reject(contents)
+        return app.projectOperations.writeFiles(
+          project.path,
+          [{ path: 'blank.kcl', contents }],
+          { overwrite: true }
+        )
+      })
       .then(async (paths) => {
+        if (cancelled || app.project !== project) return
         await app.refreshProjects()
-        if (cancelled) return
+        if (cancelled || app.project !== project) return
         await app.projectSession.openFile(paths[0], {
-          projectPath: fsZds.join(app.projectDirectoryPath, projectName),
+          projectPath: project.path,
           subRoute: joinRouterPaths(
             String(PATHS.ONBOARDING),
             thisOnboardingStatus
