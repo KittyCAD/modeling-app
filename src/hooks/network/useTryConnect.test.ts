@@ -329,9 +329,7 @@ describe('reconnect camera restoration', () => {
             : ['clear', 'camera', 'execute', 'named view']
       )
       if (retired === 'none' || retired === 'named')
-        expect(executeCode).toHaveBeenCalledWith(undefined, {
-          updateThumbnail: false,
-        })
+        expect(executeCode).toHaveBeenCalledWith()
       expect(camControls.reconnectCameraState).toBeUndefined()
       expect(
         camControls.overrideOldCameraStateToPreventDesync
