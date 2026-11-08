@@ -1088,6 +1088,9 @@ describe('project system', () => {
       }
       const opened = await app.openProject(project)
       const editor = await opened.openEditor(mainPath)
+      editor.engineCommandManager.connection = {
+        connected: true,
+      } as typeof editor.engineCommandManager.connection
       await writeText(nestedPath, '@settings(kclVersion = 3.0)\nsize = 2\n')
       await fsZds.rm(oldPath)
       const gate = Promise.withResolvers<undefined>()
