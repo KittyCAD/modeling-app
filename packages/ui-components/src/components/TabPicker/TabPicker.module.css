@@ -1,0 +1,37 @@
+.button.button,
+.label {
+  @apply m-0 inline-flex h-5 max-w-40 items-center gap-1 rounded-sm border border-solid b-4 bg-2/50 px-1.5 py-0 text-[11px] leading-none text-2 shadow-none;
+}
+.label {
+  @apply block truncate leading-[18px];
+}
+.button.button:hover,
+.button.button[aria-expanded="true"] {
+  @apply b-3 bg-3/60 text-default;
+}
+.button:focus-visible {
+  @apply outline outline-1 -outline-offset-2 outline-primary;
+}
+.option.option {
+  @apply m-0 flex w-full min-w-40 max-w-full items-center gap-2 rounded-none border-0 bg-transparent px-3 py-1.5 text-left text-xs text-inherit shadow-none;
+}
+.option.option:hover,
+.option.option:focus-visible {
+  @apply bg-2 outline-none;
+}
+
+.root {
+  @apply flex items-center;
+}
+.text {
+  @apply truncate;
+}
+.check {
+  @apply grid h-4 w-4 shrink-0 place-items-center;
+}
+.panel {
+  @apply fixed z-20 m-0 max-h-[80vh] max-w-[calc(100vw-16px)] overflow-y-auto rounded border border-solid b-4 bg-default p-0 text-sm text-default shadow-lg;
+}
+.options {
+  @apply m-0 flex list-none flex-col p-0 py-2;
+}

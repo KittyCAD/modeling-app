@@ -25,7 +25,8 @@
       "types": "./dist/web-components/index.d.ts",
       "import": "./dist/web-components.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./styles.css": "./dist/ui-components.css"
   },
   "scripts": {
     "build": "npm run build:types && vite build",
@@ -53,7 +54,9 @@
     "@tiptap/react": "^3.27.2",
     "@tiptap/starter-kit": "^3.27.2",
     "lit": "^3.3.3",
-    "ms": "^2.1.3"
+    "ms": "^2.1.3",
+    "@headlessui/react": "^1.7.19",
+    "@floating-ui/dom": "^1.7.6"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",

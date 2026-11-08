@@ -278,6 +278,12 @@ export default defineConfig([
     },
   },
   {
+    files: ['packages/ui-components/**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: { project: ['./packages/ui-components/tsconfig.json'] },
+    },
+  },
+  {
     files: ['packages/registry/src/**/*.{ts,tsx}'],
     rules: {
       'suggest-no-throw/suggest-no-throw': 'off',
@@ -289,7 +295,8 @@ export default defineConfig([
       'src/lib/{editors,executors,kcl,markdown,png,toml,dot,collaboration}/**/*.{ts,tsx}',
       'src/lib/settings/registry/**/*.{ts,tsx}',
       'src/lib/projectSession/next/ProjectView.tsx',
-      'src/components/{Tabs,TabViewPicker,FilePaneEmptyState}.tsx',
+      'src/components/{TabViewPicker,FilePaneEmptyState}.tsx',
+      'packages/ui-components/src/components/{Tabs,TabPicker,EmptyState}/**/*.tsx',
     ],
     ignores: ['**/*.test.*', '**/*.spec.*'],
     rules: { 'zds/prefer-theme-utilities': 'warn' },
@@ -298,7 +305,8 @@ export default defineConfig([
     files: [
       'src/lib/{editors,executors,kcl,markdown,png,toml,dot,collaboration}/**/*.css',
       'src/lib/settings/registry/**/*.css',
-      'src/components/{Tabs,TabViewPicker,FilePaneEmptyState}.module.css',
+      'src/components/FilePaneEmptyState.module.css',
+      'packages/ui-components/src/components/{Tabs,TabPicker,EmptyState}/**/*.css',
     ],
     languageOptions: { parser: cssParser },
     plugins: {

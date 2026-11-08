@@ -22,6 +22,30 @@ This workspace is the promotion target for components that are ready to move out
 2. Extract the UI surface into this package once the API settles.
 3. Add or expand stories, component tests, and unit tests here before wider reuse.
 
+## Tabs, tab pickers, and empty states
+
+`Tabs` is controlled by stable string, number, or symbol IDs. Inactive panels stay
+mounted, preserving form state. Prefix and postfix controls sit outside the tab
+list's arrow-key navigation; `postfixAlign="end"` pins actions to its trailing edge.
+A close action supplies its accessible label and callback; `closeIcon` can replace
+the default glyph. The caller decides which tab becomes active after removal.
+
+`TabPicker` is a generic accessory for a tab. Supply `label` for its accessible
+name, `options`, `value`, and `onChange`; domain-specific copy and optional icons
+belong to the caller. A single available option renders as a passive label. Its
+popover is portaled out of scroll containers, follows its trigger, and flips or
+shifts to stay in the viewport. Escape dismisses it without changing the choice.
+
+`EmptyState` accepts an `icon`, a heading through `children`, and an `action` slot.
+File-opening behavior and rotating product copy stay in the application.
+
+Source consumers load the component CSS automatically. Consumers of the built
+package also import `@kittycad/ui-components/styles.css`. These controls use the
+shared semantic theme channels supplied by the host (`--_surface-*`,
+`--_foreground-*`, `--_border-*`, and `--_primary`); Zoo's application stylesheet
+and Storybook preview provide them. Set the theme on the document so portaled
+controls share it. See the Tabs, TabPicker, and EmptyState Storybook examples.
+
 ## Web component pilot: feature tree row
 
 `zoo-feature-tree` and `zoo-feature-tree-row` are controlled Lit elements with
