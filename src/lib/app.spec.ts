@@ -1204,13 +1204,9 @@ describe('project system', () => {
         `open:resolved:${alternatePath}`,
         `execute:${alternatePath}`,
       ])
-      expect(executeCode).toHaveBeenLastCalledWith('alternate = true\n', {
-        updateThumbnail: false,
-      })
+      expect(executeCode).toHaveBeenLastCalledWith('alternate = true\n')
       await openedProject.openEditor(mainPath, kclManager)
-      expect(executeCode).toHaveBeenLastCalledWith('main = true\n', {
-        updateThumbnail: false,
-      })
+      expect(executeCode).toHaveBeenLastCalledWith('main = true\n')
       expect(sendUpdateFile).not.toHaveBeenCalled()
     } finally {
       vi.useRealTimers()
