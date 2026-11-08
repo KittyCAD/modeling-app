@@ -1548,6 +1548,7 @@ test(
     })
 
     await test.step('We can change back to the original root project directory', async () => {
+      await homePage.projectsLoaded()
       await expect(
         page.getByTestId('project-directory-settings-link')
       ).toBeVisible()
