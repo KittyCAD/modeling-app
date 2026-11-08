@@ -426,6 +426,10 @@ export class ElectronZoo {
       }
     }
 
+    // Electron reuses its context; prior tests may have mocked the engine socket.
+    await this.context.routeWebSocket('**/ws/modeling/commands**', (socket) => {
+      socket.connectToServer()
+    })
     await startRendererCrashDiagnostics(this.electron)
     if (this.tracingEnabled) {
       await this.context.tracing.startChunk()
