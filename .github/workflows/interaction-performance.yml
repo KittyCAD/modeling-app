@@ -106,7 +106,8 @@ jobs:
     # A failed dependency must fail this check instead of leaving it skipped.
     if: ${{ !cancelled() }}
     runs-on: namespace-profile-macos-8-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-measure
-    timeout-minutes: 15
+    # Cold dependency installs precede the fixed 50-test schedule and reporting.
+    timeout-minutes: 25
     steps:
       - name: Require both instrumented builds
         env:
