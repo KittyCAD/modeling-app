@@ -2205,15 +2205,7 @@ impl ExecutorContext {
             .map_err(|err| exec_state.error_with_outputs(err, None, default_planes.clone()))?
             .into_iter()
         {
-            #[cfg(not(target_arch = "wasm32"))]
-            let mut set = tokio::task::JoinSet::new();
-
-            #[allow(clippy::type_complexity)]
-            let (results_tx, mut results_rx): (
-                tokio::sync::mpsc::Sender<(ModuleId, ModulePath, Result<ModuleRepr, KclError>)>,
-                tokio::sync::mpsc::Receiver<_>,
-            ) = tokio::sync::mpsc::channel(1);
-
+            // Await each module so its Engine commands follow the sorted dependency order.
             for module in modules {
                 let Some((import_stmt, module_id, module_path, repr)) = universe.get(&module) else {
                     return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
@@ -2224,11 +2216,10 @@ impl ExecutorContext {
                 let module_path = module_path.clone();
                 let source_range = SourceRange::from(import_stmt);
                 // Clone before mutating.
-                let module_exec_state = exec_state.clone();
+                let mut module_exec_state = exec_state.clone();
 
                 let repr = repr.clone();
                 let exec_ctxt = self.clone_with_fresh_execution_batch();
-                let results_tx = results_tx.clone();
 
                 let exec_module = async |exec_ctxt: &ExecutorContext,
                                          repr: &ModuleRepr,
@@ -2253,7 +2244,7 @@ impl ExecutorContext {
                             result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
                         }
                         ModuleRepr::Foreign(geom, _) => {
-                            // The concurrent executor starts from a clone of the root module state.
+                            // Each imported module starts from a clone of the root module state.
                             // Use a fresh artifact state so the import command belongs only to the
                             // foreign module that issued it.
                             exec_state.mod_local.artifacts = Default::default();
@@ -2276,55 +2267,16 @@ impl ExecutorContext {
                     }
                 };
 
-                #[cfg(target_arch = "wasm32")]
-                {
-                    wasm_bindgen_futures::spawn_local(async move {
-                        let mut exec_state = module_exec_state;
-                        let exec_ctxt = exec_ctxt;
+                let result = exec_module(
+                    &exec_ctxt,
+                    &repr,
+                    module_id,
+                    &module_path,
+                    &mut module_exec_state,
+                    source_range,
+                )
+                .await;
 
-                        let result = exec_module(
-                            &exec_ctxt,
-                            &repr,
-                            module_id,
-                            &module_path,
-                            &mut exec_state,
-                            source_range,
-                        )
-                        .await;
-
-                        results_tx
-                            .send((module_id, module_path, result))
-                            .await
-                            .unwrap_or_default();
-                    });
-                }
-                #[cfg(not(target_arch = "wasm32"))]
-                {
-                    set.spawn(async move {
-                        let mut exec_state = module_exec_state;
-                        let exec_ctxt = exec_ctxt;
-
-                        let result = exec_module(
-                            &exec_ctxt,
-                            &repr,
-                            module_id,
-                            &module_path,
-                            &mut exec_state,
-                            source_range,
-                        )
-                        .await;
-
-                        results_tx
-                            .send((module_id, module_path, result))
-                            .await
-                            .unwrap_or_default();
-                    });
-                }
-            }
-
-            drop(results_tx);
-
-            while let Some((module_id, _, result)) = results_rx.recv().await {
                 match result {
                     Ok(new_repr) => {
                         let mut repr = exec_state.global.module_infos[&module_id].take_repr();
@@ -3065,6 +3017,61 @@ mod tests {
         ctx.machine_call_depth_limit = 123;
         let cloned = ctx.clone_with_fresh_execution_batch();
         assert_eq!(cloned.machine_call_depth_limit, 123);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imports_execute_in_sorted_dependency_order() {
+        #[derive(Debug, Default)]
+        struct ModuleOperations(std::sync::Mutex<Vec<ModuleId>>);
+
+        impl ExecutionCallbacks for ModuleOperations {
+            fn on_operation(&self, args: OperationCallbackArgs) {
+                self.0.lock().unwrap().push(args.module_id);
+            }
+        }
+
+        let part = r#"@settings(kclVersion = 3.0)
+export profile = sketch(on = XY) {
+  c = circle(center = [var 0mm, var 0mm], start = [var 1mm, var 0mm])
+}
+"#;
+        let assembly = r#"@settings(kclVersion = 3.0)
+import profile as first from "a.kcl"
+import profile as second from "b.kcl"
+export profiles = [first, second]
+"#;
+        // Source order deliberately differs from the sorted dependency stages.
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = 3.0)
+import profile as second from "b.kcl"
+import profiles from "assembly.kcl"
+import profile as first from "a.kcl"
+"#,
+        )
+        .unwrap();
+        for _ in 0..3 {
+            let operations = Arc::new(ModuleOperations::default());
+            let mut ctx = versioned_modules_context(&[("a.kcl", part), ("b.kcl", part), ("assembly.kcl", assembly)]);
+            ctx.execution_callbacks = Some(operations.clone());
+            let mut state = ExecState::new(&ctx);
+            ctx.run(&program, &mut state).await.unwrap();
+            ctx.close().await;
+
+            let paths = state.global.filenames();
+            let mut order: Vec<_> = operations
+                .0
+                .lock()
+                .unwrap()
+                .iter()
+                .filter_map(|id| match paths.get(id) {
+                    Some(ModulePath::Local { value, .. }) => value.file_name(),
+                    _ => None,
+                })
+                .filter(|name| *name != "main.kcl")
+                .collect();
+            order.dedup();
+            assert_eq!(order, ["a.kcl", "b.kcl", "assembly.kcl"]);
+        }
     }
 
     #[tokio::test]
