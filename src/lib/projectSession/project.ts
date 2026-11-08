@@ -476,6 +476,7 @@ export class ZDSProject {
     await editor.rustContext.sendOpenProject(editor.path, apiFiles)
     if (!isCurrent() || this.executingEditor.value !== editor) return
     if (
+      editor.engineCommandManager.connection?.connected &&
       !editor.modelingState?.matches('Sketch') &&
       !editor.modelingState?.matches('sketchSolveMode') &&
       getAutomaticallyRenderEnabledFromSettings(
