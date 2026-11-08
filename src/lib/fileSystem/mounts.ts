@@ -18,14 +18,21 @@ export function createMountedFileOperations(
   const mounts = new Map<string, FileOperationsMount>()
   const find = (path: string): FileOperationsRegistryService => {
     const absolute = paths.resolve(path)
-    const mount = [...mounts.values()]
-      .filter(
-        ({ root }) =>
-          absolute === root || absolute.startsWith(`${root}${paths.sep}`)
-      )
-      .sort((a, b) => b.root.length - a.root.length)[0]
-    return mount?.operations ?? local
+    let selectedMount: FileOperationsMount | undefined
+    for (const mount of mounts.values()) {
+      const containsPath =
+        absolute === mount.root ||
+        absolute.startsWith(`${mount.root}${paths.sep}`)
+      if (
+        containsPath &&
+        (!selectedMount || mount.root.length > selectedMount.root.length)
+      ) {
+        selectedMount = mount
+      }
+    }
+    return selectedMount?.operations ?? local
   }
+
   const copyAcross = async (
     from: FileOperationsRegistryService,
     to: FileOperationsRegistryService,
@@ -93,14 +100,16 @@ export function createMountedFileOperations(
         )
       )
     },
-    rename: (source, destination) =>
-      find(source) === find(destination)
-        ? find(source).rename(source, destination)
-        : Promise.reject(
-            new Error(
-              'Rename cannot cross project storage backends; clone the project instead.'
-            )
-          ),
+    rename: (source, destination) => {
+      const from = find(source)
+      const to = find(destination)
+      if (from === to) return from.rename(source, destination)
+      return Promise.reject(
+        new Error(
+          'Rename cannot cross project storage backends; clone the project instead.'
+        )
+      )
+    },
   }
   return {
     operations,
