@@ -144,7 +144,9 @@ const Loading = ({
         className={`flex ${isCompact ? 'flex-row gap-2' : 'flex-col'} items-center justify-center ${colorClass} ${className}`}
         data-testid={dataTestId ? dataTestId : 'loading'}
       >
-        <Spinner className={isCompact ? 'w-4 h-4' : 'w-8 w-8'} />
+        <Spinner
+          className={isCompact ? 'h-4 w-4 shrink-0' : 'h-8 w-8 shrink-0'}
+        />
         <p className={`text-base ${isCompact ? '' : 'mt-4'}`}>{children}</p>
       </div>
     )
@@ -178,7 +180,14 @@ const Loading = ({
         {isUnrecoverableError ? '' : children || 'Loading'}
       </p>
 
-      <div className="text-base h-[1em]">
+      <div
+        className={
+          `text-base h-[1em] ` +
+          (countdown !== undefined &&
+            countdown <= 1 &&
+            'transition-opacity duration-1000 opacity-0')
+        }
+      >
         {countdown !== undefined && countdown > 0 && isRetrying && (
           <span>Connecting in {countdown}s</span>
         )}
