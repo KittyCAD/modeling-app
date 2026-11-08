@@ -57,6 +57,7 @@ export interface FileOperationsRegistryService {
     restore: boolean
   ) => Promise<void>
   readonly remove: (path: string) => Promise<void>
+  /** Rename without replacing a distinct entry; filesystem spelling aliases are allowed. */
   readonly rename: (source: string, destination: string) => Promise<void>
 }
 

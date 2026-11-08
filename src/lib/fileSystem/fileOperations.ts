@@ -1,3 +1,4 @@
+import { renameEntry } from '@src/lib/fileSystem/renameEntry'
 import {
   captureDeletion,
   replayDeletion,
@@ -18,6 +19,7 @@ import {
 } from '@src/lib/fileSystem/fileSystem'
 import {
   comparePathLockKeys,
+  conservativePathLockKey,
   type PathLockRequirement,
   pathLockRequirements,
 } from '@src/lib/fileSystem/pathLocking'
@@ -151,6 +153,7 @@ export interface FileOperationsService {
     restore: boolean
   ) => Effect.Effect<void, FileSystemError>
   readonly remove: (path: string) => Effect.Effect<void, FileSystemError>
+  /** Rename without replacing a distinct entry; filesystem spelling aliases are allowed. */
   readonly rename: (
     source: string,
     destination: string
@@ -163,8 +166,8 @@ export class FileOperations extends Context.Tag('zds/FileOperations')<
 >() {}
 
 export interface FileOperationsOptions {
-  /** Windows disk paths share locks across casing aliases. Virtual backends can opt out. */
-  readonly caseInsensitivePaths?: boolean
+  /** Override conservative local alias folding for an exact-name virtual backing. */
+  readonly pathLockKey?: (absolutePath: string) => string
   /**
    * Allow cloud file reads while an upload waits for remote acknowledgement.
    * The cloud backing replaces the complete in-memory byte array before awaiting
@@ -188,13 +191,12 @@ const makeFileOperations = (
 ) =>
   Effect.gen(function* () {
     const backingFileSystem = yield* FileSystem
-    const caseInsensitivePaths =
-      options.caseInsensitivePaths ?? backing.sep === '\\'
+    const pathLockKey = options.pathLockKey ?? conservativePathLockKey
     const lockPaths = {
       dirname: backing.dirname,
       resolve: (...parts: string[]) => {
         const absolute = backing.resolve(...parts)
-        return caseInsensitivePaths ? absolute.toLowerCase() : absolute
+        return pathLockKey(absolute)
       },
     }
     const mutationGuard = yield* FiberRef.make<
@@ -589,7 +591,7 @@ const makeFileOperations = (
       rename: (source, destination) =>
         coordinateMutation(
           [source, destination],
-          fileSystem.rename(source, destination)
+          renameEntry(fileSystem, backing, source, destination)
         ),
     })
   })
