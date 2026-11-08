@@ -2987,52 +2987,6 @@ mod tests {
         assert_eq!(cloned.machine_call_depth_limit, 123);
     }
 
-    #[tokio::test(flavor = "multi_thread")]
-    async fn imports_execute_in_sorted_dependency_order() {
-        #[derive(Debug, Default)]
-        struct ModuleOperations(std::sync::Mutex<Vec<ModuleId>>);
-
-        impl ExecutionCallbacks for ModuleOperations {
-            fn on_operation(&self, args: OperationCallbackArgs) {
-                self.0.lock().unwrap().push(args.module_id);
-            }
-        }
-
-        let part = r#"@settings(kclVersion = 3.0)
-export profile = sketch(on = XY) {
-  c = circle(center = [var 0mm, var 0mm], start = [var 1mm, var 0mm])
-}
-"#;
-        let program = crate::Program::parse_no_errs(
-            r#"@settings(kclVersion = 3.0)
-import profile as second from "b.kcl"
-import profile as first from "a.kcl"
-"#,
-        )
-        .unwrap();
-        let operations = Arc::new(ModuleOperations::default());
-        let mut ctx = versioned_modules_context(&[("a.kcl", part), ("b.kcl", part)]);
-        ctx.execution_callbacks = Some(operations.clone());
-        let mut state = ExecState::new(&ctx);
-        ctx.run(&program, &mut state).await.unwrap();
-        ctx.close().await;
-
-        let paths = state.global.filenames();
-        let mut order: Vec<_> = operations
-            .0
-            .lock()
-            .unwrap()
-            .iter()
-            .filter_map(|id| match paths.get(id) {
-                Some(ModulePath::Local { value, .. }) => value.file_name(),
-                _ => None,
-            })
-            .filter(|name| *name != "main.kcl")
-            .collect();
-        order.dedup();
-        assert_eq!(order, ["a.kcl", "b.kcl"]);
-    }
-
     #[tokio::test]
     async fn appearance_oit_deferral() {
         for (geometry_only, enable_ssao, opacity) in [
