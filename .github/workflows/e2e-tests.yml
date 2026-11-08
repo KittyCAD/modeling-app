@@ -318,7 +318,7 @@ jobs:
             DEBUG=pw:browser node .github/ci-cd-scripts/webkit-minimal-shutdown.cjs \
             2> >(python3 .github/ci-cd-scripts/filter-webkit-browser-log.py)
           NODE_OPTIONS="${NODE_OPTIONS:+$NODE_OPTIONS }--require=$PWD/.github/ci-cd-scripts/webkit-native-diagnostics.cjs" \
-            DEBUG=pw:browser npm run test:e2e:web:webkit -- e2e/playwright/webkit-zookeeper-transport-shutdown.spec.ts --repeat-each=3 --retries=0 --output=test-results/application-probes \
+            DEBUG=pw:browser npm run test:e2e:web:webkit -- e2e/playwright/webkit-zookeeper-close-shutdown.spec.ts --repeat-each=3 --retries=0 --output=test-results/application-probes \
             2> >(python3 .github/ci-cd-scripts/filter-webkit-browser-log.py)
         env:
           PLAYWRIGHT_WEBKIT_TEARDOWN_DIAGNOSTICS: '1'
