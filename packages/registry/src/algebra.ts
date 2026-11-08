@@ -1,4 +1,4 @@
-import type { ReadonlySignal } from '@preact/signals-core'
+import { computed, type ReadonlySignal, signal } from '@preact/signals-core'
 
 /** A live observation. Preact supplies dependency tracking and writable signals. */
 export type Signal<T> = ReadonlySignal<T>
@@ -6,14 +6,57 @@ export type Signal<T> = ReadonlySignal<T>
 /** Explicit reads admit constants and signals without inspecting value shapes. */
 export type Source<T> = () => T
 
-/** Many ordered inputs become one output; combine([]) defines the empty case. */
+/** One `Facet`'s output and write operations for a single registry. */
+interface FacetCell<I, O> {
+  readonly output: Signal<O>
+  readonly clear: () => void
+  readonly stage: (transaction: object, read: Source<I>) => () => void
+}
+
+/** Many ordered inputs become one output; `combine([])` defines the empty case. */
 export class Facet<Input, Output> {
   readonly kind = 'facet'
+  private readonly cells = new WeakMap<object, FacetCell<Input, Output>>()
 
   constructor(
     readonly name: string,
     readonly combine: (inputs: readonly Input[]) => Output
   ) {}
+
+  /** @internal Reuse this registry's output and stage writes to its typed source list. */
+  cell(registry: object): FacetCell<Input, Output> {
+    const existing = this.cells.get(registry)
+    if (existing) return existing
+    const sources = signal<readonly Source<Input>[]>([])
+    const pending = new WeakMap<
+      object,
+      { reads: Source<Input>[]; commit: () => void }
+    >()
+    const cell: FacetCell<Input, Output> = {
+      output: computed(() => this.combine(sources.value.map((read) => read()))),
+      clear: () => {
+        sources.value = []
+      },
+      stage: (transaction, read) => {
+        let draft = pending.get(transaction)
+        if (!draft) {
+          const reads: Source<Input>[] = []
+          draft = {
+            reads,
+            commit: () => {
+              pending.delete(transaction)
+              sources.value = reads
+            },
+          }
+          pending.set(transaction, draft)
+        }
+        draft.reads.push(read)
+        return draft.commit
+      },
+    }
+    this.cells.set(registry, cell)
+    return cell
+  }
 }
 
 /** Interpreter-assigned ownership: a readable item ID and its location in the graph. */
