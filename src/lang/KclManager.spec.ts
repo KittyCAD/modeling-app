@@ -1842,7 +1842,64 @@ describe('KclManager diagnostics', () => {
       }
     }
   )
-
+  it.each([false, true])(
+    'saves local edits without an engine and blocks offline cloud edits (cloud: %s)',
+    async (cloud) => {
+      vi.useFakeTimers()
+      const { app, kclManager } = createKclManagerTestHarness()
+      const path = '/project/main.kcl'
+      const base = '@settings(kclVersion = 3.0)\n'
+      kclManager.path = path
+      kclManager.systemDeps.project = signal(
+        createProjectForTest('/project', {
+          cloudProjectId: cloud ? 'remote' : undefined,
+        })
+      )
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: path,
+        nextContent: base,
+        shouldSyncRust: false,
+      })
+      kclManager.engineCommandManager.started = false
+      let disk = base
+      vi.spyOn(kclManager.textFileIO, 'read').mockImplementation(
+        async () => disk
+      )
+      const write = vi
+        .spyOn(kclManager, 'write')
+        .mockImplementation(async (code) => {
+          disk = code
+        })
+      const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+      try {
+        await vi.advanceTimersByTimeAsync(7_000)
+        kclManager.editorView.dispatch({
+          changes: { from: base.length, insert: '// disconnected edit\n' },
+        })
+        await vi.advanceTimersByTimeAsync(1_500)
+        expect(kclManager.code).toBe(
+          cloud ? base : `${base}// disconnected edit\n`
+        )
+        expect(disk).toBe(kclManager.code)
+        expect(write).toHaveBeenCalledTimes(cloud ? 0 : 1)
+        if (cloud) {
+          kclManager.updateCodeEditor(`${base}// command edit\n`)
+          expect(kclManager.code).toBe(base)
+        }
+        online.mockReturnValue(true)
+        const current = kclManager.code
+        kclManager.editorView.dispatch({
+          changes: { from: current.length, insert: '// online edit\n' },
+        })
+        await vi.advanceTimersByTimeAsync(1_500)
+        expect(disk).toBe(`${current}// online edit\n`)
+        expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+      } finally {
+        online.mockRestore()
+        app.dispose()
+      }
+    }
+  )
   // Compare the diagnostic data exactly; renderMessage only changes its display.
   const withoutRenderMessage = (diagnostics: Diagnostic[]) =>
     diagnostics.map((diagnostic) => {
@@ -3372,21 +3429,7 @@ describe('KclManager diagnostics', () => {
         shouldExecute: false,
         shouldWriteToDisk: true,
       })
-      localStorage.setItem(
-        'kclRecovery:/cloud/project/closed.kcl',
-        'stale closed-file buffer'
-      )
-      localStorage.setItem(
-        'kclRecovery:/cloud/project-other/main.kcl',
-        'other project buffer'
-      )
       kclManager.adoptStorageSnapshot('/cloud/project', 'cloud truth')
-      expect(
-        localStorage.getItem('kclRecovery:/cloud/project/closed.kcl')
-      ).toBeNull()
-      expect(
-        localStorage.getItem('kclRecovery:/cloud/project-other/main.kcl')
-      ).toBe('other project buffer')
       await vi.advanceTimersByTimeAsync(7_000)
       if (outcome === 'success') gate.resolve(undefined)
       else gate.reject(new Error('Superseded save failed'))
@@ -3463,39 +3506,99 @@ describe('KclManager diagnostics', () => {
     expect(clientErrorMocks.reportFileOperationError).not.toHaveBeenCalled()
   })
 
-  it('restores the local recovery snapshot when reopening a file after unsaved edits', async () => {
-    vi.useFakeTimers()
+  it.each([
+    { cloud: false, contents: 'original saved contents' },
+    { cloud: false, contents: 'newer contents from another device' },
+    { cloud: true, contents: 'original saved contents' },
+    { cloud: true, contents: 'newer contents from another device' },
+  ])(
+    'opens saved contents instead of a persisted draft (cloud: $cloud, contents: $contents)',
+    async ({ cloud, contents }) => {
+      vi.useFakeTimers()
+      const path = '/project/main.kcl'
+      const { app, kclManager } = createKclManagerTestHarness()
+      kclManager.systemDeps.project = signal(
+        createProjectForTest('/project', {
+          cloudProjectId: cloud ? 'remote' : undefined,
+        })
+      )
+      localStorage.setItem(
+        getRecoverySnapshotKey(path),
+        JSON.stringify({
+          version: 1,
+          path,
+          code: 'older offline draft',
+          diskCode: 'original saved contents',
+          savedAt: new Date().toISOString(),
+        })
+      )
+      localStorage.setItem('kclRecovery:/unopened/main.kcl', 'obsolete draft')
+      localStorage.setItem('unrelated-setting', 'keep')
+      const download = createDeferred<string>()
+      vi.spyOn(kclManager.textFileIO, 'read').mockReturnValueOnce(
+        download.promise
+      )
+      const write = vi
+        .spyOn(kclManager.textFileIO, 'write')
+        .mockResolvedValue(undefined)
+      const opening = KclManager.fromFile(
+        new File(path, kclManager.textFileIO, 99),
+        kclManager.systemDeps
+      )
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(write).not.toHaveBeenCalled()
+      download.resolve(contents)
+      const reopened = await opening
+      expect(reopened.code).toBe(contents)
+      expect(reopened.hasUnsavedLocalChanges()).toBe(false)
+      expect(localStorage.getItem(getRecoverySnapshotKey(path))).toBeNull()
+      expect(localStorage.getItem('kclRecovery:/unopened/main.kcl')).toBeNull()
+      expect(localStorage.getItem('unrelated-setting')).toBe('keep')
 
-    const path = '/tmp/kcl-manager-recovery-test.kcl'
-    const recoveryKey = getRecoverySnapshotKey(path)
-    const { kclManager } = createKclManagerTestHarness('disk base')
+      // Subsequent saves must preserve the contents loaded from storage.
+      vi.spyOn(reopened.textFileIO, 'read').mockResolvedValue(contents)
+      reopened.updateCodeEditor(`${contents}\n// next edit`, {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const saving = reopened.writeToFile()
+      await vi.advanceTimersByTimeAsync(1_500)
+      await saving
+      expect(write).toHaveBeenCalledExactlyOnceWith(
+        path,
+        `${contents}\n// next edit`
+      )
+      reopened.close()
+      app.dispose()
+    }
+  )
 
-    kclManager.path = path
-    ;(kclManager as any).markFileCodeAsSynced('disk base')
+  it.each([false, true])(
+    'keeps unsaved edits only in memory (cloud: %s)',
+    async (cloud) => {
+      vi.useFakeTimers()
+      const path = '/project/main.kcl'
+      const { app, kclManager } = createKclManagerTestHarness('saved contents')
+      kclManager.path = path
+      kclManager.systemDeps.project = signal(
+        createProjectForTest('/project', {
+          cloudProjectId: cloud ? 'remote' : undefined,
+        })
+      )
+      kclManager.updateCodeEditor('offline edit', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(kclManager.code).toBe('offline edit')
+      expect(kclManager.hasUnsavedLocalChanges()).toBe(true)
+      expect(localStorage.getItem(getRecoverySnapshotKey(path))).toBeNull()
+      kclManager.close()
+      expect(localStorage.getItem(getRecoverySnapshotKey(path))).toBeNull()
+      app.dispose()
+    }
+  )
 
-    kclManager.updateCodeEditor('recovered newer', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-      shouldResetCamera: false,
-      shouldAddToHistory: false,
-    })
-
-    await vi.advanceTimersByTimeAsync(300)
-
-    const persistedSnapshot = localStorage.getItem(recoveryKey)
-    expect(persistedSnapshot).not.toBeNull()
-    expect(persistedSnapshot!).toContain('recovered newer')
-
-    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('disk base')
-
-    const reopened = await KclManager.fromFile(
-      new File(path, kclManager.textFileIO, 99),
-      (kclManager as any).systemDeps
-    )
-
-    expect(reopened.code).toBe('recovered newer')
-    expect((reopened as any).hasUnsavedLocalChanges()).toBe(true)
-  })
   it.each([
     { draft: 'unsaved edit', cloud: 'newer cloud edit', warns: true },
     { draft: 'unsaved edit', cloud: undefined, warns: true },
