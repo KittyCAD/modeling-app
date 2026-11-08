@@ -1,11 +1,22 @@
 import path from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
-vi.mock('@src/lib/fs-zds/opfsWriteWorker.ts?worker', () => ({
-  default: class MockOPFSWriteWorker {
+vi.mock('@src/lib/fs-zds/opfsWorker.ts?worker&inline', () => ({
+  default: class MockOPFSWorker {
     onmessage: ((event: MessageEvent<unknown>) => void) | null = null
 
-    postMessage() {}
+    postMessage(request: { id: number; type: string }) {
+      if (request.type === 'read-file')
+        queueMicrotask(() => {
+          this.onmessage?.({
+            data: {
+              id: request.id,
+              ok: true,
+              data: new TextEncoder().encode('worker bytes'),
+            },
+          } as MessageEvent<unknown>)
+        })
+    }
 
     terminate() {}
   },
@@ -33,6 +44,10 @@ class MockFileSystemFileHandle {
     } as File
   }
 
+  async isSameEntry(other: unknown) {
+    return this === other
+  }
+
   async createWritable() {
     return {
       write: async (data: Uint8Array<ArrayBuffer>) => {
@@ -51,6 +66,10 @@ class MockFileSystemDirectoryHandle {
   >()
 
   constructor(public name: string) {}
+
+  async isSameEntry(other: unknown) {
+    return this === other
+  }
 
   async *entries() {
     for (const entry of this.children) {
@@ -156,6 +175,96 @@ describe('opfs', () => {
       request,
     } as unknown as LockManager)
   }
+
+  test('reads through a worker when a browser file blob is unreadable', async () => {
+    const project = addProjectWithMeta('{"mtimeMs":1}')
+    const file = project.addFile('main.kcl', 'worker bytes')
+    const snapshot = await file.getFile()
+    vi.spyOn(file, 'getFile').mockResolvedValue({
+      ...snapshot,
+      text: async () =>
+        Promise.reject(new DOMException('Offline blob', 'NotReadableError')),
+    })
+    const opfs = await getOpfs()
+    await expect(
+      opfs.impl.readFile(path.join(projectPath, 'main.kcl'), 'utf8')
+    ).resolves.toBe('worker bytes')
+    await opfs.impl.detach()
+  })
+
+  test('propagates the final failure after retrying file reads', async () => {
+    const project = addProjectWithMeta('{"mtimeMs":1}')
+    const file = project.addFile('main.kcl', 'bytes')
+    const error = new Error('Failed file read')
+    vi.spyOn(file, 'getFile').mockRejectedValue(error)
+    const opfs = await getOpfs()
+    vi.useFakeTimers()
+    try {
+      const reading = opfs.impl
+        .readFile(path.join(projectPath, 'main.kcl'))
+        .catch((e) => e)
+      await vi.runAllTimersAsync()
+      expect(await reading).toBe(error)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  test('renaming an existing file or directory to itself preserves it', async () => {
+    const project = addProjectWithMeta('{"mtimeMs":1}')
+    project.addFile('main.kcl', 'bytes')
+    const opfs = await getOpfs()
+    const file = path.join(projectPath, 'main.kcl')
+    await opfs.impl.rename(file, file)
+    await opfs.impl.rename(projectPath, projectPath)
+    await expect(opfs.impl.readFile(file, 'utf8')).resolves.toBe('bytes')
+  })
+
+  test.each([false, true])(
+    'uses native moves for file and directory aliases: directory=%s',
+    async (directory) => {
+      const project = addProjectWithMeta('{"mtimeMs":1}')
+      const entry = directory
+        ? project.addDirectory('source')
+        : project.addFile('source', 'bytes')
+      // Model a backing where both spellings resolve to one native entry.
+      project.children.set('Source', entry)
+      const move = vi.fn(async (_parent: unknown, name: string) => {
+        project.children.delete('source')
+        project.children.set(name, entry)
+      })
+      Object.assign(entry, { move })
+      const opfs = await getOpfs()
+      await expect(
+        opfs.impl.isSameEntry?.(
+          path.join(projectPath, 'source'),
+          path.join(projectPath, 'Source')
+        )
+      ).resolves.toBe(true)
+      await opfs.impl.rename(
+        path.join(projectPath, 'source'),
+        path.join(projectPath, 'Source')
+      )
+      expect(move).toHaveBeenCalledWith(project, 'Source')
+      expect(project.children.get('Source')).toBe(entry)
+      expect(project.children.has('source')).toBe(false)
+    }
+  )
+
+  test('preserves an aliased entry when native move is unavailable', async () => {
+    const project = addProjectWithMeta('{"mtimeMs":1}')
+    const file = project.addFile('source.kcl', 'original bytes')
+    project.children.set('Source.kcl', file)
+    const opfs = await getOpfs()
+    await expect(
+      opfs.impl.rename(
+        path.join(projectPath, 'source.kcl'),
+        path.join(projectPath, 'Source.kcl')
+      )
+    ).rejects.toBe('ENOTSUP')
+    expect(await (await file.getFile()).text()).toBe('original bytes')
+    expect(project.children.get('source.kcl')).toBe(file)
+  })
 
   test('exclusive creation preserves an existing file', async () => {
     const project = addProjectWithMeta('{"mtimeMs":1}')

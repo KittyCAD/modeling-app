@@ -3,6 +3,7 @@ import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
 import { expect, it, vi } from 'vitest'
+import fc from 'fast-check'
 
 vi.mock('@src/lib/clientErrors', () => ({
   ClientErrorCode: { FileOperationsError: 'FileOperationsError' },
@@ -10,10 +11,58 @@ vi.mock('@src/lib/clientErrors', () => ({
 }))
 const backing = () => createMemoryFileSystem({ ...noopfs.impl, ...posix })
 
+it.each([
+  ['source.kcl', 'Source.kcl'],
+  ['cafe\u0301.kcl', 'cafe\u0301.kcl'.normalize('NFC')],
+])(
+  'renames %s to %s using native identity without inodes',
+  async (from, to) => {
+    await fc.assert(
+      fc.asyncProperty(fc.uint8Array(), async (contents) => {
+        const memory = backing()
+        await memory.mkdir('/project', { recursive: true })
+        const source = `/project/${from}`
+        const destination = `/project/${to}`
+        await memory.writeFile(source, contents)
+        let current = source
+        const canonical = (path: string) =>
+          path === source || path === destination ? current : path
+        const scheduler = createFileOperationsScheduler({
+          ...memory,
+          stat: async (path) => ({
+            ...(await memory.stat(canonical(path))),
+            ino: 0,
+            dev: 0,
+          }),
+          isSameEntry: async (left, right) =>
+            canonical(left) === canonical(right),
+          rename: async (path, target) => {
+            await memory.rename(canonical(path), target)
+            current = target
+          },
+        })
+        try {
+          await scheduler.operations.rename(source, destination)
+          expect(await memory.readdir('/project')).toEqual([to])
+          expect(await memory.readFile(destination)).toEqual(contents)
+        } finally {
+          await scheduler.dispose()
+        }
+      }),
+      { numRuns: 40 }
+    )
+  }
+)
+
 it.each([false, true])(
   'preserves distinct case-sensitive entries even if their inodes match: %s',
   async (hardLinks) => {
-    const memory = backing()
+    const externalIdentity = vi.fn(async () => false)
+    const memory = createMemoryFileSystem({
+      ...noopfs.impl,
+      ...posix,
+      isSameEntry: externalIdentity,
+    })
     await memory.mkdir('/project', { recursive: true })
     await memory.writeFile('/project/main.kcl', new Uint8Array([1]))
     await memory.writeFile('/project/Main.kcl', new Uint8Array([2]))
@@ -28,6 +77,7 @@ it.each([false, true])(
       await expect(
         scheduler.operations.rename('/project/main.kcl', '/project/Main.kcl')
       ).rejects.toMatchObject({ _tag: 'FileAlreadyExists' })
+      expect(externalIdentity).not.toHaveBeenCalled()
       expect(await scheduler.operations.readFile('/project/main.kcl')).toEqual(
         new Uint8Array([1])
       )

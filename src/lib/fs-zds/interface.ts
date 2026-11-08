@@ -82,6 +82,8 @@ export interface IZooDesignStudioFS {
   ) => Promise<undefined | void>
   readdir: (path: string, options?: any) => Promise<string[]>
   stat: (path: string, options?: StatOptions) => Promise<IStat>
+  /** Native entry identity for backings without usable inode metadata. */
+  isSameEntry?: (source: string, destination: string) => Promise<boolean>
   mkdir: (path: string, options?: any) => Promise<undefined | string>
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   rm: (path: string, options?: any) => Promise<undefined | void>

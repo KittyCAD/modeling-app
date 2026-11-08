@@ -134,6 +134,7 @@ export function createMemoryFileSystem(
   }
   return {
     ...paths,
+    isSameEntry: undefined,
     replaceDirectory: (root, files) => {
       root = key(root)
       for (let ancestor = root; ; ancestor = paths.dirname(ancestor)) {

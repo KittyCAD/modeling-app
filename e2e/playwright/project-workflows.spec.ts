@@ -440,6 +440,56 @@ test(
   }
 )
 
+test(
+  'saves browser-local files through a worker while offline',
+  { tag: '@web' },
+  async ({ page, context }, testInfo) => {
+    test.skip(process.env.TARGET !== 'web', 'OPFS is browser storage')
+    await context.addInitScript(() => {
+      if (typeof FileSystemFileHandle !== 'undefined')
+        Object.defineProperty(
+          FileSystemFileHandle.prototype,
+          'createWritable',
+          {
+            configurable: true,
+            value: undefined,
+          }
+        )
+      // Model WebKit's offline OPFS blobs while keeping the real filesystem and worker.
+      for (const method of ['text', 'arrayBuffer'] as const) {
+        const read: () => Promise<string | ArrayBuffer> = File.prototype[method]
+        Object.defineProperty(File.prototype, method, {
+          configurable: true,
+          value: function (this: File) {
+            if (!navigator.onLine)
+              return Promise.reject(
+                new DOMException('Offline blob', 'NotReadableError')
+              )
+            return read.call(this)
+          },
+        })
+      }
+    })
+    const storage = await prepareStorage('local', page, context, testInfo)
+    const root = await storage.seed('Offline worker', blankCode)
+    await storage.refresh()
+    await storage.home.openProject('Offline worker')
+    await expectEditor(page, blankCode)
+    await page.waitForLoadState('networkidle')
+    const code = `${blankCode}// saved by the offline worker\n`
+    try {
+      await context.setOffline(true)
+      await page.waitForTimeout(7_000)
+      await editThroughUI(page, code)
+      await expect.poll(() => storage.read(root)).toBe(code)
+    } finally {
+      await context.setOffline(false)
+    }
+    await storage.refresh()
+    await expectEditor(page, code)
+  }
+)
+
 // Both implementations execute the same actions and UI assertions. Naming policy
 // and persistence inspection are the explicit implementation-specific boundaries.
 for (const kind of ['local', 'cloud'] as const) {
@@ -839,12 +889,10 @@ for (const kind of ['local', 'cloud'] as const) {
         await page.getByTestId('delete-confirmation').click()
         await expect(deletedFile).not.toBeAttached()
         const undo = page.getByRole('button', {
-          name: 'arrow turn left',
-          exact: true,
+          name: /^arrow turn left\b/,
         })
         const redo = page.getByRole('button', {
-          name: 'arrow turn right',
-          exact: true,
+          name: /^arrow turn right\b/,
         })
         if (kind === 'cloud') {
           await expect(undo).toBeEnabled()
@@ -935,12 +983,10 @@ for (const kind of ['local', 'cloud'] as const) {
         await expect(folder).not.toBeAttached()
         await expectEditor(page, blankCode)
         const undo = page.getByRole('button', {
-          name: 'arrow turn left',
-          exact: true,
+          name: /^arrow turn left\b/,
         })
         const redo = page.getByRole('button', {
-          name: 'arrow turn right',
-          exact: true,
+          name: /^arrow turn right\b/,
         })
         for (const restore of [true, false, true]) {
           await (restore ? undo : redo).click()
