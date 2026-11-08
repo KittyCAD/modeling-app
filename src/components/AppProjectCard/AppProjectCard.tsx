@@ -239,6 +239,8 @@ function AppProjectCard({
         name: newProjectName,
         modified: Date.now(),
       })
+    } else {
+      setOptimisticProjectName(null)
     }
 
     projectActions
