@@ -99,3 +99,13 @@ Stops the current Zookeeper operation. Use this when you don't want the current 
 ### Reasoning
 
 The internal process Zookeeper uses to decide what to do. This is not always shown directly, but it influences the response and the actions taken.
+
+## Semantic color role
+
+A visual purpose, such as primary text or a secondary surface, whose color is resolved through the active theme. Components select roles through shared utilities such as `text-default`, `bg-2`, and `b-4`. Background, foreground, and border roles have separate scales.
+
+**Also called:** semantic role; visual role, when discussing color.
+
+**Related:** a palette supplies concrete colors; a theme assigns those colors to roles; a semantic utility selects a role in component styling. The [appearance guide](docs/design-system/appearance.md) explains how to choose and extend roles.
+
+**Search anchors:** [semanticColors.css](src/semanticColors.css), [tailwind.config.js](tailwind.config.js).
