@@ -488,16 +488,7 @@ const Home = () => {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'File.Create project') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Create project',
-          argDefaultValues: {
-            name: settingsValues.projects.defaultProjectName.current,
-          },
-        },
-      })
+      openCreateProjectCommand()
     } else if (data.menuLabel === 'File.Open project') {
       commands.send({
         type: 'Find and select command',
@@ -572,6 +563,18 @@ const Home = () => {
       })
     }
   }
+  const openCreateProjectCommand = () =>
+    commands.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Create project',
+        argDefaultValues: selectedProjectLibrary
+          ? { libraryId: selectedProjectLibrary.id }
+          : undefined,
+      },
+    })
+
   useMenuListener(cb)
 
   // Cancel all KCL executions while on the home page
@@ -663,20 +666,7 @@ const Home = () => {
             <li className="contents">
               <ActionButton
                 Element="button"
-                onClick={() =>
-                  commands.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'projects',
-                      name: 'Create project',
-                      argDefaultValues: selectedProjectLibrary
-                        ? {
-                            libraryId: selectedProjectLibrary.id,
-                          }
-                        : undefined,
-                    },
-                  })
-                }
+                onClick={openCreateProjectCommand}
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'plus',
