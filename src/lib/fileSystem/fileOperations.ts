@@ -350,42 +350,46 @@ const makeFileOperations = (
       return operation.pipe(Effect.locally(mutationGuard, check))
     }
 
+    const coordinatePathMutation = <A, E, R>(
+      paths: readonly string[],
+      operation: Effect.Effect<A, E, R>
+    ) =>
+      trackMutation(
+        withPathLocks(pathLockRequirements(lockPaths, paths), operation)
+      )
+
     const coordinateMutation = <A, E, R>(
       paths: readonly string[],
       operation: Effect.Effect<A, E, R>,
       membershipPaths = paths.map((path) => backing.dirname(path))
     ) =>
-      trackMutation(
-        withPathLocks(
-          pathLockRequirements(lockPaths, paths),
-          withDirectoryMembershipLocks(
-            membershipPaths,
-            'exclusive',
-            guardMutation(paths, operation)
-          )
+      coordinatePathMutation(
+        paths,
+        withDirectoryMembershipLocks(
+          membershipPaths,
+          'exclusive',
+          guardMutation(paths, operation)
         )
       )
 
     const coordinateWrite = (path: string, contents: OwnedFileContents) =>
-      trackMutation(
-        withPathLocks(
-          pathLockRequirements(backing, [path]),
-          guardMutation(
-            [path],
-            fileSystem
-              .exists(path)
-              .pipe(
-                Effect.flatMap((exists) =>
-                  exists
-                    ? fileSystem.writeFile(path, contents)
-                    : withDirectoryMembershipLocks(
-                        [backing.dirname(path)],
-                        'exclusive',
-                        fileSystem.writeFile(path, contents)
-                      )
-                )
+      coordinatePathMutation(
+        [path],
+        guardMutation(
+          [path],
+          fileSystem
+            .exists(path)
+            .pipe(
+              Effect.flatMap((exists) =>
+                exists
+                  ? fileSystem.writeFile(path, contents)
+                  : withDirectoryMembershipLocks(
+                      [backing.dirname(path)],
+                      'exclusive',
+                      fileSystem.writeFile(path, contents)
+                    )
               )
-          )
+            )
         )
       )
 
@@ -537,18 +541,16 @@ const makeFileOperations = (
           [parent]
         ),
       createDirectory: (path) =>
-        trackMutation(
-          withPathLocks(
-            pathLockRequirements(backing, [path]),
-            guardMutation(
-              [path],
-              ensureDirectoryPath(backing.dirname(path)).pipe(
-                Effect.zipRight(
-                  withDirectoryMembershipLocks(
-                    [backing.dirname(path)],
-                    'exclusive',
-                    createDirectoryAt(path)
-                  )
+        coordinatePathMutation(
+          [path],
+          guardMutation(
+            [path],
+            ensureDirectoryPath(backing.dirname(path)).pipe(
+              Effect.zipRight(
+                withDirectoryMembershipLocks(
+                  [backing.dirname(path)],
+                  'exclusive',
+                  createDirectoryAt(path)
                 )
               )
             )
@@ -558,18 +560,16 @@ const makeFileOperations = (
       // Child mutations take a shared parent lock, so no coordinated caller
       // can claim the same candidate between the existence check and creation.
       createUniqueDirectory: (parent, preferredName) =>
-        trackMutation(
-          withPathLocks(
-            pathLockRequirements(backing, [parent]),
-            guardMutation(
-              [parent],
-              ensureDirectoryPath(parent).pipe(
-                Effect.zipRight(
-                  withDirectoryMembershipLocks(
-                    [parent],
-                    'exclusive',
-                    createUniqueDirectoryAt(parent, preferredName)
-                  )
+        coordinatePathMutation(
+          [parent],
+          guardMutation(
+            [parent],
+            ensureDirectoryPath(parent).pipe(
+              Effect.zipRight(
+                withDirectoryMembershipLocks(
+                  [parent],
+                  'exclusive',
+                  createUniqueDirectoryAt(parent, preferredName)
                 )
               )
             )
