@@ -21,6 +21,10 @@ import type {
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { isOffline } from '@src/lib/networkStatus'
+
+const offlineError = () =>
+  new Error('Cloud projects are read-only while offline. Reconnect to edit.')
 
 export interface CloudFileChange {
   readonly path: string
@@ -280,6 +284,7 @@ export function createCloudFileSystem(
     reportSaveFailure = true,
     allowReconciliation = false
   ): Promise<T> => {
+    if (isOffline()) return Promise.reject(offlineError())
     const project = opened.get(id)
     if (!project) return Promise.reject(new Error('Cloud project is not open.'))
     const requestConfig = config()
@@ -296,6 +301,7 @@ export function createCloudFileSystem(
     const result = project.queue
       .catch(() => undefined)
       .then(async () => {
+        if (isOffline()) return Promise.reject(offlineError())
         if (opened.get(id)?.generation !== generation)
           return Promise.reject(
             new Error('Cloud snapshot changed; queued operation canceled.')
@@ -313,6 +319,10 @@ export function createCloudFileSystem(
               file.data,
             ])
           )
+          if (isOffline()) {
+            state(id, previousState ?? { state: 'saved' })
+            return Promise.reject(offlineError())
+          }
           const value = await work(previousState)
           const after = await collect(pathFor(id))
           const changes: CloudFileChange[] = []
@@ -483,6 +493,7 @@ export function createCloudFileSystem(
     return result
   }
   const deleteProject = async (id: string) => {
+    if (isOffline()) return Promise.reject(offlineError())
     const requestConfig = config()
     const project = opened.get(id)
     if (project && project.owner !== requestConfig.accountId)
@@ -492,6 +503,7 @@ export function createCloudFileSystem(
     // A delayed preview must not race the project's deletion request.
     clearTimeout(pendingThumbnails.get(id)?.timer)
     await project?.queue.catch(() => undefined)
+    if (isOffline()) return Promise.reject(offlineError())
     if (config().accountId !== requestConfig.accountId)
       return Promise.reject(new Error('Cloud account changed before deletion.'))
     await api.deleteRemoteProject(requestConfig, id)
@@ -514,6 +526,7 @@ export function createCloudFileSystem(
     title: string,
     archive: readonly ProjectArchiveFile[]
   ) => {
+    if (isOffline()) return Promise.reject(offlineError())
     await ready
     const filesWithTitle = withUpdatedProjectTomlInArchiveFiles(
       [...archive],
@@ -521,6 +534,7 @@ export function createCloudFileSystem(
     )
     if (filesWithTitle instanceof Error) return Promise.reject(filesWithTitle)
     const requestConfig = config()
+    if (isOffline()) return Promise.reject(offlineError())
     const remote = await api.createRemoteProject(
       requestConfig,
       title,
@@ -562,6 +576,7 @@ export function createCloudFileSystem(
     pathFor,
     idFor,
     captureMutationGuard: (targets: readonly string[]) => {
+      const submittedOffline = isOffline()
       const generations = targets.map((path) => {
         const id = idFor(path)
         return {
@@ -571,15 +586,18 @@ export function createCloudFileSystem(
         }
       })
       return () =>
-        generations.some(
-          ({ id, generation, reconciling }) =>
-            reconciling || opened.get(id)?.generation !== generation
-        )
-          ? new Error('Cloud snapshot changed; queued operation canceled.')
-          : undefined
+        submittedOffline || isOffline()
+          ? offlineError()
+          : generations.some(
+                ({ id, generation, reconciling }) =>
+                  reconciling || opened.get(id)?.generation !== generation
+              )
+            ? new Error('Cloud snapshot changed; queued operation canceled.')
+            : undefined
     },
     saves,
     stageThumbnail: async (path: string, bytes: Uint8Array) => {
+      if (isOffline()) return
       const id = idFor(path)
       const project = opened.get(id)
       if (!project || project.owner !== config().accountId)
