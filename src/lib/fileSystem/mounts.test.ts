@@ -1,4 +1,4 @@
-import { posix } from '@chainner/node-path'
+import { posix, win32 } from '@chainner/node-path'
 import {
   createMountedFileOperations,
   resolveProjectLocation,
@@ -11,6 +11,50 @@ import { describe, expect, it, vi } from 'vitest'
 import fc from 'fast-check'
 
 describe('project storage routing', () => {
+  describe.each([
+    { name: 'POSIX', paths: posix },
+    { name: 'Windows', paths: win32 },
+  ])('nested mounts with $name paths', ({ paths }) => {
+    it.each([false, true])(
+      'uses the most specific mount (parent registered first: %s)',
+      async (parentFirst) => {
+        const localRead = vi.fn(async () => new Uint8Array([1]))
+        const parentRead = vi.fn(async () => new Uint8Array([2]))
+        const nestedRead = vi.fn(async () => new Uint8Array([3]))
+        const router = createMountedFileOperations(
+          { ...testFileOperations, readFile: localRead },
+          paths
+        )
+        const parent = {
+          root: paths.resolve('/cloud'),
+          operations: { ...testFileOperations, readFile: parentRead },
+        }
+        const nested = {
+          root: paths.join(parent.root, 'nested'),
+          operations: { ...testFileOperations, readFile: nestedRead },
+        }
+        const mounts = parentFirst ? [parent, nested] : [nested, parent]
+        for (const mount of mounts) router.mount(mount)
+
+        expect(
+          await router.operations.readFile(paths.join(parent.root, 'main.kcl'))
+        ).toEqual(new Uint8Array([2]))
+        expect(await router.operations.readFile(nested.root)).toEqual(
+          new Uint8Array([3])
+        )
+        expect(
+          await router.operations.readFile(paths.join(nested.root, 'main.kcl'))
+        ).toEqual(new Uint8Array([3]))
+        expect(
+          await router.operations.readFile(
+            paths.join(parent.root, 'nested-copy', 'main.kcl')
+          )
+        ).toEqual(new Uint8Array([2]))
+        expect(localRead).not.toHaveBeenCalled()
+      }
+    )
+  })
+
   it('keeps a replacement mount when an older registration is disposed', async () => {
     const localRead = vi.fn(async () => new Uint8Array([1]))
     const replacementRead = vi.fn(async () => new Uint8Array([2]))
