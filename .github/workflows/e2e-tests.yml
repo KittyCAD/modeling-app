@@ -309,12 +309,13 @@ jobs:
           CI_SUITE: e2e:web
           TARGET: web
 
-      - name: Diagnose Zookeeper WebKit teardown (temporary)
+      - name: Diagnose engine-free WebKit teardown (temporary)
+        timeout-minutes: 5
         if: github.head_ref == 'kurt-zookeeper-teardown-diagnostics'
         shell: bash
         run: |
           NODE_OPTIONS="${NODE_OPTIONS:+$NODE_OPTIONS }--require=$PWD/.github/ci-cd-scripts/webkit-native-diagnostics.cjs" \
-            DEBUG=pw:browser npm run test:e2e:web:webkit -- e2e/playwright/zookeeper.spec.ts --repeat-each=3 \
+            DEBUG=pw:browser node .github/ci-cd-scripts/webkit-minimal-shutdown.cjs \
             2> >(python3 .github/ci-cd-scripts/filter-webkit-browser-log.py)
         env:
           PLAYWRIGHT_WEBKIT_TEARDOWN_DIAGNOSTICS: '1'
