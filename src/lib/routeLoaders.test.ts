@@ -1,9 +1,25 @@
+import '@src/lib/projectSession/next/testFeature'
+import { Registry } from '@kittycad/registry'
+import editorsExtension from '@src/lib/editors/registry'
+import { editorsService } from '@src/lib/editors/registry/contract'
+import projectSessionExtension from '@src/lib/projectSession/registry'
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import type { Project } from '@src/lib/projectSession/next/types'
 import { App } from '@src/lib/app'
 import { PATHS } from '@src/lib/paths'
 import { fileLoader, projectLoader, localLoader } from '@src/lib/routeLoaders'
 import { readProject } from '@src/lib/projectSession/next/utils'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 
 const environment = vi.hoisted(() => ({ projectRouteEnabled: true }))
 
@@ -77,23 +93,42 @@ describe('fileLoader legacy web bookmarks', () => {
 })
 
 describe('local directory loader', () => {
+  let registry: Registry
+  beforeAll(async () => {
+    await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
+  })
   beforeEach(() => vi.clearAllMocks())
+  afterEach(() => registry?.[Symbol.dispose]())
 
   function setup() {
     const app = new App(App.getDefaultSystems())
-    const owner = {}
-    const openProject = vi.fn(() => owner)
-    const sessions = { openProject }
+    registry = new Registry()
+    registry.configure([editorsExtension, projectSessionExtension])
+    const projectSession = registry.get(projectSessionService)
+    const openProject = vi.fn(projectSession.openProject)
+    const sessions = { ...projectSession, openProject }
+    const operations = {
+      readFile: vi.fn(async () => new TextEncoder().encode('file contents')),
+    }
     vi.spyOn(app.registry, 'optional').mockReturnValue(sessions)
     vi.spyOn(app.registry, 'get')
-      .mockReturnValueOnce({})
+      .mockImplementation(registry.get.bind(registry))
+      .mockReturnValueOnce(operations)
       .mockReturnValueOnce(sessions)
-    const data = {
+    const data: Project = {
       contents: { name: 'empty', path: '/projects/empty', children: [] },
       metadata: { title: 'Empty', readWriteAccess: false },
     }
     const closeProject = vi.spyOn(app, 'closeProject')
-    return { app, openProject, closeProject, data, owner }
+    return {
+      app,
+      openProject,
+      closeProject,
+      data,
+      operations,
+      sessions,
+      editors: registry.get(editorsService),
+    }
   }
 
   it('redirects requests without the project-shell flag before accessing storage or session state', async () => {
@@ -117,7 +152,7 @@ describe('local directory loader', () => {
   })
 
   it('publishes project data without settings initialization or an editor', async () => {
-    const { app, openProject, closeProject, data, owner } = setup()
+    const { app, openProject, closeProject, data, operations } = setup()
     vi.mocked(readProject).mockResolvedValueOnce(data)
     const request = new Request('https://app.zoo.dev/local/test')
     const result = await localLoader({ app })({
@@ -126,23 +161,130 @@ describe('local directory loader', () => {
       context: undefined,
       unstable_pattern: '/local/:path',
     })
-    expect(result).toBe(owner)
+    expect(result).toBe(openProject.mock.results[0].value)
     expect(openProject).toHaveBeenCalledExactlyOnceWith(data)
     expect(closeProject).not.toHaveBeenCalled()
     expect(vi.spyOn(app, 'beginFileRouteLoad')).not.toHaveBeenCalled()
     expect(loadAndValidateSettings).not.toHaveBeenCalled()
-    expect(readProject).toHaveBeenCalledWith({}, data.contents.path, {
+    expect(readProject).toHaveBeenCalledWith(operations, data.contents.path, {
       signal: request.signal,
       library: undefined,
     })
   })
 
   it.each([
+    { configured: 'nested/notes.md', expected: 'nested/notes.md' },
+    { configured: 'missing.kcl', expected: 'main.kcl' },
+    { configured: undefined, expected: 'main.kcl' },
+  ])(
+    'opens $expected as an editor (configured: $configured)',
+    async ({ configured, expected }) => {
+      const { app, data, editors, operations } = setup()
+      data.metadata.defaultFile = configured
+      data.contents.children = [
+        {
+          name: 'other.kcl',
+          path: `${data.contents.path}/other.kcl`,
+          children: null,
+        },
+        {
+          name: 'main.kcl',
+          path: `${data.contents.path}/main.kcl`,
+          children: null,
+        },
+        {
+          name: 'nested',
+          path: `${data.contents.path}/nested`,
+          children: [
+            {
+              name: 'notes.md',
+              path: `${data.contents.path}/nested/notes.md`,
+              children: null,
+            },
+          ],
+        },
+      ]
+      vi.mocked(readProject).mockResolvedValueOnce(data)
+      await localLoader({ app })({
+        request: new Request('https://app.zoo.dev/local/test'),
+        params: { path: data.contents.path },
+        context: undefined,
+        unstable_pattern: '/local/:path',
+      })
+      const editor = editors.editors.peek()[0]
+      expect(editors.editors.peek()).toHaveLength(1)
+      expect(editor.src.peek()).toBe(`${data.contents.path}/${expected}`)
+      expect(editor.contents.value).toBe('file contents')
+      expect(operations.readFile).toHaveBeenCalledExactlyOnceWith(
+        editor.src.peek()
+      )
+    }
+  )
+
+  it('falls back to an existing KCL file', async () => {
+    const { app, data, editors } = setup()
+    registry.configure([editorsExtension, projectSessionExtension])
+    data.contents.children = [
+      {
+        name: 'part.kcl',
+        path: `${data.contents.path}/part.kcl`,
+        children: null,
+      },
+    ]
+    vi.mocked(readProject).mockResolvedValueOnce(data)
+    await localLoader({ app })({
+      request: new Request('https://app.zoo.dev/local/test'),
+      params: { path: data.contents.path },
+      context: undefined,
+      unstable_pattern: '/local/:path',
+    })
+    expect(editors.editors.peek()[0].src.peek()).toBe(
+      `${data.contents.path}/part.kcl`
+    )
+  })
+
+  it.each(['cancel', 'replace'] as const)(
+    'does not open stale editors when a default-file read is superseded: %s',
+    async (action) => {
+      const { app, data, operations, sessions, editors } = setup()
+      data.contents.children = [
+        {
+          name: 'main.kcl',
+          path: `${data.contents.path}/main.kcl`,
+          children: null,
+        },
+      ]
+      const controller = new AbortController()
+      operations.readFile.mockImplementationOnce(async () => {
+        if (action === 'cancel') controller.abort()
+        else
+          sessions.openProject({
+            ...data,
+            contents: { ...data.contents, path: '/next', children: [] },
+          })
+        return new TextEncoder().encode('stale')
+      })
+      vi.mocked(readProject).mockResolvedValueOnce(data)
+      await expect(
+        localLoader({ app })({
+          request: new Request('https://app.zoo.dev/local/test', {
+            signal: controller.signal,
+          }),
+          params: { path: data.contents.path },
+          context: undefined,
+          unstable_pattern: '/local/:path',
+        })
+      ).rejects.toBeInstanceOf(Error)
+      expect(editors.editors.peek()).toEqual([])
+    }
+  )
+
+  it.each([
     '/projects/524db2e0-53c9-4c6c-9d41-182755a692e6',
     'C:\\Users\\example\\Bracket demo',
     'cloud:local-directory',
   ])('treats the local route path literally: %s', async (path) => {
-    const { app, data } = setup()
+    const { app, data, operations } = setup()
     vi.mocked(readProject).mockResolvedValueOnce(data)
     await localLoader({ app })({
       request: new Request(
@@ -152,7 +294,11 @@ describe('local directory loader', () => {
       context: undefined,
       unstable_pattern: '/local/:path',
     })
-    expect(readProject).toHaveBeenCalledWith({}, path, expect.anything())
+    expect(readProject).toHaveBeenCalledWith(
+      operations,
+      path,
+      expect.anything()
+    )
   })
 
   it.each(['revoked', 'replaced'] as const)(
