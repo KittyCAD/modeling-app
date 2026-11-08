@@ -1241,6 +1241,31 @@ for (const kind of ['local', 'cloud'] as const) {
         await storage.assertStorage(root)
       })
 
+      test('allocates colliding large numeric project names without freezing', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo)
+        const first = await createThroughHome(
+          page,
+          storage.home,
+          'part-9007199254740992'
+        )
+        await storage.goHome()
+        const second = await createThroughHome(
+          page,
+          storage.home,
+          'part-9007199254740992'
+        )
+        expect(second).not.toBe(first)
+        if (kind === 'local') expect(second).toContain('9007199254740993')
+        await storage.goHome()
+        await storage.refresh()
+        await expect(storage.home.projectCard).toHaveCount(2)
+        await storage.assertStorage(first)
+        await storage.assertStorage(second)
+      })
+
       test('renames and deletes nested files without changing unrelated contents', async ({
         page,
         context,

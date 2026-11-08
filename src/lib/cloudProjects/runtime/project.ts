@@ -70,17 +70,15 @@ export async function downloadProjectById(projectId: string): Promise<
     }
   | Error
 > {
-  const archive = await downloadProjectArchiveById(projectId)
-  if (err(archive)) {
-    return archive
+  try {
+    const archive = await downloadProjectArchiveById(projectId)
+    if (err(archive)) return archive
+    return await parseDownloadedProject(archive)
+  } catch (error) {
+    return error instanceof Error
+      ? error
+      : new Error('The shared project download could not be opened.')
   }
-
-  const parsedProject = await parseDownloadedProject(archive)
-  if (err(parsedProject)) {
-    return parsedProject
-  }
-
-  return parsedProject
 }
 
 async function downloadProjectArchiveById(

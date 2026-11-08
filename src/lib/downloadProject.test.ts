@@ -17,6 +17,26 @@ afterEach(() => {
 })
 
 describe('downloadProject helpers', () => {
+  test('returns an Error for a malformed ZIP instead of rejecting the caller', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response('not a ZIP')
+    )
+    await expect(downloadProjectById('invalid')).resolves.toBeInstanceOf(Error)
+  })
+
+  test('returns an Error for malformed encoded download filenames', async () => {
+    const zip = new JSZip()
+    zip.file('main.kcl', '')
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(await zip.generateAsync({ type: 'arraybuffer' }), {
+        headers: {
+          'content-disposition': "attachment; filename*=UTF-8''%ZZ.zip",
+        },
+      })
+    )
+    await expect(downloadProjectById('invalid')).resolves.toBeInstanceOf(Error)
+  })
+
   test.each([
     {
       paths: ['z.kcl', 'a.kcl'],

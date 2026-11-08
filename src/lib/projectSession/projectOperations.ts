@@ -1,5 +1,6 @@
 import { type ReadonlySignal, signal } from '@preact/signals-core'
 import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
+import { assertProjectPathWithoutSymlinks } from '@src/lib/fileSystem/projectPath'
 import { getRelativePathIfContained } from '@src/lib/paths'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
@@ -163,6 +164,12 @@ export function createProjectOperations(deps: ProjectOperationsDependencies) {
             )
         }
         const work = async (operations: FileOperationsRegistryService) => {
+          for (const file of owned)
+            await assertProjectPathWithoutSymlinks(
+              operations,
+              root,
+              fsZds.resolve(root, file.path)
+            )
           const paths = await writeProjectFiles(
             operations,
             owned.map((file) => ({
@@ -214,6 +221,8 @@ export function createProjectOperations(deps: ProjectOperationsDependencies) {
               )
             }
           }
+          for (const edit of owned)
+            await assertProjectPathWithoutSymlinks(operations, root, edit.path)
           const writes = owned.flatMap(({ path, contents }) =>
             contents === null ? [] : [{ path, contents }]
           )
