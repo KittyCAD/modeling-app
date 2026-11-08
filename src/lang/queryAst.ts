@@ -1774,6 +1774,11 @@ function getPatternExprFromSelection(
   // inherited faces can use the pattern instance's existing tag container.
   if (selected?.type === 'edgeCut' && !selected.sourceEdgeCutId) return null
   const ownerId = selected ? getFaceBodyId(selected) : undefined
+  if (selected && ownerId) {
+    const body = getBodySelectionForFace(selected, artifactGraph)
+    // An inherited face now belongs to the Boolean result, not its consumed instance.
+    if (!err(body) && body.artifact?.type === 'compositeSolid') return null
+  }
   const artifact = ownerId
     ? [...artifactGraph.values()].find(
         (a) => a.type === 'pattern' && a.copyIds.includes(ownerId)

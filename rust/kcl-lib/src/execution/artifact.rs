@@ -250,6 +250,12 @@ fn merge_artifacts(old: &mut Artifact, new: Artifact) -> Option<Artifact> {
         Artifact::Path(a) => merge_path(a, new),
         Artifact::Segment(a) => merge_segment(a, new),
         Artifact::Solid2d(_) => Some(new),
+        Artifact::PrimitiveFace(face)
+            if face.source_face_id.is_some() && matches!(&new, Artifact::Wall(_) | Artifact::Cap(_)) =>
+        {
+            // Extrusion queries describe the prototype, not the copied face's owner.
+            None
+        }
         Artifact::PrimitiveFace(_) => Some(new),
         Artifact::PrimitiveEdge(_) => Some(new),
         Artifact::StartSketchOnFace { .. } => Some(new),
@@ -1362,7 +1368,12 @@ fn mirror_3d_artifact_updates(
             &code_ref,
             copy_id_maps,
         ));
-        let source_solid = match artifacts.get(&original_solid_id) {
+        let source_body_id = if artifacts.contains_key(&original_solid_id) {
+            original_solid_id
+        } else {
+            pattern_source_body_id_for_copy(artifacts, original_solid_id).unwrap_or(original_solid_id)
+        };
+        let source_solid = match artifacts.get(&source_body_id) {
             Some(Artifact::Path(path)) => path.sweep_id.and_then(|sweep_id| artifacts.get(&sweep_id)).or_else(|| {
                 path.composite_solid_id
                     .and_then(|composite_id| artifacts.get(&composite_id))

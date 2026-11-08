@@ -460,6 +460,17 @@ export function getBodySelectionForFace(
       entityRef: { type: 'solid3d', solid3d_id: body.id },
     }
   }
+  // A lazy pattern instance has no body artifact to carry its Boolean successor.
+  const successor = [...artifactGraph.values()].find(
+    (a) => a.type === 'compositeSolid' && !a.consumed && a.solidIds.includes(id)
+  )
+  if (successor?.type === 'compositeSolid') {
+    return {
+      artifact: successor,
+      codeRef: successor.codeRef,
+      entityRef: { type: 'solid3d', solid3d_id: successor.id },
+    }
+  }
   let body = artifactGraph.get(id)
   if (body?.type === 'path') {
     const currentId = body.compositeSolidId ?? body.sweepId

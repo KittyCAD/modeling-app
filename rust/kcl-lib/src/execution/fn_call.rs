@@ -746,7 +746,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
         KclValue::Solid { value } => {
             // Instance-local tags have already been remapped. Source surfaces
             // still supply legacy declaration bindings, not the copy's tags.
-            let has_instance_tags = value.pattern_source_artifact_id.is_some();
+            // A Boolean clears pattern provenance, but retains the instance-local sketch tags.
+            let has_instance_tags = value.pattern_source_artifact_id.is_some()
+                || value.sketch().is_some_and(|sketch| sketch.original_id != sketch.id);
             if value.sketch().is_none() {
                 // If the solid isn't based on a sketch, then it doesn't have a tag container,
                 // so there's nothing to do here.

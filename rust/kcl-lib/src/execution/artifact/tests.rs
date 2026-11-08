@@ -2316,3 +2316,40 @@ fn failed_mirror_3d_command_does_not_update_artifact_graph() {
 
     assert!(updated.is_empty());
 }
+
+#[test]
+fn extrusion_queries_preserve_copied_face_ownership() {
+    let id = ArtifactId::new(Uuid::new_v4());
+    let owner = ArtifactId::new(Uuid::new_v4());
+    let source = ArtifactId::new(Uuid::new_v4());
+    let code_ref = CodeRef::placeholder(SourceRange::default());
+    let wall = Artifact::Wall(Wall {
+        id,
+        seg_id: ArtifactId::new(Uuid::new_v4()),
+        sweep_id: source,
+        edge_cut_edge_ids: vec![],
+        path_ids: vec![],
+        face_code_ref: code_ref.clone(),
+        cmd_id: Uuid::new_v4(),
+    });
+    let mut copied = Artifact::PrimitiveFace(PrimitiveFace {
+        id,
+        solid_id: owner,
+        source_face_id: Some(source),
+        code_ref: code_ref.clone(),
+    });
+    assert!(merge_artifacts(&mut copied, wall.clone()).is_none());
+    assert!(
+        matches!(copied, Artifact::PrimitiveFace(face) if face.solid_id == owner && face.source_face_id == Some(source))
+    );
+    let mut unqualified = Artifact::PrimitiveFace(PrimitiveFace {
+        id,
+        solid_id: source,
+        source_face_id: None,
+        code_ref,
+    });
+    assert!(matches!(
+        merge_artifacts(&mut unqualified, wall),
+        Some(Artifact::Wall(_))
+    ));
+}
