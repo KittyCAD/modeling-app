@@ -16,7 +16,7 @@ import {
   type ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { artifactToEntityRef } from '@src/lang/queryAst'
-import { getSweepFromSuspectedSweepSurface } from '@src/lang/std/artifactGraph'
+import { getBodyFromSurface } from '@src/lang/std/artifactGraph'
 import {
   getCodeRefsFromEntityReference,
   selectionBodyFace,
@@ -549,7 +549,7 @@ hide(sketch001)`
     )
     if (cut?.type !== 'edgeCut') throw new Error('Treatment artifact not found')
     removeObsoleteEdges(artifactGraph)
-    const body = getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)
+    const body = getBodyFromSurface(cut.id, artifactGraph)
     if (isErr(body)) throw body
     if (body.type !== 'sweep') throw new Error('Expected sweep body')
     expect(body.surfaceIds).toContain(cut.id)
@@ -694,7 +694,7 @@ it('translates a treatment body without selecting a nested sketch segment', asyn
     (a) => a.type === 'edgeCut' && a.subType === 'fillet'
   )
   if (cut?.type !== 'edgeCut') throw new Error('Fillet not found')
-  const sweep = getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)
+  const sweep = getBodyFromSurface(cut.id, artifactGraph)
   if (isErr(sweep)) throw sweep
   const x = await stringToKclExpression('5mm', world.rustContext)
   if (isErr(x) || 'errors' in x) throw new Error('Invalid distance')
@@ -926,7 +926,7 @@ ${copied ? 'copy = clone(plateWithHole) |> translate(x = 30mm, y = 10mm, global 
     )
     if (cut?.type !== 'edgeCut')
       throw new Error('Missing Boolean treatment face')
-    const body = getSweepFromSuspectedSweepSurface(cut.id, artifactGraph)
+    const body = getBodyFromSurface(cut.id, artifactGraph)
     if (isErr(body)) throw body
     expect(body.type).toBe('compositeSolid')
     if (!beforeBoolean) expect(cut.bodyId).toBe(body.id)

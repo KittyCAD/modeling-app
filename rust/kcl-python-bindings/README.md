@@ -47,6 +47,23 @@ Omitted values use the client's existing environment defaults (`ZOO_API_TOKEN`
 or `KITTYCAD_API_TOKEN` for the token; `ZOO_HOST` or `KITTYCAD_HOST` for the API
 origin). Mock sessions do not create an API client.
 
+Session constructors and network execution helpers also accept an optional
+`headers` dictionary. These headers apply to HTTP requests and the modeling
+WebSocket handshake. A supplied `User-Agent` replaces the default value:
+
+```python
+async with await kcl.new_kcl_session_code(
+    code,
+    token=api_token,
+    base_url=api_origin,
+    headers={"User-Agent": "MyApp/1.0", "X-Request-Source": "example"},
+) as session:
+    outcome = session.outcome
+```
+
+Omitting `headers`, passing `None`, or passing an empty dictionary preserves
+the default headers. Header names are case-insensitive.
+
 For exports and measurements that do not need images, pass `geometry_only=True`
 to either constructor. This selects the CPU engine pool and skips rendering setup:
 

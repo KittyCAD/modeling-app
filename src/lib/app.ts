@@ -1,3 +1,4 @@
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import {
   defineRegistryItem,
   pluginsValueSpec,
@@ -483,6 +484,7 @@ export class App implements AppSubsystems {
   }
 
   closeProject() {
+    this.registry.optional(projectSessionService)?.closeProject()
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeSystemIO?.unsubscribe()

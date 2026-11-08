@@ -2967,7 +2967,10 @@ extrude001 = extrude(region001, length = 30)`
     await test.step('Edit GDT Flatness', async () => {
       await test.step('Open edit mode from feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
+        const gdtOperation = await toolbar.getFeatureTreeOperation(
+          'annotation001',
+          0
+        )
         await gdtOperation.dblclick()
         // Should open the modeling dialog in edit mode
         await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
@@ -3040,7 +3043,10 @@ extrude001 = extrude(region001, length = 30)`
 
     await test.step('Delete GDT Flatness', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
+      const gdtOperation = await toolbar.getFeatureTreeOperation(
+        'annotation001',
+        0
+      )
       // Delete the GDT operation
       await gdtOperation.click({ button: 'left' })
       await page.keyboard.press('Delete')
@@ -3760,7 +3766,7 @@ sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
 }
 body001 = extrude(region(segments = [sketch001.circle1]), length = 10mm)
-note001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontSize = 8mm)`
+annotation001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontSize = 8mm)`
       )
     )
     await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
@@ -3775,14 +3781,14 @@ note001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontSize = 
       exact: true,
     })
     await expect(exceptions).toHaveText('1 sweep')
-    await (await toolbar.getFeatureTreeOperation('Note', 0)).click({
+    await (await toolbar.getFeatureTreeOperation('annotation001', 0)).click({
       modifiers: ['Shift'],
     })
     await expect(exceptions).toHaveText('1 sweep, 1 annotation')
     await scene.waitForExecutionDoneAfter(() =>
       dialog.getByRole('button', { name: 'Submit', exact: true }).click()
     )
-    await editor.expectEditor.toContain('except = [body001, note001]')
+    await editor.expectEditor.toContain('except = [body001, annotation001]')
   })
 
   test('Creates, edits visibility, and removes a Named View from the pane', async ({

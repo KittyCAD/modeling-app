@@ -126,10 +126,10 @@ extrude001 = extrude(region001, length = 5mm)`
   "Isolate body",
   camera = view::oriented(view::Orientation::Isometric, projection = view::Projection::Orthographic),
   baseline = view::Visibility::Hide,
-  except = [extrude001, note001],
+  except = [extrude001, annotation001],
 )`)
     expect(recast(result.modifiedAst, instance)).toContain(
-      'note001 = gdt::note(note = "INSPECT")'
+      'annotation001 = gdt::note(note = "INSPECT")'
     )
     expect(
       [...nextExecState.artifactGraph.values()].some(

@@ -452,7 +452,7 @@ export function getBodySelectionForFace(
 ): Selection | Error {
   const id = getFaceBodyId(face)
   if (!id) {
-    const body = getSweepFromSuspectedSweepSurface(face.id, artifactGraph)
+    const body = getBodyFromSurface(face.id, artifactGraph)
     if (err(body)) return body
     return {
       artifact: body,
@@ -485,7 +485,7 @@ export function getBodySelectionForFace(
   return new Error('Could not resolve the selected face instance body')
 }
 
-export function getSweepFromSuspectedSweepSurface(
+export function getBodyFromSurface(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'sweep' | 'compositeSolid' }> | Error {
@@ -738,10 +738,7 @@ export function getSweepArtifactFromSelection(
         artifactGraph
       )
     }
-    const sweep = getSweepFromSuspectedSweepSurface(
-      selection.artifact.id,
-      artifactGraph
-    )
+    const sweep = getBodyFromSurface(selection.artifact.id, artifactGraph)
     if (err(sweep)) {
       return sweep.message === 'edgeCut has no consumed segment'
         ? new Error(
@@ -775,7 +772,7 @@ export function getCodeRefsByArtifactId(
     if (err(codeRef)) return null
     return [codeRef]
   } else if (artifact?.type === 'wall') {
-    const extrusion = getSweepFromSuspectedSweepSurface(id, artifactGraph)
+    const extrusion = getBodyFromSurface(id, artifactGraph)
     const codeRef = getWallCodeRef(artifact, artifactGraph)
     if (err(codeRef)) return null
     return err(extrusion) ? [codeRef] : [codeRef, extrusion.codeRef]
@@ -1333,10 +1330,7 @@ export function coerceSelectionsToBody(
       continue
     }
     if (selection.artifact.type === 'edgeCut') {
-      const body = getSweepFromSuspectedSweepSurface(
-        selection.artifact.id,
-        artifactGraph
-      )
+      const body = getBodyFromSurface(selection.artifact.id, artifactGraph)
       if (err(body)) return body
       if (body.type === 'compositeSolid') {
         if (!seenBodyIds.has(body.id)) {
