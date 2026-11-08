@@ -318,3 +318,40 @@ describe('project storage routing', () => {
     })
   })
 })
+
+it.each(['C:\\', '\\\\server\\share\\'])(
+  'routes children of Windows volume-root mount %s without falling back to disk',
+  async (root) => {
+    const localRead = vi.fn(async () => new Uint8Array([1]))
+    const mountedRead = vi.fn(async () => new Uint8Array([2]))
+    const router = createMountedFileOperations(
+      { ...testFileOperations, readFile: localRead },
+      win32
+    )
+    router.mount({
+      root,
+      operations: { ...testFileOperations, readFile: mountedRead },
+    })
+    expect(
+      await router.operations.readFile(win32.join(root, 'folder', 'main.kcl'))
+    ).toEqual(new Uint8Array([2]))
+    expect(localRead).not.toHaveBeenCalled()
+  }
+)
+
+it('routes Windows mount roots independently of drive and directory casing', async () => {
+  const localRead = vi.fn(async () => new Uint8Array([1]))
+  const mountedRead = vi.fn(async () => new Uint8Array([2]))
+  const router = createMountedFileOperations(
+    { ...testFileOperations, readFile: localRead },
+    win32
+  )
+  router.mount({
+    root: 'C:\\Cloud',
+    operations: { ...testFileOperations, readFile: mountedRead },
+  })
+  expect(
+    await router.operations.readFile('c:\\cloud\\project\\main.kcl')
+  ).toEqual(new Uint8Array([2]))
+  expect(localRead).not.toHaveBeenCalled()
+})

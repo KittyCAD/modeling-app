@@ -14,6 +14,8 @@ import {
   readDirectory as readDirectoryOperation,
   readFile as readFileOperation,
   remove as removeOperation,
+  removeWithSnapshot,
+  replayFileDeletion,
   rename as renameOperation,
   stat as statOperation,
   writeFile as writeFileOperation,
@@ -126,6 +128,13 @@ export function createFileOperationsRuntime(
       runFileOperationsPromise(
         'create-unique-directory',
         createUniqueDirectoryOperation(parent, preferredName)
+      ),
+    removeWithSnapshot: (path) =>
+      runFileOperationsPromise('remove', removeWithSnapshot(path)),
+    replayDeletion: (deletion, restore) =>
+      runFileOperationsPromise(
+        restore ? 'create-file' : 'remove',
+        replayFileDeletion(deletion, restore)
       ),
     remove: (path) => runFileOperationsPromise('remove', removeOperation(path)),
     rename: (source, destination) =>

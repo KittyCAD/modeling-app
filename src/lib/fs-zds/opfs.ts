@@ -228,8 +228,10 @@ const readdir = async (path: string) => {
   if (dir === undefined) return []
   if (!(dir instanceof FileSystemDirectoryHandle)) return []
   let entries = []
-  for await (let [name] of dir.entries()) {
-    entries.push(name)
+  for await (const [name] of dir.entries()) {
+    // Adapter-owned timestamps are not project contents. Rebuilding a directory
+    // changes them, so exposing them also makes content-based redo unstable.
+    if (name !== META_FILE) entries.push(name)
   }
   return entries
 }
