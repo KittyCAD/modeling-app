@@ -298,36 +298,43 @@ export const ProjectExplorer = ({
     []
   )
 
-  /**
-   * External state handlers since the callback logic lives here.
-   * If code wants to externall trigger creating a file pass in a new timestamp.
-   */
+  const lastCreateFileRequest = useRef(0)
+  const lastCreateFolderRequest = useRef(0)
+
+  // A request made during a mutation runs once that mutation has finished.
   useEffect(() => {
     if (
-      createFilePressed <= 0 ||
+      createFilePressed <= lastCreateFileRequest.current ||
       readOnly ||
-      isFileTreeInteractionDisabledRef.current
+      isFileTreeInteractionDisabled
     ) {
       return
     }
-
-    const row = selectedRowRef.current
-    startCreatingEntry(row, true)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [createFilePressed, startCreatingEntry])
+    lastCreateFileRequest.current = createFilePressed
+    startCreatingEntry(selectedRowRef.current, true)
+  }, [
+    createFilePressed,
+    readOnly,
+    isFileTreeInteractionDisabled,
+    startCreatingEntry,
+  ])
 
   useEffect(() => {
     if (
-      createFolderPressed <= 0 ||
+      createFolderPressed <= lastCreateFolderRequest.current ||
       readOnly ||
-      isFileTreeInteractionDisabledRef.current
+      isFileTreeInteractionDisabled
     ) {
       return
     }
-    const row = selectedRowRef.current
-    startCreatingEntry(row, false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [createFolderPressed, startCreatingEntry])
+    lastCreateFolderRequest.current = createFolderPressed
+    startCreatingEntry(selectedRowRef.current, false)
+  }, [
+    createFolderPressed,
+    readOnly,
+    isFileTreeInteractionDisabled,
+    startCreatingEntry,
+  ])
 
   useEffect(() => {
     if (refreshExplorerPressed <= 0) {
