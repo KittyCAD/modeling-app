@@ -1,7 +1,4 @@
-import {
-  resolveBodyReference,
-  resolveFaceOwner,
-} from '@src/lang/std/selectionReferences'
+import { resolveBodyReference } from '@src/lang/std/selectionReferences'
 import type { Block } from '@rust/kcl-lib/bindings/Block'
 import type { ElseIf } from '@rust/kcl-lib/bindings/ElseIf'
 import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
@@ -20,6 +17,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { CodeRef } from '@src/lang/std/artifactGraph'
 import {
   type ResolvedGraphSelection,
+  resolveFaceOwner,
   codeRefFromRange,
   getArtifactFromRange,
   getFaceBodyId,

@@ -219,3 +219,37 @@ it('materializes a tag through a binding that already contains that face', () =>
     ])
   ).toBeUndefined()
 })
+
+it('uses the latest live body alias when selection carries an older semantic artifact ID', () => {
+  const graph: ArtifactGraph = new Map()
+  graph.bodyBindings = [
+    { ...body('input', 'physical'), artifactId: 'input-feature' },
+    { ...body('latest', 'physical'), artifactId: 'latest-feature' },
+  ]
+  expect(
+    resolveBodyReference(
+      'input-feature',
+      graph,
+      program(['input', 'latest']),
+      wasm
+    )
+  ).toMatchObject({
+    type: 'Name',
+    name: { name: 'latest' },
+  })
+  expect(
+    resolveBodyReference(
+      'input-feature',
+      graph,
+      program(['input', 'latest']),
+      wasm,
+      [
+        ['body', ''],
+        [1, 'index'],
+      ]
+    )
+  ).toMatchObject({
+    type: 'Name',
+    name: { name: 'input' },
+  })
+})

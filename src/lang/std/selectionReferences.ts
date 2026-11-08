@@ -5,7 +5,7 @@ import {
   createMemberExpression,
 } from '@src/lang/create'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import { resolveFaceOwner } from '@src/lang/std/artifactGraph'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type BodyBinding = NonNullable<ArtifactGraph['bodyBindings']>[number]
@@ -70,7 +70,12 @@ export function resolveBodyReference(
     )
     if (new Set(matches.map((m) => m.body.bodyId)).size > 1)
       return new Error('Select a specific body instance')
-    const match = matches.at(-1)
+    // Semantic artifacts identify a feature; all aliases of its physical body
+    // remain candidates for the current command input.
+    const ownerId = matches[0]?.body.bodyId
+    const match = ownerId
+      ? available.filter(({ body }) => body.bodyId === ownerId).at(-1)
+      : undefined
     if (match) return bodyBindingExpression(match.body, wasmInstance)
     // Edits may intentionally refer to an earlier, now-consumed input. Their
     // original source binding remains the responsibility of the edit path.
@@ -86,34 +91,6 @@ export function resolveBodyReference(
     current = replacement.outputIds[0]
   }
   return undefined
-}
-
-// Resolve ownership before considering source scope: an inaccessible alias must
-// never make shared topology appear to have a unique owner.
-export function resolveFaceOwner(id: string, graph: ArtifactGraph) {
-  const matches = (graph.bodyBindings ?? []).filter(
-    (body) =>
-      body.faceIds?.includes(id) || body.faces.some((face) => face.id === id)
-  )
-  if (new Set(matches.map((body) => body.bodyId)).size > 1)
-    return new Error('Select the owning body for this shared face')
-  return matches[0]
-}
-
-export function resolveFaceBodySelection(
-  selection: Selection,
-  graph: ArtifactGraph
-) {
-  const id =
-    selection.entityRef?.type === 'face'
-      ? selection.entityRef.face_id
-      : selection.artifact?.id
-  const owner = id ? resolveFaceOwner(id, graph) : undefined
-  if (!owner || owner instanceof Error) return owner
-  return {
-    entityRef: { type: 'solid3d' as const, solid3d_id: owner.bodyId },
-    engineEntityId: owner.bodyId,
-  }
 }
 
 // A newly materialized tag must be read from a binding that contains this

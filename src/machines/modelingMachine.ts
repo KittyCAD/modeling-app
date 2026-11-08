@@ -100,7 +100,6 @@ import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   insertNamedConstant,
   replaceValueAtNodePath,
-  sketchOnExtrudedFace,
   sketchOnOffsetPlane,
   splitPipedProfile,
   startSketchOnDefault,
@@ -109,7 +108,10 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
+import {
+  sketchOnExtrudedFace,
+  sketchBlockOnExtrudedFace,
+} from '@src/lang/modifyAst/legacySketchFace'
 import { createModelingCodemodActor } from '@src/lang/modifyAst/modelingCodemod'
 import { addHide } from '@src/lang/modifyAst/transforms'
 import {

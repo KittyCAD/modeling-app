@@ -1,6 +1,6 @@
-import { resolveFaceBodySelection } from '@src/lang/std/selectionReferences'
 import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
 import {
+  resolveFaceBodySelection,
   getArtifactFromRange,
   getBodySelectionForFace,
   getArtifactOfTypes,

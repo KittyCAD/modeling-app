@@ -22,12 +22,14 @@ import {
   deleteSegmentOrProfileFromPipeExpression,
   moveValueIntoNewVariable,
   setCallInAst,
-  sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
-import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
+import {
+  sketchOnExtrudedFace,
+  sketchBlockOnExtrudedFace,
+} from '@src/lang/modifyAst/legacySketchFace'
 import {
   artifactToEntityRef,
   findUsesOfTagInPipe,

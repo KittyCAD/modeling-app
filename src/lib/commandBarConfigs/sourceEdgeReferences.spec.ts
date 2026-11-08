@@ -1484,7 +1484,9 @@ ${
 it.each([0, 1, 2])(
   'preserves cap instance %i when creating a legacy sketch after patterning',
   async (copyIndex) => {
-    const { sketchOnExtrudedFace } = await import('@src/lang/modifyAst')
+    const { sketchOnExtrudedFace } = await import(
+      '@src/lang/modifyAst/legacySketchFace'
+    )
     const { addTagForSketchOnFace } = await import('@src/lang/std/sketch')
     const code = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 p = startSketchOn(XY) |> startProfile(at = [0, 0]) |> line(end = [20, 0]) |> line(end = [0, 20]) |> line(end = [-20, 0]) |> close()

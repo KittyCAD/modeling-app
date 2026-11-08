@@ -4,8 +4,10 @@ import { getAstAndArtifactGraph } from '@src/lib/testHelpers'
 import { recast } from '@src/lang/wasm'
 import { isErr } from '@src/lib/trap'
 import { selectionBodyFace } from '@src/lib/selections'
-import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
-import { sketchOnExtrudedFace } from '@src/lang/modifyAst'
+import {
+  sketchOnExtrudedFace,
+  sketchBlockOnExtrudedFace,
+} from '@src/lang/modifyAst/legacySketchFace'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 let world: Awaited<ReturnType<typeof buildTheWorldAndConnectToEngine>>
