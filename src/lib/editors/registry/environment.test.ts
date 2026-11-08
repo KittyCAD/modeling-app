@@ -1,4 +1,9 @@
 import kclExtension from '@src/lib/kcl/registry'
+import executorsExtension from '@src/lib/executors/registry'
+import {
+  executorsService,
+  executorCapabilityValueSpec,
+} from '@src/lib/executors/registry/contract'
 import savingExtension, { SAVE_EDITOR_COMMAND } from '@src/lib/save/registry'
 import {
   editorSaveService,
@@ -55,6 +60,7 @@ describe('experimental editor registration', () => {
         featureFlags,
         editorsExtension,
         kclExtension,
+        executorsExtension,
         savingExtension,
         markdownExtension,
       ])
@@ -74,6 +80,8 @@ describe('experimental editor registration', () => {
           .some(({ id }) => id === SAVE_EDITOR_COMMAND.id)
       ).toBe(enabled)
       expect(registry.optional(editorsService) !== undefined).toBe(enabled)
+      expect(registry.optional(executorsService) !== undefined).toBe(enabled)
+      expect(registry.get(executorCapabilityValueSpec).length > 0).toBe(enabled)
       expect(registry.get(editorCapabilityValueSpec).length > 0).toBe(enabled)
       for (const command of [OPEN_EDITOR_COMMAND, NEW_EDITOR_COMMAND]) {
         expect(

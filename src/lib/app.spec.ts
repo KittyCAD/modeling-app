@@ -1,5 +1,6 @@
 import '@src/lib/projectSession/next/testFeature'
 import { editorsService } from '@src/lib/editors/registry/contract'
+import { executorsService } from '@src/lib/executors/registry/contract'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import type { Feature } from '@kittycad/lib'
@@ -253,7 +254,7 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
-  it('closes project editor resources through the Home navigation boundary', async () => {
+  it('closes project editor and executor resources through the Home navigation boundary', async () => {
     const app = createAppForTest()
     try {
       await waitForSettingsIdle(app)
@@ -264,8 +265,10 @@ describe('project system', () => {
         metadata: { title: 'Project', readWriteAccess: true },
       })
       const editors = app.registry.get(editorsService)
+      const executors = app.registry.get(executorsService)
       const editor = editors.openEditor('/project/main.kcl', '')
       const destroy = vi.spyOn(editor.view, 'destroy')
+      executors.createExecutor(editor)
       // Exercise Home's actual close boundary without starting unrelated folder IO.
       loadHomeProjects({
         systemIOActor: { send: vi.fn() },
@@ -275,6 +278,7 @@ describe('project system', () => {
       expect(projects.currentSession.value).toBeUndefined()
       expect(session.signal.aborted).toBe(true)
       expect(editors.editors.value).toEqual([])
+      expect(executors.executors.value).toEqual([])
       expect(destroy).toHaveBeenCalledOnce()
     } finally {
       await app.disposeAsync()
