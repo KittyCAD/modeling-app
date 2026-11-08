@@ -389,6 +389,13 @@ async fn send_pattern_transform<T: GeometryTrait>(
         let mut new_geometry = geometry.clone();
         new_geometry.set_id(id);
         new_geometry.set_artifact_id(id);
+        // useOriginal can pattern a feature already merged into its parent.
+        // Those results are additions to the parent, not queryable bodies.
+        if !geometry.is_feature_pattern(use_original) {
+            new_geometry
+                .remap_face_tags(entity_id, geometry.topology_id(), exec_state, args)
+                .await?;
+        }
         geometries.push(new_geometry);
     }
     Ok(geometries)
@@ -560,8 +567,15 @@ pub trait GeometryTrait: Clone {
     #[allow(async_fn_in_trait)]
     async fn id(&mut self, ctx: &ExecutorContext) -> Result<Uuid, KclError>;
     fn topology_id(&self) -> Uuid;
+    fn is_feature_pattern(&self, _use_original: bool) -> bool {
+        false
+    }
     fn set_id(&mut self, id: Uuid);
     fn set_artifact_id(&mut self, id: Uuid);
+    #[allow(async_fn_in_trait)]
+    async fn remap_face_tags(&mut self, _: Uuid, _: Uuid, _: &mut ExecState, _: &Args) -> Result<(), KclError> {
+        Ok(())
+    }
     fn array_to_point3d(
         val: &KclValue,
         source_ranges: Vec<SourceRange>,
@@ -602,6 +616,15 @@ impl GeometryTrait for Sketch {
 
 impl GeometryTrait for Solid {
     type Set = Vec<Solid>;
+    async fn remap_face_tags(
+        &mut self,
+        source_id: Uuid,
+        source_topology_id: Uuid,
+        exec_state: &mut ExecState,
+        args: &Args,
+    ) -> Result<(), KclError> {
+        super::clone::fix_pattern_face_tags(self, source_id, source_topology_id, exec_state, args).await
+    }
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
         self.value_id = id;
@@ -621,6 +644,12 @@ impl GeometryTrait for Solid {
 
     fn topology_id(&self) -> Uuid {
         Solid::topology_id(self)
+    }
+
+    fn is_feature_pattern(&self, use_original: bool) -> bool {
+        // A pattern instance retains its prototype ID too, but remains a
+        // separate body. Only an uncopied merged feature has virtual outputs.
+        use_original && self.pattern_source_artifact_id.is_none() && self.topology_id() != self.id
     }
 
     fn array_to_point3d(
@@ -674,6 +703,71 @@ mod tests {
     use crate::execution::KclValueView;
     use crate::execution::types::NumericType;
     use crate::execution::types::PrimitiveType;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_original_pattern_instances_keep_local_face_tags() {
+        for pattern in [
+            "patternLinear3d(first[1], axis = [0, 1, 0], distance = 10mm, instances = 2, useOriginal = true)",
+            "patternCircular3d(first[1], axis = [0, 0, 1], center = [0mm, 0mm, 0mm], arcDegrees = 180deg, instances = 2, useOriginal = true)",
+        ] {
+            let code = format!(
+                r#"@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {{
+    bottom = line(start = [0mm, 0mm], end = [4mm, 0mm])
+    right = line(start = [4mm, 0mm], end = [4mm, 4mm])
+    top = line(start = [4mm, 4mm], end = [0mm, 4mm])
+    left = line(start = [0mm, 4mm], end = [0mm, 0mm])
+}}
+profileRegion = region(segments = [profile.bottom, profile.right, profile.top, profile.left])
+base = extrude(profileRegion, length = 5mm, tagEnd = $endCap)
+first = patternLinear3d(base, axis = [1, 0, 0], distance = 10mm, instances = 2)
+second = {pattern}
+result = chamfer(second[1], length = 0.1mm, edges = [{{sideFaces = [second[1].sketch.tags.bottom, second[1].faces.endCap]}}])
+"#
+            );
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+                .await
+                .unwrap();
+            let outcome = ctx.run_with_caching(program).await;
+            ctx.close().await;
+            outcome.unwrap_or_else(|error| panic!("{pattern}: {}", error.error));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_feature_patterns_do_not_query_virtual_bodies() {
+        for pattern in [
+            "patternLinear3d(feature, axis = [1, 0, 0], distance = 5mm, instances = 2, useOriginal = true)",
+            "patternCircular3d(feature, axis = [0, 0, 1], center = [0mm, 0mm, 0mm], arcDegrees = 180deg, instances = 2, useOriginal = true)",
+        ] {
+            let code = format!(
+                r#"@settings(kclVersion = 3.0)
+baseSketch = sketch(on = XY) {{
+    bottom = line(start = [-20mm, -20mm], end = [20mm, -20mm])
+    right = line(start = [20mm, -20mm], end = [20mm, 20mm])
+    top = line(start = [20mm, 20mm], end = [-20mm, 20mm])
+    left = line(start = [-20mm, 20mm], end = [-20mm, -20mm])
+}}
+baseRegion = region(segments = [baseSketch.bottom, baseSketch.right, baseSketch.top, baseSketch.left])
+base = extrude(baseRegion, length = 5mm)
+featureSketch = sketch(on = faceOf(base, face = END)) {{
+    perimeter = circle(center = [5mm, 0mm], start = [6mm, 0mm])
+}}
+featureRegion = region(segments = [featureSketch.perimeter])
+feature = extrude(featureRegion, length = 2mm)
+result = {pattern}
+"#
+            );
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+                .await
+                .unwrap();
+            let outcome = ctx.run_with_caching(program).await;
+            ctx.close().await;
+            outcome.unwrap_or_else(|error| panic!("{pattern}: {}", error.error));
+        }
+    }
 
     async fn assert_imported_pattern_executes(code: &str) {
         let current_file = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -1465,6 +1559,13 @@ async fn pattern_circular<T: GeometryTrait>(
         let mut new_geometry = geometry.clone();
         new_geometry.set_id(id);
         new_geometry.set_artifact_id(id);
+        // As with transform patterns, a retained feature can belong to a
+        // different live body. Its patterned additions have no separate body.
+        if !geometry.is_feature_pattern(data.use_original()) {
+            new_geometry
+                .remap_face_tags(geometry_id, geometry.topology_id(), exec_state, args)
+                .await?;
+        }
         geometries.push(new_geometry);
     }
     Ok(geometries)

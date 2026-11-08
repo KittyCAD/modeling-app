@@ -140,8 +140,8 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await modelingDialog.submit()
     await scene.settled()
 
-    await editor.expectEditor.toContain('edgeId(body001')
-    await editor.expectEditor.toContain('fillet001 = fillet(body001')
+    await editor.expectEditor.toContain('edgeId(shell001')
+    await editor.expectEditor.toContain('fillet001 = fillet(shell001')
   })
 
   test('2.12 surface-extrudes an untouched outer CSG edge', async ({

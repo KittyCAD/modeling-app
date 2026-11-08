@@ -1622,7 +1622,7 @@ extrude001 = extrude(profile001, length = 10)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `plane001 = planeOf(extrude001, face = capEnd001)
+        `plane001 = planeOf(extrude001, face = extrude001.faces.capEnd001)
 solid001 = mirror3d(extrude001, across = plane001)`
       )
     })
@@ -1681,9 +1681,9 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${code}
-face001 = faceId(extrude001, index = 6)
-plane001 = planeOf(extrude001, face = face001)
-solid001 = mirror3d(extrude001, across = plane001)`)
+face001 = faceId(shell001, index = 6)
+plane001 = planeOf(shell001, face = face001)
+solid001 = mirror3d(shell001, across = plane001)`)
     })
 
     it('should support a sketch segment as the mirror reference', async () => {
@@ -1774,7 +1774,7 @@ extrude001 = extrude(region001, length = 10mm, tagEnd = $capEnd001)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain('solid001 = mirror3d(')
       expect(newCode).toContain('across = {')
-      expect(newCode).toContain('sideFaces = [region001.tags.')
+      expect(newCode).toContain('sideFaces = [\n      extrude001.sketch.tags.')
       expect(newCode).toContain('capEnd001')
     })
   })

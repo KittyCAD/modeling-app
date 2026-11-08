@@ -1,3 +1,4 @@
+import fc from 'fast-check'
 import {
   type Artifact,
   type ResolvedGraphSelection,
@@ -9,6 +10,8 @@ import {
   getSweepArtifactFromSelection,
   getBodyFromSurface,
   getMergedSweepBodyArtifact,
+  getSourceFaceArtifact,
+  getBodySelectionForFace,
   getSegmentArtifactForEdgeCut,
   getEdgeCutConsumedCodeRef,
   isFaceFromLegacySketch,
@@ -982,6 +985,64 @@ it('keeps the source sweep distinct from the later Boolean owner of a treatment 
     getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
   ).toBe(sourceSweep)
 })
+
+it('keeps face definition and instance ownership independent through nested copies', () => {
+  fc.assert(
+    fc.property(fc.integer({ min: 1, max: 12 }), (depth) => {
+      const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+      addMappedRegion(artifactGraph, sourceSegment, 'source', true)
+      const source = artifactGraph.get('cap-source')
+      if (!source) throw new Error('Missing source cap')
+      const bodies = Array.from({ length: depth }, (_, i) => `body-${i + 1}`)
+      artifactGraph.set('pattern', {
+        type: 'pattern',
+        id: 'pattern',
+        subType: 'linear',
+        sourceId: 'sweep-source',
+        copyIds: bodies,
+        copyFaceIds: [],
+        copyEdgeIds: [],
+        codeRef,
+      })
+      let face = source
+      for (const [index, body] of bodies.entries()) {
+        const copy: Artifact = {
+          type: 'primitiveFace',
+          id: `face-${index + 1}`,
+          solidId: body,
+          sourceFaceId: face.id,
+          codeRef,
+        }
+        artifactGraph.set(copy.id, copy)
+        face = copy
+      }
+      expect(getSourceFaceArtifact(face, artifactGraph)).toBe(source)
+      expect(getBodySelectionForFace(face, artifactGraph)).toMatchObject({
+        engineEntityId: bodies[depth - 1],
+        patternIndex: depth,
+      })
+      expect(
+        coerceSelectionsToBody(
+          {
+            graphSelections: [{ artifact: face, codeRef }],
+            otherSelections: [],
+          },
+          artifactGraph
+        )
+      ).toMatchObject({
+        graphSelections: [
+          { engineEntityId: bodies[depth - 1], patternIndex: depth },
+        ],
+      })
+      const first = artifactGraph.get('face-1')
+      if (first?.type !== 'primitiveFace')
+        throw new Error('Missing first instance')
+      first.sourceFaceId = face.id
+      expect(getSourceFaceArtifact(face, artifactGraph)).toBeInstanceOf(Error)
+    })
+  )
+})
+
 describe('getBodyFromSurface', () => {
   it('resolves path fallback and direct faces without logging failed probes', () => {
     const { artifactGraph, sourceSegment } = createSourceSegmentGraph()

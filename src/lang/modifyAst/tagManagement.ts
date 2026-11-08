@@ -1,3 +1,7 @@
+import {
+  resolveNamedFaceReference,
+  resolveFaceContainerReference,
+} from '@src/lang/std/selectionReferences'
 /**
  * Little Kingdom of Tags
  * ======================
@@ -37,6 +41,9 @@ import type {
 } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
+  getSourceFaceArtifact,
+  getCapCodeRef,
+  getWallCodeRef,
   getCommonFacesForEdge,
   getSourceSegmentArtifact,
   getSweepArtifactFromSelection,
@@ -133,32 +140,24 @@ export function modifyAstWithTagsForSelection(
   if (
     selection.artifact.type === 'wall' ||
     selection.artifact.type === 'cap' ||
-    selection.artifact.type === 'edgeCut'
+    selection.artifact.type === 'edgeCut' ||
+    (selection.artifact.type === 'primitiveFace' &&
+      Boolean(selection.artifact.sourceFaceId))
   ) {
     const result = modifyAstWithTagForFaceSelection(
       ast,
       selection,
       artifactGraph,
-      wasmInstance
+      wasmInstance,
+      options?.nodeToEdit
     )
     if (err(result)) {
       return result
     }
 
-    const qualifiedExpr = qualifyClonedFaceTag(
-      ast,
-      selection,
-      result.expr,
-      artifactGraph,
-      wasmInstance,
-      options?.nodeToEdit
-    )
-    if (err(qualifiedExpr)) {
-      return qualifiedExpr
-    }
     return {
       modifiedAst: result.modifiedAst,
-      exprs: [qualifiedExpr],
+      exprs: [result.expr],
     }
   }
 
@@ -382,56 +381,6 @@ function getExprName(expr: Expr): string | null {
   return null
 }
 
-function qualifyClonedFaceTag(
-  ast: Node<Program>,
-  selection: ResolvedGraphSelection,
-  expr: Expr,
-  artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode
-): Expr | Error {
-  const face = selection.artifact
-  if (face?.type !== 'wall' && face?.type !== 'cap') {
-    return expr
-  }
-
-  const selectedSweep = artifactGraph.get(face.sweepId)
-  if (selectedSweep?.type !== 'sweep' || !selectedSweep.sourceSweepId) {
-    return expr
-  }
-
-  const context = resolveSweepSelectionContext(
-    ast,
-    selectedSweep,
-    artifactGraph,
-    wasmInstance,
-    nodeToEdit
-  )
-  if (err(context)) {
-    return context
-  }
-
-  const tagName = getExprName(expr)
-  if (!tagName) {
-    return new Error('Could not resolve the source face tag')
-  }
-
-  if (face.type === 'cap') {
-    return createMemberExpression(
-      createMemberExpression(
-        structuredClone(context.selectedBodyExpr),
-        'faces'
-      ),
-      tagName
-    )
-  }
-
-  return createSketchTagMemberExpression(
-    structuredClone(context.selectedBodyExpr),
-    tagName
-  )
-}
-
 /**
  * Handles edge selection by finding the common faces and tagging both
  * An edge is defined by two intersecting faces, so this tags both faces
@@ -485,7 +434,8 @@ function modifyAstWithTagsForEdgeSelection(
         astClone,
         faceSelection,
         artifactGraph,
-        wasmInstance
+        wasmInstance,
+        options?.nodeToEdit
       )
       if (err(result)) return result
 
@@ -683,58 +633,89 @@ function modifyAstWithTagForFaceSelection(
   ast: Node<Program>,
   selection: ResolvedGraphSelection,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode
 ): { modifiedAst: Node<Program>; expr: Expr } | Error {
   if (!selection.artifact) {
     return new Error('Selection does not have an artifact')
   }
 
-  // CASE 1: Handle wall face - tag the sketch segment
-  if (selection.artifact.type === 'wall') {
-    // Each handler function creates its own clone and returns a new AST
-    const result = modifyAstWithTagForWallFace(
-      ast,
-      selection.artifact,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(result)) return result
-    const { modifiedAst, expr } = result
-    return {
-      modifiedAst: modifiedAst,
-      expr,
-    }
-  }
-  // CASE 2: Handle cap face - tag the extrusion/sweep
-  else if (selection.artifact.type === 'cap') {
-    const result = modifyAstWithTagForCapFace(
-      ast,
-      selection.artifact,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(result)) return result
-    return {
-      modifiedAst: result.modifiedAst,
-      expr: createLocalName(result.tag),
-    }
-  }
-  // CASE 3: Handle an edgeCut face by tagging its operation.
-  else if (selection.artifact.type === 'edgeCut') {
-    // Each handler function creates its own clone and returns a new AST
-    const result = modifyAstWithTagForEdgeCutFace(
-      ast,
-      selection.artifact,
-      wasmInstance
-    )
-    if (err(result)) return result
-    const { modifiedAst, tag } = result
-    return {
-      modifiedAst: modifiedAst,
-      expr: createLocalName(tag),
-    }
-  } else {
-    return new Error(`Unsupported artifact type: ${selection.artifact.type}`)
+  const reference = resolveNamedFaceReference(
+    selection.artifact.id,
+    artifactGraph,
+    ast,
+    wasmInstance,
+    nodeToEdit
+  )
+  if (reference instanceof Error) return reference
+
+  // Tag insertion edits the defining feature; reference rendering always uses
+  // the selected instance. Originals and copies share this same operation.
+  const source = getSourceFaceArtifact(selection.artifact, artifactGraph)
+  if (err(source))
+    return reference ? { modifiedAst: ast, expr: reference.faceExpr } : source
+  const definition =
+    source.type === 'cap'
+      ? reference
+        ? getCapCodeRef(source, artifactGraph)
+        : source.faceCodeRef
+      : source.type === 'wall'
+        ? getWallCodeRef(source, artifactGraph)
+        : source.codeRef
+  if (err(definition))
+    return reference
+      ? { modifiedAst: ast, expr: reference.faceExpr }
+      : definition
+  if (definition.range[2] !== 0)
+    return reference
+      ? { modifiedAst: ast, expr: reference.faceExpr }
+      : new Error('This imported face needs a tag in its defining module')
+  const container = resolveFaceContainerReference(
+    selection.artifact.id,
+    artifactGraph,
+    ast,
+    wasmInstance,
+    nodeToEdit
+  )
+  if (container instanceof Error) return container
+  const body = container
+    ? { exprs: [container] }
+    : getVariableExprsFromSelection(
+        { graphSelections: [selection], otherSelections: [] },
+        artifactGraph,
+        ast,
+        wasmInstance,
+        nodeToEdit,
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['sweep', 'compositeSolid'],
+        }
+      )
+  if (err(body)) return body
+  if (body.exprs.length !== 1)
+    return new Error('Cannot resolve the selected face body')
+  const tagged =
+    source.type === 'wall'
+      ? modifyAstWithTagForWallFace(ast, source, artifactGraph, wasmInstance)
+      : source.type === 'cap'
+        ? modifyAstWithTagForCapFace(ast, source, artifactGraph, wasmInstance)
+        : modifyAstWithTagForEdgeCutFace(ast, source, wasmInstance)
+  if (err(tagged)) return tagged
+  const tag = 'tag' in tagged ? tagged.tag : getExprName(tagged.expr)
+  if (!tag) return new Error('Cannot resolve the defining face tag')
+  // Runtime metadata may describe a tagged version of this feature while the
+  // caller edits an earlier AST. Ensure the declaration exists in this AST too.
+  if (reference && reference.face.tag === tag)
+    return { modifiedAst: tagged.modifiedAst, expr: reference.faceExpr }
+  return {
+    modifiedAst: tagged.modifiedAst,
+    expr:
+      source.type === 'wall'
+        ? createSketchTagMemberExpression(body.exprs[0], tag)
+        : createMemberExpression(
+            createMemberExpression(body.exprs[0], 'faces'),
+            tag
+          ),
   }
 }
 
@@ -1003,6 +984,18 @@ function modifyAstWithTagForEdgeCutFace(
     return new Error('Selection artifact is not a valid edgeCut type')
   }
 
+  const definition = getNodeFromPath<CallExpressionKw>(
+    ast,
+    edgeCutFace.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    err(definition) ||
+    !['fillet', 'chamfer'].includes(definition.node.callee.name.name)
+  ) {
+    return new Error('Cannot create a tag on this copied treatment face.')
+  }
   const tagInfo = {
     node: structuredClone(ast),
     pathToNode: edgeCutFace.codeRef.pathToNode,

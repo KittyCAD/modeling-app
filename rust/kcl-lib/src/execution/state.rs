@@ -289,6 +289,9 @@ pub(crate) struct PendingLegacyAngleRefactorMeta {
 /// Artifact state for a single module.
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct ModuleArtifactState {
+    /// Consumption events survive module teardown and cached artifact replay.
+    #[serde(skip)]
+    pub(crate) body_replacements: IndexMap<ConsumedSolidKey, BodyReplacementEvent>,
     /// Internal map of UUIDs to exec artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Outgoing engine commands that have not yet been processed and integrated
@@ -426,6 +429,13 @@ impl std::fmt::Display for ConsumedRegionOperation {
             Self::Delete => f.write_str("delete"),
         }
     }
+}
+
+/// Successors recorded when a runtime body is consumed.
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) struct BodyReplacementEvent {
+    pub source_artifact_id: ArtifactId,
+    pub outputs: Vec<ConsumedSolidKey>,
 }
 
 /// Internal identity for one runtime KCL solid value.
@@ -792,6 +802,7 @@ impl ExecState {
         let variables = self.mod_local.variables(main_ref)?;
         #[cfg(test)]
         let test_program_memory = variables.clone();
+        let body_bindings = super::artifact::body_bindings(&variables, &self, ctx).await;
         let variables = variables
             .into_iter()
             .map(|(key, value)| (key, KclValueView::from(value)))
@@ -801,7 +812,13 @@ impl ExecState {
             filenames: self.global.filenames(),
             engine_scene_generation: ctx.cache.engine_scene_generation().await,
             operations: self.global.operations_by_module(),
-            artifact_graph: self.global.artifacts.graph,
+            artifact_graph: {
+                let mut graph = self.global.artifacts.graph;
+                graph.body_bindings = body_bindings;
+                graph.body_replacements =
+                    super::artifact::body_replacements(&self.global.root_module_artifacts, &self.global.module_infos);
+                graph
+            },
             scene_objects: self.global.root_module_artifacts.scene_objects,
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             var_solutions: self.global.root_module_artifacts.var_solutions,
@@ -1008,7 +1025,19 @@ impl ExecState {
     }
 
     /// Record that a solid value has been consumed by a CSG boolean operation.
-    pub(crate) fn mark_solid_consumed(&mut self, consumed_key: ConsumedSolidKey, info: ConsumedSolidInfo) {
+    pub(crate) fn mark_solid_consumed(
+        &mut self,
+        consumed_key: ConsumedSolidKey,
+        source_artifact_id: ArtifactId,
+        info: ConsumedSolidInfo,
+    ) {
+        self.mod_local.artifacts.body_replacements.insert(
+            consumed_key,
+            BodyReplacementEvent {
+                source_artifact_id,
+                outputs: info.returned_solid_keys.clone(),
+            },
+        );
         self.mod_local.consumed_solids.insert(consumed_key, info);
     }
 
@@ -1781,6 +1810,7 @@ impl ModuleArtifactState {
     }
 
     pub(crate) fn clear(&mut self) {
+        self.body_replacements.clear();
         self.artifacts.clear();
         self.unprocessed_commands.clear();
         self.commands.clear();
@@ -1831,6 +1861,7 @@ impl ModuleArtifactState {
 
     /// When self is a cached state, extend it with new state.
     pub(crate) fn extend(&mut self, other: ModuleArtifactState) {
+        self.body_replacements.extend(other.body_replacements);
         self.artifacts.extend(other.artifacts);
         self.unprocessed_commands.extend(other.unprocessed_commands);
         self.commands.extend(other.commands);

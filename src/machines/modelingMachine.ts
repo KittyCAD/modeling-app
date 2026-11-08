@@ -100,7 +100,6 @@ import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   insertNamedConstant,
   replaceValueAtNodePath,
-  sketchOnExtrudedFace,
   sketchOnOffsetPlane,
   splitPipedProfile,
   startSketchOnDefault,
@@ -109,7 +108,10 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
+import {
+  sketchOnExtrudedFace,
+  sketchBlockOnExtrudedFace,
+} from '@src/lang/modifyAst/legacySketchFace'
 import { createModelingCodemodActor } from '@src/lang/modifyAst/modelingCodemod'
 import { addHide } from '@src/lang/modifyAst/transforms'
 import {
@@ -3078,7 +3080,11 @@ export const modelingMachine = setup({
                   plane.extrudePathToNode,
                   addTagForSketchOnFace,
                   await kclManager.wasmInstancePromise,
-                  plane.faceInfo
+                  plane.faceInfo,
+                  {
+                    faceId: plane.faceId,
+                    artifactGraph: kclManager.artifactGraph,
+                  }
                 )
               : sketchOnOffsetPlane(
                   kclManager.ast,
@@ -3267,14 +3273,16 @@ export const modelingMachine = setup({
         const faceRequiringSourceMaterialization: ExtrudeFacePlane | null =
           result.type === 'extrudeFace' &&
           (selectedFaceArtifact?.type === 'edgeCut' ||
+            (selectedFaceArtifact?.type === 'primitiveFace' &&
+              Boolean(selectedFaceArtifact.sourceFaceId)) ||
             (result.faceInfo.type === 'wall' &&
               isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)))
             ? result
             : null
 
         if (faceRequiringSourceMaterialization) {
-          // Edge-cut faces and legacy sketch V1 walls need a concrete Face
-          // expression before the Rust frontend can create a sketch on them.
+          // Treatments, inherited faces and legacy walls need a concrete
+          // Face expression before the Rust frontend can create a sketch.
           const legacyFaceArtifact = kclManager.artifactGraph.get(
             faceRequiringSourceMaterialization.faceId
           )
@@ -3282,9 +3290,7 @@ export const modelingMachine = setup({
             ? getFaceCodeRef(legacyFaceArtifact)
             : null
           if (!legacyFaceArtifact || !legacyFaceCodeRef) {
-            return reject(
-              new Error('Could not resolve the selected legacy face.')
-            )
+            return reject(new Error('Could not resolve the selected face.'))
           }
 
           const legacySketchBlock = sketchBlockOnExtrudedFace(

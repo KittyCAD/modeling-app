@@ -1394,6 +1394,22 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -1606,6 +1622,22 @@ description: Artifact commands gingerbread-man.kcl
             }
           ]
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
       }
     },
     {
@@ -1893,6 +1925,22 @@ description: Artifact commands gingerbread-man.kcl
         "num_repetitions": 1,
         "arc_degrees": 360.0,
         "rotate_duplicates": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
       }
     },
     {
@@ -2620,6 +2668,22 @@ description: Artifact commands gingerbread-man.kcl
         "num_repetitions": 1,
         "arc_degrees": 360.0,
         "rotate_duplicates": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
       }
     },
     {

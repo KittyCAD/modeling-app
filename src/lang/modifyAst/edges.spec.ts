@@ -412,7 +412,7 @@ hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile]
         expect(newCode).toMatch(
           /fillet001 = fillet\(\s*part,\s*edges = \[\s*\{\s*sideFaces = \[/
         )
-        expect(newCode).toContain('boxRegion.tags.topEdge')
+        expect(newCode).toContain('part.sketch.tags.topEdge')
         expect(newCode).toContain('radius = 1')
         await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
         expect(kclManagerInThisFile.errors).toEqual([])
@@ -547,7 +547,7 @@ part = subtract(extrude001, tools = extrude002)`
         'fillet001 = fillet(part, tags = edge001, radius = 1)'
       )
       expect(newCode).toMatch(/fillet002 = fillet\(\s*part,\s*edges = \[/)
-      expect(newCode).toContain('region001.tags.circle1')
+      expect(newCode).toContain('part.sketch.tags.circle1')
       expect(newCode).not.toContain('getCommonEdge')
       expect(newCode.indexOf('fillet001')).toBeLessThan(
         newCode.indexOf('fillet002')
@@ -558,7 +558,7 @@ part = subtract(extrude001, tools = extrude002)`
         kclManagerInThisFile
       )
       expect(kclManagerInThisFile.errors).toEqual([])
-    })
+    }, 30_000)
 
     it('should add a basic fillet call with edge selection (selectionV2)', async () => {
       const codeWithTags = `sketch001 = startSketchOn(XY)
@@ -1144,7 +1144,10 @@ ${extrudedTriangle}`
   extrude001,
   edges = [
     {
-      sideFaces = [seg01, extrude001.faces.capEnd001]
+      sideFaces = [
+        extrude001.sketch.tags.seg01,
+        extrude001.faces.capEnd001
+      ]
     }
   ],
   radius = 1,
@@ -1908,7 +1911,10 @@ ${extrudedTriangle}`
   extrude001,
   edges = [
     {
-      sideFaces = [seg01, extrude001.faces.capEnd001]
+      sideFaces = [
+        extrude001.sketch.tags.seg01,
+        extrude001.faces.capEnd001
+      ]
     }
   ],
   length = 1,
@@ -2183,7 +2189,8 @@ ${command}001 = ${command}(extrude001, tags = [getOppositeEdge(seg01)], ${parame
         expect(newCode).toBe(expectedCode)
         await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
         expect(kclManagerInThisFile.errors).toEqual([])
-      }
+      },
+      30_000
     )
 
     it('preserves edge disambiguators when recovering a single edge reference', async () => {
@@ -2296,7 +2303,7 @@ chamfer001 = chamfer(
       }
 
       expect(selections.otherSelections).toHaveLength(0)
-    })
+    }, 30_000)
   })
 
   const runDeleteEdgeTreatmentTest = async (
@@ -2306,12 +2313,12 @@ chamfer001 = chamfer(
     instance: ModuleType,
     kclManager: KclManager
   ) => {
-    // parse ast
-    const ast = assertParse(code, instance)
-
-    // update artifact graph
-    await kclManager.executeAst({ ast })
-    const artifactGraph = kclManager.artifactGraph
+    // Serialize engine work with the other cases sharing this manager.
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      instance,
+      kclManager
+    )
 
     expect(kclManager.errors).toEqual([])
 

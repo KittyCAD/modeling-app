@@ -1065,7 +1065,7 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
 }
 
 #[test]
-fn build_entity_clone_id_maps_from_child_queries() {
+fn build_entity_copy_id_maps_from_child_queries() {
     let source_id = Uuid::new_v4();
     let clone_cmd_id = Uuid::new_v4();
     let old_children_cmd_id = Uuid::new_v4();
@@ -1079,7 +1079,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
     let new_child_a = Uuid::new_v4();
     let new_child_b = Uuid::new_v4();
 
-    let artifact_commands = vec![
+    let mut artifact_commands = vec![
         ArtifactCommand {
             cmd_id: clone_cmd_id,
             range: SourceRange::synthetic(),
@@ -1146,32 +1146,59 @@ fn build_entity_clone_id_maps_from_child_queries() {
         OkModelingCmdResponse::EntityGetAllChildUuids(new_children_response),
     );
 
-    let clone_id_maps = build_entity_clone_id_maps(&artifact_commands, &responses);
-    let id_map = clone_id_maps
-        .get(&clone_cmd_id)
-        .expect("Expected clone ID map for clone command");
+    let later_query_id = Uuid::new_v4();
+    artifact_commands.push(ArtifactCommand {
+        cmd_id: later_query_id,
+        range: SourceRange::synthetic(),
+        command: ModelingCmd::from(
+            kcmc::each_cmd::EntityGetAllChildUuids::builder()
+                .entity_id(clone_cmd_id)
+                .build(),
+        ),
+        entity_clone_info: None,
+        omit_from_graph: false,
+    });
+    responses.insert(
+        later_query_id,
+        OkModelingCmdResponse::EntityGetAllChildUuids(
+            serde_json::from_value(serde_json::json!({ "entity_ids": [new_child_b, new_child_a] })).unwrap(),
+        ),
+    );
+    let pattern_command = ModelingCmd::from(
+        kcmc::each_cmd::EntityLinearPatternTransform::builder()
+            .entity_id(source_id)
+            .transform(Default::default())
+            .transforms(vec![Default::default()])
+            .build(),
+    );
+    responses.insert(clone_cmd_id, OkModelingCmdResponse::EntityLinearPatternTransform(
+        serde_json::from_value(serde_json::json!({ "entity_face_edge_ids": [{ "object_id": clone_cmd_id, "faces": [new_child_a], "edges": [new_child_b] }] })).unwrap()
+    ));
+    for command in [artifact_commands[0].command.clone(), pattern_command] {
+        artifact_commands[0].command = command;
+        let clone_id_maps = build_entity_copy_id_maps(&artifact_commands, &responses);
+        let id_map = clone_id_maps
+            .get(&clone_cmd_id)
+            .expect("Expected clone ID map for clone command");
 
-    assert_eq!(
-        id_map.get(&ArtifactId::new(source_id)),
-        Some(&ArtifactId::new(clone_cmd_id))
-    );
-    assert_eq!(
-        id_map.get(&ArtifactId::new(old_child_a)),
-        Some(&ArtifactId::new(new_child_a))
-    );
-    assert_eq!(
-        id_map.get(&ArtifactId::new(old_child_b)),
-        Some(&ArtifactId::new(new_child_b))
-    );
-    assert_eq!(
-        id_map.get(&ArtifactId::new(source_child_a)),
-        Some(&ArtifactId::new(new_child_a))
-    );
-    assert_eq!(
-        id_map.get(&ArtifactId::new(source_child_b)),
-        Some(&ArtifactId::new(new_child_b))
-    );
-    assert!(!id_map.contains_key(&ArtifactId::new(source_topology_id)));
+        assert_eq!(
+            id_map.get(&ArtifactId::new(source_id)),
+            Some(&ArtifactId::new(clone_cmd_id))
+        );
+        assert_eq!(
+            id_map.get(&ArtifactId::new(old_child_a)),
+            Some(&ArtifactId::new(new_child_a))
+        );
+        assert_eq!(
+            id_map.get(&ArtifactId::new(old_child_b)),
+            Some(&ArtifactId::new(new_child_b))
+        );
+        // A prototype's shape may differ from the live instance. These aliases
+        // require semantic provenance, not matching positions in two ID lists.
+        assert!(!id_map.contains_key(&ArtifactId::new(source_child_a)));
+        assert!(!id_map.contains_key(&ArtifactId::new(source_child_b)));
+        assert!(!id_map.contains_key(&ArtifactId::new(source_topology_id)));
+    }
 }
 
 #[test]
@@ -1481,6 +1508,7 @@ fn pattern_artifact_links_to_source_geometry() {
         path_id,
         &face_edge_infos,
         code_ref,
+        &AHashMap::default(),
     );
 
     assert!(matches!(
@@ -1549,6 +1577,7 @@ fn pattern_artifact_does_not_materialize_composite_solid_copies() {
         source_id,
         &face_edge_infos,
         CodeRef::placeholder(SourceRange::synthetic()),
+        &AHashMap::default(),
     );
 
     assert!(!updated.iter().any(|artifact| artifact.id() == ArtifactId::new(copy_id)));
@@ -1667,6 +1696,7 @@ fn entity_clone_resolves_pattern_copy_lazily() {
         source_sweep_id,
         &face_edge_infos,
         code_ref,
+        &AHashMap::default(),
     ) {
         merge_artifact_into_map(&mut artifacts, update);
     }
@@ -1894,6 +1924,7 @@ fn primitive_face_does_not_replace_existing_cap_artifact() {
         Artifact::PrimitiveFace(PrimitiveFace {
             id: shared_id,
             solid_id,
+            source_face_id: None,
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
         }),
     );
@@ -2128,7 +2159,7 @@ fn edge_specifier_surface_extrude_child_query_registers_generated_topology() {
     assert!(updated.iter().any(|artifact| {
         matches!(
             artifact,
-            Artifact::PrimitiveFace(PrimitiveFace { id, solid_id, code_ref: primitive_code_ref })
+            Artifact::PrimitiveFace(PrimitiveFace { id, solid_id, code_ref: primitive_code_ref, .. })
                 if *id == ArtifactId::new(face_id)
                     && *solid_id == body_id
                     && primitive_code_ref == &code_ref
@@ -2137,7 +2168,7 @@ fn edge_specifier_surface_extrude_child_query_registers_generated_topology() {
     assert!(updated.iter().any(|artifact| {
         matches!(
             artifact,
-            Artifact::PrimitiveEdge(PrimitiveEdge { id, solid_id, code_ref: primitive_code_ref })
+            Artifact::PrimitiveEdge(PrimitiveEdge { id, solid_id, code_ref: primitive_code_ref, .. })
                 if *id == ArtifactId::new(edge_id)
                     && *solid_id == body_id
                     && primitive_code_ref == &code_ref
@@ -2284,4 +2315,107 @@ fn failed_mirror_3d_command_does_not_update_artifact_graph() {
     .unwrap();
 
     assert!(updated.is_empty());
+}
+
+#[test]
+fn extrusion_queries_preserve_copied_face_ownership() {
+    let id = ArtifactId::new(Uuid::new_v4());
+    let owner = ArtifactId::new(Uuid::new_v4());
+    let source = ArtifactId::new(Uuid::new_v4());
+    let code_ref = CodeRef::placeholder(SourceRange::default());
+    let wall = Artifact::Wall(Wall {
+        id,
+        seg_id: ArtifactId::new(Uuid::new_v4()),
+        sweep_id: source,
+        edge_cut_edge_ids: vec![],
+        path_ids: vec![],
+        face_code_ref: code_ref.clone(),
+        cmd_id: Uuid::new_v4(),
+    });
+    let mut copied = Artifact::PrimitiveFace(PrimitiveFace {
+        id,
+        solid_id: owner,
+        source_face_id: Some(source),
+        code_ref: code_ref.clone(),
+    });
+    assert!(merge_artifacts(&mut copied, wall.clone()).is_none());
+    assert!(
+        matches!(copied, Artifact::PrimitiveFace(face) if face.solid_id == owner && face.source_face_id == Some(source))
+    );
+    let mut unqualified = Artifact::PrimitiveFace(PrimitiveFace {
+        id,
+        solid_id: source,
+        source_face_id: None,
+        code_ref,
+    });
+    assert!(matches!(
+        merge_artifacts(&mut unqualified, wall),
+        Some(Artifact::Wall(_))
+    ));
+}
+
+const BODY_BINDING_FIXTURE: &str = r#"@settings(kclVersion = 3.0)
+fn make() {
+  profile = sketch(on = XY) {
+    bottom = line(start = [0mm, 0mm], end = [10mm, 0mm])
+    right = line(start = [10mm, 0mm], end = [10mm, 10mm])
+    top = line(start = [10mm, 10mm], end = [0mm, 10mm])
+    left = line(start = [0mm, 10mm], end = [0mm, 0mm])
+  }
+  body = extrude(region(point = [5mm, 5mm], sketch = profile), length = 10mm, tagEnd = $endCap)
+  return body
+}
+"#;
+
+#[tokio::test]
+async fn body_bindings_use_public_names_and_array_outputs() {
+    let code = format!("{BODY_BINDING_FIXTURE}\noutputs = [make(), make()]\ncaller = outputs[1]");
+    let result = crate::execution::parse_execute(&code).await.unwrap();
+    let outcome = result
+        .exec_state
+        .into_exec_outcome(result.mem_env, &result.exec_ctxt)
+        .await
+        .unwrap();
+    let bindings = &outcome.artifact_graph.body_bindings;
+    assert!(bindings.iter().any(|b| b.variable == "outputs" && b.indices == [0]));
+    let second = bindings
+        .iter()
+        .find(|b| b.variable == "outputs" && b.indices == [1])
+        .unwrap();
+    let caller = bindings.iter().find(|b| b.variable == "caller").unwrap();
+    assert_eq!(second.body_id, caller.body_id);
+    assert!(bindings.iter().all(|b| b.variable != "body" && b.variable != "profile"));
+    assert!(caller.faces.iter().any(|f| f.tag == "endCap" && !f.sketch));
+    // The untagged start cap still has an owner, so tag materialization can
+    // resolve its body independently from the existence of a named selector.
+    assert!(caller.face_ids.len() > caller.faces.len());
+}
+
+#[tokio::test]
+async fn body_bindings_exclude_consumed_values() {
+    let code = format!(
+        "{BODY_BINDING_FIXTURE}\nsource = make()\ntool = clone(source) |> translate(x = 2mm)\noutput = subtract(source, tools = tool)"
+    );
+    let result = crate::execution::parse_execute(&code).await.unwrap();
+    let outcome = result
+        .exec_state
+        .into_exec_outcome(result.mem_env, &result.exec_ctxt)
+        .await
+        .unwrap();
+    assert!(
+        outcome
+            .artifact_graph
+            .body_bindings
+            .iter()
+            .any(|b| b.variable == "output")
+    );
+    assert!(
+        outcome
+            .artifact_graph
+            .body_bindings
+            .iter()
+            .all(|b| b.variable != "source" && b.variable != "tool"),
+        "{:?}",
+        outcome.artifact_graph.body_bindings
+    );
 }

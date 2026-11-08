@@ -1,0 +1,358 @@
+{
+  "purpose": "Bounded inventory of non-primitive-index KCL references and selection consumers",
+  "baseline_commit": "dd161564fc",
+  "preferred_references": {
+    "sketch_derived_face": "selectedBody.sketch.tags.segment",
+    "body_created_face": "selectedBody.faces.tag",
+    "pattern_instance": "copies[index]",
+    "edge": "sideFaces referencing named faces; endFaces and selector index where needed"
+  },
+  "compatibility_only": [
+    "region.tags.segment",
+    "bare declaration tags"
+  ],
+  "excluded_as_success": [
+    "faceId(body, index = n)",
+    "edgeId(body, index = n)"
+  ],
+  "consumer_applicability": {
+    "planar_named_faces": [
+      "reference copy",
+      "GDT annotation",
+      "sketch support"
+    ],
+    "curved_named_faces": [
+      "reference copy",
+      "GDT annotation"
+    ],
+    "structural_edge": [
+      "reference copy",
+      "GDT annotation engine edge_reference"
+    ]
+  },
+  "coverage": {
+    "matrix": {
+      "programs": 18,
+      "instance_forms": [
+        "circular-second-copy",
+        "clone",
+        "clone-mirror",
+        "mirror",
+        "mirror-pattern-copy",
+        "original",
+        "pattern-clone",
+        "pattern-original",
+        "pattern-second-copy"
+      ],
+      "treatment_order": [
+        "before copying",
+        "after copying"
+      ],
+      "named_face_selections": 144,
+      "named_structural_edges": 18,
+      "sketch_supports": 126
+    },
+    "scope_cases": [
+      "alias chain",
+      "unchanged cached alias",
+      "function-local body with a shadowed name",
+      "two calls to the same factory",
+      "imported factory",
+      "imported solid alias",
+      "split outputs 0 through 3"
+    ],
+    "structural_edge_cases": "Original and pattern copy: cap-boundary indices 0 and 2; endFaces restriction",
+    "reduced_reproductions": 2,
+    "ownership_audit": "selectionOwnershipAudit.spec.ts: Boolean, shell, chamfer, fillet on copies; nested copies; legacy wall/chamfer sketches. sourceEdgeReferences.spec.ts: body commands, primitive fallbacks, annotation edits and curved cylinder references."
+  },
+  "baseline_findings": {
+    "missing_copied_wall_and_cap_references": 72,
+    "source_region_spellings_in_matrix": 16,
+    "scope_codemod_failures": [
+      {
+        "case": "function-local body with shadowed name",
+        "result": "Generated outer code references local body and endCap instead of caller-accessible target"
+      },
+      {
+        "case": "two calls to the same factory",
+        "result": "Direct named reference reaches the second live instance; generated references still use inaccessible local names"
+      },
+      {
+        "case": "imported factory",
+        "result": "Direct named face belongs to live returned body, but selectionBodyFace rejects the support; existing import limitation rather than confirmed regression"
+      },
+      {
+        "case": "imported solid alias",
+        "result": "Generator adds tagEnd to faceOf probe and attempts faceOf(probe, ...), passing Face instead of Solid"
+      },
+      {
+        "case": "split output 0",
+        "result": "Valid named cap on output 0; generated faceOf(parts, ...) loses specific result index"
+      },
+      {
+        "case": "split output 1",
+        "result": "Valid named wall on output 1; generated faceOf(parts, ...) loses the specific result index"
+      }
+    ],
+    "split_runtime_boundary": {
+      "cases": [
+        "split output 2",
+        "split output 3"
+      ],
+      "finding": "None of the six tested inherited target face names addresses live output topology. Executable faceOf expressions alone are insufficient proof of a valid selection. These are not counted as codemod-only bugs.",
+      "limitation": "Does not prove absence of every possible non-index reference, such as tool-derived or other structural selectors."
+    },
+    "split_named_face_enumeration": [
+      {
+        "code": "target = parts[1]",
+        "candidates": [
+          {
+            "index": 0,
+            "live": false
+          },
+          {
+            "index": 1,
+            "live": true
+          },
+          {
+            "index": 2,
+            "live": false
+          },
+          {
+            "index": 3,
+            "live": false
+          },
+          {
+            "index": 4,
+            "live": true
+          }
+        ],
+        "primaryFaceIsLive": true,
+        "candidateExpressions": [
+          "target.faces.startCap",
+          "target.sketch.tags.bottom",
+          "target.sketch.tags.right",
+          "target.sketch.tags.top",
+          "target.sketch.tags.left"
+        ],
+        "primaryExpression": "target.sketch.tags.bottom"
+      },
+      {
+        "code": "target = parts[2]",
+        "candidates": [
+          {
+            "index": 0,
+            "live": false
+          },
+          {
+            "index": 1,
+            "live": false
+          },
+          {
+            "index": 2,
+            "live": false
+          },
+          {
+            "index": 3,
+            "live": false
+          },
+          {
+            "index": 4,
+            "live": false
+          }
+        ],
+        "primaryFaceIsLive": false,
+        "candidateExpressions": [
+          "target.faces.startCap",
+          "target.sketch.tags.bottom",
+          "target.sketch.tags.right",
+          "target.sketch.tags.top",
+          "target.sketch.tags.left"
+        ],
+        "primaryExpression": "target.faces.endCap"
+      },
+      {
+        "code": "target = parts[3]",
+        "candidates": [
+          {
+            "index": 0,
+            "live": false
+          },
+          {
+            "index": 1,
+            "live": false
+          },
+          {
+            "index": 2,
+            "live": false
+          },
+          {
+            "index": 3,
+            "live": false
+          },
+          {
+            "index": 4,
+            "live": false
+          }
+        ],
+        "primaryFaceIsLive": false,
+        "candidateExpressions": [
+          "target.faces.startCap",
+          "target.sketch.tags.bottom",
+          "target.sketch.tags.right",
+          "target.sketch.tags.top",
+          "target.sketch.tags.left"
+        ],
+        "primaryExpression": "target.faces.endCap"
+      },
+      {
+        "code": "target = parts[0]",
+        "candidates": [
+          {
+            "index": 0,
+            "live": true
+          },
+          {
+            "index": 1,
+            "live": false
+          },
+          {
+            "index": 2,
+            "live": true
+          },
+          {
+            "index": 3,
+            "live": true
+          },
+          {
+            "index": 4,
+            "live": false
+          }
+        ],
+        "primaryFaceIsLive": true,
+        "candidateExpressions": [
+          "target.faces.startCap",
+          "target.sketch.tags.bottom",
+          "target.sketch.tags.right",
+          "target.sketch.tags.top",
+          "target.sketch.tags.left"
+        ],
+        "primaryExpression": "target.faces.endCap"
+      }
+    ]
+  },
+  "implementation": {
+    "ownership": "Runtime body bindings contain physical identity, semantic identity, root-module variable/array paths and face IDs independently of tags.",
+    "named_references": "Face bindings distinguish selectedBody.sketch.tags from selectedBody.faces; rendering and body coercion use a shared resolver.",
+    "materialization": "Adding a missing tag edits the defining feature, then qualifies it through a binding containing the selected face. The declaration is ensured in the actual edited AST even if runtime metadata came from a later tagged execution. Untagged imported definitions require a source-module edit and are rejected safely.",
+    "replacement": "Module artifact state preserves zero/one/many replacement outputs across module teardown and cached replay. Consumed inputs are not public live bindings.",
+    "topology": "Ambiguous or replaced topology is checked against engine child UUIDs before metadata advertises named references.",
+    "source_scope": "AST lookup checks name availability at the edit position. Existing historical inputs remain available to legacy edit paths.",
+    "aliasing": "The latest available alias supplies the physical body input. The earliest direct tag-bearing binding supplies the named tag, preserving references across merged aliases and engine/mock execution. Tag creation uses an alias containing that face, independently of whether a named tag already exists.",
+    "instance_tags": "An explicit execution flag records remapped instance-local tags instead of inferring them from sketch IDs.",
+    "cache": "Cached and fresh execution share the same outcome conversion."
+  },
+  "validation": {
+    "status": "Selected integration and focused native checks passed; the three former clone failures are now resolved",
+    "integration": {
+      "cases_verified": 493,
+      "combined_run": {
+        "passed": 479,
+        "failed_before_repairs": 14
+      },
+      "passing_rechecks": {
+        "edge_suite": 62,
+        "imported_and_mirror_cases": 3
+      },
+      "note": "The edge rerun covers all 11 edge failures, including the timeout and subsequent stale-manager cascade. The three imported/mirror rechecks cover the remaining failures."
+    },
+    "named_selection_matrix": {
+      "tests_passed": 20,
+      "face_selections": 144,
+      "sketch_supports": 126,
+      "structural_edges": 18,
+      "missing_face_references": 0,
+      "region_tag_spellings": 0
+    },
+    "scope_and_split": {
+      "cases_verified": 16,
+      "runtime_boundary_assertions": 2,
+      "skipped": 0
+    },
+    "unit_tests_passed": 45,
+    "focused_native_tests_passed": 93,
+    "baseline_native_failures": {
+      "baseline": "dd161564fc, isolated clean worktree",
+      "reproduced_unchanged": [
+        "std::clone::tests::kcl_test_clone_preserves_face_creator",
+        "std::clone::tests::kcl_test_clone_pattern_copy_with_face_tags",
+        "std::clone::tests::kcl_test_clone_imported_patterned_composite_uses_composite_topology"
+      ],
+      "comparison": "All three fail on both the refactor and the unchanged follow-up baseline. No baseline assertions or snapshots were altered.",
+      "resolution": {
+        "status": "Resolved with stronger engine topology checks",
+        "pattern_copy": "The old assertion used original_id() as prototype identity and required Wall/Cap subtrees. Instance-local original_id now identifies the copy; topology_id retains the source. Copied PrimitiveFace records reference the semantic body artifact; independent engine checks verify their physical face ownership.",
+        "imported_patterned_composite": "The old helper required duplicated Wall/Cap sweep subtrees. The graph deliberately represents copied faces with direct body ownership and source-face provenance. Tests now validate both supported representations against actual engine child UUIDs.",
+        "face_creator": "A real bug remapped the support body through the retained prototype map while leaving its external support face unchanged. Cloning now preserves the external face/owner pair when the support face is not part of cloned topology. The regression checks that the face belongs to the original support body and is absent from both source and cloned output bodies.",
+        "production_change": "Only CreatorFace remapping changed; pattern/composite fixes update outdated assertions and add independent geometry checks."
+      }
+    },
+    "static_checks": [
+      "TypeScript",
+      "ESLint on changed TypeScript files",
+      "Biome formatting on changed TypeScript files",
+      "Rust nightly formatting",
+      "Clippy for kcl-lib and kcl-api",
+      "Regenerated Rust bindings and development Wasm"
+    ],
+    "delivery": "Follow-up pushed through 8742422f0d; subsequent CI fixes committed locally without another push.",
+    "native_clone_pattern_cache_tests_passed": 42,
+    "ci_followup": {
+      "investigated_head": "8742422f0d848fc0cb31214666ba88419cc163f9",
+      "baseline": "901422f4e4cdbe896616dc7264d8269b768ee70d, rebuilt in the current PR worktree",
+      "confirmed_regression": "The legacy patternLinear3d useOriginal example passes on current and fails on follow-up. Face remapping queried a virtual result of patterning a merged feature as though it were an independent body.",
+      "pattern_fix": "Skip body remapping only for uncopied merged feature patterns. Pattern instances retain a prototype too, but still require remapping. New KCL 3 regressions cover linear and circular feature patterns, plus named-face chamfers on repeated useOriginal body patterns.",
+      "binding_fix": "Import runtime StdLibCommands and STD_LIB_ENUMS from committed expected-bindings. No generated binding was missing from the commit, and no CI configuration changed.",
+      "expectations": "Update existing sweep, axis, edge migration and GDT assertions to body.sketch.tags and body.faces. Keep legacy input programs, scoped migration boundaries and runtime execution checks. Refresh the pipe-elbow command snapshot only for added topology queries.",
+      "unit_tests_passed": 1985,
+      "unit_isolation": "With the generated StdLibCommands file and Wasm binary removed, all module-load failures disappear. That run had one cloud-sync assertion failure which passed immediately on a focused rerun; a subsequent full run passes all 1985 tests.",
+      "affected_integration_cases_verified": 303,
+      "integration_note": "302 passed together; the remaining getCommonEdge case passed in a 26-case targeted rerun.",
+      "focused_native_tests_passed": 33,
+      "baseline_image_failures": [
+        "kcl_test_examples_std_gear_spur_0",
+        "kcl_test_examples_std_gear_helical_1",
+        "kcl_test_examples_std_sketch_involuteCircular_1",
+        "kcl_test_execute_herringbone_gear"
+      ],
+      "infrastructure_failures": "Latest failed language-server, E2E, build-app, benchmark and interaction-performance jobs fail on Electron, Binaryen or CodSpeed downloads (HTTP 504/download errors). The circular-dependency job also fails during npm installation before analysis.",
+      "named_and_scope_cases_passed": 36
+    },
+    "ci_reference_followup": {
+      "investigated_head": "9fd724b9218a0d6b8179834df015dce06312690d",
+      "dependency_fix": "Keep ownership lookup in artifactGraph and AST construction in selectionReferences. Move sketchOnExtrudedFace beside sketchBlockOnExtrudedFace so general AST utilities no longer import face codemods. The circular-dependency baseline remains unchanged.",
+      "alias_fix": "An older semantic artifact ID now resolves through its physical body to the latest available alias. The edit cutoff still excludes later aliases. The new unit regression fails before the fix; two engine integration cases execute generated Booleans for the unchanged legacy and sketch-block fixtures.",
+      "e2e_expectations": "Use body.sketch.tags and body.faces in generated selector expectations; use the latest body for repeated treatments and Booleans. Normalize whitespace where qualified names cause line wrapping. Wait for model idle and focus the feature-tree row before the fillet Delete shortcut.",
+      "unit_tests_passed": 1986,
+      "integration_cases_verified": 169,
+      "web_e2e_cases_verified": 20,
+      "validation_note": "The 142 AST/ownership/source-edge cases, 25 Boolean cases and two alias cases passed in targeted runs. Twenty distinct browser flows passed across serial runs and focused rechecks, including creation, editing and deletion.",
+      "limits": "Packaged Electron specs were not run locally; their selector expectations were checked against CI output. Parallel local browser attempts encountered canvas/context failures; serial focused runs were stable.",
+      "static_checks": [
+        "TypeScript",
+        "ESLint on changed files",
+        "Biome formatting",
+        "circular-deps:diff with unchanged known/circular.txt",
+        "regenerated bindings"
+      ]
+    }
+  },
+  "bounds_and_remaining_gaps": [
+    "This is bounded interaction coverage, not a proof over all KCL programs or every possible selector.",
+    "Two split outputs retain inherited tag values that do not identify their live faces. Boundary tests ensure metadata excludes those stale selectors; fixing runtime inheritance remains separate.",
+    "Runtime public paths cover solids, arrays and tuples. Object-valued containers and arbitrary module namespace graphs are not included.",
+    "Coverage compares independent face/body UUIDs and engine commands, but does not drive viewport hit-testing.",
+    "Additional combinations involving multi-region sketches, holes, loft, revolve and sweep remain possible; existing individual feature regressions do not exhaust their interactions.",
+    "Source graph traversal remains for old graphs, historical edits and adding absent tags. This change does not replace the complete artifact graph or introduce primitive-index references as successful named selectors."
+  ]
+}

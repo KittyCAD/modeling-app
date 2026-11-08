@@ -1,3 +1,4 @@
+import { resolveBodyReference } from '@src/lang/std/selectionReferences'
 import type { Block } from '@rust/kcl-lib/bindings/Block'
 import type { ElseIf } from '@rust/kcl-lib/bindings/ElseIf'
 import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
@@ -16,8 +17,11 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { CodeRef } from '@src/lang/std/artifactGraph'
 import {
   type ResolvedGraphSelection,
+  resolveFaceOwner,
   codeRefFromRange,
   getArtifactFromRange,
+  getFaceBodyId,
+  getBodySelectionForFace,
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
@@ -1406,9 +1410,70 @@ export function getVariableExprsFromSelection(
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
+  const bodyReferenceAllowed =
+    !preferDirectSegment &&
+    (!artifactTypeFilter ||
+      artifactTypeFilter.includes('sweep') ||
+      artifactTypeFilter.includes('compositeSolid'))
   for (const s of selection.graphSelections) {
+    const faceId =
+      s.entityRef?.type === 'face' ? s.entityRef.face_id : s.artifact?.id
+    const bodyId =
+      s.entityRef?.type === 'solid3d'
+        ? s.entityRef.solid3d_id
+        : (s.engineEntityId ?? s.artifact?.id)
+    const faceArtifact = faceId ? artifactGraph.get(faceId) : undefined
+    const faceOwner = faceArtifact ? getFaceBodyId(faceArtifact) : undefined
+    const runtimeOwner =
+      faceId && bodyReferenceAllowed
+        ? resolveFaceOwner(faceId, artifactGraph)
+        : undefined
+    if (runtimeOwner instanceof Error) return runtimeOwner
+    const publicBody =
+      (runtimeOwner
+        ? resolveBodyReference(
+            runtimeOwner.bodyId,
+            artifactGraph,
+            ast,
+            wasmInstance,
+            nodeToEdit
+          )
+        : undefined) ??
+      (faceOwner && bodyReferenceAllowed
+        ? resolveBodyReference(
+            faceOwner,
+            artifactGraph,
+            ast,
+            wasmInstance,
+            nodeToEdit
+          )
+        : undefined) ??
+      (bodyReferenceAllowed && lastChildLookup && !preservePathInput && bodyId
+        ? resolveBodyReference(
+            bodyId,
+            artifactGraph,
+            ast,
+            wasmInstance,
+            nodeToEdit
+          )
+        : undefined)
+    if (publicBody instanceof Error) return publicBody
+    if (publicBody) {
+      const key = splitOutputExprKey(publicBody)
+      if (!pushedNames[key]) {
+        exprs.push(publicBody)
+        pushedNames[key] = true
+      }
+      continue
+    }
+
     const resolvedForSegment = resolveToCodeRef(s, artifactGraph)
-    const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
+    const patternExpr = getPatternExprFromSelection(
+      s,
+      ast,
+      wasmInstance,
+      artifactGraph
+    )
     if (patternExpr) {
       const key = splitOutputExprKey(patternExpr)
       if (pushedNames[key]) {
@@ -1435,6 +1500,29 @@ export function getVariableExprsFromSelection(
       }
       exprs.push(splitOutputExpr)
       pushedNames[key] = true
+      continue
+    }
+
+    const selectedFace = resolvedForSegment?.artifact
+    if (selectedFace?.type === 'primitiveFace' && selectedFace.sourceFaceId) {
+      const body = getBodySelectionForFace(selectedFace, artifactGraph)
+      if (err(body)) return body
+      const result = getVariableExprsFromSelection(
+        { graphSelections: [body], otherSelections: [] },
+        artifactGraph,
+        ast,
+        wasmInstance,
+        nodeToEdit,
+        options
+      )
+      if (err(result)) return result
+      for (const expr of result.exprs) {
+        const key = splitOutputExprKey(expr)
+        if (!pushedNames[key]) {
+          exprs.push(expr)
+          pushedNames[key] = true
+        }
+      }
       continue
     }
 
@@ -1568,19 +1656,27 @@ export function getVariableExprsFromSelection(
         }
       | undefined
     if (lastChildLookup && artifactForLastChildLookup) {
+      const isBody =
+        artifactForLastChildLookup.type === 'sweep' ||
+        artifactForLastChildLookup.type === 'compositeSolid'
+      // A caller's broad filter must not promote a single body to a pattern.
+      const bodyTypeFilter = isBody
+        ? artifactTypeFilter?.filter((type) => type !== 'pattern')
+        : artifactTypeFilter
       const children = findAllChildrenAndOrderByPlaceInCode(
         artifactForLastChildLookup,
-        artifactGraph
+        artifactGraph,
+        { followPatterns: !isBody }
       )
 
       if (
-        artifactTypeFilter?.includes(artifactForLastChildLookup.type) &&
+        bodyTypeFilter?.includes(artifactForLastChildLookup.type) &&
         'consumed' in artifactForLastChildLookup &&
         !artifactForLastChildLookup.consumed &&
         !hasLaterMatchingArtifact(
           children,
           artifactForLastChildLookup,
-          artifactTypeFilter
+          bodyTypeFilter
         )
       ) {
         // Use a selected, unconsumed body directly only when the ordered
@@ -1601,14 +1697,13 @@ export function getVariableExprsFromSelection(
       if (!variable) {
         // A body can have sketches attached to its faces. Those sketches and
         // their local segments are not later versions of the selected solid.
+        // A pattern is a collection of instances, not a later version of its source body.
         const lastChildVariable = getLastVariable(
           children,
           ast,
           wasmInstance,
-          artifactTypeFilter ??
-            (artifactForLastChildLookup.type === 'sweep'
-              ? ['sweep', 'compositeSolid', 'edgeCut']
-              : undefined),
+          bodyTypeFilter ??
+            (isBody ? ['sweep', 'compositeSolid', 'edgeCut'] : undefined),
           nodeToEdit
         )
         if (!lastChildVariable) {
@@ -1725,14 +1820,34 @@ export function artifactToEntityRef(
 function getPatternExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  artifactGraph: ArtifactGraph
 ): Expr | null {
-  const artifact = selection.artifact
+  const selected =
+    selection.artifact ??
+    (selection.entityRef
+      ? artifactGraph.get(getEntityRefId(selection.entityRef) ?? '')
+      : undefined)
+  // A newly defined face uses the operation that introduced its tag. Only
+  // inherited faces can use the pattern instance's existing tag container.
+  if (selected?.type === 'edgeCut' && !selected.sourceEdgeCutId) return null
+  const ownerId = selected ? getFaceBodyId(selected) : undefined
+  if (selected && ownerId) {
+    const body = getBodySelectionForFace(selected, artifactGraph)
+    // An inherited face now belongs to the Boolean result, not its consumed instance.
+    if (!err(body) && body.artifact?.type === 'compositeSolid') return null
+  }
+  const artifact = ownerId
+    ? [...artifactGraph.values()].find(
+        (a) => a.type === 'pattern' && a.copyIds.includes(ownerId)
+      )
+    : selected
   if (artifact?.type !== 'pattern') {
     return null
   }
 
   const patternIndex =
+    (ownerId ? artifact.copyIds.indexOf(ownerId) + 1 : undefined) ??
     selection.patternIndex ??
     (selection.engineEntityId
       ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
@@ -2595,7 +2710,8 @@ export const getPathNormalisedForTruncatedAst = (
  */
 export function findAllChildrenAndOrderByPlaceInCode(
   artifact: Artifact,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  { followPatterns = true }: { followPatterns?: boolean } = {}
 ): Artifact[] {
   const result = new Set<string>()
   const stack: string[] = [artifact.id]
@@ -2670,9 +2786,11 @@ export function findAllChildrenAndOrderByPlaceInCode(
         pushRelatedArtifactIds(currentId, current.patternIds)
         break
       case 'pattern':
-        pushRelatedArtifactIds(currentId, current.copyIds)
-        pushRelatedArtifactIds(currentId, current.copyFaceIds)
-        pushRelatedArtifactIds(currentId, current.copyEdgeIds)
+        if (followPatterns) {
+          pushRelatedArtifactIds(currentId, current.copyIds)
+          pushRelatedArtifactIds(currentId, current.copyFaceIds)
+          pushRelatedArtifactIds(currentId, current.copyEdgeIds)
+        }
         break
       // These artifacts have no related IDs followed by this traversal.
       case 'solid2d':

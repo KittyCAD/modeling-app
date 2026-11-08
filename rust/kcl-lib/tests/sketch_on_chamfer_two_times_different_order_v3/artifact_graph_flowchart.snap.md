@@ -71,10 +71,10 @@ flowchart LR
   23["SweepEdge Adjacent"]
   24["EdgeCut Fillet<br>[1064, 1099, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  25["Plane<br>[1750, 1787, 0]"]
-    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  26["Plane<br>[1282, 1316, 0]"]
-    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+  25["EdgeCut Chamfer<br>[1105, 1167, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+  26["EdgeCut Chamfer<br>[1173, 1223, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
   41["Sweep Extrusion<br>[2178, 2209, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   42[Wall]
@@ -108,6 +108,8 @@ flowchart LR
   2 --- 8
   2 ---- 9
   2 <--x 24
+  2 <--x 25
+  2 <--x 26
   3 --- 13
   3 x--> 14
   3 --- 22
@@ -125,7 +127,7 @@ flowchart LR
   6 x--> 14
   6 --- 16
   6 --- 17
-  6 x--> 26
+  6 --- 26
   9 --- 10
   9 --- 11
   9 --- 12
@@ -159,13 +161,14 @@ flowchart LR
   18 <--x 15
   20 <--x 15
   22 <--x 15
-  25 --- 34
+  20 <--x 25
+  25 <--x 34
   35 <--x 25
   36 <--x 25
   37 <--x 25
   38 <--x 25
   25 <--x 56
-  26 --- 27
+  26 <--x 27
   26 <--x 55
   27 --- 28
   27 --- 29

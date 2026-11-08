@@ -156,8 +156,13 @@ pub(super) async fn fix_tags_and_references(
     args: &Args,
 ) -> Result<()> {
     let new_geometry_id = new_geometry.id(&args.ctx).await?;
-    let entity_id_map =
+    let mut entity_id_map =
         get_old_new_child_map(new_geometry_id, old_geometry_id, source_topology_id, exec_state, args).await?;
+    // Lazy instances retain source surfaces for legacy declaration bindings.
+    // Their qualified tags identify the live instance, even after it changes.
+    if let GeometryWithImportedGeometry::Solid(solid) = new_geometry {
+        add_qualified_surface_mappings(solid, &mut entity_id_map);
+    }
 
     // Fix the path references in the new geometry.
     match new_geometry {
@@ -178,10 +183,13 @@ pub(super) async fn fix_tags_and_references(
             let solid_artifact_id = solid.artifact_id;
             let old_face_tag_names = solid.faces.keys().cloned().collect::<Vec<_>>();
             let face_creator = match &solid.creator {
-                SolidCreator::Face(face) => Some((
-                    remap_id(face.face_id, &entity_id_map),
-                    remap_id(face.solid_id, &entity_id_map),
-                )),
+                SolidCreator::Face(face) => Some(match entity_id_map.get(&face.face_id) {
+                    Some(face_id) => (*face_id, remap_id(face.solid_id, &entity_id_map)),
+                    // A separate support face is not cloned with this body.
+                    // Preserve the face/owner pair even when its body ID also
+                    // appears in the retained prototype mapping.
+                    None => (face.face_id, face.solid_id),
+                }),
                 _ => None,
             };
 
@@ -281,6 +289,64 @@ pub(super) async fn fix_tags_and_references(
     }
 
     Ok(())
+}
+
+/// Remap instance-qualified face and sketch tags. Declaration bindings are
+/// updated separately from the retained source surfaces for compatibility.
+pub(super) async fn fix_pattern_face_tags(
+    solid: &mut Solid,
+    source_id: uuid::Uuid,
+    source_topology_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<()> {
+    solid.tags_are_instance_local = true;
+    if args.ctx.no_engine_commands().await {
+        return Ok(());
+    }
+    let names = solid.faces.keys().cloned().collect::<Vec<_>>();
+    let mut map = get_old_new_child_map(solid.id, source_id, source_topology_id, exec_state, args).await?;
+    add_qualified_surface_mappings(solid, &mut map);
+    // Keep declaration bindings separate from instance-qualified references.
+    // The source surfaces retain legacy bare-tag behavior, while both face
+    // tags and sketch tags below refer to this instance.
+    let mut remapped = solid.clone();
+    remap_sketchless_solid(&mut remapped, &map);
+    remap_edge_cuts(&mut remapped, &map);
+    remapped.faces.clear();
+    restore_face_tags(&mut remapped, &names, exec_state);
+    solid.faces = remapped.faces;
+    let source_surfaces = solid.value.clone();
+    let face_tags = solid.faces.values().cloned().collect::<Vec<_>>();
+    let copy_id = solid.id;
+    if let Some(sketch) = solid.sketch_mut() {
+        sketch.original_id = copy_id;
+        fix_sketch_tags_and_references(sketch, &map, exec_state, Some(source_surfaces)).await?;
+        sketch.merge_tags(face_tags.iter());
+    }
+    Ok(())
+}
+
+fn add_qualified_surface_mappings(solid: &Solid, map: &mut HashMap<uuid::Uuid, uuid::Uuid>) {
+    for surface in &solid.value {
+        let Some(tag) = surface.get_tag() else {
+            continue;
+        };
+        let info = solid
+            .faces
+            .get(&tag.name)
+            .or_else(|| solid.sketch().and_then(|sketch| sketch.tags.get(&tag.name)))
+            .and_then(TagIdentifier::get_cur_info);
+        let Some(info) = info else {
+            continue;
+        };
+        if let Some(id) = map.get(&info.id).copied() {
+            map.insert(surface.get_id(), id);
+        }
+        if let Some(id) = info.surface.as_ref().and_then(|s| map.get(&s.face_id())).copied() {
+            map.insert(surface.face_id(), id);
+        }
+    }
 }
 
 fn remap_id(id: uuid::Uuid, entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>) -> uuid::Uuid {
@@ -398,18 +464,16 @@ async fn get_old_new_child_map(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<HashMap<uuid::Uuid, uuid::Uuid>> {
-    // Artifact graph ID management expects the cloned entity's own children
-    // to be queried first. Pattern copies retain the source topology in KCL,
-    // though, so use that topology for the runtime old-to-new ID map.
-    if old_geometry_id != source_topology_id {
-        get_all_child_uuids(old_geometry_id, exec_state, args).await?;
-    }
-
-    // Get the old geometries entity ids.
-    let old_entity_ids = get_all_child_uuids(source_topology_id, exec_state, args).await?;
+    let old_entity_ids = get_all_child_uuids(old_geometry_id, exec_state, args).await?;
 
     // Get the new geometries entity ids.
     let new_entity_ids = get_all_child_uuids(new_geometry_id, exec_state, args).await?;
+    if old_entity_ids.len() != new_entity_ids.len() {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            "Copied topology does not match its live source".to_owned(),
+            vec![args.source_range],
+        )));
+    }
 
     // Create a map of old entity ids to new entity ids.
     let mut entity_id_map = HashMap::from_iter(
@@ -674,7 +738,31 @@ result = chamfer(clonedAgain, length = 0.1mm, edges = [
         value
     }
 
-    fn assert_cloned_composite_topology(artifact_graph: &ArtifactGraph, cloned_composite: &SolidView) {
+    async fn engine_children(ctx: &crate::ExecutorContext, id: uuid::Uuid) -> std::collections::HashSet<uuid::Uuid> {
+        let response = ctx
+            .engine
+            .send_modeling_cmd(
+                &ctx.engine_batch,
+                uuid::Uuid::new_v4(),
+                crate::SourceRange::default(),
+                &super::ModelingCmd::from(super::mcmd::EntityGetAllChildUuids::builder().entity_id(id).build()),
+            )
+            .await
+            .unwrap();
+        let super::OkWebSocketResponseData::Modeling {
+            modeling_response: super::OkModelingCmdResponse::EntityGetAllChildUuids(children),
+        } = response
+        else {
+            panic!("Expected engine child topology")
+        };
+        children.entity_ids.into_iter().collect()
+    }
+
+    async fn assert_cloned_composite_topology(
+        artifact_graph: &ArtifactGraph,
+        cloned_composite: &SolidView,
+        ctx: &crate::ExecutorContext,
+    ) {
         let Some(Artifact::CompositeSolid(cloned_artifact)) = artifact_graph.get(&cloned_composite.artifact_id) else {
             panic!("Expected a cloned composite solid artifact at the engine entity ID");
         };
@@ -689,7 +777,30 @@ result = chamfer(clonedAgain, length = 0.1mm, edges = [
                 _ => None,
             })
             .collect::<Vec<_>>();
-        assert!(!cloned_face_sweep_ids.is_empty());
+        // Lazy copied faces carry their concrete body owner directly rather
+        // than requiring a duplicated sweep subtree. Both representations must
+        // describe real faces on the cloned engine body.
+        let children = engine_children(ctx, cloned_composite.id).await;
+        let mut face_count = 0;
+        for artifact in artifact_graph.values() {
+            let id = match artifact {
+                Artifact::Wall(face) if face.cmd_id == cloned_composite.id => face.id,
+                Artifact::Cap(face) if face.cmd_id == cloned_composite.id => face.id,
+                Artifact::PrimitiveFace(face) if face.solid_id == cloned_composite.id.into() => {
+                    let source = face.source_face_id.expect("Expected copied face provenance");
+                    assert_ne!(source, face.id);
+                    assert!(artifact_graph.get(&source).is_some());
+                    face.id
+                }
+                _ => continue,
+            };
+            assert!(
+                children.contains(&uuid::Uuid::from(id)),
+                "Cloned face {id:?} must belong to the engine body"
+            );
+            face_count += 1;
+        }
+        assert!(face_count > 0);
 
         for sweep_id in cloned_face_sweep_ids {
             let Some(Artifact::Sweep(sweep)) = artifact_graph.get(&sweep_id) else {
@@ -983,8 +1094,20 @@ cloned = clone(source)
         };
 
         assert_ne!(source.id, cloned.id);
-        assert_ne!(source_face_id, cloned_face_id);
-        assert_ne!(source_solid_id, cloned_solid_id);
+        // The clone duplicates the extruded body, not the separate support
+        // body or its face. Creator provenance must continue to name that input.
+        assert_eq!(source_face_id, cloned_face_id);
+        assert_eq!(source_solid_id, cloned_solid_id);
+        let KclValueView::Solid { value: base } = result.variables.get("base").unwrap() else {
+            panic!("Expected the unchanged support body");
+        };
+        assert_eq!(*source_solid_id, base.id);
+        assert_ne!(source.id, base.id);
+        assert!(!engine_children(&ctx, source.id).await.contains(source_face_id));
+        let support_faces = engine_children(&ctx, base.id).await;
+        assert!(support_faces.contains(source_face_id));
+        let cloned_faces = engine_children(&ctx, cloned.id).await;
+        assert!(!cloned_faces.contains(source_face_id));
         assert_ne!(source_sketch.id, cloned_sketch.id);
         assert_ne!(source_sketch.original_id, cloned_sketch.original_id);
 
@@ -1219,7 +1342,7 @@ clonedComposite = clone(composite)
         assert_eq!(cloned_composite.original_id(), cloned_composite.id);
         assert_eq!(cloned_composite.topology_id(), cloned_composite.id);
 
-        assert_cloned_composite_topology(&result.artifact_graph, cloned_composite);
+        assert_cloned_composite_topology(&result.artifact_graph, cloned_composite, &ctx).await;
 
         ctx.close().await;
     }
@@ -1283,7 +1406,7 @@ clonedCopy = clone(patternCopy)
         assert_eq!(cloned_copy.artifact_id, cloned_copy.id.into());
         assert_ne!(pattern_copy.id, cloned_copy.id);
         assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
-        assert_cloned_composite_topology(&result.artifact_graph, cloned_copy);
+        assert_cloned_composite_topology(&result.artifact_graph, cloned_copy, &ctx).await;
 
         ctx.close().await;
     }
@@ -1449,13 +1572,41 @@ clonedCopy = clone(patternCopy)
         };
         let pattern_sketch = pattern_copy.sketch().expect("Expected pattern copy to have a sketch");
         let cloned_sketch = cloned_copy.sketch().expect("Expected cloned copy to have a sketch");
-        assert_eq!(pattern_copy.original_id(), source.id);
+        // Instance-local sketch IDs identify the live instance; topology_id
+        // separately retains the prototype used for mapping a lazy pattern.
+        assert_eq!(pattern_copy.original_id(), pattern_copy.id);
+        assert_eq!(pattern_copy.topology_id(), source.id);
         assert_eq!(cloned_copy.original_id(), cloned_copy.id);
         assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
         assert_ne!(cloned_copy.artifact_id, cloned_copy.id.into());
 
         assert_eq!(pattern_sketch.tags.get("wall"), cloned_sketch.tags.get("wall"));
         assert_eq!(pattern_copy.faces.get("endCap"), cloned_copy.faces.get("endCap"));
+
+        // Equal exported tag names do not prove face identity. Check the live
+        // qualified tag UUIDs against the independent engine topology instead.
+        let pattern_runtime = runtime_solid(&result, "patternCopy");
+        let clone_runtime = runtime_solid(&result, "clonedCopy");
+        let pattern_children = engine_children(&ctx, pattern_copy.id).await;
+        let clone_children = engine_children(&ctx, cloned_copy.id).await;
+        for name in ["wall", "endCap"] {
+            let face_id = |solid: &Solid| {
+                solid
+                    .faces
+                    .get(name)
+                    .or_else(|| solid.sketch().and_then(|sketch| sketch.tags.get(name)))
+                    .and_then(|tag| tag.get_cur_info())
+                    .and_then(|info| info.surface.as_ref())
+                    .expect("Expected qualified face tag")
+                    .face_id()
+            };
+            let pattern_face = face_id(pattern_runtime);
+            let clone_face = face_id(clone_runtime);
+            assert_ne!(pattern_face, clone_face);
+            assert!(pattern_children.contains(&pattern_face));
+            assert!(clone_children.contains(&clone_face));
+            assert!(!clone_children.contains(&pattern_face));
+        }
 
         assert!(matches!(
             result.artifact_graph.get(&cloned_copy.artifact_id),
@@ -1467,18 +1618,19 @@ clonedCopy = clone(patternCopy)
             Some(Artifact::Path(path))
                 if path.sweep_id == Some(cloned_copy.artifact_id)
         ));
-        assert!(
-            result
-                .artifact_graph
-                .values()
-                .any(|artifact| matches!(artifact, Artifact::Wall(wall) if wall.sweep_id == cloned_copy.artifact_id))
-        );
-        assert!(
-            result
-                .artifact_graph
-                .values()
-                .any(|artifact| matches!(artifact, Artifact::Cap(cap) if cap.sweep_id == cloned_copy.artifact_id))
-        );
+        for name in ["wall", "endCap"] {
+            let id = clone_runtime
+                .faces
+                .get(name)
+                .or_else(|| clone_runtime.sketch().and_then(|sketch| sketch.tags.get(name)))
+                .and_then(|tag| tag.get_cur_info())
+                .and_then(|info| info.surface.as_ref())
+                .unwrap()
+                .face_id();
+            assert!(matches!(result.artifact_graph.get(&id.into()),
+                Some(Artifact::PrimitiveFace(face))
+                    if face.solid_id == cloned_copy.artifact_id && face.source_face_id.is_some()));
+        }
 
         ctx.close().await;
     }

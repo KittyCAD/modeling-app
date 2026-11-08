@@ -12,19 +12,19 @@ test.describe(
     const booleanOperations = [
       {
         name: 'union',
-        code: 'union([extrude001, extrude002])',
+        code: 'union([extrude001, extrude006])',
       },
       {
         name: 'subtract',
-        code: 'subtract(extrude001, tools = extrude002)',
+        code: 'subtract(extrude001, tools = extrude006)',
       },
       {
         name: 'intersect',
-        code: 'intersect([extrude001, extrude002])',
+        code: 'intersect([extrude001, extrude006])',
       },
       {
         name: 'split',
-        code: 'split([extrude001, extrude002])',
+        code: 'split([extrude001, extrude006])',
       },
     ] as const
     for (let i = 0; i < booleanOperations.length; i++) {

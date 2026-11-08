@@ -39,6 +39,42 @@ flowchart LR
   22["SweepEdge Adjacent"]
   23["Pattern Transform<br>[172, 234, 0]<br>Copies: 3<br>Faces: 18<br>Edges: 36"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  24["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  25["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  26["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  27["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  28["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  29["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  30["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  31["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  32["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  33["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  34["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  35["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  36["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  37["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  38["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  39["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  40["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  41["PrimitiveFace<br>[172, 234, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -94,4 +130,22 @@ flowchart LR
   17 <--x 14
   19 <--x 14
   21 <--x 14
+  23 x--> 24
+  23 x--> 25
+  23 x--> 26
+  23 x--> 27
+  23 x--> 28
+  23 x--> 29
+  23 x--> 30
+  23 x--> 31
+  23 x--> 32
+  23 x--> 33
+  23 x--> 34
+  23 x--> 35
+  23 x--> 36
+  23 x--> 37
+  23 x--> 38
+  23 x--> 39
+  23 x--> 40
+  23 x--> 41
 ```

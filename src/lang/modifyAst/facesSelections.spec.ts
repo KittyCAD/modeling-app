@@ -1,4 +1,8 @@
-import { createLiteral, createLocalName } from '@src/lang/create'
+import {
+  createLiteral,
+  createLocalName,
+  createMemberExpression,
+} from '@src/lang/create'
 import { addShell, getFacesExprsFromSelection } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -33,12 +37,12 @@ afterAll(() => {
 })
 
 // Check generated KCL: cloned faces must use the clone's
-// cap or sketch tag, while original faces retain their original tag references.
+// cap or sketch tag, including when selecting the original body.
 describe('Shell uses face tags from the selected body', () => {
   it.each([
-    ['original', 'cap', 'topCap'],
+    ['original', 'cap', 'originalBody.faces.topCap'],
     ['clone', 'cap', 'clonedBody.faces.topCap'],
-    ['original', 'wall', 'profileRegion.tags.circle1'],
+    ['original', 'wall', 'originalBody.sketch.tags.circle1'],
     ['clone', 'wall', 'clonedBody.sketch.tags.circle1'],
   ] as const)(
     "uses the correct tag for the %s body's %s face",
@@ -246,7 +250,12 @@ cutBody = ${operation}(body001, edges = [${selectedEdge}], ${sizeArg} = 1mm, tag
           instance
         )
         for (const result of [sharedResult, faceResult]) {
-          expect(result.exprs).toEqual([createLocalName(tag)])
+          expect(result.exprs).toEqual([
+            createMemberExpression(
+              createMemberExpression(createLocalName('cutBody'), 'faces'),
+              tag
+            ),
+          ])
           expect(recast(result.modifiedAst, instance)).toBe(
             recast(assertParse(expectedCode, instance), instance)
           )

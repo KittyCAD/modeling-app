@@ -19,7 +19,6 @@ use crate::execution::ConstraintState;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
-use crate::execution::KclValueView;
 use crate::execution::annotations;
 #[cfg(test)]
 use crate::execution::computed_kcl_version;
@@ -191,31 +190,14 @@ impl GlobalState {
     }
 
     pub async fn into_exec_outcome(self, ctx: &ExecutorContext) -> Result<ExecOutcome, KclError> {
-        // Fields are opt-in so that we don't accidentally leak private internal
-        // state when we add more to ExecState.
-        let variables = self.main.exec_state.variables(self.main.result_env)?;
-        #[cfg(test)]
-        let test_program_memory = variables.clone();
-        let variables = variables
-            .into_iter()
-            .map(|(key, value)| (key, KclValueView::from(value)))
-            .collect();
-        Ok(ExecOutcome {
-            variables,
-            filenames: self.exec_state.filenames(),
-            engine_scene_generation: ctx.cache.engine_scene_generation().await,
-            operations: self.exec_state.operations_by_module(),
-            artifact_graph: self.exec_state.artifacts.graph,
-            scene_objects: self.exec_state.root_module_artifacts.scene_objects,
-            source_range_to_object: self.exec_state.root_module_artifacts.source_range_to_object,
-            var_solutions: self.exec_state.root_module_artifacts.var_solutions,
-            refactor_metadata: self.exec_state.root_module_artifacts.refactor_metadata.clone(),
-            issues: self.exec_state.issues,
-            source_files: self.exec_state.id_to_source,
-            default_planes: ctx.engine.get_default_planes().read().await.clone(),
-            #[cfg(test)]
-            test_program_memory,
-        })
+        let result_env = self.main.result_env;
+        exec_state::ExecState {
+            execution_callbacks: ctx.execution_callbacks.clone(),
+            global: self.exec_state,
+            mod_local: self.main.exec_state,
+        }
+        .into_exec_outcome(result_env, ctx)
+        .await
     }
 
     pub fn mock_memory_state(&self) -> Result<SketchModeState, KclError> {

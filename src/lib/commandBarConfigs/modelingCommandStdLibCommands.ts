@@ -2,9 +2,10 @@ import type {
   StdLibCommandArgShape,
   StdLibCommandShape,
 } from '@rust/kcl-lib/bindings/StdLibCommandTypes'
-import stdLibCommands from '@rust/kcl-lib/bindings/StdLibCommands'
+// Runtime data must be available before a Wasm build restores generated bindings.
+import stdLibCommands from '@rust/kcl-lib/expected-bindings/ts-rs/StdLibCommands'
 
-export { STD_LIB_ENUMS } from '@rust/kcl-lib/bindings/StdLibCommands'
+export { STD_LIB_ENUMS } from '@rust/kcl-lib/expected-bindings/ts-rs/StdLibCommands'
 
 type ReadonlyStdLibCommandShape = Omit<StdLibCommandShape, 'args'> & {
   readonly args: readonly StdLibCommandArgShape[]

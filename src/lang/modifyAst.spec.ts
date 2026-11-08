@@ -22,12 +22,14 @@ import {
   deleteSegmentOrProfileFromPipeExpression,
   moveValueIntoNewVariable,
   setCallInAst,
-  sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
-import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
+import {
+  sketchOnExtrudedFace,
+  sketchBlockOnExtrudedFace,
+} from '@src/lang/modifyAst/legacySketchFace'
 import {
   artifactToEntityRef,
   findUsesOfTagInPipe,
@@ -1739,7 +1741,7 @@ extrude001 = extrude(profile001, length = 5)
       )
       expect(newCode).toContain(
         `extrude001 = extrude(profile001, length = 5)
-sketch002 = sketch(on = faceOf(extrude001, face = seg01)) {
+sketch002 = sketch(on = faceOf(extrude001, face = extrude001.sketch.tags.seg01)) {
 }`
       )
 

@@ -34,16 +34,16 @@ flowchart LR
     20["Segment<br>[491, 521, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   end
-  subgraph path31 [Path]
-    31["Path<br>[1008, 1088, 0]<br>Consumed: false"]
+  subgraph path35 [Path]
+    35["Path<br>[1008, 1088, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    32["Segment<br>[1035, 1086, 0]"]
+    36["Segment<br>[1035, 1086, 0]"]
       %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
-  subgraph path33 [Path]
-    33["Path Region<br>[1110, 1144, 0]<br>Consumed: true"]
+  subgraph path37 [Path]
+    37["Path Region<br>[1110, 1144, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
-    34["Segment<br>[1110, 1144, 0]"]
+    38["Segment<br>[1110, 1144, 0]"]
       %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   end
   1["Plane<br>[37, 115, 0]"]
@@ -76,43 +76,51 @@ flowchart LR
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, MemberExpressionObject]
   28["Plane<br>[794, 827, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, MemberExpressionObject]
-  29["CompositeSolid Subtract<br>[794, 827, 0]<br>Consumed: true"]
+  29["PrimitiveFace<br>[794, 827, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, MemberExpressionObject]
-  30["Plane<br>[1008, 1088, 0]"]
+  30["PrimitiveFace<br>[794, 827, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, MemberExpressionObject]
+  31["PrimitiveFace<br>[794, 827, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, MemberExpressionObject]
+  32["PrimitiveFace<br>[794, 827, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, MemberExpressionObject]
+  33["CompositeSolid Subtract<br>[794, 827, 0]<br>Consumed: true"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, MemberExpressionObject]
+  34["Plane<br>[1008, 1088, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  35["Sweep Extrusion<br>[1102, 1160, 0]<br>Consumed: true"]
+  39["Sweep Extrusion<br>[1102, 1160, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  36[Wall]
+  40[Wall]
     %% face_code_ref=Missing NodePath
-  37["Cap Start"]
+  41["Cap Start"]
     %% face_code_ref=Missing NodePath
-  38["Cap End"]
+  42["Cap End"]
     %% face_code_ref=Missing NodePath
-  39["SweepEdge Opposite"]
-  40["SweepEdge Adjacent"]
-  41["CompositeSolid Subtract<br>[1176, 1212, 0]<br>Consumed: false"]
+  43["SweepEdge Opposite"]
+  44["SweepEdge Adjacent"]
+  45["CompositeSolid Subtract<br>[1176, 1212, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, MemberExpressionObject]
-  42["SketchBlock<br>[37, 115, 0]"]
+  46["SketchBlock<br>[37, 115, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  43["SketchBlock<br>[124, 230, 0]"]
+  47["SketchBlock<br>[124, 230, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  44["SketchBlock<br>[395, 473, 0]"]
+  48["SketchBlock<br>[395, 473, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  45["SketchBlock<br>[1008, 1088, 0]"]
+  49["SketchBlock<br>[1008, 1088, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 <--x 7
-  1 <--x 42
+  1 <--x 46
   2 --- 3
   2 <--x 7
-  42 --- 2
+  46 --- 2
   3 <--x 8
   4 --- 5
   4 <--x 9
-  4 <--x 43
+  4 <--x 47
   5 --- 6
   5 <--x 9
-  43 --- 5
+  47 --- 5
   7 --- 8
   7 ---- 11
   8 --- 10
@@ -129,19 +137,19 @@ flowchart LR
   11 --- 14
   11 --- 15
   11 <--x 27
-  11 <--x 29
+  11 <--x 33
   12 --- 15
   16 --- 17
   16 <--x 19
-  16 <--x 44
+  16 <--x 48
   17 --- 18
   17 <--x 19
-  44 --- 17
+  48 --- 17
   18 <--x 20
   19 --- 20
   19 ---- 21
   19 --- 27
-  19 <--x 29
+  19 <--x 33
   20 --- 22
   20 x--> 23
   20 --- 25
@@ -154,27 +162,31 @@ flowchart LR
   22 --- 25
   22 --- 26
   25 <--x 24
-  29 --- 41
-  30 --- 31
-  30 <--x 33
-  30 <--x 45
-  31 --- 32
-  31 <--x 33
-  45 --- 31
-  32 <--x 34
-  33 --- 34
-  33 ---- 35
-  33 --- 41
-  34 --- 36
-  34 x--> 37
-  34 --- 39
-  34 --- 40
+  33 x--> 29
+  33 x--> 30
+  33 x--> 31
+  33 x--> 32
+  33 --- 45
+  34 --- 35
+  34 <--x 37
+  34 <--x 49
   35 --- 36
-  35 --- 37
-  35 --- 38
-  35 --- 39
-  35 --- 40
-  36 --- 39
-  36 --- 40
-  39 <--x 38
+  35 <--x 37
+  49 --- 35
+  36 <--x 38
+  37 --- 38
+  37 ---- 39
+  37 --- 45
+  38 --- 40
+  38 x--> 41
+  38 --- 43
+  38 --- 44
+  39 --- 40
+  39 --- 41
+  39 --- 42
+  39 --- 43
+  39 --- 44
+  40 --- 43
+  40 --- 44
+  43 <--x 42
 ```

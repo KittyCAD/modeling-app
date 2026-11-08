@@ -40,6 +40,34 @@ import { err, isErr } from '@src/lib/trap'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
+// Resolve ownership before considering source scope: an inaccessible alias must
+// never make shared topology appear to have a unique owner.
+export function resolveFaceOwner(id: string, graph: ArtifactGraph) {
+  const matches = (graph.bodyBindings ?? []).filter(
+    (body) =>
+      body.faceIds?.includes(id) || body.faces.some((face) => face.id === id)
+  )
+  if (new Set(matches.map((body) => body.bodyId)).size > 1)
+    return new Error('Select the owning body for this shared face')
+  return matches[0]
+}
+
+export function resolveFaceBodySelection(
+  selection: Selection,
+  graph: ArtifactGraph
+) {
+  const id =
+    selection.entityRef?.type === 'face'
+      ? selection.entityRef.face_id
+      : selection.artifact?.id
+  const owner = id ? resolveFaceOwner(id, graph) : undefined
+  if (!owner || owner instanceof Error) return owner
+  return {
+    entityRef: { type: 'solid3d' as const, solid3d_id: owner.bodyId },
+    engineEntityId: owner.bodyId,
+  }
+}
+
 export function defaultArtifactGraph(): ArtifactGraph {
   return new Map()
 }
@@ -390,6 +418,110 @@ export function getCapForPathId(
     return foundCap ?? new Error(`No cap found for path ${pathId}`)
   }
   return new Error(`No cap found for path ${pathId}`)
+}
+
+/** Keep an instance face's identity separate from the feature that defined it. */
+export function getSourceFaceArtifact(
+  face: Artifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'wall' | 'cap' | 'edgeCut' }> | Error {
+  const visited = new Set<string>()
+  let current: Artifact | undefined = face
+  while (current && !visited.has(current.id)) {
+    visited.add(current.id)
+    const sourceId =
+      current.type === 'primitiveFace'
+        ? current.sourceFaceId
+        : current.type === 'edgeCut'
+          ? current.sourceEdgeCutId
+          : undefined
+    if (sourceId) {
+      current = artifactGraph.get(sourceId)
+      continue
+    }
+    if (
+      current.type === 'wall' ||
+      current.type === 'cap' ||
+      current.type === 'edgeCut'
+    )
+      return current
+    break
+  }
+  return new Error('Source face is unavailable')
+}
+
+export function getFaceBodyId(face: Artifact): string | undefined {
+  if (face.type === 'primitiveFace') return face.solidId
+  if (face.type === 'edgeCut') return face.bodyId ?? undefined
+  if (face.type === 'wall' || face.type === 'cap') return face.sweepId
+  return undefined
+}
+
+export function hasFaceCopies(
+  face: Artifact,
+  artifactGraph: ArtifactGraph
+): boolean {
+  const sweepId =
+    face.type === 'wall' || face.type === 'cap' ? face.sweepId : undefined
+  return [...artifactGraph.values()].some(
+    (other) =>
+      (other.type === 'primitiveFace' && other.sourceFaceId === face.id) ||
+      (other.type === 'edgeCut' && other.sourceEdgeCutId === face.id) ||
+      Boolean(
+        sweepId && other.type === 'sweep' && other.sourceSweepId === sweepId
+      )
+  )
+}
+
+/** Resolve the selected instance, independently of where its face was defined. */
+export function getBodySelectionForFace(
+  face: Artifact,
+  artifactGraph: ArtifactGraph
+): Selection | Error {
+  const id = getFaceBodyId(face)
+  if (!id) {
+    const body = getBodyFromSurface(face.id, artifactGraph)
+    if (err(body)) return body
+    return {
+      artifact: body,
+      codeRef: body.codeRef,
+      entityRef: { type: 'solid3d', solid3d_id: body.id },
+    }
+  }
+  // A lazy pattern instance has no body artifact to carry its Boolean successor.
+  const successor = [...artifactGraph.values()].find(
+    (a) => a.type === 'compositeSolid' && !a.consumed && a.solidIds.includes(id)
+  )
+  if (successor?.type === 'compositeSolid') {
+    return {
+      artifact: successor,
+      codeRef: successor.codeRef,
+      entityRef: { type: 'solid3d', solid3d_id: successor.id },
+    }
+  }
+  let body = artifactGraph.get(id)
+  if (body?.type === 'path') {
+    const currentId = body.compositeSolidId ?? body.sweepId
+    body = currentId ? artifactGraph.get(currentId) : undefined
+  }
+  if (body?.type === 'sweep' || body?.type === 'compositeSolid') {
+    return {
+      artifact: body,
+      codeRef: body.codeRef,
+      entityRef: { type: 'solid3d', solid3d_id: body.id },
+    }
+  }
+  const pattern = getPatternArtifactForCopyId(id, artifactGraph)
+  const index = pattern?.copyIds.indexOf(id) ?? -1
+  if (pattern && index >= 0)
+    return {
+      artifact: pattern,
+      codeRef: pattern.codeRef,
+      entityRef: { type: 'solid3d', solid3d_id: id },
+      engineEntityId: id,
+      patternIndex: index + 1,
+    }
+  return new Error('Could not resolve the selected face instance body')
 }
 
 export function getBodyFromSurface(
@@ -1194,6 +1326,16 @@ export function coerceSelectionsToBody(
   const seenBodyIds = new Set<string>()
 
   for (const selection of selections.graphSelections) {
+    const body = resolveFaceBodySelection(selection, artifactGraph)
+    if (body instanceof Error) return body
+    if (body) {
+      if (!seenBodyIds.has(body.engineEntityId)) {
+        seenBodyIds.add(body.engineEntityId)
+        bodySelections.push(body)
+      }
+      continue
+    }
+
     if (!selection.artifact) {
       if (
         selection.codeRef &&
@@ -1222,6 +1364,19 @@ export function coerceSelectionsToBody(
       return new Error(
         `Unable to find source range for selected artifact: ${selection.artifact.type}`
       )
+    }
+    if (
+      selection.artifact.type === 'primitiveFace' &&
+      selection.artifact.sourceFaceId
+    ) {
+      const body = getBodySelectionForFace(selection.artifact, artifactGraph)
+      if (err(body)) return body
+      const id = body.engineEntityId ?? body.artifact?.id
+      if (id && !seenBodyIds.has(id)) {
+        seenBodyIds.add(id)
+        bodySelections.push(body)
+      }
+      continue
     }
     if (selection.artifact.type === 'edgeCut') {
       const body = getBodyFromSurface(selection.artifact.id, artifactGraph)

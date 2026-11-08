@@ -60,7 +60,31 @@ flowchart LR
   33["SweepEdge Adjacent"]
   34["Pattern Transform<br>[505, 674, 0]<br>Copies: 4<br>Faces: 12<br>Edges: 12"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  35["CompositeSolid Subtract<br>[686, 730, 0]<br>Consumed: false"]
+  35["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  36["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  37["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  38["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  39["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  40["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  41["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  42["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  43["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  44["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  45["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  46["PrimitiveFace<br>[505, 674, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  47["CompositeSolid Subtract<br>[686, 730, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -70,7 +94,7 @@ flowchart LR
   2 --- 7
   2 --- 8
   2 ---- 9
-  2 --- 35
+  2 --- 47
   3 --- 13
   3 x--> 14
   3 --- 22
@@ -122,7 +146,7 @@ flowchart LR
   25 --- 27
   25 ---- 28
   25 --- 34
-  25 --- 35
+  25 --- 47
   26 --- 29
   26 x--> 30
   26 --- 32
@@ -136,4 +160,16 @@ flowchart LR
   29 --- 32
   29 --- 33
   32 <--x 31
+  34 x--> 35
+  34 x--> 36
+  34 x--> 37
+  34 x--> 38
+  34 x--> 39
+  34 x--> 40
+  34 x--> 41
+  34 x--> 42
+  34 x--> 43
+  34 x--> 44
+  34 x--> 45
+  34 x--> 46
 ```

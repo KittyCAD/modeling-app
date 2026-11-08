@@ -514,12 +514,17 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   }
 }
 
-export type ArtifactGraph = Map<ArtifactId, Artifact>
+export type ArtifactGraph = Map<ArtifactId, Artifact> & {
+  bodyBindings?: RustArtifactGraph['bodyBindings']
+  bodyReplacements?: RustArtifactGraph['bodyReplacements']
+}
 
 function artifactGraphFromRust(
   rustArtifactGraph: RustArtifactGraph
 ): ArtifactGraph {
-  const artifactGraph = new Map<ArtifactId, Artifact>()
+  const artifactGraph: ArtifactGraph = new Map<ArtifactId, Artifact>()
+  artifactGraph.bodyBindings = rustArtifactGraph.bodyBindings ?? []
+  artifactGraph.bodyReplacements = rustArtifactGraph.bodyReplacements ?? []
   // Convert to a Map.
   for (const [id, artifact] of Object.entries(rustArtifactGraph.map)) {
     if (!artifact) continue

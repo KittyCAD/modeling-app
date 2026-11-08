@@ -744,6 +744,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
         }
         KclValue::Solid { value } => {
+            // Instance-local tags have already been remapped. Source surfaces
+            // still supply legacy declaration bindings, not the copy's tags.
+            let has_instance_tags = value.tags_are_instance_local;
             if value.sketch().is_none() {
                 // If the solid isn't based on a sketch, then it doesn't have a tag container,
                 // so there's nothing to do here.
@@ -806,7 +809,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     };
 
                     // update the sketch tags.
-                    sketch.merge_tags(Some(&tag_id).into_iter());
+                    if !has_instance_tags {
+                        sketch.merge_tags(Some(&tag_id).into_iter());
+                    }
 
                     if exec_state.stack().cur_frame_contains(&tag.name)? {
                         exec_state.mut_stack().update(&tag.name, |v, _| {

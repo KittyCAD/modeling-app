@@ -1,3 +1,4 @@
+import { resolveNamedFaceReference } from '@src/lang/std/selectionReferences'
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type {
@@ -73,6 +74,8 @@ import {
   getOriginalSegmentArtifact,
   getSegmentArtifactForEdgeCut,
   getPatternArtifactForCopyId,
+  getSourceFaceArtifact,
+  getBodySelectionForFace,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
   getSolid2dCodeRef,
@@ -758,6 +761,14 @@ function createExistingFaceReferenceExpr(
     return null
   }
 
+  const reference = resolveNamedFaceReference(
+    primitiveSelection.entityId,
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance
+  )
+  if (reference instanceof Error) return null
+  if (reference) return reference.faceExpr
   const graphSelection = primitiveSelection.graphSelection
   const artifact = graphSelection?.artifact
   if (
@@ -3612,13 +3623,28 @@ export async function selectOffsetSketchPlane(
   return true
 }
 
-function getSweepForFace(
+function getBodyForFace(
   faceId: ArtifactId,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   wasmInstance: ModuleType
 ) {
   const artifact = artifactGraph.get(faceId)
+  if (
+    (artifact?.type === 'edgeCut' && artifact.bodyId) ||
+    (artifact?.type === 'primitiveFace' && artifact.sourceFaceId)
+  ) {
+    const body = getBodySelectionForFace(artifact, artifactGraph)
+    if (isErr(body)) return body
+    if (
+      body.artifact?.type === 'sweep' ||
+      body.artifact?.type === 'compositeSolid' ||
+      body.artifact?.type === 'pattern'
+    )
+      return body.artifact
+    return new Error('Could not resolve the selected face instance body')
+  }
+
   let sweep = getBodyFromSurface(faceId, artifactGraph)
   if (isErr(sweep) && artifact?.type === 'edgeCut') {
     sweep = getOwningSweepForEdgeCut(artifact, artifactGraph, ast, wasmInstance)
@@ -3632,7 +3658,7 @@ export function showSketchOnImportForFace(
   ast: Node<Program>,
   wasmInstance: ModuleType
 ): boolean {
-  const sweep = getSweepForFace(faceId, artifactGraph, ast, wasmInstance)
+  const sweep = getBodyForFace(faceId, artifactGraph, ast, wasmInstance)
   if (err(sweep)) return false
 
   const maybeImportNode = getNodeFromPath<ImportStatement>(
@@ -3681,7 +3707,37 @@ export async function selectionBodyFace(
     return
   }
 
-  const artifact = artifactGraph.get(planeOrFaceId)
+  const reference = resolveNamedFaceReference(
+    planeOrFaceId,
+    artifactGraph,
+    ast,
+    systemDeps.wasmInstance
+  )
+  if (reference instanceof Error) return Promise.reject(reference)
+  if (reference) {
+    const details =
+      await systemDeps.sceneEntitiesManager.getFaceDetails(planeOrFaceId)
+    if (!details?.origin || !details.z_axis || !details.y_axis) return
+    return {
+      type: 'extrudeFace',
+      zAxis: [details.z_axis.x, details.z_axis.y, details.z_axis.z],
+      yAxis: [details.y_axis.x, details.y_axis.y, details.y_axis.z],
+      position: [details.origin.x, details.origin.y, details.origin.z].map(
+        (n) => n / sceneInfra.baseUnitMultiplier
+      ) as [number, number, number],
+      sketchPathToNode: reference.path,
+      extrudePathToNode: reference.path,
+      faceInfo: { type: 'wall' },
+      faceId: planeOrFaceId,
+    }
+  }
+  const instance = artifactGraph.get(planeOrFaceId)
+  const source =
+    instance?.type === 'primitiveFace' && instance.sourceFaceId
+      ? getSourceFaceArtifact(instance, artifactGraph)
+      : instance
+  if (isErr(source)) return Promise.reject(source)
+  const artifact = source
   const offsetPlaneSelected = await selectOffsetSketchPlane(
     artifact,
     systemDeps
@@ -3721,7 +3777,7 @@ export async function selectionBodyFace(
   if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
   const { z_axis, y_axis, origin } = faceInfo
   const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
-  const extrusion = getSweepForFace(
+  const extrusion = getBodyForFace(
     faceId,
     artifactGraph,
     ast,
@@ -3762,7 +3818,9 @@ export async function selectionBodyFace(
   const extrudePathToNode =
     lastChildVariable && !err(lastChildVariable)
       ? lastChildVariable.pathToNode
-      : []
+      : extrusion.type === 'pattern'
+        ? extrusion.codeRef.pathToNode
+        : []
 
   return {
     type: 'extrudeFace',

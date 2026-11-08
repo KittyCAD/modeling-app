@@ -1570,7 +1570,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     })
 
     expect(references).toHaveLength(1)
-    expect(references[0].code).toBe('seg01')
+    expect(references[0].code).toBe('extrude002.sketch.tags.seg01')
   })
 
   test('resolves graph-only region wall selections to generated tag references', async () => {
@@ -1653,7 +1653,7 @@ cube = extrude(cubeRegion, length = 10)
     expect(references).toHaveLength(1)
     expect(references[0]).toMatchObject({
       label: 'Face',
-      code: 'cubeRegion.tags.right',
+      code: 'cube.sketch.tags.right',
     })
   })
 
@@ -1974,7 +1974,7 @@ ${extrude}
     expect(references).toEqual([
       expect.objectContaining({
         label: 'Face',
-        code: 'cubeRegion.tags.right',
+        code: 'cube.sketch.tags.right',
       }),
     ])
   })
@@ -2020,8 +2020,8 @@ ${extrude}
         label: 'Edge',
         code: `{
   sideFaces = [
-    cubeRegion.tags.right,
-    cubeRegion.tags.bottom
+    cube.sketch.tags.right,
+    cube.sketch.tags.bottom
   ]
 }`,
       }),
@@ -2047,10 +2047,10 @@ ${extrude}
         label: 'Edge',
         code: `{
   sideFaces = [
-    cubeRegion.tags.right,
-    cubeRegion.tags.bottom
+    cube.sketch.tags.right,
+    cube.sketch.tags.bottom
   ],
-  endFaces = [endCap],
+  endFaces = [cube.faces.endCap],
   index = 1
 }`,
       }),
@@ -2583,7 +2583,7 @@ box = extrude(
     expect(references).toEqual([
       expect.objectContaining({
         label: 'Face',
-        code: 'boxStart',
+        code: 'box.faces.boxStart',
       }),
     ])
   })
@@ -2617,7 +2617,7 @@ box = extrude(
     expect(references).toEqual([
       expect.objectContaining({
         label: 'Face',
-        code: 'boxEnd',
+        code: 'box.faces.boxEnd',
       }),
     ])
   })
@@ -2764,7 +2764,7 @@ ${call}
     expect(references).toEqual([
       expect.objectContaining({
         label: 'Face',
-        code: 'chamferFace',
+        code: 'chamfered.faces.chamferFace',
       }),
     ])
   })
@@ -2784,7 +2784,7 @@ ${call}
     expect(references).toEqual([
       expect.objectContaining({
         label: 'Face',
-        code: 'filletFace',
+        code: 'filleted.faces.filletFace',
       }),
     ])
   })
@@ -2837,7 +2837,7 @@ ${call}
     ])
   })
 
-  test('copies a piped chamfer tag without qualifying a module-level name', async () => {
+  test('qualifies a piped chamfer tag through its body', async () => {
     const world = await edgeTreatmentWorld({
       operation: 'chamfer',
       tagged: true,
@@ -2853,7 +2853,7 @@ ${call}
     expect(references).toEqual([
       expect.objectContaining({
         label: 'Face',
-        code: 'chamferFace',
+        code: 'chamfered.faces.chamferFace',
       }),
     ])
   })

@@ -78,7 +78,55 @@ flowchart LR
   45["SweepEdge Adjacent"]
   46["Pattern Transform<br>[604, 688, 0]<br>Copies: 2<br>Faces: 12<br>Edges: 24"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  47["Pattern Transform<br>[604, 688, 0]<br>Copies: 2<br>Faces: 12<br>Edges: 24"]
+  47["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  48["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  49["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  50["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  51["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  52["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  53["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  54["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  55["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  56["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  57["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  58["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  59["Pattern Transform<br>[604, 688, 0]<br>Copies: 2<br>Faces: 12<br>Edges: 24"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  60["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  61["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  62["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  63["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  64["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  65["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  66["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  67["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  68["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  69["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  70["PrimitiveFace<br>[604, 688, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  71["PrimitiveFace<br>[604, 688, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 --- 24
@@ -144,7 +192,7 @@ flowchart LR
   24 --- 29
   24 --- 30
   24 ---- 31
-  24 --- 47
+  24 --- 59
   25 --- 35
   25 x--> 36
   25 --- 44
@@ -175,7 +223,7 @@ flowchart LR
   31 --- 43
   31 --- 44
   31 --- 45
-  31 x--> 47
+  31 x--> 59
   32 --- 38
   32 --- 39
   41 <--x 32
@@ -192,4 +240,28 @@ flowchart LR
   40 <--x 37
   42 <--x 37
   44 <--x 37
+  46 x--> 47
+  46 x--> 48
+  46 x--> 49
+  46 x--> 50
+  46 x--> 51
+  46 x--> 52
+  46 x--> 53
+  46 x--> 54
+  46 x--> 55
+  46 x--> 56
+  46 x--> 57
+  46 x--> 58
+  59 x--> 60
+  59 x--> 61
+  59 x--> 62
+  59 x--> 63
+  59 x--> 64
+  59 x--> 65
+  59 x--> 66
+  59 x--> 67
+  59 x--> 68
+  59 x--> 69
+  59 x--> 70
+  59 x--> 71
 ```

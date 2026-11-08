@@ -1,5 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
-import { createLocalName } from '@src/lang/create'
+import { createLocalName, createMemberExpression } from '@src/lang/create'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import type {
   CodeRef,
@@ -342,7 +342,12 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify results - should tag the chamfer operation (edgeCut expression)
       expect(tags.length).toBe(1)
       expect(newCode).toContain('tag = $chamferFace01')
-      expect(tags[0]).toEqual(createLocalName('chamferFace01'))
+      expect(tags[0]).toEqual(
+        createMemberExpression(
+          createMemberExpression(createLocalName('extrude001'), 'faces'),
+          'chamferFace01'
+        )
+      )
     }, 5_000)
   })
 

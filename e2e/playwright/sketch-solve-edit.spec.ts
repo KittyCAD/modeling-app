@@ -2353,7 +2353,7 @@ extrude001 = extrude(profile001, length = 5)`
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await editor.expectEditor.toContain(
         `
-        sketch002 = sketch(on = faceOf(extrude001, face = line3)) {
+        sketch002 = sketch(on = faceOf(extrude001, face = extrude001.sketch.tags.line3)) {
         }`,
         { shouldNormalise: true }
       )
@@ -2491,7 +2491,8 @@ hide(sketch001)`
     await expect(toolbar.exitSketchBtn).toBeEnabled()
     await editor.expectEditor.toContain('tag = $')
     await editor.expectEditor.toContain(
-      'sketch002 = sketch(on = faceOf(chamfer001, face = chamferFace01))'
+      'sketch002 = sketch(on = faceOf(chamfer001, face = chamfer001.faces.chamferFace01))',
+      { shouldNormalise: true }
     )
     await toolbar.exitSketch()
     await toolbar.editSketch(1)

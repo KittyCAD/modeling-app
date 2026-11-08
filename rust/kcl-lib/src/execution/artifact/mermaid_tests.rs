@@ -1227,6 +1227,7 @@ fn treatment_flowchart_links_owning_body_and_preserves_consumed_edge() {
                 let cut = Artifact::EdgeCut(EdgeCut {
                     id: cut_id,
                     body_id: has_body.then_some(body_id),
+                    source_edge_cut_id: None,
                     sub_type,
                     source_selector_index: None,
                     consumed_edge_id: has_consumed_edge.then_some(edge_id),

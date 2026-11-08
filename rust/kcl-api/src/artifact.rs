@@ -353,6 +353,9 @@ pub struct Solid2d {
 pub struct PrimitiveFace {
     pub id: ArtifactId,
     pub solid_id: ArtifactId,
+    /// Semantic source of an instance face. Absent for index-only lookups.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_face_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
 }
 
@@ -524,6 +527,9 @@ pub struct EdgeCut {
     /// Body instance on which this treatment face was created.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub body_id: Option<ArtifactId>,
+    /// Original treatment operation used to tag a copied face.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_edge_cut_id: Option<ArtifactId>,
     pub sub_type: EdgeCutSubType,
     /// Index of the source selector in an `edges` argument, when this edge cut
     /// was created from an edge-reference command.
@@ -747,17 +753,63 @@ impl Artifact {
     }
 }
 
+/// An operation can replace one body with zero, one, or several outputs.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct BodyReplacement {
+    pub source_id: ArtifactId,
+    pub source_artifact_id: ArtifactId,
+    pub output_ids: Vec<ArtifactId>,
+}
+
+/// A caller-visible body binding and its instance-qualified named faces.
+/// Source feature code refs remain on artifacts; these paths describe use sites.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct BodyBinding {
+    // Physical engine identity; cloning can give it a different semantic artifact ID.
+    pub body_id: ArtifactId,
+    pub artifact_id: ArtifactId,
+    pub variable: String,
+    pub indices: Vec<usize>,
+    /// Ownership is independent of whether a face already has a public tag.
+    #[serde(default)]
+    pub face_ids: Vec<ArtifactId>,
+    pub faces: Vec<FaceBinding>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct FaceBinding {
+    pub id: ArtifactId,
+    pub tag: String,
+    /// True for sketch-derived walls; false for body-created faces.
+    pub sketch: bool,
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, JsonSchema, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactGraph {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub body_replacements: Vec<BodyReplacement>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub body_bindings: Vec<BodyBinding>,
     map: IndexMap<ArtifactId, Artifact>,
     item_count: usize,
 }
 
 impl ArtifactGraph {
     pub fn from_parts(map: IndexMap<ArtifactId, Artifact>, item_count: usize) -> Self {
-        Self { map, item_count }
+        Self {
+            map,
+            item_count,
+            body_bindings: Vec::new(),
+            body_replacements: Vec::new(),
+        }
     }
 
     pub fn into_parts(self) -> (IndexMap<ArtifactId, Artifact>, usize) {
@@ -790,6 +842,8 @@ impl ArtifactGraph {
 
     pub fn clear(&mut self) {
         self.map.clear();
+        self.body_bindings.clear();
+        self.body_replacements.clear();
         self.item_count = 0;
     }
 }
