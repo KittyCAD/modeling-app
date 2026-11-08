@@ -5,6 +5,7 @@ import { test as browserTest } from '@e2e/playwright/base-test'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import {
   setup,
+  waitForAppLoad,
   mockClientErrorReports,
   doAndWaitForImageDiff,
 } from '@e2e/playwright/test-utils'
@@ -84,17 +85,19 @@ async function prepareStorage(
       ? getDefaultCloudProjectLibrarySetting()
       : { title: 'Local Projects', type: 'directory', path: localDirectory }
   const selectLibrary = async () => {
+    await waitForAppLoad(page)
+    await page.waitForFunction(() =>
+      window.app?.settings.actor.getSnapshot().matches('idle')
+    )
     await page.evaluate((library) => {
       window.app.settings.actor.send({
         type: 'set.app.libraries',
         data: { level: 'user', value: [library] },
       })
     }, library)
-    await expect
-      .poll(() =>
-        page.evaluate(() => window.app.settings.actor.getSnapshot().value)
-      )
-      .toBe('idle')
+    await page.waitForFunction(() =>
+      window.app?.settings.actor.getSnapshot().matches('idle')
+    )
   }
   const enterLibrary = async () => {
     const heading = page.getByRole('heading', { level: 1 })
@@ -108,6 +111,7 @@ async function prepareStorage(
           exact: true,
         })
         .click()
+      await expect(heading).toHaveText(library.title)
     }
     await home.projectsLoaded()
   }
