@@ -18,7 +18,6 @@ import {
   getHomeProjectDisplayName,
   shouldPreserveRemoteOnHomeProjectDelete,
 } from '@src/lib/homeProjects'
-import { PATHS } from '@src/lib/paths'
 import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
