@@ -1,3 +1,4 @@
+import type { Request } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { expect, test } from '@e2e/playwright/base-test'
 import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
@@ -139,6 +140,17 @@ test(
   'pauses cloud polling while hidden or offline and checks immediately on return',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
+    const metadataRequests = new Set<Request>()
+    page.on('request', (request) => {
+      if (
+        request.method() === 'GET' &&
+        new URL(request.url()).pathname === `/user/projects/${projectId}`
+      ) {
+        metadataRequests.add(request)
+      }
+    })
+    page.on('requestfinished', (request) => metadataRequests.delete(request))
+    page.on('requestfailed', (request) => metadataRequests.delete(request))
     await mockClientErrorReports(context)
     const remote = await mockCloudStorage(context)
     await setup(context, page, testInfo)
@@ -166,9 +178,7 @@ test(
         }
       }, state)
       // Allow a probe that was already in flight to settle before counting.
-      await expect
-        .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
-        .toBe(0)
+      await expect.poll(() => metadataRequests.size).toBe(0)
       const before = remote.reads.metadata
       await page.clock.runFor(120_000)
       expect(remote.reads.metadata).toBe(before)
