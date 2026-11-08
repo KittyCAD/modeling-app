@@ -35,14 +35,14 @@ for (const loadDelay of [0, 7_000]) {
       // replaces the current document.
       await waitForWebKitBillingToSettle(page)
 
-      const loading = Promise.withResolvers<void>()
-      const requested = Promise.withResolvers<void>()
+      const loading = Promise.withResolvers<boolean>()
+      const requested = Promise.withResolvers<boolean>()
       if (loadDelay) {
         await context.route(
           (url) => url.pathname === `/user/projects/${TUTORIAL_PROJECT_ID}`,
           async (route) => {
             if (route.request().method() === 'GET') {
-              requested.resolve()
+              requested.resolve(true)
               await loading.promise
             }
             await route.fallback()
@@ -63,7 +63,7 @@ for (const loadDelay of [0, 7_000]) {
           await expect(page.getByTestId('onboarding-next')).toBeHidden()
         }
       } finally {
-        loading.resolve()
+        loading.resolve(true)
       }
       // Document load does not await the deferred app bootstrap.
       await waitForAppLoad(page)
