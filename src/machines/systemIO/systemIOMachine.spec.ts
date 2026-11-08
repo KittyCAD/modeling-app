@@ -980,13 +980,13 @@ describe('systemIOMachine - XState', () => {
           .spyOn(fsZds, 'dirname')
           .mockImplementation((targetPath) => path.posix.dirname(targetPath))
         const readdirSpy = vi.spyOn(fsZds, 'readdir').mockResolvedValue([])
+        const missingDestination = Object.assign(
+          new Error('Destination does not exist'),
+          { code: 'ENOENT' }
+        )
         const statSpy = vi
           .spyOn(fsZds, 'stat')
-          .mockRejectedValue(
-            Object.assign(new Error('Destination does not exist'), {
-              code: 'ENOENT',
-            })
-          )
+          .mockRejectedValue(missingDestination)
         const renameSpy = vi.spyOn(fsZds, 'rename').mockResolvedValue(undefined)
 
         appInstanceInThisFile.project = {
