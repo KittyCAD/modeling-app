@@ -123,7 +123,12 @@ export class HomePageFixture {
     await expect(
       projectLink.or(noProjects).or(libraryLink).first()
     ).toBeVisible()
-    if (await libraryLink.isVisible()) await libraryLink.click()
+    // A single library may be selected automatically while this fixture runs.
+    // Query and activate the link in one browser turn, before it can disappear.
+    await libraryLink.evaluateAll((links) => {
+      const link = links[0]
+      if (link instanceof HTMLAnchorElement) link.click()
+    })
     await expect(projectLink.or(noProjects)).toBeVisible()
   }
 
