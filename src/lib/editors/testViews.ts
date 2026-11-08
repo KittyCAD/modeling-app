@@ -19,6 +19,7 @@ export function codeSurface(editors: EditorsService, editor: Editor) {
       .peek()
       .find((view) => view.editor === editor && view.codeView.peek())
       ?.codeView.peek() ??
+    presentation(editors, editor).codeView.peek() ??
     requireSuccess(editors.createView(editor, 'editors.code')).codeView.peek()!
   )
 }

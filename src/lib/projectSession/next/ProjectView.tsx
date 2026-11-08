@@ -1,13 +1,18 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { Logo } from '@src/components/Logo'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import { useApp } from '@src/lib/boot'
+import { EditorsPane } from '@src/lib/editors/EditorsPane'
+import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
+import {
+  editorTabIndicatorValueSpec,
+  editorsService,
+} from '@src/lib/editors/registry/contract'
 import { LayoutRootNode } from '@src/lib/layout/components'
 import {
   LayoutType,
   type AreaLibrary,
-  type AreaTypeComponentProps,
   type Layout,
 } from '@src/lib/layout/types'
 import { PATHS } from '@src/lib/paths'
@@ -16,83 +21,13 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 /**
- * Use the shared pane renderer with data-only areas. Pane changes stay local to this
- * screen instead of changing the saved layout used by the modeling route.
+ * Just a temp layout while we build up parity with the old one.
  */
 const tempLayout: Layout = {
-  id: 'next-project',
-  label: 'Project',
-  type: LayoutType.Splits,
-  orientation: 'inline',
-  sizes: [25, 75],
-  children: [
-    {
-      id: 'next-sidebar',
-      label: 'Sidebar',
-      type: LayoutType.Panes,
-      side: 'inline-start',
-      splitOrientation: 'block',
-      sizes: [100],
-      activeIndices: [0],
-      children: [
-        {
-          id: 'next-files',
-          label: 'Project files',
-          icon: 'folder',
-          type: LayoutType.Simple,
-          areaType: 'files',
-        },
-      ],
-    },
-    {
-      id: 'next-workspace',
-      label: 'Workspace',
-      type: LayoutType.Simple,
-      areaType: 'workspace',
-    },
-  ],
-}
-
-function ProjectFilesPane({
-  session,
-  layout,
-  onClose,
-}: AreaTypeComponentProps & { session: OpenProjectSession }) {
-  useSignals()
-  const { children } = session.project.value.contents
-  return (
-    <LayoutPanel id={layout.id} title={layout.label} className="min-h-0">
-      <LayoutPanelHeader
-        id={layout.id}
-        title={layout.label}
-        icon="folder"
-        onClose={onClose}
-      />
-      <div className="min-h-0 overflow-auto p-3 text-sm">
-        {children.length === 0 ? (
-          <p>No files in this project.</p>
-        ) : (
-          <ul className="space-y-1">
-            {children.map((entry) => (
-              <li key={entry.path} className="break-words">
-                {entry.name}
-                {entry.children !== null ? '/' : ''}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </LayoutPanel>
-  )
-}
-
-function EmptyWorkspace() {
-  return (
-    <main className="grid min-w-0 flex-1 place-content-center gap-2 p-6 text-center">
-      <h2 className="text-lg font-semibold">Project open</h2>
-      <p>No editor is executing for this project.</p>
-    </main>
-  )
+  id: 'next-editors',
+  label: 'Editors',
+  type: LayoutType.Simple,
+  areaType: 'editors',
 }
 
 /** Minimal project chrome while the new route takes shape. */
@@ -109,40 +44,56 @@ function ProjectHeader({ title }: { title: string }) {
   )
 }
 
-/** Compose the shared app shell around a captured project, without editor providers. */
+/** Show the captured project without legacy modeling providers. */
 export function ProjectView({ session }: { session: OpenProjectSession }) {
   useSignals()
+  const { registry, commands } = useApp()
+  const editors = registry.get(editorsService)
   const { contents, metadata } = session.project.value
   const [layout, setLayout] = useState(() => structuredClone(tempLayout))
   const areaLibrary = useMemo<AreaLibrary>(
     () => ({
-      files: {
+      editors: {
         hide: () => false,
-        Component: (props) => <ProjectFilesPane {...props} session={session} />,
+        Component: (props) => (
+          <EditorsPane
+            {...props}
+            editors={editors}
+            indicators={registry.signal(editorTabIndicatorValueSpec)}
+            onOpenEditor={() =>
+              commands.send({
+                type: 'Find and select command',
+                data: {
+                  name: OPEN_EDITOR_COMMAND.name,
+                  groupId: OPEN_EDITOR_COMMAND.groupId,
+                },
+              })
+            }
+          />
+        ),
       },
-      workspace: { hide: () => false, Component: EmptyWorkspace },
     }),
-    [session]
+    [editors, commands, registry]
   )
   return (
-    <div className="flex h-screen flex-col text-default bg-default">
+    <div className="flex h-screen flex-col bg-default text-default">
       <ProjectHeader title={metadata.title} />
-      <div className="min-h-0 flex-1">
+      <main aria-label="Editor views" className="flex min-h-0 flex-1 flex-col">
         <LayoutRootNode
           layout={layout}
           getLayout={() => layout}
           setLayout={setLayout}
-          layoutName="next-project"
+          layoutName="next"
           areaLibrary={areaLibrary}
           showDebugPanel={false}
           notifications={[]}
           artifactGraph={new Map()}
         />
-      </div>
+      </main>
       <StatusBar
         globalItems={[
           {
-            id: 'next-project-path',
+            id: 'project-path',
             element: 'text',
             label: contents.path,
             className: 'max-w-[50vw] [&>span]:truncate',
@@ -153,17 +104,12 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
           ...(!metadata.readWriteAccess
             ? [
                 {
-                  id: 'next-read-only',
+                  id: 'read-only',
                   element: 'text',
                   label: 'Read-only',
                 } satisfies StatusBarItemType,
               ]
             : []),
-          {
-            id: 'next-no-editor',
-            element: 'text',
-            label: 'No executing editor',
-          },
         ]}
       />
     </div>
