@@ -14,7 +14,7 @@ const segment = fc
     minLength: 1,
     maxLength: 12,
   })
-  .map((characters) => characters.join(''))
+  .map((characters) => `dir-${characters.join('')}`)
 
 /** Common adapter guarantees. No cloud acknowledgement or coordinator ordering is assumed. */
 export function fileSystemContract(
