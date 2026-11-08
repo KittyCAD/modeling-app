@@ -99,13 +99,12 @@ async function prepare(
       page.evaluate(() => window.app.settings.actor.getSnapshot().value)
     )
     .toBe('idle')
-  await page.reload({ waitUntil: 'domcontentloaded' })
-  await expect(page.getByTestId('home-header')).toBeVisible()
   const openLibrary = page.getByRole('link', {
     name: `Open ${sourceLibrary.title} library`,
     exact: true,
   })
-  if (await openLibrary.isVisible()) await openLibrary.click()
+  await expect(openLibrary).toBeVisible()
+  await openLibrary.click()
   const card = page
     .getByTestId('project-link')
     .filter({ has: page.getByText('Original', { exact: true }) })
