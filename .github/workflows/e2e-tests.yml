@@ -41,6 +41,7 @@ jobs:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
       - name: Track setup (snapshots)
+        if: github.head_ref != 'kurt-zookeeper-teardown-diagnostics'
         run: .github/ci-cd-scripts/track-step.sh
         env:
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -61,6 +62,7 @@ jobs:
           CI_STEP: setup
 
       - name: Track setup (desktop)
+        if: github.head_ref != 'kurt-zookeeper-teardown-diagnostics'
         run: .github/ci-cd-scripts/track-step.sh
         env:
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -79,7 +81,7 @@ jobs:
   snapshots:
     name: e2e:snapshots
     needs: [build-wasm]
-    if: github.repository == 'kittycad/modeling-app'
+    if: github.repository == 'kittycad/modeling-app' && github.head_ref != 'kurt-zookeeper-teardown-diagnostics'
     runs-on: namespace-profile-macos-8-cores
 
     steps:
@@ -231,23 +233,8 @@ jobs:
       OS_NAME: ${{ contains(matrix.config.os, 'ubuntu') && 'ubuntu' || (contains(matrix.config.os, 'windows') && 'windows' || 'macos') }}
     strategy:
       fail-fast: false
-      matrix:
-        shardIndex: [1, 2]
-        shardTotal: [2]
-        config:
-          - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-            label: ubuntu
-            test_script: test:e2e:web
-            playwright_cache_path: ~/.cache/ms-playwright
-          - os: namespace-profile-macos-8-cores
-            label: macos
-            test_script: test:e2e:web:webkit
-            playwright_cache_path: ~/Library/Caches/ms-playwright
-            optional: true # WebKit coverage is non-blocking for external callers
-          - os: namespace-profile-windows-8-cores
-            label: windows
-            test_script: test:e2e:web
-            playwright_cache_path: ~/AppData/Local/ms-playwright
+      # Temporary investigation: only this branch uses one targeted macOS job.
+      matrix: ${{ fromJSON(github.head_ref == 'kurt-zookeeper-teardown-diagnostics' && '{"shardIndex":[1],"shardTotal":[1],"config":[{"os":"namespace-profile-macos-8-cores","label":"macos","test_script":"test:e2e:web:webkit","playwright_cache_path":"~/Library/Caches/ms-playwright","optional":true}]}' || '{"shardIndex":[1,2],"shardTotal":[2],"config":[{"os":"namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2","label":"ubuntu","test_script":"test:e2e:web","playwright_cache_path":"~/.cache/ms-playwright"},{"os":"namespace-profile-macos-8-cores","label":"macos","test_script":"test:e2e:web:webkit","playwright_cache_path":"~/Library/Caches/ms-playwright","optional":true},{"os":"namespace-profile-windows-8-cores","label":"windows","test_script":"test:e2e:web","playwright_cache_path":"~/AppData/Local/ms-playwright"}]}') }}
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -312,7 +299,24 @@ jobs:
           OS_NAME: ${{ env.OS_NAME }}
 
       - run: npm run ${{ matrix.config.test_script }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        if: github.head_ref != 'kurt-zookeeper-teardown-diagnostics'
         env:
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:web
+          TARGET: web
+
+      - name: Diagnose Zookeeper WebKit teardown (temporary)
+        if: github.head_ref == 'kurt-zookeeper-teardown-diagnostics'
+        shell: bash
+        run: |
+          DEBUG=pw:browser npm run test:e2e:web:webkit -- e2e/playwright/zookeeper.spec.ts --repeat-each=3 \
+            2> >(python3 .github/ci-cd-scripts/filter-webkit-browser-log.py)
+        env:
+          PLAYWRIGHT_WEBKIT_TEARDOWN_DIAGNOSTICS: '1'
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
@@ -346,7 +350,7 @@ jobs:
   desktop:
     name: e2e:desktop (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}, shard ${{ matrix.shardIndex }})
     needs: [build-wasm]
-    if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep }}
+    if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep && github.head_ref != 'kurt-zookeeper-teardown-diagnostics' }}
     runs-on: ${{ matrix.os }}
     env:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
@@ -490,7 +494,7 @@ jobs:
 
   vercel:
     name: e2e:web (vercel)
-    if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main'))
+    if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main')) && github.head_ref != 'kurt-zookeeper-teardown-diagnostics'
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
 
     steps:

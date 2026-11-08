@@ -1,5 +1,6 @@
 import { devices, expect, test as playwrightTest } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { closeWithWebKitTeardownDiagnostics } from '@e2e/playwright/lib/webkit-teardown-diagnostics'
 
 const usePersistentWebKitContext =
   process.env.PLAYWRIGHT_WEBKIT_PERSISTENT_CONTEXT === '1'
@@ -42,7 +43,8 @@ async function resetPersistentWebKitOpfs(
 const persistentWebKitTest = playwrightTest.extend({
   context: async (
     { baseURL, browserName, headless, launchOptions, playwright },
-    provide
+    provide,
+    testInfo
   ) => {
     if (browserName !== 'webkit') {
       throw new Error(
@@ -67,7 +69,11 @@ const persistentWebKitTest = playwrightTest.extend({
       await resetPersistentWebKitOpfs(page, baseURL)
       await provide(context)
     } finally {
-      await context.close()
+      if (process.env.PLAYWRIGHT_WEBKIT_TEARDOWN_DIAGNOSTICS === '1') {
+        await closeWithWebKitTeardownDiagnostics(context, testInfo)
+      } else {
+        await context.close()
+      }
     }
   },
   page: async ({ context }, provide) => {
