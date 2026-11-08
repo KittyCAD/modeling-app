@@ -1,4 +1,6 @@
 import kclExtension from '@src/lib/kcl/registry'
+import tomlExtension from '@src/lib/toml/registry'
+import settingsExtension from '@src/lib/settings/registry'
 import executorsExtension from '@src/lib/executors/registry'
 import {
   executorsService,
@@ -61,6 +63,8 @@ describe('experimental editor registration', () => {
         featureFlags,
         editorsExtension,
         kclExtension,
+        tomlExtension,
+        settingsExtension,
         executorsExtension,
         savingExtension,
         markdownExtension,
@@ -84,6 +88,14 @@ describe('experimental editor registration', () => {
       expect(registry.get(codeEditorExtensionValueSpec).length > 0).toBe(
         enabled
       )
+      expect(
+        registry.get(editorViewValueSpec).some(({ id }) => id === 'toml.table')
+      ).toBe(enabled)
+      expect(
+        registry
+          .get(editorViewValueSpec)
+          .some(({ id }) => id === 'settings.editor')
+      ).toBe(enabled)
       expect(registry.optional(executorsService) !== undefined).toBe(enabled)
       expect(registry.get(executorCapabilityValueSpec).length > 0).toBe(enabled)
       expect(registry.get(editorCapabilityValueSpec).length > 0).toBe(enabled)
