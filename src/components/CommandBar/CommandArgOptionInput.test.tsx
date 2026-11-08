@@ -86,3 +86,33 @@ it('keeps boolean choices distinct when their options are recalculated', async (
     ).toEqual(['On', 'Off'])
   }
 })
+
+it('keeps object-valued parameter choices unique across option refreshes', async () => {
+  const names = ['a', 'b', 'myParameter001', 'theta']
+  const options = () =>
+    names.map((name) => ({ name, value: { parameter: name } }))
+  let choices = options()
+  const onSubmit = vi.fn()
+  const input = () => (
+    <CommandArgOptionInput
+      arg={{ inputType: 'options', required: true, options: choices }}
+      argName="Name"
+      stepBack={vi.fn()}
+      onSubmit={onSubmit}
+    />
+  )
+  const view = render(input())
+  for (let i = 0; i < 3; i++) {
+    choices = options()
+    view.rerender(input())
+    expect(screen.getAllByRole('option')).toHaveLength(names.length)
+    for (const name of names)
+      expect(screen.getByRole('option', { name })).toBeVisible()
+  }
+  const parameter = screen.getByRole('option', {
+    name: 'myParameter001',
+  })
+  fireEvent.mouseDown(parameter)
+  fireEvent.click(parameter)
+  expect(onSubmit).toHaveBeenCalledWith(choices[2].value)
+})
