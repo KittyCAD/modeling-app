@@ -1,3 +1,4 @@
+import type { MemoryFileDeletion } from '@src/lib/fileSystem/deletionHistory'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
 import type {
@@ -50,6 +51,11 @@ export interface FileOperationsRegistryService {
     parent: string,
     preferredName: string
   ) => Promise<string>
+  readonly removeWithSnapshot: (path: string) => Promise<MemoryFileDeletion>
+  readonly replayDeletion: (
+    deletion: MemoryFileDeletion,
+    restore: boolean
+  ) => Promise<void>
   readonly remove: (path: string) => Promise<void>
   readonly rename: (source: string, destination: string) => Promise<void>
 }

@@ -1,3 +1,4 @@
+import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
 import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
@@ -21,8 +22,7 @@ export function createMountedFileOperations(
     let selectedMount: FileOperationsMount | undefined
     for (const mount of mounts.values()) {
       const containsPath =
-        absolute === mount.root ||
-        absolute.startsWith(`${mount.root}${paths.sep}`)
+        getContainedRelativePath(paths, mount.root, absolute) !== undefined
       if (
         containsPath &&
         (!selectedMount || mount.root.length > selectedMount.root.length)
@@ -70,7 +70,7 @@ export function createMountedFileOperations(
           )
         )
       ).reduce((a, b) => a + b, 0),
-    stat: (path) => find(path).stat(path),
+    stat: (path, options) => find(path).stat(path, options),
     canReadWrite: (path) => find(path).canReadWrite(path),
     exists: (path) => find(path).exists(path),
     readDirectory: (path) => find(path).readDirectory(path),
@@ -82,6 +82,9 @@ export function createMountedFileOperations(
     createDirectory: (path) => find(path).createDirectory(path),
     createUniqueDirectory: (parent, name) =>
       find(parent).createUniqueDirectory(parent, name),
+    removeWithSnapshot: (path) => find(path).removeWithSnapshot(path),
+    replayDeletion: (deletion, restore) =>
+      find(deletion.path).replayDeletion(deletion, restore),
     remove: (path) => find(path).remove(path),
     copy: (source, destination, options) => {
       const from = find(source)

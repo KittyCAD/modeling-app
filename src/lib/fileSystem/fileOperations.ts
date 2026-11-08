@@ -1,4 +1,9 @@
 import {
+  captureDeletion,
+  replayDeletion,
+  type MemoryFileDeletion,
+} from '@src/lib/fileSystem/deletionHistory'
+import {
   type FileNameParts,
   fileNameCandidate,
 } from '@src/lib/fileSystem/fileNames'
@@ -137,6 +142,14 @@ export interface FileOperationsService {
     parent: string,
     preferredName: string
   ) => Effect.Effect<string, FileSystemError>
+  /** Capture bytes and folders in memory before removing the subtree. */
+  readonly removeWithSnapshot: (
+    path: string
+  ) => Effect.Effect<MemoryFileDeletion, FileSystemError>
+  readonly replayDeletion: (
+    deletion: MemoryFileDeletion,
+    restore: boolean
+  ) => Effect.Effect<void, FileSystemError>
   readonly remove: (path: string) => Effect.Effect<void, FileSystemError>
   readonly rename: (
     source: string,
@@ -150,6 +163,8 @@ export class FileOperations extends Context.Tag('zds/FileOperations')<
 >() {}
 
 export interface FileOperationsOptions {
+  /** Windows disk paths share locks across casing aliases. Virtual backends can opt out. */
+  readonly caseInsensitivePaths?: boolean
   /**
    * Allow cloud file reads while an upload waits for remote acknowledgement.
    * The cloud backing replaces the complete in-memory byte array before awaiting
@@ -173,6 +188,15 @@ const makeFileOperations = (
 ) =>
   Effect.gen(function* () {
     const backingFileSystem = yield* FileSystem
+    const caseInsensitivePaths =
+      options.caseInsensitivePaths ?? backing.sep === '\\'
+    const lockPaths = {
+      dirname: backing.dirname,
+      resolve: (...parts: string[]) => {
+        const absolute = backing.resolve(...parts)
+        return caseInsensitivePaths ? absolute.toLowerCase() : absolute
+      },
+    }
     const mutationGuard = yield* FiberRef.make<
       (() => Error | undefined) | undefined
     >(undefined)
@@ -284,7 +308,7 @@ const makeFileOperations = (
     ) =>
       withLocks(
         directoryMembershipLocks,
-        [...new Set(paths.map((path) => backing.resolve(path)))]
+        [...new Set(paths.map((path) => lockPaths.resolve(path)))]
           .sort(comparePathLockKeys)
           .map((path) => ({ path, mode })),
         operation
@@ -297,7 +321,7 @@ const makeFileOperations = (
       options.atomicFileReads
         ? operation
         : withPathLocks(
-            pathLockRequirements(backing, [path], 'shared'),
+            pathLockRequirements(lockPaths, [path], 'shared'),
             operation
           )
 
@@ -306,7 +330,7 @@ const makeFileOperations = (
       operation: Effect.Effect<A, E, R>
     ) =>
       withPathLocks(
-        pathLockRequirements(backing, [path], 'shared'),
+        pathLockRequirements(lockPaths, [path], 'shared'),
         withDirectoryMembershipLocks([path], 'shared', operation)
       )
 
@@ -331,7 +355,7 @@ const makeFileOperations = (
     ) =>
       trackMutation(
         withPathLocks(
-          pathLockRequirements(backing, paths),
+          pathLockRequirements(lockPaths, paths),
           withDirectoryMembershipLocks(
             membershipPaths,
             'exclusive',
@@ -549,6 +573,18 @@ const makeFileOperations = (
             )
           )
         ),
+      removeWithSnapshot: (path) =>
+        coordinateMutation(
+          [path],
+          captureDeletion(fileSystem, backing, path).pipe(
+            Effect.tap(() => fileSystem.remove(path))
+          )
+        ),
+      replayDeletion: (deletion, restore) =>
+        coordinateMutation(
+          [deletion.path],
+          replayDeletion(fileSystem, backing, deletion, restore)
+        ),
       remove: (path) => coordinateMutation([path], fileSystem.remove(path)),
       rename: (source, destination) =>
         coordinateMutation(
@@ -646,6 +682,19 @@ export const createUniqueDirectory = (parent: string, preferredName: string) =>
     Effect.flatMap((operations) =>
       operations.createUniqueDirectory(parent, preferredName)
     )
+  )
+
+export const removeWithSnapshot = (path: string) =>
+  FileOperations.pipe(
+    Effect.flatMap((operations) => operations.removeWithSnapshot(path))
+  )
+
+export const replayFileDeletion = (
+  deletion: MemoryFileDeletion,
+  restore: boolean
+) =>
+  FileOperations.pipe(
+    Effect.flatMap((operations) => operations.replayDeletion(deletion, restore))
   )
 
 export const remove = (path: string) =>
