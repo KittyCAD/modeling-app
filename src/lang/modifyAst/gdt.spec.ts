@@ -255,7 +255,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tagEnd = $capEnd001')
       // Verify the GDT annotation was added
       expect(newCode).toContain(
-        'gdt::flatness(faces = [capEnd001], tolerance = 0.1mm)'
+        'gdt::flatness(faces = [extrude001.faces.capEnd001], tolerance = 0.1mm)'
       )
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -294,9 +294,15 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const gdtCalls = newCode.match(/annotation\d{3} = gdt::flatness/g)
       expect(gdtCalls).toHaveLength(3)
       // Verify each face has its own annotation
-      expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg01], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg02], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg03], tolerance = 0.1mm'
+      )
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -333,8 +339,12 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const gdtCalls = newCode.match(/gdt::flatness/g)
       expect(gdtCalls).toHaveLength(2)
       // Verify each face has its own annotation
-      expect(newCode).toContain('faces = [capEnd001], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [capEnd002], tolerance = 0.1mm')
+      expect(newCode).toContain(
+        'faces = [extrude003.faces.capEnd001], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude004.faces.capEnd002], tolerance = 0.1mm'
+      )
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -378,9 +388,15 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(tagMatches).toHaveLength(3)
       const gdtCalls = newCode.match(/gdt::flatness/g)
       expect(gdtCalls).toHaveLength(3)
-      expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg01], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg02], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg03], tolerance = 0.1mm'
+      )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -432,8 +448,12 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Should have TWO GDT calls
       const gdtCalls = newCode.match(/gdt::flatness/g)
       expect(gdtCalls).toHaveLength(2)
-      expect(newCode).toContain('faces = [capEnd001], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [capEnd001], tolerance = 0.2mm')
+      expect(newCode).toContain(
+        'faces = [extrude001.faces.capEnd001], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude001.faces.capEnd001], tolerance = 0.2mm'
+      )
 
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })
@@ -493,7 +513,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify the extrude was tagged
       expect(newCode).toContain('tagEnd = $capEnd001')
       // Verify all parameters are in the GDT call
-      expect(newCode).toContain('faces = [capEnd001]')
+      expect(newCode).toContain('faces = [extrude001.faces.capEnd001]')
       expect(newCode).toContain('tolerance = 0.1mm')
       expect(newCode).toContain('precision = 3')
       expect(newCode).toContain('framePosition = [10, 20]')
@@ -529,7 +549,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (err(newCode)) throw newCode
 
       // Verify GDT calls come after all model code
-      const lastExtrudeIndex = newCode.lastIndexOf('extrude')
+      const lastExtrudeIndex = newCode.lastIndexOf('= extrude(')
       const firstGdtIndex = newCode.indexOf('gdt::flatness')
       expect(firstGdtIndex).toBeGreaterThan(lastExtrudeIndex)
 
@@ -577,7 +597,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $chamferFace01')
       // Verify the GDT annotation references the chamfer tag
       expect(newCode).toContain(
-        'gdt::flatness(faces = [chamferFace01], tolerance = 0.1mm)'
+        'gdt::flatness(faces = [extrude001.faces.chamferFace01], tolerance = 0.1mm)'
       )
       // Verify the original chamfer operation is still there
       expect(newCode).toContain('chamfer(')
@@ -630,7 +650,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Verify GDT annotation was added for fillet
       expect(newCode).toContain('gdt::flatness(')
-      expect(newCode).toContain('faces = [filletFace01]')
+      expect(newCode).toContain('faces = [extrude001.faces.filletFace01]')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       // Verify the fillet was tagged properly
@@ -667,7 +687,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       expect(newCode).toContain('tagEnd = $capEnd001')
       expect(newCode).toContain(
-        'gdt::straightness(faces = [capEnd001], tolerance = 0.1mm)'
+        'gdt::straightness(faces = [extrude001.faces.capEnd001], tolerance = 0.1mm)'
       )
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -703,9 +723,15 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $seg03')
       const gdtCalls = newCode.match(/gdt::straightness/g)
       expect(gdtCalls).toHaveLength(3)
-      expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg01], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg02], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg03], tolerance = 0.1mm'
+      )
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -855,7 +881,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (err(newCode)) throw newCode
 
       expect(newCode).toContain('tagEnd = $capEnd001')
-      expect(newCode).toContain('faces = [capEnd001]')
+      expect(newCode).toContain('faces = [extrude001.faces.capEnd001]')
       expect(newCode).toContain('tolerance = 0.1mm')
       expect(newCode).toContain('precision = 3')
       expect(newCode).toContain('framePosition = [10, 20]')
@@ -893,7 +919,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       expect(newCode).toContain('tagEnd = $capEnd001')
       expect(newCode).toContain(
-        'gdt::circularity(faces = [capEnd001], tolerance = 0.1mm)'
+        'gdt::circularity(faces = [extrude001.faces.capEnd001], tolerance = 0.1mm)'
       )
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -929,9 +955,15 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $seg03')
       const gdtCalls = newCode.match(/gdt::circularity/g)
       expect(gdtCalls).toHaveLength(3)
-      expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg01], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg02], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg03], tolerance = 0.1mm'
+      )
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -1029,7 +1061,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (err(newCode)) throw newCode
 
       expect(newCode).toContain('tagEnd = $capEnd001')
-      expect(newCode).toContain('faces = [capEnd001]')
+      expect(newCode).toContain('faces = [extrude001.faces.capEnd001]')
       expect(newCode).toContain('tolerance = 0.1mm')
       expect(newCode).toContain('precision = 3')
       expect(newCode).toContain('framePosition = [10, 20]')
@@ -1067,7 +1099,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       expect(newCode).toContain('tagEnd = $capEnd001')
       expect(newCode).toContain(
-        'gdt::cylindricity(faces = [capEnd001], tolerance = 0.1mm)'
+        'gdt::cylindricity(faces = [extrude001.faces.capEnd001], tolerance = 0.1mm)'
       )
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1103,9 +1135,15 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $seg03')
       const gdtCalls = newCode.match(/gdt::cylindricity/g)
       expect(gdtCalls).toHaveLength(3)
-      expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
-      expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg01], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg02], tolerance = 0.1mm'
+      )
+      expect(newCode).toContain(
+        'faces = [extrude002.sketch.tags.seg03], tolerance = 0.1mm'
+      )
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -1203,7 +1241,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (err(newCode)) throw newCode
 
       expect(newCode).toContain('tagEnd = $capEnd001')
-      expect(newCode).toContain('faces = [capEnd001]')
+      expect(newCode).toContain('faces = [extrude001.faces.capEnd001]')
       expect(newCode).toContain('tolerance = 0.1mm')
       expect(newCode).toContain('precision = 3')
       expect(newCode).toContain('framePosition = [10, 20]')
@@ -2173,7 +2211,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify the extrude was tagged
       expect(newCode).toContain('tagEnd = $capEnd001')
       // Verify the GDT datum annotation was added
-      expect(newCode).toContain('gdt::datum(face = capEnd001, name = "A")')
+      expect(newCode).toContain(
+        'gdt::datum(face = extrude001.faces.capEnd001, name = "A")'
+      )
 
       // Execute to validate runtime consistency
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -2202,7 +2242,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify the wall was tagged
       expect(newCode).toContain('tag = $seg01')
       // Verify the GDT datum annotation was added with correct name
-      expect(newCode).toContain('gdt::datum(face = seg01, name = "C")')
+      expect(newCode).toContain(
+        'gdt::datum(face = extrude002.sketch.tags.seg01, name = "C")'
+      )
 
       // Execute to validate runtime consistency
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -2248,7 +2290,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify the chamfer was tagged properly
       expect(newCode).toContain('tag = $chamferFace01')
       // Verify GDT datum annotation was added for chamfer
-      expect(newCode).toContain('gdt::datum(face = chamferFace01, name = "D")')
+      expect(newCode).toContain(
+        'gdt::datum(face = extrude001.faces.chamferFace01, name = "D")'
+      )
 
       // Execute to validate runtime consistency
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -2413,7 +2457,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (err(newCode)) throw newCode
 
       expect(newCode).toContain('gdt::datum(')
-      expect(newCode).toContain('face = capEnd001')
+      expect(newCode).toContain('face = extrude001.faces.capEnd001')
       expect(newCode).toContain('name = "A"')
       expect(newCode).toContain('framePosition = [5, 0]')
       expect(newCode).toContain('framePlane = XZ')

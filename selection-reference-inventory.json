@@ -305,8 +305,29 @@
       "Clippy for kcl-lib and kcl-api",
       "Regenerated Rust bindings and development Wasm"
     ],
-    "delivery": "Local follow-up branch commit; no push",
-    "native_clone_pattern_cache_tests_passed": 42
+    "delivery": "Follow-up pushed through 8742422f0d; subsequent CI fixes committed locally without another push.",
+    "native_clone_pattern_cache_tests_passed": 42,
+    "ci_followup": {
+      "investigated_head": "8742422f0d848fc0cb31214666ba88419cc163f9",
+      "baseline": "901422f4e4cdbe896616dc7264d8269b768ee70d, rebuilt in the current PR worktree",
+      "confirmed_regression": "The legacy patternLinear3d useOriginal example passes on current and fails on follow-up. Face remapping queried a virtual result of patterning a merged feature as though it were an independent body.",
+      "pattern_fix": "Skip body remapping only for uncopied merged feature patterns. Pattern instances retain a prototype too, but still require remapping. New KCL 3 regressions cover linear and circular feature patterns, plus named-face chamfers on repeated useOriginal body patterns.",
+      "binding_fix": "Import runtime StdLibCommands and STD_LIB_ENUMS from committed expected-bindings. No generated binding was missing from the commit, and no CI configuration changed.",
+      "expectations": "Update existing sweep, axis, edge migration and GDT assertions to body.sketch.tags and body.faces. Keep legacy input programs, scoped migration boundaries and runtime execution checks. Refresh the pipe-elbow command snapshot only for added topology queries.",
+      "unit_tests_passed": 1985,
+      "unit_isolation": "With the generated StdLibCommands file and Wasm binary removed, all module-load failures disappear. That run had one cloud-sync assertion failure which passed immediately on a focused rerun; a subsequent full run passes all 1985 tests.",
+      "affected_integration_cases_verified": 303,
+      "integration_note": "302 passed together; the remaining getCommonEdge case passed in a 26-case targeted rerun.",
+      "focused_native_tests_passed": 33,
+      "baseline_image_failures": [
+        "kcl_test_examples_std_gear_spur_0",
+        "kcl_test_examples_std_gear_helical_1",
+        "kcl_test_examples_std_sketch_involuteCircular_1",
+        "kcl_test_execute_herringbone_gear"
+      ],
+      "infrastructure_failures": "Latest failed language-server, E2E, build-app, benchmark and interaction-performance jobs fail on Electron, Binaryen or CodSpeed downloads (HTTP 504/download errors). The circular-dependency job also fails during npm installation before analysis.",
+      "named_and_scope_cases_passed": 36
+    }
   },
   "bounds_and_remaining_gaps": [
     "This is bounded interaction coverage, not a proof over all KCL programs or every possible selector.",

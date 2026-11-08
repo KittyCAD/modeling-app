@@ -267,7 +267,7 @@ profile002 = rectangle(
       const newCode = recast(res.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${circleProfileCode}
 extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
-extrude002 = extrude(capEnd001, length = 2)`)
+extrude002 = extrude(extrude001.faces.capEnd001, length = 2)`)
       await runNewAstAndCountSweeps(res.modifiedAst, rustContextInThisFile, 2)
     })
 
@@ -312,7 +312,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
 extrude001 = extrude(profile001, length = 2)
-extrude002 = extrude(seg01, length = 3)`)
+extrude002 = extrude(extrude001.sketch.tags.seg01, length = 3)`)
       await runNewAstAndCountSweeps(res.modifiedAst, rustContextInThisFile, 2)
     })
 
@@ -682,7 +682,7 @@ profile002 = rectangle(
   height = 2,
 )
 extrude001 = extrude(profile002, length = 1, tagEnd = $capEnd001)
-extrude002 = extrude([capEnd001, profile001], length = 1)`)
+extrude002 = extrude([extrude001.faces.capEnd001, profile001], length = 1)`)
       await runNewAstAndCountSweeps(res.modifiedAst, rustContextInThisFile, 3)
     })
 
@@ -1082,6 +1082,7 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
       expect(newCode).toContain('extrude001 = extrude(')
       expect(newCode).toContain('sideFaces = [')
       expect(newCode).toContain('length = 2')
@@ -1161,9 +1162,10 @@ merged = extrude(faceRegion, length = 2)`
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
       expect(newCode).toContain('extrude001 = extrude(')
-      expect(newCode).toContain(
-        'sideFaces = [faceRegion.tags.circle1, capEnd001]'
+      expect(newCode.replace(/\s/g, '')).toContain(
+        'sideFaces=[merged.sketch.tags.circle1,merged.faces.capEnd001]'
       )
       expect(newCode).toContain(
         'merged = extrude(faceRegion, length = 2, tagEnd = $capEnd001)'
@@ -1273,7 +1275,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `extrude002 = extrude(profile002, to = rectangleSegmentA001)`
+        `extrude002 = extrude(profile002, to = extrude001.sketch.tags.rectangleSegmentA001)`
       )
       const error = await mockExecAstAndReportErrors(
         result.modifiedAst,
@@ -1319,7 +1321,7 @@ extrude001 = extrude(profile001, length = 1)
 plane001 = offsetPlane(XZ, offset = 1)
 sketch002 = startSketchOn(plane001)
 profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
-extrude002 = extrude(profile002, to = seg01)`)
+extrude002 = extrude(profile002, to = extrude001.sketch.tags.seg01)`)
       const error = await mockExecAstAndReportErrors(
         result.modifiedAst,
         rustContextInThisFile
@@ -1356,7 +1358,7 @@ extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
 plane001 = offsetPlane(XY, offset = 2)
 sketch002 = startSketchOn(plane001)
 profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
-extrude002 = extrude(profile002, to = capEnd001)`)
+extrude002 = extrude(profile002, to = extrude001.faces.capEnd001)`)
       const error = await mockExecAstAndReportErrors(
         result.modifiedAst,
         rustContextInThisFile
@@ -1469,7 +1471,7 @@ extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
 plane001 = offsetPlane(XY, offset = 2)
 sketch002 = startSketchOn(plane001)
 profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
-extrude002 = extrude(profile002, to = chamferFace01)`)
+extrude002 = extrude(profile002, to = extrude001.faces.chamferFace01)`)
       const error = await mockExecAstAndReportErrors(
         result.modifiedAst,
         rustContextInThisFile
@@ -1577,7 +1579,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
         `extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)`
       )
       expect(newCode).toContain(`sweep001 = sweep(
-  capEnd001,
+  extrude001.faces.capEnd001,
   path = profile002,
   version = 2,
   translateProfileToPath = false,
