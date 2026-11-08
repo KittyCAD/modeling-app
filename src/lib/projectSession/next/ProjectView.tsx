@@ -99,7 +99,7 @@ function EmptyWorkspace() {
 function ProjectHeader({ title }: { title: string }) {
   return (
     <header
-      className={`flex shrink-0 select-none items-center gap-3 border-b border-chalkboard-30 py-2 [-webkit-app-region:drag] dark:border-chalkboard-70 ${window.electron?.os.isMac ? 'pl-24 pr-3' : 'px-3'}`}
+      className={`flex shrink-0 select-none items-center gap-3 border-b b-4 py-2 [-webkit-app-region:drag] ${window.electron?.os.isMac ? 'pl-24 pr-3' : 'px-3'}`}
     >
       <Link to={PATHS.HOME} aria-label="Projects">
         <Logo className="h-4 w-auto" />
@@ -125,7 +125,7 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
     [session]
   )
   return (
-    <div className="flex h-screen flex-col bg-chalkboard-10 text-chalkboard-100 dark:bg-chalkboard-100 dark:text-chalkboard-10">
+    <div className="flex h-screen flex-col text-default bg-default">
       <ProjectHeader title={metadata.title} />
       <div className="min-h-0 flex-1">
         <LayoutRootNode
