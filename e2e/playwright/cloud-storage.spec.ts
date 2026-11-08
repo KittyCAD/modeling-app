@@ -343,7 +343,7 @@ for (const kind of ['file', 'directory']) {
         expect(remote.project.files['main.kcl']).toBe(
           '@settings(kclVersion = 3.0)\n'
         )
-        expect(await history.evaluate((h) => h.count())).toBe(0)
+        expect(await history.evaluate((h) => h.count())).toBe(1)
         expect(
           await page.evaluate(async () => {
             const storage = await navigator.storage.getDirectory()
@@ -381,7 +381,7 @@ for (const kind of ['file', 'directory']) {
 }
 
 test(
-  'keeps the local archive and undo history for local file deletion',
+  'keeps local deletion undo in memory without creating an archive',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
     await mockClientErrorReports(context)
@@ -422,20 +422,49 @@ test(
     await expect(note).not.toBeVisible()
     expect(
       await page.evaluate(
-        async (root) =>
-          new TextDecoder().decode(
-            await window.fsZds.readFile(
-              window.fsZds.join('/userData/archive', root, 'note.md')
-            )
+        (root) =>
+          window.app.fileOperations.exists(
+            window.fsZds.join('/userData/archive', root, 'note.md')
           ),
         root
       )
-    ).toBe('local backup contents')
+    ).toBe(false)
     expect(
       await page.evaluate(
         () => window.app.singletons.kclManager.globalHistoryView.undoDepth
       )
     ).toBe(historyBefore + 1)
+    await page
+      .getByRole('button', { name: 'arrow turn left', exact: true })
+      .click()
+    await expect(note).toBeVisible()
+    expect(
+      await page.evaluate(
+        (root) =>
+          window.fsZds.readFile(window.fsZds.join(root, 'note.md'), 'utf8'),
+        root
+      )
+    ).toBe('local backup contents')
+    await page
+      .getByRole('button', { name: 'arrow turn right', exact: true })
+      .click()
+    await expect(note).not.toBeVisible()
+    await page.reload({ waitUntil: 'domcontentloaded' })
+    await expect(page.locator('.cm-content').first()).toBeVisible()
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => window.app.singletons.kclManager.globalHistoryView.undoDepth
+        )
+      )
+      .toBe(0)
+    expect(
+      await page.evaluate(
+        (root) =>
+          window.app.fileOperations.exists(window.fsZds.join(root, 'note.md')),
+        root
+      )
+    ).toBe(false)
   }
 )
 
