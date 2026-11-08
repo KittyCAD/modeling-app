@@ -151,13 +151,14 @@ input {
     "Source Code VF", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+/* Share editor styling between the legacy wrapper and editor-mode instances. */
 code,
-#code-mirror-override .cm-content {
+:is(#code-mirror-override, .code-mirror-override) .cm-content {
   font-family:
     "Source Code VF", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-#code-mirror-override {
+:is(#code-mirror-override, .code-mirror-override) {
   @apply text-xs;
 
   /* Operation highlighting CSS. TODO: turn on when we have more rich debug behavior toggling */
@@ -184,66 +185,74 @@ code,
  * The first descendent of the CodeMirror wrapper is the theme,
  * but its identifying class can change depending on the theme.
 */
-#code-mirror-override > div,
-#code-mirror-override .cm-editor {
+:is(#code-mirror-override, .code-mirror-override) > div,
+:is(#code-mirror-override, .code-mirror-override) .cm-editor {
   @apply bg-transparent h-full;
   @apply select-auto;
 }
 
-#code-mirror-override .cm-scroller {
+:is(#code-mirror-override, .code-mirror-override) .cm-scroller {
   overflow: auto;
 }
 
-#code-mirror-override .cm-gutter {
+:is(#code-mirror-override, .code-mirror-override) .cm-gutter {
   @apply select-none;
 }
 
-#code-mirror-override .cm-activeLine,
-#code-mirror-override .cm-activeLineGutter {
+:is(#code-mirror-override, .code-mirror-override) .cm-activeLine,
+:is(#code-mirror-override, .code-mirror-override) .cm-activeLineGutter {
   @apply bg-primary/5;
 }
 
-.dark #code-mirror-override .cm-activeLine,
-.dark #code-mirror-override .cm-activeLineGutter {
+.dark :is(#code-mirror-override, .code-mirror-override) .cm-activeLine,
+.dark :is(#code-mirror-override, .code-mirror-override) .cm-activeLineGutter {
   @apply bg-chalkboard-70/20;
   mix-blend-mode: lighten;
 }
 
-#code-mirror-override .cm-focused .cm-activeLine,
-#code-mirror-override .cm-focused .cm-activeLineGutter {
+:is(#code-mirror-override, .code-mirror-override) .cm-focused .cm-activeLine,
+:is(#code-mirror-override, .code-mirror-override)
+  .cm-focused
+  .cm-activeLineGutter {
   @apply bg-primary/10;
 }
 
-.dark #code-mirror-override .cm-focused .cm-activeLine,
-.dark #code-mirror-override .cm-focused .cm-activeLineGutter {
+.dark
+  :is(#code-mirror-override, .code-mirror-override)
+  .cm-focused
+  .cm-activeLine,
+.dark
+  :is(#code-mirror-override, .code-mirror-override)
+  .cm-focused
+  .cm-activeLineGutter {
   @apply bg-chalkboard-70/40;
 }
 
-#code-mirror-override .cm-matchingBracket {
+:is(#code-mirror-override, .code-mirror-override) .cm-matchingBracket {
   @apply bg-primary/20;
 }
 
-.dark #code-mirror-override .cm-matchingBracket {
+.dark :is(#code-mirror-override, .code-mirror-override) .cm-matchingBracket {
   @apply bg-chalkboard-70/60;
 }
 
-#code-mirror-override .cm-gutters {
+:is(#code-mirror-override, .code-mirror-override) .cm-gutters {
   @apply bg-chalkboard-10/30;
 }
 
-.dark #code-mirror-override .cm-gutters {
+.dark :is(#code-mirror-override, .code-mirror-override) .cm-gutters {
   @apply bg-chalkboard-110/50;
 }
 
-#code-mirror-override .cm-content {
+:is(#code-mirror-override, .code-mirror-override) .cm-content {
   @apply caret-primary;
 }
 
-.dark #code-mirror-override .cm-content {
+.dark :is(#code-mirror-override, .code-mirror-override) .cm-content {
   @apply caret-chalkboard-10;
 }
 
-#code-mirror-override .cm-focused {
+:is(#code-mirror-override, .code-mirror-override) .cm-focused {
   outline: none;
 }
 
@@ -268,22 +277,22 @@ code,
   @apply bg-transparent !important;
 }
 
-#code-mirror-override .cm-tooltip,
+:is(#code-mirror-override, .code-mirror-override) .cm-tooltip,
 .cm-tooltip {
   @apply text-xs shadow-md;
   @apply bg-chalkboard-10 text-chalkboard-80;
   @apply rounded-sm border-solid border border-chalkboard-40/30 border-l-liquid-10;
 }
 
-.dark #code-mirror-override .cm-tooltip,
+.dark :is(#code-mirror-override, .code-mirror-override) .cm-tooltip,
 .dark .cm-tooltip {
   @apply bg-chalkboard-110 text-chalkboard-40;
   @apply border-chalkboard-70/20 border-l-liquid-70;
 }
 
-#code-mirror-override .cm-tooltip-hover,
+:is(#code-mirror-override, .code-mirror-override) .cm-tooltip-hover,
 .cm-tooltip-hover,
-#code-mirror-override .cm-signature-tooltip,
+:is(#code-mirror-override, .code-mirror-override) .cm-signature-tooltip,
 .cm-signature-tooltip {
   @apply py-1 px-2;
   /* Preserve Tailwind max-w-md while preventing viewport overflow. */
@@ -292,38 +301,43 @@ code,
   overflow-wrap: anywhere;
 }
 
-#code-mirror-override .cm-tooltip-hover pre,
+:is(#code-mirror-override, .code-mirror-override) .cm-tooltip-hover pre,
 .cm-tooltip-hover pre,
-#code-mirror-override .cm-signature-tooltip pre,
+:is(#code-mirror-override, .code-mirror-override) .cm-signature-tooltip pre,
 .cm-signature-tooltip pre {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-#code-mirror-override .cm-completionInfo {
+:is(#code-mirror-override, .code-mirror-override) .cm-completionInfo {
   @apply px-4 rounded-l-none;
   @apply bg-chalkboard-10 text-liquid-90;
   @apply border-liquid-40/30;
 }
 
-.dark #code-mirror-override .cm-completionInfo {
+.dark :is(#code-mirror-override, .code-mirror-override) .cm-completionInfo {
   @apply bg-liquid-120 text-liquid-50;
   @apply border-liquid-90/60;
 }
 
-#code-mirror-override .cm-tooltip-autocomplete li {
+:is(#code-mirror-override, .code-mirror-override) .cm-tooltip-autocomplete li {
   @apply px-2 py-1;
 }
 
-#code-mirror-override .cm-tooltip-autocomplete li[aria-selected="true"] {
+:is(#code-mirror-override, .code-mirror-override)
+  .cm-tooltip-autocomplete
+  li[aria-selected="true"] {
   @apply bg-liquid-10 text-liquid-110;
 }
 
-.dark #code-mirror-override .cm-tooltip-autocomplete li[aria-selected="true"] {
+.dark
+  :is(#code-mirror-override, .code-mirror-override)
+  .cm-tooltip-autocomplete
+  li[aria-selected="true"] {
   @apply bg-liquid-100 text-liquid-20;
 }
 
-#code-mirror-override .cm-content {
+:is(#code-mirror-override, .code-mirror-override) .cm-content {
   white-space: pre-wrap;
   word-break: normal;
   word-wrap: break-word;
@@ -509,12 +523,12 @@ code,
   }
 }
 
-#code-mirror-override .cm-scroller,
-#code-mirror-override .cm-editor {
+:is(#code-mirror-override, .code-mirror-override) .cm-scroller,
+:is(#code-mirror-override, .code-mirror-override) .cm-editor {
   height: 100% !important;
 }
 
-/* Can't use #code-mirror-override here as we're outside of this div */
+/* Can't use :is(#code-mirror-override, .code-mirror-override) here as we're outside of this div */
 .body-bg .cm-diagnosticAction {
   @apply bg-primary;
 }
