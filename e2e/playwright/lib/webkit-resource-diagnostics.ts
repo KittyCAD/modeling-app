@@ -196,7 +196,10 @@ export function installWebKitResourceDiagnostics() {
     snapshot: () => ({
       installed,
       failed,
-      coverage: { opfs: 'named-worker-messages', indexedDB: 'window-transactions' },
+      coverage: {
+        opfs: 'named-worker-messages',
+        indexedDB: 'window-transactions',
+      },
       socketsCreated,
       workersCreated,
       peersCreated,
