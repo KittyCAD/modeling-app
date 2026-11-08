@@ -34,6 +34,10 @@ import { hasProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
 import { readProject } from '@src/lib/projectSession/next/utils'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
+import { loadProjectEditor } from '@src/lib/editors/loadProjectEditor'
+import { editorsService } from '@src/lib/editors/registry/contract'
+import fsZds from '@src/lib/fs-zds'
+import { isErr } from '@src/lib/trap'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -103,7 +107,7 @@ export const projectLoader =
   }
 
 /**
- * Open the directory identified by `/local/:path`, without opening an editor.
+ * Open the directory identified by `/local/:path` and its initial editor.
  * Reading assembles the full tree and optional TOML metadata without creating files
  * or applying project settings. Files are rejected rather than promoted to their
  * parent directory. Failed or cancelled discovery leaves the selection intact.
@@ -139,7 +143,28 @@ export const localLoader =
     assertCurrent()
     if (!ownsSession()) return redirect(PATHS.HOME)
     // Consumers retain this session instead of resolving the global selection again.
-    return projectSessions.openProject(project)
+    const session = projectSessions.openProject(project)
+    const files = projectSessions.listFiles()
+    const configuredPath = project.metadata.defaultFile
+      ? fsZds.join(project.contents.path, project.metadata.defaultFile)
+      : undefined
+    const entrypoint = fsZds.join(project.contents.path, PROJECT_ENTRYPOINT)
+    const initialFile =
+      files.find((file) => file.path === configuredPath) ??
+      files.find((file) => file.path === entrypoint) ??
+      files.find((file) => fsZds.extname(file.path).toLowerCase() === '.kcl')
+    if (initialFile) {
+      const editor = await loadProjectEditor(
+        initialFile.path,
+        app.registry.get(editorsService),
+        () => projectSessions,
+        () => fileOperations,
+        { signal: request.signal, reuseExisting: true }
+      )
+      assertCurrent()
+      if (isErr(editor)) return Promise.reject(editor)
+    }
+    return session
   }
 
 export const fileLoader =

@@ -52,9 +52,13 @@ A kind of Layout that consists of two or more Layouts divided, with a draggable 
 
 A kind of Split Layout that lets users toggle which Layout elements are active within it. It consists of a pane control bar and a Split Layout of all active panes.
 
+**Related:** the [Editors pane](#editors-pane) is an [Area](#areas) containing editor tabs. Editor tabs select buffers within that Area; the Panes Layout toggles which Layout elements are active.
+
 ### Pane control bar
 
 An element which contains a row of buttons that allow users to toggle the activity of Panes. It can be on the top, bottom, left, or right side of a Pane Layout.
+
+**Related:** a tab strip is a related UI control. An editor tab selects a buffer, while a pane control bar toggles Layout elements. The [Tabs component](packages/ui-components/src/components/Tabs/Tabs.tsx) provides tab-strip interaction.
 
 ## Scene
 
@@ -76,7 +80,7 @@ An Area showing the operations used in the CAD assembly. You can think of it as 
 
 An Area housing a code editor for our underlying language for CAD, called [KCL](https://zoo.dev/docs/kcl-book/intro.html). From here you can edit the model directly, and often use features that we are still developing "point & click" workflows for within the Scene.
 
-**Related:** [Editor](#editor) names the live buffer object in the tabbed editor system; [Editor mode](#editor-mode) names a component that displays it. The Code mode supplies that system's CodeMirror interface. These concepts distinguish the buffer and its display from the Code Editor Area.
+**Related:** [Editor](#editor) names the live buffer object in the tabbed editor system; [Editor mode](#editor-mode) names a component that displays it. The Code mode supplies that system's CodeMirror interface. These concepts distinguish the buffer and its display from the Code Editor Area. The [Editors pane](#editors-pane) groups these editors into tabs.
 
 ## Zookeeper
 
@@ -130,7 +134,7 @@ A contributed component that displays an editor's buffer. An editor can offer se
 
 **Also called:** editor view, in the contribution API; contributed surface, in implementation comments. Qualify these names because view also refers to CodeMirror's `EditorView`.
 
-**Related:** [Editor](#editor) supplies the buffer; [Code Editor](#code-editor) describes the familiar editing Area; [Workbench](#workbench) describes a broader Workspace configuration.
+**Related:** [Editor](#editor) supplies the buffer; [Editors pane](#editors-pane) presents the mode chooser; [Code Editor](#code-editor) describes the familiar editing Area; [Workbench](#workbench) describes a broader Workspace configuration.
 
 **Search anchors:** `EditorViewContribution`, `editorViewValueSpec` in the [editors contract](src/lib/editors/registry/contract.ts).
 
@@ -159,3 +163,21 @@ The language ID and optional media type associated with an editor. Registered la
 **Related:** a filename extension can help infer classification; a media type, also called a MIME type, describes the format; an [Editor mode](#editor-mode) is a separate display choice.
 
 **Search anchors:** `EditorClassification`, `EditorsService.setLanguage` in the [editors contract](src/lib/editors/registry/contract.ts). See [editor-contributions.md](docs/editor-contributions.md) for matching and explicit language choices.
+
+## Editors pane
+
+The Area that presents open editors as tabs and provides New and Open actions. Each tab represents an editor, including unnamed editors and independent editors for the same file. The active tab displays that editor's selected mode.
+
+**Also called:** Editors, in the layout label.
+
+**Related:** [Areas](#areas) identifies its role in the [Layout](#layout); [Editor](#editor) supplies each tab's buffer; [Editor mode](#editor-mode) supplies its displayed component. The [Panes](#panes) entry describes a separate Layout structure.
+
+**Search anchors:** `EditorsPane` in [EditorsPane.tsx](src/lib/editors/EditorsPane.tsx), `areaType: 'editors'` in [ProjectView.tsx](src/lib/projectSession/next/ProjectView.tsx). The shared UI controls are `Tabs`, `TabPicker`, and `EmptyState`; tab strip and popover are useful related search terms. See the [ui-components guide](packages/ui-components/README.md).
+
+### Editor tab indicator
+
+A contributed status component displayed beside an editor's tab label. The component receives the associated editor and determines what information to show. Contributions can specify their display order.
+
+**Related:** [Editors pane](#editors-pane) renders indicators; [Editor](#editor) supplies their context. An indicator reports information independently of the control used to select an [Editor mode](#editor-mode).
+
+**Search anchors:** `EditorTabIndicator`, `editorTabIndicatorValueSpec` in the [editors contract](src/lib/editors/registry/contract.ts).
