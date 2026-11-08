@@ -1027,89 +1027,89 @@ for (const kind of ['local', 'cloud'] as const) {
           .toBe(code)
       })
       test('keeps local files editable and cloud files read-only across disconnection', async ({
-      page,
-      context,
-    }, testInfo) => {
-      const storage = await prepareStorage(kind, page, context, testInfo)
-      const root = await storage.seed('Offline editing', blankCode, {
-        'note.md': '# Note\n',
-      })
-      await storage.refresh()
-      await storage.home.openProject('Offline editing')
-      await expectEditor(page, blankCode)
-      await page.evaluate(
-        (id) => window.app.layout.openPane(id),
-        DefaultLayoutPaneID.Files
-      )
-      await page.waitForLoadState('networkidle')
-      try {
-        await context.setOffline(true)
-        await page.waitForTimeout(7_000)
-        const code = `${blankCode}// local edit without internet\n`
-        if (kind === 'cloud') {
-          await expect(
-            page.getByText('Offline. Cloud project is read-only.', {
-              exact: true,
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo)
+        const root = await storage.seed('Offline editing', blankCode, {
+          'note.md': '# Note\n',
+        })
+        await storage.refresh()
+        await storage.home.openProject('Offline editing')
+        await expectEditor(page, blankCode)
+        await page.evaluate(
+          (id) => window.app.layout.openPane(id),
+          DefaultLayoutPaneID.Files
+        )
+        await page.waitForLoadState('networkidle')
+        try {
+          await context.setOffline(true)
+          await page.waitForTimeout(7_000)
+          const code = `${blankCode}// local edit without internet\n`
+          if (kind === 'cloud') {
+            await expect(
+              page.getByText('Offline. Cloud project is read-only.', {
+                exact: true,
+              })
+            ).toBeVisible()
+            await expect(page.locator('.cm-content').first()).toHaveAttribute(
+              'contenteditable',
+              'false'
+            )
+            await expect(page.getByTestId('create-file-button')).toBeDisabled()
+            await expect(
+              page.getByTestId('create-folder-button')
+            ).toBeDisabled()
+            // A command must not bypass the disabled editor surface.
+            await page.evaluate(() => {
+              const editor = window.app.singletons.kclManager
+              editor.editorView.dispatch({
+                changes: { from: 0, insert: '// blocked\n' },
+              })
+              editor.updateCodeEditor('// blocked command\n')
             })
-          ).toBeVisible()
+            await expectEditor(page, blankCode)
+          } else {
+            await editThroughUI(page, code)
+            await expect.poll(() => storage.read(root)).toBe(code)
+          }
+          await page
+            .getByRole('treeitem', { name: 'note.md', exact: true })
+            .click()
+          await expectEditor(page, '# Note\n')
           await expect(page.locator('.cm-content').first()).toHaveAttribute(
             'contenteditable',
-            'false'
+            kind === 'cloud' ? 'false' : 'true'
           )
-          await expect(page.getByTestId('create-file-button')).toBeDisabled()
-          await expect(
-            page.getByTestId('create-folder-button')
-          ).toBeDisabled()
-          // A command must not bypass the disabled editor surface.
-          await page.evaluate(() => {
-            const editor = window.app.singletons.kclManager
-            editor.editorView.dispatch({
-              changes: { from: 0, insert: '// blocked\n' },
-            })
-            editor.updateCodeEditor('// blocked command\n')
-          })
-          await expectEditor(page, blankCode)
-        } else {
-          await editThroughUI(page, code)
-          await expect.poll(() => storage.read(root)).toBe(code)
-        }
-        await page
-          .getByRole('treeitem', { name: 'note.md', exact: true })
-          .click()
-        await expectEditor(page, '# Note\n')
-        await expect(page.locator('.cm-content').first()).toHaveAttribute(
-          'contenteditable',
-          kind === 'cloud' ? 'false' : 'true'
-        )
-        if (kind === 'local') {
-          await editThroughUI(page, '# Offline local edit\n')
+          if (kind === 'local') {
+            await editThroughUI(page, '# Offline local edit\n')
+            await expect
+              .poll(() => storage.read(root, 'note.md'))
+              .toBe('# Offline local edit\n')
+          }
+          await context.setOffline(false)
+          await expect(page.locator('.cm-content').first()).toHaveAttribute(
+            'contenteditable',
+            'true'
+          )
+          await editThroughUI(page, '# Reconnected edit\n')
           await expect
             .poll(() => storage.read(root, 'note.md'))
-            .toBe('# Offline local edit\n')
+            .toBe('# Reconnected edit\n')
+          await page
+            .getByRole('treeitem', { name: 'main.kcl', exact: true })
+            .click()
+          await expect(page.locator('.cm-content').first()).toHaveAttribute(
+            'contenteditable',
+            'true'
+          )
+          const finalCode = `${blankCode}// reconnected KCL edit\n`
+          await editThroughUI(page, finalCode)
+          await expect.poll(() => storage.read(root)).toBe(finalCode)
+        } finally {
+          await context.setOffline(false)
         }
-        await context.setOffline(false)
-        await expect(page.locator('.cm-content').first()).toHaveAttribute(
-          'contenteditable',
-          'true'
-        )
-        await editThroughUI(page, '# Reconnected edit\n')
-        await expect
-          .poll(() => storage.read(root, 'note.md'))
-          .toBe('# Reconnected edit\n')
-        await page
-          .getByRole('treeitem', { name: 'main.kcl', exact: true })
-          .click()
-        await expect(page.locator('.cm-content').first()).toHaveAttribute(
-          'contenteditable',
-          'true'
-        )
-        const finalCode = `${blankCode}// reconnected KCL edit\n`
-        await editThroughUI(page, finalCode)
-        await expect.poll(() => storage.read(root)).toBe(finalCode)
-      } finally {
-        await context.setOffline(false)
-      }
-    })
+      })
 
       if (kind === 'cloud') {
         test('resumes a cloud edit caught by disconnection without another keystroke', async ({
@@ -1138,108 +1138,108 @@ for (const kind of ['local', 'cloud'] as const) {
         })
       }
       test('recovers a failed save through the editor without losing edits', async ({
-      page,
-      context,
-    }, testInfo) => {
-      const storage = await prepareStorage(kind, page, context, testInfo)
-      const root = await storage.seed('Recoverable save', blankCode)
-      await storage.refresh()
-      await storage.home.openProject('Recoverable save')
-      await expectEditor(page, blankCode)
-      const code = `${blankCode}// Retained after a failed save\n`
-      const gate = Promise.withResolvers<undefined>()
-      let started = false
-      let fail = true
-      if (kind === 'cloud')
-        await context.route('**/user/projects/**', async (route) => {
-          if (route.request().method() === 'PUT' && fail) {
-            const upload = await uploadedProject(route)
-            if (upload.files['main.kcl'] === code) {
-              started = true
-              await gate.promise
-              return route.fulfill({
-                status: 503,
-                json: { message: 'Storage unavailable' },
-              })
-            }
-          }
-          await route.fallback()
-        })
-      // Inject at the local writer boundary; persistence after recovery is real.
-      const localFailure = await page.evaluateHandle((local) => {
-        const io = window.app.singletons.kclManager.textFileIO
-        const write = io.write.bind(io)
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo)
+        const root = await storage.seed('Recoverable save', blankCode)
+        await storage.refresh()
+        await storage.home.openProject('Recoverable save')
+        await expectEditor(page, blankCode)
+        const code = `${blankCode}// Retained after a failed save\n`
         const gate = Promise.withResolvers<undefined>()
         let started = false
-        if (local)
-          Object.assign(io, {
-            write: async () => {
-              started = true
-              await gate.promise
-              return Promise.reject(
-                Object.assign(new Error('Disk unavailable'), {
-                  code: 'ENOSPC',
+        let fail = true
+        if (kind === 'cloud')
+          await context.route('**/user/projects/**', async (route) => {
+            if (route.request().method() === 'PUT' && fail) {
+              const upload = await uploadedProject(route)
+              if (upload.files['main.kcl'] === code) {
+                started = true
+                await gate.promise
+                return route.fulfill({
+                  status: 503,
+                  json: { message: 'Storage unavailable' },
                 })
-              )
-            },
+              }
+            }
+            await route.fallback()
           })
-        return {
-          started: () => started,
-          release: () => gate.resolve(undefined),
-          restore: () => {
-            Object.assign(io, { write })
-          },
-        }
-      }, kind === 'local')
-      try {
-        await editThroughUI(page, code)
-        await expect
-          .poll(() =>
-            kind === 'cloud'
-              ? started
-              : localFailure.evaluate((f) => f.started())
-          )
-          .toBe(true)
-        const clockStart = new Date()
-        await page.clock.install({ time: clockStart })
-        await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
-        await page.clock.runFor(7_000)
-        await expect(
-          page.getByRole('status').filter({ hasText: 'Saving...' })
-        ).toBeVisible()
-        await expectEditor(page, code)
-        expect(await storage.read(root)).toBe(blankCode)
-        gate.resolve(undefined)
-        await localFailure.evaluate((f) => f.release())
-        await page.clock.resume()
-        const retry = page.getByRole('button', { name: 'Save failed. Retry' })
-        await expect(retry).toBeVisible()
-        await expectEditor(page, code)
-        expect(await storage.read(root)).toBe(blankCode)
-        fail = false
-        await localFailure.evaluate((f) => f.restore())
-        await retry.click()
-        await expect.poll(() => storage.read(root)).toBe(code)
-        await expect(retry).toBeHidden()
-        await expect
-          .poll(() =>
-            page.evaluate(() =>
-              window.app.singletons.kclManager.hasUnsavedLocalChanges()
+        // Inject at the local writer boundary; persistence after recovery is real.
+        const localFailure = await page.evaluateHandle((local) => {
+          const io = window.app.singletons.kclManager.textFileIO
+          const write = io.write.bind(io)
+          const gate = Promise.withResolvers<undefined>()
+          let started = false
+          if (local)
+            Object.assign(io, {
+              write: async () => {
+                started = true
+                await gate.promise
+                return Promise.reject(
+                  Object.assign(new Error('Disk unavailable'), {
+                    code: 'ENOSPC',
+                  })
+                )
+              },
+            })
+          return {
+            started: () => started,
+            release: () => gate.resolve(undefined),
+            restore: () => {
+              Object.assign(io, { write })
+            },
+          }
+        }, kind === 'local')
+        try {
+          await editThroughUI(page, code)
+          await expect
+            .poll(() =>
+              kind === 'cloud'
+                ? started
+                : localFailure.evaluate((f) => f.started())
             )
-          )
-          .toBe(false)
-      } finally {
-        gate.resolve(undefined)
-        await localFailure.evaluate((f) => {
-          f.release()
-          f.restore()
-        })
-        await page.clock.resume()
-      }
-      await storage.refresh()
-      await expectEditor(page, code)
-      await storage.assertStorage(root)
-    })
+            .toBe(true)
+          const clockStart = new Date()
+          await page.clock.install({ time: clockStart })
+          await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+          await page.clock.runFor(7_000)
+          await expect(
+            page.getByRole('status').filter({ hasText: 'Saving...' })
+          ).toBeVisible()
+          await expectEditor(page, code)
+          expect(await storage.read(root)).toBe(blankCode)
+          gate.resolve(undefined)
+          await localFailure.evaluate((f) => f.release())
+          await page.clock.resume()
+          const retry = page.getByRole('button', { name: 'Save failed. Retry' })
+          await expect(retry).toBeVisible()
+          await expectEditor(page, code)
+          expect(await storage.read(root)).toBe(blankCode)
+          fail = false
+          await localFailure.evaluate((f) => f.restore())
+          await retry.click()
+          await expect.poll(() => storage.read(root)).toBe(code)
+          await expect(retry).toBeHidden()
+          await expect
+            .poll(() =>
+              page.evaluate(() =>
+                window.app.singletons.kclManager.hasUnsavedLocalChanges()
+              )
+            )
+            .toBe(false)
+        } finally {
+          gate.resolve(undefined)
+          await localFailure.evaluate((f) => {
+            f.release()
+            f.restore()
+          })
+          await page.clock.resume()
+        }
+        await storage.refresh()
+        await expectEditor(page, code)
+        await storage.assertStorage(root)
+      })
 
       test('renames and deletes nested files without changing unrelated contents', async ({
         page,

@@ -300,9 +300,9 @@ describe('opfs', () => {
 
   test.each([
     ['source.kcl', 'Source.kcl', false],
-    ['caf\u00e9.kcl', 'cafe\u0301.kcl', false],
+    ['cafe\u0301.kcl'.normalize('NFC'), 'cafe\u0301.kcl', false],
     ['parts', 'Parts', true],
-    ['caf\u00e9', 'cafe\u0301', true],
+    ['cafe\u0301'.normalize('NFC'), 'cafe\u0301', true],
   ])(
     'recognizes %s aliases when WebKit compares handle spellings',
     async (name, alias, directory) => {
