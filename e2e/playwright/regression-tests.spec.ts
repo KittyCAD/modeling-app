@@ -546,9 +546,7 @@ extrude002 = extrude(profile002, length = 150)`
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     // Locators
-    const projectsHeading = page.getByRole('heading', {
-      name: 'Projects',
-    })
+    const projectsHeading = page.getByRole('heading', { level: 1 })
     const projectLink = page.getByRole('link', { name: 'bracket' })
     const networkHealthIndicator = page.getByTestId(/network-toggle/)
 

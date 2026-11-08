@@ -44,6 +44,8 @@ export function createFileOperationsServices(
   const fileSystem = createCloudFileSystem(paths, config)
   const { projects } = fileSystem
   const runtime = createFileOperationsRuntime(fileSystem, {
+    // Cloud paths remain case-sensitive on every desktop platform.
+    caseInsensitivePaths: false,
     atomicFileReads: true,
     captureMutationGuard: fileSystem.captureMutationGuard,
   })
