@@ -143,6 +143,14 @@ const darkTheme = EditorView.theme(
   }
 )
 
+/** Theme-gated KCL palettes for editors whose visual theme is managed separately. */
+export const editorKclHighlight = [
+  syntaxHighlighting(
+    HighlightStyle.define(baseKclHighlights.specs, { themeType: 'light' })
+  ),
+  syntaxHighlighting(darkKclHighlights),
+]
+
 /**
  * Nearly-empty themes that just mark themselves as light or dark
  * so our {@link syntaxHighlightingExtension} can apply its styling.
@@ -224,7 +232,9 @@ const darkMarkdownHighlights = HighlightStyle.define(
  * also active.
  */
 export const editorMarkdownHighlight = {
-  light: syntaxHighlighting(baseMarkdownHighlights),
+  light: syntaxHighlighting(
+    HighlightStyle.define(baseMarkdownHighlights.specs, { themeType: 'light' })
+  ),
   dark: syntaxHighlighting(darkMarkdownHighlights),
 }
 /** Compartment to allow us to reconfigure CodeMirror's theme dynamically outside of React */
