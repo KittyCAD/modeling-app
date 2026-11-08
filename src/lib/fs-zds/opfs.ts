@@ -1,6 +1,7 @@
 import path from 'path'
 import { reportClientError } from '@src/lib/clientErrors'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { conservativePathLockKey } from '@src/lib/fileSystem/pathLocking'
 // The Origin Private File System. Used for browser environments.
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { resolveOPFSHandle as walk } from '@src/lib/fs-zds/opfsHandle'
@@ -427,10 +428,31 @@ const access = async (_path: string, _bitflags: number): Promise<undefined> => {
   return undefined
 }
 
-const isSameEntry = async (source: string, destination: string) => {
+const isSameEntry = async (
+  source: string,
+  destination: string
+): Promise<boolean> => {
   const [left, right] = await Promise.all([walk(source), walk(destination)])
   if (!left || !right) return Promise.reject('ENOENT')
-  return left.isSameEntry(right)
+  if (await left.isSameEntry(right)) return true
+  if (left.kind !== right.kind) return false
+
+  // WebKit compares handle path strings, so aliases on macOS can compare false.
+  // OPFS has no links: two successful lookups in the same directory identify
+  // one entry when its listing contains exactly one matching folded name.
+  const sourceParent = path.dirname(source)
+  const destinationParent = path.dirname(destination)
+  if (sourceParent === source || destinationParent === destination) return false
+  const key = conservativePathLockKey(path.basename(source))
+  if (key !== conservativePathLockKey(path.basename(destination))) return false
+  if (!(await isSameEntry(sourceParent, destinationParent))) return false
+  const parent = await walk(sourceParent)
+  if (!(parent instanceof FileSystemDirectoryHandle)) return false
+  let matches = 0
+  for await (const [name] of parent.entries()) {
+    if (conservativePathLockKey(name) === key) matches++
+  }
+  return matches === 1
 }
 
 // Kind of a misnomer coming from NodeJS. This should be called `move`.
@@ -456,7 +478,7 @@ const rename = async (
     return
   }
   const target = await walk(targetPath)
-  if (target && (await handle.isSameEntry(target)))
+  if (target && (await isSameEntry(sourcePath, targetPath)))
     return Promise.reject('ENOTSUP')
 
   if (handle instanceof FileSystemFileHandle) {

@@ -298,6 +298,65 @@ describe('opfs', () => {
     }
   )
 
+  test.each([
+    ['source.kcl', 'Source.kcl', false],
+    ['caf\u00e9.kcl', 'cafe\u0301.kcl', false],
+    ['parts', 'Parts', true],
+    ['caf\u00e9', 'cafe\u0301', true],
+  ])(
+    'recognizes %s aliases when WebKit compares handle spellings',
+    async (name, alias, directory) => {
+      const project = addProjectWithMeta('{"mtimeMs":1}')
+      const entry = directory
+        ? project.addDirectory(name)
+        : project.addFile(name, 'original bytes')
+      const file =
+        entry instanceof MockFileSystemDirectoryHandle
+          ? entry.addFile('part.kcl', 'original bytes')
+          : entry
+      vi.spyOn(entry, 'isSameEntry').mockResolvedValue(false)
+      const lookupFile = project.getFileHandle.bind(project)
+      const lookupDirectory = project.getDirectoryHandle.bind(project)
+      vi.spyOn(project, 'getFileHandle').mockImplementation(
+        (requested, options) =>
+          lookupFile(requested === alias ? name : requested, options)
+      )
+      vi.spyOn(project, 'getDirectoryHandle').mockImplementation(
+        (requested, options) =>
+          lookupDirectory(requested === alias ? name : requested, options)
+      )
+      const opfs = await getOpfs()
+      await expect(
+        opfs.impl.isSameEntry?.(
+          path.join(projectPath, name),
+          path.join(projectPath, alias)
+        )
+      ).resolves.toBe(true)
+      // A browser without native move must reject rather than copy and delete
+      // the same entry through its other spelling.
+      await expect(
+        opfs.impl.rename(
+          path.join(projectPath, name),
+          path.join(projectPath, alias)
+        )
+      ).rejects.toBe('ENOTSUP')
+      expect(await (await file.getFile()).text()).toBe('original bytes')
+    }
+  )
+
+  test('does not confuse distinct case-sensitive entries with aliases', async () => {
+    const project = addProjectWithMeta('{"mtimeMs":1}')
+    project.addFile('source.kcl', 'first')
+    project.addFile('Source.kcl', 'second')
+    const opfs = await getOpfs()
+    await expect(
+      opfs.impl.isSameEntry?.(
+        path.join(projectPath, 'source.kcl'),
+        path.join(projectPath, 'Source.kcl')
+      )
+    ).resolves.toBe(false)
+  })
+
   test('preserves an aliased entry when native move is unavailable', async () => {
     const project = addProjectWithMeta('{"mtimeMs":1}')
     const file = project.addFile('source.kcl', 'original bytes')
