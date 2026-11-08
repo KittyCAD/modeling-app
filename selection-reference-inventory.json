@@ -327,6 +327,24 @@
       ],
       "infrastructure_failures": "Latest failed language-server, E2E, build-app, benchmark and interaction-performance jobs fail on Electron, Binaryen or CodSpeed downloads (HTTP 504/download errors). The circular-dependency job also fails during npm installation before analysis.",
       "named_and_scope_cases_passed": 36
+    },
+    "ci_reference_followup": {
+      "investigated_head": "9fd724b9218a0d6b8179834df015dce06312690d",
+      "dependency_fix": "Keep ownership lookup in artifactGraph and AST construction in selectionReferences. Move sketchOnExtrudedFace beside sketchBlockOnExtrudedFace so general AST utilities no longer import face codemods. The circular-dependency baseline remains unchanged.",
+      "alias_fix": "An older semantic artifact ID now resolves through its physical body to the latest available alias. The edit cutoff still excludes later aliases. The new unit regression fails before the fix; two engine integration cases execute generated Booleans for the unchanged legacy and sketch-block fixtures.",
+      "e2e_expectations": "Use body.sketch.tags and body.faces in generated selector expectations; use the latest body for repeated treatments and Booleans. Normalize whitespace where qualified names cause line wrapping. Wait for model idle and focus the feature-tree row before the fillet Delete shortcut.",
+      "unit_tests_passed": 1986,
+      "integration_cases_verified": 169,
+      "web_e2e_cases_verified": 20,
+      "validation_note": "The 142 AST/ownership/source-edge cases, 25 Boolean cases and two alias cases passed in targeted runs. Twenty distinct browser flows passed across serial runs and focused rechecks, including creation, editing and deletion.",
+      "limits": "Packaged Electron specs were not run locally; their selector expectations were checked against CI output. Parallel local browser attempts encountered canvas/context failures; serial focused runs were stable.",
+      "static_checks": [
+        "TypeScript",
+        "ESLint on changed files",
+        "Biome formatting",
+        "circular-deps:diff with unchanged known/circular.txt",
+        "regenerated bindings"
+      ]
     }
   },
   "bounds_and_remaining_gaps": [

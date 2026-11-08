@@ -509,7 +509,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [region001.tags.line3, capEnd001]
+            sideFaces = [extrude001.sketch.tags.line3, extrude001.faces.capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -545,7 +545,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [region001.tags.line3, capEnd001]
+            sideFaces = [extrude001.sketch.tags.line3, extrude001.faces.capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -760,8 +760,8 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], radius=5,)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[extrude001.sketch.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
+    const secondFilletDeclaration = `fillet002 = fillet(fillet001, edges=[{sideFaces=[extrude001.sketch.tags.line2,extrude001.faces.capStart001]}], radius=5,)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
@@ -914,9 +914,18 @@ extrude001 = extrude(region001, length = -12)`
           1
         )
         await operationButton.click({ button: 'left' })
-        await page.keyboard.press('Delete')
+        await expect
+          .poll(() =>
+            page.evaluate(() =>
+              window.app.singletons.kclManager.modelingState?.matches('idle')
+            )
+          )
+          .toBe(true)
+        await operationButton.press('Delete')
         await page.waitForTimeout(500)
-        await editor.expectEditor.not.toContain(secondFilletDeclaration)
+        await editor.expectEditor.not.toContain(secondFilletDeclaration, {
+          shouldNormalise: true,
+        })
       })
     })
   })
@@ -1315,7 +1324,7 @@ extrude001 = extrude(region001, length = 5)`
 
       expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
       expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
+        'edges=[{sideFaces=[extrude001.sketch.tags.line1,extrude001.sketch.tags.line3]}]'
       )
       expect(normalizedCode).toContain('radius=1000,')
       expect(normalizedCode).not.toContain('tags=[')
@@ -1345,8 +1354,8 @@ sketch001 = sketch(on = XY) {
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], length=5,)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], length=5,)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[extrude001.sketch.tags.line2,extrude001.faces.capEnd001]}], length=5,)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(chamfer001, edges=[{sideFaces=[extrude001.sketch.tags.line2,extrude001.faces.capStart001]}], length=5,)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 205 }
@@ -1708,13 +1717,13 @@ extrude001 = extrude(region001, length = 30)`
     const testPoint = { x: 575, y: 200 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
+      'shell001 = shell(extrude001, faces = extrude001.faces.capEnd001, thickness = 5)'
     const shellDeclaration2 =
-      'shell001 = shell(extrude001, faces = capStart001, thickness = 5)'
+      'shell001 = shell(extrude001, faces = extrude001.faces.capStart001, thickness = 5)'
     const secondaryShellFaceDeclaration =
       'extrude001 = extrude(profile001, length = 500, tagStart = $capStart001)'
     const editedShellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
+      'shell001 = shell(extrude001, faces = extrude001.faces.capEnd001, thickness = 2)'
     const secondaryShellCode = `sketch001 = startSketchOn(-XZ)
 profile001 = startProfile(sketch001, at = [-219, 25])
   |> angledLine(angle = 0deg, length = 488, tag = $rectangleSegmentA001)
@@ -1745,7 +1754,9 @@ extrude001 = extrude(profile001, length = 500)`
 
     await test.step(`Confirm code is added to the editor`, async () => {
       await scene.settled()
-      await editor.expectEditor.toContain(shellDeclaration)
+      await editor.expectEditor.toContain(shellDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
         activeLines: [shellDeclaration],
@@ -1764,7 +1775,9 @@ extrude001 = extrude(profile001, length = 500)`
       await scene.settled()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(editedShellDeclaration)
+      await editor.expectEditor.toContain(editedShellDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
         activeLines: [editedShellDeclaration],
@@ -1777,7 +1790,9 @@ extrude001 = extrude(profile001, length = 500)`
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
       await scene.settled()
-      await editor.expectEditor.not.toContain(shellDeclaration)
+      await editor.expectEditor.not.toContain(shellDeclaration, {
+        shouldNormalise: true,
+      })
     })
     await test.step('Replace modeling code with secondary shell snippet', async () => {
       await editor.openPane()
@@ -1811,7 +1826,9 @@ extrude001 = extrude(profile001, length = 500)`
     await test.step('Confirm secondary shell code exists without diagnostics', async () => {
       await editor.openPane()
       await editor.expectEditor.toContain(secondaryShellFaceDeclaration)
-      await editor.expectEditor.toContain(shellDeclaration2)
+      await editor.expectEditor.toContain(shellDeclaration2, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
         activeLines: [shellDeclaration2],
@@ -1835,7 +1852,7 @@ sketch001 = sketch(on = XZ) {
 }
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 30)`
-    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
+    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = extrude001.faces.capEnd001)`
     await homePage.goToModelingScene()
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
@@ -1859,7 +1876,9 @@ extrude001 = extrude(region001, length = 30)`
 
     await test.step(`Confirm code is added to the editor`, async () => {
       await scene.settled()
-      await editor.expectEditor.toContain(deleteDeclaration)
+      await editor.expectEditor.toContain(deleteDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     await test.step('Delete delete face via feature tree selection', async () => {
@@ -1871,7 +1890,9 @@ extrude001 = extrude(region001, length = 30)`
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
       await scene.settled()
-      await editor.expectEditor.not.toContain(deleteDeclaration)
+      await editor.expectEditor.not.toContain(deleteDeclaration, {
+        shouldNormalise: true,
+      })
     })
   })
 
@@ -1923,7 +1944,8 @@ chamfer001 = chamfer(
 
     await editor.expectEditor.toContain('tag = $chamferFace01')
     await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
+      'surface001 = deleteFace(chamfer001, faces = chamfer001.faces.chamferFace01)',
+      { shouldNormalise: true }
     )
   })
 
@@ -1979,7 +2001,8 @@ hide(sketch001)`
 
     await editor.expectEditor.toContain('tag = $chamferFace01')
     await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
+      'surface001 = deleteFace(chamfer001, faces = chamfer001.faces.chamferFace01)',
+      { shouldNormalise: true }
     )
   })
 
@@ -2037,7 +2060,8 @@ hide(sketch001)`
 
     await editor.expectEditor.toContain('tag = $filletFace01')
     await editor.expectEditor.toContain(
-      'surface001 = deleteFace(fillet001, faces = filletFace01)'
+      'surface001 = deleteFace(fillet001, faces = fillet001.faces.filletFace01)',
+      { shouldNormalise: true }
     )
   })
 
@@ -2071,14 +2095,14 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [region001.tags.line1, capEnd001]
+    sideFaces = [extrude001.sketch.tags.line1, extrude001.faces.capEnd001]
   },
 )`
     const newCodeToFindAfterEdit = `revolve001 = revolve(
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [region001.tags.line1, capEnd001]
+    sideFaces = [extrude001.sketch.tags.line1, extrude001.faces.capEnd001]
   },
 )`
 
@@ -2180,7 +2204,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     await expect(modelingDialog.selection('Objects')).toHaveText('1 helix')
 
     await expect(modelingDialog.input('x')).toHaveText('5')
-    await modelingDialog.input('x').fill('20')
+    await modelingDialog.fillInput('x', '20')
 
     await modelingDialog.submit()
     await scene.settled()
@@ -2217,7 +2241,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   |> ${secondSurfaceEdge}
   |> extrude(length = 2, bodyType = SURFACE)
   |> flipSurface()`
-    const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = seg01),  getBoundedEdge(profile002, edge = seg02)])`
+    const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = profile001.sketch.tags.seg01),  getBoundedEdge(profile002, edge = profile002.sketch.tags.seg02)])`
 
     async function selectEdgesFromBothSurfaces() {
       await editor.selectText(firstSurfaceEdge)
@@ -2252,7 +2276,9 @@ profile002 = startProfile(sketch002, at = [-1, 0])
     })
 
     await test.step('Check blend code was added', async () => {
-      await editor.expectEditor.toContain(blendDeclaration)
+      await editor.expectEditor.toContain(blendDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     await test.step('Delete blend via feature tree selection', async () => {
@@ -2265,7 +2291,9 @@ profile002 = startProfile(sketch002, at = [-1, 0])
       await operationButton.click()
       await page.keyboard.press('Delete')
       await scene.settled()
-      await editor.expectEditor.not.toContain(blendDeclaration)
+      await editor.expectEditor.not.toContain(blendDeclaration, {
+        shouldNormalise: true,
+      })
     })
   })
 
@@ -2955,7 +2983,10 @@ extrude001 = extrude(region001, length = 30)`
         await scene.settled()
         await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::flatness(')
-        await editor.expectEditor.toContain('faces = [capEnd001]')
+        await editor.expectEditor.toContain(
+          'faces = [extrude001.faces.capEnd001]',
+          { shouldNormalise: true }
+        )
         await editor.expectEditor.toContain('tolerance = 0.1in')
         await editor.expectEditor.toContain('precision = 5')
         await editor.expectEditor.toContain('framePosition = [10, 10]')
@@ -3032,7 +3063,10 @@ extrude001 = extrude(region001, length = 30)`
         await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain('gdt::flatness(')
-        await editor.expectEditor.toContain('faces = [capEnd001]')
+        await editor.expectEditor.toContain(
+          'faces = [extrude001.faces.capEnd001]',
+          { shouldNormalise: true }
+        )
         await editor.expectEditor.toContain('tolerance = 0.2in')
         await editor.expectEditor.toContain('precision = 3')
         await editor.expectEditor.toContain('framePosition = [20, 30]')
@@ -3155,7 +3189,10 @@ extrude001 = extrude(region001, length = 30)`
         await scene.settled()
         await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::datum(')
-        await editor.expectEditor.toContain('face = capEnd001')
+        await editor.expectEditor.toContain(
+          'face = extrude001.faces.capEnd001',
+          { shouldNormalise: true }
+        )
         await editor.expectEditor.toContain('name = "A"')
         await editor.expectEditor.toContain('framePosition = [5, 0]')
         await editor.expectEditor.toContain('framePlane = XZ')
@@ -3219,7 +3256,10 @@ extrude001 = extrude(region001, length = 30)`
         await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain('gdt::datum(')
-        await editor.expectEditor.toContain('face = capEnd001')
+        await editor.expectEditor.toContain(
+          'face = extrude001.faces.capEnd001',
+          { shouldNormalise: true }
+        )
         await editor.expectEditor.toContain('name = "B"')
         await editor.expectEditor.toContain('framePosition = [10, 5]')
         await editor.expectEditor.toContain('framePlane = YZ')
@@ -3306,7 +3346,7 @@ extrude001 = extrude(region001, length = 10)`
         `extrude001 = extrude(region001, length = 10, tagEnd = $capEnd001)
 hole001 = hole::hole(
   extrude001,
-  face = capEnd001,
+  face = extrude001.faces.capEnd001,
   cutAt = [0, 0],
   holeBottom = hole::flat(),
   holeBody = hole::blind(depth = 2, diameter = 1),
@@ -3349,7 +3389,7 @@ hole001 = hole::hole(
       await editor.expectEditor.toContain(
         `hole001 = hole::hole(
   extrude001,
-  face = capEnd001,
+  face = extrude001.faces.capEnd001,
   cutAt = [2, 2],
   holeBottom =   hole::flat(),
   holeBody =   hole::blind(depth = 2, diameter = 1),

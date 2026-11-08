@@ -282,7 +282,7 @@ extrude001 = extrude(profile001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [seg01,capEnd001]
+            sideFaces = [extrude001.sketch.tags.seg01,extrude001.faces.capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -317,7 +317,7 @@ extrude001 = extrude(profile001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [seg01,capEnd001]
+            sideFaces = [extrude001.sketch.tags.seg01,extrude001.faces.capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -543,7 +543,7 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[seg01,extrude001.faces.capEnd001]}], radius=5`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[extrude001.sketch.tags.seg01,extrude001.faces.capEnd001]}], radius=5`
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -695,9 +695,9 @@ extrude001 = extrude(sketch001, length = 30)`
     const testPoint = { x: 575, y: 200 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
+      'shell001 = shell(extrude001, faces = extrude001.faces.capEnd001, thickness = 5)'
     const editedShellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
+      'shell001 = shell(extrude001, faces = extrude001.faces.capEnd001, thickness = 2)'
 
     await test.step(`Fill the modeling dialog without preselected faces`, async () => {
       await editor.closePane()
@@ -715,7 +715,9 @@ extrude001 = extrude(sketch001, length = 30)`
 
     await test.step(`Confirm code is added to the editor`, async () => {
       await scene.settled()
-      await editor.expectEditor.toContain(shellDeclaration)
+      await editor.expectEditor.toContain(shellDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
         activeLines: [shellDeclaration],
@@ -735,7 +737,9 @@ extrude001 = extrude(sketch001, length = 30)`
       await scene.settled()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(editedShellDeclaration)
+      await editor.expectEditor.toContain(editedShellDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
         activeLines: [editedShellDeclaration],
@@ -749,7 +753,9 @@ extrude001 = extrude(sketch001, length = 30)`
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
       await scene.settled()
-      await editor.expectEditor.not.toContain(shellDeclaration)
+      await editor.expectEditor.not.toContain(shellDeclaration, {
+        shouldNormalise: true,
+      })
     })
   })
 
@@ -766,7 +772,7 @@ extrude001 = extrude(sketch001, length = 30)`
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
 extrude001 = extrude(sketch001, length = 30)`
-    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
+    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = extrude001.faces.capEnd001)`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -789,7 +795,9 @@ extrude001 = extrude(sketch001, length = 30)`
 
     await test.step(`Confirm code is added to the editor`, async () => {
       await scene.settled()
-      await editor.expectEditor.toContain(deleteDeclaration)
+      await editor.expectEditor.toContain(deleteDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     await test.step('Delete delete face via feature tree selection', async () => {
@@ -801,7 +809,9 @@ extrude001 = extrude(sketch001, length = 30)`
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
       await scene.settled()
-      await editor.expectEditor.not.toContain(deleteDeclaration)
+      await editor.expectEditor.not.toContain(deleteDeclaration, {
+        shouldNormalise: true,
+      })
     })
   })
 
@@ -1575,7 +1585,10 @@ extrude001 = extrude(sketch001, length = 30)
         await scene.settled()
         await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::flatness(')
-        await editor.expectEditor.toContain('faces = [capEnd001]')
+        await editor.expectEditor.toContain(
+          'faces = [extrude001.faces.capEnd001]',
+          { shouldNormalise: true }
+        )
         await editor.expectEditor.toContain('tolerance = 0.1in')
         await editor.expectEditor.toContain('precision = 5')
         await editor.expectEditor.toContain('framePosition = [10, 10]')
@@ -1652,7 +1665,10 @@ extrude001 = extrude(sketch001, length = 30)
         await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain('gdt::flatness(')
-        await editor.expectEditor.toContain('faces = [capEnd001]')
+        await editor.expectEditor.toContain(
+          'faces = [extrude001.faces.capEnd001]',
+          { shouldNormalise: true }
+        )
         await editor.expectEditor.toContain('tolerance = 0.2in')
         await editor.expectEditor.toContain('precision = 3')
         await editor.expectEditor.toContain('framePosition = [20, 30]')
@@ -1773,7 +1789,10 @@ extrude001 = extrude(sketch001, length = 30)
         await scene.settled()
         await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::datum(')
-        await editor.expectEditor.toContain('face = capEnd001')
+        await editor.expectEditor.toContain(
+          'face = extrude001.faces.capEnd001',
+          { shouldNormalise: true }
+        )
         await editor.expectEditor.toContain('name = "A"')
         await editor.expectEditor.toContain('framePosition = [5, 0]')
         await editor.expectEditor.toContain('framePlane = XZ')
@@ -1837,7 +1856,10 @@ extrude001 = extrude(sketch001, length = 30)
         await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain('gdt::datum(')
-        await editor.expectEditor.toContain('face = capEnd001')
+        await editor.expectEditor.toContain(
+          'face = extrude001.faces.capEnd001',
+          { shouldNormalise: true }
+        )
         await editor.expectEditor.toContain('name = "B"')
         await editor.expectEditor.toContain('framePosition = [10, 5]')
         await editor.expectEditor.toContain('framePlane = YZ')
@@ -1928,7 +1950,7 @@ profile001 = startProfile(sketch001, at = [-5, -5])
 extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 hole001 = hole::hole(
   extrude001,
-  face = capEnd001,
+  face = extrude001.faces.capEnd001,
   cutAt = [0, 0],
   holeBottom =   hole::flat(),
   holeBody =   hole::blind(depth = 2, diameter = 1),
@@ -1971,7 +1993,7 @@ hole001 = hole::hole(
       await editor.expectEditor.toContain(
         `hole001 = hole::hole(
   extrude001,
-  face = capEnd001,
+  face = extrude001.faces.capEnd001,
   cutAt = [2, 2],
   holeBottom =   hole::flat(),
   holeBody =   hole::blind(depth = 2, diameter = 1),

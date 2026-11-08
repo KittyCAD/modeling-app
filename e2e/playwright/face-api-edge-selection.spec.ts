@@ -102,9 +102,13 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
       // Assert code contains revolve
       await editor.expectEditor.toContain(`revolve`)
-      await editor.expectEditor.toContain(`sideFaces = [seg01]`)
       await editor.expectEditor.toContain(
-        `endFaces = [rectangleSegmentA002, seg02]`
+        `sideFaces = [extrude002.sketch.tags.seg01]`,
+        { shouldNormalise: true }
+      )
+      await editor.expectEditor.toContain(
+        `endFaces = [extrude002.sketch.tags.rectangleSegmentA002, extrude002.sketch.tags.seg02]`,
+        { shouldNormalise: true }
       )
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
