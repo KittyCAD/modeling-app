@@ -332,7 +332,9 @@ describe.each([
     )
     vi.useFakeTimers()
     await vi.advanceTimersByTimeAsync(7_000)
-    expect(await fs.readFile(file, 'utf8')).toBe('@settings(kclVersion = 3.0)\n')
+    expect(await fs.readFile(file, 'utf8')).toBe(
+      '@settings(kclVersion = 3.0)\n'
+    )
     await fs.writeFile(file, encoder.encode('saved while downloading'))
     expect(api.updateRemoteProject).toHaveBeenCalledOnce()
     gate.resolve(new ArrayBuffer(0))
