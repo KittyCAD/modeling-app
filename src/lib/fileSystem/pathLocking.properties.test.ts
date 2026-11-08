@@ -1,5 +1,6 @@
 import {
   comparePathLockKeys,
+  conservativePathLockKey,
   type PathLockRequirement,
   pathLockRequirements,
 } from '@src/lib/fileSystem/pathLocking'
@@ -137,4 +138,34 @@ describe('filesystem path lock planning', () => {
       })
     )
   })
+})
+
+it('gives case and canonical Unicode aliases the same stable lock ID', () => {
+  fc.assert(
+    fc.property(
+      fc.array(
+        fc.constantFrom(
+          'a',
+          'Z',
+          '\u00e9',
+          '\u03a3',
+          '\u03c2',
+          '\u00df',
+          '\u1e9e',
+          '\u0130',
+          '空'
+        ),
+        { minLength: 1, maxLength: 20 }
+      ),
+      (letters) => {
+        const path = `/projects/${letters.join('')}.kcl`
+        const key = conservativePathLockKey(path)
+        expect(conservativePathLockKey(path.normalize('NFC'))).toBe(key)
+        expect(conservativePathLockKey(path.normalize('NFD'))).toBe(key)
+        expect(conservativePathLockKey(path.toLowerCase())).toBe(key)
+        expect(conservativePathLockKey(path.toUpperCase())).toBe(key)
+        expect(conservativePathLockKey(key)).toBe(key)
+      }
+    )
+  )
 })
