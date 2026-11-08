@@ -25,6 +25,8 @@ import {
   editorVisualTheme,
 } from '@src/editor/plugins/theme'
 import usePlatform from '@src/hooks/usePlatform'
+import { useIsOffline } from '@src/hooks/network/useIsOffline'
+import { isOffline } from '@src/lib/networkStatus'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import {
   type ActiveTextFile,
@@ -88,10 +90,25 @@ export const EditorPane = (props: AreaTypeComponentProps) => {
 export const EditorPaneContents = () => {
   useSignals()
   const { kclManager } = useSingletons()
+  const app = useApp()
+  const offline = useIsOffline()
+  const readOnly = Boolean(
+    offline && app.projectSignal.value?.projectIORefSignal.value.cloudProjectId
+  )
+  const editorPath = kclManager.path
   const activeTextFile = activeTextFileSignal.value
   const { isFileLoading } = useContext(RouteProviderContext)
   const loading = isFileLoading || activeTextFile?.status === 'loading'
   const editorParent = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    kclManager.editorView.dispatch({
+      effects: kclManager.cloudReadOnlyCompartment.reconfigure([
+        EditorState.readOnly.of(readOnly),
+        EditorView.editable.of(!readOnly),
+      ]),
+    })
+  }, [kclManager, editorPath, readOnly])
 
   // When this pane unmounts (e.g. the Code pane is closed), stop showing the
   // text file so a KCL file is shown again the next time it opens.
@@ -112,7 +129,7 @@ export const EditorPaneContents = () => {
     <div className="relative h-full" aria-busy={loading}>
       <div className="h-full" inert={loading}>
         {activeTextFile ? (
-          <TextFileEditor activeTextFile={activeTextFile} />
+          <TextFileEditor activeTextFile={activeTextFile} readOnly={readOnly} />
         ) : (
           <div
             id="code-mirror-override"
@@ -157,6 +174,7 @@ const textFileEditorTheme = EditorView.theme({
 
 /** Compartment so theme changes reconfigure in place instead of recreating the view. */
 const textThemeCompartment = new Compartment()
+const textReadOnlyCompartment = new Compartment()
 
 /**
  * Keep the visual theme and syntax colors in one compartment so they update
@@ -181,11 +199,14 @@ function textEditorThemeExtensions(theme: 'light' | 'dark', path: string) {
  */
 function TextFileEditor({
   activeTextFile,
+  readOnly,
 }: {
   activeTextFile: ActiveTextFile
+  readOnly: boolean
 }) {
   useSignals()
-  const { commands, fileOperations, settings, registry, project, projectSession } = useApp()
+  const app = useApp()
+  const { commands, fileOperations, settings, registry, project, projectSession } = app
   const settingsValues = settings.useSettings()
   const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
   const editorParent = useRef<HTMLDivElement>(null)
@@ -205,6 +226,15 @@ function TextFileEditor({
       state: EditorState.create({
         doc: activeTextFile.text,
         extensions: [
+          textReadOnlyCompartment.of([]),
+          EditorState.transactionFilter.of((transaction) =>
+            transaction.docChanged &&
+            app.projectSignal.peek()?.projectIORefSignal.peek()
+              .cloudProjectId &&
+            isOffline()
+              ? []
+              : transaction
+          ),
           textThemeCompartment.of(
             textEditorThemeExtensions(resolvedTheme, path)
           ),
@@ -253,6 +283,20 @@ function TextFileEditor({
       ),
     })
   }, [resolvedTheme, activeTextFile.path])
+
+  useEffect(() => {
+    viewRef.current?.dispatch({
+      effects: textReadOnlyCompartment.reconfigure([
+        EditorState.readOnly.of(readOnly),
+        EditorView.editable.of(!readOnly),
+      ]),
+    })
+  }, [
+    readOnly,
+    activeTextFile.path,
+    activeTextFile.status,
+    activeTextFile.text,
+  ])
 
   if (activeTextFile.status === 'loading') {
     return null

@@ -2,9 +2,11 @@ import { useSignals } from '@preact/signals-react/runtime'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import { reportRejection } from '@src/lib/trap'
+import { useIsOffline } from '@src/hooks/network/useIsOffline'
 
 export function FileSaveStatus({ app, className }: AppHeaderItemProps) {
   useSignals()
+  const offline = useIsOffline()
   const cloud = app.registry.get(cloudStorageService)
   const path = app.projectSignal.value?.path
   if (!path) return null
@@ -40,6 +42,12 @@ export function FileSaveStatus({ app, className }: AppHeaderItemProps) {
         shouldSyncRust: false,
       })
   }
+  if (isCloud && offline)
+    return (
+      <span role="status" className={className}>
+        Offline. Cloud project is read-only.
+      </span>
+    )
   if (!status || status.state === 'saved') return null
   return (
     <span role="status" className={className}>
