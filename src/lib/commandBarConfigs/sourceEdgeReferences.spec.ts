@@ -1465,3 +1465,75 @@ ${
   },
   60_000
 )
+
+it.each([0, 1, 2])(
+  'preserves cap instance %i when creating a legacy sketch after patterning',
+  async (copyIndex) => {
+    const { sketchOnExtrudedFace } = await import('@src/lang/modifyAst')
+    const { addTagForSketchOnFace } = await import('@src/lang/std/sketch')
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+p = startSketchOn(XY) |> startProfile(at = [0, 0]) |> line(end = [20, 0]) |> line(end = [0, 20]) |> line(end = [-20, 0]) |> close()
+body = extrude(p, length = 10)
+copies = patternLinear3d(body, instances = 3, distance = 40, axis = X)
+`
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    const body = world.kclManager.variables.body
+    if (body?.type !== 'Solid') throw new Error('missing body')
+    const face = [...artifactGraph.values()].find(
+      (a) => a.type === 'cap' && a.subType === 'end'
+    )
+    if (!face) throw new Error('missing cap')
+    const copiedFace =
+      copyIndex === 0
+        ? face
+        : [...artifactGraph.values()].filter(
+            (a) => a.type === 'primitiveFace' && a.sourceFaceId === face.id
+          )[copyIndex - 1]
+    if (!copiedFace) throw new Error('missing copied cap')
+    const plane = await selectionBodyFace(
+      copiedFace.id,
+      artifactGraph,
+      ast,
+      world.kclManager.execState,
+      {
+        sceneInfra: world.kclManager.sceneInfra,
+        rustContext: world.rustContext,
+        sceneEntitiesManager: world.kclManager.sceneEntitiesManager,
+        wasmInstance: world.instance,
+      }
+    )
+    if (!plane) throw new Error('missing plane')
+    const result = sketchOnExtrudedFace(
+      ast,
+      plane.sketchPathToNode,
+      plane.extrudePathToNode,
+      addTagForSketchOnFace,
+      world.instance,
+      plane.faceInfo,
+      { faceId: copiedFace.id, artifactGraph }
+    )
+    if (isErr(result)) throw result
+    const output = recast(result.modifiedAst, world.instance)
+    if (isErr(output)) throw output
+    await getAstAndArtifactGraph(output, world.instance, world.kclManager)
+    expect(world.kclManager.errors).toEqual([])
+    expect(world.kclManager.variables.sketch001).toMatchObject({
+      type: 'Face',
+      value: {
+        id: copiedFace.id,
+        parentSolid: {
+          solidId:
+            copiedFace.type === 'primitiveFace'
+              ? copiedFace.solidId
+              : body.value.id,
+        },
+      },
+    })
+  },
+  60000
+)

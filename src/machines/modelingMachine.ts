@@ -3078,7 +3078,11 @@ export const modelingMachine = setup({
                   plane.extrudePathToNode,
                   addTagForSketchOnFace,
                   await kclManager.wasmInstancePromise,
-                  plane.faceInfo
+                  plane.faceInfo,
+                  {
+                    faceId: plane.faceId,
+                    artifactGraph: kclManager.artifactGraph,
+                  }
                 )
               : sketchOnOffsetPlane(
                   kclManager.ast,

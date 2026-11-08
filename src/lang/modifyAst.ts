@@ -1,3 +1,4 @@
+import { buildSolidsAndFacesExprs } from '@src/lang/modifyAst/faces'
 import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
@@ -313,8 +314,48 @@ export function sketchOnExtrudedFace(
   extrudePathToNode: PathToNode,
   addTagForSketchOnFace: typeof AddTagForSketchOnFaceFn,
   wasmInstance: ModuleType,
-  info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
+  info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' },
+  faceContext?: { faceId: string; artifactGraph: ArtifactGraph }
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
+  if (faceContext) {
+    // Preserve the selected instance and its face reference, including pattern indices.
+    const result = buildSolidsAndFacesExprs(
+      {
+        graphSelections: [
+          { entityRef: { type: 'face', face_id: faceContext.faceId } },
+        ],
+        otherSelections: [],
+      },
+      faceContext.artifactGraph,
+      node,
+      wasmInstance,
+      undefined,
+      { artifactTypeFilter: ['sweep', 'compositeSolid'] }
+    )
+    if (err(result)) return result
+    if (!result.solidsExpr || !result.facesExpr) {
+      return new Error('Failed to resolve the selected sketch support face.')
+    }
+    const modifiedAst = result.modifiedAst
+    const index = modifiedAst.body.length
+    modifiedAst.body.push(
+      createVariableDeclaration(
+        findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH),
+        createCallExpressionStdLibKw('startSketchOn', result.solidsExpr, [
+          createLabeledArg('face', result.facesExpr),
+        ])
+      )
+    )
+    return {
+      modifiedAst,
+      pathToNode: [
+        ['body', ''],
+        [index, 'index'],
+        ['declaration', 'VariableDeclaration'],
+        ['init', 'VariableDeclarator'],
+      ],
+    }
+  }
   let _node = { ...node }
   const newSketchName = findUniqueName(
     node,
