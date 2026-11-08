@@ -22,7 +22,6 @@ import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
@@ -92,7 +91,6 @@ import {
   appRegistryOverridesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
-import type { SnapshotFrom, Subscription } from 'xstate'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import { routerService } from '@src/registry/contracts/router'
 import { PATHS } from '@src/lib/paths'
