@@ -247,56 +247,24 @@ type ReadFileReturn<T> = T extends 'utf8' | { encoding: 'utf-8' }
   ? string
   : Uint8Array
 
-const readFileTry = async <T extends ReadFileOptions>(
-  attemptN: number,
-  handle: FileSystemFileHandle,
-  targetPath: string,
-  options?: T
-): Promise<ReadFileReturn<T>> => {
-  try {
-    const file = await handle.getFile()
-
-    if (options === 'utf8' || options?.encoding === 'utf-8') {
-      return (await file.text()) as ReadFileReturn<T>
-    }
-
-    return new Uint8Array(await file.arrayBuffer()) as ReadFileReturn<T>
-  } catch (e: unknown) {
-    if (e instanceof DOMException && e.name === 'NotReadableError') {
-      const data = await readFileViaWorker(targetPath)
-      return (
-        options === 'utf8' || options?.encoding === 'utf-8'
-          ? new TextDecoder().decode(data)
-          : data
-      ) as ReadFileReturn<T>
-    }
-    console.error(e)
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (attemptN === 3) {
-          return reject(e)
-        }
-        void readFileTry<T>(attemptN + 1, handle, targetPath, options).then(
-          resolve,
-          reject
-        )
-      }, attemptN * 1000)
-    })
-  }
-}
-
 const readFile = async <T extends ReadFileOptions>(
   targetPath: string,
   options?: T
 ): Promise<ReadFileReturn<T>> => {
-  const handle = await walk(targetPath)
-  if (handle === undefined) return Promise.reject('ENOENT')
-
-  if (handle instanceof FileSystemFileHandle) {
-    return readFileTry(0, handle, targetPath, options)
-  }
-
-  return Promise.reject()
+  // Sync access handles exclude writable streams too. Use the existing writer
+  // lock so metadata reads cannot race a write through Window.createWritable.
+  const read = () => readFileViaWorker(targetPath)
+  const data = navigator.locks
+    ? await navigator.locks.request(
+        `zds-opfs-write:${path.resolve(targetPath)}`,
+        read
+      )
+    : await read()
+  return (
+    options === 'utf8' || options?.encoding === 'utf-8'
+      ? new TextDecoder().decode(data)
+      : data
+  ) as ReadFileReturn<T>
 }
 
 const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {

@@ -1,21 +1,30 @@
 import path from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
+const workerRead = vi.hoisted(() =>
+  vi.fn<(path: string) => Promise<Uint8Array<ArrayBuffer>>>()
+)
+
 vi.mock('@src/lib/fs-zds/opfsWorker.ts?worker&inline', () => ({
   default: class MockOPFSWorker {
     onmessage: ((event: MessageEvent<unknown>) => void) | null = null
 
-    postMessage(request: { id: number; type: string }) {
+    postMessage(request: { id: number; type: string; targetPath: string }) {
       if (request.type === 'read-file')
-        queueMicrotask(() => {
-          this.onmessage?.({
-            data: {
-              id: request.id,
-              ok: true,
-              data: new TextEncoder().encode('worker bytes'),
-            },
-          } as MessageEvent<unknown>)
-        })
+        void workerRead(request.targetPath).then(
+          (data) =>
+            this.onmessage?.({
+              data: { id: request.id, ok: true, data },
+            } as MessageEvent<unknown>),
+          (error) =>
+            this.onmessage?.({
+              data: {
+                id: request.id,
+                ok: false,
+                error: error instanceof Error ? error.message : String(error),
+              },
+            } as MessageEvent<unknown>)
+        )
     }
 
     terminate() {}
@@ -136,6 +145,20 @@ describe('opfs', () => {
   beforeEach(() => {
     vi.resetModules()
     root = new MockFileSystemDirectoryHandle('')
+    workerRead.mockImplementation(async (target) => {
+      let handle: MockFileSystemDirectoryHandle | MockFileSystemFileHandle =
+        root
+      for (const name of path.resolve(target).split(path.sep).filter(Boolean)) {
+        if (!(handle instanceof MockFileSystemDirectoryHandle))
+          throw new Error('ENOENT')
+        const child = handle.children.get(name)
+        if (!child) throw new Error('ENOENT')
+        handle = child
+      }
+      if (!(handle instanceof MockFileSystemFileHandle))
+        throw new Error('EISDIR')
+      return handle.data.slice()
+    })
     vi.stubGlobal('FileSystemDirectoryHandle', MockFileSystemDirectoryHandle)
     vi.stubGlobal('FileSystemFileHandle', MockFileSystemFileHandle)
     Object.defineProperty(globalThis.navigator, 'storage', {
@@ -192,22 +215,46 @@ describe('opfs', () => {
     await opfs.impl.detach()
   })
 
-  test('propagates the final failure after retrying file reads', async () => {
-    const project = addProjectWithMeta('{"mtimeMs":1}')
-    const file = project.addFile('main.kcl', 'bytes')
-    const error = new Error('Failed file read')
-    vi.spyOn(file, 'getFile').mockRejectedValue(error)
+  test('waits for a writable stream to close before reading the same file', async () => {
+    enableWriteLocks()
+    const file = addProjectWithMeta('{"mtimeMs":1}').addFile(
+      'main.kcl',
+      'before'
+    )
+    const started = Promise.withResolvers<undefined>()
+    const release = Promise.withResolvers<undefined>()
+    const writable = await file.createWritable()
+    vi.spyOn(file, 'createWritable').mockResolvedValue({
+      ...writable,
+      close: async () => {
+        started.resolve(undefined)
+        await release.promise
+      },
+    })
     const opfs = await getOpfs()
-    vi.useFakeTimers()
-    try {
-      const reading = opfs.impl
-        .readFile(path.join(projectPath, 'main.kcl'))
-        .catch((e) => e)
-      await vi.runAllTimersAsync()
-      expect(await reading).toBe(error)
-    } finally {
-      vi.useRealTimers()
-    }
+    const target = path.join(projectPath, 'main.kcl')
+    const writing = opfs.impl.writeFile(
+      target,
+      new TextEncoder().encode('after')
+    )
+    await started.promise
+    workerRead.mockClear()
+    const reading = opfs.impl.readFile(target, 'utf8')
+    await Promise.resolve()
+    expect(workerRead).not.toHaveBeenCalled()
+    release.resolve(undefined)
+    await writing
+    await expect(reading).resolves.toBe('after')
+  })
+
+  test('propagates worker read failures', async () => {
+    addProjectWithMeta('{"mtimeMs":1}').addFile('main.kcl', 'bytes')
+    workerRead.mockRejectedValue(new Error('Failed file read'))
+    const opfs = await getOpfs()
+    await expect(
+      opfs.impl.readFile(path.join(projectPath, 'main.kcl'))
+    ).rejects.toBe('Failed file read')
+    await opfs.impl.detach()
   })
 
   test('renaming an existing file or directory to itself preserves it', async () => {
