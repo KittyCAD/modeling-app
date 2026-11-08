@@ -93,12 +93,14 @@ test(
       const project = window.app.project
       if (!project) throw new Error('Missing project')
       const original = project.reloadFilesFromStorage.bind(project)
+      const gate = Promise.withResolvers<undefined>()
       project.reloadFilesFromStorage = async (...args) => {
-        await new Promise((resolve) => setTimeout(resolve, 2_000))
+        await gate.promise
         return original(...args)
       }
       return () => {
         project.reloadFilesFromStorage = original
+        gate.resolve(undefined)
       }
     })
     try {
@@ -108,21 +110,25 @@ test(
       const firstDownload = remote.reads.downloads + 1
       await page.evaluate(() => window.dispatchEvent(new Event('focus')))
       await expect.poll(() => remote.reads.downloads).toBe(firstDownload)
+      await page.clock.install()
       for (let save = 2; save <= 3; save++) {
         remote.project.files['main.kcl'] =
           `@settings(kclVersion = 3.0)\n// external save ${save}\n`
         remote.project.revision = `save-${save}`
-        // Polling must not add another three seconds after a slow model reload.
+        // Keep the rebuild blocked through seven seconds of browser time.
+        await page.clock.fastForward(7_000)
+        // New remote revisions must remain observable while Rust rebuilding is blocked.
         await expect
           .poll(() => remote.reads.downloads, {
-            timeout: 4_200,
+            timeout: 10_000,
             intervals: [50],
           })
           .toBe(firstDownload + save - 1)
-        await expect(page.locator('.cm-content').first()).toContainText(
-          `external save ${save}`
-        )
       }
+      await release.evaluate((restore) => restore())
+      await expect(page.locator('.cm-content').first()).toContainText(
+        'external save 3'
+      )
     } finally {
       await release.evaluate((restore) => restore())
     }
