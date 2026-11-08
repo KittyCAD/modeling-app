@@ -1537,3 +1537,66 @@ copies = patternLinear3d(body, instances = 3, distance = 40, axis = X)
   },
   60000
 )
+
+it.each([0, 1, 2])(
+  'preserves primitive fallback references for body instance %i',
+  async (index) => {
+    const { getSelectionReferences } = await import('@src/lib/selections')
+    const code =
+      chainedTreatmentCode +
+      '\ncopies = patternLinear3d(fillet001, instances = 3, distance = 50mm, axis = X)\n'
+    const { artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      world.instance,
+      world.kclManager
+    )
+    expect(world.kclManager.errors).toEqual([])
+    const copies = world.kclManager.variables.copies
+    if (copies?.type !== 'HomArray') throw new Error('no copies')
+    const body = copies.value[index]
+    if (body.type !== 'Solid') throw new Error('no solid')
+    for (const type of ['face', 'edge'] as const) {
+      const refs = await getSelectionReferences({
+        graphSelections: [
+          {
+            entityRef:
+              type === 'face'
+                ? {
+                    type: 'face',
+                    face_id: '00000000-0000-0000-0000-000000000001',
+                  }
+                : {
+                    type: 'edge',
+                    side_faces: [],
+                  },
+            engineTopologyFallback: {
+              parentId: body.value.id,
+              primitiveIndex: 0,
+            },
+          },
+        ],
+        defaultPlaneSelections: [],
+        enginePrimitives: [],
+        artifactGraph,
+        engineCommandManager: world.engineCommandManager,
+        kclManager: world.kclManager,
+        wasmInstance: world.instance,
+      })
+
+      expect(refs[0]?.code).toBe(
+        `${type}Id(${index === 0 ? 'body' : `copies[${index}]`}, index = 0)`
+      )
+      await getAstAndArtifactGraph(
+        code +
+          `\nselected = ${refs[0]?.code}\nexpected = ${type}Id(copies[${index}], index = 0)\n`,
+        world.instance,
+        world.kclManager
+      )
+      expect(world.kclManager.errors).toEqual([])
+      expect(world.kclManager.variables.selected).toEqual(
+        world.kclManager.variables.expected
+      )
+    }
+  },
+  60000
+)

@@ -1601,6 +1601,10 @@ export function getVariableExprsFromSelection(
       const isBody =
         artifactForLastChildLookup.type === 'sweep' ||
         artifactForLastChildLookup.type === 'compositeSolid'
+      // A caller's broad filter must not promote a single body to a pattern.
+      const bodyTypeFilter = isBody
+        ? artifactTypeFilter?.filter((type) => type !== 'pattern')
+        : artifactTypeFilter
       const children = findAllChildrenAndOrderByPlaceInCode(
         artifactForLastChildLookup,
         artifactGraph,
@@ -1608,13 +1612,13 @@ export function getVariableExprsFromSelection(
       )
 
       if (
-        artifactTypeFilter?.includes(artifactForLastChildLookup.type) &&
+        bodyTypeFilter?.includes(artifactForLastChildLookup.type) &&
         'consumed' in artifactForLastChildLookup &&
         !artifactForLastChildLookup.consumed &&
         !hasLaterMatchingArtifact(
           children,
           artifactForLastChildLookup,
-          artifactTypeFilter
+          bodyTypeFilter
         )
       ) {
         // Use a selected, unconsumed body directly only when the ordered
@@ -1640,7 +1644,7 @@ export function getVariableExprsFromSelection(
           children,
           ast,
           wasmInstance,
-          artifactTypeFilter ??
+          bodyTypeFilter ??
             (isBody ? ['sweep', 'compositeSolid', 'edgeCut'] : undefined),
           nodeToEdit
         )
