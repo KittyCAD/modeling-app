@@ -2,6 +2,9 @@
 
 Reactive registry framework for Zoo Design Studio.
 
+An experimental [algebra sketch](./ALGEBRA.md) explores a smaller core vocabulary
+using Signals, Facets, Services, Contracts, and Slots.
+
 This package provides:
 
 - registry value specs for declarative composition
