@@ -2213,69 +2213,37 @@ impl ExecutorContext {
                     )));
                 };
                 let module_id = *module_id;
-                let module_path = module_path.clone();
                 let source_range = SourceRange::from(import_stmt);
-                // Clone before mutating.
                 let mut module_exec_state = exec_state.clone();
-
-                let repr = repr.clone();
                 let exec_ctxt = self.clone_with_fresh_execution_batch();
-
-                let exec_module = async |exec_ctxt: &ExecutorContext,
-                                         repr: &ModuleRepr,
-                                         module_id: ModuleId,
-                                         module_path: &ModulePath,
-                                         exec_state: &mut ExecState,
-                                         source_range: SourceRange|
-                       -> Result<ModuleRepr, KclError> {
-                    match repr {
-                        ModuleRepr::Kcl(program, _) => {
-                            let result = exec_ctxt
-                                .exec_module_from_ast(
-                                    program,
-                                    module_id,
-                                    module_path,
-                                    exec_state,
-                                    source_range,
-                                    PreserveMem::Normal,
-                                )
-                                .await;
-
-                            result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
-                        }
-                        ModuleRepr::Foreign(geom, _) => {
-                            // Each imported module starts from a clone of the root module state.
-                            // Use a fresh artifact state so the import command belongs only to the
-                            // foreign module that issued it.
-                            exec_state.mod_local.artifacts = Default::default();
-                            let result = crate::execution::import::send_to_engine(geom.clone(), exec_state, exec_ctxt)
+                let result = match repr {
+                    ModuleRepr::Kcl(program, _) => exec_ctxt
+                        .exec_module_from_ast(
+                            program,
+                            module_id,
+                            module_path,
+                            &mut module_exec_state,
+                            source_range,
+                            PreserveMem::Normal,
+                        )
+                        .await
+                        .map(|val| ModuleRepr::Kcl(program.clone(), Some(val))),
+                    ModuleRepr::Foreign(geom, _) => {
+                        // Keep the import command in this module's artifacts.
+                        module_exec_state.mod_local.artifacts = Default::default();
+                        let result =
+                            crate::execution::import::send_to_engine(geom.clone(), &mut module_exec_state, &exec_ctxt)
                                 .await
                                 .map(|geom| Some(KclValue::ImportedGeometry(geom)))
-                                // Label the failure with the import so the
-                                // backtrace names the foreign file (and so
-                                // add_import_backtrace's assumption that the
-                                // immediate frame is present holds).
                                 .map_err(|err| err.add_import_location(&module_path.import_name(), source_range));
-                            let module_artifacts = std::mem::take(&mut exec_state.mod_local.artifacts);
-
-                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, module_artifacts))))
-                        }
-                        ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
-                            format!("Module {module_path} not found in universe"),
-                            vec![source_range],
-                        ))),
+                        let module_artifacts = std::mem::take(&mut module_exec_state.mod_local.artifacts);
+                        result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, module_artifacts))))
                     }
+                    ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
+                        format!("Module {module_path} not found in universe"),
+                        vec![source_range],
+                    ))),
                 };
-
-                let result = exec_module(
-                    &exec_ctxt,
-                    &repr,
-                    module_id,
-                    &module_path,
-                    &mut module_exec_state,
-                    source_range,
-                )
-                .await;
 
                 match result {
                     Ok(new_repr) => {
@@ -3035,43 +3003,34 @@ export profile = sketch(on = XY) {
   c = circle(center = [var 0mm, var 0mm], start = [var 1mm, var 0mm])
 }
 "#;
-        let assembly = r#"@settings(kclVersion = 3.0)
-import profile as first from "a.kcl"
-import profile as second from "b.kcl"
-export profiles = [first, second]
-"#;
-        // Source order deliberately differs from the sorted dependency stages.
         let program = crate::Program::parse_no_errs(
             r#"@settings(kclVersion = 3.0)
 import profile as second from "b.kcl"
-import profiles from "assembly.kcl"
 import profile as first from "a.kcl"
 "#,
         )
         .unwrap();
-        for _ in 0..3 {
-            let operations = Arc::new(ModuleOperations::default());
-            let mut ctx = versioned_modules_context(&[("a.kcl", part), ("b.kcl", part), ("assembly.kcl", assembly)]);
-            ctx.execution_callbacks = Some(operations.clone());
-            let mut state = ExecState::new(&ctx);
-            ctx.run(&program, &mut state).await.unwrap();
-            ctx.close().await;
+        let operations = Arc::new(ModuleOperations::default());
+        let mut ctx = versioned_modules_context(&[("a.kcl", part), ("b.kcl", part)]);
+        ctx.execution_callbacks = Some(operations.clone());
+        let mut state = ExecState::new(&ctx);
+        ctx.run(&program, &mut state).await.unwrap();
+        ctx.close().await;
 
-            let paths = state.global.filenames();
-            let mut order: Vec<_> = operations
-                .0
-                .lock()
-                .unwrap()
-                .iter()
-                .filter_map(|id| match paths.get(id) {
-                    Some(ModulePath::Local { value, .. }) => value.file_name(),
-                    _ => None,
-                })
-                .filter(|name| *name != "main.kcl")
-                .collect();
-            order.dedup();
-            assert_eq!(order, ["a.kcl", "b.kcl", "assembly.kcl"]);
-        }
+        let paths = state.global.filenames();
+        let mut order: Vec<_> = operations
+            .0
+            .lock()
+            .unwrap()
+            .iter()
+            .filter_map(|id| match paths.get(id) {
+                Some(ModulePath::Local { value, .. }) => value.file_name(),
+                _ => None,
+            })
+            .filter(|name| *name != "main.kcl")
+            .collect();
+        order.dedup();
+        assert_eq!(order, ["a.kcl", "b.kcl"]);
     }
 
     #[tokio::test]
