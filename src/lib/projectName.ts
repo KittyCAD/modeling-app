@@ -18,7 +18,11 @@ export function getProjectDirectoryNameFromTitle(
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
-  return normalized || fallback
+  const directoryName = normalized || fallback
+  // These device names are reserved even when used as directories on Windows.
+  return /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(directoryName)
+    ? `project-${directoryName}`
+    : directoryName
 }
 
 export function getProjectTitleFromUniqueDirectoryName({

@@ -1,4 +1,5 @@
 import { setTimeout as delay } from 'node:timers/promises'
+import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { randomUUID } from 'node:crypto'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { expect, test as appTest } from '@e2e/playwright/zoo-test'
@@ -760,90 +761,306 @@ for (const kind of ['local', 'cloud'] as const) {
           )
           .toBe(healthyCode)
       })
-      test('keeps local files editable and cloud files read-only across disconnection', async ({
+      test('imports single-file samples into unique folders in the same project', async ({
         page,
         context,
       }, testInfo) => {
         const storage = await prepareStorage(kind, page, context, testInfo)
-        const root = await storage.seed('Offline editing', blankCode, {
-          'note.md': '# Note\n',
-        })
+        const root = await storage.seed('Sample destination', blankCode)
         await storage.refresh()
-        await storage.home.openProject('Offline editing')
+        await storage.home.openProject('Sample destination')
         await expectEditor(page, blankCode)
         await page.evaluate(
           (id) => window.app.layout.openPane(id),
           DefaultLayoutPaneID.Files
         )
-        await page.waitForLoadState('networkidle')
-        try {
-          await context.setOffline(true)
-          await page.waitForTimeout(7_000)
-          const code = `${blankCode}// local edit without internet\n`
-          if (kind === 'cloud') {
-            await expect(
-              page.getByText('Offline. Cloud project is read-only.', {
-                exact: true,
-              })
-            ).toBeVisible()
-            await expect(page.locator('.cm-content').first()).toHaveAttribute(
-              'contenteditable',
-              'false'
-            )
-            await expect(page.getByTestId('create-file-button')).toBeDisabled()
-            await expect(
-              page.getByTestId('create-folder-button')
-            ).toBeDisabled()
-            // A command must not bypass the disabled editor surface.
-            await page.evaluate(() => {
-              const editor = window.app.singletons.kclManager
-              editor.editorView.dispatch({
-                changes: { from: 0, insert: '// blocked\n' },
-              })
-              editor.updateCodeEditor('// blocked command\n')
-            })
-            await expectEditor(page, blankCode)
-          } else {
-            await editThroughUI(page, code)
-            await expect.poll(() => storage.read(root)).toBe(code)
-          }
-          await page
-            .getByRole('treeitem', { name: 'note.md', exact: true })
+        const cmdBar = new CmdBarFixture(page)
+        for (const folder of ['ball-bearing', 'ball-bearing-1']) {
+          await page.getByTestId('add-file-to-project-pane-button').click()
+          await cmdBar.expectCommandName('Add file to project')
+          await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText(
+            'source'
+          )
+          await page.keyboard.press('Enter')
+          await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText(
+            'sample'
+          )
+          await cmdBar
+            .selectOption({ name: 'Ball Bearing', exact: true })
             .click()
-          await expectEditor(page, '# Note\n')
-          await expect(page.locator('.cm-content').first()).toHaveAttribute(
-            'contenteditable',
-            kind === 'cloud' ? 'false' : 'true'
-          )
-          if (kind === 'local') {
-            await editThroughUI(page, '# Offline local edit\n')
+          await expect
+            .poll(() => page.evaluate(() => window.app.project?.executingPath))
+            .toBe(await storage.fs.join(root, folder, 'main.kcl'))
+          await expect(
+            page
+              .getByTestId('file-tree-item')
+              .getByText(folder, { exact: true })
+          ).toBeVisible()
+          await expect
+            .poll(() => storage.read(root, `${folder}/main.kcl`))
+            .toContain('@settings')
+          expect(await page.evaluate(() => window.app.project?.path)).toBe(root)
+          expect(await storage.read(root)).toBe(blankCode)
+        }
+        await storage.refresh()
+        await expect
+          .poll(() => storage.read(root, 'ball-bearing/main.kcl'))
+          .toContain('@settings')
+        await expect
+          .poll(() => storage.read(root, 'ball-bearing-1/main.kcl'))
+          .toContain('@settings')
+      })
+
+      test('restores deleted files through session undo and redo', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo)
+        const removedCode = `${blankCode}original = 7\n`
+        const root = await storage.seed('Deletion history', blankCode, {
+          'deleted.kcl': removedCode,
+        })
+        await storage.refresh()
+        await storage.home.openProject('Deletion history')
+        await expectEditor(page, blankCode)
+        await page.evaluate(
+          (id) => window.app.layout.openPane(id),
+          DefaultLayoutPaneID.Files
+        )
+        const deletedFile = page.getByRole('treeitem', {
+          name: 'deleted.kcl',
+          exact: true,
+        })
+        await deletedFile.click({ button: 'right' })
+        await page.getByRole('button', { name: 'Delete', exact: true }).click()
+        await expect(
+          page.getByText('You can undo this deletion.', { exact: false })
+        ).toBeVisible()
+        await page.getByTestId('delete-confirmation').click()
+        await expect(deletedFile).not.toBeAttached()
+        const undo = page.getByRole('button', {
+          name: 'arrow turn left',
+          exact: true,
+        })
+        const redo = page.getByRole('button', {
+          name: 'arrow turn right',
+          exact: true,
+        })
+        if (kind === 'cloud') {
+          await expect(undo).toBeEnabled()
+          let failHistoricalDownload = true
+          await context.route('**/versions/*/download*', async (route) => {
+            if (failHistoricalDownload) {
+              failHistoricalDownload = false
+              await route.fulfill({
+                status: 400,
+                json: { message: 'Historical download unavailable' },
+              })
+            } else await route.fallback()
+          })
+          await undo.click()
+          await expect(
+            page.getByText(/Historical download unavailable/)
+          ).toBeVisible()
+          await expect(deletedFile).not.toBeAttached()
+        }
+        await expect(undo).toBeEnabled()
+        await undo.click()
+        await expect(deletedFile).toBeVisible()
+        await expect
+          .poll(() => storage.read(root, 'deleted.kcl'))
+          .toBe(removedCode)
+        if (kind === 'cloud')
+          expect(storage.remote.downloadRequests.at(-1)).toMatchObject({
+            paths: ['deleted.kcl'],
+            selected: true,
+          })
+        await expect(redo).toBeEnabled()
+        await redo.click()
+        await expect(deletedFile).not.toBeAttached()
+        if (kind === 'cloud')
+          await expect
+            .poll(() => storage.read(root, 'deleted.kcl'))
+            .toBeUndefined()
+        else
+          await expect(
+            storage.fs.stat(await storage.fs.join(root, 'deleted.kcl'))
+          ).rejects.toBeDefined()
+        await expect(undo).toBeEnabled()
+        await undo.click()
+        await expect(deletedFile).toBeVisible()
+        await deletedFile.dblclick()
+        await expectEditor(page, removedCode)
+        expect(await storage.read(root)).toBe(blankCode)
+        await storage.refresh()
+        await expect
+          .poll(() => storage.read(root, 'deleted.kcl'))
+          .toBe(removedCode)
+      })
+
+      test('undoes deletion of a folder containing the active file and an empty folder', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo)
+        const code = `${blankCode}original = 7\n`
+        const root = await storage.seed('Folder deletion history', blankCode, {
+          'folder/active.kcl': code,
+        })
+        await storage.refresh()
+        await storage.home.openProject('Folder deletion history')
+        await expectEditor(page, blankCode)
+        await page.evaluate(
+          async ({ root, pane }) => {
+            const app = window.app
+            const empty = window.fsZds.join(root, 'folder', 'empty')
+            await app.fileOperations.createDirectory(empty)
+            await app.projectSession.refreshProject()
+            app.layout.openPane(pane)
+            await app.projectSession.openFile(
+              window.fsZds.join(root, 'folder', 'active.kcl'),
+              { projectPath: root }
+            )
+          },
+          { root, pane: DefaultLayoutPaneID.Files }
+        )
+        await expectEditor(page, code)
+        const folder = page.getByRole('treeitem', {
+          name: 'folder',
+          exact: true,
+        })
+        await folder.click({ button: 'right' })
+        await page.getByRole('button', { name: 'Delete', exact: true }).click()
+        await page.getByTestId('delete-confirmation').click()
+        await expect(folder).not.toBeAttached()
+        await expectEditor(page, blankCode)
+        const undo = page.getByRole('button', {
+          name: 'arrow turn left',
+          exact: true,
+        })
+        const redo = page.getByRole('button', {
+          name: 'arrow turn right',
+          exact: true,
+        })
+        for (const restore of [true, false, true]) {
+          await (restore ? undo : redo).click()
+          if (restore) {
+            await expect(folder).toBeVisible()
             await expect
-              .poll(() => storage.read(root, 'note.md'))
-              .toBe('# Offline local edit\n')
-          }
-          await context.setOffline(false)
+              .poll(() => storage.read(root, 'folder/active.kcl'))
+              .toBe(code)
+            expect(
+              await page.evaluate(
+                async (root) =>
+                  window.app.fileOperations.readDirectory(
+                    window.fsZds.join(root, 'folder', 'empty')
+                  ),
+                root
+              )
+            ).toEqual([])
+          } else await expect(folder).not.toBeAttached()
+        }
+        expect(await storage.read(root)).toBe(blankCode)
+        await storage.refresh()
+        await expectEditor(page, blankCode)
+        // Only file contents survive reload; the session's undo history does not.
+        await expect
+          .poll(() =>
+            page.evaluate(
+              () =>
+                window.app.project?.executingEditor.peek()?.globalHistoryView
+                  .undoDepth
+            )
+          )
+          .toBe(0)
+        await expect
+          .poll(() => storage.read(root, 'folder/active.kcl'))
+          .toBe(code)
+      })
+      test('keeps local files editable and cloud files read-only across disconnection', async ({
+      page,
+      context,
+    }, testInfo) => {
+      const storage = await prepareStorage(kind, page, context, testInfo)
+      const root = await storage.seed('Offline editing', blankCode, {
+        'note.md': '# Note\n',
+      })
+      await storage.refresh()
+      await storage.home.openProject('Offline editing')
+      await expectEditor(page, blankCode)
+      await page.evaluate(
+        (id) => window.app.layout.openPane(id),
+        DefaultLayoutPaneID.Files
+      )
+      await page.waitForLoadState('networkidle')
+      try {
+        await context.setOffline(true)
+        await page.waitForTimeout(7_000)
+        const code = `${blankCode}// local edit without internet\n`
+        if (kind === 'cloud') {
+          await expect(
+            page.getByText('Offline. Cloud project is read-only.', {
+              exact: true,
+            })
+          ).toBeVisible()
           await expect(page.locator('.cm-content').first()).toHaveAttribute(
             'contenteditable',
-            'true'
+            'false'
           )
-          await editThroughUI(page, '# Reconnected edit\n')
+          await expect(page.getByTestId('create-file-button')).toBeDisabled()
+          await expect(
+            page.getByTestId('create-folder-button')
+          ).toBeDisabled()
+          // A command must not bypass the disabled editor surface.
+          await page.evaluate(() => {
+            const editor = window.app.singletons.kclManager
+            editor.editorView.dispatch({
+              changes: { from: 0, insert: '// blocked\n' },
+            })
+            editor.updateCodeEditor('// blocked command\n')
+          })
+          await expectEditor(page, blankCode)
+        } else {
+          await editThroughUI(page, code)
+          await expect.poll(() => storage.read(root)).toBe(code)
+        }
+        await page
+          .getByRole('treeitem', { name: 'note.md', exact: true })
+          .click()
+        await expectEditor(page, '# Note\n')
+        await expect(page.locator('.cm-content').first()).toHaveAttribute(
+          'contenteditable',
+          kind === 'cloud' ? 'false' : 'true'
+        )
+        if (kind === 'local') {
+          await editThroughUI(page, '# Offline local edit\n')
           await expect
             .poll(() => storage.read(root, 'note.md'))
-            .toBe('# Reconnected edit\n')
-          await page
-            .getByRole('treeitem', { name: 'main.kcl', exact: true })
-            .click()
-          await expect(page.locator('.cm-content').first()).toHaveAttribute(
-            'contenteditable',
-            'true'
-          )
-          const finalCode = `${blankCode}// reconnected KCL edit\n`
-          await editThroughUI(page, finalCode)
-          await expect.poll(() => storage.read(root)).toBe(finalCode)
-        } finally {
-          await context.setOffline(false)
+            .toBe('# Offline local edit\n')
         }
-      })
+        await context.setOffline(false)
+        await expect(page.locator('.cm-content').first()).toHaveAttribute(
+          'contenteditable',
+          'true'
+        )
+        await editThroughUI(page, '# Reconnected edit\n')
+        await expect
+          .poll(() => storage.read(root, 'note.md'))
+          .toBe('# Reconnected edit\n')
+        await page
+          .getByRole('treeitem', { name: 'main.kcl', exact: true })
+          .click()
+        await expect(page.locator('.cm-content').first()).toHaveAttribute(
+          'contenteditable',
+          'true'
+        )
+        const finalCode = `${blankCode}// reconnected KCL edit\n`
+        await editThroughUI(page, finalCode)
+        await expect.poll(() => storage.read(root)).toBe(finalCode)
+      } finally {
+        await context.setOffline(false)
+      }
+    })
 
       if (kind === 'cloud') {
         test('resumes a cloud edit caught by disconnection without another keystroke', async ({

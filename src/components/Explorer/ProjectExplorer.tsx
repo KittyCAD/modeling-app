@@ -1,3 +1,4 @@
+import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
 import { newKclFile } from '@src/lang/project'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -18,7 +19,7 @@ import {
   NOTHING_IS_SELECTED,
   STARTING_INDEX_TO_SELECT,
 } from '@src/components/Explorer/utils'
-import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
+import { fsFileDeletion, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
@@ -33,7 +34,6 @@ import {
   getParentAbsolutePath,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
-  toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { isErr, trap, reportRejection } from '@src/lib/trap'
@@ -1026,78 +1026,42 @@ export const ProjectExplorer = ({
               isPathWithinFileExplorerEntry(file?.path, child.path) &&
               canNavigate
 
-            if (
-              app.projectSession.storageFor(project.path).deletionHistory ===
-              'storage'
-            ) {
-              void runFileTreeMutation(async () => {
-                // Storage-owned history retains the previous revision; archive entries
-                // need an archive move and an archive-based history event.
-                await fileOperations.remove(child.path)
-                if (shouldWeNavigate && app.project?.path === project.path)
-                  await app.projectSession.openFile(project.default_file, {
-                    projectPath: project.path,
+            const current = app.project
+            const cloud = registry.optional(cloudStorageService)
+            void runFileTreeMutation(async () => {
+              if (!current) return
+              const isCloud =
+                cloud && child.path.startsWith(`${cloud.root}${fsZds.sep}`)
+              for (const editor of current.editors.values()) {
+                if (!(await editor.flushWriteToFile()))
+                  return Promise.reject(
+                    new Error('Save pending edits before deleting a file.')
+                  )
+              }
+              await flushActiveTextFileWrite()
+              if (app.project !== current) return
+              const deletion = isCloud
+                ? fsFileDeletion({
+                    kind: 'cloud',
+                    projectPath: current.path,
+                    snapshot: await cloud.deletePathWithRevision(child.path),
                   })
-                toast.success('Deleted successfully')
-              })
-              return
-            }
-
-            if (shouldWeNavigate && file && file.path) {
-              const src = child.path
-              setFileTreeMutationPending(true)
-              toArchivePath(src)
-                .then((target) => {
-                  void runFileTreeMutation(async () => {
-                    await fileOperations.move(src, target)
-                    setLastRecursiveMoveTarget(target)
-                    if (app.project?.path === project.path)
-                      await app.projectSession.openFile(project.default_file, {
-                        projectPath: project.path,
-                      })
-                    toast.success('Archived successfully')
+                : fsFileDeletion({
+                    kind: 'local',
+                    projectPath: current.path,
+                    snapshot: await fileOperations.removeWithSnapshot(
+                      child.path
+                    ),
                   })
-                  kclManager.addGlobalHistoryEvent(
-                    fsArchiveFile({
-                      src,
-                      target,
-                      requestedProjectName: project.name,
-                    })
-                  )
+              if (app.project !== current) return
+              if (shouldWeNavigate)
+                await app.projectSession.openFile(project.default_file, {
+                  projectPath: project.path,
                 })
-                .catch((e) => {
-                  setFileTreeMutationPending(false)
-                  console.error(e)
-                  console.warn(
-                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
-                  )
-                })
-            } else {
-              const src = child.path
-              setFileTreeMutationPending(true)
-              toArchivePath(src)
-                .then((target) => {
-                  void runFileTreeMutation(async () => {
-                    await fileOperations.move(src, target)
-                    setLastRecursiveMoveTarget(target)
-                    toast.success('Archived successfully')
-                  })
-                  kclManager.addGlobalHistoryEvent(
-                    fsArchiveFile({
-                      src,
-                      target,
-                      requestedProjectName: project.name,
-                    })
-                  )
-                })
-                .catch((e) => {
-                  setFileTreeMutationPending(false)
-                  console.error(e)
-                  console.warn(
-                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
-                  )
-                })
-            }
+              if (deletion && app.project === current)
+                current.executingEditor.peek()?.addGlobalHistoryEvent(deletion)
+              toast.success('Deleted successfully')
+            })
           },
           onOpenInNewWindow: () => {
             window.electron?.openInNewWindow(row.path)

@@ -29,6 +29,28 @@ describe('projectName', () => {
     ).toBe('cafe-bracket-v2')
   })
 
+  it.each([
+    'CON',
+    'prn',
+    'AUX',
+    'nul',
+    'COM1',
+    'com9',
+    'LPT1',
+    'lpt9',
+    'COM¹',
+    'LPT²',
+  ])('avoids reserved Windows directory names for title %s', (title) => {
+    expect(getProjectDirectoryNameFromTitle(title, 'untitled')).toMatch(
+      /^project-/
+    )
+  })
+
+  it('keeps ordinary names and numeric suffixes outside the reserved range', () => {
+    for (const title of ['console', 'com0', 'com10', 'lpt0', 'lpt10'])
+      expect(getProjectDirectoryNameFromTitle(title, 'untitled')).toBe(title)
+  })
+
   it('falls back when the title has no directory-safe characters', () => {
     expect(getProjectDirectoryNameFromTitle('!!!', 'untitled')).toBe('untitled')
   })
