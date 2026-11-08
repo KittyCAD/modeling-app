@@ -10,6 +10,29 @@ vi.mock('@src/lib/desktop', () => ({
 }))
 
 describe('project file operations', () => {
+  it.each(['/project', '/project/', '/project/.', '/project/nested/..'])(
+    'rejects an edit targeting the project root %s before any mutation',
+    async (rootPath) => {
+      for (const contents of [null, 'replacement']) {
+        const writeFile = vi.fn()
+        const remove = vi.fn()
+        const projects = createProjectOperations({
+          operations: { ...testFileOperations, writeFile, remove },
+          wasm: vi.fn(),
+        })
+        await expect(
+          projects.applyEdits('/project', [
+            { path: '/project/keep.kcl', contents: null },
+            { path: rootPath, contents },
+          ])
+        ).rejects.toThrow('inside its project')
+        expect(writeFile).not.toHaveBeenCalled()
+        expect(remove).not.toHaveBeenCalled()
+        expect(projects.pending.value).toBe(0)
+      }
+    }
+  )
+
   it('validates all paths before writing any files', async () => {
     const writeFile = vi.fn()
     const projects = createProjectOperations({

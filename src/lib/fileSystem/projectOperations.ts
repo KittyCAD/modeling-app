@@ -225,6 +225,11 @@ export function createProjectOperations(deps: ProjectOperationsDependencies) {
         const work = async (operations: FileOperationsRegistryService) => {
           for (const edit of owned) {
             const relative = fsZds.relative(root, edit.path)
+            if (!relative) {
+              return Promise.reject(
+                new Error('File edit must target a file inside its project.')
+              )
+            }
             if (
               relative === '..' ||
               relative.startsWith(`..${fsZds.sep}`) ||
