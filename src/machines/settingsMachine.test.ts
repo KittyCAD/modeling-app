@@ -1,5 +1,5 @@
 import type { MachineManager } from '@src/lib/MachineManager'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 import * as settingsUtils from '@src/lib/settings/settingsUtils'

@@ -1,7 +1,7 @@
 import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { posix } from '@chainner/node-path'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
@@ -493,13 +493,15 @@ describe('direct project session file actions', () => {
     })
     await memory.mkdir('/project/parts', { recursive: true })
     await memory.writeFile('/project/parts/main.kcl', new Uint8Array([42]))
-    const runtime = createFileOperationsRuntime({
+    const scheduler = createFileOperationsScheduler({
       ...memory,
       resolve: (...parts) => posix.resolve(...parts),
     })
     const s = setup()
     s.exists.mockResolvedValue(true)
-    s.rename.mockImplementation((...args) => runtime.operations.rename(...args))
+    s.rename.mockImplementation((...args) =>
+      scheduler.operations.rename(...args)
+    )
     try {
       await s.session.rename(
         '/project/parts/main.kcl',
@@ -510,10 +512,10 @@ describe('direct project session file actions', () => {
         '/project/parts/Main.kcl'
       )
       expect(
-        await runtime.operations.readFile('/project/parts/Main.kcl')
+        await scheduler.operations.readFile('/project/parts/Main.kcl')
       ).toEqual(new Uint8Array([42]))
     } finally {
-      await runtime.dispose()
+      await scheduler.dispose()
     }
   })
 

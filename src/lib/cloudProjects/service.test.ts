@@ -47,7 +47,7 @@ const remote = {
     { id: 'toml-1', relative_path: 'project.toml', byte_size: 24 },
   ],
 }
-const runtimes: { dispose: () => Promise<void> }[] = []
+const schedulers: { dispose: () => Promise<void> }[] = []
 beforeEach(() => {
   vi.mocked(parseProjectArchive).mockResolvedValue([
     { relativePath: 'main.kcl', data: new TextEncoder().encode('original') },
@@ -73,7 +73,7 @@ beforeEach(() => {
   )
 })
 afterEach(async () => {
-  await Promise.all(runtimes.splice(0).map((r) => r.dispose()))
+  await Promise.all(schedulers.splice(0).map((r) => r.dispose()))
   vi.clearAllMocks()
   vi.useRealTimers()
 })
@@ -87,7 +87,7 @@ const setup = (accountId?: () => string) => {
   const files = createFileOperationsServices(paths, undefined, () => [
     services.mount,
   ])
-  runtimes.push(services, files)
+  schedulers.push(services, files)
   const offline = signal(false)
   const storageFor = createCloudProjectStorageProvider(
     services.cloud,

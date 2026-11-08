@@ -28,7 +28,7 @@ describe('file operations extension', () => {
     )
   })
 
-  it('mounts one file operations runtime behind the registry capability', async () => {
+  it('mounts one file operations scheduler behind the registry capability', async () => {
     const root = nodeFileSystem.impl.join(
       tmpdir(),
       `zds-effect-file-operations-registry-${crypto.randomUUID()}`

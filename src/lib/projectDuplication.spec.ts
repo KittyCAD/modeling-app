@@ -1,6 +1,6 @@
 import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import {
   type DuplicateProjectResult,
   duplicateProjectInDirectory,

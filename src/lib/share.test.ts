@@ -165,7 +165,7 @@ vi.mock('react-hot-toast', () => ({
   },
 }))
 
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import {
   getCurrentProjectPublicationDetails as getCurrentProjectPublicationDetailsWithFileOperations,
   publishCurrentProject as publishCurrentProjectWithFileOperations,
