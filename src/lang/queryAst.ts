@@ -1598,9 +1598,13 @@ export function getVariableExprsFromSelection(
         }
       | undefined
     if (lastChildLookup && artifactForLastChildLookup) {
+      const isBody =
+        artifactForLastChildLookup.type === 'sweep' ||
+        artifactForLastChildLookup.type === 'compositeSolid'
       const children = findAllChildrenAndOrderByPlaceInCode(
         artifactForLastChildLookup,
-        artifactGraph
+        artifactGraph,
+        { followPatterns: !isBody }
       )
 
       if (
@@ -1631,14 +1635,13 @@ export function getVariableExprsFromSelection(
       if (!variable) {
         // A body can have sketches attached to its faces. Those sketches and
         // their local segments are not later versions of the selected solid.
+        // A pattern is a collection of instances, not a later version of its source body.
         const lastChildVariable = getLastVariable(
           children,
           ast,
           wasmInstance,
           artifactTypeFilter ??
-            (artifactForLastChildLookup.type === 'sweep'
-              ? ['sweep', 'compositeSolid', 'edgeCut']
-              : undefined),
+            (isBody ? ['sweep', 'compositeSolid', 'edgeCut'] : undefined),
           nodeToEdit
         )
         if (!lastChildVariable) {
@@ -2640,7 +2643,8 @@ export const getPathNormalisedForTruncatedAst = (
  */
 export function findAllChildrenAndOrderByPlaceInCode(
   artifact: Artifact,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  { followPatterns = true }: { followPatterns?: boolean } = {}
 ): Artifact[] {
   const result = new Set<string>()
   const stack: string[] = [artifact.id]
@@ -2715,9 +2719,11 @@ export function findAllChildrenAndOrderByPlaceInCode(
         pushRelatedArtifactIds(currentId, current.patternIds)
         break
       case 'pattern':
-        pushRelatedArtifactIds(currentId, current.copyIds)
-        pushRelatedArtifactIds(currentId, current.copyFaceIds)
-        pushRelatedArtifactIds(currentId, current.copyEdgeIds)
+        if (followPatterns) {
+          pushRelatedArtifactIds(currentId, current.copyIds)
+          pushRelatedArtifactIds(currentId, current.copyFaceIds)
+          pushRelatedArtifactIds(currentId, current.copyEdgeIds)
+        }
         break
       // These artifacts have no related IDs followed by this traversal.
       case 'solid2d':

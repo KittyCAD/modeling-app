@@ -1304,14 +1304,23 @@ ${setup ? `gdt::annotation(faces = [${body}.faces.seedSideChamfer], annotation =
   60_000
 )
 
-it.each([
-  { treatment: 'chamfer', beforeBoolean: true },
-  { treatment: 'fillet', beforeBoolean: true },
-  { treatment: 'chamfer', beforeBoolean: false },
-  { treatment: 'fillet', beforeBoolean: false },
-])(
-  'translates the Boolean output from a feature-tree $treatment selection (treatment before Boolean: $beforeBoolean)',
-  async ({ treatment, beforeBoolean }) => {
+it.each(
+  (['chamfer', 'fillet'] as const).flatMap((treatment) =>
+    [true, false].flatMap((beforeBoolean) =>
+      (
+        [
+          'original',
+          'clone',
+          'pattern-original',
+          'pattern-copy',
+          'whole-pattern',
+        ] as const
+      ).map((selectionKind) => ({ treatment, beforeBoolean, selectionKind }))
+    )
+  )
+)(
+  'translates only the selected $selectionKind $treatment body (treatment before Boolean: $beforeBoolean)',
+  async ({ treatment, beforeBoolean, selectionKind }) => {
     const cutName = `${treatment}001`
     const cutCall = `${cutName} = ${treatment}(${beforeBoolean ? 'plate' : 'plateWithHole'}, ${treatment === 'chamfer' ? 'length' : 'radius'} = 1mm, edges = [{ sideFaces = [plate.sketch.tags.bottom, plate.faces.plateTop] }])`
     const booleanCall = `plateWithHole = subtract(${beforeBoolean ? cutName : 'plate'}, tools = hole)`
@@ -1331,6 +1340,13 @@ ${beforeBoolean ? cutCall : booleanCall}
 ${beforeBoolean ? booleanCall : cutCall}
 hide(profile)
 hide(holeSketch)
+${
+  selectionKind === 'clone'
+    ? `copy = clone(${beforeBoolean ? 'plateWithHole' : cutName}) |> translate(x = 50mm)`
+    : selectionKind.startsWith('pattern') || selectionKind === 'whole-pattern'
+      ? `copies = patternLinear3d(${beforeBoolean ? 'plateWithHole' : cutName}, axis = X, instances = 3, distance = 40mm)`
+      : ''
+}
 `
     const { ast, artifactGraph } = await getAstAndArtifactGraph(
       code,
@@ -1338,32 +1354,67 @@ hide(holeSketch)
       world.kclManager
     )
     expect(world.kclManager.errors).toEqual([])
-    const cut = [...artifactGraph.values()].find((a) => a.type === 'edgeCut')
-    const body = [...artifactGraph.values()].find(
+    const bodies = [...artifactGraph.values()].filter(
       (a) => a.type === 'compositeSolid'
     )
-    if (cut?.type !== 'edgeCut' || body?.type !== 'compositeSolid')
-      throw new Error('Missing treatment or Boolean body')
+    const originalBody = bodies.find(
+      (a) =>
+        !code.slice(a.codeRef.range[0], a.codeRef.range[1]).includes('clone')
+    )
+    const copyBody = bodies.find((a) =>
+      code.slice(a.codeRef.range[0], a.codeRef.range[1]).includes('clone')
+    )
+    const pattern = [...artifactGraph.values()].find(
+      (a) => a.type === 'pattern'
+    )
+    if (!originalBody) throw new Error('Missing Boolean body')
+    const targetBodyId =
+      selectionKind === 'clone'
+        ? copyBody?.id
+        : selectionKind === 'pattern-copy'
+          ? pattern?.copyIds[1]
+          : originalBody.id
+    if (!targetBodyId) throw new Error('Missing selected body')
+    const cut = [...artifactGraph.values()].find(
+      (a) =>
+        a.type === 'edgeCut' &&
+        a.subType === treatment &&
+        (selectionKind === 'clone' || selectionKind === 'pattern-copy'
+          ? a.bodyId === targetBodyId
+          : !a.sourceEdgeCutId)
+    )
+    if (cut?.type !== 'edgeCut')
+      throw new Error('Missing selected treatment face')
     // Feature-tree selections have no engine topology fallback. Use the same
     // normalization as the command bar and modeling dialog.
-    const objects = coerceSelectionsForBodyOnlySelectionTypes(
-      {
-        graphSelections: [
-          {
-            entityRef: { type: 'face', face_id: cut.id },
-            codeRef: cut.codeRef,
-          },
-        ],
+    let objects: Selections
+    if (selectionKind === 'whole-pattern') {
+      if (!pattern) throw new Error('Missing selected pattern')
+      objects = {
+        graphSelections: [{ artifact: pattern, codeRef: pattern.codeRef }],
         otherSelections: [],
-      },
-      ['path', 'sweep', 'compositeSolid'],
-      artifactGraph
-    )
-    if (!objects) throw new Error('Missing body selection')
-    expect(objects.graphSelections[0].entityRef).toEqual({
-      type: 'solid3d',
-      solid3d_id: body.id,
-    })
+      }
+    } else {
+      const coerced = coerceSelectionsForBodyOnlySelectionTypes(
+        {
+          graphSelections: [
+            {
+              entityRef: { type: 'face', face_id: cut.id },
+              codeRef: cut.codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        ['path', 'sweep', 'compositeSolid'],
+        artifactGraph
+      )
+      if (!coerced) throw new Error('Missing body selection')
+      objects = coerced
+      expect(objects.graphSelections[0].entityRef).toEqual({
+        type: 'solid3d',
+        solid3d_id: targetBodyId,
+      })
+    }
     const x = await stringToKclExpression('5mm', world.rustContext)
     if (isErr(x) || 'errors' in x)
       throw new Error('Invalid translation distance')
@@ -1376,10 +1427,41 @@ hide(holeSketch)
     if (isErr(result)) throw result
     const output = recast(result.modifiedAst, world.instance)
     if (isErr(output)) throw output
-    expect(output).toContain('translate(plateWithHole, x = 5mm)')
-    expect(output).not.toContain('translate(plate,')
+    const expectedVariable =
+      selectionKind === 'clone'
+        ? 'copy'
+        : selectionKind === 'pattern-copy'
+          ? 'copies[2]'
+          : selectionKind === 'whole-pattern'
+            ? 'copies'
+            : 'plateWithHole'
+    expect(output).toContain(`translate(${expectedVariable}, x = 5mm)`)
+    const sent = vi.spyOn(world.engineCommandManager, 'sendCommand')
     await getAstAndArtifactGraph(output, world.instance, world.kclManager)
     expect(world.kclManager.errors).toEqual([])
+    const translatedIds = sent.mock.calls
+      .flatMap(([, message]) =>
+        message.command.type === 'modeling_cmd_req'
+          ? [message.command.cmd]
+          : message.command.type === 'modeling_cmd_batch_req'
+            ? message.command.requests.map((request) => request.cmd)
+            : []
+      )
+      .filter(
+        (command) =>
+          command.type === 'set_object_transform' &&
+          command.transforms.some((t) => t.translate?.property.x === 5)
+      )
+      .map((command) => {
+        if (command.type !== 'set_object_transform')
+          throw new Error('Expected translation command')
+        return command.object_id
+      })
+    const expectedIds =
+      selectionKind === 'whole-pattern'
+        ? [originalBody.id, ...(pattern?.copyIds ?? [])]
+        : [targetBodyId]
+    expect(translatedIds.sort()).toEqual(expectedIds.sort())
   },
   60_000
 )
