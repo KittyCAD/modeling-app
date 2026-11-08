@@ -20,12 +20,6 @@ import {
 import { isArray } from '@src/lib/utils'
 import JSZip from 'jszip'
 
-export const UNTITLED_PROJECT_TITLE = 'Untitled'
-
-export function getRemoteProjectTitleForProjectToml(title?: string) {
-  return title?.trim() || UNTITLED_PROJECT_TITLE
-}
-
 type PrepareProjectFilesForCloudUploadOptions = {
   expectedRevision?: Revision
   entrypointPath?: string
@@ -36,38 +30,12 @@ type PrepareProjectFilesForCloudUploadOptions = {
 export function prepareProjectFilesForCloudUpload(
   projectPath: string,
   files: ProjectArchiveFile[],
-  expectedRevision?: Revision
-): {
-  body: ProjectUploadBody
-  files: ProjectArchiveFile[]
-}
-export function prepareProjectFilesForCloudUpload(
-  projectPath: string,
-  files: ProjectArchiveFile[],
-  options?: PrepareProjectFilesForCloudUploadOptions
-): {
-  body: ProjectUploadBody
-  files: ProjectArchiveFile[]
-}
-export function prepareProjectFilesForCloudUpload(
-  projectPath: string,
-  files: ProjectArchiveFile[],
-  optionsOrExpectedRevision?:
-    | Revision
-    | PrepareProjectFilesForCloudUploadOptions
+  options: PrepareProjectFilesForCloudUploadOptions = {}
 ) {
-  const expectedRevision =
-    typeof optionsOrExpectedRevision === 'string'
-      ? optionsOrExpectedRevision
-      : optionsOrExpectedRevision?.expectedRevision
-  const preferredEntrypointPath =
-    typeof optionsOrExpectedRevision === 'string'
-      ? undefined
-      : optionsOrExpectedRevision?.entrypointPath
   const normalizedFiles = normalizeProjectArchiveFiles(files)
   const entrypointPath = getUploadEntrypointPath(
     normalizedFiles,
-    preferredEntrypointPath
+    options.entrypointPath
   )
   const projectTomlPath = getUploadProjectTomlPath(normalizedFiles)
   const projectTitle =
@@ -75,10 +43,7 @@ export function prepareProjectFilesForCloudUpload(
     archivePaths.basename(
       projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
     )
-  const publicationMetadata =
-    typeof optionsOrExpectedRevision === 'string'
-      ? undefined
-      : optionsOrExpectedRevision?.publicationMetadata
+  const publicationMetadata = options.publicationMetadata
   const body: ProjectUploadBody = {
     title: projectTitle || 'project',
     description: publicationMetadata?.description ?? '',
@@ -86,15 +51,12 @@ export function prepareProjectFilesForCloudUpload(
     entrypoint_path: entrypointPath,
     project_toml_path: projectTomlPath,
   }
-  if (expectedRevision) {
-    body.expected_revision = expectedRevision
+  if (options.expectedRevision) {
+    body.expected_revision = options.expectedRevision
   }
-  if (
-    typeof optionsOrExpectedRevision !== 'string' &&
-    optionsOrExpectedRevision?.deletedPaths?.length
-  ) {
+  if (options.deletedPaths?.length) {
     body.deleted_paths = Array.from(
-      new Set(optionsOrExpectedRevision.deletedPaths.map(normalizeRelativePath))
+      new Set(options.deletedPaths.map(normalizeRelativePath))
     ).sort()
   }
 
