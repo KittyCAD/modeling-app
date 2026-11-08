@@ -922,6 +922,10 @@ test.describe(
             data: { level: 'user', value: libraries },
           })
         }, libraries)
+        await page.getByTestId('app-logo').click()
+        await expect(
+          page.getByRole('heading', { name: 'Project Libraries', exact: true })
+        ).toBeVisible()
         await expect(
           homePage.projectCardTitle.filter({ hasText: 'Bracket' })
         ).toHaveCount(2)
