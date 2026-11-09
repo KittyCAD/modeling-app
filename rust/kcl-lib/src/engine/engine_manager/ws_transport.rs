@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::Duration;
-use std::time::Instant;
 
 use anyhow::anyhow;
 use futures::SinkExt;
@@ -275,6 +274,7 @@ impl WebSocketTransport {
                     Err(e) => {
                         pending_errors_for_read.write().await.push(e.into_kcl_error());
                         *socket_health_tcp_read.write().await = SocketHealth::Inactive;
+                        response_information_for_read.notify.notify_waiters();
                         return;
                     }
                 }
@@ -450,6 +450,7 @@ impl WebSocketTransport {
         self.tcp_read_handle.abort();
         self.tcp_write_handle.abort();
         *self.socket_health.write().await = SocketHealth::Inactive;
+        self.responses.notify.notify_waiters();
     }
 }
 
@@ -521,11 +522,16 @@ impl EngineTransport for WebSocketTransport {
         self.inner_fire_modeling_cmd(cmd_id, source_range, cmd, id_to_source_range)
             .await?;
 
-        let response_timeout = 600;
-        let current_time = Instant::now();
-        while current_time.elapsed().as_secs() < response_timeout {
-            let guard = self.socket_health.read().await;
-            if *guard == SocketHealth::Inactive {
+        let response_timeout = Duration::from_secs(600);
+        let deadline = tokio::time::Instant::now() + response_timeout;
+        loop {
+            // Register as a waiter before checking state so a response or disconnect that
+            // arrives after the checks below still wakes us.
+            let notified = self.responses.notify.notified();
+            tokio::pin!(notified);
+            notified.as_mut().enable();
+
+            if *self.socket_health.read().await == SocketHealth::Inactive {
                 if let Some(error) = self.pending_error(source_range).await {
                     return Err(error);
                 }
@@ -546,6 +552,10 @@ impl EngineTransport for WebSocketTransport {
             // We cannot pop here or it will break the artifact graph.
             if let Some(resp) = self.responses.responses.read().await.get(&cmd_id) {
                 return Ok(resp.clone());
+            }
+
+            if tokio::time::timeout_at(deadline, notified).await.is_err() {
+                break;
             }
         }
 
@@ -688,6 +698,69 @@ mod tests {
                 assert!(error.message().contains(pending_error.message()));
             }
         }
+    }
+
+    #[tokio::test]
+    async fn waiting_command_wakes_on_response() {
+        let transport = transport_with_pending_errors(vec![], Ok(()));
+        *transport.socket_health.write().await = SocketHealth::Active;
+        let cmd_id = Uuid::new_v4();
+        let responses = transport.responses.clone();
+        let waiter = tokio::spawn(async move {
+            transport
+                .inner_send_modeling_cmd(
+                    cmd_id,
+                    SourceRange::default(),
+                    WebSocketRequest::Ping {},
+                    HashMap::new(),
+                )
+                .await
+        });
+        tokio::time::sleep(Duration::from_millis(50)).await;
+        assert!(!waiter.is_finished());
+        responses
+            .add(
+                cmd_id,
+                WebSocketResponse::Failure(FailureWebSocketResponse {
+                    success: false,
+                    request_id: Some(cmd_id),
+                    errors: vec![],
+                }),
+            )
+            .await;
+        let response = tokio::time::timeout(Duration::from_secs(5), waiter)
+            .await
+            .expect("waiter should wake on response")
+            .unwrap()
+            .unwrap();
+        assert_eq!(response.request_id(), Some(cmd_id));
+    }
+
+    #[tokio::test]
+    async fn waiting_command_wakes_on_disconnect() {
+        let transport = transport_with_pending_errors(vec![], Ok(()));
+        *transport.socket_health.write().await = SocketHealth::Active;
+        let health = transport.socket_health.clone();
+        let responses = transport.responses.clone();
+        let waiter = tokio::spawn(async move {
+            transport
+                .inner_send_modeling_cmd(
+                    Uuid::new_v4(),
+                    SourceRange::default(),
+                    WebSocketRequest::Ping {},
+                    HashMap::new(),
+                )
+                .await
+        });
+        tokio::time::sleep(Duration::from_millis(50)).await;
+        *health.write().await = SocketHealth::Inactive;
+        responses.notify.notify_waiters();
+        let error = tokio::time::timeout(Duration::from_secs(5), waiter)
+            .await
+            .expect("waiter should wake on disconnect")
+            .unwrap()
+            .unwrap_err();
+        assert!(matches!(error, KclError::EngineHangup { .. }), "{error:?}");
     }
 
     #[tokio::test]
