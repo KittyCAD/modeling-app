@@ -24,3 +24,9 @@ Issues and specs live in GitHub Issues for `KittyCAD/modeling-app`. See `dev-doc
 ### Domain docs
 
 Multi-context layout using `GLOSSARY-MAP.md`, context glossaries, and ADRs. See `dev-docs/agents/domain.md`.
+
+## Local browser verification
+
+- Use `localhost` for app and API checks. `127.0.0.1` is not interchangeable: the API allowlist requires `localhost`.
+- Reserve port `5187` for Electron. Use a different free port for temporary browser previews.
+- Set Vite `server.open: false` for temporary previews so automated checks do not open tabs in the user's default browser.
