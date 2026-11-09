@@ -1,4 +1,5 @@
 import { computed, type ReadonlySignal, signal } from '@preact/signals-core'
+import { protect } from './protection'
 
 /** A live observation. Preact supplies dependency tracking and writable signals. */
 export type Signal<T> = ReadonlySignal<T>
@@ -6,17 +7,45 @@ export type Signal<T> = ReadonlySignal<T>
 /** Explicit reads admit constants and signals without inspecting value shapes. */
 export type Source<T> = () => T
 
+/** Stable Subtree identities and facet-scoped contribution identities. */
+export type Key = object | string | symbol
+export type Precedence = 'highest' | 'high' | 'default' | 'low' | 'lowest'
+export const precedenceRank: Record<Precedence, number> = {
+  highest: 0,
+  high: 1,
+  default: 2,
+  low: 3,
+  lowest: 4,
+}
+
+/** Where an effective contribution came from, in its resolved order. */
+export interface ContributionInfo {
+  readonly origin: Origin
+  readonly precedence: Precedence
+  readonly key?: Key
+}
+
+/** The registry evaluates pure reads and guards calls through service facades. */
+interface CellRegistry {
+  compute<T>(read: () => T): T
+  assertMutable(): void
+}
+
 /** One `Facet`'s output and write operations for a single registry. */
 interface FacetCell<I, O> {
   readonly output: Signal<O>
   readonly clear: () => void
-  readonly stage: (transaction: object, read: Source<I>) => () => void
+  readonly debug: Signal<readonly ContributionInfo[]>
+  readonly stage: (
+    transaction: object,
+    read: Source<I>,
+    info: ContributionInfo
+  ) => (() => void) | undefined
 }
 
 /** Many ordered inputs become one output; `combine([])` defines the empty case. */
 export class Facet<Input, Output> {
-  readonly kind = 'facet'
-  private readonly cells = new WeakMap<object, FacetCell<Input, Output>>()
+  private readonly cells = new WeakMap<CellRegistry, FacetCell<Input, Output>>()
 
   constructor(
     readonly name: string,
@@ -24,32 +53,53 @@ export class Facet<Input, Output> {
   ) {}
 
   /** @internal Reuse this registry's output and stage writes to its typed source list. */
-  cell(registry: object): FacetCell<Input, Output> {
+  cell(registry: CellRegistry): FacetCell<Input, Output> {
     const existing = this.cells.get(registry)
     if (existing) return existing
     const sources = signal<readonly Source<Input>[]>([])
+    const debug = signal<readonly ContributionInfo[]>([])
     const pending = new WeakMap<
       object,
-      { reads: Source<Input>[]; commit: () => void }
+      {
+        reads: Source<Input>[]
+        info: ContributionInfo[]
+        keys: Set<Key>
+        commit: () => void
+      }
     >()
     const cell: FacetCell<Input, Output> = {
-      output: computed(() => this.combine(sources.value.map((read) => read()))),
+      output: computed(() =>
+        registry.compute(() =>
+          this.combine(sources.value.map((read) => read()))
+        )
+      ),
+      debug,
       clear: () => {
         sources.value = []
+        debug.value = []
       },
-      stage: (transaction, read) => {
+      stage: (transaction, read, info) => {
         let draft = pending.get(transaction)
         if (!draft) {
           const reads: Source<Input>[] = []
+          const metadata: ContributionInfo[] = []
           draft = {
             reads,
+            info: metadata,
+            keys: new Set(),
             commit: () => {
               pending.delete(transaction)
               sources.value = reads
+              debug.value = metadata
             },
           }
           pending.set(transaction, draft)
         }
+        if (info.key !== undefined) {
+          if (draft.keys.has(info.key)) return undefined
+          draft.keys.add(info.key)
+        }
+        draft.info.push(info)
         draft.reads.push(read)
         return draft.commit
       },
@@ -80,7 +130,10 @@ export type Resolution<T> =
     }
 
 /** A service is a facet whose composition requires exactly one provider. */
-export type Service<T extends object> = Facet<Provider<T>, Resolution<T>>
+const serviceSurface = Symbol('serviceSurface')
+export type Service<T extends object> = Facet<Provider<T>, Resolution<T>> & {
+  readonly [serviceSurface]: (registry: CellRegistry, value: T) => T
+}
 
 /** Adapter types derive from contract tokens rather than repeating domain shapes. */
 export type InputOf<F> = F extends Facet<infer I, infer _O> ? I : never
@@ -88,11 +141,27 @@ export type OutputOf<F> = F extends Facet<infer _I, infer O> ? O : never
 export type CapabilityOf<S> = S extends Service<infer T> ? T : never
 
 export function service<T extends object>(name: string): Service<T> {
-  return new Facet(name, (providers) => {
+  const surfaces = new WeakMap<CellRegistry, WeakMap<T, T>>()
+  const facet = new Facet<Provider<T>, Resolution<T>>(name, (providers) => {
     const [first, second, ...rest] = providers
     if (!first) return { kind: 'missing' }
     if (!second) return { kind: 'ready', value: first.value }
     return { kind: 'conflict', providers: [first, second, ...rest] }
+  })
+  return Object.assign(facet, {
+    [serviceSurface]: (registry: CellRegistry, value: T): T => {
+      let cache = surfaces.get(registry)
+      if (!cache) {
+        cache = new WeakMap<T, T>()
+        surfaces.set(registry, cache)
+      }
+      let surface = cache.get(value)
+      if (!surface) {
+        surface = protect(value, () => registry.assertMutable())
+        cache.set(value, surface)
+      }
+      return surface
+    },
   })
 }
 
@@ -141,28 +210,40 @@ export type Contract = Readonly<Record<string, Facet<never, unknown>>>
 /** Type-check each contribution before packaging it into a heterogeneous graph. */
 export interface Sink {
   readonly origin: Origin
+  readonly runtime?: CellRegistry
   contribute<I, O>(facet: Facet<I, O>, source: Source<NoInfer<I>>): void
 }
 
-export interface Binding {
+export interface ContributionOptions {
+  readonly key?: Key
+  readonly precedence?: Precedence
+}
+
+export interface Binding extends ContributionOptions {
   readonly install: (sink: Sink) => void
 }
 
 export function contribute<I, O>(
   facet: Facet<I, O>,
-  source: Source<NoInfer<I>>
+  source: Source<NoInfer<I>>,
+  options: ContributionOptions = {}
 ): Binding {
-  return { install: (sink) => sink.contribute(facet, source) }
+  return { ...options, install: (sink) => sink.contribute(facet, source) }
 }
 
 export function provide<T extends object>(
   token: Service<T>,
-  value: NoInfer<T>
+  value: NoInfer<T>,
+  options: ContributionOptions = {}
 ): Binding {
   return {
+    ...options,
     install: (sink) => {
       const { id, path } = sink.origin
-      sink.contribute(token, () => ({ id, path, value }))
+      const surface = sink.runtime
+        ? token[serviceSurface](sink.runtime, value)
+        : value
+      sink.contribute(token, () => ({ id, path, value: surface }))
     },
   }
 }
@@ -171,9 +252,9 @@ export function provide<T extends object>(
 export type Item = Binding | readonly Item[] | Subtree
 
 /** A slot acquires a snapshot of supplied children, with no resources of its own. */
-export function slot(items: readonly Item[] = []): Subtree {
+export function slot(items: readonly Item[] = [], key?: Key): Subtree {
   const initial = Object.freeze([...items])
-  return { create: () => ({ items: initial }) }
+  return { key, create: () => ({ items: initial }) }
 }
 
 export type Cleanup = () => void | PromiseLike<void>
@@ -190,6 +271,7 @@ export interface Instance {
  * Replacement reconciles children without reacquiring or disposing their owner.
  */
 export interface Subtree {
+  readonly key?: Key
   readonly create: (scope: Scope) => Instance
   readonly dependencies?: readonly Item[]
 }
@@ -221,4 +303,9 @@ export function createScope(origin: Origin, host: ScopeHost): Scope {
 /** A readonly contract snapshot, with precise token types retained. */
 export function contract<const T extends Contract>(tokens: T): Readonly<T> {
   return Object.freeze({ ...tokens })
+}
+
+/** Binding keys belong to a Facet; Subtree keys identify mounted owners. */
+export function itemKey(item: Item): Key {
+  return 'create' in item ? (item.key ?? item) : item
 }
