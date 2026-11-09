@@ -10,6 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
   ...(await original<typeof api>()),
   getRemoteProject: vi.fn(),
+  listRemoteProjects: vi.fn(),
   downloadRemoteProjectArchive: vi.fn(),
   updateRemoteProject: vi.fn(),
   createRemoteProject: vi.fn(),
@@ -57,6 +58,64 @@ describe.each([
     instances.push(fs)
     return { fs, diskWrite, diskRemove }
   }
+
+  it.each(['success', 'failure'] as const)(
+    'reports a seven-second project list request through %s and retry',
+    async (outcome) => {
+      vi.useFakeTimers()
+      const { fs } = setup()
+      const listing =
+        Promise.withResolvers<
+          Awaited<ReturnType<typeof api.listRemoteProjects>>
+        >()
+      vi.mocked(api.listRemoteProjects)
+        .mockReturnValueOnce(listing.promise)
+        .mockResolvedValue([remote])
+      expect(fs.projectsLoading.value).toBe(false)
+      const request = fs.listProjects()
+      expect(fs.projectsLoading.value).toBe(true)
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(fs.projectsLoading.value).toBe(true)
+      if (outcome === 'success') {
+        listing.resolve([remote])
+        await expect(request).resolves.toEqual([remote])
+      } else {
+        const error = new Error('Listing failed')
+        const rejected = expect(request).rejects.toBe(error)
+        listing.reject(error)
+        await rejected
+      }
+      expect(fs.projectsLoading.value).toBe(false)
+      const retry = fs.listProjects()
+      expect(fs.projectsLoading.value).toBe(true)
+      await retry
+      expect(fs.projectsLoading.value).toBe(false)
+    }
+  )
+
+  it('keeps the list busy until overlapping requests finish', async () => {
+    const { fs } = setup()
+    const old =
+      Promise.withResolvers<
+        Awaited<ReturnType<typeof api.listRemoteProjects>>
+      >()
+    const next =
+      Promise.withResolvers<
+        Awaited<ReturnType<typeof api.listRemoteProjects>>
+      >()
+    vi.mocked(api.listRemoteProjects)
+      .mockReturnValueOnce(old.promise)
+      .mockReturnValueOnce(next.promise)
+    const first = fs.listProjects()
+    const second = fs.listProjects()
+    next.resolve([remote])
+    await second
+    expect(fs.projectsLoading.value).toBe(true)
+    old.resolve([])
+    await first
+    expect(fs.projectsLoading.value).toBe(false)
+    expect(fs.projects.value).toEqual([remote])
+  })
 
   it('rejects offline mutations before staging them and permits editing after reconnect', async () => {
     vi.useFakeTimers()

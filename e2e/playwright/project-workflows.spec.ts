@@ -233,6 +233,77 @@ async function expectEditor(page: Page, code: string) {
   })
 }
 
+test(
+  'shows loading feedback while listing and opening cloud projects',
+  { tag: '@web' },
+  async ({ page, context }, testInfo) => {
+    const storage = await prepareStorage('cloud', page, context, testInfo)
+    await storage.seed('Slow project', blankCode)
+    await storage.refresh()
+    const listing = Promise.withResolvers<undefined>()
+    const opening = Promise.withResolvers<undefined>()
+    const listRoute = /\/user\/projects(?:\?.*)?$/
+    let listingStarted = false
+    let openingStarted = false
+    await context.route(listRoute, async (route) => {
+      listingStarted = true
+      await listing.promise
+      await route.fallback()
+    })
+    await context.route('**/user/projects/**/download?*', async (route) => {
+      openingStarted = true
+      await opening.promise
+      await route.fallback()
+    })
+    try {
+      await page.reload({ waitUntil: 'domcontentloaded' })
+      await expect.poll(() => listingStarted).toBe(true)
+      const listSpinner = page.getByRole('status', {
+        name: 'Loading projects',
+        exact: true,
+      })
+      await expect(listSpinner).toBeVisible()
+      const clockStart = new Date()
+      await page.clock.install({ time: clockStart })
+      await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+      await page.clock.runFor(7_000)
+      await expect(listSpinner).toBeVisible()
+      await page.screenshot({
+        path: testInfo.outputPath('project-list-loading.png'),
+      })
+      await expect(page.getByTestId('projects-none')).not.toBeVisible()
+      listing.resolve(undefined)
+      await page.clock.resume()
+      await expect(listSpinner).not.toBeVisible()
+      await storage.home.openProject('Slow project')
+      await expect.poll(() => openingStarted).toBe(true)
+      const cardSpinner = page.getByRole('status', {
+        name: 'Opening project Slow project',
+        exact: true,
+      })
+      await expect(cardSpinner).toBeVisible()
+      await page.clock.pauseAt(
+        new Date((await page.evaluate(() => Date.now())) + 1_000)
+      )
+      await page.clock.runFor(7_000)
+      await expect(cardSpinner).toBeVisible()
+      await page.screenshot({
+        path: testInfo.outputPath('project-card-loading.png'),
+      })
+      opening.resolve(undefined)
+      await page.clock.resume()
+      await expectEditor(page, blankCode)
+      await expect(cardSpinner).not.toBeAttached()
+    } finally {
+      listing.resolve(undefined)
+      opening.resolve(undefined)
+      await page.clock.resume()
+      await context.unroute(listRoute)
+      await context.unroute('**/user/projects/**/download?*')
+    }
+  }
+)
+
 // Both implementations execute the same actions and UI assertions. Naming policy
 // and persistence inspection are the explicit implementation-specific boundaries.
 for (const kind of ['local', 'cloud'] as const) {
