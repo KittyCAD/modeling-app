@@ -10,7 +10,10 @@ import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextar
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
 import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
 import { useApp } from '@src/lib/boot'
-import type { CommandArgument } from '@src/lib/commandTypes'
+import type {
+  CommandArgument,
+  CommandArgumentInputProps,
+} from '@src/lib/commandTypes'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()
@@ -74,6 +77,19 @@ function ArgumentInput({
   stepBack: () => void
   onSubmit: (event: any) => void
 }) {
+  const app = useApp()
+  const Input = app.commands.useState().context.selectedCommand?.ArgumentInput
+  if (Input) return <Input arg={arg} stepBack={stepBack} onSubmit={onSubmit} />
+  return (
+    <DefaultArgumentInput arg={arg} stepBack={stepBack} onSubmit={onSubmit} />
+  )
+}
+
+export function DefaultArgumentInput({
+  arg,
+  stepBack,
+  onSubmit,
+}: CommandArgumentInputProps) {
   const app = useApp()
   const executingEditor = app.project?.executingEditor.value
   switch (arg.inputType) {

@@ -171,9 +171,14 @@ type NormalizableVertexReference = Partial<
   faces?: unknown
 }
 
+/** Region lookup requires scene queries, not connection lifecycle or a modeling actor. */
+type SceneCommandSender = {
+  sendSceneCommand: (command: WebSocketRequest) => Promise<unknown>
+}
+
 async function getParentEntityIdForEntity(
   entityId: string,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: SceneCommandSender
 ): Promise<string | undefined> {
   const parentResponse = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -288,7 +293,7 @@ async function getResolvableIntersectionInfoForRegion(
 
 async function getRegionQueryPointForRegion(
   regionId: ArtifactId,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: SceneCommandSender
 ): Promise<Point2d | null> {
   const response = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -323,7 +328,7 @@ function getSketchIdForRegionInfo(
 async function getSketchIdForEngineRegionEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: SceneCommandSender
 ): Promise<ArtifactId | null> {
   const parentEntityId = await getParentEntityIdForEntity(
     regionEntityId,
@@ -342,7 +347,7 @@ export async function getEngineRegionSelectionFromPoint(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
-  engineCommandManager: ConnectionManager,
+  engineCommandManager: SceneCommandSender,
   wasmInstance: ModuleType
 ): Promise<EngineRegionSelection | null> {
   const queryPointMm = await getRegionQueryPointForRegion(

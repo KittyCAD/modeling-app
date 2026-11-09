@@ -70,7 +70,10 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
-import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+import type {
+  ExtrudeCommandArgs,
+  StdLibModelingCommandSchema,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { capitaliseFC, isRecord } from '@src/lib/utils'
 import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
@@ -413,7 +416,7 @@ const gdtFrameArgOverrides = {
 export const extrudeCommandConfig = {
   icon: 'extrude',
   needsReview: true,
-  args: modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>('Extrude', {
+  args: modelingStdLibCommandArgs<ExtrudeCommandArgs, unknown>('Extrude', {
     overrides: {
       sketches: {
         inputType: 'selection',

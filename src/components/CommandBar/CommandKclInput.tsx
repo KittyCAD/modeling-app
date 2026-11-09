@@ -26,7 +26,18 @@ import {
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ReadonlySignal } from '@preact/signals-core'
+import type { Program, VariableMap } from '@src/lang/wasm'
+import type { KclExpressionRuntime } from '@src/lib/kclHelpers'
+
+/** Expression inputs need source and model memory, independently of the legacy editor controller. */
+export interface CommandKclModel {
+  readonly ast: Node<Program>
+  readonly astSignal: ReadonlySignal<Node<Program>>
+  readonly codeSignal: ReadonlySignal<string>
+  readonly variablesSignal: ReadonlySignal<VariableMap>
+  readonly rustContext: KclExpressionRuntime
+}
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
@@ -90,7 +101,7 @@ export function CommandKclInput({
   onChange,
   onValidationChange,
 }: {
-  kclManager: KclManager
+  kclManager: CommandKclModel
   settings: AppSettingsSystem
   wasmPromise: Promise<ModuleType>
   commandScopes?: CommandScopeService

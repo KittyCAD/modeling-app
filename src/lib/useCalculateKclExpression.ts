@@ -5,7 +5,7 @@ import { findAllPreviousVariables } from '@src/lang/queryAst'
 import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
 import type { Expr, Program, SourceRange, VariableMap } from '@src/lang/wasm'
 import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
-import type RustContext from '@src/lib/rustContext'
+import type { KclExpressionRuntime } from '@src/lib/kclHelpers'
 import { getInVariableCase } from '@src/lib/utils'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -33,7 +33,7 @@ export function useCalculateKclExpression({
   initialVariableName?: string
   sourceRange?: SourceRange
   selectionRanges: Selections
-  rustContext: RustContext
+  rustContext: KclExpressionRuntime
   code: string
   ast: Node<Program>
   variables: VariableMap

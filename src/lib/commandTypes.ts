@@ -1,5 +1,6 @@
+import type { KclVersionRange } from '@src/lib/kclVersionRange'
 import type { EntityType } from '@kittycad/lib'
-import type { ReactNode } from 'react'
+import type { ReactNode, ComponentType } from 'react'
 import type {
   Actor,
   ActorRefFrom,
@@ -140,6 +141,8 @@ export type Command<
     machineActor?: ActorRefFrom<T>
   ) => Promise<undefined | CommandReviewValidationError>
   machineActor?: Actor<T>
+  /** A command host can supply model-bound inputs without a legacy modeling actor. */
+  ArgumentInput?: ComponentType<CommandArgumentInputProps>
   onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
   onCancel?: () => void
   args?: {
@@ -195,6 +198,8 @@ export type CommandArgumentConfig<
 > = {
   /** Whether to offer this argument in the current machine context. */
   available?: (context: C) => boolean
+  /** Language-version availability is metadata, independent of the command host. */
+  availableInKclVersion?: KclVersionRange
   displayName?: string
   description?: string
   /** Reference documentation shown on demand, separate from command-bar hints. */
@@ -573,4 +578,11 @@ export type CommandArgumentOption<A> = {
   readonly isCurrent?: boolean
   readonly disabled?: boolean
   readonly value: A
+}
+
+/** Inputs submit resolved command values; the palette retains navigation and review ownership. */
+export interface CommandArgumentInputProps {
+  arg: CommandArgument<unknown> & { name: string }
+  stepBack: () => void
+  onSubmit: (value: unknown) => void
 }
