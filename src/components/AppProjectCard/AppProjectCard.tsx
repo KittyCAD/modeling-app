@@ -639,13 +639,19 @@ function AppProjectCard({
             return
           }
           const result = await projectActions.open(project)
-          if (result?.defaultFile)
+          if (result?.defaultFile) {
+            // Navigation can finish before React commits the next view. Keep
+            // this card busy until it unmounts after a successful handoff.
             await navigate(
               `${PATHS.FILE}/${encodeURIComponent(result.defaultFile)}`
             )
-        })()
-          .catch(reportRejection)
-          .finally(() => setIsOpening(false))
+          } else {
+            setIsOpening(false)
+          }
+        })().catch((error: unknown) => {
+          setIsOpening(false)
+          reportRejection(error)
+        })
       }}
       renderOpenLink={({ href: _href, children, ...linkProps }) => (
         <Link
