@@ -9,11 +9,11 @@ import {
   service,
   slot,
 } from './algebra'
+import { Registry } from './nextRegistry'
 import { DependencyCycleError } from './planner'
-import { Reconciler } from './reconciler'
 
 it('keeps returned service observations live across provider replacement', async () => {
-  const reconciler = new Reconciler()
+  const reconciler = new Registry()
   const token = service<{ value: number }>('value')
   const first = { value: 1 }
   const second = { value: 2 }
@@ -21,16 +21,16 @@ it('keeps returned service observations live across provider replacement', async
   await reconciler.configure([providers])
   const observed = reconciler.observe(token)
   const scope = createScope({ id: 'consumer', path: 'consumer' }, reconciler)
-  expect(scope.required(token)).toBe(first)
+  expect(scope.required(token)).toEqual(first)
   await scope.replace(providers, [provide(token, second)])
   expect(observed.value).toEqual({ kind: 'ready', value: second })
-  expect(scope.required(token)).toBe(second)
+  expect(scope.required(token)).toEqual(second)
   await reconciler.configure([])
   expect(observed.value).toEqual({ kind: 'missing' })
 })
 
 it('waits for children before releasing their owner and rejects overlapping mutations', async () => {
-  const reconciler = new Reconciler()
+  const reconciler = new Registry()
   const events: string[] = []
   let finish: () => void = () => {
     throw new Error('Cleanup was not started')
@@ -69,7 +69,7 @@ it('waits for children before releasing their owner and rejects overlapping muta
 })
 
 it('releases every removed resource after cleanup failures and keeps the committed graph', async () => {
-  const reconciler = new Reconciler()
+  const reconciler = new Registry()
   const facet = new Facet('values', (values: readonly number[]) => values)
   const failure = new Error('cleanup failed')
   const released: string[] = []
@@ -102,7 +102,7 @@ it('releases every removed resource after cleanup failures and keeps the committ
 })
 
 it('preserves acquisition and rollback errors while releasing all newly acquired resources', async () => {
-  const reconciler = new Reconciler()
+  const reconciler = new Registry()
   const facet = new Facet('values', (values: readonly number[]) => values)
   await reconciler.configure([contribute(facet, () => 3)])
   const acquisitionFailure = new Error('acquisition failed')
@@ -141,7 +141,7 @@ it('preserves acquisition and rollback errors while releasing all newly acquired
 })
 
 it('rolls back dynamically discovered cycles and performs no acquisition for declared cycles', async () => {
-  const reconciler = new Reconciler()
+  const reconciler = new Registry()
   let acquired = 0
   let disposed = 0
   const dependencies: Subtree[] = []
@@ -179,7 +179,7 @@ it('rolls back dynamically discovered cycles and performs no acquisition for dec
 })
 
 it('rolls back binding installation failures and forbids eager reads during acquisition', async () => {
-  const reconciler = new Reconciler()
+  const reconciler = new Registry()
   const facet = new Facet('values', (values: readonly number[]) => values)
   const current = signal(1)
   await reconciler.configure([contribute(facet, () => current.value)])
@@ -218,7 +218,7 @@ it('rolls back binding installation failures and forbids eager reads during acqu
 })
 
 it('registers service provenance under its acquiring owner', async () => {
-  const reconciler = new Reconciler()
+  const reconciler = new Registry()
   const token = service<{ value: number }>('value')
   const owner: Subtree = {
     create: (scope) => ({
@@ -241,7 +241,7 @@ it('registers service provenance under its acquiring owner', async () => {
 })
 
 it('rolls back a returned instance even when reading its children fails', async () => {
-  const reconciler = new Reconciler()
+  const reconciler = new Registry()
   let disposed = 0
   const owner: Subtree = {
     create: () => ({
@@ -258,7 +258,7 @@ it('rolls back a returned instance even when reading its children fails', async 
 })
 
 it('keeps sources lazy and detaches removed sources across typed cells', async () => {
-  const reconciler = new Reconciler()
+  const reconciler = new Registry()
   const numbers = new Facet('number', (values: readonly number[]) => values)
   const strings = new Facet('string', (values: readonly string[]) => values)
   const number = signal(1)
@@ -294,7 +294,7 @@ it('keeps sources lazy and detaches removed sources across typed cells', async (
 })
 
 it('does not reuse abandoned cell drafts in a later successful transaction', async () => {
-  const reconciler = new Reconciler()
+  const reconciler = new Registry()
   const facet = new Facet('values', (values: readonly number[]) => values)
   const observed = reconciler.observe(facet)
   const failure = new Error('failed after registration')
@@ -316,4 +316,70 @@ it('does not reuse abandoned cell drafts in a later successful transaction', asy
   expect(observed.value).toEqual([2, 3])
   await reconciler.configure([])
   expect(observed.value).toEqual([])
+})
+
+it.each([false, true])(
+  'preserves publication failures when cleanup also fails: %s',
+  async (cleanupFails) => {
+    const reconciler = new Registry()
+    const facet = new Facet('values', (values: readonly number[]) => values)
+    const publication = new Error('publication failed')
+    const cleanup = new Error('cleanup failed')
+    let disposals = 0
+    const owner: Subtree = {
+      create: () => ({
+        items: [contribute(facet, () => 1)],
+        dispose: () => {
+          disposals++
+          if (cleanupFails) throw cleanup
+        },
+      }),
+    }
+    await reconciler.configure([owner])
+    let failPublication = false
+    const unsubscribe = reconciler.observe(facet).subscribe(() => {
+      if (failPublication) throw publication
+    })
+    failPublication = true
+    const completion = reconciler.configure([contribute(facet, () => 2)])
+    if (cleanupFails) {
+      await expect(completion).rejects.toMatchObject({
+        errors: [publication, { errors: [cleanup] }],
+      })
+    } else {
+      await expect(completion).rejects.toBe(publication)
+    }
+    expect(disposals).toBe(1)
+    expect(reconciler.observe(facet).value).toEqual([2])
+    unsubscribe()
+    await reconciler.configure([])
+    expect(disposals).toBe(1)
+  }
+)
+
+it('keeps mutations blocked until failed acquisition finishes its asynchronous rollback', async () => {
+  const reconciler = new Registry()
+  let finish: () => void = () => {
+    throw new Error('Rollback has not started')
+  }
+  const acquired: Subtree = {
+    create: () => ({
+      items: [],
+      dispose: () =>
+        new Promise<void>((resolve) => {
+          finish = resolve
+        }),
+    }),
+  }
+  const failure = new Error('acquisition failed')
+  const broken: Subtree = {
+    create: () => {
+      throw failure
+    },
+  }
+  const completion = reconciler.configure([acquired, broken])
+  await expect(reconciler.configure([])).rejects.toThrow('already in progress')
+  finish()
+  await expect(completion).rejects.toBe(failure)
+  await reconciler.configure([])
 })

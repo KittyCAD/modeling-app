@@ -1,4 +1,5 @@
-import type { Binding, Item, Subtree } from './algebra'
+import type { Binding, Item, Key, Subtree } from './algebra'
+import { itemKey } from './algebra'
 import { formatPath, type ItemPath } from './path'
 
 /** A unique executable item and the path where planning first encountered it. */
@@ -16,13 +17,19 @@ export class DependencyCycleError extends Error {
 }
 
 /** Expand declared dependencies, without installing bindings or acquiring children. */
-export function plan(items: readonly Item[]): readonly PlannedItem[] {
+export function plan(
+  items: readonly Item[],
+  selected: ReadonlyMap<Key, Item> = new Map()
+): readonly PlannedItem[] {
   const result: PlannedItem[] = []
-  const completed = new Set<Item>()
-  const active = new Map<Item, ItemPath>()
+  const completed = new Set<Key>()
+  const active = new Map<Key, ItemPath>()
 
   const visit = (item: Item, path: ItemPath): void => {
-    const start = active.get(item)
+    const key = itemKey(item)
+    const winner = selected.get(key)
+    if (winner !== undefined && winner !== item) return
+    const start = active.get(key)
     if (start !== undefined) {
       const paths = [...active.values()]
       throw new DependencyCycleError([
@@ -30,8 +37,8 @@ export function plan(items: readonly Item[]): readonly PlannedItem[] {
         path,
       ])
     }
-    if (completed.has(item)) return
-    active.set(item, path)
+    if (completed.has(key)) return
+    active.set(key, path)
 
     if ('create' in item) {
       item.dependencies?.forEach((dependency, index) =>
@@ -44,8 +51,8 @@ export function plan(items: readonly Item[]): readonly PlannedItem[] {
       item.forEach((child, index) => visit(child, [...path, ['items', index]]))
     }
 
-    active.delete(item)
-    completed.add(item)
+    active.delete(key)
+    completed.add(key)
   }
 
   items.forEach((item, index) => visit(item, [index]))

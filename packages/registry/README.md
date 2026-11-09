@@ -2,8 +2,21 @@
 
 Reactive registry framework for Zoo Design Studio.
 
-An experimental [algebra sketch](./ALGEBRA.md) explores a smaller core vocabulary
-using Signals, Facets, Services, Contracts, and Slots.
+The new runtime is available separately at `@kittycad/registry/next`; the default
+entrypoint below remains unchanged. See the [algebra and next runtime guide](./ALGEBRA.md)
+for Facets, keyed Subtrees, transactional reconfiguration, diagnostics, and plugins.
+
+```ts
+import { Registry, Facet, contribute, slot } from '@kittycad/registry/next'
+
+const panels = new Facet('panels', (values: readonly string[]) => values)
+const sidebar = slot([contribute(panels, () => 'outline')], 'sidebar')
+const registry = new Registry()
+await registry.configure([sidebar])
+await registry.replace(sidebar, [contribute(panels, () => 'search')])
+registry.get(panels) // ['search']
+await registry.dispose()
+```
 
 This package provides:
 
