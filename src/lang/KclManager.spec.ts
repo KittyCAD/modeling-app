@@ -517,6 +517,135 @@ describe('KclManager settings ownership', () => {
   })
 })
 
+describe('KclManager storage checks before sketch insertion', () => {
+  async function setup() {
+    const { app, kclManager } = createKclManagerTestHarness()
+    await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+    await KclManager.fromFile(
+      new File('/project/main.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      'width = 1',
+      { shouldSyncRustOnOpen: false }
+    )
+    const schedule = vi
+      .spyOn(kclManager, 'scheduleCurrentCodeExecution')
+      .mockImplementation(() => {})
+    const execute = vi
+      .spyOn(kclManager, 'flushPendingEditorExecution')
+      .mockResolvedValue()
+    return { app, kclManager, schedule, execute }
+  }
+
+  it.each(['local', 'cloud'] as const)(
+    'uses newer %s contents before generating geometry after a seven-second read',
+    async (kind) => {
+      const { app, kclManager, schedule, execute } = await setup()
+      vi.useFakeTimers()
+      const gate = Promise.withResolvers<string>()
+      const read = vi
+        .spyOn(kclManager.textFileIO, 'read')
+        .mockImplementation(() =>
+          kind === 'local' ? gate.promise : Promise.resolve('width = 2')
+        )
+      const write = vi.spyOn(kclManager.textFileIO, 'write')
+      const refresh = vi.fn(async () => {
+        await gate.promise
+      })
+      try {
+        const ready = kclManager.refreshFileBeforeSketchInsertion(
+          kind === 'cloud' ? refresh : undefined
+        )
+        await vi.advanceTimersByTimeAsync(7_000)
+        expect(kclManager.code).toBe('width = 1')
+        expect(execute).not.toHaveBeenCalled()
+        if (kind === 'cloud') {
+          expect(refresh).toHaveBeenCalledOnce()
+          expect(read).not.toHaveBeenCalled()
+        }
+        gate.resolve('width = 2')
+        await ready
+        expect(kclManager.code).toBe('width = 2')
+        expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+        expect(schedule).toHaveBeenCalledWith(false)
+        expect(execute).toHaveBeenCalledOnce()
+        expect(write).not.toHaveBeenCalled()
+      } finally {
+        gate.resolve('width = 2')
+        app.dispose()
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  it('synchronizes newer text already loaded by a watcher before generating geometry', async () => {
+    const { app, kclManager, schedule, execute } = await setup()
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('width = 2')
+    try {
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: kclManager.path,
+        nextContent: 'width = 2',
+      })
+      await kclManager.refreshFileBeforeSketchInsertion()
+      expect(schedule).toHaveBeenCalledWith(false)
+      expect(execute).toHaveBeenCalledOnce()
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('stops before refreshing storage if existing edits could not be saved', async () => {
+    const { app, kclManager, schedule } = await setup()
+    vi.spyOn(kclManager, 'flushWriteToFile').mockResolvedValue(false)
+    const refresh = vi.fn()
+    const read = vi.spyOn(kclManager.textFileIO, 'read')
+    try {
+      await expect(
+        kclManager.refreshFileBeforeSketchInsertion(refresh)
+      ).rejects.toThrow('Save your current edits')
+      expect(refresh).not.toHaveBeenCalled()
+      expect(read).not.toHaveBeenCalled()
+      expect(schedule).not.toHaveBeenCalled()
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it.each(['typing', 'switching', 'closing', 'read failure'] as const)(
+    'cancels insertion on %s during the storage check',
+    async (change) => {
+      const { app, kclManager, schedule, execute } = await setup()
+      const gate = Promise.withResolvers<string>()
+      const read = vi
+        .spyOn(kclManager.textFileIO, 'read')
+        .mockReturnValue(gate.promise)
+      try {
+        const ready = kclManager.refreshFileBeforeSketchInsertion()
+        const rejected = expect(ready).rejects.toThrow()
+        await vi.waitFor(() => expect(read).toHaveBeenCalledOnce())
+        if (change === 'typing')
+          kclManager.updateCodeEditor('width = 3', {
+            shouldExecute: false,
+            shouldWriteToDisk: false,
+          })
+        else if (change === 'switching') kclManager.path = '/project/other.kcl'
+        else if (change === 'closing') kclManager.close()
+        if (change === 'read failure') gate.reject(new Error('Read failed'))
+        else gate.resolve('width = 2')
+        await rejected
+        expect(kclManager.code).toBe(
+          change === 'typing' ? 'width = 3' : 'width = 1'
+        )
+        expect(schedule).not.toHaveBeenCalled()
+        expect(execute).not.toHaveBeenCalled()
+      } finally {
+        gate.resolve('width = 2')
+        app.dispose()
+      }
+    }
+  )
+})
+
 describe('KclManager live operation updates', () => {
   it.each([
     { dirty: false, connected: false },

@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { expect, test as appTest } from '@e2e/playwright/zoo-test'
 import { test as browserTest } from '@e2e/playwright/base-test'
+import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import {
   setup,
@@ -329,6 +330,64 @@ for (const kind of ['local', 'cloud'] as const) {
     `${kind} project workflow contract`,
     { tag: ['@web', '@desktop'] },
     () => {
+      test('reads newer file contents before inserting each sketch shape', async ({
+        page,
+        context,
+      }, testInfo) => {
+        test.setTimeout(180_000)
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const scene = new SceneFixture(page)
+        const toolbar = new ToolbarFixture(page)
+        const root = await storage.seed(
+          'Fresh sketch contents',
+          `${blankCode}width = 1\n`
+        )
+        await storage.refresh()
+        await storage.home.openProject('Fresh sketch contents')
+        await scene.settled()
+        await page.evaluate(() =>
+          window.app.project?.executingEditor.peek()?.unwatch()
+        )
+        await storage.replace(
+          root,
+          `${blankCode}// before creating the sketch\nwidth = 2\n`
+        )
+        await toolbar.startSketchOnDefaultPlane('Top plane')
+        await expect.poll(() => storage.read(root)).toContain('sketch(')
+        await expect
+          .poll(() => storage.read(root))
+          .toContain('// before creating the sketch')
+        await page.getByTestId('point').click()
+        for (const [index, position] of [
+          [0.25, 0.35],
+          [0.65, 0.6],
+        ].entries()) {
+          const previous = await storage.read(root)
+          if (!previous) throw new Error('Missing saved sketch')
+          const marker = `// external edit ${index}\n`
+          await page.evaluate(() =>
+            window.app.project?.executingEditor.peek()?.unwatch()
+          )
+          await storage.replace(root, marker + previous)
+          const [click] = scene.makeMouseHelpers(position[0], position[1], {
+            format: 'ratio',
+          })
+          await click()
+          await expect(
+            page.locator('[data-handle="sketch-point-handle"]')
+          ).toHaveCount(index + 1)
+          await expect.poll(() => storage.read(root)).toContain(marker.trim())
+          await expect
+            .poll(
+              async () =>
+                (await storage.read(root))?.match(/point\(/g)?.length ?? 0
+            )
+            .toBe(index + 1)
+        }
+      })
+
       test('revalidates identical code in different files after deleting an import', async ({
         page,
         context,

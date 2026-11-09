@@ -53,6 +53,15 @@ function runtime(
     new_sketch = vi
       .fn<NativeContextContract['new_sketch']>()
       .mockRejectedValue(new Error('Native sketch boundary reached'))
+    add_segment = vi
+      .fn<NativeContextContract['add_segment']>()
+      .mockRejectedValue(new Error('Native sketch boundary reached'))
+    chain_segment = vi
+      .fn<NativeContextContract['chain_segment']>()
+      .mockRejectedValue(new Error('Native sketch boundary reached'))
+    edit_segments = vi
+      .fn<NativeContextContract['edit_segments']>()
+      .mockRejectedValue(new Error('Native sketch boundary reached'))
     edit_sketch = vi
       .fn<NativeContextContract['edit_sketch']>()
       .mockRejectedValue(new Error('Native sketch boundary reached'))
@@ -74,6 +83,67 @@ function owner(module: Promise<ModuleType>) {
 }
 
 describe('RustContext module lifecycle', () => {
+  it.each(['add', 'chain'] as const)(
+    'waits seven seconds for fresh storage before %s insertion, but not dragging',
+    async (operation) => {
+      vi.useFakeTimers()
+      const native = runtime('insertion')
+      const settings = new Actor(settingsMachine)
+      const gate = Promise.withResolvers<undefined>()
+      const before = vi.fn(() => gate.promise)
+      const context = new RustContext(
+        Promise.resolve(native.module),
+        new ConnectionManager({ settingsActor: settings }),
+        settings,
+        0,
+        before
+      )
+      const segment = {
+        type: 'Point',
+        position: {
+          x: { type: 'Var', value: 1, units: 'Mm' },
+          y: { type: 'Var', value: 2, units: 'Mm' },
+        },
+      } as const
+      try {
+        const call =
+          operation === 'add'
+            ? context.addSegment(0, 1, segment, undefined, {})
+            : context.chainSegment(0, 1, 2, segment, undefined, {})
+        const result = expect(call).rejects.toThrow(
+          'Native sketch boundary reached'
+        )
+        await vi.advanceTimersByTimeAsync(7_000)
+        expect(before).toHaveBeenCalledOnce()
+        expect(native.instances[0].add_segment).not.toHaveBeenCalled()
+        expect(native.instances[0].chain_segment).not.toHaveBeenCalled()
+        gate.resolve(undefined)
+        await result
+        expect(
+          operation === 'add'
+            ? native.instances[0].add_segment
+            : native.instances[0].chain_segment
+        ).toHaveBeenCalledOnce()
+        await expect(context.editSegments(0, 1, [], {})).rejects.toThrow(
+          'Native sketch boundary reached'
+        )
+        expect(native.instances[0].edit_segments).toHaveBeenCalledOnce()
+        expect(before).toHaveBeenCalledOnce()
+        before.mockRejectedValueOnce(new Error('Cannot refresh storage'))
+        await expect(
+          context.addSegment(0, 1, segment, undefined, {})
+        ).rejects.toThrow('Cannot refresh storage')
+        expect(native.instances[0].add_segment).toHaveBeenCalledTimes(
+          operation === 'add' ? 1 : 0
+        )
+      } finally {
+        gate.resolve(undefined)
+        context.destroy()
+        vi.useRealTimers()
+      }
+    }
+  )
+
   it.each(['newSketch', 'editSketch', 'exitSketch'])(
     '%s inherits current complete settings',
     async (operation) => {
