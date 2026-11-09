@@ -68,7 +68,7 @@ pub struct Snapshot3d {
 
 /// Execute the kcl and ask the engine to render an image
 /// 2d kcl files can't be exported for local render
-/// Fails if geometry_only = true
+/// Geometry-only sessions temporarily enable CPU software graphics.
 /// CTX should be closed by caller.
 async fn execute_locally_and_render_on_engine(
     ctx: &ExecutorContext,
