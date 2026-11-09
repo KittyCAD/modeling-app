@@ -140,12 +140,8 @@ export function sampleEdge(
         const a = points[points.length - 1]
         const b = evaluate(boundaries[i])
         subdivide(evaluate, boundaries[i - 1], a, boundaries[i], b, 0, points)
-        if (points.length > MAX_SEGMENTS + 1) break
       }
 
-      if (points.length > MAX_SEGMENTS + 1) {
-        points = sampleUniformly(evaluate, t0, t1, MAX_SEGMENTS)
-      }
       break
     }
 

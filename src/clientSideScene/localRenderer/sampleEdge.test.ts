@@ -22,7 +22,6 @@ it.each([
   const zs = points.map((p) => p.z)
   expect(Math.max(...ys) - Math.min(...ys)).toBeCloseTo(0.01, 5)
   expect(Math.max(...zs) - Math.min(...zs)).toBeCloseTo(0.01, 5)
-  expect(points.length).toBeLessThanOrEqual(513)
   for (const [point, t] of [
     [points[0], t0],
     [points[points.length - 1], t1],
@@ -30,5 +29,45 @@ it.each([
     expect(point.x).toBeCloseTo(0.02 + (0.01 * t) / 16, 8)
     expect(point.y).toBeCloseTo(0.035, 8)
     expect(point.z).toBeCloseTo(-0.03, 8)
+  }
+})
+
+it('keeps the chord tolerance on a 128-turn helix', () => {
+  const repeats = 32
+  const original = fixture.curve.nurbs.controlPoints
+  const controls = Array.from({ length: repeats }, (_, repeat) =>
+    original.slice(0, -1).map(([x, y, z]) => [x + repeat * 0.01, y, z])
+  ).flat()
+  const [x, y, z] = original[original.length - 1]
+  controls.push([x + (repeats - 1) * 0.01, y, z])
+  const spans = 16 * repeats
+  const knots = [
+    0,
+    ...Array.from({ length: spans + 1 }, (_, i) => [i, i, i]).flat(),
+    spans,
+  ]
+  const curve = {
+    ...fixture.curve,
+    nurbs: {
+      ...fixture.curve.nurbs,
+      controlPoints: controls,
+      knotVector: knots,
+    },
+  }
+  const points = sampleEdge(
+    { ...fixture.edge, t: [0, spans] } as KITTYCAD_GLTF_EDGE,
+    curve as KITTYCAD_GLTF_CURVE3D,
+    [fixture.vertices[0], controls[controls.length - 1]] as [
+      number,
+      number,
+      number,
+    ][]
+  )
+  if (points instanceof Error) throw points
+  expect(points.length).toBeGreaterThan(513)
+  for (let i = 1; i < points.length; i++) {
+    const middle = points[i - 1].clone().add(points[i]).multiplyScalar(0.5)
+    const radius = Math.hypot(middle.y - 0.04, middle.z + 0.03)
+    expect(0.005 - radius).toBeLessThanOrEqual(0.002 / 1000)
   }
 })
