@@ -5,6 +5,7 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
   return { ...actual, reportClientError }
 })
 
+import type { ModelingCmdReq } from '@kittycad/lib'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
@@ -137,6 +138,53 @@ describe('ConnectionManager', () => {
       metadata: { pendingCommandCount: 2 },
     })
   })
+
+  it.each([
+    { type: 'begin_execution', enable_render: true },
+    { type: 'end_execution' },
+  ] satisfies ModelingCmdReq['cmd'][])(
+    'allows $type after interruption while blocking modeling work',
+    async (boundary) => {
+      const manager = createConnectionManager()
+      addConnectedState(manager)
+      manager.executionIsStale = true
+      const sendCommand = vi.spyOn(manager, 'sendCommand').mockResolvedValue([
+        {
+          success: true,
+          request_id: 'boundary',
+          resp: {
+            type: 'modeling',
+            data: { modeling_response: { type: boundary.type, data: {} } },
+          },
+        },
+      ])
+      const sendModeling = (id: string, cmd: ModelingCmdReq['cmd']) =>
+        manager.sendModelingCommandFromWasm(
+          id,
+          '[0,0,0]',
+          JSON.stringify({ type: 'modeling_cmd_req', cmd_id: id, cmd }),
+          '{}'
+        )
+
+      await expect(
+        sendModeling('stale', { type: 'scene_clear_all' })
+      ).rejects.toBe(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+      expect(sendCommand).not.toHaveBeenCalled()
+
+      await expect(sendModeling('boundary', boundary)).resolves.toBeInstanceOf(
+        Uint8Array
+      )
+      expect(sendCommand).toHaveBeenCalledExactlyOnceWith('boundary', {
+        command: {
+          type: 'modeling_cmd_req',
+          cmd_id: 'boundary',
+          cmd: boundary,
+        },
+        range: [0, 0, 0],
+        idToRangeMap: {},
+      })
+    }
+  )
 
   function reconnectHarness() {
     const manager = createConnectionManager()
