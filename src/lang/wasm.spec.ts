@@ -89,7 +89,7 @@ beforeEach(async () => {
   }
 
   const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
+    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
   instanceInThisFile = instance
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
@@ -583,6 +583,75 @@ describe('isExtensionARelevantExtension', () => {
 })
 
 describe('Project file lifecycle', () => {
+  it('rejects an unregistered execution path without changing the owned scene', async () => {
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+radiusValue = 10mm
+height = 5mm
+profile = sketch(on = XY) {
+  perimeter = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([perimeter.center, ORIGIN])
+  radius(perimeter) == radiusValue
+  horizontal([perimeter.center, perimeter.start])
+}
+body = extrude(region(segments = [profile.perimeter]), length = height)
+`
+    const file: ApiFile = { id: 0, path: '/cache-owner/main.kcl', text: code }
+    const context = rustContextInThisFile
+    const manager = engineCommandManagerInThisFile
+    await context.sendOpenProject(file.path, [file])
+    const ast = assertParse(code, instanceInThisFile)
+    const warm = await context.execute(ast, {}, file.path)
+    const body = warm.variables.body
+    if (body?.type !== 'Solid') throw new Error('Expected the real solid')
+    const receipt = async () => {
+      const result = await manager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: crypto.randomUUID(),
+        cmd: {
+          type: 'scene_get_entity_ids',
+          filter: ['solid3d'],
+          skip: 0,
+          take: 100,
+        },
+      })
+      const reply = isArray(result) ? result[0] : result
+      if (
+        !reply ||
+        !reply.success ||
+        !('resp' in reply) ||
+        reply.resp.type !== 'modeling' ||
+        reply.resp.data.modeling_response.type !== 'scene_get_entity_ids'
+      )
+        throw new Error('Expected real engine solid IDs')
+      return {
+        bodyIds: reply.resp.data.modeling_response.data.entity_ids
+          .flat()
+          .sort(),
+        defaultPlanes: context.defaultPlanes,
+        project: await context.getProjectState(),
+        sessionId: manager.engineSessionId,
+      }
+    }
+    const original = await receipt()
+    expect(original.bodyIds).toEqual([body.value.id])
+    expect(original.defaultPlanes).not.toBeNull()
+    manager.clearCommandLogs()
+    await expect(
+      context.execute(ast, {}, '/cache-owner/unregistered.kcl')
+    ).rejects.toThrow('does not match registered active file')
+    expect(await receipt()).toEqual(original)
+    const retained = await context.execute(ast, {}, file.path)
+    expect(retained.engineSceneGeneration).toBe(warm.engineSceneGeneration)
+    expect(retained.defaultPlanes).toEqual(warm.defaultPlanes)
+    expect(retained.variables.body).toEqual(body)
+    expect(await receipt()).toEqual(original)
+    const commands = manager.commandLogs.flatMap((log) =>
+      log.type === 'receive-reliable' && log.cmd_type ? [log.cmd_type] : []
+    )
+    expect(commands).not.toContain('set_kcl_version')
+    expect(commands).not.toContain('scene_clear_all')
+  }, 90_000)
+
   it('accepts open, update, and get requests', async () => {
     const projectFiles: ApiFile[] = [
       { id: 0, path: 'some/path/main.kcl', text: 'The first file!' },
@@ -590,10 +659,9 @@ describe('Project file lifecycle', () => {
       { id: 2, path: 'some/path/home.kcl', text: 'The third file 🐘' },
     ]
 
-    await rustContextInThisFile.sendOpenProject(
-      'not-important-to-test',
-      projectFiles
-    )
+    const currentFile = projectFiles[0]
+    if (!currentFile) expect.fail('Expected an active project file')
+    await rustContextInThisFile.sendOpenProject(currentFile.path, projectFiles)
     expect(await rustContextInThisFile.getProjectState()).toEqual(projectFiles)
 
     const newText = 'Things sure are changing.'

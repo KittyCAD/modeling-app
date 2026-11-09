@@ -26,6 +26,7 @@ import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
+import { parse as parseToml } from 'smol-toml'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
@@ -57,6 +58,7 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
@@ -110,10 +112,71 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
-async function waitForAppLoad(page: Page) {
+export async function waitForAuthentication(page: Page) {
+  // A document reload can finish while Auth still hides the Home route.
+  try {
+    await page.waitForFunction(() => {
+      const snapshot = window.app?.auth.actor.getSnapshot()
+      return snapshot !== undefined && !snapshot.matches('checkIfLoggedIn')
+    })
+  } catch (error) {
+    let diagnosticTimeout: ReturnType<typeof setTimeout> | undefined
+    try {
+      // Bound this failure-only read so a renderer hang cannot block cleanup.
+      const diagnostic = await Promise.race([
+        page
+          .evaluate(() => {
+            const snapshot = window.app?.auth.actor.getSnapshot()
+            return {
+              readyState: document.readyState,
+              visibility: document.visibilityState,
+              focused: document.hasFocus(),
+              appPresent: window.app !== undefined,
+              authStatus: snapshot?.status ?? null,
+              authState: snapshot?.value ?? null,
+              didAuth:
+                performance.getEntriesByName('code/didAuth', 'mark').length > 0,
+              online: navigator.onLine,
+            }
+          })
+          .catch(() => ({ diagnosticUnavailable: true })),
+        new Promise<{ diagnosticUnavailable: true }>((resolve) => {
+          diagnosticTimeout = setTimeout(
+            () => resolve({ diagnosticUnavailable: true }),
+            2000
+          )
+        }),
+      ])
+      throw new Error(
+        `Home authentication readiness failed: ${JSON.stringify(diagnostic)}`,
+        { cause: error }
+      )
+    } finally {
+      if (diagnosticTimeout) clearTimeout(diagnosticTimeout)
+    }
+  }
+  expect(
+    await page.evaluate(() => window.app.auth.actor.getSnapshot().value),
+    'Home startup requires loggedIn authentication'
+  ).toBe('loggedIn')
+}
+
+export async function waitForAppLoad(page: Page) {
   const home = page.getByTestId('home-section')
   const modelingScene = page.getByRole('button', { name: 'Start Sketch' })
+  const continueInBrowser = page.getByTestId('continue-to-web-app-button')
+  await expect(home.or(modelingScene).or(continueInBrowser)).toBeVisible({
+    timeout: 20_000,
+  })
+  if (await continueInBrowser.isVisible()) await continueInBrowser.click()
   await expect(home.or(modelingScene)).toBeVisible({ timeout: 20_000 })
+  // A completed document navigation does not await the deferred app bootstrap
+  // or its settings I/O. Fixture callers need the current, loaded actor.
+  await page.waitForFunction(
+    () => window.app?.settings.actor.getSnapshot().matches('idle'),
+    undefined,
+    { timeout: 20_000 }
+  )
 }
 
 export async function waitForWebKitBillingToSettle(page: Page) {
@@ -125,9 +188,9 @@ export async function waitForWebKitBillingToSettle(page: Page) {
     .poll(
       () =>
         page.evaluate(() => {
-          const snapshot = window.app.billing.actor.getSnapshot()
+          const snapshot = window.app?.billing?.actor.getSnapshot()
           return (
-            snapshot.value === 'waiting' &&
+            snapshot?.value === 'waiting' &&
             (snapshot.context.lastFetch !== undefined ||
               snapshot.context.error !== undefined)
           )
@@ -239,8 +302,8 @@ async function closeKclCodePanel(page: Page) {
 async function openDebugPanel(page: Page) {
   await openPane(page, 'debug-pane-button')
 
-  // The debug pane needs time to load everything.
-  await page.waitForTimeout(3000)
+  // Wait for the lazy pane contents rather than imposing a fixed delay.
+  await expect(page.getByTestId('debug-panel')).toBeAttached()
 }
 
 export async function closeDebugPanel(page: Page) {
@@ -394,20 +457,7 @@ export const getMovementUtils = (opts: any) => {
   return { toSU, toU, click00r }
 }
 
-async function waitForAuthAndLsp(page: Page) {
-  const waitForLspPromise = page.waitForEvent('console', {
-    predicate: async (message: any) => {
-      // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
-      // but that doesn't seem to make it to the console for macos/safari :(
-      if (message.text().includes('start kcl lsp')) {
-        await new Promise((resolve) => setTimeout(resolve, 200))
-        return true
-      }
-      return false
-    },
-    timeout: 45_000,
-  })
-
+async function waitForAuth(page: Page) {
   if (process.env.VERCEL_BASE_URL) {
     // set bypass secret for the page's requests based on the hostname
     let secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
@@ -438,7 +488,6 @@ async function waitForAuthAndLsp(page: Page) {
 
   await page.goto('/')
   await waitForAppLoad(page)
-  return waitForLspPromise
 }
 
 /**
@@ -489,7 +538,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
   }
 
   const util = {
-    waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
+    waitForAuth: () => waitForAuth(page),
     waitForPageLoad: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
@@ -1023,8 +1072,19 @@ export async function setup(
   page: Page,
   testInfo?: TestInfo,
   userFeatures: readonly Feature[] = [],
-  { cloudSyncEnabled = false }: { cloudSyncEnabled?: boolean } = {}
+  {
+    cloudSyncEnabled = false,
+    reload = true,
+    mockApiRoutes = true,
+  }: {
+    cloudSyncEnabled?: boolean
+    mockApiRoutes?: boolean
+    reload?: boolean
+  } = {}
 ) {
+  if (!mockApiRoutes && userFeatures.length > 0)
+    throw new Error('userFeatures requires mockApiRoutes to be enabled')
+
   const testProjectSettings =
     TEST_SETTINGS.project &&
     typeof TEST_SETTINGS.project === 'object' &&
@@ -1033,17 +1093,24 @@ export async function setup(
       : undefined
 
   await context.unroute('**/user/features')
-  await context.route('**/user/features', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        features: userFeatures.map((id) => ({ id })),
-      }),
+  if (mockApiRoutes) {
+    await context.route('**/user/features', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          features: userFeatures.map((id) => ({ id })),
+        }),
+      })
     })
-  })
-
-  await installSlowFsForPlaywright(page)
+    await installSlowFsForPlaywright(page)
+  } else {
+    // Electron reuses its context. Remove previous tests' API interceptions
+    // before any init script reloads the app for this live test.
+    await context.unroute('**/user/client-errors')
+    await page.unroute('**/user/features')
+    await page.unroute('**/user/client-errors')
+  }
 
   await page.addInitScript(
     async ({
@@ -1122,8 +1189,8 @@ export async function setup(
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 
-  // Trigger a navigation, since loading file:// doesn't.
-  await page.reload()
+  // Electron batches scripts and settings before its final startup navigation.
+  if (reload) await page.reload()
 }
 
 const slowFsMethodNames = [
@@ -1359,6 +1426,24 @@ export function kclSamplesPath(fileName: string): string {
   return path.join('public', 'kcl-samples', fileName)
 }
 
+// Restore the camera used when a model is initially loaded.
+export async function resetView(scene: SceneFixture) {
+  // The camera may already face this way, so no image change is guaranteed.
+  await scene.moveCameraTo({ x: 0, y: -128, z: 64 }, undefined, {
+    waitForImageChange: false,
+  })
+  await doAndWaitForImageDiff(scene.streamWrapper, async () => {
+    await scene.streamWrapper.click({
+      button: 'right',
+      position: { x: 10, y: 100 },
+    })
+    await scene.page
+      .getByTestId('view-controls-menu')
+      .getByRole('button', { name: 'Reset view' })
+      .click()
+  })
+}
+
 export async function doAndWaitForImageDiff(
   pageOrLocator: Page | Locator,
   fn: () => Promise<unknown>,
@@ -1469,8 +1554,7 @@ export function tomlToSettings(toml: string): DeepPartial<Configuration> {
 export function tomlToPerProjectSettings(
   toml: string
 ): DeepPartial<ProjectConfiguration> {
-  // eslint-disable-next-line no-restricted-syntax
-  return TOML.parse(toml)
+  return parseToml(toml)
 }
 
 export function perProjectSettingsToToml(

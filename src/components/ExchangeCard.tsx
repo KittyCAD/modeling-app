@@ -8,6 +8,8 @@ import {
   Thinking,
 } from '@src/components/Thinking'
 import Tooltip from '@src/components/Tooltip'
+import { isImageMimetype } from '@src/lib/mimeTypes'
+import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import {
   type Exchange,
   getZookeeperAttachmentKey,
@@ -320,6 +322,7 @@ export const RequestCard = (props: RequestCardProps) => {
               Attachments
             </div>
             {visibleAttachments.map((file, index) => {
+              const isImage = isImageMimetype(file.mimetype)
               const attachmentRef = file.attachment_ref
               const fetchState = attachmentRef
                 ? props.attachmentFetches?.[
@@ -334,22 +337,30 @@ export const RequestCard = (props: RequestCardProps) => {
 
               const contents = (
                 <>
-                  <CustomIcon name="paperclip" className="w-3 h-3 shrink-0" />
-                  <span className="min-w-0 truncate">{file.name}</span>
+                  <ZookeeperAttachmentPreview
+                    file={
+                      fetchState?.status === 'loaded' ? fetchState.file : file
+                    }
+                  />
                   {fetchState?.status === 'loading' && (
-                    <span className="text-chalkboard-70 dark:text-chalkboard-40">
+                    <span
+                      className={
+                        isImage
+                          ? 'sr-only'
+                          : 'text-chalkboard-70 dark:text-chalkboard-40'
+                      }
+                    >
                       Loading…
                     </span>
                   )}
-                  {fetchState?.status === 'loaded' && (
+                  {fetchState?.status === 'loaded' && !isImage && (
                     <span className="text-chalkboard-70 dark:text-chalkboard-40">
                       Loaded
                     </span>
                   )}
                 </>
               )
-              const className =
-                'flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 px-2 py-1 text-xs'
+              const className = `m-0 flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 text-xs ${isImage ? 'p-0' : 'px-2 py-1'}`
 
               return canFetch ? (
                 <button
@@ -381,14 +392,6 @@ export const RequestCard = (props: RequestCardProps) => {
         </div>
       )}
     </>
-  )
-}
-
-export const Delta = (props: { children: ReactNode }) => {
-  return (
-    <span className="animate-delta-in" style={{ opacity: 0 }}>
-      {props.children}
-    </span>
   )
 }
 
@@ -428,7 +431,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       //   return response.delta.delta
       // }
       if ('info' in response && !isTransientRetryInfoResponse(response)) {
-        return <Delta key={index}>{response.info.text}</Delta>
+        return <span key={index}>{response.info.text}</span>
       }
       return null
     }
@@ -522,7 +525,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
 
   const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
-    transition-height duration-500 overflow-hidden text-sm
+    overflow-hidden text-sm
   `
 
   const onSeeReasoning = () => {

@@ -12,6 +12,8 @@ const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 import {
   type SourceRange,
   assertParse,
+  getAllOperations,
+  recast,
   defaultNodePath,
   nodePathFromRange,
   pathToNodeFromRustNodePath,
@@ -30,6 +32,10 @@ import {
   groupOperationTypeStreaks,
   hiddenArtifactIdsFromOperations,
 } from '@src/lib/operations'
+import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
+import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { enginelessExecutor } from '@src/lib/testHelpers'
 import { isErr } from '@src/lib/trap'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
@@ -565,6 +571,76 @@ describe('operations.test.ts', () => {
       defaultNodePath()
     )
   }
+
+  describe('tagged treatment edit flow', () => {
+    it.each(['Fillet', 'Chamfer'] as const)(
+      'edits a tagged %s with a downstream annotation',
+      async (command) => {
+        const world = await buildTheWorldAndNoEngineConnection()
+        const name = command.toLowerCase()
+        const parameter = command === 'Fillet' ? 'radius' : 'length'
+        const code = `@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  bottom = line(start = [0mm, 0mm], end = [30mm, 0mm])
+  right = line(start = [30mm, 0mm], end = [30mm, 20mm])
+  top = line(start = [30mm, 20mm], end = [0mm, 20mm])
+  left = line(start = [0mm, 20mm], end = [0mm, 0mm])
+}
+region001 = region(point = [15mm, 10mm], sketch = profile)
+body = extrude(region001, length = 12mm, tagEnd = $topCap)
+chamfer001 = chamfer(body, edges = [{ sideFaces = [region001.tags.left, body.faces.topCap] }], length = 2mm)
+${name}002 = ${name}(chamfer001, edges = [{ sideFaces = [region001.tags.right, body.faces.topCap] }], ${parameter} = 2mm, tag = $treatmentFace)
+hide(profile)
+gdt::annotation(faces = [treatmentFace], annotation = "yoyo", fontSize = 1.54mm)`
+        const ast = assertParse(code, world.instance)
+        const { operations } = await enginelessExecutor(ast, world.rustContext)
+        const artifactGraph: ArtifactGraph = new Map()
+        const operation = getAllOperations(operations).findLast(
+          (op) => op.type === 'StdLibCall' && op.name === name
+        )
+        if (!operation) throw new Error('Missing treatment operation')
+        const edit = await enterEditFlow({
+          operation,
+          code,
+          artifactGraph,
+          rustContext: world.rustContext,
+        })
+        if (isErr(edit)) throw edit
+        if (edit.type !== 'Find and select command')
+          throw new Error('Expected edit command')
+        const defaults = edit.data
+          .argDefaultValues as ModelingCommandSchema['Fillet']
+        const size = await stringToKclExpression('1mm', world.rustContext)
+        if (isErr(size) || 'errors' in size) throw new Error('Invalid size')
+        const context = {
+          ast,
+          kclManager: world.kclManager,
+          wasmInstance: world.instance,
+        }
+        const result =
+          command === 'Fillet'
+            ? await modelingCommandCodemods.Fillet.run({
+                ...context,
+                args: { ...defaults, radius: size },
+              })
+            : await modelingCommandCodemods.Chamfer.run({
+                ...context,
+                args: { ...defaults, length: size },
+              })
+        if (isErr(result)) throw result
+        const output = recast(result.modifiedAst, world.instance)
+        if (isErr(output)) throw output
+        const expectedCode = code.replace(
+          `${parameter} = 2mm, tag = $treatmentFace`,
+          `${parameter} = 1mm, tag = $treatmentFace`
+        )
+        expect(output).toBe(
+          recast(assertParse(expectedCode, world.instance), world.instance)
+        )
+        await enginelessExecutor(result.modifiedAst, world.rustContext)
+      }
+    )
+  })
 
   describe('tangent chain edit flow', () => {
     it.each(['fillet', 'chamfer'])(
@@ -1610,13 +1686,13 @@ clone001 = clone(extrude001)`
   describe('variable name of operations', () => {
     it('finds the variable name with simple assignment', async () => {
       const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-      const op = stdlib('stdLibFn')
+      const op = stdlib('gdt::note')
       if (op.type !== 'StdLibCall') {
         throw new Error('Expected operation to be a StdLibCall')
       }
-      const code = `myVar = stdLibFn()`
+      const code = `myVar = gdt::note()`
       // Make the path match the code.
-      op.nodePath = await buildNodePath(code, 'stdLibFn()', instance)
+      op.nodePath = await buildNodePath(code, 'gdt::note()', instance)
 
       const program = assertParse(code, instance)
       const variableName = getOperationVariableName(op, program, instance)

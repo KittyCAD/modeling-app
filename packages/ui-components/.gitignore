@@ -2,3 +2,6 @@ dist
 storybook-static
 *.config.d.ts
 *.config.d.ts.map
+storybook-web-components-static/
+test-results/
+playwright-report/

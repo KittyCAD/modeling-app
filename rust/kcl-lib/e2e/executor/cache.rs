@@ -65,7 +65,7 @@ async fn cache_test(
                 std::fs::write(tmp_file, variant_code).unwrap();
             }
 
-            ctx.settings.project_directory = Some(kcl_lib::TypedPath(tmp_dir.clone()));
+            ctx.settings.project_directory = Some(kcl_lib::TypedPath(tmp_dir));
         }
 
         let outcome = match ctx.run_with_caching(program).await {

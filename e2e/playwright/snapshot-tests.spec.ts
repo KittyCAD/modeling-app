@@ -63,6 +63,23 @@ function runTestForTheme(mode: Themes) {
     fs,
     folderSetupFn,
   }: SnapshotTestContext) => {
+    // Keep the balance and status bar width independent of the test account.
+    await page.route('**/user/payment/balance?*', (route) =>
+      route.fulfill({ json: { amount_due_after_credits: 0 } })
+    )
+    await page.route('**/user/payment/subscriptions', (route) =>
+      route.fulfill({
+        json: {
+          modeling_app: {
+            name: 'pro',
+            type: { type: 'individual' },
+            zoo_tools_included: ['modeling_app'],
+            endpoints_included: ['ml'],
+          },
+        },
+      })
+    )
+
     const tomlStr = settingsToToml({
       settings: {
         plugins: playwrightPluginSettings({ zookeeperEnabled: true }),
@@ -108,6 +125,10 @@ function runTestForTheme(mode: Themes) {
         page
           .getByTestId('app-header')
           .getByRole('button', { name: 'Zookeeper', exact: true })
+      ).toBeVisible()
+
+      await expect(
+        page.getByTestId('billing-remaining-bar').getByTestId('infinity')
       ).toBeVisible()
 
       // Freeze the welcome videos so playback does not change the snapshots.

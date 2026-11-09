@@ -1,5 +1,6 @@
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown } from '@codemirror/lang-markdown'
+import { python } from '@codemirror/lang-python'
 import { searchKeymap } from '@codemirror/search'
 import { Compartment, EditorState } from '@codemirror/state'
 import {
@@ -17,6 +18,7 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import {
   editorMarkdownHighlight,
+  editorTheme,
   editorVisualTheme,
 } from '@src/editor/plugins/theme'
 import usePlatform from '@src/hooks/usePlatform'
@@ -135,25 +137,23 @@ const textFileEditorTheme = EditorView.theme({
 const textThemeCompartment = new Compartment()
 
 /**
- * The text editor's theme bundle: the visual (light/dark) theme plus, for
- * Markdown files, a theme-aware Markdown highlight style. Both live in one
- * compartment so a theme toggle swaps them together — the Markdown style has to
- * follow the theme or dark mode renders unreadably (light-tuned colors on a
- * dark background).
+ * Keep the visual theme and syntax colors in one compartment so they update
+ * together when the app theme changes. Python uses the same code palette as KCL.
  */
-function textEditorThemeExtensions(
-  theme: 'light' | 'dark',
-  isMarkdown: boolean
-) {
+function textEditorThemeExtensions(theme: 'light' | 'dark', path: string) {
+  const normalizedPath = path.toLowerCase()
+  if (normalizedPath.endsWith('.py')) {
+    return editorTheme[theme]
+  }
   return [
     editorVisualTheme[theme],
-    ...(isMarkdown ? [editorMarkdownHighlight[theme]] : []),
+    ...(normalizedPath.endsWith('.md') ? [editorMarkdownHighlight[theme]] : []),
   ]
 }
 
 /**
- * A lightweight, editable CodeMirror surface for non-KCL text files (Markdown /
- * plain text). It is deliberately independent of `KclManager` so editing these
+ * A lightweight, editable CodeMirror surface for non-KCL text files (Markdown,
+ * Python, or plain text). It is independent of `KclManager` so editing these
  * files never triggers KCL execution, LSP, or WASM project loading. Edits are
  * auto-saved to disk (debounced) via {@link scheduleActiveTextFileWrite}.
  */
@@ -176,8 +176,7 @@ function TextFileEditor({
       return
     }
     const path = activeTextFile.path
-    const isMarkdown = path.toLowerCase().endsWith('.md')
-    const languageExtension = isMarkdown ? [markdown()] : []
+    const normalizedPath = path.toLowerCase()
     const lineSeparator = activeTextFile.text.match(/\r\n|\r|\n/)?.[0]
 
     const view = new EditorView({
@@ -185,10 +184,11 @@ function TextFileEditor({
         doc: activeTextFile.text,
         extensions: [
           textThemeCompartment.of(
-            textEditorThemeExtensions(resolvedTheme, isMarkdown)
+            textEditorThemeExtensions(resolvedTheme, path)
           ),
           textFileEditorTheme,
-          ...languageExtension,
+          ...(normalizedPath.endsWith('.md') ? [markdown()] : []),
+          ...(normalizedPath.endsWith('.py') ? [python()] : []),
           EditorView.lineWrapping,
           history(),
           drawSelection(),
@@ -224,10 +224,9 @@ function TextFileEditor({
 
   // Reconfigure the theme in place — no recreation, no lost edits.
   useEffect(() => {
-    const isMarkdown = activeTextFile.path.toLowerCase().endsWith('.md')
     viewRef.current?.dispatch({
       effects: textThemeCompartment.reconfigure(
-        textEditorThemeExtensions(resolvedTheme, isMarkdown)
+        textEditorThemeExtensions(resolvedTheme, activeTextFile.path)
       ),
     })
   }, [resolvedTheme, activeTextFile.path])

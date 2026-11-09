@@ -238,3 +238,43 @@ fn convert_date_time(offset_dt: OffsetDateTime) -> anyhow::Result<zip::DateTime>
     )
     .map_err(|err| anyhow::anyhow!("Failed to convert date time to MS-DOS format: {}", err))
 }
+
+#[cfg(test)]
+mod tests {
+    use std::io::Read;
+
+    use super::*;
+
+    #[test]
+    fn release_zip_round_trips_with_and_without_symbols() -> Result<()> {
+        let sh = Shell::new()?;
+        let temp = sh.create_temp_dir()?;
+        let server = temp.path().join("kcl-language-server.exe");
+        let symbols = temp.path().join("kcl_language_server.pdb");
+        let archive_path = temp.path().join("release.zip");
+        let server_bytes = b"server\x00\xff\x01";
+        let symbols_bytes = b"symbols\x00\xfe\x02";
+        std::fs::write(&server, server_bytes)?;
+        std::fs::write(&symbols, symbols_bytes)?;
+
+        for include_symbols in [false, true] {
+            zip(&server, include_symbols.then_some(&symbols), &archive_path)?;
+            let mut archive = zip::ZipArchive::new(File::open(&archive_path)?)?;
+            assert_eq!(archive.len(), if include_symbols { 2 } else { 1 });
+
+            let mut expected = vec![("kcl-language-server.exe", server_bytes.as_slice())];
+            if include_symbols {
+                expected.push(("kcl_language_server.pdb", symbols_bytes.as_slice()));
+            }
+            for (name, bytes) in expected {
+                let mut entry = archive.by_name(name)?;
+                assert_eq!(entry.compression(), zip::CompressionMethod::Deflated);
+                assert_eq!(entry.unix_mode().map(|mode| mode & 0o777), Some(0o755));
+                let mut actual = Vec::new();
+                entry.read_to_end(&mut actual)?;
+                assert_eq!(actual, bytes);
+            }
+        }
+        Ok(())
+    }
+}

@@ -24,6 +24,7 @@
     "@codemirror/autocomplete": "^6.20.1",
     "@codemirror/commands": "^6.10.3",
     "@codemirror/lang-markdown": "^6.5.2",
+    "@codemirror/lang-python": "^6.2.1",
     "@codemirror/language": "^6.12.4",
     "@codemirror/lint": "^6.9.7",
     "@codemirror/merge": "^6.12.2",
@@ -33,7 +34,7 @@
     "@csstools/postcss-oklab-function": "^4.0.12",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
-    "@kittycad/lib": "^4.5.14",
+    "@kittycad/lib": "^4.5.28",
     "@lezer/highlight": "^1.2.4",
     "@lezer/lr": "^1.4.10",
     "@microlink/react-json-view": "^1.31.38",
@@ -164,6 +165,9 @@
       "last 1 safari version"
     ]
   },
+  "overrides": {
+    "tar": "^7.5.19"
+  },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^8.0.6",
@@ -219,7 +223,7 @@
     "eslint-plugin-vitest": "^0.5.4",
     "fake-indexeddb": "^6.2.5",
     "fast-check": "^4.9.0",
-    "happy-dom": "^20.9.0",
+    "happy-dom": "^21.0.4",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "msw": "^2.14.6",

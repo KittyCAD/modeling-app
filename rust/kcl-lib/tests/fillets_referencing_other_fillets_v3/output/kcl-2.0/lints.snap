@@ -13,8 +13,8 @@ description: Lints fillets_referencing_other_fillets_v3.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1548,
-      1740,
+      1538,
+      1730,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints fillets_referencing_other_fillets_v3.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1746,
-      1888,
+      1736,
+      1878,
       0
     ],
     "overridden": false,
@@ -47,8 +47,8 @@ description: Lints fillets_referencing_other_fillets_v3.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1894,
-      2040,
+      1884,
+      2030,
       0
     ],
     "overridden": false,

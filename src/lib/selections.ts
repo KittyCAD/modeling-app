@@ -71,6 +71,7 @@ import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
   getOriginalSegmentArtifact,
+  getSegmentArtifactForEdgeCut,
   getPatternArtifactForCopyId,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
@@ -603,14 +604,7 @@ function getTaggableEdgeArtifact(
     return null
   }
 
-  const consumedEdge = getArtifactOfTypes(
-    {
-      key: selection.artifact.consumedEdgeId ?? '',
-      types: ['segment', 'sweepEdge'],
-    },
-    artifactGraph
-  )
-  return err(consumedEdge) ? null : consumedEdge
+  return getSegmentArtifactForEdgeCut(selection.artifact, artifactGraph)
 }
 
 function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {
@@ -1304,7 +1298,9 @@ export async function getSelectionReferences({
               ? artifact.subType === 'region'
                 ? 'Region'
                 : 'Profile'
-              : undefined
+              : artifact?.type === 'gdtAnnotation'
+                ? 'Annotation'
+                : undefined
       if (label) {
         references.push(
           ...createExpressionReferences({
@@ -1535,6 +1531,12 @@ export function normalizeEntityReference(
   const typeRaw = raw.type
   if (typeof typeRaw !== 'string') return null
   const type = typeRaw.toLowerCase()
+
+  if (type === 'annotation') {
+    const annotation_id = raw.annotation_id ?? raw.annotationId
+    if (typeof annotation_id !== 'string') return null
+    return { type: 'annotation', annotation_id }
+  }
 
   if (type === 'plane') {
     const plane_id = raw.plane_id ?? raw.planeId
@@ -1849,7 +1851,9 @@ export async function getEventForQueryEntityTypeWithPoint(
 
   // Get the entity ID from the EntityReference to find the artifact
   let entityId: string | undefined
-  if (entityRef.type === 'plane') {
+  if (entityRef.type === 'annotation') {
+    entityId = entityRef.annotation_id
+  } else if (entityRef.type === 'plane') {
     entityId = entityRef.plane_id
   } else if (entityRef.type === 'face') {
     entityId = entityRef.face_id
@@ -2633,6 +2637,14 @@ export function getSelectionCountByType(
       incrementOrInitializeSelectionType('helix')
       return true
     }
+    if (
+      artifact.type === 'sketchBlock' ||
+      artifact.type === 'gdtAnnotation' ||
+      artifact.type === 'importedGeometry'
+    ) {
+      incrementOrInitializeSelectionType(artifact.type)
+      return true
+    }
     if (artifact.type === 'path' && artifact.subType === 'region') {
       incrementOrInitializeSelectionType('pathRegion')
       return true
@@ -2676,35 +2688,53 @@ export function getSelectionCountByType(
     ).artifact
 
     if (v2Selection.entityRef) {
-      if (v2Selection.entityRef.type === 'helix') {
-        incrementOrInitializeSelectionType('helix')
-      } else if (v2Selection.entityRef.type === 'solid2d_edge') {
-        incrementOrInitializeSelectionType('segment')
-      } else if (
-        v2Selection.entityRef.type === 'edge' ||
-        v2Selection.entityRef.type === 'segment'
-      ) {
-        // All other edge-like refs: show as "edges"
-        incrementOrInitializeSelectionType('segment')
-      } else if (v2Selection.entityRef.type === 'vertex') {
-        incrementOrInitializeSelectionType('other')
-      } else if (v2Selection.entityRef.type === 'face') {
-        incrementOrInitializeSelectionType('wall')
-      } else if (v2Selection.entityRef.type === 'plane') {
-        incrementOrInitializeSelectionType('plane')
-      } else if (v2Selection.entityRef.type === 'solid2d') {
-        const artifact = getArtifactById(v2Selection.entityRef.solid2d_id)
-        if (!artifact || !incrementArtifactSelectionType(artifact)) {
-          incrementOrInitializeSelectionType('solid2d')
+      switch (v2Selection.entityRef.type) {
+        case 'annotation':
+          incrementOrInitializeSelectionType('gdtAnnotation')
+          break
+        case 'helix':
+          incrementOrInitializeSelectionType('helix')
+          break
+        case 'solid2d_edge':
+        case 'edge':
+        case 'segment':
+          // Edge-like refs: show as "edges"
+          incrementOrInitializeSelectionType('segment')
+          break
+        case 'vertex':
+          incrementOrInitializeSelectionType('other')
+          break
+        case 'face':
+          incrementOrInitializeSelectionType('wall')
+          break
+        case 'plane':
+          incrementOrInitializeSelectionType('plane')
+          break
+        case 'solid2d': {
+          const artifact = getArtifactById(v2Selection.entityRef.solid2d_id)
+          if (!artifact || !incrementArtifactSelectionType(artifact)) {
+            incrementOrInitializeSelectionType('solid2d')
+          }
+          break
         }
-      } else if (v2Selection.entityRef.type === 'solid3d') {
-        const artifact = getArtifactById(v2Selection.entityRef.solid3d_id)
-        if (!artifact || !incrementArtifactSelectionType(artifact)) {
-          incrementOrInitializeSelectionType('path')
+        case 'solid3d': {
+          const artifact = getArtifactById(v2Selection.entityRef.solid3d_id)
+          if (!artifact || !incrementArtifactSelectionType(artifact)) {
+            incrementOrInitializeSelectionType('path')
+          }
+          break
         }
+        case 'region':
+          break
       }
     } else if (inlineArtifact?.type === 'helix') {
       incrementOrInitializeSelectionType('helix')
+    } else if (
+      inlineArtifact?.type === 'sketchBlock' ||
+      inlineArtifact?.type === 'gdtAnnotation' ||
+      inlineArtifact?.type === 'importedGeometry'
+    ) {
+      incrementOrInitializeSelectionType(inlineArtifact.type)
     } else if (
       inlineArtifact?.type === 'path' &&
       inlineArtifact.subType === 'region'
@@ -3235,6 +3265,7 @@ const semanticEntityNames: {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
   profile: ['solid2d'],
   region: ['pathRegion', 'engineRegion'],
+  sketch: ['sketchBlock'],
   edge: [
     'segment',
     'sweepEdge',
@@ -3244,6 +3275,8 @@ const semanticEntityNames: {
   ],
   point: [],
   plane: ['defaultPlane'],
+  annotation: ['gdtAnnotation'],
+  object: ['importedGeometry'],
 }
 
 function getSemanticEntityForSelectionType(
@@ -3587,7 +3620,7 @@ function getSweepForFace(
 ) {
   const artifact = artifactGraph.get(faceId)
   let sweep = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
-  if (err(sweep) && artifact?.type === 'edgeCut') {
+  if (isErr(sweep) && artifact?.type === 'edgeCut') {
     sweep = getOwningSweepForEdgeCut(artifact, artifactGraph, ast, wasmInstance)
   }
   return sweep
@@ -3609,7 +3642,7 @@ export function showSketchOnImportForFace(
     ['ImportStatement']
   )
   if (
-    err(maybeImportNode) ||
+    isErr(maybeImportNode) ||
     maybeImportNode.node?.type !== 'ImportStatement'
   ) {
     return false
@@ -3790,7 +3823,10 @@ export function getCodeRefsFromEntityReference(
 ): Array<{ range: SourceRange }> | null {
   const codeRefs: Array<{ range: SourceRange }> = []
 
-  if (entityRef.type === 'helix' && entityRef.helix_id) {
+  if (entityRef.type === 'annotation') {
+    const refs = getCodeRefsByArtifactId(entityRef.annotation_id, artifactGraph)
+    if (refs?.length) codeRefs.push({ range: refs[0].range })
+  } else if (entityRef.type === 'helix' && entityRef.helix_id) {
     const refs = getCodeRefsByArtifactId(entityRef.helix_id, artifactGraph)
     if (refs?.length) codeRefs.push({ range: refs[0].range })
   } else if (entityRef.type === 'segment' && entityRef.segment_id) {
@@ -3836,6 +3872,10 @@ export function getCodeRefsFromEntityReference(
     const faceArtifact = artifactGraph.get(entityRef.face_id)
     if (!faceArtifact) {
       return null
+    }
+
+    if (faceArtifact.type === 'edgeCut') {
+      return getCodeRefsByArtifactId(faceArtifact.id, artifactGraph)
     }
 
     // Wall artifacts have segId pointing to the segment

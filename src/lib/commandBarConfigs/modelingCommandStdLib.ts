@@ -263,8 +263,16 @@ export const modelingCommandStdLibDriftConfig = {
   'Named View': {
     stdLibName: 'view::named',
     additionalStdLibNames: ['view::oriented'],
-    flowArgOrder: ['name', 'orientation', 'projection', 'baseline'],
-    omittedStdLibArgs: ['camera'],
+    uiOnlyArgs: ['cameraMode'],
+    editFlow: true,
+    flowArgOrder: [
+      'name',
+      'cameraMode',
+      'camera',
+      'orientation',
+      'projection',
+      'baseline',
+    ],
   },
   Extrude: {
     stdLibName: 'extrude',
@@ -686,6 +694,17 @@ export function modelingStdLibCall(
   const name = parts.pop() ?? stdLibName
 
   return { name, path: parts }
+}
+
+export function modelingStdLibCommandAvailable(
+  commandName: ModelingStdLibCommandName,
+  context: ModelingMachineContext
+) {
+  return isKclVersionAvailable(
+    context.kclManager.kclProgramVersionSignal.peek(),
+    STD_LIB_COMMANDS[modelingStdLibCommandName(commandName)],
+    context.wasmInstance
+  )
 }
 
 export function modelingStdLibCommandArgs<CommandArgs extends object>(
