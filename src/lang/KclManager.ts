@@ -1639,7 +1639,6 @@ export class KclManager extends File {
   ): Promise<void> {
     const path = this.path
     const generation = this.fileSelectionGeneration
-    const snapshotGeneration = this.cloudSnapshotGeneration
     const isCurrent = () =>
       !this.closed &&
       this.path === path &&
@@ -1660,12 +1659,7 @@ export class KclManager extends File {
       // here would either block behind its write or replace newer geometry.
       // Persistence still checks for external edits before writing; cloud
       // revision conflicts adopt the cloud snapshot and invalidate queued saves.
-      void this.flushWriteToFile().catch(() => undefined)
-      await refreshStorage?.(() => false)
-      if (!isCurrent() || snapshotGeneration !== this.cloudSnapshotGeneration)
-        return Promise.reject(
-          new Error('The active file changed before sketch insertion.')
-        )
+      // Leave the editor's save debounce running, including across line clicks.
       return
     }
     const version = this._documentVersion
@@ -4131,16 +4125,19 @@ export class KclManager extends File {
         requestedPath,
         options,
       }
-      const save = this.fileSaveQueue.has(requestedPath)
-        ? // An active save already supplies the debounce window. Replace its
-          // waiting snapshot immediately, before that upload can acknowledge.
-          this.performDelayedWriteToFile(request)
-        : new Promise<void>((resolve, reject) => {
-            this.timeoutWriter = setTimeout(() => {
-              this.timeoutWriter = undefined
-              this.performDelayedWriteToFile(request).then(resolve, reject)
-            }, EDITOR_SAVE_DEBOUNCE_MS)
-          })
+      // Capture committed source now: the next segment's pointer preview can
+      // change the document before the quiet period ends, without being a save.
+      const snapshot = {
+        ...request,
+        fileSelectionGeneration: this.fileSelectionGeneration,
+        cloudSnapshotGeneration: this.cloudSnapshotGeneration,
+      }
+      const save = new Promise<void>((resolve, reject) => {
+        this.timeoutWriter = setTimeout(() => {
+          this.timeoutWriter = undefined
+          this.fileSaveQueue.save(snapshot).then(resolve, reject)
+        }, EDITOR_SAVE_DEBOUNCE_MS)
+      })
       return save.catch((err: unknown) => {
         if (isPathNotFoundError(err)) {
           return
@@ -4307,14 +4304,11 @@ export class KclManager extends File {
       cloudSnapshotGeneration === this.cloudSnapshotGeneration
     if (!isCurrent()) return
 
-    if (
-      await this.seedDefaultKclVersionOnBlankMain(
-        requestedDocumentVersion,
-        requestedPath
-      )
-    ) {
-      return
-    }
+    const seeded = await this.seedDefaultKclVersionOnBlankMain(
+      requestedDocumentVersion,
+      requestedPath
+    )
+    if (seeded !== undefined) newCode = seeded
 
     const baseline = this._lastKnownFileCode
     const previousWrite =
@@ -4424,20 +4418,20 @@ export class KclManager extends File {
   private async seedDefaultKclVersionOnBlankMain(
     requestedDocumentVersion: number,
     requestedPath: string
-  ): Promise<boolean> {
+  ): Promise<string | undefined> {
     if (!isMainKclPath(requestedPath) || this.code.trim() !== '') {
-      return false
+      return undefined
     }
 
     const wasmInstance = await this.wasmInstancePromise
     if (typeof wasmInstance === 'string') {
-      return false
+      return undefined
     }
     if (
       requestedDocumentVersion !== this._documentVersion ||
       requestedPath !== this.path
     ) {
-      return false
+      return undefined
     }
 
     const currentCode = this.code
@@ -4447,15 +4441,15 @@ export class KclManager extends File {
       wasmInstance
     )
     if (err(seeded) || seeded === currentCode) {
-      return false
+      return undefined
     }
 
     this.updateCodeEditor(seeded, {
       shouldExecute: true,
-      shouldWriteToDisk: true,
+      shouldWriteToDisk: false,
     })
     notifyDefaultKclVersionSeeded()
-    return true
+    return seeded
   }
 
   async updateEditorWithAstAndWriteToFile(

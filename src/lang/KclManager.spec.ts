@@ -31,6 +31,7 @@ import { KCLError } from '@src/lang/errors'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { Connection } from '@src/lib/engineConnection/connection'
 import { File } from '@src/lib/projectSession'
+import { EDITOR_SAVE_DEBOUNCE_MS } from '@src/lib/constants'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { Themes } from '@src/lib/theme'
@@ -1005,8 +1006,9 @@ describe('KclManager storage checks before sketch insertion', () => {
     }
   )
 
-  it('replaces the queued save immediately when an editor commit arrives during an upload', async () => {
+  it('debounces editor commits during an upload instead of saving each click', async () => {
     const { app, kclManager } = await setup()
+    vi.useFakeTimers()
     const gate = Promise.withResolvers<undefined>()
     let stored = 'width = 1'
     vi.spyOn(kclManager.textFileIO, 'read').mockImplementation(
@@ -1023,18 +1025,24 @@ describe('KclManager storage checks before sketch insertion', () => {
         shouldExecute: false,
         shouldWriteToDisk: false,
       })
-      const first = kclManager.flushWriteToFile()
-      await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
+      const first = kclManager.writeToFile()
+      await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
+      expect(write).toHaveBeenCalledOnce()
       kclManager.updateCodeEditor('width = 3', {
         shouldExecute: false,
         shouldWriteToDisk: true,
       })
+      await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS - 1)
       kclManager.updateCodeEditor('width = 4', {
         shouldExecute: false,
         shouldWriteToDisk: true,
       })
       gate.resolve(undefined)
       await first
+      expect(stored).toBe('width = 2')
+      await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS - 1)
+      expect(write).toHaveBeenCalledOnce()
+      await vi.advanceTimersByTimeAsync(1)
       expect(stored).toBe('width = 4')
       expect(write.mock.calls.map(([, code]) => code)).toEqual([
         'width = 2',
@@ -1043,8 +1051,59 @@ describe('KclManager storage checks before sketch insertion', () => {
     } finally {
       gate.resolve(undefined)
       app.dispose()
+      vi.useRealTimers()
     }
   })
+
+  it.each(['local', 'cloud'] as const)(
+    'buffers quick %s sketch commits without saving the next drag preview',
+    async (kind) => {
+      const { app, kclManager, schedule } = await setup()
+      vi.useFakeTimers()
+      let stored = 'width = 1'
+      const read = vi
+        .spyOn(kclManager.textFileIO, 'read')
+        .mockImplementation(async () => stored)
+      const write = vi
+        .spyOn(kclManager.textFileIO, 'write')
+        .mockImplementation(async (_path, code) => {
+          stored = code
+        })
+      const refresh = vi.fn(async () => {})
+      try {
+        kclManager.updateCodeEditor('width = 2', {
+          shouldExecute: false,
+          shouldWriteToDisk: true,
+        })
+        await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS - 1)
+        await kclManager.refreshFileBeforeSketchInsertion(
+          kind === 'cloud' ? refresh : undefined
+        )
+        expect(write).not.toHaveBeenCalled()
+        expect(refresh).not.toHaveBeenCalled()
+        kclManager.updateCodeEditor('width = 3', {
+          shouldExecute: false,
+          shouldWriteToDisk: true,
+        })
+        // Moving the pointer previews the following segment without committing it.
+        kclManager.updateCodeEditor('width = 4', {
+          shouldExecute: false,
+          shouldWriteToDisk: false,
+        })
+        read.mockClear()
+        await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS - 1)
+        expect(write).not.toHaveBeenCalled()
+        await vi.advanceTimersByTimeAsync(1)
+        expect(stored).toBe('width = 3')
+        expect(kclManager.code).toBe('width = 4')
+        expect(write.mock.calls.map(([, code]) => code)).toEqual(['width = 3'])
+        expect(schedule).not.toHaveBeenCalled()
+      } finally {
+        app.dispose()
+        vi.useRealTimers()
+      }
+    }
+  )
 
   it('persists the latest committed geometry even while a new drag preview changes the editor', async () => {
     const { app, kclManager } = await setup()
