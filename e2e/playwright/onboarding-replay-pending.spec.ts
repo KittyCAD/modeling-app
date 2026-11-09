@@ -69,9 +69,11 @@ async function expectHome(page: Page) {
 
 test.use({ trace: 'on' })
 
+test.use({ useTestSettings: true })
+
 test.describe(
   'Onboarding replay pending state',
-  { tag: ['@desktop', '@localRenderer'] },
+  { tag: ['@web', '@localRenderer'] },
   () => {
     test('disables Settings and Help replay while the tutorial project initializes', async ({
       page,

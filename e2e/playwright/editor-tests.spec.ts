@@ -15,7 +15,6 @@ import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import { join } from 'path'
 
 /** Press arrow down until the given label is selected. */
 async function selectCompletionOption(page: Page, label: string) {
@@ -59,7 +58,9 @@ async function editorCacheReceipt(page: Page) {
   }
 }
 
-test.describe('Editor tests', { tag: '@desktop' }, () => {
+test.use({ useTestSettings: true })
+
+test.describe('Editor tests', { tag: '@web' }, () => {
   test(
     'can comment out code with ctrl+/',
     { tag: '@localRenderer' },
@@ -277,11 +278,8 @@ sketch001 = startSketchOn(XY)
   test(
     'F2 can rename a variable',
     { tag: '@localRenderer' },
-    async ({ page, homePage, scene }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `myVARName = 100
+    async ({ editor, page, homePage, scene }) => {
+      const initialCode = `myVARName = 100
 
 a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> startProfile(at = [0, 0])
@@ -291,12 +289,15 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 12)`
-        )
-      })
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
       await scene.connectionEstablished()
 
       // check no error to begin with
@@ -394,27 +395,27 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'fold gutters work',
     { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
+    async ({ editor, scene, page, homePage }) => {
       const fullCode = `sketch001 = startSketchOn(XY)
    |> startProfile(at = [-10, -10])
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
    |> close()`
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn(XY)
+      const initialCode = `sketch001 = startSketchOn(XY)
    |> startProfile(at = [-10, -10])
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
    |> close()`
-        )
-      })
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       // TODO: Jess needs to fix this but you have to mod the code to get them to show
       // up, its an annoying codemirror thing.
@@ -469,22 +470,22 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'hover over functions shows function description',
     { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
+    async ({ editor, scene, page, homePage }) => {
       const u = await getUtils(page)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn(XY)
+      const initialCode = `sketch001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
     |> close()`
-        )
-      })
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -517,23 +518,25 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'if you use the format keyboard binding it formats your code',
     { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
+    async ({ editor, scene, page, homePage }) => {
       const u = await getUtils(page)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn(XY)
+      const initialCode = `sketch001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
     |> close()`
-        )
+      await page.evaluate(() => {
         localStorage.setItem('disableAxis', 'true')
       })
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -562,23 +565,25 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'if you use the format keyboard binding it formats your code and executes so lints are shown',
     { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
+    async ({ editor, scene, page, homePage }) => {
       const u = await getUtils(page)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch_001 = startSketchOn(XY)
+      const initialCode = `sketch_001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
     |> close()`
-        )
+      await page.evaluate(() => {
         localStorage.setItem('disableAxis', 'true')
       })
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       await u.openDebugPanel()
       await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -626,11 +631,8 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'you can accept the suggestion from a lint',
     { tag: '@localRenderer' },
-    async ({ page, homePage, scene }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `a1 = startSketchOn({
+    async ({ editor, page, homePage, scene }) => {
+      const initialCode = `a1 = startSketchOn({
        origin = { x = 0, y = 0, z = 0 },
        xAxis = { x = 1, y = 0, z = 0 },
        yAxis = { x = 0, y = 12, z = 0 },
@@ -642,11 +644,14 @@ my_var = 1 + 2`.replaceAll('\n', '')
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 3.14)`
-        )
-      })
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       await scene.connectionEstablished()
 
@@ -682,11 +687,8 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'signature help triggered by comma',
     { tag: '@localRenderer' },
-    async ({ page, homePage, scene }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `myVARName = 100
+    async ({ editor, page, homePage, scene }) => {
+      const initialCode = `myVARName = 100
 
 a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> startProfile(at = [0, 0])
@@ -696,11 +698,12 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 12`
-        )
-      })
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await editor.replaceCode('', initialCode)
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       await scene.connectionEstablished()
 
@@ -790,23 +793,23 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if you fixup kcl errors you clear lints',
     { tag: '@localRenderer' },
-    async ({ page, homePage, scene }) => {
+    async ({ editor, scene, page, homePage }) => {
       const u = await getUtils(page)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn(XZ)
+      const initialCode = `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [3.29, 7.86])
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
     |> close()
     `
-        )
-      })
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
-      await scene.waitForExecutionDoneAfter(() => homePage.goToModelingScene())
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -923,11 +926,8 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if your kcl gets an error from the engine it is inlined',
     { tag: '@localRenderer' },
-    async ({ context, page, homePage, scene }) => {
-      await context.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `box = startSketchOn(XY)
+    async ({ editor, scene, page, homePage }) => {
+      const initialCode = `box = startSketchOn(XY)
     |> startProfile(at = [0, 0])
     |> line(end = [0, 10])
     |> line(end = [10, 0])
@@ -946,13 +946,14 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     angle = 90deg
     )
     `
-        )
-      })
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await editor.replaceCode('', initialCode)
       await scene.settled({ expectError: true })
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
@@ -1107,29 +1108,28 @@ sketch001 = startSketchOn(XZ)
     )
   })
   test('Can undo a click and point extrude with ctrl+z', async ({
+    editor,
     page,
-    context,
     homePage,
     toolbar,
     modelingDialog,
     scene,
   }) => {
     const u = await getUtils(page)
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
+    const initialCode = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [4.61, -14.01])
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()`
-      )
-    })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
+    await editor.scrollToText(initialCode.trimStart().split('\n')[0])
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     await page.waitForTimeout(100)
@@ -1186,15 +1186,18 @@ sketch001 = startSketchOn(XZ)
   test(
     `Can import a local OBJ file`,
     { tag: '@localRenderer' },
-    async ({ page, scene, cmdBar, folderSetupFn }) => {
+    async ({ fs, page, scene, cmdBar, folderSetupFn }) => {
       await folderSetupFn(async (dir) => {
-        const bracketDir = join(dir, 'cube')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('cube.obj'),
-          join(bracketDir, 'cube.obj')
+        const bracketDir = await fs.join(dir, 'cube')
+        await fs.mkdir(bracketDir, { recursive: true })
+        await fs.writeFile(
+          await fs.join(bracketDir, 'cube.obj'),
+          Uint8Array.from(await fsp.readFile(executorInputPath('cube.obj')))
         )
-        await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
+        await fs.writeFile(
+          await fs.join(bracketDir, 'main.kcl'),
+          new TextEncoder().encode('')
+        )
       })
 
       const viewportSize = { width: 1200, height: 500 }
@@ -1272,27 +1275,26 @@ sketch001 = startSketchOn(XZ)
   })
 
   test(`Only show axis planes when there are no errors`, async ({
+    editor,
     page,
     homePage,
     scene,
     cmdBar,
   }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
+    const initialCode = `sketch001 = startSketchOn(XZ)
     profile001 = circle(sketch001, center = [-100.0, -100.0], radius = 50.0)
 
     sketch002 = startSketchOn(XZ)
     profile002 = circle(sketch002, center = [-100.0, 100.0], radius = 50.0)
-    extrude001 = extrude(profile002, length = 0)` // length = 0 is causing the error
-      )
-    })
+    extrude001 = extrude(profile002, length = 0)`
 
     const viewportSize = { width: 1200, height: 800 }
     await page.setBodyDimensions(viewportSize)
 
     await homePage.goToModelingScene()
+    await scene.settled()
+    await editor.replaceCode('', initialCode)
+    await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
     await scene.connectionEstablished()
 
@@ -1312,9 +1314,6 @@ sketch001 = startSketchOn(XZ)
     cmdBar,
   }) => {
     await test.step('Load an empty file', async () => {
-      await page.addInitScript(async () => {
-        localStorage.setItem('persistCode', '')
-      })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
 
