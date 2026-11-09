@@ -85,11 +85,17 @@ describe('exported region selection identity', () => {
           {
             type: 'pattern',
             id: 'pattern',
+            subType: 'transform',
+            codeRef: {
+              range: [0, 0, 0],
+              pathToNode: [],
+              nodePath: { steps: [] },
+            },
             sourceId: 'profile-path',
             copyIds: ['copy-path-0', 'copy-path-1'],
             copyFaceIds: ['copy-face-0', 'copy-face-1'],
             copyEdgeIds: [],
-          } as Artifact,
+          },
         ],
       ])
       const [mesh] = createRegionMeshes(gltf, graph)

@@ -1962,6 +1962,29 @@ export async function getEventForQueryEntityTypeWithPoint(
   const skipRegionSelectionForTopologyEdge =
     entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
 
+  // Pattern copies have no separate path artifact; retain their owning instance.
+  if (entityRef.type === 'region' && engineTopologyFallbackEarly) {
+    const pathId = engineTopologyFallbackEarly.parentId
+    const pattern = getPatternArtifactForCopyId(pathId, artifactGraph)
+    const patternIndex = pattern ? pattern.copyIds.indexOf(pathId) + 1 : 0
+    if (pattern && patternIndex > 0) {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {
+            entityRef,
+            artifact: pattern,
+            codeRef: pattern.codeRef,
+            patternIndex,
+            engineEntityId: entityRef.region_id,
+            engineTopologyFallback: engineTopologyFallbackEarly,
+          },
+        },
+      }
+    }
+  }
+
   // Try segment references first, then the point fallback below.
   if (entityRef.type === 'region') {
     const regionSelection = await getEngineRegionSelectionFromSegments(
@@ -2725,6 +2748,8 @@ export function getSelectionCountByType(
           break
         }
         case 'region':
+          if (inlineArtifact?.type === 'pattern')
+            incrementOrInitializeSelectionType('engineRegion')
           break
       }
     } else if (inlineArtifact?.type === 'helix') {
