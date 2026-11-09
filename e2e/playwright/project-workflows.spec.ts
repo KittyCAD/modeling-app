@@ -995,6 +995,130 @@ for (const kind of ['local', 'cloud'] as const) {
         await expect.poll(() => storage.read(root)).toBe(updatedCode)
       })
 
+      for (const removal of [
+        'editor',
+        'storage',
+        'editor leaving a broken reference',
+      ] as const) {
+        test(`exits sketch mode when the active sketch is deleted through ${removal}`, async ({
+          page,
+          context,
+        }, testInfo) => {
+          const storage = await prepareStorage(kind, page, context, testInfo, {
+            modeling: true,
+          })
+          const scene = new SceneFixture(page)
+          const toolbar = new ToolbarFixture(page)
+          const activeSketch =
+            'profile = sketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 2mm, var 2mm])\n}\n'
+          const remainingSketch =
+            'other = sketch(on = XY) {\n  point(at = [var 8mm, var 9mm])\n}\n'
+          const brokenReference =
+            removal === 'editor leaving a broken reference'
+              ? 'result = profile\n'
+              : ''
+          const initialCode =
+            blankCode + activeSketch + remainingSketch + brokenReference
+          const updatedCode = blankCode + remainingSketch + brokenReference
+          const root = await storage.seed('Deleted active sketch', initialCode)
+          await storage.refresh()
+          await storage.home.openProject('Deleted active sketch')
+          await scene.settled()
+          await toolbar.openFeatureTreePane()
+          await (await toolbar.getFeatureTreeOperation('profile', 0)).dblclick()
+          await expect(toolbar.exitSketchBtn).toBeEnabled()
+          await page.evaluate(() =>
+            window.app.singletons.kclManager.flushWriteToFile()
+          )
+          await page.getByTestId('point').click()
+          if (removal === 'editor') {
+            await editThroughUI(page, `${initialCode}unfinished = (`)
+            await expect
+              .poll(() =>
+                page.evaluate(() =>
+                  window.app.singletons.kclManager.hasParseErrors()
+                )
+              )
+              .toBe(true)
+            expect(
+              await page.evaluate(() =>
+                window.app.singletons.kclManager.modelingState?.matches(
+                  'sketchSolveMode'
+                )
+              )
+            ).toBe(true)
+          }
+          if (removal.startsWith('editor'))
+            await editThroughUI(page, updatedCode)
+          else {
+            const download = Promise.withResolvers<undefined>()
+            let downloading = false
+            if (kind === 'cloud')
+              await context.route('**/versions/*/download*', async (route) => {
+                downloading = true
+                await download.promise
+                await route.fallback()
+              })
+            try {
+              await storage.replace(root, updatedCode)
+              if (kind === 'cloud') {
+                await expect.poll(() => downloading).toBe(true)
+                const clock = new Date()
+                await page.clock.install({ time: clock })
+                await page.clock.pauseAt(new Date(clock.getTime() + 1_000))
+                await page.clock.runFor(7_000)
+                await expect(toolbar.exitSketchBtn).toBeEnabled()
+              }
+            } finally {
+              download.resolve(undefined)
+              if (kind === 'cloud') await page.clock.resume()
+            }
+            if (kind === 'local' && process.env.TARGET === 'web')
+              await page.evaluate(() => {
+                const editor = window.app.project?.executingEditor.peek()
+                if (editor)
+                  for (const onChange of editor.onWatchEvent)
+                    onChange('change', editor.path)
+              })
+          }
+          await expectEditor(page, updatedCode)
+          await expect
+            .poll(() =>
+              page.evaluate(() =>
+                window.app.singletons.kclManager.modelingState?.matches(
+                  'sketchSolveMode'
+                )
+              )
+            )
+            .toBe(false)
+          await expect(toolbar.exitSketchBtn).not.toBeVisible()
+          await expect(
+            page.locator('[data-handle="sketch-point-handle"]')
+          ).toHaveCount(0)
+          await expect.poll(() => storage.read(root)).toBe(updatedCode)
+          if (brokenReference) {
+            await editThroughUI(page, blankCode + remainingSketch)
+            await expectEditor(page, blankCode + remainingSketch)
+            await expect
+              .poll(() =>
+                page.evaluate(
+                  () => window.app.singletons.kclManager.diagnostics
+                )
+              )
+              .toEqual([])
+          }
+          // The surviving sketch remains editable; exiting must not delete its objects.
+          await (await toolbar.getFeatureTreeOperation('other', 0)).dblclick()
+          await expect(toolbar.exitSketchBtn).toBeEnabled()
+          await expect(
+            page.locator('[data-handle="sketch-point-handle"]')
+          ).toHaveCount(1)
+          await expect
+            .poll(() => storage.read(root))
+            .toBe(blankCode + remainingSketch)
+        })
+      }
+
       test('reads newer file contents before inserting each sketch shape', async ({
         page,
         context,

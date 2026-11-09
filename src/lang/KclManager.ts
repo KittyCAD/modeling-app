@@ -18,7 +18,11 @@ import {
   ensureDefaultKclVersionOnBlankMain,
   isMainKclPath,
 } from '@src/lang/project'
-import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
+import {
+  getNodeFromPath,
+  getSettingsAnnotation,
+  traverse,
+} from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
 import type {
@@ -1504,7 +1508,8 @@ export class KclManager extends File {
          * take that path is what overwrote freshly typed sketch lines.
          */
         await this.executeCode(newCode)
-        if (!isCurrentDirectEditorExecution()) return
+        // Incomplete syntax does not prove that the running sketch was deleted.
+        if (!isCurrentDirectEditorExecution() || this.hasParseErrors()) return
 
         const setProgramOutcome = await this.rustContext.hackSetProgram(
           this.ast,
@@ -1512,6 +1517,27 @@ export class KclManager extends File {
         )
         if (!isCurrentDirectEditorExecution()) return
 
+        if (
+          setProgramOutcome.type === 'ExecFailure' &&
+          !this.hasParseErrors()
+        ) {
+          // Removing a sketch can leave references that fail execution. The
+          // parsed source still proves which named sketches were removed.
+          const sketchNames: string[] = []
+          traverse(this.ast, {
+            enter: (node) => {
+              if (
+                node.type === 'VariableDeclaration' &&
+                node.declaration.init.type === 'SketchBlock'
+              )
+                sketchNames.push(node.declaration.id.name)
+            },
+          })
+          this.sendModelingEvent({
+            type: 'sketch source changed',
+            data: { sketchNames },
+          })
+        }
         if (setProgramOutcome.type === 'Success') {
           // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
           // Always invalidate IDs for direct edits since we don't know what the user changed
