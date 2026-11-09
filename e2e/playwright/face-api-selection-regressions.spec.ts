@@ -220,4 +220,40 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await clickHelix()
     await expect(page.getByTestId('selection-status')).toContainText('1 helix')
   })
+
+  test('selects a standalone helix after opening Translate @localRenderer', async ({
+    page,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+    homePage,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', standaloneHelixCode)
+    )
+    await editor.closePane()
+    await scene.moveCameraTo({ x: 24, y: -24, z: 18 }, { x: 0, y: 0, z: 10 })
+    await toolbar.translateButton.click()
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          window.app.singletons.kclManager.selectionFilter.peek()
+        )
+      )
+      .toEqual(['object'])
+    const [clickHelix, moveToHelix] = scene.makeMouseHelpers(0.5875, 0.5883, {
+      format: 'ratio',
+    })
+    await moveToHelix()
+    await clickHelix()
+    await expect(modelingDialog.selection('Objects')).toHaveText('1 helix')
+    await modelingDialog.fillInput('x', '20')
+    await modelingDialog.submit()
+    await scene.settled()
+    await editor.expectEditor.toContain('translate(helix001, x = 20)')
+  })
 })
