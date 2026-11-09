@@ -207,6 +207,14 @@ export const homeProjectsContract = defineContract({
   homeProjectActionsService: defineService<HomeProjectActionsService>(
     'home-project-actions'
   ),
+  homeProjectSettledLibraryIdsValueSpec: defineValueSpec<
+    readonly string[],
+    readonly string[]
+  >({
+    name: 'home-project-settled-library-ids',
+    defaultValue: [],
+    combine: (contributions) => uniqueStrings(contributions.flat()),
+  }),
   homeProjectLoadingLibraryIdsValueSpec: defineValueSpec<
     readonly string[],
     readonly string[]
@@ -229,4 +237,5 @@ export const {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
   homeProjectLoadingLibraryIdsValueSpec,
+  homeProjectSettledLibraryIdsValueSpec,
 } = homeProjectsContract
