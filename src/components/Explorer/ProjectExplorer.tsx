@@ -273,7 +273,7 @@ export const ProjectExplorer = ({
     (run: () => Promise<unknown>) => {
       setFileTreeMutationPending(true)
       void run()
-        .then(() => app.refreshProjects())
+        .then(() => app.projectLibraries.refreshProjects())
         .catch(trap)
         .finally(() => setFileTreeMutationPending(false))
     },
@@ -342,7 +342,7 @@ export const ProjectExplorer = ({
     }
     // TODO: Refresh only this path from the Project. This will refresh your entire application project directory
     // It is correct but can be slow if there are many projects
-    app.refreshProjects().catch(reportRejection)
+    app.projectLibraries.refreshProjects().catch(reportRejection)
   }, [refreshExplorerPressed, app])
 
   useEffect(() => {
@@ -809,7 +809,7 @@ export const ProjectExplorer = ({
         }
 
         // Refresh the explorer to show the new files
-        app.refreshProjects().catch(reportRejection)
+        app.projectLibraries.refreshProjects().catch(reportRejection)
 
         toast.success(
           `Imported ${supportedFiles.length} file${supportedFiles.length > 1 ? 's' : ''}.`

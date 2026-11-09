@@ -47,7 +47,7 @@ export type CreateFileSchemaMethodOptional = Omit<
 let pendingWebLayoutProjectCreation: Promise<string> | undefined
 
 async function createFreshWebLayoutProject(app: App) {
-  await app.refreshProjects()
+  await app.projectLibraries.refreshProjects()
   await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
   const targets = app.getCreateProjectLibraryTargets()
@@ -149,7 +149,7 @@ export function useQueryParamEffects() {
       // File navigation removes the project-id param while preserving the new
       // file route. Calling setSearchParams here can re-navigate from the
       // original query-param route and reopen the project default file.
-      await app.refreshProjects()
+      await app.projectLibraries.refreshProjects()
       if (cancelled) {
         return
       }
@@ -302,7 +302,7 @@ export function useQueryParamEffects() {
       let cancelled = false
 
       void (async () => {
-        await app.refreshProjects()
+        await app.projectLibraries.refreshProjects()
         if (cancelled) {
           return
         }
@@ -400,7 +400,7 @@ export function useQueryParamEffects() {
 
       let cancelled = false
       void (async () => {
-        await app.refreshProjects()
+        await app.projectLibraries.refreshProjects()
         if (cancelled) return
         if (
           !app.projectOperations.projects
@@ -410,10 +410,10 @@ export function useQueryParamEffects() {
           projectFolderName === DEFAULT_WEB_PROJECT_NAME
         ) {
           await app.projectOperations.createProject({
-            directory: app.projectDirectoryPath,
+            directory: app.projectLibraries.projectDirectoryPath,
             name: DEFAULT_WEB_PROJECT_NAME,
           })
-          await app.refreshProjects()
+          await app.projectLibraries.refreshProjects()
         }
         if (!cancelled) sendCommand()
       })().catch((error) => {

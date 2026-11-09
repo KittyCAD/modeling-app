@@ -39,8 +39,11 @@ function createProject({
 
 function createApp(folders: Project[] = []) {
   return {
-    projectDirectoryPath: '/projects',
-    defaultProjectName: 'untitled',
+    projectLibraries: {
+      projectDirectoryPath: '/projects',
+      defaultProjectName: 'untitled',
+      refreshProjects: vi.fn(async () => {}),
+    },
     projectOperations: {
       projects: signal(folders),
       createProject: vi.fn(async () => createProject({ name: 'created' })),
@@ -49,7 +52,6 @@ function createApp(folders: Project[] = []) {
       writeFiles: vi.fn(async () => ['/projects/demo/main.kcl']),
     },
     projectSession: { openFile: vi.fn(async () => {}) },
-    refreshProjects: vi.fn(async () => {}),
   } as unknown as Parameters<typeof createProjectCommands>[0]['app']
 }
 

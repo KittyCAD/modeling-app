@@ -264,7 +264,7 @@ describe('project system', () => {
       })
       // Exercise Home's actual close boundary without starting unrelated folder IO.
       loadHomeProjects({
-        refreshProjects: vi.fn(async () => {}),
+        projectLibraries: { refreshProjects: vi.fn(async () => {}) },
         closeProject: () => app.closeProject(),
         settings: { actor: { send: vi.fn() } },
       })
@@ -274,41 +274,6 @@ describe('project system', () => {
       await app.disposeAsync()
     }
   })
-  it.each([
-    {
-      error: new FileNotFound({
-        operation: 'stat',
-        path: mockProject.path,
-        cause: 'ENOENT',
-        message: 'Removed',
-      }),
-      missing: true,
-    },
-    { error: new Error('Permission denied'), missing: false },
-  ])(
-    'only returns home for a missing project ($missing)',
-    async ({ error, missing }) => {
-      const navigate = vi.fn(async () => {})
-      const app = {
-        project: {},
-        projectDirectoryPath: '/some-dir',
-        projectOperations: { listProjects: vi.fn(async () => []) },
-        projectSession: {
-          refreshProject: vi.fn(async () => Promise.reject(error)),
-        },
-        registry: { get: () => ({ navigate }) },
-      } as unknown as App
-      const refreshed = App.prototype.refreshProjects.call(app)
-      if (missing) {
-        await refreshed
-        expect(navigate).toHaveBeenCalledWith('/home')
-      } else {
-        await expect(refreshed).rejects.toBe(error)
-        expect(navigate).not.toHaveBeenCalled()
-      }
-    }
-  )
-
   it('opens projects containing KCL-named directories without reading them as files', async () => {
     const path = `/tmp/app-kcl-directory-${crypto.randomUUID()}`
     const main = fsZds.join(path, 'main.kcl')
@@ -1083,7 +1048,8 @@ describe('project system', () => {
   })
 
   it('refreshes project folders after Zookeeper undo and redo changes the file set', async () => {
-    const projectPath = `/tmp/app-zookeeper-folder-refresh-${crypto.randomUUID()}`
+    const libraryPath = `/tmp/app-zookeeper-folder-refresh-${crypto.randomUUID()}`
+    const projectPath = fsZds.join(libraryPath, 'project')
     const mainPath = fsZds.join(projectPath, 'main.kcl')
     const createdPath = fsZds.join(projectPath, 'created.kcl')
     const app = createAppForTest()
@@ -1097,6 +1063,7 @@ describe('project system', () => {
         kcl_file_count: 1,
         metadata: null,
         path: projectPath,
+        libraryPath,
         readWriteAccess: true,
         children: [
           {
@@ -1127,23 +1094,39 @@ describe('project system', () => {
           },
         })
       )
-      const refresh = vi.spyOn(app, 'refreshProjects')
+      await app.projectLibraries.refreshProjects()
+      expect(
+        openedProject.projectIORefSignal.value.children?.map(
+          (file) => file.path
+        )
+      ).toContain(createdPath)
 
       kclManager.undo()
       await waitForHistoryIdle(kclManager)
-      expect(refresh).toHaveBeenCalled()
+      await expect
+        .poll(() =>
+          openedProject.projectIORefSignal.value.children?.map(
+            (file) => file.path
+          )
+        )
+        .not.toContain(createdPath)
       await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
 
-      refresh.mockClear()
       kclManager.redo()
       await waitForHistoryIdle(kclManager)
-      expect(refresh).toHaveBeenCalled()
+      await expect
+        .poll(() =>
+          openedProject.projectIORefSignal.value.children?.map(
+            (file) => file.path
+          )
+        )
+        .toContain(createdPath)
       await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
         'created = true\n'
       )
     } finally {
       app.dispose()
-      await fsZds.rm(projectPath, { recursive: true, force: true })
+      await fsZds.rm(libraryPath, { recursive: true, force: true })
     }
   })
 

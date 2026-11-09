@@ -1,4 +1,6 @@
-import type { App } from '@src/lib/app'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import type { ProjectLibrariesService } from '@src/registry/contracts/projectLibraries'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import fsZds from '@src/lib/fs-zds'
 import { trap } from '@src/lib/trap'
 import toast from 'react-hot-toast'
@@ -56,7 +58,18 @@ export const fsMoveFile = (props: FSEffectProps) => h(moveFile.of(props))
  * FS history extension. This is where FS un/redo editor events
  * apply file operations.
  */
-export function buildFSHistoryExtension(app: App, kclManager: KclManager) {
+export function buildFSHistoryExtension(
+  {
+    fileOperations,
+    projectLibraries,
+    projectSession,
+  }: {
+    fileOperations: Pick<FileOperationsRegistryService, 'move'>
+    projectLibraries: ProjectLibrariesService
+    projectSession: Pick<ProjectSessionService, 'getProject' | 'openFile'>
+  },
+  kclManager: KclManager
+) {
   const fsWiredListener = EditorView.updateListener.of((vu) => {
     for (const tr of vu.transactions) {
       if (tr.annotation(fsIgnoreAnnotationType)) {
@@ -64,17 +77,17 @@ export function buildFSHistoryExtension(app: App, kclManager: KclManager) {
       }
       for (const e of tr.effects) {
         if (e.is(restoreFile) || e.is(archiveFile) || e.is(moveFile)) {
-          const current = app.project
-          const root = app.projectDirectoryPath
+          const current = projectSession.getProject()
+          const root = projectLibraries.projectDirectoryPath
           const { src, target, requestedProjectName, requestedFileName } =
             e.value
           void (async () => {
-            await app.fileOperations.move(src, target)
-            await app.refreshProjects()
-            if (app.project !== current) return
+            await fileOperations.move(src, target)
+            await projectLibraries.refreshProjects()
+            if (projectSession.getProject() !== current) return
             if (!e.is(moveFile)) {
               const projectPath = fsZds.join(root, requestedProjectName)
-              await app.projectSession.openFile(
+              await projectSession.openFile(
                 requestedFileName
                   ? fsZds.join(projectPath, requestedFileName)
                   : projectPath,

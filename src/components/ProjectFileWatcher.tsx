@@ -17,7 +17,7 @@ export function ProjectFileWatcher() {
     if (app.project !== project) return
     if (await app.fileOperations.pending()) return
     try {
-      await app.refreshProjects()
+      await app.projectLibraries.refreshProjects()
     } catch (error) {
       if (app.project === project && isPathNotFoundError(error))
         await app.registry.get(routerService).navigate(PATHS.HOME)
