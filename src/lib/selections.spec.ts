@@ -4,6 +4,7 @@ import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { addExtrude } from '@src/lang/modifyAst/sweeps'
 import { createEdgeRefObjectExpression } from '@src/lang/modifyAst/edges'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { KclManager } from '@src/lang/KclManager'
@@ -38,7 +39,7 @@ import type {
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { enginelessExecutor } from '@src/lib/testHelpers'
+import { enginelessExecutor, getKclCommandValue } from '@src/lib/testHelpers'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 test('includes region, source segment, and sweep ranges for a wall face', () => {
@@ -3474,6 +3475,94 @@ describe('mixed entity-reference selection highlighting', () => {
 })
 
 describe('getSelectionTypeDisplayText', () => {
+  test.each([
+    [false, 0],
+    [false, 1],
+    [true, 0],
+    [true, 1],
+  ])(
+    'extrudes only a 2D pattern copy (piped=%s, copy=%s)',
+    async (piped, copyIndex) => {
+      const { instance, rustContext } =
+        await buildTheWorldAndNoEngineConnection()
+      const profile = `@settings(kclVersion = 1.0)
+profile001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [5, 0])
+  |> line(end = [0, 5])
+  |> line(end = [-5, 0])
+  |> close()`
+      const code = piped
+        ? `${profile}
+  |> patternLinear2d(instances = 3, distance = 8, axis = [1, 0])`
+        : `${profile}
+copies = patternLinear2d(profile001, instances = 3, distance = 8, axis = [1, 0])`
+      const ast = assertParse(code, instance)
+      const range = [
+        code.indexOf('patternLinear2d'),
+        code.length,
+        0,
+      ] as SourceRange
+      const codeRef = {
+        range,
+        pathToNode: getNodePathFromSourceRange(ast, range),
+        nodePath: { steps: [] },
+      }
+      const pattern = {
+        type: 'pattern',
+        id: 'pattern',
+        subType: 'transform',
+        sourceId: 'profile-path',
+        copyIds: ['path-copy-1', 'path-copy-2'],
+        copyFaceIds: ['face-copy-1', 'face-copy-2'],
+        copyEdgeIds: [],
+        codeRef,
+      } satisfies Extract<Artifact, { type: 'pattern' }>
+      const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
+        ['profile-path', { type: 'path', id: 'profile-path' } as Artifact],
+        ['pattern', pattern],
+      ])
+      const faceId = pattern.copyFaceIds[copyIndex]
+      const event = await getEventForQueryEntityTypeWithPoint(
+        { entity_id: faceId, reference: { type: 'face', face_id: faceId } },
+        {
+          engineCommandManager: {
+            sendSceneCommand: vi.fn(async () => ({
+              resp: {
+                type: 'modeling',
+                data: { modeling_response: { type: 'empty' } },
+              },
+            })),
+          } as any,
+          kclManager: { ast, artifactGraph } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+        }
+      )
+      expect(event?.data.selectionType).toBe('singleCodeCursor')
+      if (!event || event.data.selectionType !== 'singleCodeCursor')
+        throw new Error('Expected a copied profile selection')
+      expect(event.data.selection.patternIndex).toBe(copyIndex + 1)
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches: {
+          graphSelections: [event.data.selection],
+          otherSelections: [],
+        },
+        wasmInstance: instance,
+        length: await getKclCommandValue('5', instance, rustContext),
+      })
+      if (result instanceof Error) throw result
+      const output = recast(result.modifiedAst, instance)
+      if (output instanceof Error) throw output
+      const name = piped ? 'profile001' : 'copies'
+      expect(output.replace(/\s/g, '')).toContain(
+        `extrude(${name}[${copyIndex + 1}],length=5)`
+      )
+    }
+  )
+
   test('preserves the clicked pattern copy identity in viewport selections', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const code = `body001 = 0
