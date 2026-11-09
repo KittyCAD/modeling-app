@@ -44,6 +44,7 @@ import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectEntry,
   homeProjectLoadingLibraryIdsValueSpec,
+  homeProjectSettledLibraryIdsValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import {
   type ProjectLibraryOperation,
@@ -360,6 +361,7 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
     const warnedMissingTypeLibraryIds = new Set<string>()
     const scanStates = new Map<string, ConfiguredProjectLibraryScanState>()
     const loadingLibraryIds = signal<readonly string[]>([])
+    const settledLibraryIds = signal<readonly string[]>([])
     let disposeConfiguredProjectLibraryRealizationsEffect:
       | (() => void)
       | undefined
@@ -367,6 +369,15 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
     let currentLibraryIds: readonly string[] = []
 
     const updateRealizations = () => {
+      settledLibraryIds.value = currentLibraryIds.filter((libraryId) => {
+        const state = scanStates.get(libraryId)
+        // Cloud discovery is owned by its server listing, not this empty local scan.
+        return (
+          state &&
+          state.input.library.type !== CLOUD_PROJECT_LIBRARY_TYPE &&
+          !state.abortController
+        )
+      })
       loadingLibraryIds.value = currentLibraryIds.filter((libraryId) =>
         Boolean(scanStates.get(libraryId)?.abortController)
       )
@@ -480,6 +491,9 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
     return {
       id: 'project-libraries.configured-realizations',
       provides: [
+        provide(homeProjectSettledLibraryIdsValueSpec, settledLibraryIds, {
+          key: 'project-libraries.settled',
+        }),
         provide(homeProjectLoadingLibraryIdsValueSpec, loadingLibraryIds, {
           key: 'project-libraries.loading',
         }),

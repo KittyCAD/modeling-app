@@ -54,6 +54,7 @@ import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
   homeProjectLoadingLibraryIdsValueSpec,
+  homeProjectSettledLibraryIdsValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
 import {
@@ -379,8 +380,17 @@ const Home = () => {
   const loadingLibraryIds = registry.signal(
     homeProjectLoadingLibraryIdsValueSpec
   ).value
+  const settledLibraryIds = registry.signal(
+    homeProjectSettledLibraryIdsValueSpec
+  ).value
+  const visibleLibraries = selectedProjectLibrary
+    ? [selectedProjectLibrary]
+    : projectLibraries
   const projectsLoaded =
     app.projectOperations.pending.value === 0 &&
+    visibleLibraries.every((library) =>
+      settledLibraryIds.includes(library.id)
+    ) &&
     !loadingLibraryIds.some(
       (id) => !selectedProjectLibraryId || id === selectedProjectLibraryId
     )
