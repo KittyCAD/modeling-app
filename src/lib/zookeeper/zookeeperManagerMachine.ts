@@ -37,10 +37,12 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { constructZookeeperUserPromptRequest } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import {
-  constructZookeeperUserPromptRequest,
-  type KittyCadLibFile,
-} from '@src/lib/zookeeper/zookeeperPromptRequest'
+  encodeLegacyCurrentFiles,
+  encodeLegacyProjectFiles,
+} from '@src/lib/zookeeper/registry/legacy/currentFiles'
+import { usesCloudProjectTools } from '@src/lib/zookeeper/projectFileTransport'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import toast from 'react-hot-toast'
@@ -1836,13 +1838,17 @@ export const zookeeperManagerMachine = setup({
       if (!isPresent<Conversation>(context.conversation))
         return Promise.reject(new Error('Conversation not present'))
 
+      const projectId = event.projectForPromptOutput.cloudProjectId
+        ? `cloud:${event.projectForPromptOutput.cloudProjectId}`
+        : `local:${event.projectForPromptOutput.projectId ?? event.projectForPromptOutput.path}`
+      const cloudProjectTools = usesCloudProjectTools(projectId)
       const requestData = await constructZookeeperUserPromptRequest({
         conversationId: context.conversationId ?? '',
         prompt: event.prompt,
         selections: event.selections,
         applicationProjectDirectory: event.applicationProjectDirectory,
         projectFiles: event.projectFiles,
-        includeProjectFiles: !event.projectForPromptOutput.cloudProjectId,
+        includeProjectFiles: !cloudProjectTools,
         artifactGraph: event.artifactGraph,
         projectName: event.projectForPromptOutput.name,
         currentFile: event.fileSelectedDuringPrompting,
@@ -1853,13 +1859,9 @@ export const zookeeperManagerMachine = setup({
       })
       if (isErr(requestData)) return Promise.reject(requestData)
 
-      const filesAsByteArrays: Record<string, number[]> = {}
-
-      for (let file of requestData.files) {
-        filesAsByteArrays[file.name] = Array.from(
-          new Uint8Array(await file.data.arrayBuffer())
-        )
-      }
+      const filesAsByteArrays = cloudProjectTools
+        ? {}
+        : await encodeLegacyCurrentFiles(requestData.files)
 
       let additionalFiles: MlCopilotFile[] | undefined
       if (event.additionalFiles && event.additionalFiles.length > 0) {
@@ -1873,9 +1875,7 @@ export const zookeeperManagerMachine = setup({
 
       const request: MlCopilotUserRequest = {
         type: 'user',
-        project_id: event.projectForPromptOutput.cloudProjectId
-          ? `cloud:${event.projectForPromptOutput.cloudProjectId}`
-          : `local:${event.projectForPromptOutput.projectId ?? event.projectForPromptOutput.path}`,
+        project_id: projectId,
         ...createZookeeperCorrelation(event.engineCommandManager.apiCallId),
         content: requestData.body.prompt ?? '',
         project_name: requestData.body.project_name,
@@ -1927,31 +1927,9 @@ export const zookeeperManagerMachine = setup({
         }
       }
 
-      const filesAsByteArrays: Record<string, number[]> = {}
-      const files: KittyCadLibFile[] = []
-
-      const projectFiles = event.projectId?.startsWith('cloud:')
-        ? []
-        : event.projectFiles
-      projectFiles.forEach((file) => {
-        let data: Blob
-        if (file.type === 'other') {
-          data = file.data
-        } else {
-          // file.type === 'kcl'
-          data = new Blob([file.fileContents], { type: 'text/kcl' })
-        }
-        files.push({
-          name: file.relPath,
-          data,
-        })
-      })
-
-      for (let file of files) {
-        filesAsByteArrays[file.name] = Array.from(
-          new Uint8Array(await file.data.arrayBuffer())
-        )
-      }
+      const filesAsByteArrays = usesCloudProjectTools(event.projectId)
+        ? {}
+        : await encodeLegacyProjectFiles(event.projectFiles)
 
       const requestProjectContext: MlCopilotProjectContextRequest = {
         type: 'project_context',

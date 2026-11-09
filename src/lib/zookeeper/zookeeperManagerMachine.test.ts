@@ -38,6 +38,7 @@ import {
   ZOOKEEPER_MAX_MESSAGE_BYTES,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import * as zookeeperPromptRequest from '@src/lib/zookeeper/zookeeperPromptRequest'
+import * as projectFileTransport from '@src/lib/zookeeper/projectFileTransport'
 import { S } from '@src/machines/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -1479,14 +1480,37 @@ describe('zookeeperManagerMachine', () => {
     })
   })
 
-  it.each(['local', 'cloud'] as const)(
-    'sends project files only for local projects on prompts and resume (%s)',
-    async (storage) => {
+  it.each([
+    ['local', false],
+    ['cloud', false],
+    ['local', true],
+    ['cloud', true],
+  ] as const)(
+    'sends project files on prompts and resume (%s, SDK project tools: %s)',
+    async (storage, sdkHasProjectTools) => {
+      const selectTransport = projectFileTransport.usesCloudProjectTools
+      vi.spyOn(
+        projectFileTransport,
+        'usesCloudProjectTools'
+      ).mockImplementation((projectId) =>
+        selectTransport(projectId, sdkHasProjectTools)
+      )
+      const cloudTools = storage === 'cloud' && sdkHasProjectTools
       const ws = new TestSocket() as TestWebSocket
       const send = vi.fn()
       ws.send = send
       const { kclManager, engineCommandManager, instance } =
         await buildTheWorldAndNoEngineConnection(true)
+      const binaryFile = new Blob([new Uint8Array([0, 255, 128])])
+      const readBinary = vi.spyOn(binaryFile, 'arrayBuffer')
+      const slowRead = storage === 'cloud' && !sdkHasProjectTools
+      if (slowRead) {
+        vi.useFakeTimers()
+        readBinary.mockImplementation(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 7_000))
+          return new Uint8Array([0, 255, 128]).buffer
+        })
+      }
       const projectFiles: FileMeta[] = [
         {
           type: 'kcl',
@@ -1495,7 +1519,7 @@ describe('zookeeperManagerMachine', () => {
           fileContents: '@settings(kclVersion = 3.0)\n',
           execStateFileNamesIndex: 0,
         },
-        { type: 'other', relPath: 'notes.txt', data: new Blob(['notes']) },
+        { type: 'other', relPath: 'assets/reference.bin', data: binaryFile },
       ]
       const context = {
         ...zookeeperDefaultContext({}),
@@ -1560,7 +1584,13 @@ describe('zookeeperManagerMachine', () => {
           throw new Error('Missing request actor')
         const actor = createActor(logic, { input: { context, event } })
         const result = toPromise(actor)
+        const sentBefore = send.mock.calls.length
         actor.start()
+        if (slowRead) {
+          await vi.advanceTimersByTimeAsync(6_999)
+          expect(send).toHaveBeenCalledTimes(sentBefore)
+          await vi.advanceTimersByTimeAsync(1)
+        }
         await result
       }
       const requests = send.mock.calls
@@ -1575,16 +1605,17 @@ describe('zookeeperManagerMachine', () => {
         expect(request.project_id).toMatch(new RegExp(`^${storage}:`))
         expect(request.active_file).toBe('parts/main.kcl')
         expect(request.current_files).toEqual(
-          storage === 'cloud'
+          cloudTools
             ? {}
             : {
                 'parts/main.kcl': Array.from(
                   new TextEncoder().encode('@settings(kclVersion = 3.0)\n')
                 ),
-                'notes.txt': Array.from(new TextEncoder().encode('notes')),
+                'assets/reference.bin': [0, 255, 128],
               }
         )
       }
+      expect(readBinary).toHaveBeenCalledTimes(cloudTools ? 0 : 2)
       expect(requests[0].additional_files[0].name).toBe('reference.txt')
     }
   )
