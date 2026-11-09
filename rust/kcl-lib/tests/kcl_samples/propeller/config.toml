@@ -1,4 +1,2 @@
+test_graphics = "CpuEngineRender"
 redact_uuids = true
-
-[test_graphics.EngineRender]
-reason = "BooleanIntersection fails on CPU engine"

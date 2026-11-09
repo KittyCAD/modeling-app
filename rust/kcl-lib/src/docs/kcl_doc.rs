@@ -1939,21 +1939,29 @@ export FOO = 1
             eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
 
-            let result =
-                match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, eg.1.no3d, eg.1.norun).await {
-                    Err(crate::errors::ExecError::Kcl(e)) => {
-                        panic!(
-                            "Error testing example {NAME} for {owner_name} in {}: {}",
-                            source_path.display(),
-                            e.error.message()
-                        );
-                    }
-                    Err(other_err) => panic!(
-                        "Error testing example {NAME} for {owner_name} in {}: {other_err}",
-                        source_path.display()
-                    ),
-                    Ok(img) => img,
-                };
+            let graphics = if NAME == "std-helix-3" {
+                // CPU software rendering still differs for the helix on its cylinder.
+                // Keep the existing image threshold and GPU control until parity is fixed.
+                crate::test_server::TestGraphicsParams::EngineRender {
+                    reason: "CPU helix/cylinder image differs at the existing 0.99 threshold".to_owned(),
+                }
+            } else {
+                crate::test_server::TestGraphicsParams::from_kcl_sample_spec(eg.1.no3d, eg.1.norun)
+            };
+            let result = match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, graphics).await {
+                Err(crate::errors::ExecError::Kcl(e)) => {
+                    panic!(
+                        "Error testing example {NAME} for {owner_name} in {}: {}",
+                        source_path.display(),
+                        e.error.message()
+                    );
+                }
+                Err(other_err) => panic!(
+                    "Error testing example {NAME} for {owner_name} in {}: {other_err}",
+                    source_path.display()
+                ),
+                Ok(img) => img,
+            };
 
             let assert_images_match = |img: image::DynamicImage| {
                 if let Err(err) = twenty_twenty::try_assert_image(

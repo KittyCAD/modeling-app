@@ -75,10 +75,48 @@ async fn execute_locally_and_render_on_engine(
     program: Program,
     deprecation_version_override: Option<&str>,
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
-    let (exec_state, env_ref) = do_execute(ctx, program, deprecation_version_override).await?;
-    let snapshot_png_bytes = ctx
-        .prepare_snapshot()
-        .await
+    // CPU sessions start without graphics. Enable them before KCL so that plane
+    // appearance commands and camera setup see the same lifecycle as GPU sessions.
+    let mut graphics_state = ExecState::new(ctx);
+    if ctx.settings.geometry_only {
+        ctx.enable_engine_graphics(&mut graphics_state).await.map_err(|err| {
+            ExecErrorWithState::new(
+                ExecError::BadPng(format!("CPU graphics initialization failed: {err:#}")),
+                graphics_state.clone(),
+                None,
+            )
+        })?;
+    }
+    let (mut exec_state, env_ref) = match do_execute(ctx, program, deprecation_version_override).await {
+        Ok(output) => output,
+        Err(err) => {
+            if ctx.settings.geometry_only {
+                let _ = ctx.disable_engine_graphics(&mut graphics_state).await;
+            }
+            return Err(err);
+        }
+    };
+    if ctx.settings.geometry_only
+        && let Err(err) = ctx.enable_engine_graphics_settings(&mut exec_state).await
+    {
+        let _ = ctx.disable_engine_graphics(&mut exec_state).await;
+        return Err(ExecErrorWithState::new(
+            ExecError::BadPng(format!("CPU graphics settings failed: {err:#}")),
+            exec_state.clone(),
+            None,
+        ));
+    }
+    let snapshot = ctx.prepare_snapshot().await;
+    if ctx.settings.geometry_only {
+        ctx.disable_engine_graphics(&mut exec_state).await.map_err(|err| {
+            ExecErrorWithState::new(
+                ExecError::BadPng(format!("CPU graphics cleanup failed: {err:#}")),
+                exec_state.clone(),
+                None,
+            )
+        })?;
+    }
+    let snapshot_png_bytes = snapshot
         .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), None))?
         .contents
         .0;
@@ -182,6 +220,8 @@ impl TestGraphicsArtifact {
 pub enum TestGraphicsParams {
     /// use the 3d engine scene to render an image
     EngineRender { reason: String },
+    /// Render an Engine snapshot using temporary CPU software graphics.
+    CpuEngineRender,
     /// the model is exportable. export and CPU render
     #[default]
     ExportAndRender,
@@ -192,18 +232,14 @@ pub enum TestGraphicsParams {
 #[cfg(test)]
 impl TestGraphicsParams {
     fn geometry_only(&self) -> bool {
-        matches!(self, Self::ExportAndRender | Self::None)
+        matches!(self, Self::CpuEngineRender | Self::ExportAndRender | Self::None)
     }
     /// kcl tests have `no3d` or `norun` flags in their declaration.
     /// `norun` means "no graphics" and "no3d" means we want graphics but the model can't yet be exported for local rendering.
     /// Translate these requirements into a more descriptive type here.
-    fn from_kcl_sample_spec(no_3d: bool, no_run: bool) -> Self {
+    pub(crate) fn from_kcl_sample_spec(no_3d: bool, no_run: bool) -> Self {
         match (no_3d, no_run) {
-            (true, false) => Self::EngineRender {
-                // It would be nice for the kcl sample itself to contain richer information about why it's marked no3d.
-                // But this is the best info we have for now.
-                reason: "KCL sample marked 'no3d'".to_string(),
-            },
+            (true, false) => Self::CpuEngineRender,
             (false, false) => Self::ExportAndRender,
             (true, true) | (false, true) => Self::None,
         }
@@ -220,7 +256,7 @@ async fn execute_from_graphics_params(
     match graphics {
         // maybe there's something we can do to pipe reason into test output,
         // or maybe the main importance of the field is just that it must exist in config.toml files
-        TestGraphicsParams::EngineRender { reason: _r } => {
+        TestGraphicsParams::EngineRender { .. } | TestGraphicsParams::CpuEngineRender => {
             execute_locally_and_render_on_engine(ctx, program, deprecation_version_override)
                 .await
                 .map(|(state, env, image)| (state, env, TestGraphicsArtifact::Image(image)))
@@ -249,10 +285,8 @@ async fn execute_from_graphics_params(
 pub async fn kcl_doc_execute_and_snapshot(
     code: &str,
     current_file: Option<PathBuf>,
-    no_3d: bool,
-    no_run: bool,
+    graphics: TestGraphicsParams,
 ) -> Result<TestGraphicsArtifact, ExecError> {
-    let graphics = TestGraphicsParams::from_kcl_sample_spec(no_3d, no_run);
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let version = program.language_version().map_err(KclErrorWithOutputs::no_outputs)?;
     let ctx = new_context(true, current_file, graphics.geometry_only(), version).await?;
