@@ -1,5 +1,5 @@
-import { isPathNotFoundError } from '@src/lib/desktop'
-import { getProjectInfo } from '@src/lib/desktop'
+
+import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
@@ -429,7 +429,6 @@ export class ZDSProject {
     this.files = this.files.filter((file) => !missing.has(file))
     return files.filter((file) => file !== undefined)
   }
-
 
   /** Rebuild the complete Rust snapshot after an authoritative storage refresh. */
   async reloadFilesFromStorage(isCurrent: () => boolean) {

@@ -691,39 +691,39 @@ describe('project system', () => {
   })
 
   it('annotates opened projects with their owning library path', async () => {
-  const app = createAppForTest()
+    const app = createAppForTest()
 
-  try {
-    await waitForSettingsIdle(app)
+    try {
+      await waitForSettingsIdle(app)
 
-    const library = app.settings.get().app.libraries.current[0]
-    expect(library).toBeDefined()
-    if (!library) {
-      return
-    }
+      const library = app.settings.get().app.libraries.current[0]
+      expect(library).toBeDefined()
+      if (!library) {
+        return
+      }
 
-    const libraryPath =
-      library.type === 'cloud'
-        ? app.registry.get(cloudStorageService).root
-        : library.path
-    const projectPath = fsZds.join(libraryPath, 'bracket')
-    const openedProject = await app.openProject({
-      ...mockProject,
-      name: 'bracket',
-      path: projectPath,
-      default_file: fsZds.join(projectPath, 'main.kcl'),
-    })
-
-    expect(openedProject.projectIORefSignal.value).toEqual(
-      expect.objectContaining({
-        libraryPath,
-        libraryType: library.type,
+      const libraryPath =
+        library.type === 'cloud'
+          ? app.registry.get(cloudStorageService).root
+          : library.path
+      const projectPath = fsZds.join(libraryPath, 'bracket')
+      const openedProject = await app.openProject({
+        ...mockProject,
+        name: 'bracket',
+        path: projectPath,
+        default_file: fsZds.join(projectPath, 'main.kcl'),
       })
-    )
-  } finally {
-    app.dispose()
-  }
-})
+
+      expect(openedProject.projectIORefSignal.value).toEqual(
+        expect.objectContaining({
+          libraryPath,
+          libraryType: library.type,
+        })
+      )
+    } finally {
+      app.dispose()
+    }
+  })
 
   it('sets KCL runtime flags when the app wasm instance becomes active', async () => {
     const userFeatures = createUserFeaturesForTest(new Set())

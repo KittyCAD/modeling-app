@@ -2339,7 +2339,9 @@ export class KclManager extends File {
     const currentExecutionId = args.executionId ?? generation
     const pathThatExecuted = this.path
     const isCurrent = () =>
-      this.executionGeneration === generation && this.path === pathThatExecuted
+      !this.closed &&
+      this.executionGeneration === generation &&
+      this.path === pathThatExecuted
 
     try {
       const ast = args.ast || this.ast
@@ -2354,7 +2356,6 @@ export class KclManager extends File {
       this.beginLiveOperationUpdates(currentExecutionId)
 
       const codeThatExecuted = this.code
-      const pathThatExecuted = this.path
       const { logs, errors, execState, isInterrupted } = await executeAst({
         ast,
         path: this.path,
