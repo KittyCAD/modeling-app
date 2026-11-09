@@ -15,8 +15,8 @@ This file applies to all work in this repository. More-specific `AGENTS.md` file
 
 ### Issue tracker
 
-Issues and specs live in GitHub Issues for `KittyCAD/modeling-app`. See `docs/agents/issue-tracker.md`.
+Issues and specs live in GitHub Issues for `KittyCAD/modeling-app`. See `dev-docs/agents/issue-tracker.md`.
 
 ### Domain docs
 
-Multi-context layout using `GLOSSARY-MAP.md`, context glossaries, and ADRs. See `docs/agents/domain.md`.
+Multi-context layout using `GLOSSARY-MAP.md`, context glossaries, and ADRs. See `dev-docs/agents/domain.md`.

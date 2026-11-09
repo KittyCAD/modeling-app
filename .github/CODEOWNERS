@@ -24,6 +24,7 @@ package-lock.json                 @KittyCAD/frontend @KittyCAD/kcl
 # Documentation
 README.md                         @KittyCAD/frontend @KittyCAD/kcl
 GLOSSARY-MAP.md                   @KittyCAD/frontend @KittyCAD/kcl
+/dev-docs/                        @KittyCAD/frontend @KittyCAD/kcl
 /src/GLOSSARY.md                  @KittyCAD/frontend @KittyCAD/kcl
 CONTRIBUTING.md                   @KittyCAD/frontend @KittyCAD/kcl
 /docs/                            @KittyCAD/frontend @KittyCAD/kcl

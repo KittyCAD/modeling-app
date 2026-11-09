@@ -6,7 +6,7 @@ Layout: multi-context.
 
 Read the root `GLOSSARY-MAP.md` when present. It identifies domain contexts, their code paths, and their glossary and ADR locations. Read the glossaries relevant to the task, including every affected context when work crosses boundaries.
 
-Read relevant system-wide decisions in `docs/adr/` and context-specific ADRs listed by the map.
+Read relevant system-wide decisions in `dev-docs/adr/` and context-specific ADRs listed by the map.
 
 If domain documents are missing, proceed silently. The `/domain-modeling` skill creates them when terms or decisions are resolved.
 
@@ -19,9 +19,9 @@ The root `GLOSSARY-MAP.md` indexes contexts. Each entry records:
 - Glossary path
 - ADR directory
 
-Keep each context's `GLOSSARY.md` and `docs/adr/` beside its owning code. A context can span several directories; package and language boundaries do not automatically define domain contexts.
+Keep each context's `GLOSSARY.md` at its project directory root, such as `src/GLOSSARY.md` or `rust/GLOSSARY.md`. Store context-specific ADRs in its `dev-docs/adr/` directory. A context can span several code directories; package and language boundaries do not automatically define domain contexts.
 
-Reserve root `docs/adr/` for decisions spanning contexts.
+Reserve `dev-docs/adr/` for decisions spanning contexts.
 
 Create the map, context glossaries, and ADRs lazily when there is resolved content to record.
 
