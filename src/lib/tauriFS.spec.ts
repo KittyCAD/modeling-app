@@ -48,6 +48,6 @@ describe('Test project name utility functions', () => {
   ]
 
   it('gets the correct next project index', () => {
-    expect(getNextProjectIndex('new-project-$n', testFiles)).toBe(8)
+    expect(getNextProjectIndex('new-project-$n.kcl', testFiles)).toBe(8)
   })
 })

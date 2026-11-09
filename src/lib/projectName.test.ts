@@ -34,6 +34,12 @@ describe('projectName', () => {
     { name: 'part[$n', existing: [], expected: 'part[0' },
     { name: 'part.$n', existing: ['partX9'], expected: 'part.0' },
     { name: 'part-$n', existing: ['other-part-9-extra'], expected: 'part-0' },
+    { name: 'part-$n', existing: ['part-9.kcl'], expected: 'part-0' },
+    {
+      name: 'part-$n.kcl',
+      existing: ['part-04.kcl', 'part-007.kcl', 'part-9Xkcl'],
+      expected: 'part-8.kcl',
+    },
     { name: 'part-$n', existing: ['PART-9'], expected: 'part-10' },
     { name: 'part-$n', existing: [], expected: 'part-0' },
     {
