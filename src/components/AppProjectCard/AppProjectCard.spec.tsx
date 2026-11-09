@@ -17,11 +17,14 @@ import {
   waitFor,
   within,
 } from '@testing-library/react'
+import { lazy, Suspense, type ReactElement } from 'react'
 import toast from 'react-hot-toast'
 import {
   BrowserRouter,
   createMemoryRouter,
   RouterProvider,
+  Routes,
+  Route,
 } from 'react-router-dom'
 import {
   afterEach,
@@ -294,6 +297,81 @@ describe('ProjectCard', () => {
         opening.resolve(undefined)
         navigation.resolve(undefined)
         router.dispose()
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  test.each(['local', 'cloud'] as const)(
+    'keeps the %s card busy until the next view commits',
+    async (kind) => {
+      vi.useFakeTimers()
+      vi.stubGlobal(
+        'URL',
+        class extends NativeURL {
+          static createObjectURL = createObjectURLMock
+          static revokeObjectURL = revokeObjectURLMock
+        }
+      )
+      const previousUrl = window.location.href
+      const nextView = Promise.withResolvers<{ default: () => ReactElement }>()
+      const Editor = lazy(() => nextView.promise)
+      const projectActions = createProjectActions()
+      vi.mocked(projectActions.open).mockResolvedValue({
+        defaultFile: '/project/main.kcl',
+      })
+      const project: HomeProjectEntry =
+        kind === 'local'
+          ? cloudProject
+          : {
+              ...cloudProject,
+              source: 'remote',
+              status: 'cloud-only',
+              localProjectPath: undefined,
+            }
+      window.history.replaceState(null, '', '/home')
+      const view = render(
+        <BrowserRouter>
+          <Suspense fallback={<p>Loading view</p>}>
+            <Routes>
+              <Route
+                path="/home"
+                element={
+                  <AppProjectCard
+                    project={project}
+                    projectActions={projectActions}
+                    fileOperations={fileOperations}
+                  />
+                }
+              />
+              <Route path="*" element={<Editor />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      )
+      try {
+        await act(async () => {
+          fireEvent.click(screen.getByTestId('project-link'))
+          await vi.advanceTimersByTimeAsync(7_000)
+        })
+        expect(
+          screen.getByRole('status', {
+            name: 'Opening project Old cloud title',
+          })
+        ).toBeVisible()
+        expect(screen.queryByText('Editor ready')).not.toBeInTheDocument()
+        fireEvent.click(screen.getByTestId('project-link'))
+        expect(projectActions.open).toHaveBeenCalledOnce()
+        await act(async () => {
+          nextView.resolve({ default: () => <p>Editor ready</p> })
+          await nextView.promise
+        })
+        expect(screen.getByText('Editor ready')).toBeVisible()
+        expect(screen.queryByRole('status')).not.toBeInTheDocument()
+      } finally {
+        nextView.resolve({ default: () => <p>Editor ready</p> })
+        view.unmount()
+        window.history.replaceState(null, '', previousUrl)
         vi.useRealTimers()
       }
     }
