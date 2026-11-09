@@ -1,3 +1,10 @@
+import { fakeKclRuntime } from '@src/lib/kcl/testHelpers/runtime'
+import { modelingTargetBinding } from '@src/lib/kcl/modelingTarget'
+import { createActor } from 'xstate'
+import { MachineManager } from '@src/lib/MachineManager'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
+import { createViewerExtrudeCommand } from '@src/lib/kcl/extrudeCommand'
+import { createKclSession } from '@src/lib/kcl/session'
 import { history, redo, undo } from '@codemirror/commands'
 import { EditorSelection } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
@@ -16,7 +23,7 @@ import {
   type KclExpressionRuntime,
 } from '@src/lib/kclHelpers'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { afterEach, beforeAll, expect, it } from 'vitest'
+import { afterEach, beforeAll, expect, it, vi } from 'vitest'
 
 let wasm: ModuleType
 const settings = JSON.stringify({ settings: { modeling: { base_unit: 'mm' } } })
@@ -263,4 +270,82 @@ it('rejects an execution change while asynchronous review is pending', async () 
   finish.resolve(undefined)
   expect(await pending).toBeInstanceOf(Error)
   expect(fixture.edits).toEqual([])
+})
+
+it('reviews and applies the shared Extrude command through the palette to its explicitly selected editor', async () => {
+  const fixture = await model()
+  const other = await model()
+  const session = createKclSession(
+    async () => new Error('No stream needed for palette binding'),
+    async () => fakeKclRuntime()
+  )
+  cleanup.push(() => session.dispose())
+  session.snapshot.value = fixture.input.getExecution()
+  vi.spyOn(session, 'validate').mockImplementation((ast) =>
+    fixture.input.validate(ast)
+  )
+  const targets = signal([{ id: 'target', editor: fixture.editor, session }])
+  const command = createViewerExtrudeCommand(targets, Promise.resolve(wasm))
+  const actor = createActor(commandBarMachine, {
+    input: {
+      commands: [command],
+      wasmInstancePromise: Promise.resolve(wasm),
+      machineManager: new MachineManager(),
+    },
+  }).start()
+  cleanup.push(() => actor.stop())
+  actor.send({
+    type: 'Find and select command',
+    data: {
+      name: 'Extrude',
+      groupId: 'kcl-modeling',
+      argDefaultValues: {
+        modelingTarget: modelingTargetBinding(targets.peek()[0]),
+        ...fixture.input.args,
+      },
+    },
+  })
+  actor.send({
+    type: 'Submit argument',
+    data: { length: fixture.input.args.length },
+  })
+  await vi.waitFor(() =>
+    expect(actor.getSnapshot().matches('Review')).toBe(true)
+  )
+  expect(actor.getSnapshot().context.reviewValidationError).toBeUndefined()
+  expect(fixture.editor.contents.value).toBe(fixture.contents)
+  actor.send({
+    type: 'Submit command',
+    output: {
+      argumentsToSubmit: actor.getSnapshot().context.argumentsToSubmit,
+    },
+  })
+  await vi.waitFor(() =>
+    expect(fixture.editor.contents.value).toContain('length = depth')
+  )
+  expect(fixture.edits).toHaveLength(1)
+  expect(other.editor.contents.value).toBe(other.contents)
+})
+
+it('rejects arguments collected for a previous execution even when the source text is unchanged', async () => {
+  const fixture = await model()
+  const session = createKclSession(
+    async () => new Error('No stream needed'),
+    async () => fakeKclRuntime()
+  )
+  cleanup.push(() => session.dispose())
+  const snapshot = fixture.input.getExecution()
+  if (!snapshot) throw new Error('Fixture execution is missing')
+  session.snapshot.value = snapshot
+  const target = { id: 'target', editor: fixture.editor, session }
+  const command = createViewerExtrudeCommand(
+    signal([target]),
+    Promise.resolve(wasm)
+  )
+  const binding = modelingTargetBinding(target)
+  session.snapshot.value = { ...snapshot }
+  expect(
+    await command.onSubmit({ ...fixture.input.args, modelingTarget: binding })
+  ).toBeInstanceOf(Error)
+  expect(fixture.editor.contents.value).toBe(fixture.contents)
 })

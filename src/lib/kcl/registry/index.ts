@@ -1,3 +1,20 @@
+import { initialiseWasm } from '@src/lang/wasmUtils'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
+import { signal } from '@preact/signals-core'
+import { createViewerExtrudeCommand } from '@src/lib/kcl/extrudeCommand'
+import {
+  modelingTargetBinding,
+  type ModelingTarget,
+} from '@src/lib/kcl/modelingTarget'
+import {
+  provideCommand,
+  commandSystemService,
+} from '@src/registry/contracts/commands'
+import { createViewerKclRuntime } from '@src/lib/kcl/runtime'
+import { bindViewerTransport } from '@src/lib/kcl/transport'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
@@ -17,7 +34,6 @@ import {
 import { createKclExecution } from '@src/lib/kcl/executor'
 import { KclScene } from '@src/lib/kcl/KclScene'
 import { loadKclProjectSources } from '@src/lib/kcl/projectSources'
-import type { KclStreamView } from '@src/lib/kcl/session'
 import { createKclSceneSettings } from '@src/lib/kcl/settings'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
@@ -26,7 +42,9 @@ import { settingsService } from '@src/registry/contracts/settings'
 import { createElement } from 'react'
 
 /** KCL contributes syntax, execution, and a standalone engine stream without legacy modeling services. */
-const extension = defineRegistryItemFactory(({ services }) => {
+const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
+  const wasmPromise = valueSpecs.get(wasmPromiseValueSpec) ?? initialiseWasm()
+  const targets = signal<readonly ModelingTarget[]>([])
   const sceneSettings = createKclSceneSettings(
     () => services.get(settingsService).current.value
   )
@@ -41,7 +59,7 @@ const extension = defineRegistryItemFactory(({ services }) => {
       const token = services.get(authService).token.peek()
       if (!token) return new Error('Sign in to connect to the engine')
       // Keep the viewer SDK separate from the app SDK until their API changes are adopted.
-      const [{ ZooWebView }, { Client }] = await Promise.all([
+      const [{ ZooWebView }, { Client, modeling }] = await Promise.all([
         import('@kittycad/web-view'),
         import('@kittycad/viewer-sdk'),
       ])
@@ -53,15 +71,24 @@ const extension = defineRegistryItemFactory(({ services }) => {
       })
       // The SDK's auto-start frame can restart a disposed viewer. Start only after
       // the session has attached its element and checked that it is still owned.
-      // SDK 4.5.26 forwards Map inputs to its worker, but declares submit(string).
-      // Keep that declaration correction confined to the SDK boundary.
+      let unbindTransport: (() => void) | undefined
+      const destroy = view.deconstructor.bind(view)
       return Object.assign(view, {
+        deconstructor: () => {
+          unbindTransport?.()
+          return destroy()
+        },
         start: () => {
           const start = view.el.querySelector<HTMLElement>('.start')
           start?.click()
           if (start) start.style.display = 'none'
           const rtc = view.rtc
           if (rtc) {
+            unbindTransport = bindViewerTransport(rtc, (message) =>
+              modeling.modeling_commands_ws.parseMessage(
+                message as MessageEvent
+              )
+            )
             // The SDK observes hidden panels too. Keep their last valid stream
             // size instead of asking the engine to render a 0x0 framebuffer.
             const resize = rtc.resize.bind(rtc)
@@ -70,8 +97,12 @@ const extension = defineRegistryItemFactory(({ services }) => {
             }
           }
         },
-      }) as KclStreamView
+      })
     },
+    (send) =>
+      createViewerKclRuntime(wasmPromise, send, () =>
+        jsAppSettings(services.get(settingsService).current.peek())
+      ),
     sceneSettings.current,
     (contents, context) =>
       loadKclProjectSources(
@@ -85,6 +116,13 @@ const extension = defineRegistryItemFactory(({ services }) => {
     id: 'kcl',
     dispose: sceneSettings.dispose,
     provides: [
+      provideCommand(
+        createViewerExtrudeCommand(targets, wasmPromise, () =>
+          services
+            .get(userFeaturesService)
+            .has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false)
+        )
+      ),
       provide(editorLanguageValueSpec, {
         id: 'kcl',
         matches: '.kcl',
@@ -98,11 +136,19 @@ const extension = defineRegistryItemFactory(({ services }) => {
       provide(executorCapabilityValueSpec, capability),
       provide(
         editorViewValueSpec,
-        defineEditorView(
-          executionContext(capability, () => services.get(executorsService), {
-            shared: false,
+        defineEditorView((host) => {
+          const context = executionContext(capability, () => services.get(executorsService), { shared: false })(host)
+          const target = {
+            id: crypto.randomUUID(),
+            editor: host.editor,
+            session: getSession(context.executor),
+          }
+          targets.value = [...targets.peek(), target]
+          host.onDispose(() => {
+            targets.value = targets.peek().filter((entry) => entry !== target)
           })
-        )({
+          return { ...context, target }
+        })({
           id: 'kcl.engine',
           label: 'Modeling',
           priority: 1000,
@@ -113,6 +159,17 @@ const extension = defineRegistryItemFactory(({ services }) => {
               executor: context.executor,
               capability,
               session: getSession(context.executor),
+              onExtrude: () =>
+                services.get(commandSystemService).send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'Extrude',
+                    groupId: 'kcl-modeling',
+                    argDefaultValues: {
+                      modelingTarget: modelingTargetBinding(context.target),
+                    },
+                  },
+                }),
             }),
         })
       ),

@@ -1,11 +1,9 @@
+import { emptyExecState, type ExecState } from '@src/lang/wasm'
+import { fakeKclRuntime } from '@src/lib/kcl/testHelpers/runtime'
 import { signal } from '@preact/signals-core'
 import { Themes } from '@src/lib/theme'
 import type { KclSceneSettings } from '@src/lib/kcl/settings'
-import {
-  createKclSession,
-  type KclSources,
-  type KclStreamView,
-} from '@src/lib/kcl/session'
+import { createKclSession, type KclStreamView } from '@src/lib/kcl/session'
 import { afterEach, expect, it, vi } from 'vitest'
 
 /** A controllable transport exercises lifecycle and ordering without a remote engine or WASM. */
@@ -14,21 +12,16 @@ function fakeViewer() {
     send: vi.fn(
       async (_message: string): Promise<unknown> => ({ success: true })
     ),
-    executor: () => ({ submit }),
   })
-  const submit = vi.fn(
-    async (
-      _contents: KclSources,
-      _options: { mainKclPathName: string }
-    ): Promise<unknown> => ({ values: {} })
-  )
+  const runtime = fakeKclRuntime()
+  const submit = runtime.execute
   const viewer: KclStreamView = Object.assign(new EventTarget(), {
     el: document.createElement('div'),
     start: vi.fn(),
     rtc,
     deconstructor: vi.fn(),
   })
-  return { viewer, submit, rtc }
+  return { viewer, submit, rtc, runtime }
 }
 const sessions: ReturnType<typeof createKclSession>[] = []
 afterEach(() => {
@@ -39,7 +32,7 @@ afterEach(() => {
 const setup = () => {
   const fake = fakeViewer()
   const create = vi.fn(async () => fake.viewer)
-  const session = createKclSession(create)
+  const session = createKclSession(create, async () => fake.runtime)
   sessions.push(session)
   return { ...fake, create, session }
 }
@@ -67,24 +60,20 @@ it('waits for a mounted, ready stream; remounting and editing reuse its connecti
   )
   expect(create).not.toHaveBeenCalled()
   const detach = await connect(session, viewer)
-  expect(await result).toEqual({ result: { values: {} } })
-  expect(submit).toHaveBeenCalledWith('first', {
-    mainKclPathName: '/original.kcl',
-  })
+  expect(await result).toEqual({ result: emptyExecState() })
+  expect(submit).toHaveBeenCalledWith('first', '/original.kcl')
   detach()
   session.mount(visibleContainer())
   await session.execute('second', '/renamed.kcl', new AbortController().signal)
   expect(create).toHaveBeenCalledOnce()
-  expect(submit).toHaveBeenLastCalledWith('second', {
-    mainKclPathName: '/renamed.kcl',
-  })
+  expect(submit).toHaveBeenLastCalledWith('second', '/renamed.kcl')
   expect(viewer.deconstructor).not.toHaveBeenCalled()
   session.dispose()
   session.dispose()
   expect(viewer.deconstructor).toHaveBeenCalledOnce()
 })
 
-it('passes a project file map and selected nested entrypoint to the SDK unchanged', async () => {
+it('passes a project file map and selected nested entrypoint to the runtime unchanged', async () => {
   const { session, viewer, submit } = setup()
   await connect(session, viewer)
   const sources = new Map([
@@ -96,15 +85,16 @@ it('passes a project file map and selected nested entrypoint to the SDK unchange
     '/project/scenes/main.kcl',
     new AbortController().signal
   )
-  expect(submit).toHaveBeenCalledExactlyOnceWith(sources, {
-    mainKclPathName: '/project/scenes/main.kcl',
-  })
+  expect(submit).toHaveBeenCalledExactlyOnceWith(
+    sources,
+    '/project/scenes/main.kcl'
+  )
 })
 
-it('serializes SDK submissions and skips interrupted queued inputs', async () => {
+it('serializes model execution and skips interrupted queued inputs', async () => {
   const { session, viewer, submit } = setup()
   await connect(session, viewer)
-  const first = Promise.withResolvers<unknown>()
+  const first = Promise.withResolvers<ExecState>()
   submit.mockReturnValueOnce(first.promise)
   const firstSignal = new AbortController()
   const run = session.execute('first', 'first.kcl', firstSignal.signal)
@@ -119,7 +109,7 @@ it('serializes SDK submissions and skips interrupted queued inputs', async () =>
     new AbortController().signal
   )
   expect(submit).toHaveBeenCalledOnce()
-  first.resolve({ values: {} })
+  first.resolve(emptyExecState())
   expect(await run).toBeInstanceOf(Error)
   expect(await skipped).toBeInstanceOf(Error)
   expect(await latest).not.toBeInstanceOf(Error)
@@ -132,7 +122,10 @@ it('serializes SDK submissions and skips interrupted queued inputs', async () =>
 it('releases a viewer acquired after the executor closes', async () => {
   const { viewer } = fakeViewer()
   const acquisition = Promise.withResolvers<KclStreamView>()
-  const session = createKclSession(() => acquisition.promise)
+  const session = createKclSession(
+    () => acquisition.promise,
+    async () => fakeKclRuntime()
+  )
   sessions.push(session)
   session.mount(visibleContainer())
   session.dispose()
@@ -155,7 +148,10 @@ it('settles pending execution on disposal and reports connection failures', asyn
   await vi.waitFor(() => expect(submit).toHaveBeenCalledOnce())
   session.dispose()
   expect(await run).toEqual(new Error('The executor closed'))
-  const failing = createKclSession(async () => new Error('Sign in first'))
+  const failing = createKclSession(
+    async () => new Error('Sign in first'),
+    async () => fakeKclRuntime()
+  )
   sessions.push(failing)
   failing.mount(visibleContainer())
   expect(await failing.execute('', '', new AbortController().signal)).toEqual(
@@ -276,8 +272,12 @@ it('updates connected scenes without executing KCL again and restores preference
     defaultUnit: 'mm',
     cameraProjection: 'orthographic',
   })
-  const { viewer, rtc, submit } = fakeViewer()
-  const session = createKclSession(async () => viewer, settings)
+  const { viewer, rtc, submit, runtime } = fakeViewer()
+  const session = createKclSession(
+    async () => viewer,
+    async () => runtime,
+    settings
+  )
   sessions.push(session)
   await connect(session, viewer)
   const commands = () =>
@@ -312,7 +312,8 @@ it('updates connected scenes without executing KCL again and restores preference
   rtc.send.mockClear()
   await session.execute('contents', 'main.kcl', new AbortController().signal)
   const afterRun = commands()
-  expect(afterRun).toContainEqual({ type: 'scene_clear_all' })
+  // Native execution owns scene invalidation; clearing here would break its cached entity IDs.
+  expect(afterRun).not.toContainEqual({ type: 'scene_clear_all' })
   expect(afterRun).toContainEqual({ type: 'edge_lines_visible', hidden: false })
   expect(afterRun).toContainEqual(
     expect.objectContaining({ type: 'set_default_system_properties' })
@@ -337,12 +338,16 @@ it('waits for the current KCL run before applying the latest changed preferences
     defaultUnit: 'mm',
     cameraProjection: 'orthographic',
   })
-  const { viewer, rtc, submit } = fakeViewer()
-  const session = createKclSession(async () => viewer, settings)
+  const { viewer, rtc, submit, runtime } = fakeViewer()
+  const session = createKclSession(
+    async () => viewer,
+    async () => runtime,
+    settings
+  )
   sessions.push(session)
   await connect(session, viewer)
   await session.execute('first', 'main.kcl', new AbortController().signal)
-  const pending = Promise.withResolvers<unknown>()
+  const pending = Promise.withResolvers<ExecState>()
   submit.mockReturnValueOnce(pending.promise)
   const run = session.execute(
     'second',
@@ -354,7 +359,7 @@ it('waits for the current KCL run before applying the latest changed preferences
   settings.value = { ...settings.peek(), backfaceColor: '#ff0000' }
   settings.value = { ...settings.peek(), backfaceColor: '#00ff00' }
   expect(rtc.send).not.toHaveBeenCalled()
-  pending.resolve({ values: {} })
+  pending.resolve(emptyExecState())
   await run
   const commands = rtc.send.mock.calls.map(
     ([message]) => JSON.parse(message).cmd

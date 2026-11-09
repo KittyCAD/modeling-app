@@ -1,3 +1,5 @@
+import type { ExecState } from '@src/lang/wasm'
+import { fakeKclRuntime } from '@src/lib/kcl/testHelpers/runtime'
 import '@src/lib/projectSession/next/testFeature'
 import { Registry, defineRegistryItem, provide } from '@kittycad/registry'
 import editorsExtension from '@src/lib/editors/registry'
@@ -33,14 +35,14 @@ it.each([false, true])(
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(640)
     vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(360)
     const viewers: KclStreamView[] = []
-    const submit = vi.fn(async () => ({ values: {} }))
+    const runtime = fakeKclRuntime()
+    const submit = runtime.execute
     const execution = createKclExecution(
       async () => {
         const viewer = Object.assign(new EventTarget(), {
           el: document.createElement('div'),
           start: vi.fn(),
           rtc: Object.assign(new EventTarget(), {
-            executor: () => ({ submit }),
             send: vi.fn(async () => ({})),
           }),
           deconstructor: vi.fn(),
@@ -48,13 +50,14 @@ it.each([false, true])(
         viewers.push(viewer)
         return viewer
       },
+      async () => runtime,
       undefined,
       projectSources
         ? async (contents, { src }) => new Map([[src, contents]])
         : undefined
     )
     expectTypeOf<CapabilityData<typeof execution.capability>>().toEqualTypeOf<{
-      result: unknown
+      result: ExecState
     }>()
     const registry = new Registry()
     registry.configure([
@@ -107,9 +110,7 @@ it.each([false, true])(
       await vi.waitFor(() =>
         expect(submit).toHaveBeenCalledWith(
           projectSources ? new Map([['/test.kcl', 'edited']]) : 'edited',
-          {
-            mainKclPathName: '/test.kcl',
-          }
+          '/test.kcl'
         )
       )
       view.unmount()

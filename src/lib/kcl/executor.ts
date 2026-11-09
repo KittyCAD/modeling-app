@@ -9,6 +9,7 @@ import {
   type KclSession,
   type KclSources,
 } from '@src/lib/kcl/session'
+import type { CreateViewerKclRuntime } from '@src/lib/kcl/runtime'
 import { isErr } from '@src/lib/trap'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { KclSceneSettings } from '@src/lib/kcl/settings'
@@ -20,6 +21,7 @@ export const kclExecutorCapabilityId = 'kcl.execute'
 /** Sessions outlive individual runs and React mounts, but never their owning executor. */
 export function createKclExecution(
   createView: CreateKclStreamView,
+  createRuntime: CreateViewerKclRuntime,
   settings?: ReadonlySignal<KclSceneSettings>,
   loadSources: (
     contents: string,
@@ -30,7 +32,7 @@ export function createKclExecution(
   const getSession = (executor: Executor) => {
     const existing = sessions.get(executor)
     if (existing) return existing
-    const session = createKclSession(createView, settings)
+    const session = createKclSession(createView, createRuntime, settings)
     sessions.set(executor, session)
     Effect.runSync(
       Scope.addFinalizer(

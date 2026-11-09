@@ -42,24 +42,56 @@ and maps the current selection; it does not replace the entire buffer. The
 transaction is isolated from ordinary typing history. Saving and execution remain
 the responsibility of the editor's contributions.
 
-## Evidence and remaining bridge
+## Viewer runtime and palette binding
 
-The proof tests use the actual compiled WASM in mock execution mode. A KCL 3.0
-circle produces its artifact graph; a typed point selection identifies that
-sketch's region. The existing expression evaluator resolves a unit-bearing
-length. The codemod creates a named parameter, hides the sketch, materializes a
-region variable, and adds an extrusion. Mock execution of the result produces
-a `Solid`. The editor receives multiple change ranges in one transaction, and
-its cursor, undo, and redo behave as expected.
+The Modeling mode contributes an Extrude command and a button that opens it in
+the existing command palette. The Model choice binds an editor and its displayed
+execution. Reexecuting, editing, renaming, or closing that target invalidates the
+choice; changing focus does not retarget the command.
 
-This verifies the programmatic codemod path without `KclManager` or an engine
-connection. It does not verify real engine geometry, viewer-backed named-parameter
-evaluation, or viewer-backed mock review. In an exploratory run, evaluating a
-model variable after standalone mock execution did not retain that variable.
-The viewer session still needs an explicit analysis/validation bridge with
-appropriate model memory; the injected callback is that boundary, not a fallback
-to syntax-only validation. The new UI should consume the shared definition after
-that runtime bridge is established. Argument binding is also still a legacy
-seam: `buildCommandArgument` and version-availability callbacks take a
-modeling-machine context. This proof receives already-resolved arguments and
-does not simulate that context or replace the selection/KCL input widgets.
+The shared argument definition supplies defaults, documentation, conditional
+requirements, advanced parameters, and language-version availability. Selection
+inputs query the bound viewer. KCL inputs reuse `CommandKclInput` with an explicit
+source/model contract instead of a modeling actor. Numeric expressions can use
+variables from the executed model, including imported values.
+
+`runtime.ts` creates a persistent app-WASM context for each viewer session. Its
+engine callbacks send commands through that viewer's connection. `transport.ts`
+correlates websocket replies by request ID so camera and ICE messages cannot
+complete unrelated KCL requests. Native execution manages its own scene cache;
+the session must not clear the scene behind that cache.
+
+Mock review uses a separate native context and the same captured project files.
+Successful `executeMock` writes cached variables even when `usePrevMemory` is
+false, so sharing the live context would change subsequent argument calculations.
+Review's engine callbacks reject attempts to contact the visible engine.
+Execution, evaluation, review, and preference updates are sequenced by the
+session. Disposal closes the transport and waits for borrowed WASM contexts
+before freeing them.
+
+## Evidence and smoke test
+
+Tests use the compiled WASM with engine lifecycle acknowledgements for numeric
+models. They cover model-variable evaluation, imported files, independent session
+memory, and both successful and failed mock review without engine traffic.
+The palette actor test passes the shared Extrude arguments through review and
+commits a real codemod into the selected editor. Separate tests cover stale
+execution choices, localized changes, cursor mapping, undo/redo, reply
+correlation, and session cleanup. These checks do not establish real engine
+geometry or browser picking; those still need a live-engine smoke test.
+
+With the project-shell feature enabled, open this file in Modeling mode:
+
+```kcl
+@settings(kclVersion = 3.0, defaultLengthUnit = mm)
+height = 24mm
+s = sketch(on = XY) {
+  c = circle(start = [10mm, 0mm], center = [0mm, 0mm])
+  radius(c) == 10mm
+}
+```
+
+After execution, click Extrude, click inside the circle, and continue to Length.
+Enter `height / 2`, review, and submit. The editor should gain the stdlib codemod's
+region/extrusion code and the viewer should reexecute it. Switching to Code mode
+allows inspection and one-step undo. Dialogs are unchanged.

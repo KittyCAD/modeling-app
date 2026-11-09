@@ -1,3 +1,8 @@
+import type { WebSocketRequest } from '@kittycad/lib'
+import type { CreateViewerKclRuntime } from '@src/lib/kcl/runtime'
+import type { KclModelSnapshot } from '@src/lib/kcl/stdlibExtrude'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program, ExecState } from '@src/lang/wasm'
 import { readKclResult } from '@src/lib/kcl/result'
 import { effect, signal, type ReadonlySignal } from '@preact/signals-core'
 import { kclSceneCommands, type KclSceneSettings } from '@src/lib/kcl/settings'
@@ -11,12 +16,6 @@ export interface KclStreamView extends EventTarget {
   el: HTMLElement
   start: () => void
   rtc?: EventTarget & {
-    executor: () => {
-      submit: (
-        contents: KclSources,
-        options: { mainKclPathName: string }
-      ) => Promise<unknown>
-    }
     send: (message: string) => Promise<unknown>
   }
   deconstructor: () => unknown
@@ -33,6 +32,7 @@ type ConnectionState =
 /** One persistent engine connection per executor, independent of execution snapshots and React mounts. */
 export function createKclSession(
   createView: CreateKclStreamView,
+  createRuntime: CreateViewerKclRuntime,
   settings?: ReadonlySignal<KclSceneSettings>
 ) {
   const element = document.createElement('div')
@@ -40,6 +40,9 @@ export function createKclSession(
   const state = signal<ConnectionState>({ type: 'connecting' })
   const ready = Promise.withResolvers<KclStreamView | Error>()
   const closed = Promise.withResolvers<Error>()
+  const snapshot = signal<KclModelSnapshot | undefined>(undefined)
+  let runtime: Awaited<ReturnType<CreateViewerKclRuntime>> | undefined
+  let runtimePromise: ReturnType<CreateViewerKclRuntime> | undefined
   let view: KclStreamView | undefined
   let started = false
   let disposed = false
@@ -73,7 +76,11 @@ export function createKclSession(
     state.value = { type: 'error', error }
     ready.resolve(error)
     closed.resolve(error)
+    snapshot.value = undefined
     stopViewer()
+    void queue
+      .then(async () => (await runtimePromise)?.dispose())
+      .catch(reportRejection)
   }
   const unavailable = () => disposed || state.peek().type === 'error'
   const onDisconnect = () =>
@@ -144,6 +151,13 @@ export function createKclSession(
     clearTimeout(timeout)
     view.rtc.addEventListener('close', onDisconnect, { once: true })
     state.value = { type: 'ready' }
+    runtimePromise = createRuntime(view.rtc.send.bind(view.rtc)).then(
+      (value) => {
+        runtime = value
+        return value
+      }
+    )
+    void runtimePromise?.catch(fail)
     ready.resolve(view)
     scheduleSettings()
   }
@@ -192,6 +206,33 @@ export function createKclSession(
   return {
     element,
     state,
+    snapshot,
+    sendSceneCommand: (command: WebSocketRequest) =>
+      enqueue(async () => {
+        const connected = await ready.promise
+        if (connected instanceof Error) return Promise.reject(connected)
+        if (unavailable() || !connected.rtc)
+          return Promise.reject(new Error('The engine session is unavailable'))
+        return connected.rtc.send(JSON.stringify(command))
+      }),
+    evaluateExpression: (ast: Node<Program>) =>
+      enqueue(async () => {
+        if (unavailable() || !runtimePromise || !snapshot.peek())
+          return Promise.reject(
+            new Error('Execute the model before evaluating an argument')
+          )
+        return (await runtimePromise).evaluateExpression(ast)
+      }),
+    validate: (ast: Node<Program>, expected: KclModelSnapshot) =>
+      enqueue(async () => {
+        if (unavailable() || snapshot.peek() !== expected || !runtimePromise)
+          return new Error('The model changed before review')
+        return (await runtimePromise).validate(ast, expected.src ?? 'main.kcl')
+      }),
+    waitForAllEngineModelingCommands: () =>
+      enqueue(async () => {
+        await runtime?.waitForAllEngineModelingCommands()
+      }),
     mount: (container: HTMLElement) => {
       container.appendChild(element)
       // Inactive tab panels mount with display:none. Wait for a usable layout
@@ -223,7 +264,8 @@ export function createKclSession(
       contents: KclSources,
       src: string,
       signal: AbortSignal
-    ): Promise<{ result: unknown } | Error> => {
+    ): Promise<{ result: ExecState } | Error> => {
+      snapshot.value = undefined
       const run = enqueue(async () => {
         const connected = await ready.promise
         if (isErr(connected)) return connected
@@ -234,26 +276,17 @@ export function createKclSession(
         const rtc = connected.rtc
         if (!rtc) return new Error('The engine session is unavailable')
         try {
-          // The SDK cannot cancel submit yet. Wait for an in-flight run before
-          // submitting another, and skip obsolete queued inputs after interruption.
+          // Native execution cannot retract commands already sent to the engine.
+          // Finish the current run before starting another, and skip interrupted queued inputs.
           const submit = async () => {
-            await rtc.send(
-              JSON.stringify({
-                type: 'modeling_cmd_req',
-                cmd_id: crypto.randomUUID(),
-                cmd: { type: 'scene_clear_all' },
-              })
-            )
-            if (signal.aborted || unavailable())
-              return new Error('KCL execution was cancelled')
-            const result = await rtc
-              .executor()
-              .submit(contents, { mainKclPathName: src })
+            if (!runtimePromise)
+              return new Error('The KCL runtime is unavailable')
+            const model = await runtimePromise
+            const execution = await model.execute(contents, src)
             // WASM applies its own colors, edges and grid defaults on each run.
             const settingsError = await applySettings(connected, true)
             if (isErr(settingsError)) return settingsError
-            const output = readKclResult(result)
-            if (isErr(output)) return output
+            const output = { result: execution }
             if (signal.aborted || unavailable())
               return new Error('KCL execution was cancelled')
             if (!framed) {
@@ -265,6 +298,16 @@ export function createKclSession(
                 })
               )
               framed = true
+            }
+            if (signal.aborted || unavailable())
+              return new Error('KCL execution was cancelled')
+            snapshot.value = {
+              src,
+              contents:
+                typeof contents === 'string'
+                  ? contents
+                  : (contents.get(src) ?? ''),
+              execState: execution,
             }
             return output
           }
@@ -301,6 +344,10 @@ export function createKclSession(
       ready.resolve(error)
       closed.resolve(error)
       state.value = { type: 'closed' }
+      snapshot.value = undefined
+      void queue
+        .then(async () => (await runtimePromise)?.dispose())
+        .catch(reportRejection)
       stopViewer()
       element.remove()
     },

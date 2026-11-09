@@ -10,10 +10,12 @@ export function KclScene({
   executor,
   capability,
   session,
+  onExtrude,
 }: {
   executor: Executor
   capability: KclExecutorCapability
   session: KclSession
+  onExtrude?: () => void
 }) {
   useSignals()
   const container = useRef<HTMLDivElement>(null)
@@ -31,6 +33,18 @@ export function KclScene({
       className="body-bg relative flex min-h-0 min-w-0 flex-1"
       aria-label="KCL engine scene"
     >
+      {onExtrude && (
+        <div className="absolute left-3 top-3 z-10">
+          <button
+            type="button"
+            className="rounded border border-3 bg-2 px-3 py-1 text-sm disabled:opacity-50"
+            disabled={!session.snapshot.value}
+            onClick={onExtrude}
+          >
+            Extrude
+          </button>
+        </div>
+      )}
       <div ref={container} className="min-h-0 min-w-0 flex-1" />
       {!error && connection.type === 'connecting' ? (
         <div role="status" className="body-bg absolute inset-0">
