@@ -502,7 +502,8 @@ export class ZDSProject {
       if (editor.modelingState?.matches('sketchSolveMode')) {
         // Rebuild the live sketch as well as Rust's file registry. A plain file
         // snapshot leaves handles and tool previews on the previous geometry.
-        editor.scheduleCurrentCodeExecution(false)
+        // Receiving a snapshot must not upload a fresh thumbnail/revision.
+        editor.scheduleCurrentCodeExecution(false, { updateThumbnail: false })
         await editor.flushPendingEditorExecution()
       } else if (
         !editor.modelingState?.matches('Sketch') &&

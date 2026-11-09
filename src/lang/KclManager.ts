@@ -204,6 +204,7 @@ interface EditorExecutionRequest {
   shouldResetCamera: boolean
   requestedUserDocumentVersion: number
   forceExecution?: boolean
+  executionOptions?: Pick<ExecuteArgs, 'updateThumbnail'>
 }
 
 interface DeferredEditorExecution extends EditorExecutionRequest {
@@ -1468,6 +1469,7 @@ export class KclManager extends File {
     shouldResetCamera,
     requestedUserDocumentVersion,
     forceExecution = false,
+    executionOptions = {},
     requestedPath,
     requestedProjectPath,
     requestedOwnershipVersion,
@@ -1507,7 +1509,7 @@ export class KclManager extends File {
          * sourceDelta is real generated KCL; letting this stale editor snapshot
          * take that path is what overwrote freshly typed sketch lines.
          */
-        await this.executeCode(newCode)
+        await this.executeCode(newCode, executionOptions)
         // Incomplete syntax does not prove that the running sketch was deleted.
         if (!isCurrentDirectEditorExecution() || this.hasParseErrors()) return
 
@@ -1593,7 +1595,7 @@ export class KclManager extends File {
           })
         }
       } else {
-        await this.executeCode(newCode)
+        await this.executeCode(newCode, executionOptions)
         if (!isCurrent()) return
         if (shouldResetCamera) {
           await resetCameraAfterExecution({
@@ -1607,12 +1609,16 @@ export class KclManager extends File {
     }
   }
 
-  scheduleCurrentCodeExecution(shouldResetCamera: boolean) {
+  scheduleCurrentCodeExecution(
+    shouldResetCamera: boolean,
+    executionOptions: Pick<ExecuteArgs, 'updateThumbnail'> = {}
+  ) {
     this.scheduleEditorExecution({
       newCode: this.code,
       shouldResetCamera,
       requestedUserDocumentVersion: this._userDocumentVersion,
       forceExecution: true,
+      executionOptions,
     })
   }
 

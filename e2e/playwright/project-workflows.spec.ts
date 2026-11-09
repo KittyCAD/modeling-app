@@ -1014,6 +1014,22 @@ for (const kind of ['local', 'cloud'] as const) {
         await expect(
           page.locator('[data-handle="sketch-point-handle"]')
         ).toHaveCount(2)
+        // Drain initial rendering and thumbnail work before measuring a refresh.
+        await page.evaluate(() =>
+          window.app.singletons.kclManager.flushWriteToFile()
+        )
+        const clockStart = new Date()
+        await page.clock.install({ time: clockStart })
+        await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+        await page.clock.runFor(7_000)
+        await page.clock.resume()
+        await expect(
+          page
+            .locator('#statusbar')
+            .getByRole('status')
+            .filter({ hasText: 'Saving...' })
+        ).not.toBeAttached()
+        const uploadsBefore = storage.remote.uploads.length
         const updatedCode = initialCode.replace(
           '\n}',
           '\n  point(at = [var 8mm, var 9mm])\n}'
@@ -1036,6 +1052,20 @@ for (const kind of ['local', 'cloud'] as const) {
         await expect(toolbar.exitSketchBtn).toBeEnabled()
         // No re-entering the sketch and no new insertion should be required.
         await expect.poll(() => storage.read(root)).toBe(updatedCode)
+        // A read-only refresh must not generate another cloud revision by
+        // uploading a thumbnail after the capture and save debounce timers.
+        await page.clock.pauseAt(
+          new Date((await page.evaluate(() => Date.now())) + 1_000)
+        )
+        await page.clock.runFor(7_000)
+        await expect(
+          page
+            .locator('#statusbar')
+            .getByRole('status')
+            .filter({ hasText: 'Saving...' })
+        ).not.toBeAttached()
+        expect(storage.remote.uploads).toHaveLength(uploadsBefore)
+        await page.clock.resume()
       })
 
       for (const removal of [

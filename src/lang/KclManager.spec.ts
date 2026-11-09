@@ -1443,7 +1443,7 @@ describe('KclManager live operation updates', () => {
       await project.reloadFilesFromStorage(() => app.project === project)
       expect(editor.code).toBe('width = 2')
       expect(open).toHaveBeenCalledOnce()
-      expect(schedule).toHaveBeenCalledWith(false)
+      expect(schedule).toHaveBeenCalledWith(false, { updateThumbnail: false })
       expect(execute).toHaveBeenCalledOnce()
       expect(write).not.toHaveBeenCalled()
     } finally {
@@ -2562,7 +2562,7 @@ describe('KclManager diagnostics', () => {
 
     await vi.advanceTimersByTimeAsync(1)
     expect(executeCodeSpy).toHaveBeenCalledTimes(1)
-    expect(executeCodeSpy).toHaveBeenCalledWith('abc')
+    expect(executeCodeSpy).toHaveBeenCalledWith('abc', {})
   })
 
   it('coalesces scheduled project reloads and executes with automatic rendering disabled', async () => {
@@ -2580,13 +2580,15 @@ describe('KclManager diagnostics', () => {
       shouldResetCamera: false,
       shouldWriteToDisk: false,
     })
-    kclManager.scheduleCurrentCodeExecution(false)
+    kclManager.scheduleCurrentCodeExecution(false, { updateThumbnail: false })
 
     await vi.advanceTimersByTimeAsync(999)
     expect(executeCodeSpy).not.toHaveBeenCalled()
 
     await vi.advanceTimersByTimeAsync(1)
-    expect(executeCodeSpy).toHaveBeenCalledExactlyOnceWith('latest')
+    expect(executeCodeSpy).toHaveBeenCalledExactlyOnceWith('latest', {
+      updateThumbnail: false,
+    })
   })
 
   it('flushes a pending direct editor execution before starting a sketch', async () => {
@@ -2606,7 +2608,7 @@ describe('KclManager diagnostics', () => {
     await kclManager.flushPendingEditorExecution()
 
     expect(executeCodeSpy).toHaveBeenCalledTimes(1)
-    expect(executeCodeSpy).toHaveBeenCalledWith('ab')
+    expect(executeCodeSpy).toHaveBeenCalledWith('ab', {})
 
     await vi.advanceTimersByTimeAsync(1000)
     expect(executeCodeSpy).toHaveBeenCalledTimes(1)
@@ -3567,7 +3569,7 @@ describe('KclManager diagnostics', () => {
 
     await vi.advanceTimersByTimeAsync(1000)
 
-    expect(executeCodeSpy).toHaveBeenCalledWith(mainCode)
+    expect(executeCodeSpy).toHaveBeenCalledWith(mainCode, {})
   })
 
   it('does not overwrite dirty editor state when an external reload resolves later', async () => {
