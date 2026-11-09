@@ -294,6 +294,25 @@ describe('local GLB loading', () => {
     f.renderer.dispose()
   })
 
+  it.each<[EntityType[], boolean]>([
+    [['object'], true],
+    [['curve'], true],
+    [['edge'], false],
+    [['solid3d'], false],
+    [['face', 'object'], false],
+  ])('includes standalone curves for filter %j: %s', (filter, included) => {
+    const f = fixture()
+    f.state.currentModel = new Group()
+    f.manager.selectionFilter.value = filter
+    f.state.rebuildSelectionTargets()
+    expect(f.gpu.integerIdPicker.setTargets.mock.lastCall?.[3]).toEqual(
+      included
+        ? { source: f.gpu.sketchLineRenderer.lines, targets: [] }
+        : undefined
+    )
+    f.renderer.dispose()
+  })
+
   function selectionFixture() {
     const f = planeFixture()
     const model = new Group()

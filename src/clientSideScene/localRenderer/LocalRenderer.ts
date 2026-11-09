@@ -358,7 +358,8 @@ export class LocalRenderer {
       filter.includes('edge')
         ? { source: edgeRenderer.lines, targets: edgeTargets }
         : undefined,
-      filter.includes('curve')
+      // Object-selection commands accept paths and helices, not just solids.
+      filter.includes('curve') || getBodySelectionType(filter) === 'object'
         ? { source: sketchLineRenderer.lines, targets: sketchLineTargets }
         : undefined
     )
