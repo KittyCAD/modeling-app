@@ -895,6 +895,8 @@ pub struct ExampleProperties {
     pub norun: bool,
     #[allow(dead_code)]
     pub no3d: bool,
+    /// Request GPU snapshots for this individual example.
+    pub gpu: bool,
     pub inline: bool,
     pub sketch_syntax: ExampleSketchSyntax,
     pub sketch_syntax_explicit: bool,
@@ -1348,6 +1350,7 @@ trait ApplyMeta {
                     let mut inline = false;
                     let mut norun = false;
                     let mut no3d = false;
+                    let mut gpu = false;
                     let mut sketch_syntax = ExampleSketchSyntax::SketchSyntaxAgnostic;
                     let mut sketch_syntax_explicit = false;
                     for a in args {
@@ -1355,6 +1358,7 @@ trait ApplyMeta {
                             "inline" => inline = true,
                             "norun" | "no_run" => norun = true,
                             "no3d" | "no_3d" => no3d = true,
+                            "gpu" => gpu = true,
                             other => {
                                 if let Some(tag) = ExampleSketchSyntax::from_attr(other) {
                                     sketch_syntax = tag;
@@ -1368,6 +1372,7 @@ trait ApplyMeta {
                         ExampleProperties {
                             norun,
                             no3d,
+                            gpu,
                             inline,
                             sketch_syntax,
                             sketch_syntax_explicit,
@@ -1721,6 +1726,49 @@ mod test {
     }
 
     #[test]
+    fn example_graphics_override_is_local_to_its_code_fence() {
+        use crate::parsing::ast::types::BodyItem;
+        use crate::test_server::TestGraphicsParams;
+
+        let program = crate::parsing::top_level_parse("export fn example() { return 1 }").unwrap();
+        let BodyItem::VariableDeclaration(var) = &program.body[0] else {
+            panic!("expected a function declaration");
+        };
+        let mut docs = FnData::from_ast(var, "std::".to_owned(), "", "std");
+        let comments = [
+            "/// Example graphics settings.",
+            "/// ```kcl,no3d,gpu",
+            "/// 1",
+            "/// ```",
+            "/// ```kcl,no3d",
+            "/// 2",
+            "/// ```",
+            "/// ```kcl,norun,gpu",
+            "/// 3",
+            "/// ```",
+            "/// ```kcl",
+            "/// 4",
+            "/// ```",
+        ]
+        .map(str::to_owned);
+        docs.with_comments(&comments);
+        let graphics: Vec<_> = docs
+            .examples
+            .iter()
+            .map(|(_, props)| TestGraphicsParams::from_kcl_sample_spec(props.no3d, props.norun, props.gpu))
+            .collect();
+        assert!(matches!(
+            graphics.as_slice(),
+            [
+                TestGraphicsParams::EngineRender { .. },
+                TestGraphicsParams::CpuEngineRender,
+                TestGraphicsParams::None,
+                TestGraphicsParams::ExportAndRender,
+            ]
+        ));
+    }
+
+    #[test]
     fn smoke() {
         let result = walk_stdlib();
         if let DocData::Const(d) = result.find_by_name("PI").unwrap()
@@ -1939,15 +1987,8 @@ export FOO = 1
             eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
 
-            let graphics = if NAME == "std-helix-3" {
-                // CPU software rendering still differs for the helix on its cylinder.
-                // Keep the existing image threshold and GPU control until parity is fixed.
-                crate::test_server::TestGraphicsParams::EngineRender {
-                    reason: "CPU helix/cylinder image differs at the existing 0.99 threshold".to_owned(),
-                }
-            } else {
-                crate::test_server::TestGraphicsParams::from_kcl_sample_spec(eg.1.no3d, eg.1.norun)
-            };
+            let graphics =
+                crate::test_server::TestGraphicsParams::from_kcl_sample_spec(eg.1.no3d, eg.1.norun, eg.1.gpu);
             let result = match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, graphics).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     panic!(

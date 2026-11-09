@@ -236,12 +236,16 @@ impl TestGraphicsParams {
     }
     /// kcl tests have `no3d` or `norun` flags in their declaration.
     /// `norun` means "no graphics" and "no3d" means we want graphics but the model can't yet be exported for local rendering.
+    /// `gpu` overrides the default renderer for one example; `norun` still takes precedence.
     /// Translate these requirements into a more descriptive type here.
-    pub(crate) fn from_kcl_sample_spec(no_3d: bool, no_run: bool) -> Self {
-        match (no_3d, no_run) {
-            (true, false) => Self::CpuEngineRender,
-            (false, false) => Self::ExportAndRender,
-            (true, true) | (false, true) => Self::None,
+    pub(crate) fn from_kcl_sample_spec(no_3d: bool, no_run: bool, gpu: bool) -> Self {
+        match (no_3d, no_run, gpu) {
+            (_, true, _) => Self::None,
+            (_, false, true) => Self::EngineRender {
+                reason: "KCL example explicitly requests GPU snapshots".to_owned(),
+            },
+            (true, false, false) => Self::CpuEngineRender,
+            (false, false, false) => Self::ExportAndRender,
         }
     }
 }
