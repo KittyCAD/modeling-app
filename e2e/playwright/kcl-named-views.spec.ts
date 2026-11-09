@@ -1,5 +1,4 @@
-import { join } from 'path'
-import * as fsp from 'fs/promises'
+import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -112,35 +111,51 @@ isometricAt = view::named(
 const VIEW_SWITCHER_PANE = `#${DefaultLayoutPaneID.NamedViews}-pane`
 const VIEW_SWITCHER_BUTTON = `${DefaultLayoutPaneID.NamedViews}-pane-button`
 
-async function writeTopTargetProject(dir: string) {
-  const projectDir = join(dir, 'top-target')
-  await fsp.mkdir(projectDir, { recursive: true })
-  await fsp.writeFile(join(projectDir, 'main.kcl'), TOP_TARGET_KCL, 'utf-8')
-}
-
-async function writeIsometricTargetProject(dir: string) {
-  const projectDir = join(dir, 'isometric-target')
-  await fsp.mkdir(projectDir, { recursive: true })
-  await fsp.writeFile(
-    join(projectDir, 'main.kcl'),
-    ISOMETRIC_TARGET_KCL,
-    'utf-8'
+async function writeTopTargetProject(
+  dir: string,
+  fs: PromisifiedZooDesignStudioFS
+) {
+  const projectDir = await fs.join(dir, 'top-target')
+  await fs.mkdir(projectDir, { recursive: true })
+  await fs.writeFile(
+    await fs.join(projectDir, 'main.kcl'),
+    new TextEncoder().encode(TOP_TARGET_KCL)
   )
 }
 
-async function writeProject(dir: string) {
-  const projectDir = join(dir, 'named-views')
-  await fsp.mkdir(projectDir, { recursive: true })
-  await fsp.writeFile(join(projectDir, 'main.kcl'), MAIN_KCL, 'utf-8')
-  await fsp.writeFile(join(projectDir, 'panel.kcl'), PANEL_KCL, 'utf-8')
+async function writeIsometricTargetProject(
+  dir: string,
+  fs: PromisifiedZooDesignStudioFS
+) {
+  const projectDir = await fs.join(dir, 'isometric-target')
+  await fs.mkdir(projectDir, { recursive: true })
+  await fs.writeFile(
+    await fs.join(projectDir, 'main.kcl'),
+    new TextEncoder().encode(ISOMETRIC_TARGET_KCL)
+  )
 }
 
-test.describe('KCL named views', { tag: '@desktop' }, () => {
+async function writeProject(dir: string, fs: PromisifiedZooDesignStudioFS) {
+  const projectDir = await fs.join(dir, 'named-views')
+  await fs.mkdir(projectDir, { recursive: true })
+  await fs.writeFile(
+    await fs.join(projectDir, 'main.kcl'),
+    new TextEncoder().encode(MAIN_KCL)
+  )
+  await fs.writeFile(
+    await fs.join(projectDir, 'panel.kcl'),
+    new TextEncoder().encode(PANEL_KCL)
+  )
+}
+
+test.use({ useTestSettings: true })
+
+test.describe('KCL named views', { tag: '@web' }, () => {
   test(
     'the rail button opens and closes the switcher',
     { tag: '@localRenderer' },
-    async ({ homePage, scene, toolbar, page, folderSetupFn }) => {
-      await folderSetupFn(writeProject)
+    async ({ fs, homePage, scene, toolbar, page, folderSetupFn }) => {
+      await folderSetupFn((dir) => writeProject(dir, fs))
       await homePage.openProject('named-views')
       await scene.settled()
 
@@ -158,8 +173,8 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
   test(
     'numbers the rows from 1, lists Default View first, and prefixes a name two modules declare',
     { tag: '@localRenderer' },
-    async ({ homePage, scene, toolbar, page, folderSetupFn }) => {
-      await folderSetupFn(writeProject)
+    async ({ fs, homePage, scene, toolbar, page, folderSetupFn }) => {
+      await folderSetupFn((dir) => writeProject(dir, fs))
       await homePage.openProject('named-views')
       await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
@@ -191,8 +206,8 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
   test(
     'activating a view moves the active marker and returns it',
     { tag: '@localRenderer' },
-    async ({ homePage, scene, toolbar, page, folderSetupFn }) => {
-      await folderSetupFn(writeProject)
+    async ({ fs, homePage, scene, toolbar, page, folderSetupFn }) => {
+      await folderSetupFn((dir) => writeProject(dir, fs))
       await homePage.openProject('named-views')
       await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
@@ -223,8 +238,8 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
   test(
     'an edit leaves the active view marked',
     { tag: '@localRenderer' },
-    async ({ homePage, scene, toolbar, editor, page, folderSetupFn }) => {
-      await folderSetupFn(writeProject)
+    async ({ fs, homePage, scene, toolbar, editor, page, folderSetupFn }) => {
+      await folderSetupFn((dir) => writeProject(dir, fs))
       await homePage.openProject('named-views')
       await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
@@ -250,8 +265,8 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
   test(
     'deleting the active view returns to Default View and says so',
     { tag: '@localRenderer' },
-    async ({ homePage, scene, toolbar, editor, page, folderSetupFn }) => {
-      await folderSetupFn(writeProject)
+    async ({ fs, homePage, scene, toolbar, editor, page, folderSetupFn }) => {
+      await folderSetupFn((dir) => writeProject(dir, fs))
       await homePage.openProject('named-views')
       await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
@@ -278,6 +293,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`a Top view centres on its own target, not the current one ${rendererTag}`, async ({
+      fs,
       homePage,
       scene,
       toolbar,
@@ -285,7 +301,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
       folderSetupFn,
     }) => {
       const u = await getUtils(page)
-      await folderSetupFn(writeTopTargetProject)
+      await folderSetupFn((dir) => writeTopTargetProject(dir, fs))
       await homePage.openProject('top-target')
       await scene.settled()
       if (rendererTag === '@streamRenderer') await u.openDebugPanel()
@@ -323,6 +339,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     })
 
     test(`an Isometric view uses its own target and distance ${rendererTag}`, async ({
+      fs,
       homePage,
       scene,
       toolbar,
@@ -330,7 +347,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
       folderSetupFn,
     }) => {
       const u = await getUtils(page)
-      await folderSetupFn(writeIsometricTargetProject)
+      await folderSetupFn((dir) => writeIsometricTargetProject(dir, fs))
       await homePage.openProject('isometric-target')
       await scene.settled()
       if (rendererTag === '@streamRenderer') await u.openDebugPanel()
