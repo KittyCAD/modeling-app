@@ -223,11 +223,11 @@ describe('ExchangeCard replay attachments', () => {
     expect(
       screen.getByRole('button', { name: /View activity/ })
     ).toHaveAttribute('aria-expanded', 'false')
-    expect(screen.queryByText('Checking the project.')).not.toBeInTheDocument()
+    expect(screen.getByText('Checking the project.')).toBeVisible()
     expect(screen.getByTestId('zookeeper-activity-card')).toHaveClass(
       'zk-activity-card-running'
     )
-    expect(screen.getByText('Read main.kcl')).toBeVisible()
+    expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
     expect(
       screen.queryByText('Read main.kcl · Running')
     ).not.toBeInTheDocument()
@@ -298,7 +298,7 @@ describe('ExchangeCard replay attachments', () => {
     )
   })
 
-  test('keeps legacy reasoning text out of the compact status', () => {
+  test('keeps tool labels and legacy reasoning out of the compact status', () => {
     render(
       <ExchangeCard
         {...exchangeProps}
@@ -322,11 +322,12 @@ describe('ExchangeCard replay attachments', () => {
       />
     )
 
-    expect(screen.getByText('Read main.kcl')).toBeVisible()
+    expect(screen.getByText('Working…')).toBeVisible()
+    expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
     expect(screen.queryByText('Internal model text')).not.toBeInTheDocument()
   })
 
-  test('replaces a tool status with later commentary in the same card', () => {
+  test('shows commentary after a tool starts in the same card', () => {
     render(
       <ExchangeCard
         {...exchangeProps}
@@ -394,6 +395,13 @@ describe('ExchangeCard replay attachments', () => {
       kind: 'commentary',
       text: 'Building the bracket.',
     })
+    const validation = activity({
+      kind: 'tool',
+      call_id: 'call-2',
+      name: 'validate_project_file',
+      status: 'completed',
+      label: 'Validated main.kcl',
+    })
     const request = { type: 'user' as const, content: 'Build a bracket' }
     const { rerender } = render(
       <ExchangeCard {...exchangeProps} request={request} responses={[]} />
@@ -410,7 +418,18 @@ describe('ExchangeCard replay attachments', () => {
       <ExchangeCard
         {...exchangeProps}
         request={request}
-        responses={[first, tool, second]}
+        responses={[first, tool]}
+      />
+    )
+    expect(screen.getByTestId('zookeeper-activity-card')).toHaveTextContent(
+      'Inspecting the project.'
+    )
+    expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
+    rerender(
+      <ExchangeCard
+        {...exchangeProps}
+        request={request}
+        responses={[first, tool, second, validation]}
       />
     )
 
@@ -422,6 +441,7 @@ describe('ExchangeCard replay attachments', () => {
       screen.queryByText('Inspecting the project.')
     ).not.toBeInTheDocument()
     expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
+    expect(screen.queryByText('Validated main.kcl')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: /View activity/ }))
     const history =
@@ -432,6 +452,9 @@ describe('ExchangeCard replay attachments', () => {
     expect(history.indexOf('Read main.kcl')).toBeLessThan(
       history.indexOf('Building the bracket.')
     )
+    expect(history.indexOf('Building the bracket.')).toBeLessThan(
+      history.indexOf('Validated main.kcl')
+    )
 
     rerender(
       <ExchangeCard
@@ -441,6 +464,7 @@ describe('ExchangeCard replay attachments', () => {
           first,
           tool,
           second,
+          validation,
           {
             end_of_stream: {
               whole_response: 'The bracket is ready.',

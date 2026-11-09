@@ -548,17 +548,15 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   )
   const hasActivity =
     hasRecordedActivity || (!isEndOfStream && props.isLastResponse)
-  let latestActivity: ReturnType<typeof parseZookeeperActivity>
+  let latestCommentary: string | undefined
   for (let index = props.responses.length - 1; index >= 0; index--) {
-    latestActivity = parseZookeeperActivity(props.responses[index])
-    if (latestActivity !== undefined) break
+    const activity = parseZookeeperActivity(props.responses[index])
+    if (activity?.kind === 'commentary' && activity.text.trim() !== '') {
+      latestCommentary = activity.text
+      break
+    }
   }
-  const progressStatus =
-    latestActivity?.kind === 'commentary'
-      ? latestActivity.text
-      : latestActivity?.kind === 'tool'
-        ? (latestActivity.label ?? latestActivity.name.replaceAll('_', ' '))
-        : 'Working…'
+  const progressStatus = latestCommentary ?? 'Working…'
   const durationText = `${isEndOfStream ? 'Worked' : 'Working'} for ${elapsedLabel}`
   const activityCardClass = `rounded-md border border-chalkboard-30 p-3 text-xs text-chalkboard-70 dark:border-chalkboard-70 dark:text-chalkboard-30 ${
     isEndOfStream ? '' : 'zk-activity-card-running'
