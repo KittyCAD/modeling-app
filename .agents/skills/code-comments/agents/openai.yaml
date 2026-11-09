@@ -1,0 +1,3 @@
+interface:
+  display_name: "Code comments"
+  short_description: "Preserve the reasoning behind implementation choices"
