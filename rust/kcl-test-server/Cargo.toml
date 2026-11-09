@@ -1,7 +1,7 @@
 [package]
 name = "kcl-test-server"
 description = "A test server for KCL"
-version = "0.2.195"
+version = "0.2.196"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -14,7 +14,7 @@ anyhow = "1.0.102"
 http-body-util = "0.1"
 hyper = { version = "1", features = ["http1", "server"] }
 hyper-util = { version = "0.1", features = ["tokio"] }
-kcl-lib = { version = "=0.2.195", path = "../kcl-lib" }
+kcl-lib = { version = "=0.2.196", path = "../kcl-lib" }
 pico-args = "0.5.0"
 serde = { workspace = true }
 serde_json = { workspace = true }
