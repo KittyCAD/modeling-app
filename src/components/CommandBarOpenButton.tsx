@@ -10,7 +10,7 @@ import { interactions } from '@src/lib/interactionPerformance/definitions'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { memo } from 'react'
@@ -32,7 +32,7 @@ export const CommandBarOpenButton = memo(function CommandBarOpenButton({
           keymap.keymap.value,
           COMMAND_PALETTE_OPEN_COMMAND_ID,
           keymap.getCurrentScopes(),
-          app.registry.signal(keymapScopesValueSpec).value
+          app.registry.observe(keymapScopesFacet).value
         )?.keystrokes
       : [COMMAND_PALETTE_HOTKEY],
     platform

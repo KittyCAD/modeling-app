@@ -161,7 +161,7 @@ export function useQueryParamEffects() {
       }
 
       const projectName = await app.registry
-        .get(cloudStorageService)
+        .required(cloudStorageService)
         .getProjectNameById(projectId)
       if (err(projectName)) {
         return Promise.reject(projectName)
@@ -171,7 +171,7 @@ export function useQueryParamEffects() {
       }
 
       const downloadedProject = await app.registry
-        .get(cloudStorageService)
+        .required(cloudStorageService)
         .downloadProjectById(projectId)
       if (err(downloadedProject)) {
         return Promise.reject(downloadedProject)

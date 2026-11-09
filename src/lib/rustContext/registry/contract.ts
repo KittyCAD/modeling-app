@@ -1,12 +1,10 @@
-import { defineContract, defineService } from '@kittycad/registry'
 import type RustContext from '@src/lib/rustContext'
-
+import { contract, service } from 'plankton'
 export type RustContextRegistryService = {
   readonly context: RustContext
 }
-
-export const rustContextContract = defineContract({
-  rustContextService: defineService<RustContextRegistryService>(
+export const rustContextContract = contract({
+  rustContextService: service<RustContextRegistryService>(
     'rust-context.service'
   ),
 })

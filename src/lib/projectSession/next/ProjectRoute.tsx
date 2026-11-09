@@ -7,7 +7,7 @@ import { ProjectView } from '@src/lib/projectSession/next/ProjectView'
 export function ProjectRoute() {
   useSignals()
   const app = useApp()
-  const session = app.registry.signal(projectSessionService).value
-    ?.currentSession.value
+  const session = app.registry.optional(projectSessionService)?.currentSession
+    .value
   return session ? <ProjectView session={session} /> : null
 }

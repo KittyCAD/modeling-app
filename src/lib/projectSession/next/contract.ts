@@ -1,7 +1,7 @@
-import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
-import type { Project } from '@src/lib/projectSession/next/types'
 import type { FileEntry } from '@src/lib/project'
+import type { Project } from '@src/lib/projectSession/next/types'
+import { contract, service } from 'plankton'
 
 /** File capabilities captured for one project opening; paths are project-relative. */
 export interface ProjectFiles {
@@ -36,11 +36,7 @@ export interface ProjectSessionService {
   /** Clear the selection; captured sessions remain usable. */
   closeProject: () => void
 }
-
-export const projectSessionContract = defineContract({
-  projectSessionService: defineService<ProjectSessionService>(
-    'project-session-next'
-  ),
+export const projectSessionContract = contract({
+  projectSessionService: service<ProjectSessionService>('project-session-next'),
 })
-
 export const { projectSessionService } = projectSessionContract

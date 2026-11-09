@@ -1,22 +1,15 @@
-import {
-  defineContract,
-  firstWinsValueSpec,
-  type MaybeSignal,
-  provide,
-} from '@kittycad/registry'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-
-export const wasmContract = defineContract({
-  wasmPromiseValueSpec: firstWinsValueSpec<Promise<ModuleType> | undefined>(
-    'wasm-promise',
-    undefined
-  ),
+import { contract, contribute, Facet, type Source } from 'plankton'
+export const wasmContract = contract({
+  wasmPromiseFacet: new Facet<
+    Promise<ModuleType> | undefined,
+    Promise<ModuleType> | undefined
+  >('wasm-promise', (inputs) => (inputs.length ? inputs[0] : undefined)),
 })
 
-export const { wasmPromiseValueSpec } = wasmContract
-
-export function provideWasmPromise(
-  wasmPromise: MaybeSignal<Promise<ModuleType>>
-) {
-  return provide(wasmPromiseValueSpec, wasmPromise, { key: 'wasm-promise' })
+export const { wasmPromiseFacet } = wasmContract
+export function provideWasmPromise(wasmPromise: Source<Promise<ModuleType>>) {
+  return contribute(wasmPromiseFacet, wasmPromise, {
+    key: 'wasm-promise',
+  })
 }

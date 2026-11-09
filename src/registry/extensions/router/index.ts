@@ -1,9 +1,10 @@
-import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provideService,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import {
+  type RouterRegistryService,
+  type RouterRuntimeValues,
+  routerService,
+} from '@src/registry/contracts/router'
+import { provide, type Subtree } from 'plankton'
 import {
   createPath,
   type Location,
@@ -11,12 +12,6 @@ import {
   type NavigateOptions,
   type To,
 } from 'react-router-dom'
-
-import {
-  type RouterRegistryService,
-  type RouterRuntimeValues,
-  routerService,
-} from '@src/registry/contracts/router'
 
 const initialLocation: Location = {
   pathname: '/',
@@ -28,7 +23,10 @@ const initialLocation: Location = {
 
 const isReactRouterHistoryState = (
   historyState: unknown
-): historyState is { usr: unknown; key?: unknown } =>
+): historyState is {
+  usr: unknown
+  key?: unknown
+} =>
   Boolean(
     historyState &&
       typeof historyState === 'object' &&
@@ -157,18 +155,15 @@ export const createRouterRegistryService = (): RouterRegistryService => {
 
   return serviceImpl
 }
+export const routerExtension = {
+  key: 'router-extension',
+  create: () => {
+    const serviceImpl = createRouterRegistryService()
 
-export const routerExtension = defineRegistryItemFactory(() => {
-  const serviceImpl = createRouterRegistryService()
-
-  return {
-    id: 'router-extension',
-    providesServices: [provideService(routerService, serviceImpl)],
-    dispose: serviceImpl.reset,
-  }
-}, 'router-extension')
-
-export default defineRegistryItem({
-  id: 'router',
-  uses: [routerExtension],
-})
+    return {
+      items: [provide(routerService, serviceImpl)],
+      dispose: serviceImpl.reset,
+    }
+  },
+} satisfies Subtree
+export default [routerExtension]

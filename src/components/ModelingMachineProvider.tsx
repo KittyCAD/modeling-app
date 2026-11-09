@@ -1,37 +1,35 @@
+import { useSignals } from '@preact/signals-react/runtime'
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { useAppState } from '@src/AppState'
 import { enterSketchModeAndSyncCamera } from '@src/clientSideScene/CameraControls'
 import { SKETCH_GROUP_SEGMENTS } from '@src/clientSideScene/sceneUtils'
 import { useMenuListener } from '@src/hooks/useMenu'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
-import { reportRejection } from '@src/lib/trap'
-import { useMachine } from '@xstate/react'
-import type React from 'react'
-import { createContext, use, useEffect, useMemo, useRef } from 'react'
-import type { MutableRefObject } from 'react'
-import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
-
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { modelingStdLibCommandSummary } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
-import type { Project } from '@src/lib/project'
-import { modelingMachine } from '@src/machines/modelingMachine'
-
-import { useSignals } from '@preact/signals-react/runtime'
-import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
-import { DefaultLayoutPaneID } from '@src/lib/layout'
-import {
-  modelingMachineStateToToolbarModeName,
-  toolbarModeNameToKeymapScope,
-} from '@src/lib/toolbar'
-import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   EngineConnectionEvents,
   EngineConnectionStateType,
 } from '@src/lib/engineConnection/utils'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
+import type { Project } from '@src/lib/project'
+import {
+  modelingMachineStateToToolbarModeName,
+  toolbarModeNameToKeymapScope,
+} from '@src/lib/toolbar'
+import { reportRejection } from '@src/lib/trap'
+import { modelingMachine } from '@src/machines/modelingMachine'
+import type { WebContentSendPayload } from '@src/menu/channels'
 import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import { keymapService } from '@src/registry/contracts/keymap'
+import { useMachine } from '@xstate/react'
+import type React from 'react'
+import type { MutableRefObject } from 'react'
+import { createContext, use, useEffect, useMemo, useRef } from 'react'
+import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
 
 const MODELING_COMMAND_SCOPES = [MODE_MODELING_COMMAND_SCOPE] as const
 
@@ -143,8 +141,7 @@ export const ModelingMachineProvider = ({
     modelingMachineStateToToolbarModeName(modelingState)
   const toolbarModeKeymapScope =
     toolbarModeNameToKeymapScope[toolbarConfigurationName]
-  const keymap = registry.get(keymapService)
-
+  const keymap = registry.required(keymapService)
   useEffect(() => {
     keymap.applyScope(toolbarModeKeymapScope)
     return () => {
@@ -344,7 +341,7 @@ export const ModelingMachineProvider = ({
       }}
     >
       {/* TODO #818: maybe pass reff down to children/app.ts or render app.tsx directly?
-      since realistically it won't ever have generic children that isn't app.tsx */}
+        since realistically it won't ever have generic children that isn't app.tsx */}
       <div className="h-screen overflow-hidden select-none" ref={streamRef}>
         {children}
       </div>

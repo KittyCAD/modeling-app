@@ -1,23 +1,19 @@
 import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provideService,
-} from '@kittycad/registry'
-import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
-import {
   createMountedFileOperations,
   type FileOperationsMount,
 } from '@src/lib/fileSystem/mounts'
-import { createProjectOperations } from '@src/lib/projectSession/projectOperations'
-import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import fsZds from '@src/lib/fs-zds'
+import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { createProjectOperations } from '@src/lib/projectSession/projectOperations'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
+  fileOperationsMountsFacet,
   fileOperationsService,
   projectOperationsService,
-  fileOperationsMountsValueSpec,
 } from '@src/registry/contracts/fileOperations'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
+import { provide, type Subtree } from 'plankton'
 
 /** Coordinates file operations over contributed backings without owning their lifetimes. */
 export function createFileOperationsServices(
@@ -42,28 +38,26 @@ export function createFileOperationsServices(
     dispose: scheduler.dispose,
   }
 }
-
-export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
-  defineRegistryItemFactory((ctx) => {
+export const createFileOperationsExtension = (
+  backing: IZooDesignStudioFS
+): Subtree => ({
+  key: 'file-operations-extension',
+  create: (ctx) => {
     const services = createFileOperationsServices(
       backing,
       () =>
-        ctx.valueSpecs.get(wasmPromiseValueSpec) ??
+        ctx.get(wasmPromiseFacet) ??
         Promise.reject(new Error('Missing WASM promise.')),
-      () => ctx.valueSpecs.get(fileOperationsMountsValueSpec)
+      () => ctx.get(fileOperationsMountsFacet)
     )
     return {
-      id: 'file-operations-extension',
-      providesServices: [
-        provideService(projectOperationsService, services.projects),
-        provideService(fileOperationsService, services.operations),
+      items: [
+        provide(projectOperationsService, services.projects),
+        provide(fileOperationsService, services.operations),
       ],
       dispose: services.dispose,
     }
-  }, 'file-operations-extension')
-
-export const fileOperationsExtension = createFileOperationsExtension(fsZds)
-export default defineRegistryItem({
-  id: 'file-operations',
-  uses: [fileOperationsExtension],
+  },
 })
+export const fileOperationsExtension = createFileOperationsExtension(fsZds)
+export default [fileOperationsExtension]

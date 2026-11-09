@@ -1,5 +1,5 @@
-import { defineContract, defineValueSpec } from '@kittycad/registry'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import { contract, Facet } from 'plankton'
 
 type NullableStatusBarItemContribution = {
   type: 'nullable-status-bar-item'
@@ -76,25 +76,20 @@ export function filterStatusBarItemsForScopes(
       item.scopes.some((scope) => activeScopes.has(scope))
   )
 }
-
-export const statusBarContract = defineContract({
-  statusBarGlobalItemsValueSpec: defineValueSpec<
+export const statusBarContract = contract({
+  statusBarGlobalItemsFacet: new Facet<
     StatusBarItemContribution,
     StatusBarItemType[]
-  >({
-    name: 'status-bar-global',
-    defaultValue: [],
-    combine: sortGlobalStatusBarItems,
-  }),
-  statusBarLocalItemsValueSpec: defineValueSpec<
+  >('status-bar-global', (inputs) =>
+    inputs.length ? sortGlobalStatusBarItems(inputs) : []
+  ),
+  statusBarLocalItemsFacet: new Facet<
     StatusBarItemContribution,
     StatusBarItemType[]
-  >({
-    name: 'status-bar-local',
-    defaultValue: [],
-    combine: sortLocalStatusBarItems,
-  }),
+  >('status-bar-local', (inputs) =>
+    inputs.length ? sortLocalStatusBarItems(inputs) : []
+  ),
 })
 
-export const { statusBarGlobalItemsValueSpec, statusBarLocalItemsValueSpec } =
+export const { statusBarGlobalItemsFacet, statusBarLocalItemsFacet } =
   statusBarContract

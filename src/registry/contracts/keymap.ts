@@ -1,9 +1,3 @@
-import {
-  defineContract,
-  defineService,
-  defineValueSpec,
-  provide,
-} from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import { isArray, type Platform } from '@src/lib/utils'
 import {
@@ -12,7 +6,7 @@ import {
   CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE,
   COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   type CommandScope,
-  commandScopesValueSpec,
+  commandScopesFacet,
   DEFAULT_COMMAND_SCOPES,
   EDITABLE_FOCUSED_COMMAND_SCOPE,
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
@@ -22,17 +16,17 @@ import {
   getEffectiveCommandScopes,
   HOME_COMMAND_SCOPE,
   MODE_MODELING_COMMAND_SCOPE,
-  MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
   MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
   MODE_SKETCH_SOLVE_COMMAND_SCOPE,
   MODE_SKETCHING_COMMAND_SCOPE,
+  MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
   PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE,
   PROJECT_EXPLORER_RENAMING_COMMAND_SCOPE,
   provideCommandScope,
   SETTINGS_COMMAND_SCOPE,
   SKETCH_COMMAND_SCOPES,
 } from '@src/registry/contracts/commands'
-
+import { contract, contribute, Facet, service } from 'plankton'
 export const BASE_KEYMAP_SCOPE = BASE_COMMAND_SCOPE
 export const CODE_EDITOR_FOCUSED_KEYMAP_SCOPE =
   CODE_EDITOR_FOCUSED_COMMAND_SCOPE
@@ -69,8 +63,9 @@ export type KeymapArguments =
   | number
   | string
   | readonly KeymapArguments[]
-  | { readonly [key: string]: KeymapArguments }
-
+  | {
+      readonly [key: string]: KeymapArguments
+    }
 export type KeymapScope = CommandScope
 
 export type KeymapBinding = {
@@ -143,10 +138,16 @@ export type KeymapTree = {
 }
 
 export type KeymapMatch =
-  | { type: 'none' }
-  | { type: 'prefix' }
-  | { type: 'full'; item: KeymapItem }
-
+  | {
+      type: 'none'
+    }
+  | {
+      type: 'prefix'
+    }
+  | {
+      type: 'full'
+      item: KeymapItem
+    }
 export type KeymapItemAvailability = (item: KeymapItem) => boolean
 
 export type KeymapSource = 'global' | 'codeMirror'
@@ -165,7 +166,9 @@ export type KeymapService = {
   suspendListening: () => () => void
   handleKeyDown: (
     event: KeyboardEvent,
-    options: { source: KeymapSource }
+    options: {
+      source: KeymapSource
+    }
   ) => boolean
   focusScope: (scopeName: string) => {
     onFocus: () => void
@@ -708,38 +711,35 @@ export interface KeymapEventOwner {
   scope: string
   owns: (event: KeyboardEvent) => boolean
 }
-
-export const keymapContract = defineContract({
-  keymapEventOwnersValueSpec: defineValueSpec<
+export const keymapContract = contract({
+  keymapEventOwnersFacet: new Facet<
     KeymapEventOwner,
     readonly KeymapEventOwner[]
-  >({
-    name: 'keymap.event-owners',
-    defaultValue: [],
-    combine: (items) => items,
-  }),
-  keymapService: defineService<KeymapService>('keymap.service'),
-  keymapValueSpec: defineValueSpec<KeymapContribution, KeymapTree>({
-    name: 'keymap',
-    defaultValue: createKeymapTree([]),
-    combine: createKeymapTreeFromContributions,
-  }),
-  keymapScopesValueSpec: commandScopesValueSpec,
+  >('keymap.event-owners', (inputs) =>
+    inputs.length ? ((items) => items)(inputs) : []
+  ),
+  keymapService: service<KeymapService>('keymap.service'),
+  keymapFacet: new Facet<KeymapContribution, KeymapTree>('keymap', (inputs) =>
+    inputs.length
+      ? createKeymapTreeFromContributions(inputs)
+      : createKeymapTree([])
+  ),
+  keymapScopesFacet: commandScopesFacet,
 })
 
 export const {
   keymapService,
-  keymapValueSpec,
-  keymapScopesValueSpec,
-  keymapEventOwnersValueSpec,
+  keymapFacet,
+  keymapScopesFacet,
+  keymapEventOwnersFacet,
 } = keymapContract
 
 export function provideKeymapItem(item: KeymapItemInput) {
-  return provide(keymapValueSpec, item, { key: item.id })
+  return contribute(keymapFacet, () => item, { key: item.id })
 }
 
 export function provideKeymapDocument(document: KeymapDocumentInput) {
-  return provide(keymapValueSpec, document, { key: document.source })
+  return contribute(keymapFacet, () => document, { key: document.source })
 }
 
 export function provideKeymapScope(scope: KeymapScope) {

@@ -1,23 +1,23 @@
-import { reportRejection } from '@src/lib/trap'
 import { useSignals } from '@preact/signals-react/runtime'
 import { Logo } from '@src/components/Logo'
-import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { useApp } from '@src/lib/boot'
-import { EditorsPane } from '@src/lib/editors/EditorsPane'
 import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
+import { EditorsPane } from '@src/lib/editors/EditorsPane'
 import {
-  editorTabIndicatorsValueSpec,
   editorsService,
+  editorTabIndicatorsFacet,
 } from '@src/lib/editors/registry/contract'
 import { LayoutRootNode } from '@src/lib/layout/components'
 import {
-  LayoutType,
   type AreaLibrary,
   type Layout,
+  LayoutType,
 } from '@src/lib/layout/types'
 import { PATHS } from '@src/lib/paths'
 import type { OpenProjectSession } from '@src/lib/projectSession/next/contract'
+import { reportRejection } from '@src/lib/trap'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -52,7 +52,7 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
   useEffect(() => {
     void window.electron?.createEditorPageMenu?.().catch(reportRejection)
   }, [])
-  const editors = registry.get(editorsService)
+  const editors = registry.required(editorsService)
   const { contents, metadata } = session.project.value
   const [layout, setLayout] = useState(() => structuredClone(tempLayout))
   const areaLibrary = useMemo<AreaLibrary>(
@@ -63,7 +63,7 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
           <EditorsPane
             {...props}
             editors={editors}
-            indicators={registry.signal(editorTabIndicatorsValueSpec)}
+            indicators={registry.observe(editorTabIndicatorsFacet)}
             onOpenEditor={() =>
               commands.send({
                 type: 'Find and select command',
@@ -101,7 +101,9 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
             element: 'text',
             label: contents.path,
             className: 'max-w-[50vw] [&>span]:truncate',
-            toolTip: { children: contents.path },
+            toolTip: {
+              children: contents.path,
+            },
           },
         ]}
         localItems={[

@@ -11,7 +11,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 // TODO: would be nice if this didn't have to be a react hook. It's not needed
 // for the code mirror stuff but but it is needed for the useHotkeys hook.
 /**
- * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
+ * @deprecated Prefer registering shortcuts through `keymapFacet`.
  */
 export default function useHotkeyWrapper(
   hotkey: string[],

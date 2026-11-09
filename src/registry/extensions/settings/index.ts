@@ -1,9 +1,3 @@
-import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provide,
-  provideService,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
@@ -17,120 +11,118 @@ import {
 import { commandSystemService } from '@src/registry/contracts/commands'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
-  projectLibrarySettingDefaultPoliciesValueSpec,
-  projectLibrarySettingDefaultsValueSpec,
+  projectLibrarySettingDefaultPoliciesFacet,
+  projectLibrarySettingDefaultsFacet,
 } from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
+  settingsFacet,
   settingsService,
-  settingsValueSpec,
 } from '@src/registry/contracts/settings'
-import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { statusBarGlobalItemsFacet } from '@src/registry/contracts/statusBar'
+import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
+import { contribute, type InputOf, provide, type Subtree } from 'plankton'
 import { createActor } from 'xstate'
-
-export const settingsExtension = defineRegistryItemFactory((ctx) => {
-  const settingsSignal = signal<SettingsType>(createSettings())
-  let settingsActor: SettingsActorType | undefined
-  let settingsSubscription: { unsubscribe: () => void } | undefined
-
-  const getWasmPromise = () =>
-    ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    Promise.reject(new Error('Missing WASM promise registry value.'))
-
-  const ensureActor = () => {
-    if (settingsActor) {
+export const settingsExtension = {
+  key: 'settings-extension',
+  create: (ctx) => {
+    const settingsSignal = signal<SettingsType>(createSettings())
+    let settingsActor: SettingsActorType | undefined
+    let settingsSubscription:
+      | {
+          unsubscribe: () => void
+        }
+      | undefined
+    const getWasmPromise = () =>
+      ctx.observe(wasmPromiseFacet).value ??
+      Promise.reject(new Error('Missing WASM promise registry value.'))
+    const ensureActor = () => {
+      if (settingsActor) {
+        return settingsActor
+      }
+      const commands = ctx.required(commandSystemService)
+      const extensionSettings = ctx.observe(settingsFacet).value
+      const defaultProjectLibraries = ctx.observe(
+        projectLibrarySettingDefaultsFacet
+      ).value
+      const projectLibrarySettingDefaultPolicies = ctx.observe(
+        projectLibrarySettingDefaultPoliciesFacet
+      ).value
+      const actor = createActor(settingsMachine, {
+        input: {
+          ...createSettings(extensionSettings),
+          commandBarActor: commands.actor,
+          defaultProjectLibraries,
+          projectLibrarySettingDefaultPolicies,
+          extensionSettings,
+          fileOperations: ctx.required(fileOperationsService),
+          wasmInstancePromise: getWasmPromise(),
+        },
+      }).start()
+      settingsSignal.value = getOnlySettingsFromContext(
+        actor.getSnapshot().context
+      )
+      settingsSubscription = actor.subscribe((snapshot) => {
+        settingsSignal.value = getOnlySettingsFromContext(snapshot.context)
+      })
+      settingsActor = actor
       return settingsActor
     }
-
-    const commands = ctx.services.get(commandSystemService)
-    const extensionSettings = ctx.valueSpecs.get(settingsValueSpec)
-    const defaultProjectLibraries = ctx.valueSpecs.get(
-      projectLibrarySettingDefaultsValueSpec
-    )
-    const projectLibrarySettingDefaultPolicies = ctx.valueSpecs.get(
-      projectLibrarySettingDefaultPoliciesValueSpec
-    )
-    const actor = createActor(settingsMachine, {
-      input: {
-        ...createSettings(extensionSettings),
-        commandBarActor: commands.actor,
-        defaultProjectLibraries,
-        projectLibrarySettingDefaultPolicies,
-        extensionSettings,
-        fileOperations: ctx.services.get(fileOperationsService),
-        wasmInstancePromise: getWasmPromise(),
+    const serviceImpl: SettingsRegistryService = {
+      get actor() {
+        return ensureActor()
       },
-    }).start()
-
-    settingsSignal.value = getOnlySettingsFromContext(
-      actor.getSnapshot().context
-    )
-    settingsSubscription = actor.subscribe((snapshot) => {
-      settingsSignal.value = getOnlySettingsFromContext(snapshot.context)
-    })
-    settingsActor = actor
-    return settingsActor
-  }
-
-  const serviceImpl: SettingsRegistryService = {
-    get actor() {
-      return ensureActor()
-    },
-    get current() {
-      ensureActor()
-      return settingsSignal
-    },
-    get: () => {
-      ensureActor()
-      return settingsSignal.value
-    },
-    send: (...args: Parameters<SettingsActorType['send']>) =>
-      ensureActor().send(...args),
-    useSettings: () =>
-      useSelector(ensureActor(), (state) => {
-        return getOnlySettingsFromContext(state.context)
-      }),
-  }
-
-  return {
-    id: 'settings-extension',
-    providesServices: [provideService(settingsService, serviceImpl)],
-    dispose: () => {
-      settingsSubscription?.unsubscribe()
-      settingsActor?.stop()
-    },
-  }
-}, 'settings-extension')
-
-const settingsRegistryItem = defineRegistryItem({
-  id: 'settings',
-  provides: [
-    provide(statusBarGlobalItemsValueSpec, {
-      id: 'settings',
-      element: 'link',
-      icon: 'settings',
-      href: (location, { activeFileRoutePath } = {}) => {
-        const pathname = location.pathname
-        const routePath =
-          !pathname.includes(PATHS.SETTINGS) &&
-          pathname.includes(PATHS.FILE) &&
-          activeFileRoutePath
-            ? activeFileRoutePath
-            : pathname
-        const settingsPath = pathname.includes(PATHS.SETTINGS)
-          ? pathname
-          : webSafeJoin([routePath, makeUrlPathRelative(PATHS.SETTINGS)])
-
-        return `${settingsPath}${routePath.includes(PATHS.FILE) ? '?tab=project' : ''}`
+      get current() {
+        ensureActor()
+        return settingsSignal
       },
-      'data-testid': 'settings-link',
-      order: 1,
-      label: 'Settings',
-    }),
-  ],
-  uses: [settingsExtension],
-})
-
+      get: () => {
+        ensureActor()
+        return settingsSignal.value
+      },
+      send: (...args: Parameters<SettingsActorType['send']>) =>
+        ensureActor().send(...args),
+      useSettings: () =>
+        useSelector(ensureActor(), (state) => {
+          return getOnlySettingsFromContext(state.context)
+        }),
+    }
+    return {
+      items: [provide(settingsService, serviceImpl)],
+      dispose: () => {
+        settingsSubscription?.unsubscribe()
+        settingsActor?.stop()
+      },
+    }
+  },
+} satisfies Subtree
+const settingsRegistryItem = [
+  contribute(
+    statusBarGlobalItemsFacet,
+    (): InputOf<typeof statusBarGlobalItemsFacet> =>
+      ({
+        id: 'settings',
+        element: 'link',
+        icon: 'settings',
+        href: (location, { activeFileRoutePath } = {}) => {
+          const pathname = location.pathname
+          const routePath =
+            !pathname.includes(PATHS.SETTINGS) &&
+            pathname.includes(PATHS.FILE) &&
+            activeFileRoutePath
+              ? activeFileRoutePath
+              : pathname
+          const settingsPath = pathname.includes(PATHS.SETTINGS)
+            ? pathname
+            : webSafeJoin([routePath, makeUrlPathRelative(PATHS.SETTINGS)])
+          return `${settingsPath}${routePath.includes(PATHS.FILE) ? '?tab=project' : ''}`
+        },
+        'data-testid': 'settings-link',
+        order: 1,
+        label: 'Settings',
+      }) satisfies InputOf<typeof statusBarGlobalItemsFacet>
+  ),
+  settingsExtension,
+]
 export default settingsRegistryItem

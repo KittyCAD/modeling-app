@@ -1,20 +1,14 @@
-import {
-  Registry,
-  defineRegistryItem,
-  pluginsValueSpec,
-  provideService,
-} from '@kittycad/registry'
 import { DefaultLayoutToolbarID } from '@src/lib/layout/configs/default'
+import {
+  layoutActionLibraryFacet,
+  layoutContributionsFacet,
+} from '@src/lib/layout/registry/contract'
 import {
   type CommandSystemService,
   commandSystemService,
-  commandsValueSpec,
+  commandsFacet,
 } from '@src/registry/contracts/commands'
-import {
-  layoutActionLibraryValueSpec,
-  layoutContributionsValueSpec,
-} from '@src/lib/layout/registry/contract'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { settingsFacet } from '@src/registry/contracts/settings'
 import {
   EXPORT_TO_SLICER_ACTION_TYPE,
   EXPORT_TO_SLICER_COMMAND_GROUP_ID,
@@ -22,6 +16,7 @@ import {
   EXPORT_TO_SLICER_COMMAND_NAME,
   SLICER_PLUGIN_ID,
 } from '@src/registry/plugins/slicer/constants'
+import { plugins, provide, Registry } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 import slicer from '.'
 
@@ -36,35 +31,30 @@ function createCommandSystemService(send: CommandSystemService['send']) {
 describe('slicer plugin', () => {
   it('registers a toggleable Export to Slicer command and toolbar action', async () => {
     const send = vi.fn()
-    const commandSystemItem = defineRegistryItem({
-      id: 'test-command-system-service',
-      providesServices: [
-        provideService(commandSystemService, createCommandSystemService(send)),
-      ],
-    })
+    const commandSystemItem = [
+      provide(commandSystemService, createCommandSystemService(send)),
+    ]
     const registry = new Registry()
-    registry.configure([commandSystemItem, slicer])
-
-    const [plugin] = registry.get(pluginsValueSpec)
+    await registry.configure([commandSystemItem, slicer])
+    const [plugin] = registry.get(plugins)
     expect(plugin).toMatchObject({
       id: SLICER_PLUGIN_ID,
       title: 'Slicer export',
     })
-
-    const toggle = registry.get(plugin.service)
+    const toggle = registry.required(plugin.service)
     expect(toggle.active.value).toBe(false)
     expect(
-      registry.get(settingsValueSpec).plugins[SLICER_PLUGIN_ID].createSetting()
+      registry.get(settingsFacet).plugins[SLICER_PLUGIN_ID].createSetting()
         .default
     ).toBe(false)
 
-    expect(registry.get(commandsValueSpec)).toEqual([])
-    expect(registry.get(layoutActionLibraryValueSpec)).toEqual({})
-    expect(registry.get(layoutContributionsValueSpec)).toEqual([])
+    expect(registry.get(commandsFacet)).toEqual([])
+    expect(registry.get(layoutActionLibraryFacet)).toEqual({})
+    expect(registry.get(layoutContributionsFacet)).toEqual([])
 
     await toggle.enable()
 
-    const [command] = registry.get(commandsValueSpec)
+    const [command] = registry.get(commandsFacet)
     expect(command).toMatchObject({
       id: EXPORT_TO_SLICER_COMMAND_ID,
       name: EXPORT_TO_SLICER_COMMAND_NAME,
@@ -85,7 +75,7 @@ describe('slicer plugin', () => {
     })
     expect(command.args?.slicer.valueSummary?.('cura')).toBe('UltiMaker Cura')
 
-    const actionLibrary = registry.get(layoutActionLibraryValueSpec)
+    const actionLibrary = registry.get(layoutActionLibraryFacet)
     expect(actionLibrary).toHaveProperty(EXPORT_TO_SLICER_ACTION_TYPE)
     actionLibrary[EXPORT_TO_SLICER_ACTION_TYPE].execute()
     expect(send).toHaveBeenCalledWith({
@@ -96,7 +86,7 @@ describe('slicer plugin', () => {
       },
     })
 
-    expect(registry.get(layoutContributionsValueSpec)).toEqual([
+    expect(registry.get(layoutContributionsFacet)).toEqual([
       expect.objectContaining({
         id: 'slicer.left-toolbar.action',
         kind: 'action',
@@ -116,8 +106,9 @@ describe('slicer plugin', () => {
     await toggle.disable()
 
     expect(toggle.active.value).toBe(false)
-    expect(registry.get(commandsValueSpec)).toEqual([])
-    expect(registry.get(layoutActionLibraryValueSpec)).toEqual({})
-    expect(registry.get(layoutContributionsValueSpec)).toEqual([])
+    expect(registry.get(commandsFacet)).toEqual([])
+    expect(registry.get(layoutActionLibraryFacet)).toEqual({})
+    expect(registry.get(layoutContributionsFacet)).toEqual([])
+    await registry.dispose()
   })
 })

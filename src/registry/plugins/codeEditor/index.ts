@@ -1,4 +1,4 @@
-import { defineRegistryItem, provide } from '@kittycad/registry'
+import { computed } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
@@ -7,29 +7,29 @@ import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRen
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { reportRejection } from '@src/lib/trap'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
-import { projectSession } from '@src/registry/contracts/projectSession'
-import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
+import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
 import {
+  findKeymapItemForCommand,
   type KeymapDocument,
+  keymapFacet,
+  keymapKeystrokesDisplay,
+  keymapScopesFacet,
+  keymapService,
   MODE_MODELING_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-  findKeymapItemForCommand,
-  keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
-  keymapService,
-  keymapValueSpec,
+  MODE_SKETCHING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { projectSession } from '@src/registry/contracts/projectSession'
+import { settingsFacet } from '@src/registry/contracts/settings'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useSelector } from '@xstate/react'
+import { contribute, type InputOf } from 'plankton'
 import { createElement } from 'react'
 
 const RENDER_HOTKEY = 'mod+s'
 const CODE_EDITOR_KEYMAP_SOURCE = 'code-editor'
-
 const codeEditorKeymap: KeymapDocument = {
   source: CODE_EDITOR_KEYMAP_SOURCE,
   bindings: [
@@ -47,7 +47,6 @@ const codeEditorKeymap: KeymapDocument = {
     },
   ],
 }
-
 function RenderHeaderItem({ app }: AppHeaderItemProps) {
   useSignals()
   const platform = usePlatform()
@@ -55,8 +54,8 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
   const automaticallyRenderEnabled = useSelector(app.settings.actor, (state) =>
     getAutomaticallyRenderEnabledFromSettings(state.context)
   )
-  const executionService =
-    app.registry.signal(projectSession).value?.executingEditor.value
+  const executionService = computed(() => app.registry.optional(projectSession))
+    .value?.executingEditor.value
   const hasEditsSinceLastExecution =
     executionService?.hasEditsSinceLastExecution.value ?? false
   const keymap = app.registry.optional(keymapService)
@@ -66,27 +65,22 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
           keymap.keymap.value,
           APP_COMMAND_IDS.editor.render,
           keymap.getCurrentScopes(),
-          app.registry.signal(keymapScopesValueSpec).value
+          app.registry.observe(keymapScopesFacet).value
         )?.keystrokes
       : [RENDER_HOTKEY],
     platform
   )
-
   if (!currentProject || automaticallyRenderEnabled || !executionService) {
     return null
   }
-
   const tooltipText = hasEditsSinceLastExecution ? 'Render' : 'Up to date'
   const iconName = hasEditsSinceLastExecution ? 'play' : 'checkmark'
-  const buttonClassName = `flex gap-1 items-center justify-center py-0 px-0.5 m-0 text-primary dark:text-inherit bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 border border-solid border-primary/50 hover:border-primary active:border-primary ${
-    hasEditsSinceLastExecution
-      ? '!border-primary !bg-primary/10 !text-primary dark:!bg-primary/20 dark:!text-primary'
-      : 'disabled:cursor-default disabled:opacity-70 disabled:hover:border-primary/50'
-  }`
-
+  const buttonClassName = `flex gap-1 items-center justify-center py-0 px-0.5 m-0 text-primary dark:text-inherit bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 border border-solid border-primary/50 hover:border-primary active:border-primary ${hasEditsSinceLastExecution ? '!border-primary !bg-primary/10 !text-primary dark:!bg-primary/20 dark:!text-primary' : 'disabled:cursor-default disabled:opacity-70 disabled:hover:border-primary/50'}`
   return createElement(
     'span',
-    { className: 'inline-flex items-center' },
+    {
+      className: 'inline-flex items-center',
+    },
     createElement(
       'button',
       {
@@ -115,49 +109,52 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
       hasEditsSinceLastExecution && renderHotkeyLabel
         ? createElement(
             'kbd',
-            { className: 'hotkey tooltip' },
+            {
+              className: 'hotkey tooltip',
+            },
             renderHotkeyLabel
           )
         : null
     )
   )
 }
-
-const codeEditorSettingsItem = defineRegistryItem({
-  provides: [
-    provide(settingsValueSpec, {
-      textEditor: {
-        automaticallyRender: defineBooleanExtensionSetting({
-          defaultValue: true,
-          description:
-            'Whether the code editor should automatically render changes.',
-          hideOnLevel: 'project',
-          commandConfig: {
-            inputType: 'boolean',
-          },
-          userToml: {
-            sectionKey: 'text_editor',
-            tomlKey: 'automatically_render',
-          },
-        }),
-      },
-    }),
-  ],
-})
-
-const renderHeaderItem = defineRegistryItem({
-  provides: [
-    provide(keymapValueSpec, codeEditorKeymap, {
-      key: codeEditorKeymap.source,
-    }),
-    provide(appHeaderItemsValueSpec, {
-      id: 'code-editor.render',
-      order: 5,
-      Component: RenderHeaderItem,
-    }),
-  ],
-})
-
+const codeEditorSettingsItem = [
+  contribute(
+    settingsFacet,
+    () =>
+      ({
+        textEditor: {
+          automaticallyRender: defineBooleanExtensionSetting({
+            defaultValue: true,
+            description:
+              'Whether the code editor should automatically render changes.',
+            hideOnLevel: 'project',
+            commandConfig: {
+              inputType: 'boolean',
+            },
+            userToml: {
+              sectionKey: 'text_editor',
+              tomlKey: 'automatically_render',
+            },
+          }),
+        },
+      }) satisfies InputOf<typeof settingsFacet>
+  ),
+]
+const renderHeaderItem = [
+  contribute(keymapFacet, () => codeEditorKeymap, {
+    key: codeEditorKeymap.source,
+  }),
+  contribute(
+    appHeaderItemsFacet,
+    () =>
+      ({
+        id: 'code-editor.render',
+        order: 5,
+        Component: RenderHeaderItem,
+      }) satisfies InputOf<typeof appHeaderItemsFacet>
+  ),
+]
 const codeEditor = createZdsPlugin({
   id: 'code-editor',
   title: 'Code editor',
@@ -165,5 +162,4 @@ const codeEditor = createZdsPlugin({
   items: [codeEditorSettingsItem, renderHeaderItem],
   defaultSetting: 'core',
 })
-
 export default codeEditor

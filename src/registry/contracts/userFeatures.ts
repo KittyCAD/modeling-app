@@ -1,5 +1,4 @@
 import type { Feature } from '@kittycad/lib'
-import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type {
   UserFeaturesActorRef,
@@ -7,6 +6,7 @@ import type {
   UserFeaturesService,
   userFeaturesMachine,
 } from '@src/machines/userFeaturesMachine'
+import { contract, service } from 'plankton'
 import type { SnapshotFrom } from 'xstate'
 
 export type UserFeaturesRegistryService = UserFeaturesService & {
@@ -19,10 +19,8 @@ export type UserFeaturesRegistryService = UserFeaturesService & {
   useContext: () => UserFeaturesContext
   useHas: (featureFlagId: Feature, defaultValue: boolean) => boolean
 }
-
-export const userFeaturesContract = defineContract({
-  userFeaturesService:
-    defineService<UserFeaturesRegistryService>('user-features'),
+export const userFeaturesContract = contract({
+  userFeaturesService: service<UserFeaturesRegistryService>('user-features'),
 })
 
 export const { userFeaturesService } = userFeaturesContract

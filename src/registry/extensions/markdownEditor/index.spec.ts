@@ -1,12 +1,11 @@
-import { defineRegistryItem, Registry } from '@kittycad/registry'
 import type { MarkdownEditorActions } from '@kittycad/ui-components'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { commandsValueSpec } from '@src/registry/contracts/commands'
+import { commandsFacet } from '@src/registry/contracts/commands'
 import {
   KEYMAP_SCHEMA_VERSION,
-  keymapScopesValueSpec,
+  keymapFacet,
+  keymapScopesFacet,
   keymapService,
-  keymapValueSpec,
   matchKeymapKeystrokes,
 } from '@src/registry/contracts/keymap'
 import {
@@ -17,9 +16,10 @@ import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { commandsExtension } from '@src/registry/extensions/commands'
 import keymapExtension from '@src/registry/extensions/keymap'
 import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap'
+import { Registry } from 'plankton'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import markdownEditorExtension, { MARKDOWN_EDITOR_COMMAND_IDS } from '.'
 import { machineManagerExtension } from '../machineManager'
+import markdownEditorExtension, { MARKDOWN_EDITOR_COMMAND_IDS } from '.'
 
 const persistenceMocks = vi.hoisted(() => ({
   readUserKeymapFile: vi.fn(),
@@ -60,16 +60,14 @@ describe('markdown editor extension', () => {
     })
     persistenceMocks.writeUserKeymapFile.mockResolvedValue(undefined)
   })
-
-  it('routes Markdown editor shortcuts only while the Markdown editor scope is focused', () => {
+  it('routes Markdown editor shortcuts only while the Markdown editor scope is focused', async () => {
     const registry = new Registry()
-    registry.configure([defaultKeymapItem, markdownEditorExtension])
-
+    await registry.configure([defaultKeymapItem, markdownEditorExtension])
     const command = registry
-      .get(commandsValueSpec)
+      .get(commandsFacet)
       .find((candidate) => candidate.id === MARKDOWN_EDITOR_COMMAND_IDS.setLink)
-    const tree = registry.get(keymapValueSpec)
-    const keymapScopes = registry.get(keymapScopesValueSpec)
+    const tree = registry.get(keymapFacet)
+    const keymapScopes = registry.get(keymapScopesFacet)
     const baseMatch = matchKeymapKeystrokes(tree, [], ['mod+k'], keymapScopes)
     const expectedShortcuts = [
       ['mod+b', MARKDOWN_EDITOR_COMMAND_IDS.toggleBold],
@@ -109,8 +107,7 @@ describe('markdown editor extension', () => {
     if (!command) {
       throw new Error('Missing Markdown editor link command')
     }
-
-    const service = registry.get(markdownEditorService)
+    const service = registry.required(markdownEditorService)
     const setLink = vi.fn(() => true)
     const unregister = service.registerActiveEditor(
       createMarkdownEditorActions({ setLink })
@@ -122,25 +119,19 @@ describe('markdown editor extension', () => {
     unregister()
 
     expect(command.onSubmit()).toBe(false)
-
-    registry[Symbol.dispose]()
+    await registry.dispose()
   })
-
-  it('executes active editor actions through the keymap service', () => {
+  it('executes active editor actions through the keymap service', async () => {
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-wasm-promise',
-        provides: [provideWasmPromise(Promise.resolve({} as ModuleType))],
-      }),
+    await registry.configure([
+      [provideWasmPromise(() => Promise.resolve({} as ModuleType))],
       machineManagerExtension,
       commandsExtension,
       keymapExtension,
       markdownEditorExtension,
     ])
-
-    const keymap = registry.get(keymapService)
-    const service = registry.get(markdownEditorService)
+    const keymap = registry.required(keymapService)
+    const service = registry.required(markdownEditorService)
     const toggleBold = vi.fn(() => true)
     const setLink = vi.fn(() => true)
     const toggleBulletList = vi.fn(() => true)
@@ -171,6 +162,6 @@ describe('markdown editor extension', () => {
     }
 
     unregister()
-    registry[Symbol.dispose]()
+    await registry.dispose()
   })
 })

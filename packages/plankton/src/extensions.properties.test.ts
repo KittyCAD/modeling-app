@@ -8,7 +8,7 @@ import {
   factory,
   Facet,
 } from './algebra'
-import { Registry } from './nextRegistry'
+import { Registry } from './registry'
 
 const runs = { numRuns: 120 }
 

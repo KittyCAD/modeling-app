@@ -1,4 +1,3 @@
-import { selectCommand } from '@src/lib/commandUtils'
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown } from '@codemirror/lang-markdown'
 import { python } from '@codemirror/lang-python'
@@ -16,10 +15,10 @@ import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { RouteProviderContext } from '@src/components/RouteProvider'
-import { Spinner } from '@src/components/Spinner'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
+import { RouteProviderContext } from '@src/components/RouteProvider'
+import { Spinner } from '@src/components/Spinner'
 import {
   editorMarkdownHighlight,
   editorTheme,
@@ -35,6 +34,7 @@ import {
   scheduleActiveTextFileWrite,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { selectCommand } from '@src/lib/commandUtils'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import {
@@ -47,17 +47,16 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { use, useContext, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
 
 type Singletons = ReturnType<typeof useSingletons>
-
 export const editorShortcutMeta = {
   formatCode: {
     defaultKeys: ['alt+shift+f'],
@@ -66,7 +65,6 @@ export const editorShortcutMeta = {
     defaultKeys: ['ctrl+shift+c'],
   },
 }
-
 export const EditorPane = (props: AreaTypeComponentProps) => {
   return (
     <LayoutPanel
@@ -85,7 +83,6 @@ export const EditorPane = (props: AreaTypeComponentProps) => {
     </LayoutPanel>
   )
 }
-
 export const EditorPaneContents = () => {
   useSignals()
   const { kclManager } = useSingletons()
@@ -100,7 +97,6 @@ export const EditorPaneContents = () => {
   const { isFileLoading } = useContext(RouteProviderContext)
   const loading = isFileLoading || activeTextFile?.status === 'loading'
   const editorParent = useRef<HTMLDivElement>(null)
-
   useEffect(() => {
     kclManager.editorView.dispatch({
       effects: kclManager.storageReadOnlyCompartment.reconfigure([
@@ -117,14 +113,12 @@ export const EditorPaneContents = () => {
       clearActiveTextFile()
     }
   }, [])
-
   useEffect(() => {
     if (activeTextFile) {
       return
     }
     editorParent.current?.appendChild(kclManager.editorView.dom)
   }, [activeTextFile, kclManager.editorView.dom])
-
   return (
     <div className="relative h-full" aria-busy={loading}>
       <div className="h-full" inert={loading}>
@@ -151,7 +145,6 @@ export const EditorPaneContents = () => {
     </div>
   )
 }
-
 const textFileEditorTheme = EditorView.theme({
   '&': {
     height: '100%',
@@ -228,7 +221,6 @@ function TextFileEditor({
     const path = activeTextFile.path
     const normalizedPath = path.toLowerCase()
     const lineSeparator = activeTextFile.text.match(/\r\n|\r|\n/)?.[0]
-
     const view = new EditorView({
       state: EditorState.create({
         doc: activeTextFile.text,
@@ -270,7 +262,6 @@ function TextFileEditor({
       parent: editorParent.current,
     })
     viewRef.current = view
-
     return () => {
       view.destroy()
       viewRef.current = null
@@ -290,7 +281,6 @@ function TextFileEditor({
       ),
     })
   }, [resolvedTheme, activeTextFile.path])
-
   useEffect(() => {
     viewRef.current?.dispatch({
       effects: textReadOnlyCompartment.reconfigure([
@@ -304,15 +294,13 @@ function TextFileEditor({
     activeTextFile.status,
     activeTextFile.text,
   ])
-
   if (activeTextFile.status === 'loading') {
     return null
   }
-
   if (activeTextFile.status === 'error') {
     const currentProject = project?.projectIORefSignal.value
     const currentFile = project?.executingFileEntry.value
-    const wasmPromise = registry.signal(wasmPromiseValueSpec).value
+    const wasmPromise = registry.observe(wasmPromiseFacet).value
     const wasm = wasmPromise ? use(wasmPromise) : undefined
     const canImport =
       currentProject?.readWriteAccess &&
@@ -323,7 +311,6 @@ function TextFileEditor({
         'kcl',
         ...wasm.import_file_extensions(),
       ])
-
     return (
       <div className="h-full p-3 text-sm">
         <p className="text-destroy-80">
@@ -356,7 +343,6 @@ function TextFileEditor({
       </div>
     )
   }
-
   return (
     <div className="relative h-full">
       <div
@@ -367,18 +353,15 @@ function TextFileEditor({
     </div>
   )
 }
-
 function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
   if (!kclManager.codeSignal.value) {
     toast.error('No code available to copy.')
     return
   }
-
   if (!globalThis?.navigator?.clipboard?.writeText) {
     toast.error('Clipboard functionality not available in your browser.')
     return
   }
-
   navigator.clipboard
     .writeText(kclManager.codeSignal.value)
     .then(() => toast.success(`Copied current file's code to clipboard.`))
@@ -386,7 +369,6 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
       trap(new Error(`Failed to copy code to clipboard: ${e.message}`))
     )
 }
-
 export const KclEditorMenu = () => {
   useSignals()
   // The KCL-specific menu items (format, convert to variable, KCL docs, add KCL
@@ -396,7 +378,6 @@ export const KclEditorMenu = () => {
   }
   return <KclEditorKclMenu />
 }
-
 const KclEditorKclMenu = () => {
   useSignals()
   const app = useApp()
@@ -405,7 +386,7 @@ const KclEditorKclMenu = () => {
   const platform = usePlatform()
   const settingsActor = settings.actor
   const keymap = app.registry.optional(keymapService)
-  const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
+  const keymapScopes = app.registry.observe(keymapScopesFacet).value
   const currentScopes = keymap?.getCurrentScopes()
   const keybindingDisplay = (
     command: string,
@@ -432,7 +413,6 @@ const KclEditorKclMenu = () => {
   )
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
-
   return (
     <HeaderMenu>
       <Menu.Item>

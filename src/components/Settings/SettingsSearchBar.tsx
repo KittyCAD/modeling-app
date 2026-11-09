@@ -2,13 +2,8 @@ import { Combobox } from '@headlessui/react'
 import type { Feature } from '@kittycad/lib'
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { getKeybindingRows } from '@src/components/Settings/keybindingRows'
-import Fuse from 'fuse.js'
-import { useCallback, useMemo, useRef, useState } from 'react'
-// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: settings search publishes tab and hash (useNavigate).
-import { useNavigate } from 'react-router-dom'
-
 import { CustomIcon } from '@src/components/CustomIcon'
+import { getKeybindingRows } from '@src/components/Settings/keybindingRows'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import { settingsSearchFocusRequest } from '@src/lib/searchFocusRequests'
@@ -20,14 +15,18 @@ import {
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
   type CommandScope,
-  commandScopesValueSpec,
+  commandScopesFacet,
 } from '@src/registry/contracts/commands'
 import {
-  KEYMAP_SCHEMA_VERSION,
   getKeymapItemWhen,
+  KEYMAP_SCHEMA_VERSION,
+  keymapFacet,
   keymapService,
-  keymapValueSpec,
 } from '@src/registry/contracts/keymap'
+import Fuse from 'fuse.js'
+import { useCallback, useMemo, useRef, useState } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: settings search publishes tab and hash (useNavigate).
+import { useNavigate } from 'react-router-dom'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 
@@ -51,7 +50,7 @@ export function SettingsSearchBar({
   useSignals()
   const { settings, registry, userFeatures } = useApp()
   const keymap = registry.optional(keymapService)
-  const contributedKeymap = registry.signal(keymapValueSpec).value
+  const contributedKeymap = registry.observe(keymapFacet).value
   const persistedKeymap = keymap?.persistedKeymap.value ?? {
     version: KEYMAP_SCHEMA_VERSION,
     bindings: [],
@@ -60,7 +59,7 @@ export function SettingsSearchBar({
     () => getKeybindingRows(contributedKeymap.items, persistedKeymap.bindings),
     [contributedKeymap.items, persistedKeymap.bindings]
   )
-  const commandScopes = registry.signal(commandScopesValueSpec).value
+  const commandScopes = registry.observe(commandScopesFacet).value
   const inputRef = useRef<HTMLInputElement>(null)
   const lastHandledFocusRequest = useRef(settingsSearchFocusRequest.value)
   useSignalEffect(() => {

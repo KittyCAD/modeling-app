@@ -7,7 +7,6 @@ import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
-import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import type {
   ModelingMachineEvent,
   modelingMachine,
@@ -18,6 +17,7 @@ import {
   isSketchBlockSelected,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
+import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import {
   MODE_MODELING_COMMAND_SCOPE,
   MODE_SKETCH_SOLVE_COMMAND_SCOPE,

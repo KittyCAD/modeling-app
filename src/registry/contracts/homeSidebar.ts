@@ -1,4 +1,4 @@
-import { defineContract, defineValueSpec } from '@kittycad/registry'
+import { contract, Facet } from 'plankton'
 import type { ComponentType } from 'react'
 
 export interface HomeSidebarItemProps {
@@ -14,16 +14,11 @@ export interface HomeSidebarItem {
 
 const sortByOrderProperty = (items: readonly HomeSidebarItem[]) =>
   items.toSorted((a, b) => (a.order || 0) - (b.order || 0))
-
-export const homeSidebarContract = defineContract({
-  homeSidebarItemsValueSpec: defineValueSpec<
-    HomeSidebarItem,
-    HomeSidebarItem[]
-  >({
-    name: 'home-sidebar-items',
-    defaultValue: [],
-    combine: sortByOrderProperty,
-  }),
+export const homeSidebarContract = contract({
+  homeSidebarItemsFacet: new Facet<HomeSidebarItem, HomeSidebarItem[]>(
+    'home-sidebar-items',
+    (inputs) => (inputs.length ? sortByOrderProperty(inputs) : [])
+  ),
 })
 
-export const { homeSidebarItemsValueSpec } = homeSidebarContract
+export const { homeSidebarItemsFacet } = homeSidebarContract

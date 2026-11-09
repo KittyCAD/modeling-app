@@ -1,11 +1,11 @@
-import { selectCommand } from '@src/lib/commandUtils'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import { selectCommand } from '@src/lib/commandUtils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
-import { layoutActionLibraryValueSpec } from '@src/lib/layout/registry/contract'
+import { layoutActionLibraryFacet } from '@src/lib/layout/registry/contract'
 import type { ActionLibrary } from '@src/lib/layout/types'
 import { useMemo } from 'react'
 
@@ -14,8 +14,8 @@ export const useDefaultActionLibrary = () => {
   const { commands, settings, registry } = useApp()
   const { kclManager } = useSingletons()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
-  const registeredActionLibrary = registry.signal(
-    layoutActionLibraryValueSpec
+  const registeredActionLibrary = registry.observe(
+    layoutActionLibraryFacet
   ).value
 
   return useMemo(

@@ -9,7 +9,7 @@ import { refreshPage } from '@src/lib/utils'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
@@ -18,12 +18,14 @@ import { type HTMLProps, type MouseEventHandler } from 'react'
 export function UndoRedoButtons({
   kclManager,
   ...props
-}: HTMLProps<HTMLDivElement> & { kclManager: KclManager }) {
+}: HTMLProps<HTMLDivElement> & {
+  kclManager: KclManager
+}) {
   useSignals()
   const app = useApp()
   const platform = usePlatform()
   const keymap = app.registry.optional(keymapService)
-  const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
+  const keymapScopes = app.registry.observe(keymapScopesFacet).value
   const currentScopes = keymap?.getCurrentScopes()
   const keybindingDisplay = (
     command: string,

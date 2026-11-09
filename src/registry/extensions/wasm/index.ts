@@ -1,29 +1,20 @@
-import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-} from '@kittycad/registry'
-import { computed } from '@preact/signals-core'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { type Subtree } from 'plankton'
+export const wasmExtension = {
+  key: 'wasm-extension',
+  create: () => {
+    let wasmPromise: Promise<ModuleType> | undefined
 
-export const wasmExtension = defineRegistryItemFactory(() => {
-  let wasmPromise: Promise<ModuleType> | undefined
-
-  return {
-    id: 'wasm-extension',
-    provides: [
-      provideWasmPromise(
-        computed(() => {
+    return {
+      items: [
+        provideWasmPromise(() => {
           wasmPromise ??= initialiseWasm()
           return wasmPromise
-        })
-      ),
-    ],
-  }
-}, 'wasm-extension')
-
-export default defineRegistryItem({
-  id: 'wasm',
-  uses: [wasmExtension],
-})
+        }),
+      ],
+    }
+  },
+} satisfies Subtree
+export default [wasmExtension]

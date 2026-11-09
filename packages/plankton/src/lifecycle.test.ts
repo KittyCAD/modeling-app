@@ -2,7 +2,7 @@ import { computed, effect } from '@preact/signals-core'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
 import { contribute, factory, Facet, slot } from './algebra'
-import { Registry } from './nextRegistry'
+import { Registry } from './registry'
 
 it('starts observers against complete publications and preserves them through replacement', async () => {
   await fc.assert(

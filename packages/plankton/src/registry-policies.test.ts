@@ -9,7 +9,7 @@ import {
   service,
   slot,
 } from './algebra'
-import { Registry } from './next'
+import { Registry } from './index'
 
 it('ignores dependencies of a discarded keyed definition', async () => {
   const registry = new Registry()
