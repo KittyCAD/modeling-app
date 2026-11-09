@@ -389,6 +389,7 @@ export class KclManager extends File {
     return this._wasmInstance
   }
   private closed = false
+  private fileSelectionGeneration = 0
   readonly systemDeps: ProjectSystemDeps
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
   /** React publishes modeling snapshots for consumers such as Named Views. */
@@ -1530,6 +1531,58 @@ export class KclManager extends File {
     }
   }
 
+  /** Refresh storage before adding geometry, never during pointer-move edits. */
+  async refreshFileBeforeSketchInsertion(
+    refreshStorage?: (isCurrent: () => boolean) => Promise<void>
+  ): Promise<void> {
+    const path = this.path
+    const generation = this.fileSelectionGeneration
+    const isCurrent = () =>
+      !this.closed &&
+      this.path === path &&
+      this.fileSelectionGeneration === generation
+    if (!path) return
+    if (!(await this.flushWriteToFile()))
+      return Promise.reject(
+        new Error('Save your current edits before adding sketch geometry.')
+      )
+    if (!isCurrent())
+      return Promise.reject(
+        new Error('The active file changed before sketch insertion.')
+      )
+    const version = this._documentVersion
+    await refreshStorage?.(() => isCurrent() && !this.hasUnsavedLocalChanges())
+    const contents = normalizeLineEndings(await this.textFileIO.read(path))
+    if (!isCurrent())
+      return Promise.reject(
+        new Error('The active file changed before sketch insertion.')
+      )
+    if (!isCodeTheSame(contents, this.code)) {
+      if (version !== this._documentVersion || this.hasUnsavedLocalChanges())
+        return Promise.reject(
+          new Error(
+            'The editor changed while checking for newer file contents. Try adding the geometry again.'
+          )
+        )
+      this.updateCodeEditor(contents, {
+        shouldExecute: false,
+        shouldSyncRust: false,
+        shouldWriteToDisk: false,
+        shouldClearHistory: true,
+      })
+      this.markFileCodeAsSynced(contents)
+    }
+    // A watcher may already have loaded the new text without executing it in
+    // sketch mode. Flush that source too before Rust generates the next edit.
+    if (this.hasEditsSinceLastExecutionSignal.peek())
+      this.scheduleCurrentCodeExecution(false)
+    await this.flushPendingEditorExecution()
+    if (!isCurrent() || this.hasParseErrors())
+      return Promise.reject(
+        new Error('Cannot add sketch geometry until the current file is ready.')
+      )
+  }
+
   /**
    * `EditorView.setState` bypasses the usual editor update effects. After
    * restoring a captured state for Zookeeper history, manually resync the
@@ -1909,6 +1962,7 @@ export class KclManager extends File {
     // A reused editor must stop accepting results from its previous file, even
     // if the user returns to that path before an old execution finishes.
     providedEditor.executionGeneration += 1
+    providedEditor.fileSelectionGeneration += 1
     providedEditor.endLiveOperationUpdates()
     providedEditor.isExecuting = false
     providedEditor.path = file.path
@@ -2020,6 +2074,7 @@ export class KclManager extends File {
   /** Clean up listeners, watchers, etc */
   public close() {
     this.closed = true
+    this.fileSelectionGeneration += 1
     this.executionGeneration += 1
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
