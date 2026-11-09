@@ -409,6 +409,90 @@ const gdtFrameArgOverrides = {
   ...gdtFrameDisplayArgOverrides,
 } as const
 
+/** Shared stdlib-derived arguments and UI overrides; each host supplies its own review and execution adapter. */
+export const extrudeCommandConfig = {
+  icon: 'extrude',
+  needsReview: true,
+  args: modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>('Extrude', {
+    overrides: {
+      sketches: {
+        inputType: 'selection',
+        displayName: 'Profiles',
+        selectionTypes: [
+          'solid2d',
+          'segment',
+          'sweepEdge',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+          'cap',
+          'wall',
+          'pathRegion',
+          'engineRegion',
+        ],
+        multiple: true,
+        hidden: isEditingNodeSelection,
+      },
+      length: {
+        defaultValue: KCL_DEFAULT_LENGTH,
+        prepopulate: true,
+      },
+      to: {
+        inputType: 'selection',
+        // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
+        selectionTypes: ['cap', 'wall'],
+        clearSelectionFirst: true,
+        multiple: false,
+        description: 'Only parallel faces are supported for now.',
+        hidden: isEditingNodeSelection,
+      },
+      tagStart: {
+        dialog: { advanced: true },
+        // TODO: add validation like for Clone command
+      },
+      twistCenter: {
+        dialog: { advanced: true },
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+      },
+      direction: {
+        dialog: { advanced: true },
+        inputType: 'selection',
+        selectionTypes: [
+          'segment',
+          'sweepEdge',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+        ],
+        multiple: false,
+        clearSelectionFirst: true,
+        hidden: isEditingNodeSelection,
+      },
+      tagEnd: { dialog: { advanced: true } },
+      draftAngle: { dialog: { advanced: true } },
+      twistAngle: { dialog: { advanced: true } },
+      twistAngleStep: { dialog: { advanced: true } },
+      hideSeams: { dialog: { advanced: true } },
+      method: {
+        inputType: 'options',
+        required: extrudeSelectionRequiresMethod,
+        options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
+          name: capitaliseFC(value.toLowerCase()),
+          value,
+        })),
+      },
+      bodyType: {
+        inputType: 'options',
+        required: extrudeSelectionRequiresBodyType,
+        options: kclBodyTypeOptions,
+      },
+    },
+  }),
+} satisfies NonNullable<
+  StateMachineCommandSetConfig<
+    typeof modelingMachine,
+    ModelingCommandSchema
+  >['Extrude']
+>
+
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   typeof modelingMachine,
   ModelingCommandSchema
@@ -786,86 +870,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Extrude: {
-    icon: 'extrude',
-    needsReview: true,
+    ...extrudeCommandConfig,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Extrude
-    ),
-    args: modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
-      'Extrude',
-      {
-        overrides: {
-          sketches: {
-            inputType: 'selection',
-            displayName: 'Profiles',
-            selectionTypes: [
-              'solid2d',
-              'segment',
-              'sweepEdge',
-              'primitiveEdge',
-              'enginePrimitiveEdge',
-              'cap',
-              'wall',
-              'pathRegion',
-              'engineRegion',
-            ],
-            multiple: true,
-            hidden: isEditingNodeSelection,
-          },
-          length: {
-            defaultValue: KCL_DEFAULT_LENGTH,
-            prepopulate: true,
-          },
-          to: {
-            inputType: 'selection',
-            // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
-            selectionTypes: ['cap', 'wall'],
-            clearSelectionFirst: true,
-            multiple: false,
-            description: 'Only parallel faces are supported for now.',
-            hidden: isEditingNodeSelection,
-          },
-          tagStart: {
-            dialog: { advanced: true },
-            // TODO: add validation like for Clone command
-          },
-          twistCenter: {
-            dialog: { advanced: true },
-            defaultValue: KCL_DEFAULT_ORIGIN_2D,
-          },
-          direction: {
-            dialog: { advanced: true },
-            inputType: 'selection',
-            selectionTypes: [
-              'segment',
-              'sweepEdge',
-              'primitiveEdge',
-              'enginePrimitiveEdge',
-            ],
-            multiple: false,
-            clearSelectionFirst: true,
-            hidden: isEditingNodeSelection,
-          },
-          tagEnd: { dialog: { advanced: true } },
-          draftAngle: { dialog: { advanced: true } },
-          twistAngle: { dialog: { advanced: true } },
-          twistAngleStep: { dialog: { advanced: true } },
-          hideSeams: { dialog: { advanced: true } },
-          method: {
-            inputType: 'options',
-            required: extrudeSelectionRequiresMethod,
-            options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
-              name: capitaliseFC(value.toLowerCase()),
-              value,
-            })),
-          },
-          bodyType: {
-            inputType: 'options',
-            required: extrudeSelectionRequiresBodyType,
-            options: kclBodyTypeOptions,
-          },
-        },
-      }
     ),
   },
   Sweep: {

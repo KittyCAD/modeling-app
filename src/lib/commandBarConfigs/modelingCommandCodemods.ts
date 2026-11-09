@@ -192,18 +192,33 @@ const withArtifactGraph = <
   commandName: Name,
   add: CompleteAddFunction<Name, Add>,
   options?: CommandCodemodOptions<Name>
-) =>
-  defineModelingCodemod<CommandArgsByName[Name]>({
-    ...withStdLibExperimentalFeatures(commandName, options),
-    run: ({ args, ast, kclManager, wasmInstance }) =>
-      add(
-        addCodemodArgs(args, {
+) => {
+  /** Both command hosts use the same transform; only the legacy adapter reads `KclManager`. */
+  const transform = ({
+    args,
+    ast,
+    artifactGraph,
+    wasmInstance,
+  }: {
+    args: CommandArgsByName[Name]
+    ast: Node<Program>
+    artifactGraph: ArtifactGraph
+    wasmInstance: ModuleType
+  }) => add(addCodemodArgs(args, { ast, artifactGraph, wasmInstance }))
+  return {
+    ...defineModelingCodemod<CommandArgsByName[Name]>({
+      ...withStdLibExperimentalFeatures(commandName, options),
+      run: ({ args, ast, kclManager, wasmInstance }) =>
+        transform({
+          args,
           ast,
           artifactGraph: kclManager.artifactGraph,
           wasmInstance,
-        })
-      ),
-  })
+        }),
+    }),
+    transform,
+  }
+}
 
 // A sketch segment does not identify which solid edge the user intends.
 const withSolidEdgeSelections = <

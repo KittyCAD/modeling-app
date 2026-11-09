@@ -51,7 +51,7 @@ export const defineModelingCodemod = <CommandArgs>(
 ) => codemod
 
 const shouldEnableExperimentalFeatures = <CommandArgs>(
-  codemod: ModelingCodemod<CommandArgs>,
+  codemod: Pick<ModelingCodemod<CommandArgs>, 'enableExperimentalFeatures'>,
   commandArgs: CommandArgs
 ) =>
   typeof codemod.enableExperimentalFeatures === 'function'
@@ -103,25 +103,15 @@ export async function runModelingCodemod<CommandArgs>({
 }) {
   const resolvedWasmInstance =
     wasmInstance ?? (await kclManager.wasmInstancePromise)
-  let ast = sourceSnapshot?.ast ?? kclManager.ast
-
-  if (
-    shouldEnableExperimentalFeatures(codemod, commandArgs) &&
-    kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-  ) {
-    const astWithNewSetting = setExperimentalFeatures(
-      sourceSnapshot?.code ?? kclManager.code,
-      {
-        type: 'Allow',
-      },
-      resolvedWasmInstance
-    )
-    if (err(astWithNewSetting)) {
-      return astWithNewSetting
-    }
-
-    ast = astWithNewSetting
-  }
+  const ast = prepareModelingCodemodAst({
+    codemod,
+    commandArgs,
+    source: sourceSnapshot ?? { ast: kclManager.ast, code: kclManager.code },
+    experimentalFeaturesAllowed:
+      kclManager.fileSettings.experimentalFeatures?.type === 'Allow',
+    wasmInstance: resolvedWasmInstance,
+  })
+  if (err(ast)) return ast
 
   return await codemod.run({
     args: commandArgs,
@@ -129,6 +119,26 @@ export async function runModelingCodemod<CommandArgs>({
     kclManager,
     wasmInstance: resolvedWasmInstance,
   })
+}
+
+/** Preserve command-specific experimental opt-in for hosts that do not own a KclManager. */
+export function prepareModelingCodemodAst<Args>({
+  codemod,
+  commandArgs,
+  source,
+  experimentalFeaturesAllowed,
+  wasmInstance,
+}: {
+  codemod: Pick<ModelingCodemod<Args>, 'enableExperimentalFeatures'>
+  commandArgs: Args
+  source: { ast: Node<Program>; code: string }
+  experimentalFeaturesAllowed: boolean
+  wasmInstance: ModuleType
+}): Node<Program> | Error {
+  return shouldEnableExperimentalFeatures(codemod, commandArgs) &&
+    !experimentalFeaturesAllowed
+    ? setExperimentalFeatures(source.code, { type: 'Allow' }, wasmInstance)
+    : source.ast
 }
 
 export function createModelingCodemodReviewValidation<CommandArgs>(
