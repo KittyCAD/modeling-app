@@ -76,6 +76,7 @@ pub struct WebSocketTransport {
     engine_req_tx: mpsc::Sender<ToEngineReq>,
     shutdown_tx: mpsc::Sender<()>,
     responses: ResponseInformation,
+    response_ready: Arc<tokio::sync::Notify>,
     pending_errors: Arc<RwLock<Vec<KclError>>>,
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
     socket_health: Arc<RwLock<SocketHealth>>,
@@ -171,6 +172,8 @@ impl WebSocketTransport {
         let session_data_for_read = session_data.clone();
         let pending_errors_for_read = pending_errors.clone();
         let socket_health_tcp_read = socket_health.clone();
+        let response_ready = Arc::new(tokio::sync::Notify::new());
+        let response_ready_for_read = response_ready.clone();
         let tcp_read_handle = tokio::spawn(async move {
             // Get Websocket messages from API server
             loop {
@@ -271,10 +274,12 @@ impl WebSocketTransport {
                         if let Some(id) = id {
                             response_information_for_read.add(id, ws_resp.clone()).await;
                         }
+                        response_ready_for_read.notify_waiters();
                     }
                     Err(e) => {
                         pending_errors_for_read.write().await.push(e.into_kcl_error());
                         *socket_health_tcp_read.write().await = SocketHealth::Inactive;
+                        response_ready_for_read.notify_waiters();
                         return;
                     }
                 }
@@ -283,6 +288,7 @@ impl WebSocketTransport {
         Self {
             shutdown_tx,
             responses: response_information,
+            response_ready,
             pending_errors,
             session_data,
             socket_health,
@@ -450,6 +456,7 @@ impl WebSocketTransport {
         self.tcp_read_handle.abort();
         self.tcp_write_handle.abort();
         *self.socket_health.write().await = SocketHealth::Inactive;
+        self.response_ready.notify_waiters();
     }
 }
 
@@ -524,6 +531,10 @@ impl EngineTransport for WebSocketTransport {
         let response_timeout = 600;
         let current_time = Instant::now();
         while current_time.elapsed().as_secs() < response_timeout {
+            let notified = self.response_ready.notified();
+            tokio::pin!(notified);
+            // Register before checking state so a response cannot be missed.
+            notified.as_mut().enable();
             let guard = self.socket_health.read().await;
             if *guard == SocketHealth::Inactive {
                 if let Some(error) = self.pending_error(source_range).await {
@@ -542,10 +553,15 @@ impl EngineTransport for WebSocketTransport {
                     api_call_id,
                 ));
             }
+            drop(guard);
 
             // We cannot pop here or it will break the artifact graph.
             if let Some(resp) = self.responses.responses.read().await.get(&cmd_id) {
                 return Ok(resp.clone());
+            }
+            let remaining = Duration::from_secs(response_timeout).saturating_sub(current_time.elapsed());
+            if tokio::time::timeout(remaining, notified).await.is_err() {
+                break;
             }
         }
 
@@ -628,6 +644,7 @@ mod tests {
             engine_req_tx,
             shutdown_tx,
             responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
+            response_ready: Arc::default(),
             pending_errors: Arc::new(RwLock::new(pending_errors)),
             session_data: Arc::new(RwLock::new(Some(ModelingSessionData {
                 api_call_id: "test-api-call-id".to_owned(),
@@ -635,6 +652,70 @@ mod tests {
             socket_health: Arc::new(RwLock::new(SocketHealth::Inactive)),
             upgrade_request_id: None,
         }
+    }
+
+    #[tokio::test]
+    async fn waiting_for_a_response_suspends_until_it_arrives() {
+        use std::future::Future;
+        use std::sync::atomic::AtomicUsize;
+        use std::sync::atomic::Ordering;
+
+        let transport = transport_with_pending_errors(vec![], Ok(()));
+        *transport.socket_health.write().await = SocketHealth::Active;
+        let id = Uuid::new_v4();
+        let responses = transport.responses.clone();
+        let ready = transport.response_ready.clone();
+        let sender = tokio::spawn(async move {
+            tokio::time::sleep(Duration::from_millis(20)).await;
+            responses
+                .add(
+                    id,
+                    WebSocketResponse::Failure(FailureWebSocketResponse {
+                        success: false,
+                        request_id: Some(id),
+                        errors: vec![],
+                    }),
+                )
+                .await;
+            ready.notify_waiters();
+        });
+        let polls = AtomicUsize::new(0);
+        let response =
+            transport.inner_send_modeling_cmd(id, SourceRange::default(), WebSocketRequest::Ping {}, HashMap::new());
+        tokio::pin!(response);
+        let result = tokio::time::timeout(
+            Duration::from_secs(1),
+            std::future::poll_fn(|cx| {
+                polls.fetch_add(1, Ordering::Relaxed);
+                response.as_mut().poll(cx)
+            }),
+        )
+        .await
+        .expect("the response should wake the waiter")
+        .expect("the response should be retained");
+        assert_eq!(result.request_id(), Some(id));
+        assert!(polls.load(Ordering::Relaxed) < 10, "waiting should not repeatedly poll");
+        sender.await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn closing_transport_wakes_response_waiter() {
+        let transport = transport_with_pending_errors(vec![], Ok(()));
+        *transport.socket_health.write().await = SocketHealth::Active;
+        let response = transport.inner_send_modeling_cmd(
+            Uuid::new_v4(),
+            SourceRange::default(),
+            WebSocketRequest::Ping {},
+            HashMap::new(),
+        );
+        let close = async {
+            tokio::time::sleep(Duration::from_millis(20)).await;
+            transport.close_with_timeout(Duration::ZERO).await;
+        };
+        let (response, ()) = tokio::time::timeout(Duration::from_secs(1), async { tokio::join!(response, close) })
+            .await
+            .expect("closing should wake the response waiter");
+        assert!(matches!(response.unwrap_err(), KclError::EngineHangup { .. }));
     }
 
     #[tokio::test]
@@ -728,6 +809,7 @@ mod tests {
             engine_req_tx,
             shutdown_tx,
             responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
+            response_ready: Arc::default(),
             pending_errors: Arc::new(RwLock::new(Vec::new())),
             session_data: Arc::new(RwLock::new(None)),
             socket_health: socket_health.clone(),
@@ -759,6 +841,7 @@ mod tests {
             engine_req_tx,
             shutdown_tx,
             responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
+            response_ready: Arc::default(),
             pending_errors: Arc::new(RwLock::new(Vec::new())),
             session_data: Arc::new(RwLock::new(None)),
             socket_health: socket_health.clone(),
