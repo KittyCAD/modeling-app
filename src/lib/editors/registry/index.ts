@@ -133,8 +133,8 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
       )
         closeEditor(record.instance.editor.id)
     },
-    createEditor: (contents = '') => service.openEditor(undefined, contents),
-    openEditor: (src, contents) => {
+    createEditor: (contents = '', options) => service.openEditor(undefined, contents, options),
+    openEditor: (src, contents, options) => {
       contextBoundary.assertCanManageEditors()
       // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- This synchronous API cannot produce an editor after shutdown.
       if (disposed) throw new Error('The editors service is closed')
@@ -154,6 +154,7 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
           return backing.document.state
         },
         id: Symbol(src),
+        documentType: options?.documentType,
         src: source,
         contents: text,
         classification: language.classification,
@@ -292,5 +293,7 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
     },
   }
 }, 'editors')
+
+export { extension as editorsExtension }
 
 export default withProjectShellFeature(extension, 'editors')

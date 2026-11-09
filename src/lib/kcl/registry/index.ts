@@ -1,3 +1,5 @@
+import { commandArgumentsExtension } from '@src/lib/commandArguments/registry'
+import { commandArgumentsService } from '@src/lib/commandArguments/registry/contract'
 import { useSignals } from '@preact/signals-react/runtime'
 import { modelingToolsExtension } from '@src/lib/modelingTools/registry'
 import {
@@ -126,7 +128,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
   const sceneExtensions = valueSpecs.signal(kclSceneViewExtensionsValueSpec)
   return {
     id: 'kcl',
-    uses: [modelingToolsExtension],
+    uses: [modelingToolsExtension, commandArgumentsExtension],
     dispose: sceneSettings.dispose,
     provides: [
       provide(modelingToolsValueSpec, {
@@ -138,10 +140,14 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
       provide(
         commandsValueSpec,
         computed(() =>
-          createViewerExtrudeCommand(targets, wasmPromise.value, () =>
-            services
-              .get(userFeaturesService)
-              .has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false)
+          createViewerExtrudeCommand(
+            targets,
+            wasmPromise.value,
+            () =>
+              services
+                .get(userFeaturesService)
+                .has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false),
+            (binding) => services.get(commandArgumentsService).open(binding)
           )
         ),
         { key: STDLIB_EXTRUDE_COMMAND.id }

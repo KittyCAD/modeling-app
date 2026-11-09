@@ -167,6 +167,8 @@ export const commandBarMachine = setup({
         return event.data
       },
     }),
+    'Open editor dialog': ({ context }) =>
+      context.selectedCommand?.openEditorDialog?.(context),
     'Execute command': ({ context, event }) => {
       const { selectedCommand } = context
       if (!selectedCommand) return
@@ -396,6 +398,8 @@ export const commandBarMachine = setup({
     }),
   },
   guards: {
+    'Command opens editor dialog': ({ context }) =>
+      Boolean(context.selectedCommand?.openEditorDialog),
     'Command needs review': ({ context }) =>
       // Edit flows are (for now) always considered to need review
       context.selectedCommand?.needsReview ||
@@ -707,6 +711,11 @@ export const commandBarMachine = setup({
 
     'Command selected': {
       always: [
+        {
+          target: 'Closed',
+          guard: 'Command opens editor dialog',
+          actions: ['Open editor dialog', 'Clear selected command'],
+        },
         {
           target: 'Closed',
           guard: 'Command has no arguments',

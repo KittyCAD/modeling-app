@@ -1,3 +1,5 @@
+import { EditorDialogsHost } from '@src/lib/editorDialogs/EditorDialogsHost'
+import { editorDialogsService } from '@src/lib/editorDialogs/registry/contract'
 import { useSignals } from '@preact/signals-react/runtime'
 import { Logo } from '@src/components/Logo'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
@@ -49,6 +51,7 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
   useSignals()
   const { registry, commands } = useApp()
   const editors = registry.get(editorsService)
+  const dialogs = registry.optional(editorDialogsService)
   const { contents, metadata } = session.project.value
   const [layout, setLayout] = useState(() => structuredClone(tempLayout))
   const areaLibrary = useMemo<AreaLibrary>(
@@ -90,6 +93,7 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
           artifactGraph={new Map()}
         />
       </main>
+      {dialogs && <EditorDialogsHost dialogs={dialogs} />}
       <StatusBar
         globalItems={[
           {

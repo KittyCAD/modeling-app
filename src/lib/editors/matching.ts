@@ -9,6 +9,7 @@ export interface EditorSourceContext {
 
 /** A source snapshot shared by editor behavior, execution, and view matching. */
 export interface EditorMatchContext extends EditorSourceContext {
+  readonly documentType?: string
   readonly languageId?: string
   readonly mediaType?: string
 }
@@ -23,6 +24,7 @@ export function editorMatchContext(editor: Editor): EditorMatchContext {
   // Unnamed buffers have no file extension; wildcard and content predicates still apply.
   return {
     src: editor.src.value ?? '',
+    documentType: editor.documentType,
     contents: editor.contents.value,
     ...editor.classification.value,
   }

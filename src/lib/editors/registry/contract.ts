@@ -20,6 +20,8 @@ import type { ComponentType } from 'react'
 /** One live working document, independent of the views displaying it. */
 export interface Editor {
   readonly id: symbol
+  /** Optional semantic document kind, independent of its language and source. */
+  readonly documentType?: string
   /** Undefined for a new buffer; otherwise a local path or cloud ID plus relative path. */
   readonly src: ReadonlySignal<string | undefined>
   /** Independent language/format metadata; undefined means the buffer is unclassified. */
@@ -138,9 +140,16 @@ export interface EditorsService {
   createView: (editor: Editor, modeId?: string) => EditorViewInstance
   closeView: (id: symbol) => void
   /** Create an unsaved buffer, without reading or creating a file. */
-  createEditor: (contents?: string) => Editor
+  createEditor: (
+    contents?: string,
+    options?: { documentType?: string }
+  ) => Editor
   /** Synchronously create an independent document from contents already loaded by the caller. */
-  openEditor: (src: string | undefined, contents: string) => Editor
+  openEditor: (
+    src: string | undefined,
+    contents: string,
+    options?: { documentType?: string }
+  ) => Editor
   /** Update an editor's source after a rename or reassociation; performs no file IO. */
   setSource: (id: symbol, src: string) => void
   /** Explicitly choose a registered language, or clear the choice to resume source classification. */

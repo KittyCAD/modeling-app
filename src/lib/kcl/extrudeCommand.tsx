@@ -1,3 +1,5 @@
+import type { CommandArgumentsBinding } from '@src/lib/commandArguments/registry/contract'
+import { createArgumentModelLookup } from '@src/lib/kcl/argumentModel'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { isSelections } from '@src/lib/selections'
 import { reportRejection } from '@src/lib/trap'
@@ -34,7 +36,8 @@ export const STDLIB_EXTRUDE_COMMAND = {
 export function createViewerExtrudeCommand(
   targets: ReadonlySignal<readonly ModelingTarget[]>,
   wasmPromise: Promise<ModuleType>,
-  showExperimentalCommands: () => boolean = () => false
+  showExperimentalCommands: () => boolean = () => false,
+  openDialog?: (binding: CommandArgumentsBinding) => Promise<void>
 ): Command {
   let loadedWasm: ModuleType | undefined
   void wasmPromise
@@ -42,6 +45,7 @@ export function createViewerExtrudeCommand(
       loadedWasm = wasm
     })
     .catch(reportRejection)
+  const lookupModel = createArgumentModelLookup(wasmPromise)
   const targetFor = (args: Record<string, unknown>) =>
     typeof args.modelingTarget === 'string'
       ? targets
@@ -156,7 +160,7 @@ export function createViewerExtrudeCommand(
       validate: (ast, snapshot) => target.session.validate(ast, snapshot),
     })
   }
-  return {
+  const command: Command = {
     ...STDLIB_EXTRUDE_COMMAND,
     icon: extrudeCommandConfig.icon,
     description: 'Extrude profiles in a Modeling editor.',
@@ -171,6 +175,21 @@ export function createViewerExtrudeCommand(
           target.editor.src.value === target.session.snapshot.value.src
       )
     },
+    openEditorDialog: openDialog
+      ? (context) => {
+          void openDialog({
+            command,
+            context,
+            getModel: (values) => {
+              const target = targetFor(values)
+              return target && loadedWasm
+                ? lookupModel(target, loadedWasm)
+                : undefined
+            },
+            prepare,
+          }).catch(reportRejection)
+        }
+      : undefined,
     forceCommandBar: true,
     args,
     ArgumentInput: (props) => (
@@ -191,4 +210,5 @@ export function createViewerExtrudeCommand(
       return result instanceof Error ? result : result.commit()
     },
   }
+  return command
 }

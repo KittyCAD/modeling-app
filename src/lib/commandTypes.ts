@@ -144,6 +144,8 @@ export type Command<
   /** A command host can supply model-bound inputs without a legacy modeling actor. */
   ArgumentInput?: ComponentType<CommandArgumentInputProps>
   onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
+  /** Open a document-backed editor dialog instead of gathering arguments in the palette. */
+  openEditorDialog?: (context: CommandBarContext) => void
   onCancel?: () => void
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>

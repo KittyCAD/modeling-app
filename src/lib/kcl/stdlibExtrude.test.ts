@@ -1,3 +1,8 @@
+import { Registry } from '@kittycad/registry'
+import { commandArgumentsExtension } from '@src/lib/commandArguments/registry'
+import { commandArgumentsService } from '@src/lib/commandArguments/registry/contract'
+import { editorDialogsService } from '@src/lib/editorDialogs/registry/contract'
+import { EditorDialogsHost } from '@src/lib/editorDialogs/EditorDialogsHost'
 import { createElement } from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { ModelingToolbar } from '@src/lib/modelingTools/ModelingToolbar'
@@ -30,7 +35,9 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeAll, expect, it, vi } from 'vitest'
 
 let wasm: ModuleType
-const settings = JSON.stringify({ settings: { modeling: { base_unit: 'mm' } } })
+const settings = JSON.stringify({
+  settings: { modeling: { base_unit: 'mm' } },
+})
 beforeAll(async () => {
   wasm = await loadAndInitialiseWasmInstance(
     `${process.cwd()}/public/kcl_wasm_lib_bg.wasm`
@@ -372,4 +379,62 @@ it('rejects arguments collected for a previous execution even when the source te
     await command.onSubmit({ ...fixture.input.args, modelingTarget: binding })
   ).toBeInstanceOf(Error)
   expect(fixture.editor.contents.value).toBe(fixture.contents)
+})
+
+it('opens Extrude as a temporary editor and submits its untouched default from Code mode', async () => {
+  const fixture = await model()
+  const registry = new Registry()
+  registry.configure([commandArgumentsExtension])
+  cleanup.push(() => registry[Symbol.dispose]())
+  const session = createKclSession(
+    async () => new Error('No stream needed'),
+    async () => fakeKclRuntime()
+  )
+  cleanup.push(() => session.dispose())
+  session.snapshot.value = fixture.input.getExecution()
+  vi.spyOn(session, 'validate').mockImplementation((ast) =>
+    fixture.input.validate(ast)
+  )
+  vi.spyOn(session, 'evaluateExpression').mockImplementation(
+    fixture.expressionRuntime.evaluateExpression
+  )
+  const target = { id: 'target', editor: fixture.editor, session }
+  const command = createViewerExtrudeCommand(
+    signal([target]),
+    Promise.resolve(wasm),
+    () => false,
+    (binding) => registry.get(commandArgumentsService).open(binding)
+  )
+  const actor = createActor(commandBarMachine, {
+    input: {
+      commands: [command],
+      wasmInstancePromise: Promise.resolve(wasm),
+      machineManager: new MachineManager(),
+    },
+  }).start()
+  cleanup.push(() => actor.stop())
+  actor.send({
+    type: 'Find and select command',
+    data: {
+      name: command.name,
+      groupId: command.groupId,
+      argDefaultValues: {
+        modelingTarget: modelingTargetBinding(target),
+        sketches: fixture.input.args.sketches,
+      },
+    },
+  })
+  const dialogs = registry.get(editorDialogsService)
+  await vi.waitFor(() => expect(dialogs.active.peek()).toBeDefined())
+  const dialog = dialogs.active.peek()!
+  dialog.editors.setView(dialog.editor.id, 'editors.code')
+  render(createElement(EditorDialogsHost, { dialogs }))
+  await vi.waitFor(() =>
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled()
+  )
+  expect(fixture.editor.contents.peek()).toBe(fixture.contents)
+  fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
+  await vi.waitFor(() => expect(dialogs.active.peek()).toBeUndefined())
+  expect(fixture.editor.contents.peek()).toContain('length = 5')
+  expect(fixture.edits).toHaveLength(1)
 })
