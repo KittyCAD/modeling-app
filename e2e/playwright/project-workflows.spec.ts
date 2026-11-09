@@ -609,6 +609,150 @@ for (const kind of ['local', 'cloud'] as const) {
         expect(missingArtifacts).toEqual([])
       })
 
+      test('shows new sketch geometry and coalesces saves while persistence takes seven seconds', async ({
+        page,
+        context,
+      }, testInfo) => {
+        test.setTimeout(180_000)
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const scene = new SceneFixture(page)
+        const toolbar = new ToolbarFixture(page)
+        const initialCode = `${blankCode}profile = sketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 2mm, var 2mm])\n}\n`
+        const root = await storage.seed('Background sketch saves', initialCode)
+        await storage.refresh()
+        await storage.home.openProject('Background sketch saves')
+        await scene.settled()
+        await toolbar.openFeatureTreePane()
+        await (await toolbar.getFeatureTreeOperation('profile', 0)).dblclick()
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await page.evaluate(async () => {
+          await window.app.singletons.kclManager.flushWriteToFile()
+        })
+        const savedBefore = await storage.read(root)
+        const uploadsBefore = storage.remote.uploads.length
+        const revisionBefore = storage.remote.projects.find((project) =>
+          root.endsWith(project.id)
+        )?.revision
+        const upload = Promise.withResolvers<undefined>()
+        let uploadStarted = false
+        const uploadedContents: string[] = []
+        const uploadRoute = '**/user/projects/*'
+        if (kind === 'cloud')
+          await context.route(uploadRoute, async (route) => {
+            if (route.request().method() !== 'PUT') return route.fallback()
+            const data = await uploadedProject(route)
+            if (data.files['main.kcl'])
+              uploadedContents.push(data.files['main.kcl'])
+            if (!uploadStarted) {
+              uploadStarted = true
+              await upload.promise
+            }
+            await route.fallback()
+          })
+        const localGate =
+          kind === 'local'
+            ? await page.evaluateHandle(() => {
+                const io = window.app.singletons.kclManager.textFileIO
+                const write = io.write
+                const gate = Promise.withResolvers<undefined>()
+                let started = false
+                const contents: string[] = []
+                Object.assign(io, {
+                  write: async (path: string, code: string) => {
+                    contents.push(code)
+                    if (!started) {
+                      started = true
+                      await gate.promise
+                    }
+                    await write(path, code)
+                  },
+                })
+                return {
+                  started: () => started,
+                  contents: () => contents,
+                  release: () => gate.resolve(undefined),
+                  restore: () => Object.assign(io, { write }),
+                }
+              })
+            : undefined
+        try {
+          await page.getByTestId('point').click()
+          for (const [index, position] of [
+            [0.25, 0.35],
+            [0.7, 0.6],
+            [0.3, 0.65],
+          ].entries()) {
+            const [click] = scene.makeMouseHelpers(position[0], position[1], {
+              format: 'ratio',
+            })
+            await click()
+            await expect(
+              page.locator('[data-handle="sketch-point-handle"]')
+            ).toHaveCount(3 + index)
+            if (index === 0)
+              await expect
+                .poll(() =>
+                  localGate
+                    ? localGate.evaluate((gate) => gate.started())
+                    : uploadStarted
+                )
+                .toBe(true)
+          }
+          const clockStart = new Date()
+          await page.clock.install({ time: clockStart })
+          await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+          await page.clock.runFor(7_000)
+          expect(await storage.read(root)).toBe(savedBefore)
+          await expect
+            .poll(() =>
+              page.evaluate(
+                () =>
+                  window.app.singletons.kclManager.code.match(/point\(/g)
+                    ?.length ?? 0
+              )
+            )
+            .toBe(3)
+          expect(
+            localGate
+              ? await localGate.evaluate((gate) => gate.contents().length)
+              : uploadedContents.length
+          ).toBe(1)
+          await page.clock.resume()
+          if (localGate) await localGate.evaluate((gate) => gate.release())
+          else upload.resolve(undefined)
+          await expect
+            .poll(
+              async () =>
+                (await storage.read(root))?.match(/point\(/g)?.length ?? 0
+            )
+            .toBe(3)
+          const writes = localGate
+            ? await localGate.evaluate((gate) => gate.contents())
+            : uploadedContents
+          expect(
+            writes.map((code) => code.match(/point\(/g)?.length ?? 0)
+          ).toEqual([1, 3])
+          if (kind === 'cloud')
+            expect(storage.remote.uploads.slice(uploadsBefore)).toEqual([
+              revisionBefore,
+              String(Number(revisionBefore) + 1),
+            ])
+        } finally {
+          upload.resolve(undefined)
+          if (localGate) {
+            await localGate.evaluate((gate) => {
+              gate.release()
+              gate.restore()
+            })
+            await localGate.dispose()
+          }
+          if (kind === 'cloud') await context.unroute(uploadRoute)
+          await page.clock.resume()
+        }
+      })
+
       test('keeps line and rectangle source updating throughout draft movement', async ({
         page,
         context,
@@ -769,6 +913,11 @@ for (const kind of ['local', 'cloud'] as const) {
           [0.25, 0.35],
           [0.65, 0.6],
         ].entries()) {
+          // This case changes an acknowledged file. Concurrent external edits
+          // during an active save are covered by conflict/reconciliation tests.
+          await page.evaluate(() =>
+            window.app.singletons.kclManager.waitForFileSaves()
+          )
           const previous = await storage.read(root)
           if (!previous) throw new Error('Missing saved sketch')
           const marker = `// external edit ${index}\n`

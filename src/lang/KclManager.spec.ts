@@ -927,19 +927,197 @@ describe('KclManager storage checks before sketch insertion', () => {
     }
   })
 
-  it('stops before refreshing storage if existing edits could not be saved', async () => {
-    const { app, kclManager, schedule } = await setup()
-    vi.spyOn(kclManager, 'flushWriteToFile').mockResolvedValue(false)
-    const refresh = vi.fn()
-    const read = vi.spyOn(kclManager.textFileIO, 'read')
+  it.each(['local', 'cloud'] as const)(
+    'keeps %s sketch insertions responsive and saves only the latest queued contents',
+    async (kind) => {
+      const { app, kclManager, schedule } = await setup()
+      vi.useFakeTimers()
+      const firstSave = Promise.withResolvers<undefined>()
+      const lastSave = Promise.withResolvers<undefined>()
+      let stored = 'width = 1'
+      const read = vi
+        .spyOn(kclManager.textFileIO, 'read')
+        .mockImplementation(async () => stored)
+      const write = vi
+        .spyOn(kclManager.textFileIO, 'write')
+        .mockImplementation(async (_path, code) => {
+          await (code === 'width = 2' ? firstSave.promise : lastSave.promise)
+          stored = code
+        })
+      const refresh = vi.fn(async (canApply: () => boolean) => {
+        expect(canApply()).toBe(false)
+      })
+      const saves: Promise<boolean>[] = []
+      try {
+        kclManager.updateCodeEditor('width = 2', {
+          shouldExecute: false,
+          shouldWriteToDisk: false,
+        })
+        saves.push(kclManager.flushWriteToFile())
+        await vi.advanceTimersByTimeAsync(0)
+        expect(write).toHaveBeenCalledOnce()
+        kclManager.updateCodeEditor('width = 3', {
+          shouldExecute: false,
+          shouldWriteToDisk: false,
+        })
+        saves.push(kclManager.flushWriteToFile())
+        kclManager.updateCodeEditor('width = 4', {
+          shouldExecute: false,
+          shouldWriteToDisk: false,
+        })
+        saves.push(kclManager.flushWriteToFile())
+        read.mockClear()
+        let ready = false
+        const insertion = kclManager
+          .refreshFileBeforeSketchInsertion(
+            kind === 'cloud' ? refresh : undefined
+          )
+          .then(() => {
+            ready = true
+          })
+        void insertion.catch(() => undefined)
+        await vi.advanceTimersByTimeAsync(7_000)
+        expect(ready).toBe(true)
+        await insertion
+        expect(kclManager.code).toBe('width = 4')
+        expect(stored).toBe('width = 1')
+        expect(read).not.toHaveBeenCalled()
+        expect(schedule).not.toHaveBeenCalled()
+        expect(write).toHaveBeenCalledOnce()
+        firstSave.resolve(undefined)
+        await vi.advanceTimersByTimeAsync(0)
+        expect(write.mock.calls.map(([, code]) => code)).toEqual([
+          'width = 2',
+          'width = 4',
+        ])
+        expect(kclManager.saveState.value).toBe('saving')
+        lastSave.resolve(undefined)
+        expect(await Promise.all(saves)).toEqual([true, true, true])
+        expect(stored).toBe('width = 4')
+        expect(kclManager.saveState.value).toBe('saved')
+      } finally {
+        firstSave.resolve(undefined)
+        lastSave.resolve(undefined)
+        await Promise.allSettled(saves)
+        app.dispose()
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  it('replaces the queued save immediately when an editor commit arrives during an upload', async () => {
+    const { app, kclManager } = await setup()
+    const gate = Promise.withResolvers<undefined>()
+    let stored = 'width = 1'
+    vi.spyOn(kclManager.textFileIO, 'read').mockImplementation(
+      async () => stored
+    )
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockImplementation(async (_path, code) => {
+        await gate.promise
+        stored = code
+      })
     try {
-      await expect(
-        kclManager.refreshFileBeforeSketchInsertion(refresh)
-      ).rejects.toThrow('Save your current edits')
-      expect(refresh).not.toHaveBeenCalled()
-      expect(read).not.toHaveBeenCalled()
-      expect(schedule).not.toHaveBeenCalled()
+      kclManager.updateCodeEditor('width = 2', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const first = kclManager.flushWriteToFile()
+      await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
+      kclManager.updateCodeEditor('width = 3', {
+        shouldExecute: false,
+        shouldWriteToDisk: true,
+      })
+      kclManager.updateCodeEditor('width = 4', {
+        shouldExecute: false,
+        shouldWriteToDisk: true,
+      })
+      gate.resolve(undefined)
+      await first
+      expect(stored).toBe('width = 4')
+      expect(write.mock.calls.map(([, code]) => code)).toEqual([
+        'width = 2',
+        'width = 4',
+      ])
     } finally {
+      gate.resolve(undefined)
+      app.dispose()
+    }
+  })
+
+  it('persists the latest committed geometry even while a new drag preview changes the editor', async () => {
+    const { app, kclManager } = await setup()
+    const gate = Promise.withResolvers<undefined>()
+    let stored = 'width = 1'
+    vi.spyOn(kclManager.textFileIO, 'read').mockImplementation(
+      async () => stored
+    )
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockImplementation(async (_path, code) => {
+        await gate.promise
+        stored = code
+      })
+    try {
+      kclManager.updateCodeEditor('width = 2', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const first = kclManager.flushWriteToFile()
+      await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
+      kclManager.updateCodeEditor('width = 4', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const latest = kclManager.flushWriteToFile()
+      kclManager.updateCodeEditor('width = 5', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      gate.resolve(undefined)
+      await Promise.all([first, latest])
+      expect(stored).toBe('width = 4')
+      expect(kclManager.code).toBe('width = 5')
+      expect(write.mock.calls.map(([, code]) => code)).toEqual([
+        'width = 2',
+        'width = 4',
+      ])
+    } finally {
+      gate.resolve(undefined)
+      app.dispose()
+    }
+  })
+
+  it('discards queued geometry when a cloud conflict adopts the authoritative snapshot', async () => {
+    const { app, kclManager } = await setup()
+    const gate = Promise.withResolvers<undefined>()
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('width = 1')
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockImplementation(async () => {
+        await gate.promise
+        kclManager.adoptCloudSnapshot('/project', 'width = 99')
+      })
+    try {
+      kclManager.updateCodeEditor('width = 2', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const first = kclManager.flushWriteToFile()
+      await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
+      kclManager.updateCodeEditor('width = 3', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const second = kclManager.flushWriteToFile()
+      gate.resolve(undefined)
+      await Promise.all([first, second])
+      expect(kclManager.code).toBe('width = 99')
+      expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+      expect(write).toHaveBeenCalledOnce()
+    } finally {
+      gate.resolve(undefined)
       app.dispose()
     }
   })
@@ -3195,7 +3373,7 @@ describe('KclManager diagnostics', () => {
     const expectedCode = `@settings(kclVersion = ${defaultVersionLiteral})\n`
 
     expect(kclManager.code).toBe(expectedCode)
-    expect(writeSpy).not.toHaveBeenCalled()
+    expect(writeSpy).toHaveBeenCalledExactlyOnceWith(expectedCode)
 
     await vi.advanceTimersByTimeAsync(1_500)
 

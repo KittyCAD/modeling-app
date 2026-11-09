@@ -193,6 +193,7 @@ import {
 import toast from 'react-hot-toast'
 import type { ProjectSystemDeps } from '@src/lib/projectSession/project'
 import { File } from '@src/lib/projectSession/file'
+import { createLatestFileSaveQueue } from '@src/lib/projectSession/latestFileSaveQueue'
 
 interface EditorExecutionRequest {
   newCode: string
@@ -211,6 +212,18 @@ interface ExecuteArgs {
   ast?: Node<Program>
   executionId?: number
   updateThumbnail?: boolean
+}
+
+interface EditorFileSave {
+  newCode: string
+  requestedDocumentVersion: number
+  requestedPath: string
+  options: { suppressConflictToast?: boolean }
+}
+
+interface EditorFileSaveSnapshot extends EditorFileSave {
+  fileSelectionGeneration: number
+  cloudSnapshotGeneration: number
 }
 
 type UpdateCodeEditorOptions = {
@@ -780,6 +793,9 @@ export class KclManager extends File {
     string,
     { code: string; baseline: string; promise: Promise<void> }
   >()
+  private readonly fileSaveQueue = createLatestFileSaveQueue(
+    (request: EditorFileSaveSnapshot) => this.persistFileSnapshot(request)
+  )
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
   private get storage() {
@@ -1593,29 +1609,42 @@ export class KclManager extends File {
   ): Promise<void> {
     const path = this.path
     const generation = this.fileSelectionGeneration
+    const snapshotGeneration = this.cloudSnapshotGeneration
     const isCurrent = () =>
       !this.closed &&
       this.path === path &&
       this.fileSelectionGeneration === generation
     if (!path) return
-    // Drafts belong to the live sketch; flushing them here can delay the next click.
+    if (this.systemDeps.project.peek()?.cloudProjectId && isOffline())
+      return Promise.reject(
+        new Error('Reconnect before adding sketch geometry.')
+      )
     if (
       this.hasUnsavedLocalChanges() ||
       this.timeoutWriter !== undefined ||
+      this.fileSaveQueue.has(path) ||
       this.inFlightFileWrites.has(path) ||
       this.fileSwitchSaves.has(path)
-    )
+    ) {
+      // Keep drawing on the live buffer. Reading our previous saved snapshot
+      // here would either block behind its write or replace newer geometry.
+      // Persistence still checks for external edits before writing; cloud
+      // revision conflicts adopt the cloud snapshot and invalidate queued saves.
+      void this.flushWriteToFile().catch(() => undefined)
+      await refreshStorage?.(() => false)
+      if (!isCurrent() || snapshotGeneration !== this.cloudSnapshotGeneration)
+        return Promise.reject(
+          new Error('The active file changed before sketch insertion.')
+        )
       return
-    if (!(await this.flushWriteToFile()))
-      return Promise.reject(
-        new Error('Save your current edits before adding sketch geometry.')
-      )
-    if (!isCurrent())
-      return Promise.reject(
-        new Error('The active file changed before sketch insertion.')
-      )
+    }
     const version = this._documentVersion
-    await refreshStorage?.(() => isCurrent() && !this.hasUnsavedLocalChanges())
+    await refreshStorage?.(
+      () =>
+        isCurrent() &&
+        !this.hasUnsavedLocalChanges() &&
+        !this.fileSaveQueue.has(path)
+    )
     const contents = normalizeLineEndings(await this.textFileIO.read(path))
     if (!isCurrent())
       return Promise.reject(
@@ -2165,8 +2194,11 @@ export class KclManager extends File {
   readonly saveState = signal<'saved' | 'saving' | 'failed'>('saved')
 
   private markFileCodeAsSynced(code: string) {
-    this.saveState.value = 'saved'
     this._lastKnownFileCode = normalizeLineEndings(code)
+    this.saveState.value =
+      this.hasUnsavedLocalChanges() && this.fileSaveQueue.has(this.path)
+        ? 'saving'
+        : 'saved'
   }
 
   /** Discard buffers and saves based on a storage snapshot that has been superseded. */
@@ -4060,17 +4092,24 @@ export class KclManager extends File {
       // Reset the timer on every edit; save only after uninterrupted inactivity.
       clearTimeout(this.timeoutWriter)
       clearTimeout(this.timeoutRewatch)
-      return new Promise((resolve, reject) => {
-        this.timeoutWriter = setTimeout(() => {
-          this.timeoutWriter = undefined
-          this.performDelayedWriteToFile({
-            newCode,
-            requestedDocumentVersion,
-            requestedPath,
-            options,
-          }).then(resolve, reject)
-        }, EDITOR_SAVE_DEBOUNCE_MS)
-      }).catch((err: unknown) => {
+      this.timeoutWriter = undefined
+      const request = {
+        newCode,
+        requestedDocumentVersion,
+        requestedPath,
+        options,
+      }
+      const save = this.fileSaveQueue.has(requestedPath)
+        ? // An active save already supplies the debounce window. Replace its
+          // waiting snapshot immediately, before that upload can acknowledge.
+          this.performDelayedWriteToFile(request)
+        : new Promise<void>((resolve, reject) => {
+            this.timeoutWriter = setTimeout(() => {
+              this.timeoutWriter = undefined
+              this.performDelayedWriteToFile(request).then(resolve, reject)
+            }, EDITOR_SAVE_DEBOUNCE_MS)
+          })
+      return save.catch((err: unknown) => {
         if (isPathNotFoundError(err)) {
           return
         }
@@ -4155,6 +4194,7 @@ export class KclManager extends File {
     await Promise.allSettled([
       ...[...this.fileSwitchSaves.values()].map((save) => save.promise),
       ...[...this.inFlightFileWrites.values()].map((save) => save.promise),
+      this.fileSaveQueue.settled(),
     ])
   }
 
@@ -4169,7 +4209,8 @@ export class KclManager extends File {
       return true
     }
 
-    const hasPendingWrite = this.timeoutWriter !== undefined
+    const hasPendingWrite =
+      this.timeoutWriter !== undefined || this.fileSaveQueue.has(this.path)
     if (!hasPendingWrite && !this.hasUnsavedLocalChanges()) {
       return true
     }
@@ -4204,26 +4245,35 @@ export class KclManager extends File {
    * This keeps the timeout callback synchronous while preserving the existing
    * version checks, conflict detection, and watcher re-arm behavior.
    */
-  private async performDelayedWriteToFile({
+  private performDelayedWriteToFile(request: EditorFileSave) {
+    if (
+      request.requestedDocumentVersion !== this._documentVersion ||
+      request.requestedPath !== this.path
+    )
+      return Promise.resolve()
+    return this.fileSaveQueue.save({
+      ...request,
+      fileSelectionGeneration: this.fileSelectionGeneration,
+      cloudSnapshotGeneration: this.cloudSnapshotGeneration,
+    })
+  }
+
+  private async persistFileSnapshot({
     newCode,
     requestedDocumentVersion,
     requestedPath,
     options,
-  }: {
-    newCode: string
-    requestedDocumentVersion: number
-    requestedPath: string
-    options: { suppressConflictToast?: boolean }
-  }) {
-    if (!requestedPath) {
+    fileSelectionGeneration,
+    cloudSnapshotGeneration,
+  }: EditorFileSaveSnapshot) {
+    if (!requestedPath)
       return Promise.reject(new Error('currentFilePath not set'))
-    }
-    if (
-      requestedDocumentVersion !== this._documentVersion ||
-      requestedPath !== this.path
-    ) {
-      return
-    }
+    const isCurrent = () =>
+      !this.closed &&
+      requestedPath === this.path &&
+      fileSelectionGeneration === this.fileSelectionGeneration &&
+      cloudSnapshotGeneration === this.cloudSnapshotGeneration
+    if (!isCurrent()) return
 
     if (
       await this.seedDefaultKclVersionOnBlankMain(
@@ -4234,19 +4284,19 @@ export class KclManager extends File {
       return
     }
 
-    const cloudSnapshotGeneration = this.cloudSnapshotGeneration
     const baseline = this._lastKnownFileCode
     const previousWrite =
       this.inFlightFileWrites.get(requestedPath) ??
       this.fileSwitchSaves.get(requestedPath)
     await previousWrite?.promise.catch(() => undefined)
+    if (!isCurrent()) return
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
         await this.textFileIO.read(requestedPath)
       )
     } catch (err: unknown) {
-      if (cloudSnapshotGeneration !== this.cloudSnapshotGeneration) return
+      if (!isCurrent()) return
       if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
@@ -4266,12 +4316,7 @@ export class KclManager extends File {
       }
     }
 
-    if (
-      requestedDocumentVersion !== this._documentVersion ||
-      requestedPath !== this.path
-    ) {
-      return
-    }
+    if (!isCurrent()) return
     if (currentDiskCode !== null && isCodeTheSame(currentDiskCode, newCode)) {
       this.markFileCodeAsSynced(currentDiskCode)
       return
@@ -4307,11 +4352,7 @@ export class KclManager extends File {
         if (this.inFlightFileWrites.get(requestedPath) === write)
           this.inFlightFileWrites.delete(requestedPath)
       }
-      if (
-        requestedPath !== this.path ||
-        cloudSnapshotGeneration !== this.cloudSnapshotGeneration
-      )
-        return
+      if (!isCurrent()) return
       if (this.fileSwitchSaves.get(requestedPath)?.code === newCode)
         this.fileSwitchSaves.delete(requestedPath)
       this.markFileCodeAsSynced(newCode)
@@ -4323,7 +4364,7 @@ export class KclManager extends File {
       }, 1_000)
     } catch (err: unknown) {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-      if (cloudSnapshotGeneration !== this.cloudSnapshotGeneration) return
+      if (!isCurrent()) return
       this.saveState.value = 'failed'
       console.warn('error saving file', err)
       if (!isPathNotFoundError(err)) {
