@@ -560,9 +560,11 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         ('files' in response &&
           response.files.files.some((file) => !isExportDownloadFile(file))))
   )
-  const latestActivity = props.responses
-    .map(parseZookeeperActivity)
-    .findLast((activity) => activity !== undefined)
+  let latestActivity: ReturnType<typeof parseZookeeperActivity>
+  for (let index = props.responses.length - 1; index >= 0; index--) {
+    latestActivity = parseZookeeperActivity(props.responses[index])
+    if (latestActivity !== undefined) break
+  }
   const progressStatus =
     latestActivity?.kind === 'tool'
       ? (latestActivity.label ?? latestActivity.name.replaceAll('_', ' '))
