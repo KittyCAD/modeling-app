@@ -1,3 +1,4 @@
+import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { isSelections } from '@src/lib/selections'
 import { reportRejection } from '@src/lib/trap'
 import { lazy, Suspense } from 'react'
@@ -98,15 +99,54 @@ export function createViewerExtrudeCommand(
       return new Error('Execute the selected model before using Extrude')
     const sketches = data.sketches
     if (!isSelections(sketches)) return new Error('Select profiles to extrude')
-    if (data.length !== undefined && !isKclCommandValue(data.length))
-      return new Error('Resolve the extrusion length before applying it')
+    // Prepopulated fields can reach review without mounting their input widget.
+    // Resolve their source expressions just as an explicitly submitted KCL input does.
+    const resolved = { ...data }
+    for (const [name, arg] of Object.entries(args)) {
+      const value = resolved[name]
+      if (
+        (arg.inputType !== 'kcl' &&
+          arg.inputType !== 'vector2d' &&
+          arg.inputType !== 'vector3d') ||
+        typeof value !== 'string'
+      )
+        continue
+      const expression =
+        arg.inputType === 'kcl' && arg.inputToKclValue
+          ? arg.inputToKclValue(value.trim())
+          : value.trim()
+      const parsed = await stringToKclExpression(
+        expression,
+        {
+          wasmInstancePromise: wasmPromise,
+          evaluateExpression: target.session.evaluateExpression,
+          waitForAllEngineModelingCommands:
+            target.session.waitForAllEngineModelingCommands,
+        },
+        {
+          allowArrays: arg.inputType !== 'kcl' || arg.allowArrays,
+          allowStringArrays:
+            arg.inputType === 'kcl' ? arg.allowStringArrays : undefined,
+        }
+      )
+      if (
+        parsed instanceof Error ||
+        'errors' in parsed ||
+        (parsed.valueCalculated === 'NAN' &&
+          !(arg.inputType === 'kcl' && arg.allowUncalculated))
+      )
+        return new Error(`Invalid expression for ${arg.displayName || name}.`)
+      resolved[name] = parsed
+    }
+    if (resolved.length !== undefined && !isKclCommandValue(resolved.length))
+      return new Error('Invalid expression for Length.')
     // The palette's shared argument definitions produce the stdlib command schema.
     return prepareStdlibExtrude({
       editor: target.editor,
-      args: data as ExtrudeCommandArgs,
+      args: resolved as ExtrudeCommandArgs,
       wasmInstance: wasm,
       getExecution: () =>
-        targets.peek().includes(target) ? currentModel(target) : undefined,
+        targetFor(data) === target ? currentModel(target) : undefined,
       validate: (ast, snapshot) => target.session.validate(ast, snapshot),
     })
   }

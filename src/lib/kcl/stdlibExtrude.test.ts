@@ -172,6 +172,7 @@ s = sketch(on = XY) {
   }
   return {
     input,
+    expressionRuntime,
     contents,
     editor,
     source,
@@ -272,60 +273,71 @@ it('rejects an execution change while asynchronous review is pending', async () 
   expect(fixture.edits).toEqual([])
 })
 
-it('reviews and applies the shared Extrude command through the palette to its explicitly selected editor', async () => {
-  const fixture = await model()
-  const other = await model()
-  const session = createKclSession(
-    async () => new Error('No stream needed for palette binding'),
-    async () => fakeKclRuntime()
-  )
-  cleanup.push(() => session.dispose())
-  session.snapshot.value = fixture.input.getExecution()
-  vi.spyOn(session, 'validate').mockImplementation((ast) =>
-    fixture.input.validate(ast)
-  )
-  const targets = signal([{ id: 'target', editor: fixture.editor, session }])
-  const command = createViewerExtrudeCommand(targets, Promise.resolve(wasm))
-  const actor = createActor(commandBarMachine, {
-    input: {
-      commands: [command],
-      wasmInstancePromise: Promise.resolve(wasm),
-      machineManager: new MachineManager(),
-    },
-  }).start()
-  cleanup.push(() => actor.stop())
-  actor.send({
-    type: 'Find and select command',
-    data: {
-      name: 'Extrude',
-      groupId: 'kcl-modeling',
-      argDefaultValues: {
-        modelingTarget: modelingTargetBinding(targets.peek()[0]),
-        ...fixture.input.args,
+it.each(['resolved', 'untouched default'] as const)(
+  'reviews and applies Extrude to its selected editor with %s length',
+  async (length) => {
+    const fixture = await model()
+    const other = await model()
+    const session = createKclSession(
+      async () => new Error('No stream needed for palette binding'),
+      async () => fakeKclRuntime()
+    )
+    cleanup.push(() => session.dispose())
+    session.snapshot.value = fixture.input.getExecution()
+    vi.spyOn(session, 'validate').mockImplementation((ast) =>
+      fixture.input.validate(ast)
+    )
+    vi.spyOn(session, 'evaluateExpression').mockImplementation(
+      fixture.expressionRuntime.evaluateExpression
+    )
+    const targets = signal([{ id: 'target', editor: fixture.editor, session }])
+    const command = createViewerExtrudeCommand(targets, Promise.resolve(wasm))
+    const actor = createActor(commandBarMachine, {
+      input: {
+        commands: [command],
+        wasmInstancePromise: Promise.resolve(wasm),
+        machineManager: new MachineManager(),
       },
-    },
-  })
-  actor.send({
-    type: 'Submit argument',
-    data: { length: fixture.input.args.length },
-  })
-  await vi.waitFor(() =>
-    expect(actor.getSnapshot().matches('Review')).toBe(true)
-  )
-  expect(actor.getSnapshot().context.reviewValidationError).toBeUndefined()
-  expect(fixture.editor.contents.value).toBe(fixture.contents)
-  actor.send({
-    type: 'Submit command',
-    output: {
-      argumentsToSubmit: actor.getSnapshot().context.argumentsToSubmit,
-    },
-  })
-  await vi.waitFor(() =>
-    expect(fixture.editor.contents.value).toContain('length = depth')
-  )
-  expect(fixture.edits).toHaveLength(1)
-  expect(other.editor.contents.value).toBe(other.contents)
-})
+    }).start()
+    cleanup.push(() => actor.stop())
+    actor.send({
+      type: 'Find and select command',
+      data: {
+        name: 'Extrude',
+        groupId: 'kcl-modeling',
+        argDefaultValues: {
+          modelingTarget: modelingTargetBinding(targets.peek()[0]),
+          ...(length === 'resolved' ? fixture.input.args : {}),
+        },
+      },
+    })
+    actor.send({
+      type: 'Submit argument',
+      data:
+        length === 'resolved'
+          ? { length: fixture.input.args.length }
+          : { sketches: fixture.input.args.sketches },
+    })
+    await vi.waitFor(() =>
+      expect(actor.getSnapshot().matches('Review')).toBe(true)
+    )
+    expect(actor.getSnapshot().context.reviewValidationError).toBeUndefined()
+    expect(fixture.editor.contents.value).toBe(fixture.contents)
+    actor.send({
+      type: 'Submit command',
+      output: {
+        argumentsToSubmit: actor.getSnapshot().context.argumentsToSubmit,
+      },
+    })
+    await vi.waitFor(() =>
+      expect(fixture.editor.contents.value).toContain(
+        length === 'resolved' ? 'length = depth' : 'length = 5'
+      )
+    )
+    expect(fixture.edits).toHaveLength(1)
+    expect(other.editor.contents.value).toBe(other.contents)
+  }
+)
 
 it('rejects arguments collected for a previous execution even when the source text is unchanged', async () => {
   const fixture = await model()
