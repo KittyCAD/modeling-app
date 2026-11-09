@@ -103,7 +103,7 @@ describe('ExchangeCard replay attachments', () => {
       />
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /See reasoning/ }))
+    fireEvent.click(screen.getByRole('button', { name: /View activity/ }))
     fireEvent.click(
       screen.getByRole('button', {
         name: 'generated.png: Load attachment',
@@ -114,7 +114,7 @@ describe('ExchangeCard replay attachments', () => {
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
   })
 
-  test('keeps the initial update and final answer outside completed activity', () => {
+  test('keeps the full activity inside a completed card above the final answer', () => {
     render(
       <ExchangeCard
         {...exchangeProps}
@@ -158,29 +158,27 @@ describe('ExchangeCard replay attachments', () => {
     )
 
     const activityToggle = screen.getByRole('button', {
-      name: /Reasoned for 1m 14s See reasoning/,
+      name: /Worked for 1m 14s View activity/,
     })
     expect(activityToggle).toHaveAttribute('aria-expanded', 'false')
     expect(screen.getByTestId('zookeeper-activity-card')).toHaveClass(
       'border-chalkboard-30'
     )
     expect(screen.getByText('The project is ready.')).toBeVisible()
-    expect(
-      screen.getByTestId('ml-response-commentary-chat-bubble')
-    ).toHaveTextContent('Checking the project.')
+    expect(screen.queryByText('Checking the project.')).not.toBeInTheDocument()
     expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
 
     fireEvent.click(activityToggle)
     expect(screen.getByText('Read main.kcl')).toBeVisible()
     expect(
-      screen.getByRole('button', { name: /Hide reasoning/ })
+      screen.getByRole('button', { name: /Hide activity/ })
     ).toHaveAttribute('aria-expanded', 'true')
-    expect(
-      screen.getByTestId('ml-response-thinking-view')
-    ).not.toHaveTextContent('Checking the project.')
+    expect(screen.getByTestId('ml-response-thinking-view')).toHaveTextContent(
+      'Checking the project.'
+    )
   })
 
-  test('starts running activity collapsed below the first commentary bubble', () => {
+  test('starts running activity collapsed with commentary inside the card', () => {
     render(
       <ExchangeCard
         {...exchangeProps}
@@ -223,11 +221,9 @@ describe('ExchangeCard replay attachments', () => {
     )
 
     expect(
-      screen.getByRole('button', { name: /See reasoning/ })
+      screen.getByRole('button', { name: /View activity/ })
     ).toHaveAttribute('aria-expanded', 'false')
-    expect(
-      screen.getByTestId('ml-response-commentary-chat-bubble')
-    ).toHaveTextContent('Checking the project.')
+    expect(screen.queryByText('Checking the project.')).not.toBeInTheDocument()
     expect(screen.getByTestId('zookeeper-activity-card')).toHaveClass(
       'zk-activity-card-running'
     )
@@ -240,9 +236,9 @@ describe('ExchangeCard replay attachments', () => {
       screen.queryByText('The project contains one KCL file.')
     ).not.toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: /See reasoning/ }))
+    fireEvent.click(screen.getByRole('button', { name: /View activity/ }))
     expect(
-      screen.getByRole('button', { name: /Hide reasoning/ })
+      screen.getByRole('button', { name: /Hide activity/ })
     ).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByText('Read main.kcl · Running')).toBeVisible()
     expect(
@@ -251,12 +247,27 @@ describe('ExchangeCard replay attachments', () => {
     expect(screen.getByTestId('ml-response-thinking-view')).toHaveClass(
       'overflow-auto'
     )
-    expect(
-      screen.getByTestId('ml-response-thinking-view')
-    ).not.toHaveTextContent('Checking the project.')
+    expect(screen.getByTestId('ml-response-thinking-view')).toHaveTextContent(
+      'Checking the project.'
+    )
   })
 
-  test('shows the first commentary without a duplicate reasoning card before tools start', () => {
+  test('shows an activity card immediately, before any response arrives', () => {
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        request={{ type: 'user', content: 'Inspect the project' }}
+      />
+    )
+
+    expect(screen.getByText('Working…')).toBeVisible()
+    expect(
+      screen.getByRole('button', { name: /View activity/ })
+    ).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.queryByTestId('ml-response-chat-bubble')).toBeNull()
+  })
+
+  test('updates the same collapsed card when the first commentary arrives', () => {
     render(
       <ExchangeCard
         {...exchangeProps}
@@ -277,11 +288,14 @@ describe('ExchangeCard replay attachments', () => {
       />
     )
 
-    expect(
-      screen.getByTestId('ml-response-commentary-chat-bubble')
-    ).toHaveTextContent('Checking the project.')
-    expect(screen.queryByTestId('zookeeper-activity-card')).toBeNull()
+    expect(screen.getByTestId('zookeeper-activity-card')).toHaveTextContent(
+      'Checking the project.'
+    )
     expect(screen.queryByTestId('ml-response-chat-bubble-thinking')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: /View activity/ }))
+    expect(screen.getByTestId('ml-response-thinking-view')).toHaveTextContent(
+      'Checking the project.'
+    )
   })
 
   test('keeps legacy reasoning text out of the compact status', () => {
@@ -312,7 +326,7 @@ describe('ExchangeCard replay attachments', () => {
     expect(screen.queryByText('Internal model text')).not.toBeInTheDocument()
   })
 
-  test('keeps the first commentary separate when a tool starts first', () => {
+  test('replaces a tool status with later commentary in the same card', () => {
     render(
       <ExchangeCard
         {...exchangeProps}
@@ -346,13 +360,104 @@ describe('ExchangeCard replay attachments', () => {
       />
     )
 
-    expect(
-      screen.getByTestId('ml-response-commentary-chat-bubble')
-    ).toHaveTextContent('Checking the project.')
-    fireEvent.click(screen.getByRole('button', { name: /See reasoning/ }))
-    expect(
-      screen.getByTestId('ml-response-thinking-view')
-    ).not.toHaveTextContent('Checking the project.')
+    expect(screen.getAllByTestId('zookeeper-activity-card')).toHaveLength(1)
+    expect(screen.getByTestId('zookeeper-activity-card')).toHaveTextContent(
+      'Checking the project.'
+    )
+    expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /View activity/ }))
+    expect(screen.getByTestId('ml-response-thinking-view')).toHaveTextContent(
+      'Checking the project.'
+    )
     expect(screen.getByText('Read main.kcl · Running')).toBeVisible()
+  })
+
+  test('updates one card through multiple statuses and collapses it on completion', () => {
+    const activity = (payload: object) => ({
+      reasoning: {
+        type: 'markdown' as const,
+        content: ZOOKEEPER_ACTIVITY_PREFIX + JSON.stringify(payload),
+      },
+    })
+    const first = activity({
+      kind: 'commentary',
+      text: 'Inspecting the project.',
+    })
+    const tool = activity({
+      kind: 'tool',
+      call_id: 'call-1',
+      name: 'read_project_file',
+      status: 'completed',
+      label: 'Read main.kcl',
+    })
+    const second = activity({
+      kind: 'commentary',
+      text: 'Building the bracket.',
+    })
+    const request = { type: 'user' as const, content: 'Build a bracket' }
+    const { rerender } = render(
+      <ExchangeCard {...exchangeProps} request={request} responses={[]} />
+    )
+
+    expect(screen.getByText('Working…')).toBeVisible()
+    rerender(
+      <ExchangeCard {...exchangeProps} request={request} responses={[first]} />
+    )
+    expect(screen.getByTestId('zookeeper-activity-card')).toHaveTextContent(
+      'Inspecting the project.'
+    )
+    rerender(
+      <ExchangeCard
+        {...exchangeProps}
+        request={request}
+        responses={[first, tool, second]}
+      />
+    )
+
+    expect(screen.getAllByTestId('zookeeper-activity-card')).toHaveLength(1)
+    expect(screen.getByTestId('zookeeper-activity-card')).toHaveTextContent(
+      'Building the bracket.'
+    )
+    expect(
+      screen.queryByText('Inspecting the project.')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /View activity/ }))
+    const history =
+      screen.getByTestId('ml-response-thinking-view').textContent ?? ''
+    expect(history.indexOf('Inspecting the project.')).toBeLessThan(
+      history.indexOf('Read main.kcl')
+    )
+    expect(history.indexOf('Read main.kcl')).toBeLessThan(
+      history.indexOf('Building the bracket.')
+    )
+
+    rerender(
+      <ExchangeCard
+        {...exchangeProps}
+        request={request}
+        responses={[
+          first,
+          tool,
+          second,
+          {
+            end_of_stream: {
+              whole_response: 'The bracket is ready.',
+              started_at: '2026-11-05T10:00:00Z',
+              completed_at: '2026-11-05T10:01:14Z',
+            },
+          },
+        ]}
+        deltasAggregated="The bracket is ready."
+      />
+    )
+
+    expect(
+      screen.getByRole('button', {
+        name: /Worked for 1m 14s View activity/,
+      })
+    ).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.getByText('The bracket is ready.')).toBeVisible()
   })
 })

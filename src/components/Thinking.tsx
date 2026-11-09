@@ -1053,7 +1053,6 @@ export const Thinking = (
     thoughts?: MlCopilotServerMessage[]
     isDone: boolean
     onlyShowImmediateThought: boolean
-    omitFirstCommentary?: boolean
   } & AttachmentFetchProps
 ) => {
   const refViewFull = useRef<HTMLDivElement>(null)
@@ -1153,14 +1152,6 @@ export const Thinking = (
             item.message.reasoning.type !== 'markdown')
       )
     : activityItems
-  if (props.omitFirstCommentary) {
-    const firstCommentaryIndex = displayedItems.findIndex(
-      (item) => item.kind === 'commentary'
-    )
-    if (firstCommentaryIndex !== -1) {
-      displayedItems.splice(firstCommentaryIndex, 1)
-    }
-  }
   const sections = hasStructuredActivity
     ? groupActivityItems(displayedItems)
     : undefined

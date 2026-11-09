@@ -471,10 +471,10 @@ describe('ZookeeperConversation', () => {
       const requestBubble = screen.getByTestId('ml-request-chat-bubble')
       expect(requestBubble).toHaveTextContent(promptText)
 
-      const responseBubble = screen.getByTestId('ml-response-chat-bubble')
-      expect(
-        within(responseBubble).getByTestId('ml-response-chat-bubble-thinking')
-      ).toBeInTheDocument()
+      expect(screen.getByTestId('zookeeper-activity-card')).toHaveTextContent(
+        'Working…'
+      )
+      expect(screen.queryByTestId('ml-response-chat-bubble')).toBeNull()
 
       const finalResponse = 'Rounded cube generated successfully.'
       latestConversation = {
@@ -776,14 +776,9 @@ describe('ZookeeperConversation', () => {
       />
     )
 
-    const responseBubble = screen.getByTestId('ml-response-chat-bubble')
-
-    expect(
-      within(responseBubble).queryByText(unknownResponseText)
-    ).not.toBeInTheDocument()
-    expect(
-      screen.getByTestId('ml-response-chat-bubble-thinking')
-    ).toBeInTheDocument()
+    expect(screen.queryByText(unknownResponseText)).not.toBeInTheDocument()
+    expect(screen.getByTestId('zookeeper-activity-card')).toBeInTheDocument()
+    expect(screen.queryByTestId('ml-response-chat-bubble')).toBeNull()
   })
 
   test.each([
@@ -849,11 +844,11 @@ describe('ZookeeperConversation', () => {
         ).toHaveTextContent(infoText)
       }
       expect(
-        screen.getByTestId('ml-response-chat-bubble-thinking')
-      ).toBeInTheDocument()
+        screen.queryByTestId('ml-response-chat-bubble-thinking')
+      ).not.toBeInTheDocument()
 
       const activityToggle = screen.getByRole('button', {
-        name: /See reasoning/,
+        name: /View activity/,
       })
       expect(activityToggle).toHaveAttribute('aria-expanded', 'false')
       fireEvent.click(activityToggle)
@@ -863,7 +858,7 @@ describe('ZookeeperConversation', () => {
         ).toBeInTheDocument()
       })
       expect(
-        screen.getByRole('button', { name: /Hide reasoning/ })
+        screen.getByRole('button', { name: /Hide activity/ })
       ).toHaveAttribute('aria-expanded', 'true')
     }
   )
@@ -889,14 +884,14 @@ describe('ZookeeperConversation', () => {
     try {
       const { unmount } = renderExchange()
       expect(
-        screen.getByRole('button', { name: /Reasoning for 20m 0s/ })
+        screen.getByRole('button', { name: /Working for 20m 0s/ })
       ).toBeInTheDocument()
       unmount()
 
       vi.setSystemTime(new Date('2026-07-15T12:21:00.000Z'))
       renderExchange()
       expect(
-        screen.getByRole('button', { name: /Reasoning for 21m 0s/ })
+        screen.getByRole('button', { name: /Working for 21m 0s/ })
       ).toBeInTheDocument()
     } finally {
       vi.clearAllTimers()
