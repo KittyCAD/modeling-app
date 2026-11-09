@@ -41,7 +41,10 @@ import {
   type FileOperationRisk,
 } from '@src/lib/fileSystem/operationErrors'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
+import {
+  type HomeProjectEntry,
+  homeProjectLoadingLibraryIdsValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import {
   type ProjectLibraryOperation,
   type ProjectLibraryRealizationContribution,
@@ -356,6 +359,7 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
     const realizations = signal<ProjectLibraryRealizationContribution[]>([])
     const warnedMissingTypeLibraryIds = new Set<string>()
     const scanStates = new Map<string, ConfiguredProjectLibraryScanState>()
+    const loadingLibraryIds = signal<readonly string[]>([])
     let disposeConfiguredProjectLibraryRealizationsEffect:
       | (() => void)
       | undefined
@@ -363,6 +367,9 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
     let currentLibraryIds: readonly string[] = []
 
     const updateRealizations = () => {
+      loadingLibraryIds.value = currentLibraryIds.filter((libraryId) =>
+        Boolean(scanStates.get(libraryId)?.abortController)
+      )
       realizations.value = currentLibraryIds.flatMap(
         (libraryId) => scanStates.get(libraryId)?.realizations ?? []
       )
@@ -473,6 +480,9 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
     return {
       id: 'project-libraries.configured-realizations',
       provides: [
+        provide(homeProjectLoadingLibraryIdsValueSpec, loadingLibraryIds, {
+          key: 'project-libraries.loading',
+        }),
         provide(projectLibraryRealizationsValueSpec, realizations, {
           key: 'project-libraries.configured-realizations',
         }),

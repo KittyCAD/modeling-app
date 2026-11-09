@@ -12,6 +12,7 @@ import {
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
+import { Spinner } from '@src/components/Spinner'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import {
   getHomeProjectDeleteWarningMessage,
@@ -185,6 +186,7 @@ function AppProjectCard({
   const navigate = useNavigate()
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
+  const [isOpening, setIsOpening] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isReviewingDuplicates, setIsReviewingDuplicates] = useState(false)
@@ -525,7 +527,8 @@ function AppProjectCard({
       rootRef={cardRef}
       title={projectName}
       titleText={projectName}
-      canOpen={canOpen}
+      canOpen={canOpen && !isOpening}
+      aria-busy={isOpening}
       isEditing={isEditing}
       thumbnailUrl={imageUrl}
       badges={badges}
@@ -626,29 +629,25 @@ function AppProjectCard({
       dialogs={dialogs}
       onOpen={(e) => {
         e.preventDefault()
-        if (!canOpen) {
-          return
-        }
-
-        if (projectShellEnabled && e.shiftKey && project.localProjectPath) {
-          void navigate(
-            `${PATHS.LOCAL}/${encodeURIComponent(project.localProjectPath)}`
-          )
-          return
-        }
-
-        void projectActions
-          .open(project)
-          .then((result) => {
-            if (result?.defaultFile) {
-              void navigate(
-                `${PATHS.FILE}/${encodeURIComponent(result.defaultFile)}`
-              )
-            }
-          })
+        if (!canOpen || isOpening) return
+        setIsOpening(true)
+        void (async () => {
+          if (projectShellEnabled && e.shiftKey && project.localProjectPath) {
+            await navigate(
+              `${PATHS.LOCAL}/${encodeURIComponent(project.localProjectPath)}`
+            )
+            return
+          }
+          const result = await projectActions.open(project)
+          if (result?.defaultFile)
+            await navigate(
+              `${PATHS.FILE}/${encodeURIComponent(result.defaultFile)}`
+            )
+        })()
           .catch(reportRejection)
+          .finally(() => setIsOpening(false))
       }}
-      renderOpenLink={({ href: _href, ...linkProps }) => (
+      renderOpenLink={({ href: _href, children, ...linkProps }) => (
         <Link
           {...linkProps}
           to={openHref}
@@ -657,7 +656,19 @@ function AppProjectCard({
               ? 'Shift-click to open without an editor'
               : undefined
           }
-        />
+        >
+          {children}
+          {isOpening && (
+            <span
+              role="status"
+              aria-label={`Opening project ${projectName}`}
+              className="absolute inset-0 z-20 flex items-center justify-center gap-2 bg-chalkboard-10/80 dark:bg-chalkboard-100/80"
+            >
+              <Spinner aria-hidden="true" className="h-6 w-6" />
+              <span>Opening project...</span>
+            </span>
+          )}
+        </Link>
       )}
     />
   )

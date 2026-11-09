@@ -5,7 +5,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
 import { CustomIcon } from '@src/components/CustomIcon'
-import Loading from '@src/components/Loading'
+import { Spinner } from '@src/components/Spinner'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import { useProjectSearch } from '@src/components/ProjectSearchBar'
 import {
@@ -53,6 +53,7 @@ import {
   type HomeProjectEntry,
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
+  homeProjectLoadingLibraryIdsValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
 import {
@@ -337,7 +338,6 @@ const Home = () => {
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
 
-  const localProjectsLoaded = app.projectOperations.pending.value === 0
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
   const projectStatuses = useProjectStatuses(
     registry.get(cloudStorageService),
@@ -376,6 +376,14 @@ const Home = () => {
   const selectedProjectLibrary =
     routeSelectedProjectLibrary ?? singleProjectLibrary
   const selectedProjectLibraryId = selectedProjectLibrary?.id
+  const loadingLibraryIds = registry.signal(
+    homeProjectLoadingLibraryIdsValueSpec
+  ).value
+  const projectsLoaded =
+    app.projectOperations.pending.value === 0 &&
+    !loadingLibraryIds.some(
+      (id) => !selectedProjectLibraryId || id === selectedProjectLibraryId
+    )
   const scopedHomeProjectEntries = routeSelectedProjectLibrary
     ? getHomeProjectEntriesForLibrary(
         homeProjectEntries,
@@ -763,7 +771,7 @@ const Home = () => {
             projectShellEnabled={projectShellEnabled}
             searchResults={searchResults ?? []}
             projects={scopedHomeProjectEntries}
-            localProjectsLoaded={localProjectsLoaded}
+            projectsLoaded={projectsLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
@@ -781,7 +789,7 @@ const Home = () => {
             libraries={projectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
-            localProjectsLoaded={localProjectsLoaded}
+            projectsLoaded={projectsLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
@@ -822,12 +830,25 @@ const Home = () => {
   )
 }
 
+function ProjectsLoading() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading projects"
+      className="flex items-center justify-center gap-2 py-4"
+    >
+      <Spinner aria-hidden="true" className="h-5 w-5" />
+      <span>Loading projects...</span>
+    </div>
+  )
+}
+
 interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   projectShellEnabled: boolean
   libraries: ProjectLibrary[]
   searchResults: HomeProjectEntry[]
   projects: HomeProjectEntry[]
-  localProjectsLoaded: boolean
+  projectsLoaded: boolean
   query: string
   sort: string
   projectStatuses: Map<string, ProjectStatus>
@@ -844,7 +865,7 @@ function ProjectLibraryOverview({
   libraries,
   searchResults,
   projects,
-  localProjectsLoaded,
+  projectsLoaded,
   query,
   sort,
   projectStatuses,
@@ -876,9 +897,9 @@ function ProjectLibraryOverview({
       }
     })
     .filter(({ projects }) => query.length === 0 || projects.length > 0)
-  const loadingMore = !localProjectsLoaded ? (
+  const loadingMore = !projectsLoaded ? (
     <div className="py-4">
-      <Loading isDummy={true}>Loading more projects...</Loading>
+      <ProjectsLoading />
     </div>
   ) : null
 
@@ -888,8 +909,8 @@ function ProjectLibraryOverview({
 
   return (
     <section data-testid="home-section" {...rest}>
-      {!localProjectsLoaded && projects.length === 0 ? (
-        <Loading isDummy={true}>Loading your Projects...</Loading>
+      {!projectsLoaded && projects.length === 0 ? (
+        <ProjectsLoading />
       ) : (
         <>
           {libraryRows.length > 0 ? (
@@ -966,7 +987,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projectShellEnabled: boolean
   searchResults: HomeProjectEntry[]
   projects: HomeProjectEntry[]
-  localProjectsLoaded: boolean
+  projectsLoaded: boolean
   query: string
   sort: string
   projectStatuses: Map<string, ProjectStatus>
@@ -982,7 +1003,7 @@ function ProjectGrid({
   projectShellEnabled,
   searchResults,
   projects,
-  localProjectsLoaded,
+  projectsLoaded,
   query,
   sort,
   projectStatuses,
@@ -995,16 +1016,16 @@ function ProjectGrid({
   ...rest
 }: ProjectGridProps) {
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
-  const loadingMore = !localProjectsLoaded ? (
+  const loadingMore = !projectsLoaded ? (
     <div className="py-4">
-      <Loading isDummy={true}>Loading more projects...</Loading>
+      <ProjectsLoading />
     </div>
   ) : null
 
   return (
     <section data-testid="home-section" {...rest}>
-      {!localProjectsLoaded && projects.length === 0 ? (
-        <Loading isDummy={true}>Loading your Projects...</Loading>
+      {!projectsLoaded && projects.length === 0 ? (
+        <ProjectsLoading />
       ) : (
         <>
           {searchResults.length > 0 ? (

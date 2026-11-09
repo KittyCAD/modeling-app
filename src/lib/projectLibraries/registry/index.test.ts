@@ -5,6 +5,7 @@ import {
   Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import { homeProjectLoadingLibraryIdsValueSpec } from '@src/registry/contracts/homeProjects'
 import {
   type ProjectLibrarySetting,
   projectLibrariesFromSettings,
@@ -53,6 +54,59 @@ describe('project library realizations registry service', () => {
     vi.restoreAllMocks()
     vi.useRealTimers()
   })
+
+  it.each(['success', 'failure'] as const)(
+    'reports directory discovery pending for seven seconds through %s',
+    async (outcome) => {
+      vi.useFakeTimers()
+      const libraries = [
+        { title: 'Slow disk', path: '/slow', type: 'custom-directory' },
+      ]
+      const listing = Promise.withResolvers<[]>()
+      const readRealizations = vi.fn(() => listing.promise)
+      const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+      registry = new Registry()
+      registry.configure([
+        defineRegistryItem({
+          id: 'test.settings',
+          providesServices: [
+            provideService(settingsService, createSettingsService(libraries)),
+          ],
+        }),
+        defineRegistryItem({
+          id: 'test.library',
+          provides: [
+            provide(projectLibraryTypesValueSpec, {
+              type: 'custom-directory',
+              title: 'Custom Directory',
+              readRealizations,
+            }),
+          ],
+        }),
+        projectLibrariesExtension,
+      ])
+      try {
+        expect(
+          registry.signal(projectLibraryRealizationsValueSpec).value
+        ).toEqual([])
+        const loading = registry.signal(homeProjectLoadingLibraryIdsValueSpec)
+        await vi.waitFor(() => expect(readRealizations).toHaveBeenCalledOnce())
+        expect(loading.value).toEqual([
+          projectLibrariesFromSettings(libraries)[0].id,
+        ])
+        await vi.advanceTimersByTimeAsync(7_000)
+        expect(loading.value).toHaveLength(1)
+        if (outcome === 'failure') listing.reject(new Error('Read failed'))
+        else listing.resolve([])
+        await listing.promise.catch(() => undefined)
+        await vi.advanceTimersByTimeAsync(0)
+        expect(loading.value).toEqual([])
+      } finally {
+        listing.resolve([])
+        log.mockRestore()
+      }
+    }
+  )
 
   it('refreshes watched libraries and invalidates only the library that changes', async () => {
     const librarySettings = [
