@@ -330,6 +330,58 @@ for (const kind of ['local', 'cloud'] as const) {
     `${kind} project workflow contract`,
     { tag: ['@web', '@desktop'] },
     () => {
+      test('adds a shape to a sketch that already contains a line', async ({
+        page,
+        context,
+      }, testInfo) => {
+        test.setTimeout(180_000)
+        const missingArtifacts: string[] = []
+        page.on('console', (message) => {
+          if (
+            message.type() === 'error' &&
+            message.text().includes('No artifact found with key')
+          )
+            missingArtifacts.push(message.text())
+        })
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const scene = new SceneFixture(page)
+        const toolbar = new ToolbarFixture(page)
+        const initialCode = `${blankCode}profile = sketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 2mm, var 2mm])\n}\n`
+        const root = await storage.seed('Existing sketch', initialCode)
+        await storage.refresh()
+        await storage.home.openProject('Existing sketch')
+        await scene.settled()
+        await toolbar.openFeatureTreePane()
+        const operation = await toolbar.getFeatureTreeOperation('profile', 0)
+        await operation.dblclick()
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await page.getByTestId('point').click()
+        const [click] = scene.makeMouseHelpers(0.7, 0.65, { format: 'ratio' })
+        await click()
+        await expect.poll(() => storage.read(root)).toContain('point(')
+        await expect.poll(() => storage.read(root)).toContain('line(')
+        await toolbar.lineBtn.click()
+        const [startLine] = scene.makeMouseHelpers(0.3, 0.35, {
+          format: 'ratio',
+        })
+        const [endLine] = scene.makeMouseHelpers(0.4, 0.7, { format: 'ratio' })
+        await startLine()
+        await expect(
+          page.locator('[data-handle="sketch-point-handle"]')
+        ).toHaveCount(5)
+        await endLine()
+        await page.keyboard.press('Escape')
+        await expect
+          .poll(
+            async () =>
+              (await storage.read(root))?.match(/line\(/g)?.length ?? 0
+          )
+          .toBe(2)
+        expect(missingArtifacts).toEqual([])
+      })
+
       test('reads newer file contents before inserting each sketch shape', async ({
         page,
         context,
