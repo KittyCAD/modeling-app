@@ -9,7 +9,7 @@ import {
   type Subtree,
   service,
 } from './algebra'
-import { Reconciler } from './reconciler'
+import { Registry } from './nextRegistry'
 
 const runs = { numRuns: 150 }
 
@@ -20,7 +20,7 @@ it('preserves owners and surviving children through generated replacement histor
         maxLength: 8,
       }),
       async (history) => {
-        const reconciler = new Reconciler()
+        const reconciler = new Registry()
         const facet = new Facet(
           'children',
           (values: readonly { id: number }[]) => values
@@ -123,7 +123,7 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
       fc.array(fc.integer(), { maxLength: 8 }),
       fc.integer(),
       async (payloads, initial) => {
-        const reconciler = new Reconciler()
+        const reconciler = new Registry()
         const facet = new Facet('values', (values: readonly number[]) => values)
         const capability = service<{ readonly value: number }>('current')
         const value = signal(initial)
@@ -156,6 +156,7 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
           },
         }
         await reconciler.configure([owner])
+        const originalSurface = reconciler.required(capability)
         const observation = reconciler.observe(facet)
         const before = observation.value
         const published: unknown[] = []
@@ -200,7 +201,7 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
           { id: 'reader', path: 'root/reader' },
           reconciler
         )
-        expect(scope.required(capability)).toBe(original)
+        expect(scope.required(capability)).toBe(originalSurface)
         // The old graph remains reactive and can participate in another transaction.
         value.value = initial === 0 ? 1 : 0
         expect(observation.value).toEqual([value.value])
@@ -236,8 +237,8 @@ it('commits mixed Facet types together, isolates registries, and discards failed
           'values',
           (values: readonly string[]) => values
         )
-        const first = new Reconciler()
-        const second = new Reconciler()
+        const first = new Registry()
+        const second = new Registry()
         await second.configure([
           contribute(numbers, () => 42),
           contribute(strings, () => 'other registry'),

@@ -1,0 +1,67 @@
+import {
+  contribute,
+  Facet,
+  type Item,
+  provide,
+  type Service,
+  type Signal,
+  type Subtree,
+  service,
+  slot,
+} from './algebra'
+
+/** A plugin stays installed while its independently owned content is toggled. */
+export interface PluginController {
+  readonly active: Signal<boolean>
+  enable(): Promise<void>
+  disable(): Promise<void>
+  toggle(): Promise<void>
+}
+
+export interface PluginInfo {
+  readonly id: string
+  readonly title: string
+  readonly description: string
+}
+
+export interface PluginRecord extends PluginInfo {
+  readonly service: Service<PluginController>
+}
+
+export const plugins = new Facet(
+  'plugins',
+  (records: readonly PluginRecord[]) => records
+)
+
+export function createPlugin({
+  items,
+  enabledByDefault = true,
+  ...info
+}: PluginInfo & {
+  readonly items: readonly Item[]
+  readonly enabledByDefault?: boolean
+}): Subtree {
+  const enabled = new Facet(
+    'plugin.active',
+    (values: readonly boolean[]) => values.length > 0
+  )
+  const content = Object.freeze([contribute(enabled, () => true), ...items])
+  const body = slot(enabledByDefault ? content : [])
+  const controller = service<PluginController>(`${info.id}.controller`)
+  return {
+    key: info.id,
+    create: (scope) => ({
+      items: [
+        body,
+        contribute(plugins, () => ({ ...info, service: controller })),
+        provide(controller, {
+          active: scope.observe(enabled),
+          enable: () => scope.replace(body, content),
+          disable: () => scope.replace(body, []),
+          toggle: () =>
+            scope.replace(body, scope.observe(enabled).value ? [] : content),
+        }),
+      ],
+    }),
+  }
+}
