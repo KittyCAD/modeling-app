@@ -1,4 +1,5 @@
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { resetView } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { isArray } from '@src/lib/utils'
@@ -135,10 +136,11 @@ function withDefaultLengthUnitInches(code: string): string {
 ${code}`
 }
 
-test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
+test.use({ useTestSettings: true })
+
+test.describe('Sketch solve edit tests', { tag: '@web' }, () => {
   test("can edit an existing sketch and edit it's segments", async ({
     page,
-    context,
     homePage,
     scene,
     cmdBar,
@@ -146,14 +148,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     toolbar,
   }) => {
     await test.step('Set up the app with test code', async () => {
-      await context.addInitScript(async (code) => {
-        localStorage.setItem('persistCode', code)
-      }, TEST_CODE)
-
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', TEST_CODE)
+      )
 
       await editor.expectEditor.toContain('sketch(on = XZ)')
     })
@@ -229,20 +230,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test(
     'add new sketch, add segments and verify a constraint can be added',
     { tag: '@web' },
-    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
-      const INITIAL_CODE = ''
+    async ({ page, homePage, scene, cmdBar, editor, toolbar }) => {
       const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
       await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code: INITIAL_CODE,
-          }
-        )
-
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
@@ -414,12 +405,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test(
     'sketch solve tool hotkeys equip tools and update the sketch',
     { tag: ['@web'] },
-    async ({ page, context, homePage, scene, editor, toolbar }) => {
+    async ({ page, homePage, scene, editor, toolbar }) => {
       await test.step('Set up the app and enter sketch solve mode', async () => {
-        await context.addInitScript(() => {
-          localStorage.setItem('persistCode', '')
-        })
-
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled()
@@ -565,12 +552,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test(
     'horizontal and vertical hotkeys constrain the draft line while drawing',
     { tag: '@web' },
-    async ({ page, context, homePage, scene, editor, toolbar }) => {
+    async ({ page, homePage, scene, editor, toolbar }) => {
       await test.step('Set up the app and enter sketch solve mode', async () => {
-        await context.addInitScript(() => {
-          localStorage.setItem('persistCode', '')
-        })
-
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled()
@@ -646,22 +629,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test(
     'unequipping line tool should not drop committed segments from the scene',
     { tag: '@web' },
-    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
-      const INITIAL_CODE = ''
+    async ({ page, homePage, scene, cmdBar, editor, toolbar }) => {
       const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
       const getLineCount = (code: string) =>
         (code.match(/line\(/g) ?? []).length
 
       await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code: INITIAL_CODE,
-          }
-        )
-
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled()
@@ -732,7 +705,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test('undo still works after mixing point-click edits with direct kcl edits in sketch solve mode', async ({
     page,
-    context,
     homePage,
     scene,
     cmdBar,
@@ -783,18 +755,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     }
 
     await test.step('Set up the app with initial sketch code and enable sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: INITIAL_CODE,
-        }
-      )
-
       await page.setBodyDimensions({ width: 1200, height: 600 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', INITIAL_CODE)
+      )
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
     })
 
@@ -951,7 +917,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test(
     'treats fresh direct editor sketch executions as derived source updates',
     { tag: '@localRenderer' },
-    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
+    async ({ page, homePage, scene, cmdBar, editor, toolbar }) => {
       const INITIAL_CODE = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
 }
@@ -988,18 +954,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       }
 
       await test.step('Set up a sketch and enter sketch edit mode', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code: INITIAL_CODE,
-          }
-        )
-
         await page.setBodyDimensions({ width: 1200, height: 600 })
         await homePage.goToModelingScene()
         await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', INITIAL_CODE)
+        )
         await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
 
         await toolbar.openFeatureTreePane()
@@ -1092,7 +1052,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test(
     'keeps newer copied sketch block edits when stale execution finishes',
     { tag: '@localRenderer' },
-    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
+    async ({ page, homePage, scene, cmdBar, editor, toolbar }) => {
       const INITIAL_CODE = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
 }
@@ -1110,18 +1070,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       }
 
       await test.step('Set up a sketch and enter sketch edit mode', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code: INITIAL_CODE,
-          }
-        )
-
         await page.setBodyDimensions({ width: 1200, height: 600 })
         await homePage.goToModelingScene()
         await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', INITIAL_CODE)
+        )
         await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
 
         await toolbar.openFeatureTreePane()
@@ -1245,7 +1199,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test('undoing center arcs removes one arc at a time in sketch solve mode', async ({
     page,
-    context,
     homePage,
     scene,
     cmdBar,
@@ -1253,18 +1206,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     toolbar,
   }) => {
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
-    const INITIAL_CODE = ''
 
     await test.step('Set up app with sketch solve mode enabled', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: INITIAL_CODE,
-        }
-      )
-
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
@@ -1308,9 +1251,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     }
 
     const pressUndo = async () => {
-      await page.keyboard.down('Control')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Control')
+      await page.keyboard.press('ControlOrMeta+z')
     }
 
     const getCodeCounts = (code: string) => ({
@@ -1362,7 +1303,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(9)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterArc3)
+      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterArc3, {
+        useInnerText: true,
+      })
       const codeAfterUndo1 = await editor.getCurrentCode()
       expect(normaliseCode(codeAfterUndo1)).toBe(normaliseCode(codeAfterArc2))
       expect((codeAfterUndo1.match(/arc\(/g) ?? []).length).toBe(2)
@@ -1372,7 +1315,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(6)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo1)
+      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo1, {
+        useInnerText: true,
+      })
       const codeAfterUndo2 = await editor.getCurrentCode()
       expect(normaliseCode(codeAfterUndo2)).toBe(normaliseCode(codeAfterArc1))
       expect((codeAfterUndo2.match(/arc\(/g) ?? []).length).toBe(1)
@@ -1382,7 +1327,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(3)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo2)
+      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo2, {
+        useInnerText: true,
+      })
       const codeAfterUndo3 = await editor.getCurrentCode()
       expect(normaliseCode(codeAfterUndo3)).toBe(
         normaliseCode(codeAfterSketchStart)
@@ -1674,7 +1621,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test('constraints can be added and undone one at a time in sketch solve mode', async ({
     page,
-    context,
     homePage,
     scene,
     cmdBar,
@@ -1704,18 +1650,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 `
 
     await test.step('Set up app with existing sketch code in sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: CONSTRAINT_TEST_CODE,
-        }
-      )
-
       await page.setBodyDimensions({ width: 1400, height: 900 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', CONSTRAINT_TEST_CODE)
+      )
+      await resetView(scene)
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
     })
 
@@ -1987,7 +1928,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test('trim operations can be undone in sketch solve mode', async ({
     page,
-    context,
     homePage,
     scene,
     cmdBar,
@@ -2007,18 +1947,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
     await test.step('Set up app with trim fixture in sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: TRIM_TEST_CODE,
-        }
-      )
-
       await page.setBodyDimensions({ width: 1400, height: 900 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', TRIM_TEST_CODE)
+      )
+      await resetView(scene)
       await editor.expectEditor.toContain('sketch001 = sketch(on = YZ) {')
     })
 
@@ -2038,9 +1973,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     const pressUndo = async () => {
-      await page.keyboard.down('Control')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Control')
+      await page.keyboard.press('ControlOrMeta+z')
     }
     const getHandleIds = async () =>
       await page
@@ -2114,7 +2047,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`can extrude sketch regions ${rendererTag}`, async ({
       page,
-      context,
       homePage,
       scene,
       modelingDialog,
@@ -2122,12 +2054,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       toolbar,
     }) => {
       await test.step('Set up scene with a closed sketch block', async () => {
-        await context.addInitScript(async (square) => {
-          localStorage.setItem('persistCode', square)
-        }, square)
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', square)
+        )
         await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
       })
 
@@ -2193,7 +2125,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     test(`can extrude sketch regions with defaultLengthUnit = inches ${rendererTag}`, async ({
       page,
-      context,
       homePage,
       scene,
       modelingDialog,
@@ -2201,12 +2132,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       toolbar,
     }) => {
       await test.step('Set up scene with a closed sketch block in inches', async () => {
-        await context.addInitScript(async (code) => {
-          localStorage.setItem('persistCode', code)
-        }, squareInches)
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', squareInches)
+        )
         await editor.expectEditor.toContain('@settings(defaultLengthUnit = in')
         await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
       })
@@ -2252,7 +2183,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`can sketch on extrude cap ${rendererTag}`, async ({
       page,
-      context,
       homePage,
       scene,
       cmdBar,
@@ -2265,25 +2195,24 @@ region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5)`
 
       await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code,
-          }
-        )
-
         await page.setBodyDimensions({ width: 1200, height: 1000 })
 
         await homePage.goToModelingScene()
         await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', code)
+        )
         if (
           await page.evaluate(() => window.engineCommandManager.geometryOnly)
         ) {
           // Frame the small body from its end-cap/top side before showing planes.
           await scene.moveCameraTo(
             { x: 7, y: -12, z: 7 },
+            { x: 0, y: -2.5, z: 0 }
+          )
+        } else {
+          await scene.moveCameraTo(
+            { x: 0, y: -25, z: 1 },
             { x: 0, y: -2.5, z: 0 }
           )
         }
@@ -2313,7 +2242,6 @@ extrude001 = extrude(region001, length = 5)`
 
     test(`can sketch on extrude wall ${rendererTag}`, async ({
       page,
-      context,
       homePage,
       scene,
       cmdBar,
@@ -2329,19 +2257,13 @@ profile001 = startProfile(sketch001, at = [-2.05mm, -1.99mm])
 extrude001 = extrude(profile001, length = 5)`
 
       await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code,
-          }
-        )
-
         await page.setBodyDimensions({ width: 1200, height: 1000 })
 
         await homePage.goToModelingScene()
         await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', code)
+        )
         if (
           await page.evaluate(() => window.engineCommandManager.geometryOnly)
         ) {
@@ -2349,6 +2271,11 @@ extrude001 = extrude(profile001, length = 5)`
           await scene.moveCameraTo(
             { x: 7, y: -12, z: 7 },
             { x: 0, y: -2.5, z: 0 }
+          )
+        } else {
+          await scene.moveCameraTo(
+            { x: 0, y: -20, z: 25 },
+            { x: 0, y: -2.5, z: 2.23 }
           )
         }
       })
@@ -2358,7 +2285,7 @@ extrude001 = extrude(profile001, length = 5)`
         const [clickAboveCenter] = await scene.makeSelectionHelpers({
           kind: 'face',
           index: 1,
-          stream: { x: 0.5, y: 0.28, format: 'ratio' },
+          stream: { x: 0.5, y: 0.5, format: 'ratio' },
         })
         await clickAboveCenter()
       })
@@ -2376,14 +2303,12 @@ extrude001 = extrude(profile001, length = 5)`
   }
 
   test('starts a sketch block on an extruded sketch-block wall', async ({
-    context,
     page,
     homePage,
     scene,
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const code = `@settings(defaultLengthUnit = mm)
 
@@ -2397,20 +2322,10 @@ region001 = region(point = [15, 10], sketch = sketch001)
 body001 = extrude(region001, length = 12, tagEnd = $endCap)
 hide(sketch001)`
 
-    if (tronApp) {
-      await tronApp.cleanProjectDir()
-    }
-    await context.addInitScript(
-      ({ initialCode }) => {
-        localStorage.setItem('persistCode', initialCode)
-      },
-      {
-        initialCode: code,
-      }
-    )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('body001 = extrude')
     await scene.moveCameraTo(
       { x: 43.8, y: -79.54, z: 9.08 },
@@ -2442,14 +2357,12 @@ hide(sketch001)`
   })
 
   test('starts and re-edits a sketch on a chamfer face', async ({
-    context,
     page,
     homePage,
     scene,
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const code = `@settings(defaultLengthUnit = mm)
 
@@ -2468,18 +2381,10 @@ chamfer001 = chamfer(
 )
 hide(sketch001)`
 
-    if (tronApp) {
-      await tronApp.cleanProjectDir()
-    }
-    await context.addInitScript(
-      ({ initialCode }) => {
-        localStorage.setItem('persistCode', initialCode)
-      },
-      { initialCode: code }
-    )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.closePane()
     await scene.moveCameraTo(
       { x: 39.68, y: -7.24, z: 19.4 },
