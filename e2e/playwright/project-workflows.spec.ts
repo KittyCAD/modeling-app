@@ -240,6 +240,158 @@ for (const kind of ['local', 'cloud'] as const) {
     `${kind} project workflow contract`,
     { tag: ['@web', '@desktop'] },
     () => {
+      test('revalidates identical code in different files after deleting an import', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const code = `${blankCode}import value from "dependency.kcl"\nresult = value\n`
+        await storage.seed('Import diagnostics', blankCode, {
+          'broken/one.kcl': code,
+          'broken/dependency.kcl': `${blankCode}export value = 7\n`,
+          'healthy/two.kcl': code,
+          'healthy/dependency.kcl': `${blankCode}export value = 23\n`,
+        })
+        await storage.refresh()
+        await storage.home.openProject('Import diagnostics')
+        await new SceneFixture(page).settled()
+        await expectEditor(page, blankCode)
+        await page.evaluate(
+          (id) => window.app.layout.openPane(id),
+          DefaultLayoutPaneID.Files
+        )
+        const item = (name: string) =>
+          page.getByRole('treeitem', { name, exact: true })
+        await item('broken').click()
+        await item('dependency.kcl').click({ button: 'right' })
+        await page.getByRole('button', { name: 'Delete', exact: true }).click()
+        await page.getByTestId('delete-confirmation').click()
+        await expect(item('dependency.kcl')).not.toBeAttached()
+        await item('healthy').click()
+        const diagnostics = () =>
+          page.evaluate(() =>
+            window.app.singletons.kclManager.diagnostics.map(
+              (diagnostic) => diagnostic.message
+            )
+          )
+        for (let visit = 0; visit < 2; visit++) {
+          await item('one.kcl').click()
+          await expectEditor(page, code)
+          await expect
+            .poll(async () => (await diagnostics()).join('\n'))
+            .toMatch(
+              /(?:could not find file|Unable to read-file).*dependency\.kcl/i
+            )
+          await expect(page.locator('.cm-lint-marker-error')).not.toHaveCount(0)
+          await item('two.kcl').click()
+          await expectEditor(page, code)
+          await expect.poll(diagnostics).toEqual([])
+          await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+          await expect
+            .poll(() =>
+              page.evaluate(
+                () => window.app.singletons.kclManager.lastSuccessfulCode
+              )
+            )
+            .toBe(code)
+        }
+      })
+
+      test('revalidates an imported module after deleting another import from the open entrypoint', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const code = `${blankCode}import value from "dependency.kcl"\nimport healthyValue from "healthy.kcl"\nresult = value + healthyValue\n`
+        const healthyCode = `${blankCode}export healthyValue = 23\n`
+        await storage.seed('Active import diagnostics', code, {
+          'dependency.kcl': `${blankCode}export value = 7\n`,
+          'healthy.kcl': healthyCode,
+        })
+        await storage.refresh()
+        await storage.home.openProject('Active import diagnostics')
+        await new SceneFixture(page).settled()
+        await expectEditor(page, code)
+        await expect
+          .poll(() =>
+            page.evaluate(
+              () => window.app.singletons.kclManager.lastSuccessfulCode
+            )
+          )
+          .toBe(code)
+        await page.evaluate(
+          (id) => window.app.layout.openPane(id),
+          DefaultLayoutPaneID.Files
+        )
+        const item = (name: string) =>
+          page.getByRole('treeitem', { name, exact: true })
+        await item('dependency.kcl').click({ button: 'right' })
+        await page.getByRole('button', { name: 'Delete', exact: true }).click()
+        await page.getByTestId('delete-confirmation').click()
+        await expect(item('dependency.kcl')).not.toBeAttached()
+        // Re-execute the importer after deletion before switching modules.
+        await editThroughUI(page, `${code}\n`)
+        await expect(page.locator('.cm-lint-marker-error')).not.toHaveCount(0)
+        await item('healthy.kcl').click()
+        await expectEditor(page, healthyCode)
+        await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+        await expect
+          .poll(() =>
+            page.evaluate(
+              () => window.app.singletons.kclManager.lastSuccessfulCode
+            )
+          )
+          .toBe(healthyCode)
+      })
+
+      test('clears errors when deleting the open file and switching to a valid file', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const brokenCode = `${blankCode}import value from "missing.kcl"\nresult = value\n`
+        const healthyCode = `${blankCode}result = 23\n`
+        await storage.seed('Deleted editor diagnostics', blankCode, {
+          'broken.kcl': brokenCode,
+          'healthy.kcl': healthyCode,
+        })
+        await storage.refresh()
+        await storage.home.openProject('Deleted editor diagnostics')
+        await new SceneFixture(page).settled()
+        await expectEditor(page, blankCode)
+        await page.evaluate(
+          (id) => window.app.layout.openPane(id),
+          DefaultLayoutPaneID.Files
+        )
+        const item = (name: string) =>
+          page.getByRole('treeitem', { name, exact: true })
+        await item('broken.kcl').click()
+        await expectEditor(page, brokenCode)
+        await expect(page.locator('.cm-lint-marker-error')).not.toHaveCount(0)
+        await item('broken.kcl').click({ button: 'right' })
+        await page.getByRole('button', { name: 'Delete', exact: true }).click()
+        await page.getByTestId('delete-confirmation').click()
+        await expect(item('broken.kcl')).not.toBeAttached()
+        await expectEditor(page, blankCode)
+        await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+        await item('healthy.kcl').click()
+        await expectEditor(page, healthyCode)
+        await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+        await expect
+          .poll(() =>
+            page.evaluate(
+              () => window.app.singletons.kclManager.lastSuccessfulCode
+            )
+          )
+          .toBe(healthyCode)
+      })
+
       test('recovers a failed save through the editor without losing edits', async ({
         page,
         context,
