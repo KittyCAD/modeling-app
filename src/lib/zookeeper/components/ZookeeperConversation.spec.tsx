@@ -853,7 +853,7 @@ describe('ZookeeperConversation', () => {
       ).toBeInTheDocument()
 
       const activityToggle = screen.getByRole('button', {
-        name: /Working for/,
+        name: /See reasoning/,
       })
       expect(activityToggle).toHaveAttribute('aria-expanded', 'false')
       fireEvent.click(activityToggle)
@@ -862,7 +862,9 @@ describe('ZookeeperConversation', () => {
           screen.getByTestId('ml-response-thinking-view')
         ).toBeInTheDocument()
       })
-      expect(activityToggle).toHaveAttribute('aria-expanded', 'true')
+      expect(
+        screen.getByRole('button', { name: /Hide reasoning/ })
+      ).toHaveAttribute('aria-expanded', 'true')
     }
   )
 
@@ -887,14 +889,14 @@ describe('ZookeeperConversation', () => {
     try {
       const { unmount } = renderExchange()
       expect(
-        screen.getByRole('button', { name: 'Working for 20m 0s' })
+        screen.getByRole('button', { name: /Reasoning for 20m 0s/ })
       ).toBeInTheDocument()
       unmount()
 
       vi.setSystemTime(new Date('2026-07-15T12:21:00.000Z'))
       renderExchange()
       expect(
-        screen.getByRole('button', { name: 'Working for 21m 0s' })
+        screen.getByRole('button', { name: /Reasoning for 21m 0s/ })
       ).toBeInTheDocument()
     } finally {
       vi.clearAllTimers()

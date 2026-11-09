@@ -1053,6 +1053,7 @@ export const Thinking = (
     thoughts?: MlCopilotServerMessage[]
     isDone: boolean
     onlyShowImmediateThought: boolean
+    omitFirstCommentary?: boolean
   } & AttachmentFetchProps
 ) => {
   const refViewFull = useRef<HTMLDivElement>(null)
@@ -1111,11 +1112,7 @@ export const Thinking = (
   }, [])
 
   useEffect(() => {
-    if (
-      hasStructuredActivity ||
-      props.onlyShowImmediateThought === true ||
-      userHasManuallyScrolled
-    ) {
+    if (props.onlyShowImmediateThought === true || userHasManuallyScrolled) {
       return
     }
 
@@ -1132,7 +1129,6 @@ export const Thinking = (
       })
     })
   }, [
-    hasStructuredActivity,
     reasoningThoughts.length,
     props.onlyShowImmediateThought,
     userHasManuallyScrolled,
@@ -1157,6 +1153,14 @@ export const Thinking = (
             item.message.reasoning.type !== 'markdown')
       )
     : activityItems
+  if (props.omitFirstCommentary) {
+    const firstCommentaryIndex = displayedItems.findIndex(
+      (item) => item.kind === 'commentary'
+    )
+    if (firstCommentaryIndex !== -1) {
+      displayedItems.splice(firstCommentaryIndex, 1)
+    }
+  }
   const sections = hasStructuredActivity
     ? groupActivityItems(displayedItems)
     : undefined
@@ -1252,21 +1256,17 @@ export const Thinking = (
       data-testid="ml-response-thinking-view"
       ref={refViewFull}
       role="region"
-      style={hasStructuredActivity ? undefined : { maxHeight: '20lh' }}
+      style={{ maxHeight: '20lh' }}
       className={
         hasStructuredActivity
-          ? 'select-text text-2 text-xs pl-8 pr-2 pb-2'
+          ? `relative select-text overflow-auto text-2 text-xs bg-2 rounded-md px-3 py-2 ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`
           : `relative select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`
       }
-      onScroll={hasStructuredActivity ? undefined : onReasoningScroll}
-      onWheel={hasStructuredActivity ? undefined : onReasoningPaneInteraction}
-      onTouchStart={
-        hasStructuredActivity ? undefined : onReasoningPaneInteraction
-      }
-      onPointerDown={
-        hasStructuredActivity ? undefined : onReasoningPaneInteraction
-      }
-      onKeyDown={hasStructuredActivity ? undefined : onReasoningPaneInteraction}
+      onScroll={onReasoningScroll}
+      onWheel={onReasoningPaneInteraction}
+      onTouchStart={onReasoningPaneInteraction}
+      onPointerDown={onReasoningPaneInteraction}
+      onKeyDown={onReasoningPaneInteraction}
     >
       {componentThoughts.length > 0 ? componentThoughts : <PlaceholderLine />}
       {!hasStructuredActivity && anyRowCollapse.length > 0 && (
