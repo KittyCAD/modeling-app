@@ -155,6 +155,7 @@ export interface Fixtures {
 }
 
 export interface ElectronZooLaunchOptions {
+  args?: string[]
   appDirectory?: string
   executablePath?: string
 }
@@ -316,7 +317,11 @@ export class ElectronZoo {
         ? process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron'
         : undefined)
     const options = {
-      args: [appDirectory ?? '.', '--no-sandbox'],
+      args: [
+        appDirectory ?? '.',
+        '--no-sandbox',
+        ...(this.launchOptions.args ?? []),
+      ],
       ...(appDirectory ? { cwd: appDirectory } : {}),
       timeout: setupTimeout,
       env: {
