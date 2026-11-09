@@ -1,4 +1,3 @@
-import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import {
@@ -6,25 +5,26 @@ import {
   MODE_MODELING_COMMAND_SCOPE,
   provideCommand,
 } from '@src/registry/contracts/commands'
-import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   defineEngineSceneStreamClassName,
   defineEngineSceneViewExtension,
   type EngineSceneExtensionContext,
-  engineSceneStreamClassNamesValueSpec,
-  engineSceneViewExtensionsValueSpec,
+  engineSceneStreamClassNamesFacet,
+  engineSceneViewExtensionsFacet,
 } from '@src/registry/contracts/engineScene'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type KeymapItem,
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   nullableStatusBarItem,
-  statusBarGlobalItemsValueSpec,
-  statusBarLocalItemsValueSpec,
+  statusBarGlobalItemsFacet,
+  statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
 import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
+import { contribute, type Subtree } from 'plankton'
 import { createElement, lazy, Suspense } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
@@ -32,8 +32,8 @@ import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisServ
 import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
-  EngineSceneToolbarViewExtension,
   EngineSceneModelingDialogViewExtension,
+  EngineSceneToolbarViewExtension,
   SketchBackgroundOpacityViewExtension,
   SketchConstraintsToggleViewExtension,
 } from './viewExtensionControls'
@@ -267,150 +267,179 @@ const EngineSceneScreenshotStatusBarItem = () =>
  * behavior. For now it contributes always-on local status bar items owned by
  * the scene and the default view chrome rendered around the engine stream.
  */
-const engineSceneExtension = defineRegistryItemFactory((ctx) => {
-  const session = ctx.services.signal(projectSession)
-  const executionService = computed(() => session.value?.executingEditor.value)
-  const selectionStatusBarItem = computed(() => {
-    const selectionStatusLabel =
-      executionService.value?.selectionStatusLabel.value
-    return nullableStatusBarItem(
-      selectionStatusLabel !== undefined
-        ? {
-            id: 'selection',
-            component: () =>
-              createElement(EngineSceneSelectionStatusBarItem, {
-                label: selectionStatusLabel,
-              }),
-            order: 10,
-            scopes: ['file'],
-          }
-        : null
+const engineSceneExtension = {
+  key: 'engine-scene-extension',
+  create: (ctx) => {
+    const session = computed(() => ctx.optional(projectSession))
+    const executionService = computed(
+      () => session.value?.executingEditor.value
     )
-  })
-  const measurementStatusBarItem = computed(() =>
-    nullableStatusBarItem(
-      executionService.value
-        ? {
-            id: 'measure',
-            component: EngineSceneMeasurementStatusBarItem,
-            order: 9,
-            scopes: ['file'],
-          }
-        : null
+    const selectionStatusBarItem = computed(() => {
+      const selectionStatusLabel =
+        executionService.value?.selectionStatusLabel.value
+      return nullableStatusBarItem(
+        selectionStatusLabel !== undefined
+          ? {
+              id: 'selection',
+              component: () =>
+                createElement(EngineSceneSelectionStatusBarItem, {
+                  label: selectionStatusLabel,
+                }),
+              order: 10,
+              scopes: ['file'],
+            }
+          : null
+      )
+    })
+    const measurementStatusBarItem = computed(() =>
+      nullableStatusBarItem(
+        executionService.value
+          ? {
+              id: 'measure',
+              component: EngineSceneMeasurementStatusBarItem,
+              order: 9,
+              scopes: ['file'],
+            }
+          : null
+      )
     )
-  )
-  const physicalAnalysisStatusBarItem = computed(() =>
-    nullableStatusBarItem(
-      executionService.value
-        ? {
-            id: 'physical-analysis',
-            component: EngineScenePhysicalAnalysisStatusBarItem,
-            order: 9.5,
-            scopes: ['file'],
-          }
-        : null
+    const physicalAnalysisStatusBarItem = computed(() =>
+      nullableStatusBarItem(
+        executionService.value
+          ? {
+              id: 'physical-analysis',
+              component: EngineScenePhysicalAnalysisStatusBarItem,
+              order: 9.5,
+              scopes: ['file'],
+            }
+          : null
+      )
     )
-  )
-  const screenshotStatusBarItem = computed(() =>
-    nullableStatusBarItem(
-      executionService.value
-        ? {
-            id: 'capture-screenshot',
-            component: EngineSceneScreenshotStatusBarItem,
-            order: 8,
-            scopes: ['file'],
-          }
-        : null
+    const screenshotStatusBarItem = computed(() =>
+      nullableStatusBarItem(
+        executionService.value
+          ? {
+              id: 'capture-screenshot',
+              component: EngineSceneScreenshotStatusBarItem,
+              order: 8,
+              scopes: ['file'],
+            }
+          : null
+      )
     )
-  )
-  const selectionFilterStatusBarItem = computed(() =>
-    nullableStatusBarItem(
-      executionService.value
-        ? {
-            id: 'selection-filter',
-            component: EngineSceneSelectionFilterControls,
-            order: 11,
-            scopes: ['file'],
-          }
-        : null
+    const selectionFilterStatusBarItem = computed(() =>
+      nullableStatusBarItem(
+        executionService.value
+          ? {
+              id: 'selection-filter',
+              component: EngineSceneSelectionFilterControls,
+              order: 11,
+              scopes: ['file'],
+            }
+          : null
+      )
     )
-  )
-  const experimentalFeaturesStatusBarItem = computed(() =>
-    nullableStatusBarItem(
-      executionService.value?.showExperimentalFeaturesStatusBarItem.value
-        ? {
-            id: 'experimental-features',
-            component: EngineSceneExperimentalFeaturesMenu,
-            order: 30,
-            scopes: ['file'],
-          }
-        : null
+    const experimentalFeaturesStatusBarItem = computed(() =>
+      nullableStatusBarItem(
+        executionService.value?.showExperimentalFeaturesStatusBarItem.value
+          ? {
+              id: 'experimental-features',
+              component: EngineSceneExperimentalFeaturesMenu,
+              order: 30,
+              scopes: ['file'],
+            }
+          : null
+      )
     )
-  )
-  const unitsStatusBarItem = computed(() =>
-    nullableStatusBarItem(
-      executionService.value
-        ? {
-            id: 'units',
-            component: EngineSceneUnitsMenu,
-            order: 20,
-            scopes: ['file'],
-          }
-        : null
+    const unitsStatusBarItem = computed(() =>
+      nullableStatusBarItem(
+        executionService.value
+          ? {
+              id: 'units',
+              component: EngineSceneUnitsMenu,
+              order: 20,
+              scopes: ['file'],
+            }
+          : null
+      )
     )
-  )
 
-  return {
-    id: 'engine-scene-extension',
-    provides: [
-      provideCommand(
-        captureScreenshotCommand(() =>
-          saveViewportScreenshot(
-            ctx.services.get(fileOperationsService),
-            ctx.services.get(viewportScreenshotService)
+    return {
+      items: [
+        provideCommand(
+          captureScreenshotCommand(() =>
+            saveViewportScreenshot(
+              ctx.required(fileOperationsService),
+              ctx.required(viewportScreenshotService)
+            )
           )
-        )
-      ),
-      provideCommand(openMeasureToolCommand),
-      provideCommand(openPhysicalAnalysisToolCommand),
-      provideKeymapItem(openMeasureToolKeymapItem),
-      provideKeymapItem(openPhysicalAnalysisToolKeymapItem),
-      provide(statusBarGlobalItemsValueSpec, screenshotStatusBarItem),
-      provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
-      provide(statusBarLocalItemsValueSpec, physicalAnalysisStatusBarItem),
-      provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
-      provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
-      provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
-      provide(statusBarLocalItemsValueSpec, experimentalFeaturesStatusBarItem),
-      provide(engineSceneStreamClassNamesValueSpec, defaultStreamClassName, {
-        key: defaultStreamClassName.id,
-      }),
-      provide(engineSceneViewExtensionsValueSpec, toolbarViewExtension, {
-        key: toolbarViewExtension.id,
-      }),
-      provide(
-        engineSceneViewExtensionsValueSpec,
-        sketchBackgroundOpacityViewExtension,
-        {
-          key: sketchBackgroundOpacityViewExtension.id,
-        }
-      ),
-      provide(
-        engineSceneViewExtensionsValueSpec,
-        sketchConstraintsToggleViewExtension,
-        {
-          key: sketchConstraintsToggleViewExtension.id,
-        }
-      ),
-      provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
-        key: gizmoViewExtension.id,
-      }),
-      provide(engineSceneViewExtensionsValueSpec, modelingDialogViewExtension, {
-        key: modelingDialogViewExtension.id,
-      }),
-    ],
-    uses: [executionIndicator],
-  }
-}, 'engine-scene-extension')
-
+        ),
+        provideCommand(openMeasureToolCommand),
+        provideCommand(openPhysicalAnalysisToolCommand),
+        provideKeymapItem(openMeasureToolKeymapItem),
+        provideKeymapItem(openPhysicalAnalysisToolKeymapItem),
+        contribute(
+          statusBarGlobalItemsFacet,
+          () => screenshotStatusBarItem.value
+        ),
+        contribute(
+          statusBarLocalItemsFacet,
+          () => measurementStatusBarItem.value
+        ),
+        contribute(
+          statusBarLocalItemsFacet,
+          () => physicalAnalysisStatusBarItem.value
+        ),
+        contribute(
+          statusBarLocalItemsFacet,
+          () => selectionFilterStatusBarItem.value
+        ),
+        contribute(
+          statusBarLocalItemsFacet,
+          () => selectionStatusBarItem.value
+        ),
+        contribute(statusBarLocalItemsFacet, () => unitsStatusBarItem.value),
+        contribute(
+          statusBarLocalItemsFacet,
+          () => experimentalFeaturesStatusBarItem.value
+        ),
+        contribute(
+          engineSceneStreamClassNamesFacet,
+          () => defaultStreamClassName,
+          {
+            key: defaultStreamClassName.id,
+          }
+        ),
+        contribute(engineSceneViewExtensionsFacet, () => toolbarViewExtension, {
+          key: toolbarViewExtension.id,
+        }),
+        contribute(
+          engineSceneViewExtensionsFacet,
+          () => sketchBackgroundOpacityViewExtension,
+          {
+            key: sketchBackgroundOpacityViewExtension.id,
+          }
+        ),
+        contribute(
+          engineSceneViewExtensionsFacet,
+          () => sketchConstraintsToggleViewExtension,
+          {
+            key: sketchConstraintsToggleViewExtension.id,
+          }
+        ),
+        contribute(engineSceneViewExtensionsFacet, () => gizmoViewExtension, {
+          key: gizmoViewExtension.id,
+        }),
+        contribute(
+          engineSceneViewExtensionsFacet,
+          () => modelingDialogViewExtension,
+          {
+            key: modelingDialogViewExtension.id,
+          }
+        ),
+        executionIndicator,
+      ],
+    }
+  },
+} satisfies Subtree
 export default engineSceneExtension

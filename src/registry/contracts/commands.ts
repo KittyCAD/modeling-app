@@ -1,14 +1,8 @@
-import {
-  appendValueSpec,
-  defineContract,
-  defineService,
-  defineValueSpec,
-  provide,
-} from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import { commandKey } from '@src/lib/commandUtils'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import { contract, contribute, Facet, service } from 'plankton'
 import type { SnapshotFrom } from 'xstate'
 
 export { commandKey } from '@src/lib/commandUtils'
@@ -303,33 +297,32 @@ function compareActiveScopeOrder(
     ? indexDifference
     : a.scope.localeCompare(b.scope)
 }
-
-export const commandsContract = defineContract({
-  commandScopeService: defineService<CommandScopeService>(
-    'command.scope-service'
+export const commandsContract = contract({
+  commandScopeService: service<CommandScopeService>('command.scope-service'),
+  commandScopesFacet: new Facet<CommandScope, CommandScope[]>(
+    'commands.scopes',
+    (inputs) => (inputs.length ? combineCommandScopes(inputs) : [])
   ),
-  commandScopesValueSpec: defineValueSpec<CommandScope, CommandScope[]>({
-    name: 'commands.scopes',
-    defaultValue: [],
-    combine: combineCommandScopes,
-  }),
-  commandSystemService: defineService<CommandSystemService>('command-system'),
-  commandsValueSpec: appendValueSpec<Command>('commands'),
+  commandSystemService: service<CommandSystemService>('command-system'),
+  commandsFacet: new Facet<Command, readonly Command[]>(
+    'commands',
+    (inputs) => inputs
+  ),
 })
 
 export const {
   commandScopeService,
-  commandScopesValueSpec,
+  commandScopesFacet,
   commandSystemService,
-  commandsValueSpec,
+  commandsFacet,
 } = commandsContract
 
 export function provideCommand(command: Command) {
-  return provide(commandsValueSpec, command, { key: commandKey(command) })
+  return contribute(commandsFacet, () => command, { key: commandKey(command) })
 }
 
 export function provideCommandScope(scope: CommandScope) {
-  return provide(commandScopesValueSpec, scope, { key: scope.id })
+  return contribute(commandScopesFacet, () => scope, { key: scope.id })
 }
 
 function combineCommandScopes(scopes: readonly CommandScope[]) {

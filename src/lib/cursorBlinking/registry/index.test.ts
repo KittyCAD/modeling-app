@@ -1,29 +1,27 @@
-import {
-  defineRegistryItem,
-  provideService,
-  Registry,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
+import { provide, Registry, type Subtree } from 'plankton'
 import { afterEach, describe, expect, it } from 'vitest'
 import cursorBlinking from '.'
 
-function createRegistry() {
+async function createRegistry() {
   const current = signal(createSettings())
   // This consumer needs only reactive settings, without an actor or editor.
   const service = { current } as SettingsRegistryService
   const registry = new Registry()
-  registry.configure([
+  await registry.configure([
     cursorBlinking,
-    defineRegistryItem({
-      providesServices: [provideService(settingsService, service)],
-    }),
+    {
+      create: () => ({
+        items: [provide(settingsService, service)],
+      }),
+    } satisfies Subtree,
   ])
-  registry.get(settingsService)
+  registry.required(settingsService)
   return { registry, current }
 }
 
@@ -33,7 +31,7 @@ afterEach(() => {
 
 describe('global cursor blinking', () => {
   it('applies settings at the document root without an editor', async () => {
-    const { registry, current } = createRegistry()
+    const { registry, current } = await createRegistry()
     try {
       current.value.textEditor.blinkingCursor.user = false
       await Promise.resolve()
@@ -53,27 +51,41 @@ describe('global cursor blinking', () => {
       replacement.textEditor.blinkingCursor.user = true
       expect(style.getPropertyValue('--cursor-color')).toBe('auto')
     } finally {
-      registry[Symbol.dispose]()
+      await registry.dispose()
     }
   })
 
   it('stops updates and restores the previous style when disposed', async () => {
     const style = document.documentElement.style
     style.setProperty('--cursor-color', 'red', 'important')
-    const { registry, current } = createRegistry()
+    const { registry, current } = await createRegistry()
     await Promise.resolve()
-    registry[Symbol.dispose]()
+    await registry.dispose()
     current.value.textEditor.blinkingCursor.user = false
     expect(style.getPropertyValue('--cursor-color')).toBe('red')
     expect(style.getPropertyPriority('--cursor-color')).toBe('important')
   })
-
-  it('does not start an effect after disposal', async () => {
-    const { registry } = createRegistry()
-    registry[Symbol.dispose]()
-    await Promise.resolve()
+  it('does not start a deferred effect after acquisition rolls back', async () => {
+    const registry = new Registry()
+    const failure = new Error('Later acquisition failed')
+    await expect(
+      registry.configure([
+        cursorBlinking,
+        {
+          create: () => {
+            throw failure
+          },
+        },
+      ])
+    ).rejects.toBe(failure)
+    const current = signal(createSettings())
+    current.value.textEditor.blinkingCursor.user = false
+    await registry.configure([
+      provide(settingsService, { current } as SettingsRegistryService),
+    ])
     expect(
       document.documentElement.style.getPropertyValue('--cursor-color')
     ).toBe('')
+    await registry.dispose()
   })
 })

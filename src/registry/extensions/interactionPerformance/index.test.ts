@@ -1,9 +1,9 @@
 // @vitest-environment node
 
-import { Registry } from '@kittycad/registry'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import { reportInteractions } from '@src/lib/interactionPerformance/report'
 import type { InteractionPerformanceService } from '@src/registry/contracts/interactionPerformance'
+import { Registry } from 'plankton'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('interaction performance extension', () => {
@@ -25,12 +25,11 @@ describe('interaction performance extension', () => {
       )
     }
     registry = new Registry()
-    registry.configure([interactionPerformanceExtension])
-    service = registry.get(interactionPerformanceService)
+    await registry.configure([interactionPerformanceExtension])
+    service = registry.required(interactionPerformanceService)
   })
-
-  afterEach(() => {
-    registry[Symbol.dispose]()
+  afterEach(async () => {
+    await registry.dispose()
     vi.unstubAllEnvs()
   })
 
@@ -43,7 +42,7 @@ describe('interaction performance extension', () => {
     const { interactionPerformanceService } = await import(
       '@src/registry/contracts/interactionPerformance'
     )
-    registry.configure(
+    await registry.configure(
       interactionPerformanceExtension ? [interactionPerformanceExtension] : []
     )
 
@@ -81,8 +80,7 @@ describe('interaction performance extension', () => {
 
   it('cancels loading on disposal and rejects subsequent activation', async () => {
     const pending = service.start()
-    registry[Symbol.dispose]()
-
+    await registry.dispose()
     await pending
     expect(service.snapshot().samples).toEqual([])
     await expect(service.start()).rejects.toThrow(

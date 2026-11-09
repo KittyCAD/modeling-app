@@ -1,10 +1,8 @@
-# Registry package agent guidance
+# Plankton agent guidance
 
-Repository `AGENTS.md` instructions apply. The guidance below concerns the new
-`@kittycad/registry/next` runtime; keep the legacy default entrypoint unchanged by
-new-runtime API changes. Use [ALGEBRA.md](ALGEBRA.md) for the public model and
-[CONTRIBUTING.md](CONTRIBUTING.md) for design rules, runtime guarantees, and
-verification commands.
+Repository `AGENTS.md` instructions apply. Use the [README](README.md) for the
+public model and [CONTRIBUTING.md](CONTRIBUTING.md) for design rules, runtime
+guarantees, and verification commands.
 
 ## Working in this package
 

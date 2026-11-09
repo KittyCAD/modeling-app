@@ -1,29 +1,21 @@
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provideService,
-} from '@kittycad/registry'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { createLspService } from '@src/lang/lsp/service'
 import { authService } from '@src/registry/contracts/auth'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-
-export const lspExtension = defineRegistryItemFactory((ctx) => {
-  const lsp = createLspService({
-    getFileOperations: () => ctx.services.get(fileOperationsService),
-    getAuth: () => ctx.services.get(authService),
-    getUserFeatures: () => ctx.services.get(userFeaturesService),
-  })
-
-  return {
-    id: 'lsp-extension',
-    providesServices: [provideService(lspService, lsp.service)],
-    dispose: lsp.dispose,
-  }
-}, 'lsp-extension')
-
-export default defineRegistryItem({
-  id: 'lsp',
-  uses: [lspExtension],
-})
+import { provide, type Subtree } from 'plankton'
+export const lspExtension: Subtree = {
+  key: 'lsp-extension',
+  create: (ctx) => {
+    const lsp = createLspService({
+      getFileOperations: () => ctx.required(fileOperationsService),
+      getAuth: () => ctx.required(authService),
+      getUserFeatures: () => ctx.required(userFeaturesService),
+    })
+    return {
+      items: [provide(lspService, lsp.service)],
+      dispose: lsp.dispose,
+    }
+  },
+}
+export default [lspExtension]

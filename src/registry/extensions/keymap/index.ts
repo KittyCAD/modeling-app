@@ -1,14 +1,8 @@
-import { selectCommand } from '@src/lib/commandUtils'
-import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provide,
-  provideService,
-} from '@kittycad/registry'
 import { computed, signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import type { Command, CommandScopes } from '@src/lib/commandTypes'
+import { selectCommand } from '@src/lib/commandUtils'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
@@ -18,7 +12,7 @@ import {
   type CommandScopeService,
   commandKey,
   commandScopeService,
-  commandScopesValueSpec,
+  commandScopesFacet,
   commandSystemService,
   DEFAULT_COMMAND_SCOPES,
   EDITABLE_FOCUSED_COMMAND_SCOPE,
@@ -35,535 +29,508 @@ import {
   createEmptyPersistedKeymap,
   createKeymapTree,
   createUnbindBinding,
+  getKeymapItemWhen,
   type KeymapArguments,
   type KeymapItem,
   type KeymapService,
   type KeymapSource,
+  keymapEventOwnersFacet,
+  keymapFacet,
   keymapService,
-  keymapValueSpec,
-  keymapEventOwnersValueSpec,
-  getKeymapItemWhen,
   matchKeymapKeystrokes,
   normalizeEventKey,
   normalizePersistedKeymap,
   resolveKeymapItems,
 } from '@src/registry/contracts/keymap'
-import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import { statusBarLocalItemsFacet } from '@src/registry/contracts/statusBar'
 import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap'
 import {
   readUserKeymapFile,
   writeUserKeymapFile,
 } from '@src/registry/extensions/keymap/persistence'
+import { contribute, provide, type Subtree } from 'plankton'
 import { createElement } from 'react'
 
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
 type SettingsKeymapTab = 'project' | 'user' | 'keybindings' | 'plugins'
-
 type BuiltInKeymapCommand = {
   scopes: CommandScopes
   run: (item: KeymapItem) => unknown
 }
-
-const keymapExtension = defineRegistryItemFactory((ctx) => {
-  const fileOperations = () => ctx.services.get(fileOperationsService)
-  const contributedKeymapSignal = ctx.valueSpecs.signal(keymapValueSpec)
-  const commandScopesSignal = ctx.valueSpecs.signal(commandScopesValueSpec)
-  const persistedKeymap = signal(createEmptyPersistedKeymap())
-  const keymapSignal = computed(() =>
-    createKeymapTree(
-      resolveKeymapItems(
-        contributedKeymapSignal.value.items,
-        persistedKeymap.value
+const keymapExtension: Subtree = {
+  key: 'keymap-extension',
+  create: (ctx) => {
+    const fileOperations = () => ctx.required(fileOperationsService)
+    const contributedKeymapSignal = ctx.observe(keymapFacet)
+    const commandScopesSignal = ctx.observe(commandScopesFacet)
+    const persistedKeymap = signal(createEmptyPersistedKeymap())
+    const keymapSignal = computed(() =>
+      createKeymapTree(
+        resolveKeymapItems(
+          contributedKeymapSignal.value.items,
+          persistedKeymap.value
+        )
       )
     )
-  )
-  const activeScopes = signal<readonly string[]>([
-    CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-  ])
-  const partialMatch = signal(false)
-  const partialMatchProgress = signal(0)
-  const builtInKeymapCommands = new Map<string, BuiltInKeymapCommand>([
-    [
-      'zds.commandPalette.open',
-      {
-        scopes: GLOBAL_COMMAND_SCOPES,
-        run: () =>
-          ctx.services.optional(commandSystemService)?.send({ type: 'Open' }),
+    const activeScopes = signal<readonly string[]>([
+      CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+    ])
+    const partialMatch = signal(false)
+    const partialMatchProgress = signal(0)
+    const builtInKeymapCommands = new Map<string, BuiltInKeymapCommand>([
+      [
+        'zds.commandPalette.open',
+        {
+          scopes: GLOBAL_COMMAND_SCOPES,
+          run: () =>
+            ctx.optional(commandSystemService)?.send({
+              type: 'Open',
+            }),
+        },
+      ],
+      [
+        'zds.commandPalette.close',
+        {
+          scopes: [COMMAND_PALETTE_OPEN_COMMAND_SCOPE],
+          run: () =>
+            ctx.optional(commandSystemService)?.send({
+              type: 'Close',
+            }),
+        },
+      ],
+      [
+        'zds.modelingDialog.submit',
+        {
+          scopes: [MODELING_DIALOG_FOCUSED_COMMAND_SCOPE],
+          run: () =>
+            getFocusedModelingDialogForm(
+              document.activeElement
+            )?.requestSubmit(),
+        },
+      ],
+      [
+        'zds.settings.open',
+        {
+          scopes: GLOBAL_COMMAND_SCOPES,
+          run: openSettings,
+        },
+      ],
+      [
+        'zds.settings.tab',
+        {
+          scopes: [SETTINGS_COMMAND_SCOPE],
+          run: (item) =>
+            updateSettingsTab(getSettingsTabArgument(item.arguments)),
+        },
+      ],
+    ])
+    const scopeServiceImpl: CommandScopeService = {
+      activeScopes,
+      applyScope: (scopeName) => {
+        if (activeScopes.value.includes(scopeName)) {
+          return
+        }
+        activeScopes.value = [...activeScopes.value, scopeName]
       },
-    ],
-    [
-      'zds.commandPalette.close',
-      {
-        scopes: [COMMAND_PALETTE_OPEN_COMMAND_SCOPE],
-        run: () =>
-          ctx.services.optional(commandSystemService)?.send({ type: 'Close' }),
+      removeScope: (scopeName) => {
+        activeScopes.value = activeScopes.value.filter(
+          (scope) => scope !== scopeName
+        )
       },
-    ],
-    [
-      'zds.modelingDialog.submit',
-      {
-        scopes: [MODELING_DIALOG_FOCUSED_COMMAND_SCOPE],
-        run: () =>
-          getFocusedModelingDialogForm(document.activeElement)?.requestSubmit(),
-      },
-    ],
-    [
-      'zds.settings.open',
-      {
-        scopes: GLOBAL_COMMAND_SCOPES,
-        run: openSettings,
-      },
-    ],
-    [
-      'zds.settings.tab',
-      {
-        scopes: [SETTINGS_COMMAND_SCOPE],
-        run: (item) =>
-          updateSettingsTab(getSettingsTabArgument(item.arguments)),
-      },
-    ],
-  ])
-
-  const scopeServiceImpl: CommandScopeService = {
-    activeScopes,
-    applyScope: (scopeName) => {
-      if (activeScopes.value.includes(scopeName)) {
+      getCurrentScopes: () => activeScopes.value,
+      focusScope: (scopeName) => ({
+        onFocus: () => scopeServiceImpl.applyScope(scopeName),
+        onBlur: () => scopeServiceImpl.removeScope(scopeName),
+      }),
+    }
+    const focusScopes = new Set([
+      CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+      CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+      EDITABLE_FOCUSED_COMMAND_SCOPE,
+      MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
+    ])
+    const syncFocusScopeFromEventTarget = (target: EventTarget | null) => {
+      let nextFocusScope = CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+      if (getFocusedModelingDialogForm(target)) {
+        nextFocusScope = MODELING_DIALOG_FOCUSED_COMMAND_SCOPE
+      } else if (isEventFromFormControl(target)) {
+        nextFocusScope = EDITABLE_FOCUSED_COMMAND_SCOPE
+      } else if (isEventFromCodeEditor(target)) {
+        nextFocusScope = CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+      } else if (isEventFromContentEditableTarget(target)) {
+        nextFocusScope = EDITABLE_FOCUSED_COMMAND_SCOPE
+      }
+      const currentFocusScopes = activeScopes.value.filter((scope) =>
+        focusScopes.has(scope)
+      )
+      if (
+        currentFocusScopes.length === 1 &&
+        currentFocusScopes[0] === nextFocusScope
+      ) {
         return
       }
-      activeScopes.value = [...activeScopes.value, scopeName]
-    },
-    removeScope: (scopeName) => {
-      activeScopes.value = activeScopes.value.filter(
-        (scope) => scope !== scopeName
+      activeScopes.value = [
+        ...activeScopes.value.filter((scope) => !focusScopes.has(scope)),
+        nextFocusScope,
+      ]
+    }
+    const pendingKeystrokesBySource: Record<KeymapSource, string[]> = {
+      global: [],
+      codeMirror: [],
+    }
+    /**
+     * Reference count for temporarily disabling keymap handling. A count is used
+     * instead of a boolean so overlapping callers can suspend listening
+     * independently and keymaps resume only after every cleanup callback has run.
+     */
+    let suspendListeningCount = 0
+    let persistedKeymapRevision = 0
+    let pendingTimeout: number | undefined
+    let pendingAnimationFrame: number | undefined
+    const clearPendingKeystrokes = () => {
+      pendingKeystrokesBySource.global = []
+      pendingKeystrokesBySource.codeMirror = []
+      partialMatch.value = false
+      partialMatchProgress.value = 0
+      if (pendingTimeout !== undefined) {
+        window.clearTimeout(pendingTimeout)
+        pendingTimeout = undefined
+      }
+      if (pendingAnimationFrame !== undefined) {
+        window.cancelAnimationFrame(pendingAnimationFrame)
+        pendingAnimationFrame = undefined
+      }
+    }
+    const initialPersistedKeymapLoad = Promise.resolve()
+      .then(() => readUserKeymapFile(fileOperations()))
+      .then((keymap) => {
+        if (persistedKeymapRevision === 0) {
+          persistedKeymap.value = keymap
+        }
+      })
+      .catch((error) => {
+        if (error !== undefined) {
+          reportRejection(error)
+        }
+      })
+    const schedulePendingKeystrokesReset = () => {
+      if (pendingTimeout !== undefined) {
+        window.clearTimeout(pendingTimeout)
+      }
+      pendingTimeout = window.setTimeout(
+        clearPendingKeystrokes,
+        PARTIAL_MATCH_TIMEOUT_MS
       )
-    },
-    getCurrentScopes: () => activeScopes.value,
-    focusScope: (scopeName) => ({
-      onFocus: () => scopeServiceImpl.applyScope(scopeName),
-      onBlur: () => scopeServiceImpl.removeScope(scopeName),
-    }),
-  }
-
-  const focusScopes = new Set([
-    CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
-    CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-    EDITABLE_FOCUSED_COMMAND_SCOPE,
-    MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
-  ])
-
-  const syncFocusScopeFromEventTarget = (target: EventTarget | null) => {
-    let nextFocusScope = CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
-    if (getFocusedModelingDialogForm(target)) {
-      nextFocusScope = MODELING_DIALOG_FOCUSED_COMMAND_SCOPE
-    } else if (isEventFromFormControl(target)) {
-      nextFocusScope = EDITABLE_FOCUSED_COMMAND_SCOPE
-    } else if (isEventFromCodeEditor(target)) {
-      nextFocusScope = CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
-    } else if (isEventFromContentEditableTarget(target)) {
-      nextFocusScope = EDITABLE_FOCUSED_COMMAND_SCOPE
-    }
-
-    const currentFocusScopes = activeScopes.value.filter((scope) =>
-      focusScopes.has(scope)
-    )
-    if (
-      currentFocusScopes.length === 1 &&
-      currentFocusScopes[0] === nextFocusScope
-    ) {
-      return
-    }
-
-    activeScopes.value = [
-      ...activeScopes.value.filter((scope) => !focusScopes.has(scope)),
-      nextFocusScope,
-    ]
-  }
-
-  const pendingKeystrokesBySource: Record<KeymapSource, string[]> = {
-    global: [],
-    codeMirror: [],
-  }
-  /**
-   * Reference count for temporarily disabling keymap handling. A count is used
-   * instead of a boolean so overlapping callers can suspend listening
-   * independently and keymaps resume only after every cleanup callback has run.
-   */
-  let suspendListeningCount = 0
-  let persistedKeymapRevision = 0
-  let pendingTimeout: number | undefined
-  let pendingAnimationFrame: number | undefined
-
-  const clearPendingKeystrokes = () => {
-    pendingKeystrokesBySource.global = []
-    pendingKeystrokesBySource.codeMirror = []
-    partialMatch.value = false
-    partialMatchProgress.value = 0
-    if (pendingTimeout !== undefined) {
-      window.clearTimeout(pendingTimeout)
-      pendingTimeout = undefined
-    }
-    if (pendingAnimationFrame !== undefined) {
-      window.cancelAnimationFrame(pendingAnimationFrame)
-      pendingAnimationFrame = undefined
-    }
-  }
-
-  const initialPersistedKeymapLoad = Promise.resolve()
-    .then(() => readUserKeymapFile(fileOperations()))
-    .then((keymap) => {
-      if (persistedKeymapRevision === 0) {
-        persistedKeymap.value = keymap
+      const startedAt = window.performance.now()
+      partialMatchProgress.value = 1
+      const updateProgress = (now: number) => {
+        const elapsed = now - startedAt
+        partialMatchProgress.value = Math.max(
+          0,
+          1 - elapsed / PARTIAL_MATCH_TIMEOUT_MS
+        )
+        if (partialMatchProgress.value > 0) {
+          pendingAnimationFrame = window.requestAnimationFrame(updateProgress)
+        }
       }
-    })
-    .catch((error) => {
-      if (error !== undefined) {
-        reportRejection(error)
+      if (pendingAnimationFrame !== undefined) {
+        window.cancelAnimationFrame(pendingAnimationFrame)
       }
-    })
-
-  const schedulePendingKeystrokesReset = () => {
-    if (pendingTimeout !== undefined) {
-      window.clearTimeout(pendingTimeout)
+      pendingAnimationFrame = window.requestAnimationFrame(updateProgress)
     }
-
-    pendingTimeout = window.setTimeout(
-      clearPendingKeystrokes,
-      PARTIAL_MATCH_TIMEOUT_MS
-    )
-
-    const startedAt = window.performance.now()
-    partialMatchProgress.value = 1
-
-    const updateProgress = (now: number) => {
-      const elapsed = now - startedAt
-      partialMatchProgress.value = Math.max(
-        0,
-        1 - elapsed / PARTIAL_MATCH_TIMEOUT_MS
+    const handleKeyDown: KeymapService['handleKeyDown'] = (
+      event,
+      { source }
+    ) => {
+      if (suspendListeningCount > 0) {
+        return false
+      }
+      if (source === 'global') {
+        // A focused editable can be removed without another focusin event. Use
+        // the event target to reconcile focus before checking availability.
+        syncFocusScopeFromEventTarget(event.composedPath()[0] ?? event.target)
+      }
+      const chord = keyboardEventToKeymapChord(event)
+      const pendingKeystrokes = pendingKeystrokesBySource[source]
+      if (
+        !chord ||
+        (source === 'global' &&
+          shouldIgnoreKeyboardEvent(event, pendingKeystrokes.length > 0))
+      ) {
+        return false
+      }
+      const owner =
+        source === 'global'
+          ? ctx.get(keymapEventOwnersFacet).find((owner) => owner.owns(event))
+          : undefined
+      const commandSystem = ctx.optional(commandSystemService)
+      const registeredCommands =
+        commandSystem?.actor.getSnapshot().context.commands ?? []
+      const commandsByKey = new Map<string, Command>()
+      for (const command of registeredCommands) {
+        const key = commandKey(command)
+        if (!commandsByKey.has(key)) {
+          commandsByKey.set(key, command)
+        }
+      }
+      const effectiveCommandScopes = getEffectiveCommandScopeSet(
+        activeScopes.value,
+        commandScopesSignal.value
       )
-
-      if (partialMatchProgress.value > 0) {
-        pendingAnimationFrame = window.requestAnimationFrame(updateProgress)
+      const isItemAvailable = (item: KeymapItem) => {
+        const command =
+          builtInKeymapCommands.get(item.command) ??
+          commandsByKey.get(item.command)
+        return (
+          command !== undefined &&
+          (!owner || getKeymapItemWhen(item).includes(owner.scope)) &&
+          isCommandAvailable(command, effectiveCommandScopes)
+        )
       }
-    }
-
-    if (pendingAnimationFrame !== undefined) {
-      window.cancelAnimationFrame(pendingAnimationFrame)
-    }
-    pendingAnimationFrame = window.requestAnimationFrame(updateProgress)
-  }
-
-  const handleKeyDown: KeymapService['handleKeyDown'] = (event, { source }) => {
-    if (suspendListeningCount > 0) {
+      const match = matchKeymapKeystrokes(
+        keymapSignal.value,
+        activeScopes.value,
+        [...pendingKeystrokes, chord],
+        commandScopesSignal.value,
+        isItemAvailable
+      )
+      if (match.type === 'prefix') {
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+        pendingKeystrokesBySource[source] = [...pendingKeystrokes, chord]
+        partialMatch.value = true
+        schedulePendingKeystrokesReset()
+        return true
+      }
+      if (match.type === 'full') {
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+        clearPendingKeystrokes()
+        runKeymapItem(match.item, commandsByKey, isItemAvailable(match.item))
+        return true
+      }
+      if (pendingKeystrokes.length === 0) {
+        return false
+      }
+      clearPendingKeystrokes()
+      const retryMatch = matchKeymapKeystrokes(
+        keymapSignal.value,
+        activeScopes.value,
+        [chord],
+        commandScopesSignal.value,
+        isItemAvailable
+      )
+      if (retryMatch.type === 'prefix') {
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+        pendingKeystrokesBySource[source] = [chord]
+        partialMatch.value = true
+        schedulePendingKeystrokesReset()
+        return true
+      }
+      if (retryMatch.type === 'full') {
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+        runKeymapItem(
+          retryMatch.item,
+          commandsByKey,
+          isItemAvailable(retryMatch.item)
+        )
+        return true
+      }
       return false
     }
-
-    if (source === 'global') {
-      // A focused editable can be removed without another focusin event. Use
-      // the event target to reconcile focus before checking availability.
+    const serviceImpl: KeymapService = {
+      keymap: keymapSignal,
+      persistedKeymap,
+      partialMatch,
+      applyScope: scopeServiceImpl.applyScope,
+      removeScope: scopeServiceImpl.removeScope,
+      getCurrentScopes: scopeServiceImpl.getCurrentScopes,
+      savePersistedKeymap: async (keymap) => {
+        await initialPersistedKeymapLoad
+        const normalizedKeymap = normalizePersistedKeymap(keymap)
+        persistedKeymapRevision += 1
+        persistedKeymap.value = normalizedKeymap
+        await writeUserKeymapFile(fileOperations(), normalizedKeymap)
+      },
+      addUserBinding: async (binding) => {
+        await serviceImpl.savePersistedKeymap({
+          ...persistedKeymap.value,
+          bindings: [...persistedKeymap.value.bindings, binding],
+        })
+      },
+      removeUserBinding: async (index) => {
+        await serviceImpl.savePersistedKeymap({
+          ...persistedKeymap.value,
+          bindings: persistedKeymap.value.bindings.filter(
+            (_binding, bindingIndex) => bindingIndex !== index
+          ),
+        })
+      },
+      unbind: async (item) => {
+        await serviceImpl.addUserBinding(createUnbindBinding(item))
+      },
+      /**
+       * Used by UI that needs to capture raw keystrokes for another purpose, such
+       * as the editable keybinding field in Settings. While suspended,
+       * `handleKeyDown` ignores global and CodeMirror keymap matches so the
+       * caller's own keydown listener can record chords without triggering app
+       * commands. The returned function must be called when capture ends.
+       */
+      suspendListening: () => {
+        suspendListeningCount += 1
+        clearPendingKeystrokes()
+        return () => {
+          suspendListeningCount = Math.max(0, suspendListeningCount - 1)
+        }
+      },
+      handleKeyDown,
+      focusScope: scopeServiceImpl.focusScope,
+    }
+    function runKeymapItem(
+      item: KeymapItem,
+      commandsByKey: ReadonlyMap<string, Command>,
+      isAvailable: boolean
+    ) {
+      if (!isAvailable) {
+        return
+      }
+      const builtInCommand = builtInKeymapCommands.get(item.command)
+      const result = builtInCommand
+        ? builtInCommand.run(item)
+        : runCommandById(item, commandsByKey)
+      if (result instanceof Promise) {
+        result.catch(reportRejection)
+      }
+    }
+    function runCommandById(
+      item: KeymapItem,
+      commandsByKey: ReadonlyMap<string, Command>
+    ) {
+      const commandSystem = ctx.optional(commandSystemService)
+      const command = commandsByKey.get(item.command)
+      if (!command || !commandSystem) {
+        return
+      }
+      const argDefaultValues = isKeymapArgumentRecord(item.arguments)
+        ? item.arguments
+        : undefined
+      return selectCommand(commandSystem, {
+        groupId: command.groupId,
+        name: String(command.name),
+        ...(argDefaultValues
+          ? {
+              argDefaultValues,
+            }
+          : {}),
+      })
+    }
+    const PartialMatchStatusBarItem = () => {
+      useSignals()
+      if (!partialMatch.value) {
+        return null
+      }
+      return createElement(
+        'div',
+        {
+          role: 'tooltip',
+          className:
+            'relative flex items-center overflow-hidden px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30',
+          'data-testid': 'keymap-partial-match-status',
+        },
+        createElement('div', {
+          className: 'absolute left-0 top-0 h-0.5 bg-primary',
+          style: {
+            width: `${Math.round(partialMatchProgress.value * 100)}%`,
+          },
+        }),
+        createElement('span', null, 'Partial keymap match, awaiting input...')
+      )
+    }
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      handleKeyDown(event, {
+        source: 'global',
+      })
+    }
+    const handleGlobalFocusIn = (event: FocusEvent) => {
       syncFocusScopeFromEventTarget(event.composedPath()[0] ?? event.target)
     }
-
-    const chord = keyboardEventToKeymapChord(event)
-    const pendingKeystrokes = pendingKeystrokesBySource[source]
-    if (
-      !chord ||
-      (source === 'global' &&
-        shouldIgnoreKeyboardEvent(event, pendingKeystrokes.length > 0))
-    ) {
-      return false
-    }
-
-    const owner =
-      source === 'global'
-        ? ctx.valueSpecs
-            .get(keymapEventOwnersValueSpec)
-            .find((owner) => owner.owns(event))
-        : undefined
-    const commandSystem = ctx.services.optional(commandSystemService)
-    const registeredCommands =
-      commandSystem?.actor.getSnapshot().context.commands ?? []
-    const commandsByKey = new Map<string, Command>()
-    for (const command of registeredCommands) {
-      const key = commandKey(command)
-      if (!commandsByKey.has(key)) {
-        commandsByKey.set(key, command)
+    const handleGlobalPointerDown = (event: PointerEvent) => {
+      if (shouldPreserveFocusScope(event.target)) {
+        return
       }
+      syncFocusScopeFromEventTarget(event.target)
     }
-    const effectiveCommandScopes = getEffectiveCommandScopeSet(
-      activeScopes.value,
-      commandScopesSignal.value
-    )
-    const isItemAvailable = (item: KeymapItem) => {
-      const command =
-        builtInKeymapCommands.get(item.command) ??
-        commandsByKey.get(item.command)
-      return (
-        command !== undefined &&
-        (!owner || getKeymapItemWhen(item).includes(owner.scope)) &&
-        isCommandAvailable(command, effectiveCommandScopes)
-      )
-    }
-
-    const match = matchKeymapKeystrokes(
-      keymapSignal.value,
-      activeScopes.value,
-      [...pendingKeystrokes, chord],
-      commandScopesSignal.value,
-      isItemAvailable
-    )
-
-    if (match.type === 'prefix') {
-      event.preventDefault()
-      event.stopPropagation()
-      event.stopImmediatePropagation()
-      pendingKeystrokesBySource[source] = [...pendingKeystrokes, chord]
-      partialMatch.value = true
-      schedulePendingKeystrokesReset()
-      return true
-    }
-
-    if (match.type === 'full') {
-      event.preventDefault()
-      event.stopPropagation()
-      event.stopImmediatePropagation()
-      clearPendingKeystrokes()
-      runKeymapItem(match.item, commandsByKey, isItemAvailable(match.item))
-      return true
-    }
-
-    if (pendingKeystrokes.length === 0) {
-      return false
-    }
-
-    clearPendingKeystrokes()
-
-    const retryMatch = matchKeymapKeystrokes(
-      keymapSignal.value,
-      activeScopes.value,
-      [chord],
-      commandScopesSignal.value,
-      isItemAvailable
-    )
-
-    if (retryMatch.type === 'prefix') {
-      event.preventDefault()
-      event.stopPropagation()
-      event.stopImmediatePropagation()
-      pendingKeystrokesBySource[source] = [chord]
-      partialMatch.value = true
-      schedulePendingKeystrokesReset()
-      return true
-    }
-
-    if (retryMatch.type === 'full') {
-      event.preventDefault()
-      event.stopPropagation()
-      event.stopImmediatePropagation()
-      runKeymapItem(
-        retryMatch.item,
-        commandsByKey,
-        isItemAvailable(retryMatch.item)
-      )
-      return true
-    }
-
-    return false
-  }
-
-  const serviceImpl: KeymapService = {
-    keymap: keymapSignal,
-    persistedKeymap,
-    partialMatch,
-    applyScope: scopeServiceImpl.applyScope,
-    removeScope: scopeServiceImpl.removeScope,
-    getCurrentScopes: scopeServiceImpl.getCurrentScopes,
-    savePersistedKeymap: async (keymap) => {
-      await initialPersistedKeymapLoad
-      const normalizedKeymap = normalizePersistedKeymap(keymap)
-      persistedKeymapRevision += 1
-      persistedKeymap.value = normalizedKeymap
-      await writeUserKeymapFile(fileOperations(), normalizedKeymap)
-    },
-    addUserBinding: async (binding) => {
-      await serviceImpl.savePersistedKeymap({
-        ...persistedKeymap.value,
-        bindings: [...persistedKeymap.value.bindings, binding],
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleGlobalKeyDown, {
+        capture: true,
       })
-    },
-    removeUserBinding: async (index) => {
-      await serviceImpl.savePersistedKeymap({
-        ...persistedKeymap.value,
-        bindings: persistedKeymap.value.bindings.filter(
-          (_binding, bindingIndex) => bindingIndex !== index
+      window.addEventListener('focusin', handleGlobalFocusIn, {
+        capture: true,
+      })
+      window.addEventListener('pointerdown', handleGlobalPointerDown, {
+        capture: true,
+      })
+    }
+    return {
+      items: [
+        provide(commandScopeService, scopeServiceImpl),
+        provide(keymapService, serviceImpl),
+        ...DEFAULT_COMMAND_SCOPES.map((scope) =>
+          contribute(commandScopesFacet, () => scope, {
+            key: scope.id,
+          })
         ),
-      })
-    },
-    unbind: async (item) => {
-      await serviceImpl.addUserBinding(createUnbindBinding(item))
-    },
-    /**
-     * Used by UI that needs to capture raw keystrokes for another purpose, such
-     * as the editable keybinding field in Settings. While suspended,
-     * `handleKeyDown` ignores global and CodeMirror keymap matches so the
-     * caller's own keydown listener can record chords without triggering app
-     * commands. The returned function must be called when capture ends.
-     */
-    suspendListening: () => {
-      suspendListeningCount += 1
-      clearPendingKeystrokes()
-      return () => {
-        suspendListeningCount = Math.max(0, suspendListeningCount - 1)
-      }
-    },
-    handleKeyDown,
-    focusScope: scopeServiceImpl.focusScope,
-  }
-
-  function runKeymapItem(
-    item: KeymapItem,
-    commandsByKey: ReadonlyMap<string, Command>,
-    isAvailable: boolean
-  ) {
-    if (!isAvailable) {
-      return
-    }
-
-    const builtInCommand = builtInKeymapCommands.get(item.command)
-    const result = builtInCommand
-      ? builtInCommand.run(item)
-      : runCommandById(item, commandsByKey)
-    if (result instanceof Promise) {
-      result.catch(reportRejection)
-    }
-  }
-
-  function runCommandById(
-    item: KeymapItem,
-    commandsByKey: ReadonlyMap<string, Command>
-  ) {
-    const commandSystem = ctx.services.optional(commandSystemService)
-    const command = commandsByKey.get(item.command)
-    if (!command || !commandSystem) {
-      return
-    }
-
-    const argDefaultValues = isKeymapArgumentRecord(item.arguments)
-      ? item.arguments
-      : undefined
-
-    return selectCommand(commandSystem, {
-      groupId: command.groupId,
-      name: String(command.name),
-      ...(argDefaultValues ? { argDefaultValues } : {}),
-    })
-  }
-
-  const PartialMatchStatusBarItem = () => {
-    useSignals()
-    if (!partialMatch.value) {
-      return null
-    }
-
-    return createElement(
-      'div',
-      {
-        role: 'tooltip',
-        className:
-          'relative flex items-center overflow-hidden px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30',
-        'data-testid': 'keymap-partial-match-status',
+        contribute(
+          statusBarLocalItemsFacet,
+          () =>
+            computed((): StatusBarItemType | null =>
+              partialMatch.value
+                ? {
+                    id: 'keymap.partial-match',
+                    component: PartialMatchStatusBarItem,
+                    order: -100,
+                  }
+                : null
+            ).value,
+          {
+            key: 'keymap.partial-match',
+          }
+        ),
+      ],
+      dispose: () => {
+        clearPendingKeystrokes()
+        if (typeof window !== 'undefined') {
+          window.removeEventListener('keydown', handleGlobalKeyDown, {
+            capture: true,
+          })
+          window.removeEventListener('focusin', handleGlobalFocusIn, {
+            capture: true,
+          })
+          window.removeEventListener('pointerdown', handleGlobalPointerDown, {
+            capture: true,
+          })
+        }
       },
-      createElement('div', {
-        className: 'absolute left-0 top-0 h-0.5 bg-primary',
-        style: {
-          width: `${Math.round(partialMatchProgress.value * 100)}%`,
-        },
-      }),
-      createElement('span', null, 'Partial keymap match, awaiting input...')
-    )
-  }
-
-  const handleGlobalKeyDown = (event: KeyboardEvent) => {
-    handleKeyDown(event, { source: 'global' })
-  }
-
-  const handleGlobalFocusIn = (event: FocusEvent) => {
-    syncFocusScopeFromEventTarget(event.composedPath()[0] ?? event.target)
-  }
-
-  const handleGlobalPointerDown = (event: PointerEvent) => {
-    if (shouldPreserveFocusScope(event.target)) {
-      return
     }
-    syncFocusScopeFromEventTarget(event.target)
-  }
-
-  if (typeof window !== 'undefined') {
-    window.addEventListener('keydown', handleGlobalKeyDown, { capture: true })
-    window.addEventListener('focusin', handleGlobalFocusIn, { capture: true })
-    window.addEventListener('pointerdown', handleGlobalPointerDown, {
-      capture: true,
-    })
-  }
-
-  return {
-    id: 'keymap-extension',
-    providesServices: [
-      provideService(commandScopeService, scopeServiceImpl),
-      provideService(keymapService, serviceImpl),
-    ],
-    provides: [
-      ...DEFAULT_COMMAND_SCOPES.map((scope) =>
-        provide(commandScopesValueSpec, scope, { key: scope.id })
-      ),
-      provide(
-        statusBarLocalItemsValueSpec,
-        computed((): StatusBarItemType | null =>
-          partialMatch.value
-            ? {
-                id: 'keymap.partial-match',
-                component: PartialMatchStatusBarItem,
-                order: -100,
-              }
-            : null
-        ),
-        { key: 'keymap.partial-match' }
-      ),
-    ],
-    dispose: () => {
-      clearPendingKeystrokes()
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('keydown', handleGlobalKeyDown, {
-          capture: true,
-        })
-        window.removeEventListener('focusin', handleGlobalFocusIn, {
-          capture: true,
-        })
-        window.removeEventListener('pointerdown', handleGlobalPointerDown, {
-          capture: true,
-        })
-      }
-    },
-  }
-}, 'keymap-extension')
-
-const keymapRegistryItem = defineRegistryItem({
-  id: 'keymap',
-  uses: [keymapExtension, defaultKeymapItem],
-})
-
+  },
+}
+const keymapRegistryItem = [keymapExtension, defaultKeymapItem]
 function keyboardEventToKeymapChord(event: KeyboardEvent) {
   if (isModifierKey(event.key)) {
     return null
   }
-
   const key = normalizeEventKey(event)
   if (!key) {
     return null
   }
-
   const parts: string[] = []
   const usesMod = isMacPlatform() ? event.metaKey : event.ctrlKey
-
   if (usesMod) {
     parts.push('mod')
   } else {
@@ -574,7 +541,6 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
       parts.push('meta')
     }
   }
-
   if (event.altKey) {
     parts.push('alt')
   }
@@ -582,22 +548,17 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
     parts.push('shift')
   }
   parts.push(key)
-
   return parts.join('+')
 }
-
 function isModifierKey(key: string) {
   return key === 'Control' || key === 'Meta' || key === 'Shift' || key === 'Alt'
 }
-
 function isMacPlatform() {
   if (typeof navigator === 'undefined') {
     return false
   }
-
   return /mac|iphone|ipad|ipod/i.test(navigator.platform)
 }
-
 function shouldIgnoreKeyboardEvent(
   event: KeyboardEvent,
   hasPendingKeystrokes: boolean
@@ -605,25 +566,20 @@ function shouldIgnoreKeyboardEvent(
   if (event.metaKey || event.ctrlKey || event.altKey || hasPendingKeystrokes) {
     return false
   }
-
   return (
     isEventFromFormControl(event.composedPath()[0] ?? event.target) ||
     isEventFromContentEditableTarget(event.composedPath()[0] ?? event.target)
   )
 }
-
 function isEventFromCodeEditor(target: EventTarget | null) {
   return target instanceof Element && target.closest('.cm-editor') !== null
 }
-
 function isEventFromContentEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false
   }
-
   return target.isContentEditable
 }
-
 function isEventFromFormControl(target: EventTarget | null) {
   return (
     target instanceof HTMLInputElement ||
@@ -631,7 +587,6 @@ function isEventFromFormControl(target: EventTarget | null) {
     target instanceof HTMLSelectElement
   )
 }
-
 function getFocusedModelingDialogForm(target: EventTarget | null) {
   const selection =
     target === document.body
@@ -643,31 +598,26 @@ function getFocusedModelingDialogForm(target: EventTarget | null) {
     ? selection.form
     : null
 }
-
 function shouldPreserveFocusScope(target: EventTarget | null) {
   return (
     target instanceof Element &&
     target.closest('[data-command-scope-preserve-focus="true"]') !== null
   )
 }
-
 function openSettings() {
   const pathname = getRouterPathname()
   const settingsPath = pathname.includes(PATHS.SETTINGS)
     ? pathname
     : webSafeJoin([pathname, makeUrlPathRelative(PATHS.SETTINGS)])
-
   pushRouterPath(
     `${settingsPath}${pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`
   )
 }
-
 function updateSettingsTab(tab: SettingsKeymapTab) {
   updateRouterSearchParams((searchParams) => {
     searchParams.set('tab', tab)
   })
 }
-
 function getSettingsTabArgument(args: KeymapArguments | undefined) {
   if (
     isKeymapArgumentRecord(args) &&
@@ -678,42 +628,33 @@ function getSettingsTabArgument(args: KeymapArguments | undefined) {
   ) {
     return args.tab
   }
-
   return 'user'
 }
-
-function isKeymapArgumentRecord(
-  args: KeymapArguments | undefined
-): args is { readonly [key: string]: KeymapArguments } {
+function isKeymapArgumentRecord(args: KeymapArguments | undefined): args is {
+  readonly [key: string]: KeymapArguments
+} {
   return Boolean(args && typeof args === 'object' && !isArray(args))
 }
-
 function getRouterPathname() {
   if (typeof window === 'undefined') {
     return '/'
   }
-
   const hashPath = getHashRouterPath()
   if (hashPath) {
     return hashPath.pathname
   }
-
   return window.location.pathname
 }
-
 function getHashRouterPath() {
   if (typeof window === 'undefined' || !window.location.hash.startsWith('#/')) {
     return null
   }
-
   return new URL(window.location.hash.slice(1), window.location.origin)
 }
-
 function pushRouterPath(pathAndSearch: string) {
   if (typeof window === 'undefined') {
     return
   }
-
   if (window.location.hash.startsWith('#/')) {
     const url = new URL(window.location.href)
     url.hash = `#${pathAndSearch}`
@@ -721,17 +662,14 @@ function pushRouterPath(pathAndSearch: string) {
   } else {
     window.history.pushState(null, '', pathAndSearch)
   }
-
   window.dispatchEvent(new Event('popstate'))
 }
-
 function updateRouterSearchParams(
   update: (searchParams: URLSearchParams) => void
 ) {
   if (typeof window === 'undefined') {
     return
   }
-
   const hashPath = getHashRouterPath()
   if (hashPath) {
     update(hashPath.searchParams)
@@ -743,8 +681,6 @@ function updateRouterSearchParams(
     update(url.searchParams)
     window.history.pushState(null, '', url)
   }
-
   window.dispatchEvent(new Event('popstate'))
 }
-
 export default keymapRegistryItem

@@ -1,12 +1,10 @@
-import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provide,
-  provideService,
-} from '@kittycad/registry'
-import { effect, signal } from '@preact/signals-core'
-import projectLibrariesRegistryService from '@src/lib/projectLibraries/registry/service'
+import { computed, effect, signal } from '@preact/signals-core'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
+import {
+  ExpectedFileOperationError,
+  type FileOperationRisk,
+  reportFileOperationError,
+} from '@src/lib/fileSystem/operationErrors'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
@@ -21,8 +19,8 @@ import {
 } from '@src/lib/projectLibraries'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import {
-  createProjectInLocalDirectory,
   cloneProjectIntoLocalDirectory,
+  createProjectInLocalDirectory,
 } from '@src/lib/projectLibraries/operations'
 import { projectLibraryRealizationFromProject } from '@src/lib/projectLibraries/realizations'
 import {
@@ -31,20 +29,16 @@ import {
   readProjectLibraryRealizationInvalidationForLibrary,
   readProjectLibraryRealizationsInvalidation,
 } from '@src/lib/projectLibraries/registry/invalidation'
+import projectLibrariesRegistryService from '@src/lib/projectLibraries/registry/service'
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import {
-  ExpectedFileOperationError,
-  reportFileOperationError,
-  type FileOperationRisk,
-} from '@src/lib/fileSystem/operationErrors'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectEntry,
-  homeProjectLoadingLibraryIdsValueSpec,
-  homeProjectSettledLibraryIdsValueSpec,
+  homeProjectLoadingLibraryIdsFacet,
+  homeProjectSettledLibraryIdsFacet,
 } from '@src/registry/contracts/homeProjects'
 import {
   type ProjectLibraryOperation,
@@ -52,17 +46,17 @@ import {
   type ProjectLibraryRealizationsService,
   type ProjectLibraryTypeContribution,
   type ProjectLibraryTypeOperations,
+  projectLibraryRealizationsFacet,
   projectLibraryRealizationsService,
-  projectLibraryRealizationsValueSpec,
-  projectLibrarySettingDefaultPoliciesValueSpec,
-  projectLibraryTypesValueSpec,
+  projectLibrarySettingDefaultPoliciesFacet,
+  projectLibraryTypesFacet,
 } from '@src/registry/contracts/projectLibraries'
 import {
+  settingsFacet,
   settingsService,
-  settingsValueSpec,
 } from '@src/registry/contracts/settings'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
-
+import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
+import { contribute, type InputOf, provide, type Subtree } from 'plankton'
 function areProjectLibrariesEqual(
   left: readonly ProjectLibrary[],
   right: readonly ProjectLibrary[]
@@ -82,7 +76,6 @@ function areProjectLibrariesEqual(
     })
   )
 }
-
 type ProjectLibraryInvalidationGeneration = {
   global: number
   library: number
@@ -94,13 +87,11 @@ type ConfiguredProjectLibraryScanInput = {
   libraryType?: ProjectLibraryTypeContribution
   invalidation: ProjectLibraryInvalidationGeneration
 }
-
 type ConfiguredProjectLibraryScanState = {
   input: ConfiguredProjectLibraryScanInput
   abortController?: AbortController
   realizations: ProjectLibraryRealizationContribution[]
 }
-
 function configuredProjectLibraryScanInputIsEqual(
   left: ConfiguredProjectLibraryScanInput | undefined,
   right: ConfiguredProjectLibraryScanInput
@@ -113,7 +104,6 @@ function configuredProjectLibraryScanInputIsEqual(
       areProjectLibrariesEqual([left.library], [right.library])
   )
 }
-
 function configuredProjectLibrarySourceIsEqual(
   left: ConfiguredProjectLibraryScanInput | undefined,
   right: ConfiguredProjectLibraryScanInput
@@ -124,7 +114,6 @@ function configuredProjectLibrarySourceIsEqual(
       areProjectLibrariesEqual([left.library], [right.library])
   )
 }
-
 function warnMissingProjectLibraryTypeHandler(
   library: ProjectLibrary,
   warnedMissingTypeLibraryIds: Set<string>
@@ -132,7 +121,6 @@ function warnMissingProjectLibraryTypeHandler(
   if (warnedMissingTypeLibraryIds.has(library.id)) {
     return
   }
-
   warnedMissingTypeLibraryIds.add(library.id)
   console.warn(
     `Configured project library "${library.title}" (${library.id}) has no registered "${library.type}" type handler; its projects cannot be listed.`
@@ -160,9 +148,11 @@ async function readConfiguredProjectLibraryRealizations({
     warnMissingProjectLibraryTypeHandler(library, warnedMissingTypeLibraryIds)
     return []
   }
-
   try {
-    return await readRealizations({ library, signal })
+    return await readRealizations({
+      library,
+      signal,
+    })
   } catch (error) {
     if (!signal.aborted) {
       reportRejection(error)
@@ -170,31 +160,25 @@ async function readConfiguredProjectLibraryRealizations({
     return []
   }
 }
-
 const PROJECT_LIBRARY_WATCH_DEBOUNCE_MS = 750
 const PROJECT_LIBRARY_WATCH_SETTLED_RESCAN_MS = 3000
-
 type ProjectLibraryWatchTarget = {
   path: string
   normalizedPath: string
   libraryIds: readonly string[]
 }
-
 type ProjectLibraryWatchPathScope =
   | 'outside'
   | 'root'
   | 'immediate-child'
   | 'nested-child'
-
 function normalizeProjectLibraryWatchPath(path: string) {
   return path.trim().replaceAll('\\', '/').replace(/\/+$/g, '')
 }
-
 function projectLibraryWatchTargetsFromLibraries(
   libraries: readonly ProjectLibrary[]
 ): ProjectLibraryWatchTarget[] {
   const targetsByPath = new Map<string, ProjectLibraryWatchTarget>()
-
   for (const library of libraries) {
     if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) continue
     const path = library.path.trim()
@@ -202,7 +186,6 @@ function projectLibraryWatchTargetsFromLibraries(
     if (!path || !normalizedPath || normalizedPath === fsZds.sep) {
       continue
     }
-
     const previousTarget = targetsByPath.get(normalizedPath)
     targetsByPath.set(normalizedPath, {
       path: previousTarget?.path ?? path,
@@ -210,7 +193,6 @@ function projectLibraryWatchTargetsFromLibraries(
       libraryIds: [...(previousTarget?.libraryIds ?? []), library.id],
     })
   }
-
   return Array.from(targetsByPath.values()).toSorted((left, right) =>
     left.normalizedPath.localeCompare(right.normalizedPath)
   )
@@ -228,20 +210,16 @@ function projectLibraryWatchPathScope(
 ): ProjectLibraryWatchPathScope {
   const normalizedTargetPath = normalizeProjectLibraryWatchPath(targetPath)
   const normalizedLibraryPath = normalizeProjectLibraryWatchPath(libraryPath)
-
   if (normalizedTargetPath === normalizedLibraryPath) {
     return 'root'
   }
-
   const libraryPrefix = `${normalizedLibraryPath}/`
   if (!normalizedTargetPath.startsWith(libraryPrefix)) {
     return 'outside'
   }
-
   const relativePath = normalizedTargetPath.slice(libraryPrefix.length)
   return relativePath.includes('/') ? 'nested-child' : 'immediate-child'
 }
-
 const PROJECT_LIBRARY_REALIZATION_INVALIDATION_EVENT_TYPES = new Set([
   'add',
   'addDir',
@@ -249,7 +227,6 @@ const PROJECT_LIBRARY_REALIZATION_INVALIDATION_EVENT_TYPES = new Set([
   'unlink',
   'unlinkDir',
 ])
-
 function shouldInvalidateProjectLibraryRealizationsForWatchEvent(
   eventType: string,
   targetPath: string,
@@ -258,11 +235,9 @@ function shouldInvalidateProjectLibraryRealizationsForWatchEvent(
   if (!PROJECT_LIBRARY_REALIZATION_INVALIDATION_EVENT_TYPES.has(eventType)) {
     return false
   }
-
   const pathScope = projectLibraryWatchPathScope(targetPath, libraryPath)
   return pathScope === 'root' || pathScope === 'immediate-child'
 }
-
 function watchConfiguredProjectLibraries({
   libraries,
   onInvalidateLibrary,
@@ -273,7 +248,6 @@ function watchConfiguredProjectLibraries({
   if (typeof window === 'undefined' || !window.electron) {
     return () => {}
   }
-
   const targets = projectLibraryWatchTargetsFromLibraries(libraries)
   const timersByLibraryId = new Map<string, ReturnType<typeof setTimeout>>()
   const settledTimersByLibraryId = new Map<
@@ -281,7 +255,6 @@ function watchConfiguredProjectLibraries({
     ReturnType<typeof setTimeout>
   >()
   const watcherKeysByPath = new Map<string, string>()
-
   const scheduleInvalidation = (libraryId: string) => {
     clearTimeout(timersByLibraryId.get(libraryId))
     timersByLibraryId.set(
@@ -292,7 +265,6 @@ function watchConfiguredProjectLibraries({
       }, PROJECT_LIBRARY_WATCH_DEBOUNCE_MS)
     )
   }
-
   const scheduleSettledInvalidation = (libraryId: string) => {
     clearTimeout(settledTimersByLibraryId.get(libraryId))
     settledTimersByLibraryId.set(
@@ -303,7 +275,6 @@ function watchConfiguredProjectLibraries({
       }, PROJECT_LIBRARY_WATCH_SETTLED_RESCAN_MS)
     )
   }
-
   for (const target of targets) {
     const watcherKey = `project-library-realizations:${uuidv4()}`
     watcherKeysByPath.set(target.path, watcherKey)
@@ -320,7 +291,6 @@ function watchConfiguredProjectLibraries({
         ) {
           return
         }
-
         for (const libraryId of target.libraryIds) {
           scheduleInvalidation(libraryId)
           if (eventType === 'addDir') {
@@ -331,10 +301,11 @@ function watchConfiguredProjectLibraries({
           }
         }
       },
-      { depth: 0 }
+      {
+        depth: 0,
+      }
     )
   }
-
   return () => {
     for (const timer of timersByLibraryId.values()) {
       clearTimeout(timer)
@@ -353,10 +324,11 @@ function watchConfiguredProjectLibraries({
  * directory library. This layer owns local realization discovery and library
  * membership only; cloud identity and duplicate policy are handled by cloudSync.
  */
-const configuredProjectLibraryRealizations = defineRegistryItemFactory(
-  (ctx) => {
-    const settings = ctx.services.signal(settingsService)
-    const libraryTypes = ctx.valueSpecs.signal(projectLibraryTypesValueSpec)
+const configuredProjectLibraryRealizations: Subtree = {
+  key: 'project-libraries.configured-realizations',
+  create: (ctx) => {
+    const settings = computed(() => ctx.optional(settingsService))
+    const libraryTypes = ctx.observe(projectLibraryTypesFacet)
     const realizations = signal<ProjectLibraryRealizationContribution[]>([])
     const warnedMissingTypeLibraryIds = new Set<string>()
     const scanStates = new Map<string, ConfiguredProjectLibraryScanState>()
@@ -367,7 +339,6 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
       | undefined
     let disposed = false
     let currentLibraryIds: readonly string[] = []
-
     const updateRealizations = () => {
       settledLibraryIds.value = currentLibraryIds.filter((libraryId) => {
         const state = scanStates.get(libraryId)
@@ -385,7 +356,6 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         (libraryId) => scanStates.get(libraryId)?.realizations ?? []
       )
     }
-
     const scanLibrary = (
       library: ProjectLibrary,
       libraryType: ProjectLibraryTypeContribution | undefined,
@@ -407,11 +377,9 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
           library.id
         ),
       }
-
       if (configuredProjectLibraryScanInputIsEqual(cachedScan?.input, input)) {
         return
       }
-
       cachedScan?.abortController?.abort()
       const readRealizations = libraryType?.readRealizations
       if (!readRealizations) {
@@ -425,7 +393,6 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         })
         return
       }
-
       const abortController = new AbortController()
       const state: ConfiguredProjectLibraryScanState = {
         input,
@@ -438,7 +405,6 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
           : [],
       }
       scanStates.set(library.id, state)
-
       void readConfiguredProjectLibraryRealizations({
         library,
         libraryType,
@@ -452,18 +418,15 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         ) {
           return
         }
-
         state.abortController = undefined
         state.realizations = nextRealizations
         updateRealizations()
       })
     }
-
     queueMicrotask(() => {
       if (disposed) {
         return
       }
-
       disposeConfiguredProjectLibraryRealizationsEffect = effect(() => {
         const currentSettings = settings.value?.current.value
         const typeById = libraryTypes.value
@@ -473,31 +436,35 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
           : []
         const activeLibraryIds = new Set(libraries.map((library) => library.id))
         currentLibraryIds = libraries.map((library) => library.id)
-
         for (const [libraryId, state] of scanStates) {
           if (!activeLibraryIds.has(libraryId)) {
             state.abortController?.abort()
             scanStates.delete(libraryId)
           }
         }
-
         libraries.forEach((library) => {
           scanLibrary(library, typeById.get(library.type), invalidation)
         })
         updateRealizations()
       })
     })
-
     return {
-      id: 'project-libraries.configured-realizations',
-      provides: [
-        provide(homeProjectSettledLibraryIdsValueSpec, settledLibraryIds, {
-          key: 'project-libraries.settled',
-        }),
-        provide(homeProjectLoadingLibraryIdsValueSpec, loadingLibraryIds, {
-          key: 'project-libraries.loading',
-        }),
-        provide(projectLibraryRealizationsValueSpec, realizations, {
+      items: [
+        contribute(
+          homeProjectSettledLibraryIdsFacet,
+          () => settledLibraryIds.value,
+          {
+            key: 'project-libraries.settled',
+          }
+        ),
+        contribute(
+          homeProjectLoadingLibraryIdsFacet,
+          () => loadingLibraryIds.value,
+          {
+            key: 'project-libraries.loading',
+          }
+        ),
+        contribute(projectLibraryRealizationsFacet, () => realizations.value, {
           key: 'project-libraries.configured-realizations',
         }),
       ],
@@ -510,36 +477,31 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
       },
     }
   },
-  'project-libraries.configured-realizations'
-)
-
-const projectLibraryRealizationsRegistryService = defineRegistryItem({
-  id: 'project-libraries.realizations-service',
-  providesServices: [
-    provideService(projectLibraryRealizationsService, {
-      invalidate: invalidateProjectLibraryRealizations,
-      watchConfiguredLibraries: ({ libraries }) => {
-        const dispose = watchConfiguredProjectLibraries({
-          libraries,
-          onInvalidateLibrary: (libraryId) =>
-            invalidateProjectLibraryRealizations({ libraryId }),
+}
+const projectLibraryRealizationsRegistryService = [
+  provide(projectLibraryRealizationsService, {
+    invalidate: invalidateProjectLibraryRealizations,
+    watchConfiguredLibraries: ({ libraries }) => {
+      const dispose = watchConfiguredProjectLibraries({
+        libraries,
+        onInvalidateLibrary: (libraryId) =>
+          invalidateProjectLibraryRealizations({
+            libraryId,
+          }),
+      })
+      for (const libraryId of new Set(libraries.map(({ id }) => id))) {
+        invalidateProjectLibraryRealizations({
+          libraryId,
         })
-
-        for (const libraryId of new Set(libraries.map(({ id }) => id))) {
-          invalidateProjectLibraryRealizations({ libraryId })
-        }
-
-        return dispose
-      },
-    } satisfies ProjectLibraryRealizationsService),
-  ],
-})
-
+      }
+      return dispose
+    },
+  } satisfies ProjectLibraryRealizationsService),
+]
 function getProjectCloneSource({ project }: { project: HomeProjectEntry }) {
   if (!project.localProjectPath || !project.readWriteAccess) {
     return undefined
   }
-
   return {
     localProjectPath: project.localProjectPath,
     localProjectName:
@@ -547,12 +509,10 @@ function getProjectCloneSource({ project }: { project: HomeProjectEntry }) {
     defaultFile: project.defaultFile,
   }
 }
-
 type DirectoryProjectOperationReport = {
   operation: string
   risk: FileOperationRisk
 }
-
 async function runReportedDirectoryProjectOperation<T>({
   run,
   ...report
@@ -570,9 +530,10 @@ async function runReportedDirectoryProjectOperation<T>({
     return Promise.reject(error)
   }
 }
-
 function withReportedDirectoryProjectOperation<
-  Input extends { library: ProjectLibrary },
+  Input extends {
+    library: ProjectLibrary
+  },
   Result,
 >(
   operation: ProjectLibraryOperation<Input, Result>,
@@ -587,18 +548,21 @@ function withReportedDirectoryProjectOperation<
       }),
   }
 }
-
 function withReportedDirectoryProjectOperations(
   operations: ProjectLibraryTypeOperations
 ): ProjectLibraryTypeOperations {
-  const report = <Input extends { library: ProjectLibrary }, Result>(
+  const report = <
+    Input extends {
+      library: ProjectLibrary
+    },
+    Result,
+  >(
     operation: ProjectLibraryOperation<Input, Result> | undefined,
     metadata: DirectoryProjectOperationReport
   ) =>
     operation
       ? withReportedDirectoryProjectOperation(operation, metadata)
       : undefined
-
   return {
     ...operations,
     createProject: report(operations.createProject, {
@@ -623,7 +587,6 @@ function withReportedDirectoryProjectOperations(
     }),
   }
 }
-
 function reportDirectoryProjectStatFailures({
   error,
   count,
@@ -643,234 +606,232 @@ function reportDirectoryProjectStatFailures({
     },
   })
 }
-
-const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
-  const fileOperations = () => ctx.services.get(fileOperationsService)
-  const getWasmPromise = () =>
-    ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    new ExpectedFileOperationError('Missing WASM promise registry value.')
-  /**
-   * Directory operations know the configured library they changed, so they
-   * refresh that library's local realization discovery directly.
-   */
-  const refreshLocalProjectRealizations = (
-    ...libraries: readonly ProjectLibrary[]
-  ) => {
-    for (const library of libraries) {
-      invalidateProjectLibraryRealizations({ libraryId: library.id })
+const directoryProjectLibraryType: Subtree = {
+  key: 'project-libraries.directory-library-type',
+  create: (ctx) => {
+    const fileOperations = () => ctx.required(fileOperationsService)
+    const getWasmPromise = () =>
+      ctx.get(wasmPromiseFacet) ??
+      new ExpectedFileOperationError('Missing WASM promise registry value.')
+    /**
+     * Directory operations know the configured library they changed, so they
+     * refresh that library's local realization discovery directly.
+     */
+    const refreshLocalProjectRealizations = (
+      ...libraries: readonly ProjectLibrary[]
+    ) => {
+      for (const library of libraries) {
+        invalidateProjectLibraryRealizations({
+          libraryId: library.id,
+        })
+      }
     }
-  }
-
-  const operations: ProjectLibraryTypeOperations = {
-    refresh: {
-      run: ({ library }) => {
-        refreshLocalProjectRealizations(library)
-        return undefined
+    const operations: ProjectLibraryTypeOperations = {
+      refresh: {
+        run: ({ library }) => {
+          refreshLocalProjectRealizations(library)
+          return undefined
+        },
       },
-    },
-    createProject: {
-      run: async ({
-        library,
-        requestedProjectName,
-        requestedProjectTitle,
-        initialKclFile,
-        initialProject,
-      }) => {
-        const wasmInstancePromise = getWasmPromise()
-        if (wasmInstancePromise instanceof Error) {
-          return Promise.reject(wasmInstancePromise)
-        }
-
-        const project = await createProjectInLocalDirectory({
-          fileOperations: fileOperations(),
-          projectDirectoryPath: library.path,
+      createProject: {
+        run: async ({
+          library,
           requestedProjectName,
           requestedProjectTitle,
-          wasmInstancePromise,
           initialKclFile,
           initialProject,
-        })
-        refreshLocalProjectRealizations(library)
-
-        return project
-      },
-    },
-    openProject: {
-      run: ({ project }) => {
-        if (!project.readWriteAccess || !project.defaultFile) {
-          return undefined
-        }
-
-        return { defaultFile: project.defaultFile }
-      },
-    },
-    duplicateProject: {
-      run: async ({ library, project }) => {
-        if (!project.localProjectName || !project.localProjectPath) {
-          return undefined
-        }
-        const wasmInstancePromise = getWasmPromise()
-        if (wasmInstancePromise instanceof Error) {
-          return Promise.reject(wasmInstancePromise)
-        }
-
-        const result = await duplicateProjectInDirectory({
-          fileOperations: fileOperations(),
-          source: {
-            directoryName: project.localProjectName,
-            displayName: getHomeProjectDisplayName(project),
-            path: project.localProjectPath,
-          },
-          projectDirectoryPath: library.path,
-          requestedProjectTitle: getHomeProjectDisplayName(project),
-          wasmInstance: await wasmInstancePromise,
-        })
-        refreshLocalProjectRealizations(library)
-
-        return result
-      },
-    },
-    renameProject: {
-      run: async ({ library, project, requestedName }) => {
-        if (!project.localProjectPath || !project.readWriteAccess) {
-          return
-        }
-
-        await writeProjectTitleToProjectToml(
-          fileOperations(),
-          project.localProjectPath,
-          requestedName
-        )
-        refreshLocalProjectRealizations(library)
-      },
-    },
-    deleteProject: {
-      run: async ({ library, project }) => {
-        if (!project.localProjectPath || !project.readWriteAccess) {
-          return
-        }
-
-        await fileOperations().remove(project.localProjectPath)
-        refreshLocalProjectRealizations(library)
-      },
-    },
-    cloneProjectFrom: {
-      canCloneProject: ({ project }) =>
-        Boolean(project.localProjectPath && project.readWriteAccess),
-      run: ({ project }) => getProjectCloneSource({ project }),
-    },
-    cloneProjectTo: {
-      run: async ({ library, source, project, requestedProjectTitle }) => {
-        const wasmInstancePromise = getWasmPromise()
-        if (wasmInstancePromise instanceof Error)
-          return Promise.reject(wasmInstancePromise)
-        const result = await cloneProjectIntoLocalDirectory({
-          fileOperations: fileOperations(),
-          projectDirectoryPath: library.path,
-          sourceProjectPath: source.localProjectPath,
-          sourceProjectName: source.localProjectName,
-          defaultFile: source.defaultFile,
-          requestedProjectTitle:
-            requestedProjectTitle ?? getHomeProjectDisplayName(project),
-          wasmInstancePromise,
-        })
-        refreshLocalProjectRealizations(library)
-
-        return result
-      },
-    },
-  }
-
-  return {
-    id: 'project-libraries.directory-library-type',
-    provides: [
-      provide(projectLibraryTypesValueSpec, {
-        type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-        title: 'Directory',
-        icon: 'folder',
-        order: 0,
-        defaultSetting: {
-          title: DEFAULT_PROJECT_LIBRARY_TITLE,
-          path: 'projects',
-          type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-        },
-        newLibrarySetting: {
-          title: NEW_PROJECT_LIBRARY_TITLE,
-          path: 'projects',
-          type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-        },
-        settingsDetails: DirectoryProjectLibrarySettingsDetails,
-        hideInSettingsOnPlatform: 'web',
-        /**
-         * Directory libraries return concrete folders on disk. Any cloud
-         * project ID found in project metadata is carried as an observation,
-         * not used here to merge or discard local realizations.
-         */
-        readRealizations: async ({ library, signal }) => {
+        }) => {
           const wasmInstancePromise = getWasmPromise()
           if (wasmInstancePromise instanceof Error) {
             return Promise.reject(wasmInstancePromise)
           }
-
-          return runReportedDirectoryProjectOperation({
-            operation: 'list projects',
-            risk: 'read',
-            run: async () => {
-              const projects = await readProjectsFromProjectDirectory({
-                fileOperations: fileOperations(),
-                projectDirectoryPath: library.path,
-                wasmInstancePromise,
-                signal,
-                onProjectStatFailures: reportDirectoryProjectStatFailures,
-              })
-
-              return projects.map((project) =>
-                projectLibraryRealizationFromProject(project, library)
-              )
-            },
+          const project = await createProjectInLocalDirectory({
+            fileOperations: fileOperations(),
+            projectDirectoryPath: library.path,
+            requestedProjectName,
+            requestedProjectTitle,
+            wasmInstancePromise,
+            initialKclFile,
+            initialProject,
           })
+          refreshLocalProjectRealizations(library)
+          return project
         },
-        operations: withReportedDirectoryProjectOperations(operations),
-      }),
-    ],
-  }
-}, 'project-libraries.directory-library-type')
-
-const directoryProjectLibraryDefaultPolicy = defineRegistryItem({
-  id: 'project-libraries.directory-library-default-policy',
-  provides: [
-    provide(projectLibrarySettingDefaultPoliciesValueSpec, {
-      id: 'project-libraries.directory-library-default-policy',
-      priority: 0,
+      },
+      openProject: {
+        run: ({ project }) => {
+          if (!project.readWriteAccess || !project.defaultFile) {
+            return undefined
+          }
+          return {
+            defaultFile: project.defaultFile,
+          }
+        },
+      },
+      duplicateProject: {
+        run: async ({ library, project }) => {
+          if (!project.localProjectName || !project.localProjectPath) {
+            return undefined
+          }
+          const wasmInstancePromise = getWasmPromise()
+          if (wasmInstancePromise instanceof Error) {
+            return Promise.reject(wasmInstancePromise)
+          }
+          const result = await duplicateProjectInDirectory({
+            fileOperations: fileOperations(),
+            source: {
+              directoryName: project.localProjectName,
+              displayName: getHomeProjectDisplayName(project),
+              path: project.localProjectPath,
+            },
+            projectDirectoryPath: library.path,
+            requestedProjectTitle: getHomeProjectDisplayName(project),
+            wasmInstance: await wasmInstancePromise,
+          })
+          refreshLocalProjectRealizations(library)
+          return result
+        },
+      },
+      renameProject: {
+        run: async ({ library, project, requestedName }) => {
+          if (!project.localProjectPath || !project.readWriteAccess) {
+            return
+          }
+          await writeProjectTitleToProjectToml(
+            fileOperations(),
+            project.localProjectPath,
+            requestedName
+          )
+          refreshLocalProjectRealizations(library)
+        },
+      },
+      deleteProject: {
+        run: async ({ library, project }) => {
+          if (!project.localProjectPath || !project.readWriteAccess) {
+            return
+          }
+          await fileOperations().remove(project.localProjectPath)
+          refreshLocalProjectRealizations(library)
+        },
+      },
+      cloneProjectFrom: {
+        canCloneProject: ({ project }) =>
+          Boolean(project.localProjectPath && project.readWriteAccess),
+        run: ({ project }) =>
+          getProjectCloneSource({
+            project,
+          }),
+      },
+      cloneProjectTo: {
+        run: async ({ library, source, project, requestedProjectTitle }) => {
+          const wasmInstancePromise = getWasmPromise()
+          if (wasmInstancePromise instanceof Error)
+            return Promise.reject(wasmInstancePromise)
+          const result = await cloneProjectIntoLocalDirectory({
+            fileOperations: fileOperations(),
+            projectDirectoryPath: library.path,
+            sourceProjectPath: source.localProjectPath,
+            sourceProjectName: source.localProjectName,
+            defaultFile: source.defaultFile,
+            requestedProjectTitle:
+              requestedProjectTitle ?? getHomeProjectDisplayName(project),
+            wasmInstancePromise,
+          })
+          refreshLocalProjectRealizations(library)
+          return result
+        },
+      },
+    }
+    const _projectLibraryTypesContribution: InputOf<
+      typeof projectLibraryTypesFacet
+    > = {
+      type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      title: 'Directory',
+      icon: 'folder',
+      order: 0,
+      defaultSetting: {
+        title: DEFAULT_PROJECT_LIBRARY_TITLE,
+        path: 'projects',
+        type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      },
+      newLibrarySetting: {
+        title: NEW_PROJECT_LIBRARY_TITLE,
+        path: 'projects',
+        type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      },
+      settingsDetails: DirectoryProjectLibrarySettingsDetails,
+      hideInSettingsOnPlatform: 'web',
       /**
-       * Product policy: the directory library owns the legacy default project
-       * directory fallback. Other library systems can contribute
-       * higher-priority policies without `loadAndValidateSettings()` knowing
-       * about their storage type.
+       * Directory libraries return concrete folders on disk. Any cloud
+       * project ID found in project metadata is carried as an observation,
+       * not used here to merge or discard local realizations.
        */
-      getDefaultLibraries: ({ legacyProjectDirectory, initialDefaultDir }) =>
-        getDefaultProjectLibrarySettings(
-          legacyProjectDirectory ?? initialDefaultDir
+      readRealizations: async ({ library, signal }) => {
+        const wasmInstancePromise = getWasmPromise()
+        if (wasmInstancePromise instanceof Error) {
+          return Promise.reject(wasmInstancePromise)
+        }
+        return runReportedDirectoryProjectOperation({
+          operation: 'list projects',
+          risk: 'read',
+          run: async () => {
+            const projects = await readProjectsFromProjectDirectory({
+              fileOperations: fileOperations(),
+              projectDirectoryPath: library.path,
+              wasmInstancePromise,
+              signal,
+              onProjectStatFailures: reportDirectoryProjectStatFailures,
+            })
+            return projects.map((project) =>
+              projectLibraryRealizationFromProject(project, library)
+            )
+          },
+        })
+      },
+      operations: withReportedDirectoryProjectOperations(operations),
+    } satisfies InputOf<typeof projectLibraryTypesFacet>
+    return {
+      items: [
+        contribute(
+          projectLibraryTypesFacet,
+          () => _projectLibraryTypesContribution
         ),
-    }),
-  ],
-})
-
-const projectLibrariesExtension = defineRegistryItem({
-  id: 'project-libraries',
-  uses: [
-    projectLibrariesRegistryService,
-    configuredProjectLibraryRealizations,
-    directoryProjectLibraryDefaultPolicy,
-    directoryProjectLibraryType,
-    projectLibraryRealizationsRegistryService,
-  ],
-  provides: [provide(settingsValueSpec, projectLibrariesSettingsContribution)],
-})
-
+      ],
+    }
+  },
+}
+const _projectLibrarySettingDefaultPoliciesContribution: InputOf<
+  typeof projectLibrarySettingDefaultPoliciesFacet
+> = {
+  id: 'project-libraries.directory-library-default-policy',
+  priority: 0,
+  /**
+   * Product policy: the directory library owns the legacy default project
+   * directory fallback. Other library systems can contribute
+   * higher-priority policies without `loadAndValidateSettings()` knowing
+   * about their storage type.
+   */
+  getDefaultLibraries: ({ legacyProjectDirectory, initialDefaultDir }) =>
+    getDefaultProjectLibrarySettings(
+      legacyProjectDirectory ?? initialDefaultDir
+    ),
+} satisfies InputOf<typeof projectLibrarySettingDefaultPoliciesFacet>
+const directoryProjectLibraryDefaultPolicy = [
+  contribute(
+    projectLibrarySettingDefaultPoliciesFacet,
+    () => _projectLibrarySettingDefaultPoliciesContribution
+  ),
+]
+const projectLibrariesExtension = [
+  projectLibrariesRegistryService,
+  configuredProjectLibraryRealizations,
+  directoryProjectLibraryDefaultPolicy,
+  directoryProjectLibraryType,
+  projectLibraryRealizationsRegistryService,
+  contribute(settingsFacet, () => projectLibrariesSettingsContribution),
+]
 export {
   invalidateProjectLibraryRealizations,
   readProjectLibraryRealizationsInvalidation,
 }
-
 export default projectLibrariesExtension

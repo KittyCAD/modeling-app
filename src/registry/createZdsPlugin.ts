@@ -1,22 +1,20 @@
 import type { Feature } from '@kittycad/lib'
-import {
-  appendValueSpec,
-  createPlugin,
-  defineRegistryItem,
-  provide,
-  type RegistryItem,
-  type RegistryItemDefinition,
-} from '@kittycad/registry'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import type {
   HideOnPlatformValue,
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { settingsFacet } from '@src/registry/contracts/settings'
+import {
+  contribute,
+  createPlugin,
+  Facet,
+  type InputOf,
+  type Item,
+} from 'plankton'
 
 type ZdsPluginDefault = 'core' | 'off'
 type ZdsPluginActivationSettingCategory = 'modeling' | 'plugins'
-
 export type ZdsPluginFeatureActivationPolicy = {
   /**
    * Feature flag that controls whether this plugin may become active.
@@ -38,23 +36,24 @@ export type ZdsPluginFeatureActivationPolicy = {
    */
   disableWithoutFeature?: boolean
 }
-
 export type ZdsPluginActivationSetting = {
   pluginId: string
   category: ZdsPluginActivationSettingCategory
   settingName: string
   featurePolicy?: ZdsPluginFeatureActivationPolicy
 }
-
-export const zdsPluginActivationSettingsValueSpec =
-  appendValueSpec<ZdsPluginActivationSetting>('zds-plugin-activation-settings')
-
+export const zdsPluginActivationSettingsFacet = new Facet<
+  ZdsPluginActivationSetting,
+  readonly ZdsPluginActivationSetting[]
+>('zds-plugin-activation-settings', (inputs) => inputs)
 type ZdsPluginActivationSettingSpec = {
   category: ZdsPluginActivationSettingCategory
   settingName: string
   title?: string
   description?: string
-  commandConfig?: { inputType: 'boolean' }
+  commandConfig?: {
+    inputType: 'boolean'
+  }
   hideOnLevel?: SettingsLevel
   /**
    * Hide the activation toggle on a platform. Used to make a plugin
@@ -71,15 +70,20 @@ type ZdsPluginActivationSettingSpec = {
    */
   hideWithoutFeature?: Feature
   featurePolicy?: ZdsPluginFeatureActivationPolicy
-  userToml?: { sectionKey: string; tomlKey: string }
-  projectToml?: { sectionKey: string; tomlKey: string }
+  userToml?: {
+    sectionKey: string
+    tomlKey: string
+  }
+  projectToml?: {
+    sectionKey: string
+    tomlKey: string
+  }
 }
-
 type ZdsPluginSpec = {
   id: string
   title: string
   description: string
-  items: readonly RegistryItem[]
+  items: readonly Item[]
   defaultSetting?: ZdsPluginDefault
   activationSetting?: ZdsPluginActivationSettingSpec
 }
@@ -95,7 +99,7 @@ type ZdsPluginSpec = {
 export function createZdsPlugin({
   defaultSetting = 'core',
   ...spec
-}: ZdsPluginSpec): RegistryItemDefinition {
+}: ZdsPluginSpec): readonly Item[] {
   const enabledByDefault = defaultSetting === 'core'
   const activationSetting: ZdsPluginActivationSettingSpec =
     spec.activationSetting ?? {
@@ -108,37 +112,39 @@ export function createZdsPlugin({
         tomlKey: spec.id,
       },
     }
-
-  return defineRegistryItem({
-    id: `${spec.id}.zds-plugin`,
-    uses: [
-      createPlugin({
-        ...spec,
-        enabledByDefault,
-      }),
-    ],
-    provides: [
-      provide(settingsValueSpec, {
-        [activationSetting.category]: {
-          [activationSetting.settingName]: defineBooleanExtensionSetting({
-            defaultValue: enabledByDefault,
-            title: activationSetting.title,
-            description: activationSetting.description,
-            commandConfig: activationSetting.commandConfig,
-            hideOnLevel: activationSetting.hideOnLevel,
-            hideOnPlatform: activationSetting.hideOnPlatform,
-            hideWithoutFeature: activationSetting.hideWithoutFeature,
-            userToml: activationSetting.userToml,
-            projectToml: activationSetting.projectToml,
-          }),
-        },
-      }),
-      provide(zdsPluginActivationSettingsValueSpec, {
-        pluginId: spec.id,
-        category: activationSetting.category,
-        settingName: activationSetting.settingName,
-        featurePolicy: activationSetting.featurePolicy,
-      }),
-    ],
-  })
+  return [
+    createPlugin({
+      ...spec,
+      enabledByDefault,
+    }),
+    contribute(
+      settingsFacet,
+      () =>
+        ({
+          [activationSetting.category]: {
+            [activationSetting.settingName]: defineBooleanExtensionSetting({
+              defaultValue: enabledByDefault,
+              title: activationSetting.title,
+              description: activationSetting.description,
+              commandConfig: activationSetting.commandConfig,
+              hideOnLevel: activationSetting.hideOnLevel,
+              hideOnPlatform: activationSetting.hideOnPlatform,
+              hideWithoutFeature: activationSetting.hideWithoutFeature,
+              userToml: activationSetting.userToml,
+              projectToml: activationSetting.projectToml,
+            }),
+          },
+        }) satisfies InputOf<typeof settingsFacet>
+    ),
+    contribute(
+      zdsPluginActivationSettingsFacet,
+      () =>
+        ({
+          pluginId: spec.id,
+          category: activationSetting.category,
+          settingName: activationSetting.settingName,
+          featurePolicy: activationSetting.featurePolicy,
+        }) satisfies InputOf<typeof zdsPluginActivationSettingsFacet>
+    ),
+  ]
 }

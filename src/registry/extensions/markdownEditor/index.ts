@@ -1,4 +1,3 @@
-import { defineRegistryItemFactory, provideService } from '@kittycad/registry'
 import type {
   MarkdownEditorActionName,
   MarkdownEditorActions,
@@ -17,6 +16,7 @@ import {
   type MarkdownEditorService,
   markdownEditorService,
 } from '@src/registry/contracts/markdownEditor'
+import { provide, type Subtree } from 'plankton'
 
 const MARKDOWN_EDITOR_COMMAND_GROUP_ID = 'markdownEditor'
 const MARKDOWN_EDITOR_KEYMAP_SOURCE = 'Markdown editor'
@@ -181,62 +181,62 @@ const markdownEditorCommands: readonly Command[] = Object.values(
     onSubmit: () => false,
   }
 })
+const markdownEditorExtension = {
+  key: 'markdown-editor-extension',
+  create: () => {
+    let nextRegistrationId = 0
+    const activeEditors: {
+      id: number
+      actions: MarkdownEditorActions
+    }[] = []
 
-const markdownEditorExtension = defineRegistryItemFactory(() => {
-  let nextRegistrationId = 0
-  const activeEditors: {
-    id: number
-    actions: MarkdownEditorActions
-  }[] = []
+    const runEditorAction = (action: MarkdownEditorActionName) =>
+      activeEditors.at(-1)?.actions[action]() ?? false
 
-  const runEditorAction = (action: MarkdownEditorActionName) =>
-    activeEditors.at(-1)?.actions[action]() ?? false
+    const serviceImpl: MarkdownEditorService = {
+      registerActiveEditor: (actions) => {
+        const registration = {
+          id: nextRegistrationId,
+          actions,
+        }
+        nextRegistrationId += 1
+        activeEditors.push(registration)
 
-  const serviceImpl: MarkdownEditorService = {
-    registerActiveEditor: (actions) => {
-      const registration = {
-        id: nextRegistrationId,
-        actions,
-      }
-      nextRegistrationId += 1
-      activeEditors.push(registration)
-
-      return () => {
-        const index = activeEditors.findIndex(
-          (candidate) => candidate.id === registration.id
+        return () => {
+          const index = activeEditors.findIndex(
+            (candidate) => candidate.id === registration.id
+          )
+          if (index !== -1) {
+            activeEditors.splice(index, 1)
+          }
+        }
+      },
+    }
+    const commands: readonly Command[] = markdownEditorCommands.map(
+      (command) => {
+        const keymap = markdownEditorKeymaps.find(
+          (candidate) => candidate.command === command.id
         )
-        if (index !== -1) {
-          activeEditors.splice(index, 1)
+
+        return {
+          ...command,
+          onSubmit: () => (keymap ? runEditorAction(keymap.action) : false),
         }
       }
-    },
-  }
-
-  const commands: readonly Command[] = markdownEditorCommands.map((command) => {
-    const keymap = markdownEditorKeymaps.find(
-      (candidate) => candidate.command === command.id
     )
-
     return {
-      ...command,
-      onSubmit: () => (keymap ? runEditorAction(keymap.action) : false),
+      items: [
+        ...commands.map(provideCommand),
+        ...markdownEditorKeymapItems.map(provideKeymapItem),
+        provideCommandScope({
+          id: MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
+          displayName: 'Markdown editor focused',
+          priority: 1200,
+          userEditable: false,
+        }),
+        provide(markdownEditorService, serviceImpl),
+      ],
     }
-  })
-
-  return {
-    id: 'markdown-editor-extension',
-    provides: [
-      ...commands.map(provideCommand),
-      ...markdownEditorKeymapItems.map(provideKeymapItem),
-      provideCommandScope({
-        id: MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
-        displayName: 'Markdown editor focused',
-        priority: 1200,
-        userEditable: false,
-      }),
-    ],
-    providesServices: [provideService(markdownEditorService, serviceImpl)],
-  }
-}, 'markdown-editor-extension')
-
+  },
+} satisfies Subtree
 export default markdownEditorExtension

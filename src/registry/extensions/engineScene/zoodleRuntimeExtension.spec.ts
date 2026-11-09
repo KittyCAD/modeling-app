@@ -1,8 +1,7 @@
-import { Registry } from '@kittycad/registry'
 import {
   engineSceneRuntimeExtensionsSlot,
-  engineSceneStreamClassNamesValueSpec,
-  engineSceneStreamLayersValueSpec,
+  engineSceneStreamClassNamesFacet,
+  engineSceneStreamLayersFacet,
   mergeEngineSceneClassNames,
 } from '@src/registry/contracts/engineScene'
 import {
@@ -11,49 +10,53 @@ import {
   ZOODLE_BRUSH_SIZE_MIN_PX,
   zoodleService,
 } from '@src/registry/contracts/zoodle'
+import { Registry } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 import engineSceneExtension from '.'
 import { activateZoodleRuntimeExtension } from './zoodleRuntimeExtension'
 
 describe('zoodle runtime extension', () => {
-  it('insets the engine stream while Zoodle is active', () => {
+  it('insets the engine stream while Zoodle is active', async () => {
     const registry = new Registry()
-    registry.configure([
+    await registry.configure([
       engineSceneExtension,
-      engineSceneRuntimeExtensionsSlot.of(),
+      {
+        ...engineSceneRuntimeExtensionsSlot,
+        create: () => ({
+          items: [],
+        }),
+      },
     ])
-
-    activateZoodleRuntimeExtension(registry, {
+    await activateZoodleRuntimeExtension(registry, {
       imageDataUrl: 'data:image/png;base64,aGVsbG8=',
       onCancel: vi.fn(),
       onSend: vi.fn(),
     })
 
-    expect(registry.get(engineSceneStreamLayersValueSpec)).toHaveLength(1)
+    expect(registry.get(engineSceneStreamLayersFacet)).toHaveLength(1)
     expect(
-      mergeEngineSceneClassNames(
-        registry.get(engineSceneStreamClassNamesValueSpec)
-      )
+      mergeEngineSceneClassNames(registry.get(engineSceneStreamClassNamesFacet))
     ).toBe(
       'absolute inset-4 z-20 rounded-lg before:content-[""] before:absolute before:-inset-4 before:bg-ml-green'
     )
   })
-
-  it('provides a session-scoped Zoodle tool service', () => {
+  it('provides a session-scoped Zoodle tool service', async () => {
     const registry = new Registry()
-    registry.configure([
+    await registry.configure([
       engineSceneExtension,
-      engineSceneRuntimeExtensionsSlot.of(),
+      {
+        ...engineSceneRuntimeExtensionsSlot,
+        create: () => ({
+          items: [],
+        }),
+      },
     ])
-
-    activateZoodleRuntimeExtension(registry, {
+    await activateZoodleRuntimeExtension(registry, {
       imageDataUrl: 'data:image/png;base64,aGVsbG8=',
       onCancel: vi.fn(),
       onSend: vi.fn(),
     })
-
-    const zoodle = registry.get(zoodleService)
-
+    const zoodle = registry.required(zoodleService)
     expect(zoodle.activeToolKey.value).toBe('drawOrange')
     expect(zoodle.brushSize.value).toBe(ZOODLE_BRUSH_SIZE_DEFAULT_PX)
     expect(zoodle.toolDefinitions.drawOrange).toMatchObject({

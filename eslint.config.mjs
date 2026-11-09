@@ -284,7 +284,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/registry/src/**/*.{ts,tsx}'],
+    files: ['packages/plankton/src/**/*.{ts,tsx}'],
     rules: {
       'suggest-no-throw/suggest-no-throw': 'off',
     },

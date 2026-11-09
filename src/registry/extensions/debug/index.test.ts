@@ -1,45 +1,41 @@
-import {
-  defineRegistryItem,
-  provideService,
-  Registry,
-} from '@kittycad/registry'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
+import { provide, Registry, type Subtree } from 'plankton'
 import { afterEach, expect, it, vi } from 'vitest'
 import debug from '.'
 
 const registries: Registry[] = []
-afterEach(() => {
-  for (const registry of registries.splice(0)) registry[Symbol.dispose]()
+afterEach(async () => {
+  for (const registry of registries.splice(0)) await registry.dispose()
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
   document.querySelector('[data-testid="stream"]')?.remove()
 })
-
-function createRegistry() {
+async function createRegistry() {
   const sendSceneCommand = vi.fn().mockResolvedValue(undefined)
   const manager = { sendSceneCommand } as unknown as ConnectionManager
   const context = {} as RustContext
   const registry = new Registry()
   registries.push(registry)
-  registry.configure([
+  await registry.configure([
     debug,
-    defineRegistryItem({
-      providesServices: [
-        provideService(engineConnectionService, { manager }),
-        provideService(rustContextService, { context }),
-      ],
-    }),
+    {
+      create: () => ({
+        items: [
+          provide(engineConnectionService, { manager }),
+          provide(rustContextService, { context }),
+        ],
+      }),
+    } satisfies Subtree,
   ])
   registry.inspect()
   return { registry, manager, context, sendSceneCommand }
 }
-
-it('exposes runtime services and console helpers without an app or editor', () => {
-  const { manager, context, sendSceneCommand } = createRegistry()
+it('exposes runtime services and console helpers without an app or editor', async () => {
+  const { manager, context, sendSceneCommand } = await createRegistry()
   expect(window.engineCommandManager).toBe(manager)
   expect(window.rustContext).toBe(context)
   expect(window.engineDebugger).toBe(EngineDebugger)
@@ -54,9 +50,8 @@ it('exposes runtime services and console helpers without an app or editor', () =
     cmd: { type: 'zoom_to_fit', object_ids: [], padding: 0.2, animated: false },
   })
 })
-
-it('enables mouse logging once and removes its listener on stop and disposal', () => {
-  const { registry } = createRegistry()
+it('enables mouse logging once and removes its listener on stop and disposal', async () => {
+  const { registry } = await createRegistry()
   const stream = document.createElement('div')
   stream.dataset.testid = 'stream'
   document.body.append(stream)
@@ -85,53 +80,49 @@ it('enables mouse logging once and removes its listener on stop and disposal', (
   click()
   expect(log).toHaveBeenCalledTimes(2)
   window.enableMousePositionLogs?.()
-  registry[Symbol.dispose]()
+  await registry.dispose()
   enable?.()
   click()
   expect(log).toHaveBeenCalledTimes(2)
 })
-
-it('does not restore globals from an older registry that was already disposed', () => {
+it('does not restore globals from an older registry that was already disposed', async () => {
   const previous = Object.getOwnPropertyDescriptor(
     window,
     'engineCommandManager'
   )
-  const first = createRegistry()
-  const second = createRegistry()
+  const first = await createRegistry()
+  const second = await createRegistry()
   expect(window.engineCommandManager).toBe(second.manager)
-  first.registry[Symbol.dispose]()
+  await first.registry.dispose()
   expect(window.engineCommandManager).toBe(second.manager)
-  second.registry[Symbol.dispose]()
+  await second.registry.dispose()
   expect(
     Object.getOwnPropertyDescriptor(window, 'engineCommandManager')
   ).toEqual(previous)
 })
-
-it('restores a still-live registry when the newer registry is disposed', () => {
-  const first = createRegistry()
-  const second = createRegistry()
-  second.registry[Symbol.dispose]()
+it('restores a still-live registry when the newer registry is disposed', async () => {
+  const first = await createRegistry()
+  const second = await createRegistry()
+  await second.registry.dispose()
   expect(window.engineCommandManager).toBe(first.manager)
 })
-
-it('leaves console replacements alone during disposal', () => {
+it('leaves console replacements alone during disposal', async () => {
   const previous = Object.getOwnPropertyDescriptor(window, 'zoomToFit')
-  const { registry } = createRegistry()
+  const { registry } = await createRegistry()
   const replacement = vi.fn()
   Object.defineProperty(window, 'zoomToFit', {
     configurable: true,
     value: replacement,
   })
-  registry[Symbol.dispose]()
+  await registry.dispose()
   expect(window.zoomToFit).toBe(replacement)
   if (previous) Object.defineProperty(window, 'zoomToFit', previous)
   else Reflect.deleteProperty(window, 'zoomToFit')
 })
-
-it('can be constructed without a browser window', () => {
+it('can be constructed without a browser window', async () => {
   vi.stubGlobal('window', undefined)
   const registry = new Registry()
   registries.push(registry)
-  registry.configure([debug])
+  await registry.configure([debug])
   expect(() => registry.inspect()).not.toThrow()
 })

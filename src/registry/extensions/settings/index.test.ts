@@ -1,15 +1,14 @@
-import { Registry } from '@kittycad/registry'
-import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import { statusBarGlobalItemsFacet } from '@src/registry/contracts/statusBar'
+import { Registry } from 'plankton'
 import type { Location } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import settingsRegistryItem from '.'
 
 describe('settings extension', () => {
-  it('contributes the settings status bar item', () => {
+  it('contributes the settings status bar item', async () => {
     const registry = new Registry()
-    registry.configure([settingsRegistryItem])
-
-    expect(registry.get(statusBarGlobalItemsValueSpec)).toEqual([
+    await registry.configure([settingsRegistryItem])
+    expect(registry.get(statusBarGlobalItemsFacet)).toEqual([
       expect.objectContaining({
         id: 'settings',
         element: 'link',
@@ -18,14 +17,12 @@ describe('settings extension', () => {
         'data-testid': 'settings-link',
       }),
     ])
-
-    registry[Symbol.dispose]()
+    await registry.dispose()
   })
-
-  it('builds a stable settings link for project file routes', () => {
+  it('builds a stable settings link for project file routes', async () => {
     const registry = new Registry()
-    registry.configure([settingsRegistryItem])
-    const [settingsItem] = registry.get(statusBarGlobalItemsValueSpec)
+    await registry.configure([settingsRegistryItem])
+    const [settingsItem] = registry.get(statusBarGlobalItemsFacet)
 
     if (
       !settingsItem ||
@@ -50,7 +47,6 @@ describe('settings extension', () => {
         activeFileRoutePath: filePath,
       })
     ).toBe(`${filePath}/settings?tab=project`)
-
-    registry[Symbol.dispose]()
+    await registry.dispose()
   })
 })

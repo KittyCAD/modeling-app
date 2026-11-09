@@ -1,8 +1,3 @@
-import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provideService,
-} from '@kittycad/registry'
 import { computed, signal } from '@preact/signals-core'
 import {
   UserFeaturesState,
@@ -14,45 +9,43 @@ import {
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
 import { useSelector } from '@xstate/react'
+import { provide, type Subtree } from 'plankton'
 import { createActor } from 'xstate'
+export const userFeaturesExtension = {
+  key: 'user-features-extension',
+  create: () => {
+    const actor = createActor(userFeaturesMachine).start()
+    const state = signal(actor.getSnapshot())
+    const context = signal(actor.getSnapshot().context)
+    const subscription = actor.subscribe((snapshot) => {
+      state.value = snapshot
+      context.value = snapshot.context
+    })
+    const ready = computed(() => state.value.matches(UserFeaturesState.Ready))
 
-export const userFeaturesExtension = defineRegistryItemFactory(() => {
-  const actor = createActor(userFeaturesMachine).start()
-  const state = signal(actor.getSnapshot())
-  const context = signal(actor.getSnapshot().context)
-  const subscription = actor.subscribe((snapshot) => {
-    state.value = snapshot
-    context.value = snapshot.context
-  })
-  const ready = computed(() => state.value.matches(UserFeaturesState.Ready))
+    const serviceImpl: UserFeaturesRegistryService = {
+      actor,
+      send: (...args: Parameters<typeof actor.send>) => actor.send(...args),
+      state,
+      context,
+      contextSignal: context,
+      ready,
+      has: (featureFlagId, defaultValue) =>
+        userFeaturesContextHas(context.value, featureFlagId, defaultValue),
+      useContext: () => useSelector(actor, ({ context }) => context),
+      useHas: (featureFlagId, defaultValue) =>
+        useSelector(actor, ({ context }) =>
+          userFeaturesContextHas(context, featureFlagId, defaultValue)
+        ),
+    }
 
-  const serviceImpl: UserFeaturesRegistryService = {
-    actor,
-    send: (...args: Parameters<typeof actor.send>) => actor.send(...args),
-    state,
-    context,
-    contextSignal: context,
-    ready,
-    has: (featureFlagId, defaultValue) =>
-      userFeaturesContextHas(context.value, featureFlagId, defaultValue),
-    useContext: () => useSelector(actor, ({ context }) => context),
-    useHas: (featureFlagId, defaultValue) =>
-      useSelector(actor, ({ context }) =>
-        userFeaturesContextHas(context, featureFlagId, defaultValue)
-      ),
-  }
-
-  return {
-    id: 'user-features-extension',
-    providesServices: [provideService(userFeaturesService, serviceImpl)],
-    dispose: () => {
-      subscription.unsubscribe()
-      actor.stop()
-    },
-  }
-}, 'user-features-extension')
-
-export default defineRegistryItem({
-  id: 'user-features',
-  uses: [userFeaturesExtension],
-})
+    return {
+      items: [provide(userFeaturesService, serviceImpl)],
+      dispose: () => {
+        subscription.unsubscribe()
+        actor.stop()
+      },
+    }
+  },
+} satisfies Subtree
+export default [userFeaturesExtension]

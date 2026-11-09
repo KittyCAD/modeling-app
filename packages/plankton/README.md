@@ -1,9 +1,21 @@
-# Registry algebra and next runtime
+# Plankton
 
-The new implementation is available at `@kittycad/registry/next`. The default
-`@kittycad/registry` entrypoint and application imports continue to use the existing
-implementation. `src/examples/extension-workspace.ts` demonstrates typed Factory
-dependencies alongside reactive composition and replaceable children.
+Plankton composes application capabilities and contributions into a reactive graph.
+A Registry owns resource lifetimes and lets callers replace parts of the graph
+without restarting the owners that survive. The application uses this package
+throughout its extensions, plugins, views, and editor integrations.
+
+```ts
+import { Registry, Facet, contribute, slot } from 'plankton'
+
+const panels = new Facet('panels', (values: readonly string[]) => values)
+const sidebar = slot([contribute(panels, () => 'outline')], 'sidebar')
+const registry = new Registry()
+await registry.configure([sidebar])
+await registry.replace(sidebar, [contribute(panels, () => 'search')])
+registry.get(panels) // ['search']
+await registry.dispose()
+```
 
 | Concept | Essence | Responsibility |
 | --- | --- | --- |
@@ -41,6 +53,10 @@ application state. `InputOf`, `OutputOf`, and `CapabilityOf` derive adapter type
 
 ## Planning and acquisition
 
+![Planning visits dependencies before owners and skips repeated identities. Amber squares are Extensions; teal diamonds are Bindings. The result is storage, editor, shortcut, search, with zero create calls.](docs/planner.gif)
+
+The shared `storage` dependency and repeated `editor` each appear once.
+
 `plan(items)` expands declared dependencies before their owners, flattens groups,
 and rejects dependency cycles and recursive groups. It never reads `create` or
 installs bindings. Its optional selected-definition map carries earlier decisions
@@ -52,7 +68,7 @@ Each planned entry has an `ItemPath`: a root index followed by typed
 integers; dependency names are the keys of the declared dependency map. `formatPath` renders diagnostics. Paths identify occurrences, not stable
 identities. Cycle errors retain structured paths.
 
-`Registry` in `src/nextRegistry.ts` acquires synchronously. Returned children are
+`Registry` in `src/registry.ts` acquires synchronously. Returned children are
 planned in turn, with declared definitions selected before acquisition begins.
 `factory({ dependencies, create })` infers constructor inputs from a named map
 of Factories. Each dependency is acquired once, before its consumers, and its
@@ -60,7 +76,7 @@ exports are injected directly. Exports are private construction inputs until the
 complete graph commits; they do not require Service tokens or early publication.
 
 ```ts
-import { factory } from '@kittycad/registry/next'
+import { factory } from 'plankton'
 
 const files = factory({
   create: () => ({ exports: { read: (path: string) => path.length } }),
@@ -74,8 +90,7 @@ const editor = factory({
 })
 ```
 
-The optional second constructor argument supplies only `origin`, `observe`, and
-`replace`; constructor capabilities come from the declared dependency map.
+The optional second constructor argument supplies owner controls and observations.
 Registry-wide Facet and Service reads must still wait until acquisition finishes.
 Services select providers through composition; dependency injection names a concrete
 Factory. A dependency discarded by keyed selection cannot supply another
@@ -165,11 +180,12 @@ public entrypoint as the package examples.
 
 - `src/algebra.ts`: Facets, Services, Bindings, Factories, and authoring helpers.
 - `src/planner.ts` and `src/path.ts`: declared dependencies and structured paths.
-- `src/nextRegistry.ts`: acquisition, publication, replacement, diagnostics, and cleanup.
+- `src/registry.ts`: acquisition, publication, replacement, diagnostics, and cleanup.
 - `src/plugins.ts`: metadata and toggle controllers composed from the primitives.
-- `src/examples/extension-workspace.ts`: a document model shared by a live title,
+- `src/examples/document-workspace.ts`: a document model shared by a live title,
   replaceable sidebar panels, and an independently toggled outline plugin.
 
-Factories use synchronous `create` callbacks and awaitable cleanup. Declarative
-groups use ordinary Extension arrays; they should not acquire an extra lifetime merely
-to group contributions. The application migration is a separate change.
+Application-created Factories use synchronous `create` callbacks and awaitable
+cleanup. Declarative groups use ordinary Extension arrays; they should not acquire an
+extra lifetime merely to group contributions. Application startup and settings
+changes await queued graph updates through `App.registryReady`.

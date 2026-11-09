@@ -1,41 +1,36 @@
-import {
-  Registry,
-  Slot,
-  defineRegistryItem,
-  provideService,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
-import { MachineManager } from '@src/lib/MachineManager'
 import type { Command } from '@src/lib/commandTypes'
+import { MachineManager } from '@src/lib/MachineManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import {
   COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
+  commandScopeService,
+  commandSystemService,
+  commandsFacet,
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
   FILE_COMMAND_SCOPES,
   GLOBAL_COMMAND_SCOPES,
   HOME_COMMAND_SCOPE,
   MODE_MODELING_COMMAND_SCOPE,
   MODE_SKETCH_SOLVE_COMMAND_SCOPE,
+  provideCommand,
   SETTINGS_COMMAND_SCOPE,
   SKETCH_COMMAND_SCOPES,
-  commandScopeService,
-  commandSystemService,
-  provideCommand,
 } from '@src/registry/contracts/commands'
 import { getKeymapItemWhen } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
-import { provideWasmPromise } from '@src/registry/contracts/wasm'
-import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { projectSession } from '@src/registry/contracts/projectSession'
-import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
-import type { ZDSProject } from '@src/lib/projectSession'
+import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
+import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
+import { provide, Registry, slot } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 import { commandsExtension, toolbarCommandsItem } from '.'
 import { APP_COMMAND_IDS, createAppCommands } from './appCommands'
-import { TOOLBAR_COMMAND_IDS, createToolbarCommands } from './toolbarCommands'
+import { createToolbarCommands, TOOLBAR_COMMAND_IDS } from './toolbarCommands'
 
 const appCommands = createAppCommands(() => undefined)
 const toolbarCommands = createToolbarCommands(() => undefined)
@@ -47,9 +42,9 @@ function commandIds(
 }
 
 describe('commands extension', () => {
-  it('resolves the executing editor at invocation and releases it when the project closes', () => {
+  it('resolves the executing editor at invocation and releases it when the project closes', async () => {
     const registry = new Registry()
-    registry.configure([projectSessionRegistryItem, toolbarCommandsItem])
+    await registry.configure([projectSessionRegistryItem, toolbarCommandsItem])
     const undoFirst = vi.fn()
     const undoSecond = vi.fn()
     const first = { undo: undoFirst } as unknown as KclManager
@@ -58,28 +53,27 @@ describe('commands extension', () => {
     const project = { executingEditor } as unknown as ZDSProject
     try {
       const undo = registry
-        .get(commandsValueSpec)
+        .get(commandsFacet)
         .find((command) => command.id === APP_COMMAND_IDS.editor.undo)
       expect(undo).toBeDefined()
       undo?.onSubmit({})
       expect(undoFirst).not.toHaveBeenCalled()
-      registry.get(projectSession).setProject(project)
+      registry.required(projectSession).setProject(project)
       undo?.onSubmit({})
       expect(undoFirst).toHaveBeenCalledTimes(1)
       executingEditor.value = second
       undo?.onSubmit({})
       expect(undoSecond).toHaveBeenCalledTimes(1)
-      registry.get(projectSession).clearProject()
+      registry.required(projectSession).clearProject()
       undo?.onSubmit({})
       expect(undoFirst).toHaveBeenCalledTimes(1)
       expect(undoSecond).toHaveBeenCalledTimes(1)
     } finally {
-      registry[Symbol.dispose]()
+      await registry.dispose()
     }
   })
-
-  it('syncs registry command contributions into the command system service', () => {
-    const commandsSlot = new Slot()
+  it('syncs registry command contributions into the command system service', async () => {
+    const commandsSlot = slot([], Symbol())
     const command: Command = {
       scopes: GLOBAL_COMMAND_SCOPES,
       groupId: 'test',
@@ -87,43 +81,33 @@ describe('commands extension', () => {
       needsReview: false,
       onSubmit: vi.fn(),
     }
-    const commandItem = defineRegistryItem({
-      id: 'test-command-item',
-      provides: [provideCommand(command)],
-    })
-
+    const commandItem = [provideCommand(command)]
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-wasm-promise',
-        provides: [provideWasmPromise(Promise.resolve({} as ModuleType))],
-      }),
-      defineRegistryItem({
-        id: 'test-machine-manager',
-        providesServices: [
-          provideService(machineManagerService, {
-            manager: new MachineManager(),
-          }),
-        ],
-      }),
+    await registry.configure([
+      [provideWasmPromise(() => Promise.resolve({} as ModuleType))],
+      [
+        provide(machineManagerService, {
+          manager: new MachineManager(),
+        }),
+      ],
       commandsExtension,
-      commandsSlot.of(commandItem),
+      {
+        ...commandsSlot,
+        create: () => ({
+          items: [commandItem],
+        }),
+      },
     ])
-
-    const commandSystem = registry.get(commandSystemService)
+    const commandSystem = registry.required(commandSystemService)
     expect(commandSystem.actor.getSnapshot().context.commands).toEqual([
       command,
     ])
-
-    registry.reconfigure(commandsSlot, [])
-
+    await registry.replace(commandsSlot, [])
     expect(commandSystem.actor.getSnapshot().context.commands).toEqual([])
-
-    registry[Symbol.dispose]()
+    await registry.dispose()
   })
-
-  it('runs a command selection sent before that command is registered', () => {
-    const commandsSlot = new Slot()
+  it('runs a command selection sent before that command is registered', async () => {
+    const commandsSlot = slot([], Symbol())
     const onSubmit = vi.fn()
     const command: Command = {
       groupId: 'test',
@@ -132,30 +116,24 @@ describe('commands extension', () => {
       needsReview: false,
       onSubmit,
     }
-    const commandItem = defineRegistryItem({
-      id: 'late-command-item',
-      provides: [provideCommand(command)],
-    })
-
+    const commandItem = [provideCommand(command)]
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-wasm-promise',
-        provides: [provideWasmPromise(Promise.resolve({} as ModuleType))],
-      }),
-      defineRegistryItem({
-        id: 'test-machine-manager',
-        providesServices: [
-          provideService(machineManagerService, {
-            manager: new MachineManager(),
-          }),
-        ],
-      }),
+    await registry.configure([
+      [provideWasmPromise(() => Promise.resolve({} as ModuleType))],
+      [
+        provide(machineManagerService, {
+          manager: new MachineManager(),
+        }),
+      ],
       commandsExtension,
-      commandsSlot.of(),
+      {
+        ...commandsSlot,
+        create: () => ({
+          items: [],
+        }),
+      },
     ])
-
-    const commandSystem = registry.get(commandSystemService)
+    const commandSystem = registry.required(commandSystemService)
     commandSystem.send({
       type: 'Find and select command',
       data: {
@@ -172,15 +150,11 @@ describe('commands extension', () => {
     })
 
     expect(onSubmit).not.toHaveBeenCalled()
-
-    registry.reconfigure(commandsSlot, [commandItem])
-
+    await registry.replace(commandsSlot, [commandItem])
     expect(onSubmit).toHaveBeenCalledOnce()
-
-    registry[Symbol.dispose]()
+    await registry.dispose()
   })
-
-  it('syncs the command palette scope with command machine state', () => {
+  it('syncs the command palette scope with command machine state', async () => {
     const activeScopes = signal<readonly string[]>([])
     const applyScope = (scope: string) => {
       if (!activeScopes.value.includes(scope)) {
@@ -193,50 +167,37 @@ describe('commands extension', () => {
       )
     }
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-wasm-promise',
-        provides: [provideWasmPromise(Promise.resolve({} as ModuleType))],
-      }),
-      defineRegistryItem({
-        id: 'test-machine-manager',
-        providesServices: [
-          provideService(machineManagerService, {
-            manager: new MachineManager(),
+    await registry.configure([
+      [provideWasmPromise(() => Promise.resolve({} as ModuleType))],
+      [
+        provide(machineManagerService, {
+          manager: new MachineManager(),
+        }),
+      ],
+      [
+        provide(commandScopeService, {
+          activeScopes,
+          applyScope,
+          removeScope,
+          getCurrentScopes: () => activeScopes.value,
+          focusScope: (scope) => ({
+            onFocus: () => applyScope(scope),
+            onBlur: () => removeScope(scope),
           }),
-        ],
-      }),
-      defineRegistryItem({
-        id: 'test-command-scopes',
-        providesServices: [
-          provideService(commandScopeService, {
-            activeScopes,
-            applyScope,
-            removeScope,
-            getCurrentScopes: () => activeScopes.value,
-            focusScope: (scope) => ({
-              onFocus: () => applyScope(scope),
-              onBlur: () => removeScope(scope),
-            }),
-          }),
-        ],
-      }),
+        }),
+      ],
       commandsExtension,
-      defineRegistryItem({
-        id: 'test-command',
-        provides: [
-          provideCommand({
-            scopes: GLOBAL_COMMAND_SCOPES,
-            groupId: 'test',
-            name: 'test-command',
-            needsReview: false,
-            onSubmit: vi.fn(),
-          }),
-        ],
-      }),
+      [
+        provideCommand({
+          scopes: GLOBAL_COMMAND_SCOPES,
+          groupId: 'test',
+          name: 'test-command',
+          needsReview: false,
+          onSubmit: vi.fn(),
+        }),
+      ],
     ])
-
-    const commandSystem = registry.get(commandSystemService)
+    const commandSystem = registry.required(commandSystemService)
     expect(activeScopes.value).not.toContain(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
 
     commandSystem.send({ type: 'Open' })
@@ -246,7 +207,7 @@ describe('commands extension', () => {
     expect(activeScopes.value).not.toContain(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
 
     commandSystem.send({ type: 'Open' })
-    registry[Symbol.dispose]()
+    await registry.dispose()
     expect(activeScopes.value).not.toContain(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
   })
 
@@ -466,8 +427,7 @@ describe('commands extension', () => {
     expect(command?.onSubmit({})).toBe(true)
     expect(sentEvents).toEqual([{ type: 'Exit sketch' }])
   })
-
-  it('runs toolbar commands selected by keymaps against the resolved editor', () => {
+  it('runs toolbar commands selected by keymaps against the resolved editor', async () => {
     const sentEvents: unknown[] = []
     const kclManager = {
       modelingState: {
@@ -487,27 +447,17 @@ describe('commands extension', () => {
     }
 
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-wasm-promise',
-        provides: [provideWasmPromise(Promise.resolve({} as ModuleType))],
-      }),
-      defineRegistryItem({
-        id: 'test-machine-manager',
-        providesServices: [
-          provideService(machineManagerService, {
-            manager: new MachineManager(),
-          }),
-        ],
-      }),
+    await registry.configure([
+      [provideWasmPromise(() => Promise.resolve({} as ModuleType))],
+      [
+        provide(machineManagerService, {
+          manager: new MachineManager(),
+        }),
+      ],
       commandsExtension,
-      defineRegistryItem({
-        id: 'test-toolbar-command',
-        provides: [provideCommand(command)],
-      }),
+      [provideCommand(command)],
     ])
-
-    const commandSystem = registry.get(commandSystemService)
+    const commandSystem = registry.required(commandSystemService)
     commandSystem.send({
       type: 'Find and select command',
       data: {
@@ -519,8 +469,7 @@ describe('commands extension', () => {
     expect(sentEvents).toEqual([
       { type: 'equip tool', data: { tool: 'lineTool' } },
     ])
-
-    registry[Symbol.dispose]()
+    await registry.dispose()
   })
 
   it('runs select all in current sketch from keymaps outside legacy sketch state', () => {

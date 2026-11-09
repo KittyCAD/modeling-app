@@ -31,11 +31,10 @@ import { PATHS } from '@src/lib/paths'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
-
 import {
   filterStatusBarItemsForScopes,
-  statusBarGlobalItemsValueSpec,
-  statusBarLocalItemsValueSpec,
+  statusBarGlobalItemsFacet,
+  statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
 import { useApplyRememberedOnboardingWorkflow } from '@src/routes/Onboarding/utils'
 import { useEffect, useMemo, useState } from 'react'
@@ -43,7 +42,6 @@ import toast from 'react-hot-toast'
 import ModalContainer from 'react-modal-promise'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project navigation and onboarding query detection (useLocation, useSearchParams).
 import { useLocation } from 'react-router-dom'
-
 export function OpenedProject() {
   useSignals()
   const app = useApp()
@@ -64,31 +62,31 @@ export function OpenedProject() {
   const location = useLocation()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
-  const lsp = registry.get(lspService)
+  const lsp = registry.required(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
-
   const projectName = project?.name || null
   const projectPath = project?.path || null
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
     lsp.onProjectOpen(
-      { name: projectName, path: projectPath },
+      {
+        name: projectName,
+        path: projectPath,
+      },
       project?.executingPath ? project.executingFileEntry.value : null
     )
   }, [lsp, projectName, projectPath, project])
-
   useHotKeyListener(kclManager)
-
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const registryGlobalStatusBarItems = filterStatusBarItemsForScopes(
-    registry.signal(statusBarGlobalItemsValueSpec).value,
+    registry.observe(statusBarGlobalItemsFacet).value,
     ['file']
   )
   const registryLocalStatusBarItems = filterStatusBarItemsForScopes(
-    registry.signal(statusBarLocalItemsValueSpec).value,
+    registry.observe(statusBarLocalItemsFacet).value,
     ['file']
   )
   const executingPath = project?.executingPathSignal.value?.value
@@ -99,16 +97,16 @@ export function OpenedProject() {
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
     settingsValues.app.onboardingStatus.default
-
   useApplyRememberedOnboardingWorkflow(location.pathname, onboardingStatus)
-
   useEngineConnectionSubscriptions()
-
   useEffect(() => {
     // Not too useful for regular flows but on modeling view refresh,
     // fetch the token count. The regular flow is the count is initialized
     // by the Projects view.
-    billing.send({ type: BillingTransition.Update, apiToken: authToken })
+    billing.send({
+      type: BillingTransition.Update,
+      apiToken: authToken,
+    })
 
     // Tell engineStream to wait for dependencies to start streaming.
     // When leaving the modeling scene, cut the engine stream.
@@ -154,7 +152,6 @@ export function OpenedProject() {
         .catch(reportRejection)
     }
   }, [])
-
   const undoRedoButtons = useMemo(
     () => (
       <UndoRedoButtons
@@ -165,7 +162,6 @@ export function OpenedProject() {
     ),
     [kclManager]
   )
-
   const notifications: boolean[] = Object.values(defaultAreaLibrary).map(
     (x) => {
       if ('useNotifications' in x) {
@@ -175,7 +171,6 @@ export function OpenedProject() {
       return false
     }
   )
-
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">

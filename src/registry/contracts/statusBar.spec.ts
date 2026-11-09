@@ -1,11 +1,11 @@
-import { Registry, defineRegistryItem, provide } from '@kittycad/registry'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import {
   filterStatusBarItemsForScopes,
   nullableStatusBarItem,
-  statusBarGlobalItemsValueSpec,
-  statusBarLocalItemsValueSpec,
+  statusBarGlobalItemsFacet,
+  statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
+import { contribute, Registry, type Subtree } from 'plankton'
 import { describe, expect, it } from 'vitest'
 
 const statusItem = (id: string, order: number): StatusBarItemType => ({
@@ -16,70 +16,79 @@ const statusItem = (id: string, order: number): StatusBarItemType => ({
 })
 
 describe('status bar registry contract', () => {
-  it('sorts nullable global items after static items, then by order', () => {
+  it('sorts nullable global items after static items, then by order', async () => {
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        provides: [
-          provide(statusBarGlobalItemsValueSpec, statusItem('static-high', 20)),
-          provide(
-            statusBarGlobalItemsValueSpec,
-            nullableStatusBarItem(statusItem('nullable-low', 0))
-          ),
-          provide(statusBarGlobalItemsValueSpec, statusItem('static-low', 10)),
-          provide(
-            statusBarGlobalItemsValueSpec,
-            nullableStatusBarItem(statusItem('nullable-high', 30))
-          ),
-        ],
-      }),
+    await registry.configure([
+      {
+        create: () => ({
+          items: [
+            contribute(statusBarGlobalItemsFacet, () =>
+              statusItem('static-high', 20)
+            ),
+            contribute(statusBarGlobalItemsFacet, () =>
+              nullableStatusBarItem(statusItem('nullable-low', 0))
+            ),
+            contribute(statusBarGlobalItemsFacet, () =>
+              statusItem('static-low', 10)
+            ),
+            contribute(statusBarGlobalItemsFacet, () =>
+              nullableStatusBarItem(statusItem('nullable-high', 30))
+            ),
+          ],
+        }),
+      } satisfies Subtree,
     ])
 
     expect(
-      registry.get(statusBarGlobalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarGlobalItemsFacet).map((item) => item.id)
     ).toEqual(['static-low', 'static-high', 'nullable-low', 'nullable-high'])
   })
-
-  it('sorts nullable local items before static items, then by order', () => {
+  it('sorts nullable local items before static items, then by order', async () => {
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        provides: [
-          provide(statusBarLocalItemsValueSpec, statusItem('static-high', 20)),
-          provide(
-            statusBarLocalItemsValueSpec,
-            nullableStatusBarItem(statusItem('nullable-low', 0))
-          ),
-          provide(statusBarLocalItemsValueSpec, statusItem('static-low', 10)),
-          provide(
-            statusBarLocalItemsValueSpec,
-            nullableStatusBarItem(statusItem('nullable-high', 30))
-          ),
-        ],
-      }),
+    await registry.configure([
+      {
+        create: () => ({
+          items: [
+            contribute(statusBarLocalItemsFacet, () =>
+              statusItem('static-high', 20)
+            ),
+            contribute(statusBarLocalItemsFacet, () =>
+              nullableStatusBarItem(statusItem('nullable-low', 0))
+            ),
+            contribute(statusBarLocalItemsFacet, () =>
+              statusItem('static-low', 10)
+            ),
+            contribute(statusBarLocalItemsFacet, () =>
+              nullableStatusBarItem(statusItem('nullable-high', 30))
+            ),
+          ],
+        }),
+      } satisfies Subtree,
     ])
 
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).toEqual(['nullable-low', 'nullable-high', 'static-low', 'static-high'])
   })
-
-  it('omits empty nullable contributions', () => {
+  it('omits empty nullable contributions', async () => {
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        provides: [
-          provide(
-            statusBarLocalItemsValueSpec,
-            nullableStatusBarItem(statusItem('visible', 10))
-          ),
-          provide(statusBarLocalItemsValueSpec, nullableStatusBarItem(null)),
-        ],
-      }),
+    await registry.configure([
+      {
+        create: () => ({
+          items: [
+            contribute(statusBarLocalItemsFacet, () =>
+              nullableStatusBarItem(statusItem('visible', 10))
+            ),
+            contribute(statusBarLocalItemsFacet, () =>
+              nullableStatusBarItem(null)
+            ),
+          ],
+        }),
+      } satisfies Subtree,
     ])
 
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).toEqual(['visible'])
   })
 

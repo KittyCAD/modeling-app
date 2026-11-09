@@ -1,10 +1,4 @@
 import type { Feature } from '@kittycad/lib'
-import {
-  Registry,
-  defineRegistryItem,
-  provide,
-  provideService,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import {
@@ -12,6 +6,11 @@ import {
   defaultLayoutConfig,
 } from '@src/lib/layout/configs/default'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+import {
+  layoutService,
+  layoutUserFeatureTransformationsFacet,
+} from '@src/lib/layout/registry/contract'
+import layoutRegistryItem from '@src/lib/layout/registry/extension'
 import type { Layout } from '@src/lib/layout/types'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import {
@@ -28,11 +27,7 @@ import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-import layoutRegistryItem from '@src/lib/layout/registry/extension'
-import {
-  layoutService,
-  layoutUserFeatureTransformationsValueSpec,
-} from '@src/lib/layout/registry/contract'
+import { contribute, type InputOf, provide, Registry } from 'plankton'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const playwrightRuntime: RuntimeInfo = {
@@ -43,21 +38,17 @@ const playwrightRuntime: RuntimeInfo = {
   isServer: false,
   isPlaywright: true,
 }
-
 const webRuntime: RuntimeInfo = {
   ...playwrightRuntime,
   isPlaywright: false,
 }
-
 type TestSettingsSnapshot = {
   value: string
   context: ReturnType<typeof createSettings>
 }
-
 type TestSettingsRegistryService = SettingsRegistryService & {
   resolve: () => void
 }
-
 function createSettingsService({
   settings = createSettings(),
   initialValue = 'idle',
@@ -74,11 +65,12 @@ function createSettingsService({
     getSnapshot: () => snapshot,
     subscribe: vi.fn((subscriber: (snapshot: TestSettingsSnapshot) => void) => {
       subscribers.add(subscriber)
-      return { unsubscribe: vi.fn(() => subscribers.delete(subscriber)) }
+      return {
+        unsubscribe: vi.fn(() => subscribers.delete(subscriber)),
+      }
     }),
     send: vi.fn(),
   }
-
   return {
     actor,
     current: signal(settings),
@@ -96,7 +88,6 @@ function createSettingsService({
     },
   } as unknown as TestSettingsRegistryService
 }
-
 function createRuntimeService(runtimeInfo = playwrightRuntime) {
   const current = signal(runtimeInfo)
   return {
@@ -105,13 +96,14 @@ function createRuntimeService(runtimeInfo = playwrightRuntime) {
     refresh: () => current.value,
   }
 }
-
 function createUserFeaturesService(
   featureIds: readonly Feature[] = []
 ): UserFeaturesRegistryService & {
   setFeatureIds: (featureIds: readonly Feature[]) => void
 } {
-  const context = signal({ featureIds: new Set(featureIds) })
+  const context = signal({
+    featureIds: new Set(featureIds),
+  })
   const snapshot = {
     context: context.value,
     matches: () => true,
@@ -120,10 +112,11 @@ function createUserFeaturesService(
   const ready = signal(true)
   const actor = {
     getSnapshot: () => snapshot,
-    subscribe: vi.fn(() => ({ unsubscribe: vi.fn() })),
+    subscribe: vi.fn(() => ({
+      unsubscribe: vi.fn(),
+    })),
     stop: vi.fn(),
   }
-
   return {
     actor,
     send: vi.fn(),
@@ -135,15 +128,15 @@ function createUserFeaturesService(
     useContext: () => context.value,
     useHas: (_featureFlagId: Feature, defaultValue: boolean) => defaultValue,
     setFeatureIds: (nextFeatureIds: readonly Feature[]) => {
-      context.value = { featureIds: new Set(nextFeatureIds) }
+      context.value = {
+        featureIds: new Set(nextFeatureIds),
+      }
     },
   } as unknown as UserFeaturesRegistryService & {
     setFeatureIds: (featureIds: readonly Feature[]) => void
   }
 }
-
 const FEATURE_CONTROLLED_PANE_ID = 'test-feature-controlled-pane'
-
 function setFeatureControlledPaneEnabled(rootLayout: Layout, enabled: boolean) {
   const toolbar = findLayoutChildNode({
     rootLayout,
@@ -152,7 +145,6 @@ function setFeatureControlledPaneEnabled(rootLayout: Layout, enabled: boolean) {
   if (toolbar?.type !== LayoutType.Panes) {
     return rootLayout
   }
-
   const paneIndex = toolbar.children.findIndex(
     (child) => child.id === FEATURE_CONTROLLED_PANE_ID
   )
@@ -167,10 +159,8 @@ function setFeatureControlledPaneEnabled(rootLayout: Layout, enabled: boolean) {
   } else if (!enabled && paneIndex !== -1) {
     toolbar.children.splice(paneIndex, 1)
   }
-
   return rootLayout
 }
-
 function hasFeatureControlledPane(rootLayout: Layout) {
   return Boolean(
     findLayoutChildNode({
@@ -179,19 +169,17 @@ function hasFeatureControlledPane(rootLayout: Layout) {
     })
   )
 }
-
 describe('layout extension', () => {
   let registry: Registry | undefined
-
-  afterEach(() => {
-    registry?.[Symbol.dispose]()
+  afterEach(async () => {
+    await registry?.dispose()
     registry = undefined
   })
-
-  it('applies the tab preference to loading, opening, contributions, and resets', () => {
+  it('applies the tab preference to loading, opening, contributions, and resets', async () => {
     const settings = createSettings()
-    const service = createSettingsService({ settings })
-
+    const service = createSettingsService({
+      settings,
+    })
     const savedLayout = togglePaneLayoutNode({
       rootLayout: structuredClone(playwrightLayoutConfig),
       targetNodeId: 'variables',
@@ -201,57 +189,81 @@ describe('layout extension', () => {
     settings.layout.configs.user = {
       default: createLayoutWithMetadata(savedLayout),
     }
-
     registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-dependencies',
-        providesServices: [
-          provideService(runtimeService, createRuntimeService()),
-          provideService(settingsService, service),
-          provideService(userFeaturesService, createUserFeaturesService()),
-        ],
-      }),
+    await registry.configure([
+      [
+        provide(runtimeService, createRuntimeService()),
+        provide(settingsService, service),
+        provide(userFeaturesService, createUserFeaturesService()),
+      ],
       layoutRegistryItem,
     ])
-    const layout = registry.get(layoutService)
+    const layout = registry.required(layoutService)
     const toolbar = () =>
       findLayoutChildNode({
         rootLayout: layout.get(),
         targetNodeId: DefaultLayoutToolbarID.Left,
       })
-
-    expect(toolbar()).toMatchObject({ activeIndices: [1, 3], sizes: [50, 50] })
+    expect(toolbar()).toMatchObject({
+      activeIndices: [1, 3],
+      sizes: [50, 50],
+    })
 
     // Exercise opening tabs both before and after the current tab's index.
     layout.togglePane('variables')
-    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    expect(toolbar()).toMatchObject({
+      activeIndices: [1],
+      sizes: [100],
+    })
     settings.layout.paneOpenBehavior.user = 'single'
     layout.togglePane('feature-tree')
-    expect(toolbar()).toMatchObject({ activeIndices: [0], sizes: [100] })
+    expect(toolbar()).toMatchObject({
+      activeIndices: [0],
+      sizes: [100],
+    })
     layout.togglePane('feature-tree')
-    expect(toolbar()).toMatchObject({ activeIndices: [], sizes: [] })
+    expect(toolbar()).toMatchObject({
+      activeIndices: [],
+      sizes: [],
+    })
     layout.togglePane('code')
-    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
-
+    expect(toolbar()).toMatchObject({
+      activeIndices: [1],
+      sizes: [100],
+    })
     settings.layout.paneOpenBehavior.user = 'multiple'
     layout.togglePane('variables')
-    expect(toolbar()).toMatchObject({ activeIndices: [1, 3], sizes: [50, 50] })
+    expect(toolbar()).toMatchObject({
+      activeIndices: [1, 3],
+      sizes: [50, 50],
+    })
     settings.layout.paneOpenBehavior.user = 'single'
-
-    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    expect(toolbar()).toMatchObject({
+      activeIndices: [1],
+      sizes: [100],
+    })
     // Restoring multiple mode does not reopen panes that single mode closed.
     settings.layout.paneOpenBehavior.user = 'multiple'
-    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    expect(toolbar()).toMatchObject({
+      activeIndices: [1],
+      sizes: [100],
+    })
     settings.layout.paneOpenBehavior.user = 'single'
-
     layout.openPane('variables')
-    expect(toolbar()).toMatchObject({ activeIndices: [3], sizes: [100] })
+    expect(toolbar()).toMatchObject({
+      activeIndices: [3],
+      sizes: [100],
+    })
     layout.openPane('variables')
-    expect(toolbar()).toMatchObject({ activeIndices: [3], sizes: [100] })
+    expect(toolbar()).toMatchObject({
+      activeIndices: [3],
+      sizes: [100],
+    })
     layout.openPane('code')
-    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
-
+    expect(toolbar()).toMatchObject({
+      activeIndices: [1],
+      sizes: [100],
+    })
     layout.applyContributions([
       {
         id: 'extra-tab',
@@ -270,12 +282,17 @@ describe('layout extension', () => {
         },
       },
     ])
-    expect(toolbar()).toMatchObject({ activeIndices: [0], sizes: [100] })
+    expect(toolbar()).toMatchObject({
+      activeIndices: [0],
+      sizes: [100],
+    })
     layout.reset()
-    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    expect(toolbar()).toMatchObject({
+      activeIndices: [1],
+      sizes: [100],
+    })
   })
-
-  it('opens panes idempotently without changing sibling sizes or previous snapshots', () => {
+  it('opens panes idempotently without changing sibling sizes or previous snapshots', async () => {
     const settings = createSettings()
     settings.layout.configs.user = {
       default: createLayoutWithMetadata(
@@ -283,22 +300,23 @@ describe('layout extension', () => {
       ),
     }
     registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-dependencies',
-        providesServices: [
-          provideService(runtimeService, createRuntimeService()),
-          provideService(settingsService, createSettingsService({ settings })),
-          provideService(userFeaturesService, createUserFeaturesService()),
-        ],
-      }),
+    await registry.configure([
+      [
+        provide(runtimeService, createRuntimeService()),
+        provide(
+          settingsService,
+          createSettingsService({
+            settings,
+          })
+        ),
+        provide(userFeaturesService, createUserFeaturesService()),
+      ],
       layoutRegistryItem,
     ])
-    const layout = registry.get(layoutService)
+    const layout = registry.required(layoutService)
     const initial = structuredClone(layout.get())
     expect(layout.openPane('code')).toEqual(initial)
     expect(layout.openPane('code')).toEqual(initial)
-
     layout.togglePane('code')
     const closed = layout.get()
     const closedSnapshot = structuredClone(closed)
@@ -314,7 +332,6 @@ describe('layout extension', () => {
       activeIndices: [1],
       sizes: [100],
     })
-
     layout.openPane('variables')
     const resized = structuredClone(layout.get())
     const toolbar = findLayoutChildNode({
@@ -330,41 +347,22 @@ describe('layout extension', () => {
     expect(layout.openPane('code')).toEqual(resized)
     expect(layout.openPane('variables')).toEqual(resized)
   })
-
-  it('provides the app layout service from runtime, settings, and feature services', () => {
+  it('provides the app layout service from runtime, settings, and feature services', async () => {
     registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-runtime',
-        providesServices: [
-          provideService(runtimeService, createRuntimeService()),
-        ],
-      }),
-      defineRegistryItem({
-        id: 'test-settings',
-        providesServices: [
-          provideService(settingsService, createSettingsService()),
-        ],
-      }),
-      defineRegistryItem({
-        id: 'test-user-features',
-        providesServices: [
-          provideService(userFeaturesService, createUserFeaturesService()),
-        ],
-      }),
+    await registry.configure([
+      [provide(runtimeService, createRuntimeService())],
+      [provide(settingsService, createSettingsService())],
+      [provide(userFeaturesService, createUserFeaturesService())],
       layoutRegistryItem,
     ])
-
-    const layout = registry.get(layoutService)
-
+    const layout = registry.required(layoutService)
     expect(layout.get()).toEqual(playwrightLayoutConfig)
     expect(layout.signal.value).toEqual(playwrightLayoutConfig)
     expect(layout).toMatchObject({
       applyContributions: expect.any(Function),
     })
   })
-
-  it('applies contributed user-feature transformations after settings hydrate', () => {
+  it('applies contributed user-feature transformations after settings hydrate', async () => {
     const settings = createSettings()
     settings.layout.configs.user = {
       default: createLayoutWithMetadata(structuredClone(defaultLayoutConfig)),
@@ -374,47 +372,29 @@ describe('layout extension', () => {
       initialValue: 'loadingUser',
     })
     const testUserFeaturesService = createUserFeaturesService()
-
     registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-runtime',
-        providesServices: [
-          provideService(runtimeService, createRuntimeService(webRuntime)),
-        ],
-      }),
-      defineRegistryItem({
-        id: 'test-settings',
-        providesServices: [
-          provideService(settingsService, testSettingsService),
-        ],
-      }),
-      defineRegistryItem({
-        id: 'test-user-features',
-        providesServices: [
-          provideService(userFeaturesService, testUserFeaturesService),
-        ],
-      }),
-      defineRegistryItem({
-        id: 'test-user-feature-layout',
-        provides: [
-          provide(layoutUserFeatureTransformationsValueSpec, {
-            id: 'test-user-feature-layout',
-            feature: EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-            transform: setFeatureControlledPaneEnabled,
-          }),
-        ],
-      }),
+    await registry.configure([
+      [provide(runtimeService, createRuntimeService(webRuntime))],
+      [provide(settingsService, testSettingsService)],
+      [provide(userFeaturesService, testUserFeaturesService)],
+      [
+        contribute(
+          layoutUserFeatureTransformationsFacet,
+          () =>
+            ({
+              id: 'test-user-feature-layout',
+              feature: EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+              transform: setFeatureControlledPaneEnabled,
+            }) satisfies InputOf<typeof layoutUserFeatureTransformationsFacet>
+        ),
+      ],
       layoutRegistryItem,
     ])
-
-    const layout = registry.get(layoutService)
+    const layout = registry.required(layoutService)
     testSettingsService.resolve()
     expect(hasFeatureControlledPane(layout.get())).toBe(false)
-
     testUserFeaturesService.setFeatureIds([EXPERIMENTAL_POINT_AND_CLICK_FLAG])
     expect(hasFeatureControlledPane(layout.get())).toBe(true)
-
     testUserFeaturesService.setFeatureIds([])
     expect(hasFeatureControlledPane(layout.get())).toBe(false)
   })

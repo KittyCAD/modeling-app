@@ -1,14 +1,11 @@
-import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
-import { selectCommand } from '@src/lib/commandUtils'
-import { canReadWriteDirectory } from '@src/lib/desktop'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { Spinner } from '@src/components/Spinner'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import { useProjectSearch } from '@src/components/ProjectSearchBar'
+import { Spinner } from '@src/components/Spinner'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
@@ -27,7 +24,10 @@ import {
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
+import { selectCommand } from '@src/lib/commandUtils'
+import { canReadWriteDirectory } from '@src/lib/desktop'
 import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -39,27 +39,27 @@ import {
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { shouldShowFreeCloudProjectTrainingDisclosure } from '@src/lib/projectLibraries/trainingDisclosure'
+import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
 import { getSortFunction } from '@src/lib/sorting'
 import { reportRejection, trap } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
-import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import { type FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
   homeProjectActionsService,
-  homeProjectEntriesValueSpec,
-  homeProjectLoadingLibraryIdsValueSpec,
-  homeProjectSettledLibraryIdsValueSpec,
+  homeProjectEntriesFacet,
+  homeProjectLoadingLibraryIdsFacet,
+  homeProjectSettledLibraryIdsFacet,
 } from '@src/registry/contracts/homeProjects'
-import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
+import { homeSidebarItemsFacet } from '@src/registry/contracts/homeSidebar'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
 import {
@@ -67,13 +67,13 @@ import {
   getProjectLibraryOperation,
   type ProjectLibraryTypeContribution,
   projectLibraryRealizationsService,
-  projectLibraryTypesValueSpec,
+  projectLibraryTypesFacet,
 } from '@src/registry/contracts/projectLibraries'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   filterStatusBarItemsForScopes,
-  statusBarGlobalItemsValueSpec,
-  statusBarLocalItemsValueSpec,
+  statusBarGlobalItemsFacet,
+  statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { HomeHeader } from '@src/routes/HomeHeader'
@@ -107,11 +107,9 @@ import {
 
 const HOME_PROJECT_CARD_DRAG_MIME = 'application/x-zoo-home-project'
 const HOME_PROJECT_CARD_DRAG_PREVIEW_ID = 'home-project-card-drag-preview'
-
 interface HomeProjectCardDragData {
   projectId: string
 }
-
 function writeHomeProjectCardDragData(
   dataTransfer: DataTransfer,
   project: HomeProjectEntry
@@ -126,7 +124,6 @@ function writeHomeProjectCardDragData(
   )
   dataTransfer.setData('text/plain', getHomeProjectDisplayName(project))
 }
-
 function readHomeProjectCardDragData(
   dataTransfer: DataTransfer
 ): HomeProjectCardDragData | undefined {
@@ -134,23 +131,22 @@ function readHomeProjectCardDragData(
   if (!serialized) {
     return undefined
   }
-
   try {
     const data = JSON.parse(serialized) as Partial<HomeProjectCardDragData>
     return typeof data.projectId === 'string'
-      ? { projectId: data.projectId }
+      ? {
+          projectId: data.projectId,
+        }
       : undefined
   } catch {
     return undefined
   }
 }
-
 interface UseProjectLibraryDragOptions {
   projects: HomeProjectEntry[]
   projectActions: HomeProjectActionsService
   onCloneToLibrary: (project: HomeProjectEntry, libraryId: string) => void
 }
-
 function useProjectLibraryDrag({
   projects,
   projectActions,
@@ -188,9 +184,10 @@ function useProjectLibraryDrag({
   const getProjectCardDragProps = useCallback(
     (project: HomeProjectEntry): ProjectCardDragProps => {
       if (!projectActions.canCloneToLibrary(project)) {
-        return { draggable: false }
+        return {
+          draggable: false,
+        }
       }
-
       return {
         draggable: true,
         onDragStart: (event) => {
@@ -198,7 +195,6 @@ function useProjectLibraryDrag({
             event.preventDefault()
             return
           }
-
           const projectDisplayName = getHomeProjectDisplayName(project)
           writeHomeProjectCardDragData(event.dataTransfer, project)
           setDragPreview(event.dataTransfer, {
@@ -221,7 +217,6 @@ function useProjectLibraryDrag({
         if (!canDropOnLibrary(library)) {
           return
         }
-
         event.preventDefault()
         event.dataTransfer.dropEffect = 'copy'
         setDragOverLibraryId(library.id)
@@ -233,7 +228,6 @@ function useProjectLibraryDrag({
         ) {
           return
         }
-
         setDragOverLibraryId((currentLibraryId) =>
           currentLibraryId === library.id ? undefined : currentLibraryId
         )
@@ -242,7 +236,6 @@ function useProjectLibraryDrag({
         if (!canDropOnLibrary(library)) {
           return
         }
-
         const droppedProjectId =
           readHomeProjectCardDragData(event.dataTransfer)?.projectId ??
           draggedProject?.id
@@ -251,7 +244,6 @@ function useProjectLibraryDrag({
           finishProjectDrag()
           return
         }
-
         event.preventDefault()
         event.stopPropagation()
         event.dataTransfer.dropEffect = 'copy'
@@ -273,11 +265,9 @@ function useProjectLibraryDrag({
       dragOverLibraryId === library.id && canDropOnLibrary(library),
     [canDropOnLibrary, dragOverLibraryId]
   )
-
   useEffect(() => {
     return () => removeDragPreviewElement(HOME_PROJECT_CARD_DRAG_PREVIEW_ID)
   }, [])
-
   return useMemo(
     () => ({
       getProjectCardDragProps,
@@ -302,25 +292,24 @@ const Home = () => {
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   useQueryParamEffects()
-
   useEffect(() => {
     if (!keymap) {
       return
     }
-
     keymap.applyScope(HOME_COMMAND_SCOPE)
-
     return () => {
       keymap.removeScope(HOME_COMMAND_SCOPE)
     }
   }, [keymap])
-
   const navigate = useNavigate()
   const location = useLocation()
   const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
     value: boolean
     error: unknown
-  }>({ value: true, error: undefined })
+  }>({
+    value: true,
+    error: undefined,
+  })
   const directory = app.projectLibraries.projectDirectoryPath
   useEffect(() => {
     let active = true
@@ -338,18 +327,15 @@ const Home = () => {
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
-
-  const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
+  const homeProjectEntries = registry.observe(homeProjectEntriesFacet).value
   const projectStatuses = useProjectStatuses(
-    registry.get(cloudStorageService),
+    registry.required(cloudStorageService),
     homeProjectEntries,
     apiToken
   )
-  const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
+  const homeSidebarItems = registry.observe(homeSidebarItemsFacet).value
   const settingsValues = settings.useSettings()
-  const projectLibraryTypes = registry.signal(
-    projectLibraryTypesValueSpec
-  ).value
+  const projectLibraryTypes = registry.observe(projectLibraryTypesFacet).value
   const projectLibraries = projectLibrariesFromSettings(
     settingsValues.app.libraries.current
   ).map((library) => ({
@@ -364,8 +350,8 @@ const Home = () => {
       [library.id, library.type, library.path, library.source ?? ''].join(':')
     )
     .join('|')
-  const homeProjectActions = registry.get(homeProjectActionsService)
-  const session = registry.get(projectSession)
+  const homeProjectActions = registry.required(homeProjectActionsService)
+  const session = registry.required(projectSession)
   const { libraryId } = useParams()
   const routeSelectedProjectLibrary = libraryId
     ? projectLibraries.find((library) => library.id === libraryId)
@@ -377,11 +363,11 @@ const Home = () => {
   const selectedProjectLibrary =
     routeSelectedProjectLibrary ?? singleProjectLibrary
   const selectedProjectLibraryId = selectedProjectLibrary?.id
-  const loadingLibraryIds = registry.signal(
-    homeProjectLoadingLibraryIdsValueSpec
+  const loadingLibraryIds = registry.observe(
+    homeProjectLoadingLibraryIdsFacet
   ).value
-  const settledLibraryIds = registry.signal(
-    homeProjectSettledLibraryIdsValueSpec
+  const settledLibraryIds = registry.observe(
+    homeProjectSettledLibraryIdsFacet
   ).value
   const visibleLibraries = selectedProjectLibrary
     ? [selectedProjectLibrary]
@@ -403,8 +389,15 @@ const Home = () => {
           library,
           'refresh'
         )
-        if (operation) return Promise.resolve(operation.run({ library }))
-        projectLibraryRealizations?.invalidate({ libraryId: library.id })
+        if (operation)
+          return Promise.resolve(
+            operation.run({
+              library,
+            })
+          )
+        projectLibraryRealizations?.invalidate({
+          libraryId: library.id,
+        })
         return Promise.resolve()
       })
     )
@@ -431,7 +424,7 @@ const Home = () => {
           keymap.keymap.value,
           APP_COMMAND_IDS.search.focusProjects,
           [HOME_COMMAND_SCOPE],
-          registry.signal(keymapScopesValueSpec).value
+          registry.observe(keymapScopesFacet).value
         )?.keystrokes
       : undefined,
     platform()
@@ -444,13 +437,16 @@ const Home = () => {
       if (!homeProjectActions.canCloneToLibrary(project)) {
         return
       }
-
       selectCommand(commands, {
         groupId: 'projects',
         name: 'Clone project',
         argDefaultValues: {
           project: project.id,
-          ...(libraryId ? { library: libraryId } : {}),
+          ...(libraryId
+            ? {
+                library: libraryId,
+              }
+            : {}),
         },
       })
     },
@@ -469,17 +465,14 @@ const Home = () => {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
   }, [projectLibraryRealizations, projectLibraryWatchKey])
-
   useEffect(() => {
     session.setCurrentProjectLibraryId(selectedProjectLibraryId)
-
     return () => {
       if (session.getCurrentProjectLibraryId() === selectedProjectLibraryId) {
         session.setCurrentProjectLibraryId(undefined)
       }
     }
   }, [session, selectedProjectLibraryId])
-
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
       navigate,
@@ -487,14 +480,12 @@ const Home = () => {
       '',
       [HOME_COMMAND_SCOPE]
     )
-
     commands.send({
       type: 'Add commands',
       data: {
         commands: [RouteTelemetryCommand, RouteSettingsCommand],
       },
     })
-
     return () => {
       commands.send({
         type: 'Remove commands',
@@ -516,11 +507,12 @@ const Home = () => {
         .catch(reportRejection)
     }
   }, [])
-
   useEffect(() => {
-    billing.send({ type: BillingTransition.Update, apiToken })
+    billing.send({
+      type: BillingTransition.Update,
+      apiToken,
+    })
   }, [apiToken, billing])
-
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
   const machineApiEnabled = settingsValues.app.machineApi.current
@@ -568,12 +560,16 @@ const Home = () => {
     } else if (data.menuLabel === 'Edit.Change project directory') {
       void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#libraries`)
     } else if (data.menuLabel === 'File.Sign out') {
-      auth.send({ type: 'Log out' })
+      auth.send({
+        type: 'Log out',
+      })
     } else if (
       data.menuLabel === 'View.Command Palette...' ||
       data.menuLabel === 'Help.Command Palette...'
     ) {
-      commands.send({ type: 'Open' })
+      commands.send({
+        type: 'Open',
+      })
     } else if (data.menuLabel === 'File.Preferences.Theme') {
       selectCommand(commands, {
         groupId: 'settings',
@@ -591,10 +587,11 @@ const Home = () => {
       groupId: 'projects',
       name: 'Create project',
       argDefaultValues: selectedProjectLibrary
-        ? { libraryId: selectedProjectLibrary.id }
+        ? {
+            libraryId: selectedProjectLibrary.id,
+          }
         : undefined,
     })
-
   useMenuListener(cb)
 
   // Cancel all KCL executions while on the home page
@@ -602,7 +599,6 @@ const Home = () => {
     markOnce('code/didLoadHome')
     kclManager.cancelAllExecutions()
   }, [kclManager])
-
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
@@ -709,7 +705,9 @@ const Home = () => {
                     argDefaultValues: {
                       source: 'kcl-samples',
                       ...(selectedProjectLibrary
-                        ? { libraryId: selectedProjectLibrary.id }
+                        ? {
+                            libraryId: selectedProjectLibrary.id,
+                          }
                         : {}),
                     },
                   })
@@ -818,13 +816,13 @@ const Home = () => {
             },
           }),
           ...filterStatusBarItemsForScopes(
-            registry.signal(statusBarGlobalItemsValueSpec).value,
+            registry.observe(statusBarGlobalItemsFacet).value,
             ['home']
           ),
         ]}
         localItems={[
           ...filterStatusBarItemsForScopes(
-            registry.signal(statusBarLocalItemsValueSpec).value,
+            registry.observe(statusBarLocalItemsFacet).value,
             ['home']
           ),
           ...defaultLocalStatusBarItems,
@@ -833,7 +831,6 @@ const Home = () => {
     </div>
   )
 }
-
 function ProjectsLoading() {
   return (
     <div
@@ -846,7 +843,6 @@ function ProjectsLoading() {
     </div>
   )
 }
-
 interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   projectShellEnabled: boolean
   libraries: ProjectLibrary[]
@@ -863,7 +859,6 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   projectLibraryDrag?: ProjectLibraryDragController
   projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
-
 function ProjectLibraryOverview({
   projectShellEnabled,
   libraries,
@@ -893,7 +888,6 @@ function ProjectLibraryOverview({
               getSortFunction(sort)
             )
           : libraryProjects
-
       return {
         library,
         libraryProjects,
@@ -906,11 +900,9 @@ function ProjectLibraryOverview({
       <ProjectsLoading />
     </div>
   ) : null
-
   if (libraries.length === 0) {
     return <ProjectLibrariesEmptyState {...rest} />
   }
-
   return (
     <section data-testid="home-section" {...rest}>
       {!projectsLoaded && projects.length === 0 ? (
@@ -954,7 +946,6 @@ function ProjectLibraryOverview({
     </section>
   )
 }
-
 function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
   return (
     <section data-testid="home-section" {...props}>
@@ -986,7 +977,6 @@ function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
     </section>
   )
 }
-
 interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projectShellEnabled: boolean
   searchResults: HomeProjectEntry[]
@@ -1002,7 +992,6 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   showSourceStatusBadges?: boolean
   projectLibraryEmptyTestId?: string
 }
-
 function ProjectGrid({
   projectShellEnabled,
   searchResults,
@@ -1025,7 +1014,6 @@ function ProjectGrid({
       <ProjectsLoading />
     </div>
   ) : null
-
   return (
     <section data-testid="home-section" {...rest}>
       {!projectsLoaded && projects.length === 0 ? (
@@ -1062,5 +1050,4 @@ function ProjectGrid({
     </section>
   )
 }
-
 export default Home

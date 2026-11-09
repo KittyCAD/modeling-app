@@ -1,24 +1,21 @@
-import { Registry } from '@kittycad/registry'
 import { updateEnvironment } from '@src/env'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import runtimeRegistryItem from '@src/registry/extensions/runtime'
+import { Registry } from 'plankton'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 describe('runtime extension', () => {
   let registry: Registry | undefined
-
-  afterEach(() => {
-    registry?.[Symbol.dispose]()
+  afterEach(async () => {
+    await registry?.dispose()
     registry = undefined
     updateEnvironment(null)
     vi.unstubAllGlobals()
   })
-
-  it('provides runtime target and environment metadata', () => {
+  it('provides runtime target and environment metadata', async () => {
     registry = new Registry()
-    registry.configure([runtimeRegistryItem])
-
-    const runtime = registry.get(runtimeService)
+    await registry.configure([runtimeRegistryItem])
+    const runtime = registry.required(runtimeService)
     const current = runtime.get()
 
     expect(current.hasWindow).toBe(true)
@@ -28,8 +25,7 @@ describe('runtime extension', () => {
     expect(runtime.current.value).toEqual(current)
     expect(runtime.refresh()).toEqual(runtime.current.value)
   })
-
-  it('refreshes runtime metadata when the desktop environment changes', () => {
+  it('refreshes runtime metadata when the desktop environment changes', async () => {
     vi.stubGlobal('navigator', { userAgent: 'Electron' })
     vi.stubGlobal('electron', {
       process: {
@@ -40,10 +36,8 @@ describe('runtime extension', () => {
       },
     })
     registry = new Registry()
-    registry.configure([runtimeRegistryItem])
-
-    const runtime = registry.get(runtimeService)
-
+    await registry.configure([runtimeRegistryItem])
+    const runtime = registry.required(runtimeService)
     updateEnvironment('customer.example')
 
     expect(runtime.current.value).toMatchObject({

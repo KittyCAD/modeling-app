@@ -1,50 +1,33 @@
 import { Popover } from '@headlessui/react'
-
 import { useSignals } from '@preact/signals-react/runtime'
-
 import { getAquariumStatusBadge } from '@src/components/AquariumStatusBadge'
-
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
-
 import { PublishDialog } from '@src/components/PublishDialog'
-
 import {
   type ProjectStatus,
   useProjectStatus,
 } from '@src/hooks/useProjectStatus'
-
 import type { App } from '@src/lib/app'
-
-import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
-
-import fsZds from '@src/lib/fs-zds'
-
-import type { Project } from '@src/lib/project'
-
-import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
-
 import {
   cloneOpenedProjectToCloudLibrary,
   updateProjectTitleForPublication,
 } from '@src/lib/cloudProjects/cloneOpenedProjectToCloudLibrary'
-
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+import fsZds from '@src/lib/fs-zds'
+import type { Project } from '@src/lib/project'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import { type CurrentProjectPublicationDetails } from '@src/lib/publishing/publication'
-
 import { err } from '@src/lib/trap'
-
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-
-import { keymapService } from '@src/registry/contracts/keymap'
 import {
   homeProjectActionsService,
-  homeProjectEntriesValueSpec,
+  homeProjectEntriesFacet,
 } from '@src/registry/contracts/homeProjects'
-
+import { keymapService } from '@src/registry/contracts/keymap'
 import {
   MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
   markdownEditorService,
 } from '@src/registry/contracts/markdownEditor'
-
 import {
   type ComponentProps,
   memo,
@@ -53,7 +36,6 @@ import {
   useMemo,
   useState,
 } from 'react'
-
 import toast from 'react-hot-toast'
 
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: publish workflow navigation (useNavigate).
@@ -62,13 +44,11 @@ import { useNavigate } from 'react-router-dom'
 type PublishButtonProps = {
   app: App
 }
-
 export const PublishButton = memo(function PublishButton({
   app,
 }: PublishButtonProps) {
   useSignals()
   const project = app.projectSignal.value?.projectIORefSignal.value
-
   return (
     <Popover className="relative hidden sm:flex">
       {(popover) => (
@@ -81,7 +61,6 @@ export const PublishButton = memo(function PublishButton({
     </Popover>
   )
 })
-
 function PublishPopoverContent({
   app,
   project,
@@ -102,7 +81,7 @@ function PublishPopoverContent({
   const token = auth.useToken()
   const user = auth.useUser()
   const fetchedProjectStatus = useProjectStatus(
-    app.registry.get(cloudStorageService),
+    app.registry.required(cloudStorageService),
     project?.cloudProjectId,
     token
   )
@@ -143,16 +122,14 @@ function PublishPopoverContent({
         : undefined,
     [keymap, markdownEditor]
   )
-
   const fetchPublicationDetails = useCallback(
     async (remoteProjectId?: string) => {
       if (!token || !project) {
         return null
       }
-
       const wasmInstance = await kclManager.wasmInstancePromise
       const details = await app.registry
-        .get(cloudStorageService)
+        .required(cloudStorageService)
         .getCurrentProjectPublicationDetails({
           fileOperations: app.fileOperations,
           token,
@@ -160,43 +137,34 @@ function PublishPopoverContent({
           wasmInstance,
           remoteProjectId,
         })
-
       if (err(details)) {
         console.error('Failed to load project publication details', details)
         return null
       }
-
       return details
     },
     [app.fileOperations, app.registry, kclManager, project, token]
   )
-
   useEffect(() => {
     let isCancelled = false
-
     if (!open) {
       setPublicationDetails(null)
       setIsLoadingPublicationDetails(false)
       return
     }
-
     setIsLoadingPublicationDetails(true)
     void (async () => {
       const details = await fetchPublicationDetails()
-
       if (isCancelled) {
         return
       }
-
       setPublicationDetails(details)
       setIsLoadingPublicationDetails(false)
     })()
-
     return () => {
       isCancelled = true
     }
   }, [fetchPublicationDetails, open])
-
   const handlePublish = useCallback<
     Required<ComponentProps<typeof PublishDialog>>['onSubmit']
   >(
@@ -209,12 +177,10 @@ function PublishPopoverContent({
       if (!project) {
         return false
       }
-
       const publicationTitle = submission.title.trim()
       let publicationProject = project
       let publicationFilePath = kclManager.path
       let publicationFileContents = kclManager.code
-
       if (willCloneProjectToCloud) {
         const relativeFilePath = fsZds.relative(
           project.path,
@@ -222,7 +188,7 @@ function PublishPopoverContent({
         )
         const created = await cloneOpenedProjectToCloudLibrary({
           actions: app.registry.optional(homeProjectActionsService),
-          entries: app.registry.get(homeProjectEntriesValueSpec),
+          entries: app.registry.get(homeProjectEntriesFacet),
           projectPath: project.path,
           navigate,
           title: publicationTitle,
@@ -237,7 +203,6 @@ function PublishPopoverContent({
           })
           return false
         }
-
         publicationFilePath = fsZds.join(created.projectPath, relativeFilePath)
         publicationFileContents = new TextDecoder().decode(
           await app.fileOperations.readFile(publicationFilePath)
@@ -254,7 +219,7 @@ function PublishPopoverContent({
       } else {
         const updatedTitle = await updateProjectTitleForPublication({
           actions: app.registry.optional(homeProjectActionsService),
-          entries: app.registry.get(homeProjectEntriesValueSpec),
+          entries: app.registry.get(homeProjectEntriesFacet),
           projectPath: project.path,
           title: publicationTitle,
         })
@@ -270,14 +235,12 @@ function PublishPopoverContent({
           title: publicationTitle,
         }
       }
-
       let remoteProjectId: string | undefined
       if (willCloneProjectToCloud && cloudStorage) {
         remoteProjectId = cloudStorage.idFor(publicationProject.path)
       }
-
       const published = await app.registry
-        .get(cloudStorageService)
+        .required(cloudStorageService)
         .publishCurrentProject({
           fileOperations: app.fileOperations,
           token,
@@ -288,11 +251,9 @@ function PublishPopoverContent({
           submission,
           remoteProjectId,
         })
-
       if (!published) {
         return false
       }
-
       const details = await fetchPublicationDetails(published.remoteProjectId)
       setPublicationDetails(details)
       if (details) {
@@ -308,7 +269,6 @@ function PublishPopoverContent({
           },
         })
       }
-
       return true
     },
     [
@@ -323,17 +283,12 @@ function PublishPopoverContent({
       willCloneProjectToCloud,
     ]
   )
-
   return (
     <>
       <Popover.Button
         type="button"
         disabled={buttonDisabled}
-        className={`relative inline-flex min-w-max items-center gap-1 border py-0 pl-0.5 pr-2 focus-visible:outline-appForeground active:border-primary disabled:cursor-wait disabled:opacity-70 ${
-          buttonPresentation.highlight
-            ? 'border-warn-80 bg-warn-10/60 text-warn-90 hover:bg-warn-20 dark:border-warn-40 dark:bg-warn-80/30 dark:text-warn-10 dark:hover:bg-warn-80/50'
-            : 'border-chalkboard-30 bg-chalkboard-10/80 text-chalkboard-100 hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100'
-        }`}
+        className={`relative inline-flex min-w-max items-center gap-1 border py-0 pl-0.5 pr-2 focus-visible:outline-appForeground active:border-primary disabled:cursor-wait disabled:opacity-70 ${buttonPresentation.highlight ? 'border-warn-80 bg-warn-10/60 text-warn-90 hover:bg-warn-20 dark:border-warn-40 dark:bg-warn-80/30 dark:text-warn-10 dark:hover:bg-warn-80/50' : 'border-chalkboard-30 bg-chalkboard-10/80 text-chalkboard-100 hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100'}`}
         data-testid="publish-button"
       >
         <CustomIcon
@@ -362,7 +317,6 @@ function PublishPopoverContent({
     </>
   )
 }
-
 const aquariumStatusIcons = {
   private: 'share',
   draft: 'share',
@@ -372,14 +326,12 @@ const aquariumStatusIcons = {
   deleted: 'share',
   changes_requested: 'triangleExclamation',
 } satisfies Record<ProjectStatus['publicationStatus'], CustomIconName>
-
 function getPublishButtonPresentation(projectStatus: ProjectStatus | null): {
   label: string
   icon: CustomIconName
   highlight: boolean
 } {
   const aquariumStatus = getAquariumStatusBadge(projectStatus)
-
   if (!projectStatus || !aquariumStatus) {
     return {
       label: 'Publish',
@@ -387,7 +339,6 @@ function getPublishButtonPresentation(projectStatus: ProjectStatus | null): {
       highlight: false,
     }
   }
-
   return {
     label: aquariumStatus.label,
     icon: aquariumStatusIcons[projectStatus.publicationStatus],

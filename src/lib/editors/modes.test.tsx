@@ -1,41 +1,53 @@
-import {
-  requireSuccess,
-  codeSurface,
-  presentation,
-} from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
-import { Registry, Slot, defineRegistryItem, provide } from '@kittycad/registry'
-import { useSignals } from '@preact/signals-react/runtime'
 import { computed } from '@preact/signals-core'
-import { act, cleanup, render, screen } from '@testing-library/react'
-import { afterEach, beforeAll, expect, it, vi } from 'vitest'
+import { useSignals } from '@preact/signals-react/runtime'
 import { EditorView } from '@src/lib/editors/EditorView'
 import editorsExtension from '@src/lib/editors/registry'
 import {
-  editorsService,
-  editorViewsValueSpec,
-  type EditorViewHost,
   type Editor,
+  type EditorViewHost,
+  editorsService,
+  editorViewsFacet,
 } from '@src/lib/editors/registry/contract'
+import {
+  codeSurface,
+  presentation,
+  requireSuccess,
+} from '@src/lib/editors/testViews'
 import { defineEditorView } from '@src/lib/editors/views'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-
-vi.mock('@src/lib/paths', () => ({ PATHS: { INDEX: '/' } }))
+import { act, cleanup, render, screen } from '@testing-library/react'
+import {
+  contribute,
+  slot as createSlot,
+  Registry,
+  type InputOf,
+} from 'plankton'
+import { afterEach, beforeAll, expect, it, vi } from 'vitest'
+vi.mock('@src/lib/paths', () => ({
+  PATHS: {
+    INDEX: '/',
+  },
+}))
 beforeAll(async () => {
-  await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
 })
 let registry: Registry
-afterEach(() => {
+afterEach(async () => {
   cleanup()
-  registry?.[Symbol.dispose]()
+  await registry?.dispose()
 })
-
 it('retains typed mode context across switches and remounts, and releases it when withdrawn or closed', async () => {
-  const slot = new Slot()
+  const slot = createSlot([], Symbol())
   const release = vi.fn()
   const bind = vi.fn(({ editor, onDispose }: EditorViewHost) => {
     onDispose(release)
-    return { text: computed(() => editor.contents.value.toUpperCase()) }
+    return {
+      text: computed(() => editor.contents.value.toUpperCase()),
+    }
   })
   const mode = defineEditorView(bind)({
     id: 'preview',
@@ -47,12 +59,18 @@ it('retains typed mode context across switches and remounts, and releases it whe
       return <p>{context.text.value}</p>
     },
   })
-  const contribution = defineRegistryItem({
-    provides: [provide(editorViewsValueSpec, mode)],
-  })
+  const contribution = [contribute(editorViewsFacet, () => mode)]
   registry = new Registry()
-  registry.configure([editorsExtension, slot.of(contribution)])
-  const editors = registry.get(editorsService)
+  await registry.configure([
+    editorsExtension,
+    {
+      ...slot,
+      create: () => ({
+        items: [contribution],
+      }),
+    },
+  ])
+  const editors = registry.required(editorsService)
   const editor = requireSuccess(editors.openEditor('/notes.txt', 'original'))
   const workspace = render(
     <EditorView instance={presentation(editors, editor)} editors={editors} />
@@ -63,7 +81,14 @@ it('retains typed mode context across switches and remounts, and releases it whe
       editors.setView(presentation(editors, editor).id, 'editors.code')
     )
   })
-  act(() => editor.dispatch({ changes: { from: 0, insert: 'edited ' } }))
+  act(() =>
+    editor.dispatch({
+      changes: {
+        from: 0,
+        insert: 'edited ',
+      },
+    })
+  )
   act(() => {
     requireSuccess(editors.setView(presentation(editors, editor).id, 'preview'))
   })
@@ -74,17 +99,17 @@ it('retains typed mode context across switches and remounts, and releases it whe
   )
   expect(bind).toHaveBeenCalledTimes(1)
   expect(release).not.toHaveBeenCalled()
-  act(() => registry.reconfigure(slot, []))
+  await act(async () => await registry.replace(slot, []))
   // Context withdrawal is deferred past any CodeMirror document update.
   await act(async () => {
     await Promise.resolve()
   })
   expect(release).toHaveBeenCalledTimes(1)
   expect(
-    editors.viewState(presentation(registry.get(editorsService), editor)).value
-      .selected?.id
+    editors.viewState(presentation(registry.required(editorsService), editor))
+      .value.selected?.id
   ).toBe('editors.code')
-  act(() => registry.reconfigure(slot, [contribution]))
+  await act(async () => await registry.replace(slot, [contribution]))
   editors.setView(presentation(editors, editor).id, 'preview')
   expect(bind).toHaveBeenCalledTimes(2)
   act(() => {
@@ -92,68 +117,77 @@ it('retains typed mode context across switches and remounts, and releases it whe
   })
   expect(release).toHaveBeenCalledTimes(2)
 })
-
 it('defers content-matched binding until the CodeMirror update completes and releases it when unmatched', async () => {
   const release = vi.fn()
   const bind = vi.fn(({ editor, onDispose }: EditorViewHost) => {
-    editor.dispatch({ effects: [] })
+    editor.dispatch({
+      effects: [],
+    })
     onDispose(release)
     return editor.contents
   })
   registry = new Registry()
-  registry.configure([
+  const _editorViewsContribution: InputOf<typeof editorViewsFacet> =
+    defineEditorView(bind)({
+      id: 'render',
+      label: 'Render',
+      matches: ({ contents }) => contents.startsWith('render:'),
+      Component: () => null,
+    })
+  await registry.configure([
     editorsExtension,
-    defineRegistryItem({
-      provides: [
-        provide(
-          editorViewsValueSpec,
-          defineEditorView(bind)({
-            id: 'render',
-            label: 'Render',
-            matches: ({ contents }) => contents.startsWith('render:'),
-            Component: () => null,
-          })
-        ),
-      ],
-    }),
+    [contribute(editorViewsFacet, () => _editorViewsContribution)],
   ])
-  const editors = registry.get(editorsService)
+  const editors = registry.required(editorsService)
   const editor = requireSuccess(editors.openEditor('/notes.txt', 'plain'))
   editors.createView(editor)
   expect(bind).not.toHaveBeenCalled()
-  editor.dispatch({ changes: { from: 0, insert: 'render:' } })
+  editor.dispatch({
+    changes: {
+      from: 0,
+      insert: 'render:',
+    },
+  })
   await Promise.resolve()
   expect(bind).toHaveBeenCalledTimes(1)
   expect(
-    editors.viewState(presentation(registry.get(editorsService), editor)).value
-      .binding.type
+    editors.viewState(presentation(registry.required(editorsService), editor))
+      .value.binding.type
   ).toBe('ready')
-  editor.dispatch({ changes: { from: 0, to: 7, insert: '' } })
+  editor.dispatch({
+    changes: {
+      from: 0,
+      to: 7,
+      insert: '',
+    },
+  })
   await Promise.resolve()
   expect(release).toHaveBeenCalledTimes(1)
 })
-
 it('keeps source/content matching and explicit mode choices independent for duplicate sources', async () => {
-  const extraViews = new Slot()
+  const extraViews = createSlot([], Symbol())
   registry = new Registry()
-  registry.configure([editorsExtension, extraViews.of()])
-  const service = registry.get(editorsService)
-  await registry.reconfigureAsync(extraViews, [
-    defineRegistryItem({
-      provides: [
-        provide(
-          editorViewsValueSpec,
-          defineEditorView({
-            id: 'test.form',
-            label: 'Form',
-            matches: ({ src, contents }) =>
-              // Just proving that content can be used: you should allow an empty settings file to be valid.
-              src.endsWith('project.toml') && contents.startsWith('title'),
-            Component: () => null,
-          })
-        ),
-      ],
-    }),
+  await registry.configure([
+    editorsExtension,
+    {
+      ...extraViews,
+      create: () => ({
+        items: [],
+      }),
+    },
+  ])
+  const service = registry.required(editorsService)
+  const _editorViewsContribution2: InputOf<typeof editorViewsFacet> =
+    defineEditorView({
+      id: 'test.form',
+      label: 'Form',
+      matches: ({ src, contents }) =>
+        // Just proving that content can be used: you should allow an empty settings file to be valid.
+        src.endsWith('project.toml') && contents.startsWith('title'),
+      Component: () => null,
+    })
+  await registry.replace(extraViews, [
+    [contribute(editorViewsFacet, () => _editorViewsContribution2)],
   ])
   const first = requireSuccess(
     service.openEditor('/project/project.toml', 'title = "Project"')
@@ -163,112 +197,101 @@ it('keeps source/content matching and explicit mode choices independent for dupl
   )
   service.setView(presentation(service, first).id, 'editors.code')
   expect(
-    service.viewState(presentation(registry.get(editorsService), first)).value
-      .selected?.id
+    service.viewState(presentation(registry.required(editorsService), first))
+      .value.selected?.id
   ).toBe('editors.code')
   expect(
-    service.viewState(presentation(registry.get(editorsService), second)).value
-      .selected?.id
+    service.viewState(presentation(registry.required(editorsService), second))
+      .value.selected?.id
   ).toBe('test.form')
   service.setSource(second.id, '/project/other.toml')
   expect(
-    service.viewState(presentation(registry.get(editorsService), second)).value
-      .selected?.id
+    service.viewState(presentation(registry.required(editorsService), second))
+      .value.selected?.id
   ).toBe('editors.code')
   service.setSource(second.id, '/project/project.toml')
   expect(
-    service.viewState(presentation(registry.get(editorsService), second)).value
-      .selected?.id
+    service.viewState(presentation(registry.required(editorsService), second))
+      .value.selected?.id
   ).toBe('test.form')
   second.dispatch({
     changes: {
       from: 0,
-      to: codeSurface(registry.get(editorsService), second).state.doc.length,
+      to: codeSurface(registry.required(editorsService), second).state.doc
+        .length,
       insert: '# empty settings',
     },
   })
   expect(
     service
-      .viewState(presentation(registry.get(editorsService), second))
+      .viewState(presentation(registry.required(editorsService), second))
       .value.available.map((view) => view.id)
   ).toEqual(['editors.code'])
   expect(
-    service.viewState(presentation(registry.get(editorsService), second)).value
-      .selected?.id
+    service.viewState(presentation(registry.required(editorsService), second))
+      .value.selected?.id
   ).toBe('editors.code')
   service.setView(presentation(service, second).id, 'test.form')
   expect(
-    service.viewState(presentation(registry.get(editorsService), second)).value
-      .selected?.id
+    service.viewState(presentation(registry.required(editorsService), second))
+      .value.selected?.id
   ).toBe('editors.code')
 })
-
-it('rejects recursive editor creation during mode setup', () => {
+it('rejects recursive editor creation during mode setup', async () => {
   registry = new Registry()
-  registry.configure([
+  const _editorViewsContribution3: InputOf<typeof editorViewsFacet> =
+    defineEditorView(() => {
+      return registry
+        .required(editorsService)
+        .openEditor('/helper.parent', 'helper')
+    })({
+      id: 'parent',
+      label: 'Parent',
+      matches: '.parent',
+      Component: () => null,
+    })
+  await registry.configure([
     editorsExtension,
-    defineRegistryItem({
-      provides: [
-        provide(
-          editorViewsValueSpec,
-          defineEditorView(() => {
-            return registry
-              .get(editorsService)
-              .openEditor('/helper.parent', 'helper')
-          })({
-            id: 'parent',
-            label: 'Parent',
-            matches: '.parent',
-            Component: () => null,
-          })
-        ),
-      ],
-    }),
+    [contribute(editorViewsFacet, () => _editorViewsContribution3)],
   ])
-  const editors = registry.get(editorsService)
+  const editors = registry.required(editorsService)
   const parent = requireSuccess(editors.openEditor('/main.parent', 'parent'))
   presentation(editors, parent)
   expect(
     editors.editors.peek().map((editor) => editor.contents.peek())
   ).toEqual(['parent'])
   const binding = editors.viewState(
-    presentation(registry.get(editorsService), parent)
+    presentation(registry.required(editorsService), parent)
   ).value.binding
   expect(binding.type).toBe('error')
   if (binding.type === 'error')
     expect(binding.error.message).toContain('during mode setup or cleanup')
 })
-
-it('protects other buffers from mode cleanup and continues releasing owned resources', () => {
+it('protects other buffers from mode cleanup and continues releasing owned resources', async () => {
   const report = vi.spyOn(console, 'error').mockImplementation(() => {})
   const release = vi.fn()
   registry = new Registry()
   let child: Editor
-  registry.configure([
+  const _editorViewsContribution4: InputOf<typeof editorViewsFacet> =
+    defineEditorView(({ onDispose }) => {
+      onDispose(release)
+      onDispose(() => registry.required(editorsService).closeEditor(child.id))
+    })({
+      id: 'parent',
+      label: 'Parent',
+      matches: '.parent',
+      Component: () => null,
+    })
+  await registry.configure([
     editorsExtension,
-    defineRegistryItem({
-      provides: [
-        provide(
-          editorViewsValueSpec,
-          defineEditorView(({ onDispose }) => {
-            onDispose(release)
-            onDispose(() => registry.get(editorsService).closeEditor(child.id))
-          })({
-            id: 'parent',
-            label: 'Parent',
-            matches: '.parent',
-            Component: () => null,
-          })
-        ),
-      ],
-    }),
+    [contribute(editorViewsFacet, () => _editorViewsContribution4)],
   ])
-  const editors = registry.get(editorsService)
+  const editors = registry.required(editorsService)
   const parent = requireSuccess(editors.openEditor('/main.parent', ''))
   presentation(editors, parent)
   child = requireSuccess(editors.createEditor())
   const destroy = vi.spyOn(
-    codeSurface(registry.get(editorsService), child),
+    codeSurface(registry.required(editorsService), child),
     'destroy'
   )
   editors.closeEditor(parent.id)
@@ -281,35 +304,29 @@ it('protects other buffers from mode cleanup and continues releasing owned resou
   expect(destroy).toHaveBeenCalledOnce()
   report.mockRestore()
 })
-
 it.each(['return', 'throw'] as const)(
   'releases partial mode resources when its provider fails by %s',
-  (failureMode) => {
+  async (failureMode) => {
     const released: string[] = []
     registry = new Registry()
-    registry.configure([
+    const _editorViewsContribution5: InputOf<typeof editorViewsFacet> =
+      defineEditorView(({ onDispose }) => {
+        onDispose(() => released.push('first'))
+        onDispose(() => released.push('second'))
+        const failure = new Error('Mode initialization failed')
+        if (failureMode === 'throw') throw failure
+        return failure
+      })({
+        id: 'broken',
+        label: 'Broken',
+        matches: '*',
+        Component: () => null,
+      })
+    await registry.configure([
       editorsExtension,
-      defineRegistryItem({
-        provides: [
-          provide(
-            editorViewsValueSpec,
-            defineEditorView(({ onDispose }) => {
-              onDispose(() => released.push('first'))
-              onDispose(() => released.push('second'))
-              const failure = new Error('Mode initialization failed')
-              if (failureMode === 'throw') throw failure
-              return failure
-            })({
-              id: 'broken',
-              label: 'Broken',
-              matches: '*',
-              Component: () => null,
-            })
-          ),
-        ],
-      }),
+      [contribute(editorViewsFacet, () => _editorViewsContribution5)],
     ])
-    const editors = registry.get(editorsService)
+    const editors = registry.required(editorsService)
     const editor = requireSuccess(editors.createEditor())
     render(
       <EditorView instance={presentation(editors, editor)} editors={editors} />

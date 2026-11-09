@@ -1,6 +1,5 @@
-import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
-
+import { contract, service } from 'plankton'
 export type RuntimeTarget = 'desktop' | 'web' | 'server'
 
 export type RuntimeInfo = {
@@ -23,9 +22,8 @@ export type RuntimeRegistryService = {
   get: () => RuntimeInfo
   refresh: () => RuntimeInfo
 }
-
-export const runtimeContract = defineContract({
-  runtimeService: defineService<RuntimeRegistryService>('runtime.service'),
+export const runtimeContract = contract({
+  runtimeService: service<RuntimeRegistryService>('runtime.service'),
 })
 
 export const { runtimeService } = runtimeContract

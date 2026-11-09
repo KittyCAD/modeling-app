@@ -114,10 +114,10 @@ ruleTester.run('no-codemirror-printable-keymap-keystrokes', rule, {
     },
     {
       code: `
-        provide(keymapValueSpec, {
+        contribute(keymapFacet, () => ({
           keystrokes: ['Space', 'k'],
           when: ['base'],
-        })
+        }))
       `,
       errors: [{ messageId: 'textProducingCodeMirrorKeystrokes' }],
     },

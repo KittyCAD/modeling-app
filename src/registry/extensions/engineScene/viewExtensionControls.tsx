@@ -1,6 +1,6 @@
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
-import { Suspense, lazy } from 'react'
+import { lazy, Suspense } from 'react'
 
 const Toolbar = lazy(async () => {
   const { Toolbar } = await import('@src/Toolbar')

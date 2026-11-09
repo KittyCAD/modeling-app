@@ -1,8 +1,3 @@
-import {
-  defineRegistryItem,
-  provideService,
-  Registry,
-} from '@kittycad/registry'
 import type { ZDSProject } from '@src/lib/projectSession'
 import { File } from '@src/lib/projectSession/file'
 import {
@@ -11,9 +6,10 @@ import {
 } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
+import { provide, Registry, type Subtree } from 'plankton'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-const createSession = (text: string) => {
+const createSession = async (text: string) => {
   const readFile = vi.fn(async () => new TextEncoder().encode(text))
   const writeFile = vi.fn(async (_path: string, _content: string) => {})
   const operations = {
@@ -21,30 +17,29 @@ const createSession = (text: string) => {
     writeFile,
   } as unknown as FileOperationsRegistryService
   const registry = new Registry()
-  registry.configure([
+  await registry.configure([
     projectSessionRegistryItem,
-    defineRegistryItem({
-      providesServices: [provideService(fileOperationsService, operations)],
-    }),
+    {
+      create: () => ({
+        items: [provide(fileOperationsService, operations)],
+      }),
+    } satisfies Subtree,
   ])
-  const session = registry.get(projectSession)
+  const session = registry.required(projectSession)
   const file = new File('/project/main.kcl', session.textFileIO, 7)
   return { registry, file, readFile, writeFile }
 }
 
 describe('project session extension', () => {
   let registry: Registry | undefined
-
-  afterEach(() => {
-    registry?.[Symbol.dispose]()
+  afterEach(async () => {
+    await registry?.dispose()
     registry = undefined
   })
-
-  it('provides the opened project session through registry signals', () => {
+  it('provides the opened project session through registry signals', async () => {
     registry = new Registry()
-    registry.configure([projectSessionRegistryItem])
-
-    const session = registry.get(projectSession)
+    await registry.configure([projectSessionRegistryItem])
+    const session = registry.required(projectSession)
     const project = { name: 'bracket' } as ZDSProject
 
     expect(session.getProject()).toBeUndefined()
@@ -60,13 +55,10 @@ describe('project session extension', () => {
     expect(session.getProject()).toBeUndefined()
     expect(session.project.value).toBeUndefined()
   })
-
-  it('tracks the current project library id', () => {
+  it('tracks the current project library id', async () => {
     registry = new Registry()
-    registry.configure([projectSessionRegistryItem])
-
-    const session = registry.get(projectSession)
-
+    await registry.configure([projectSessionRegistryItem])
+    const session = registry.required(projectSession)
     expect(session.getCurrentProjectLibraryId()).toBeUndefined()
     expect(session.currentProjectLibraryId.value).toBeUndefined()
 
@@ -82,8 +74,8 @@ describe('project session extension', () => {
   })
 
   it('keeps file reads and writes isolated between registries without an editor', async () => {
-    const first = createSession('first: \u03c0')
-    const second = createSession('second')
+    const first = await createSession('first: \u03c0')
+    const second = await createSession('second')
     try {
       await expect(first.file.asRustApiFile()).resolves.toEqual({
         id: 7,
@@ -101,7 +93,7 @@ describe('project session extension', () => {
         '/project/main.kcl',
         'second edit'
       )
-      second.registry[Symbol.dispose]()
+      await second.registry.dispose()
       // Web sessions have no platform watcher, but keep the same file lifecycle.
       first.file.watch()
       expect(first.file.watching).toBe(true)
@@ -114,12 +106,11 @@ describe('project session extension', () => {
       first.writeFile.mockRejectedValueOnce(failure)
       await expect(first.file.write('failed edit')).rejects.toBe(failure)
     } finally {
-      second.registry[Symbol.dispose]()
-      first.registry[Symbol.dispose]()
+      await second.registry.dispose()
+      await first.registry.dispose()
     }
   })
-
-  it('binds desktop watch hooks to each registry instead of global File state', () => {
+  it('binds desktop watch hooks to each registry instead of global File state', async () => {
     const originalElectron = Object.getOwnPropertyDescriptor(window, 'electron')
     const firstWatcher = { watchFileOn: vi.fn(), watchFileOff: vi.fn() }
     const secondWatcher = { watchFileOn: vi.fn(), watchFileOff: vi.fn() }
@@ -127,12 +118,12 @@ describe('project session extension', () => {
       configurable: true,
       value: firstWatcher,
     })
-    const first = createSession('first')
+    const first = await createSession('first')
     Object.defineProperty(window, 'electron', {
       configurable: true,
       value: secondWatcher,
     })
-    const second = createSession('second')
+    const second = await createSession('second')
     try {
       first.file.watch()
       second.file.watch()
@@ -157,8 +148,8 @@ describe('project session extension', () => {
     } finally {
       first.file.unwatch()
       second.file.unwatch()
-      first.registry[Symbol.dispose]()
-      second.registry[Symbol.dispose]()
+      await first.registry.dispose()
+      await second.registry.dispose()
       if (originalElectron)
         Object.defineProperty(window, 'electron', originalElectron)
       else Reflect.deleteProperty(window, 'electron')

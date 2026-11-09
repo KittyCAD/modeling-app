@@ -1,4 +1,3 @@
-import { Registry, defineRegistryItem } from '@kittycad/registry'
 import {
   clearSessionExpiredNotice,
   notifySessionExpired,
@@ -8,23 +7,21 @@ import {
   provideAuthSessionExpiredListener,
 } from '@src/registry/contracts/auth'
 import authRegistryItem from '@src/registry/extensions/auth'
+import { Registry } from 'plankton'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 describe('auth extension', () => {
   let registry: Registry | undefined
-
-  afterEach(() => {
-    registry?.[Symbol.dispose]()
+  afterEach(async () => {
+    await registry?.dispose()
     registry = undefined
     clearSessionExpiredNotice()
   })
 
   it('provides auth state, token, and login readiness through the registry', async () => {
     registry = new Registry()
-    registry.configure([authRegistryItem])
-
-    const auth = registry.get(authService)
-
+    await registry.configure([authRegistryItem])
+    const auth = registry.required(authService)
     await vi.waitFor(() => {
       expect(auth.state.value.matches('checkIfLoggedIn')).toBe(false)
     })
@@ -44,20 +41,16 @@ describe('auth extension', () => {
     notifySessionExpired('fetch')
 
     registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-session-expired-listener',
-        provides: [
-          provideAuthSessionExpiredListener(
-            'test-session-expired-listener',
-            listener
-          ),
-        ],
-      }),
+    await registry.configure([
+      [
+        provideAuthSessionExpiredListener(
+          'test-session-expired-listener',
+          listener
+        ),
+      ],
       authRegistryItem,
     ])
-    registry.get(authService)
-
+    registry.required(authService)
     expect(listener).not.toHaveBeenCalled()
 
     notifySessionExpired('fetch')

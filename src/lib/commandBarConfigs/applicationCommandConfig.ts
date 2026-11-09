@@ -324,7 +324,7 @@ export function createApplicationCommands({
             }
 
             void app.registry
-              .get(routerService)
+              .required(routerService)
               .navigate(getFileRoute(project.default_file))
           })
           .catch((error: unknown) => {
