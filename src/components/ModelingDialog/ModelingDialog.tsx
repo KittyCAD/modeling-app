@@ -1,40 +1,29 @@
+import { ModelingArgumentFields } from '@src/components/ModelingDialog/ModelingArgumentFields'
 import { useSignals } from '@preact/signals-react/runtime'
 import { Draggable } from '@kittycad/ui-components'
 import type { RefObject } from 'react'
-import { useEffect, useId, useRef, useState } from 'react'
-import decamelize from 'decamelize'
-import {
-  CommandKclInput,
-  getKclInputValue,
-  type CommandKclArgument,
-} from '@src/components/CommandBar/CommandKclInput'
-import { CommandCameraInput } from '@src/components/CommandBar/CommandCameraInput'
+import { useEffect, useRef, useState } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ErrorBanner } from '@src/components/ErrorBanner'
-import { MarkdownText } from '@src/components/MarkdownText'
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
 import Tooltip from '@src/components/Tooltip'
 import type { KclManager } from '@src/lang/KclManager'
 import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
 import type { CommandInputValidationState } from '@src/lib/commandTypes'
-import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
-import { getSelectionTypeDisplayText, isSelections } from '@src/lib/selections'
+import { noAutofillFormProps } from '@src/lib/autofill'
 import { isErr, trap } from '@src/lib/trap'
-import { capitaliseFC, isRecord } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { CommandScopeService } from '@src/registry/contracts/commands'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 import {
-  fieldText,
+  type DialogField,
   getDialogFields,
   hasValue,
   initializeArguments,
   resolveArguments,
-  type DialogField,
 } from '@src/components/ModelingDialog/arguments'
 import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSelection'
-import { ArgumentHelp } from '@src/components/ModelingDialog/ArgumentHelp'
 import { CommandHelp } from '@src/components/ModelingDialog/CommandHelp'
 
 export default function ModelingDialog({
@@ -58,15 +47,12 @@ export default function ModelingDialog({
 }) {
   useSignals()
   const state = commands.useState()
-  const fieldIdPrefix = useId()
   const { selectedCommand: command } = state.context
   const [values, setValues] = useState<Record<string, unknown>>({})
   const [validity, setValidity] = useState<Record<string, boolean>>({})
   const [initializing, setInitializing] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const mounted = useRef(true)
-  // Restore focus to the corresponding field after removing a selection.
-  const selectionInputs = useRef(new Map<string, HTMLButtonElement>())
   const initialContext = useRef(state.context)
   const fields = getDialogFields({
     ...state.context,
@@ -191,280 +177,31 @@ export default function ModelingDialog({
     }
   }
 
-  function renderField({ name, arg, required }: DialogField) {
-    const fieldId = `${fieldIdPrefix}-${name}`
-    const label =
-      arg.displayName || capitaliseFC(decamelize(name, { separator: ' ' }))
-    const value = context.argumentsToSubmit[name]
-    const description = arg.description && (
-      <MarkdownText
-        text={arg.description}
-        className="parsed-markdown text-xs text-chalkboard-70 dark:text-chalkboard-40"
-      />
-    )
-    const help = arg.documentation && (
-      <ArgumentHelp label={label} text={arg.documentation} />
-    )
-    const fieldLabel = (
-      <div className="flex items-center justify-between gap-1">
-        <label htmlFor={fieldId} className="capitalize">
-          {label}
-          {required && ' *'}
-        </label>
-        {help}
-      </div>
-    )
-    const machineContext = arg.machineActor?.getSnapshot().context
-    switch (arg.inputType) {
-      case 'camera':
-        return (
-          <div key={name} className="flex flex-col gap-1">
-            {fieldLabel}
-            <CommandCameraInput
-              id={fieldId}
-              controls={kclManager.sceneInfra.camControls}
-              saved={hasValue(value)}
-              captured={isRecord(value) && 'look' in value}
-              onChange={(camera) => save(name, camera)}
-              onValidationChange={(next) => updateValidation(name, next)}
-            />
-            {description}
-          </div>
-        )
-      case 'kcl':
-        return (
-          <CommandKclInput
-            key={name}
-            kclManager={kclManager}
-            settings={settings}
-            wasmPromise={wasmPromise}
-            commandScopes={commandScopes}
-            name={name}
-            arg={arg}
-            label={label}
-            labelAction={help}
-            description={description}
-            placeholder={required ? undefined : 'Use defaults'}
-            isRequired={required}
-            inline={false}
-            autoFocus={name === firstFieldName}
-            value={getKclInputValue(arg, value)}
-            submittedValue={state.context.argumentsToSubmit[name]}
-            nodeToEdit={state.context.argumentsToSubmit.nodeToEdit}
-            variableName={
-              typeof arg.variableName === 'function'
-                ? arg.variableName(context, machineContext)
-                : arg.variableName
-            }
-            selectionRanges={selection.selectionRanges}
-            onChange={(change) => save(name, change.value)}
-            onValidationChange={(next) => updateValidation(name, next)}
-          />
-        )
-      case 'vector2d':
-      case 'vector3d': {
-        const vectorArg: CommandKclArgument = {
-          ...arg,
-          inputType: 'kcl',
-          allowArrays: true,
-          createVariable: 'disallow',
-        }
-        return (
-          <CommandKclInput
-            key={name}
-            kclManager={kclManager}
-            settings={settings}
-            wasmPromise={wasmPromise}
-            commandScopes={commandScopes}
-            name={name}
-            arg={vectorArg}
-            label={label}
-            labelAction={help}
-            description={description}
-            placeholder={required ? undefined : 'Use defaults'}
-            isRequired={required}
-            inline={false}
-            autoFocus={name === firstFieldName}
-            value={getKclInputValue(vectorArg, value)}
-            submittedValue={state.context.argumentsToSubmit[name]}
-            nodeToEdit={state.context.argumentsToSubmit.nodeToEdit}
-            selectionRanges={selection.selectionRanges}
-            onChange={(change) => save(name, change.value)}
-            onValidationChange={(next) => updateValidation(name, next)}
-          />
-        )
-      }
-      case 'selection':
-        return (
-          <div key={name} className="flex flex-col gap-1">
-            {fieldLabel}
-            <div
-              role="group"
-              aria-label={`${label} selections`}
-              className={`rounded-sm border ${selection.activeName === name ? 'border-primary' : 'border-chalkboard-30 dark:border-chalkboard-70'}`}
-            >
-              <button
-                id={fieldId}
-                type="button"
-                ref={(button) => {
-                  if (button) selectionInputs.current.set(name, button)
-                  else selectionInputs.current.delete(name)
-                }}
-                autoFocus={name === firstFieldName}
-                aria-label={`Select ${label}`}
-                aria-pressed={selection.activeName === name}
-                data-modeling-dialog-selection={selection.activeName === name}
-                disabled={Boolean(state.context.argumentsToSubmit.nodeToEdit)}
-                title={
-                  state.context.argumentsToSubmit.nodeToEdit
-                    ? "Selection edits aren't supported yet."
-                    : undefined
-                }
-                className="m-0 w-full rounded-sm border-0 bg-transparent px-2 py-1 text-left text-[10px] focus-visible:ring-1 focus-visible:ring-primary aria-pressed:text-primary"
-                onClick={() => selection.select(name, arg)}
-              >
-                {isSelections(value) && hasValue(value)
-                  ? getSelectionTypeDisplayText(
-                      kclManager.astSignal.value,
-                      value,
-                      kclManager.artifactGraph
-                    )
-                  : 'Select in the scene'}
-              </button>
-              {isSelections(value) && hasValue(value) && (
-                <div className="max-h-32 overflow-auto">
-                  <DialogSelectionList
-                    kclManager={kclManager}
-                    wasmPromise={wasmPromise}
-                    selectionRanges={value}
-                    onChange={
-                      state.context.argumentsToSubmit.nodeToEdit
-                        ? undefined
-                        : (next) => {
-                            selection.update(name, next)
-                            selectionInputs.current.get(name)?.focus()
-                          }
-                    }
-                  />
-                </div>
-              )}
-            </div>
-            {description}
-          </div>
-        )
-      case 'boolean':
-      case 'options': {
-        const choices =
-          arg.inputType === 'boolean'
-            ? [
-                { name: 'On', value: true },
-                { name: 'Off', value: false },
-              ]
-            : typeof arg.options === 'function'
-              ? arg.options(context, machineContext)
-              : arg.options
-        const index = choices.findIndex((choice) => choice.value === value)
-        return (
-          <div key={name} className="flex flex-col gap-1">
-            {fieldLabel}
-            <select
-              id={fieldId}
-              autoFocus={name === firstFieldName}
-              className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
-              value={index < 0 ? '' : String(index)}
-              onChange={(event) =>
-                save(
-                  name,
-                  event.target.value === ''
-                    ? undefined
-                    : choices[Number(event.target.value)]?.value
-                )
-              }
-            >
-              <option value="" disabled={required}>
-                {required ? 'Select an option' : 'Optional'}
-              </option>
-              {choices.map((choice, index) => (
-                <option
-                  key={choice.name}
-                  value={index}
-                  disabled={'disabled' in choice && choice.disabled}
-                >
-                  {choice.name}
-                </option>
-              ))}
-            </select>
-            {description}
-          </div>
-        )
-      }
-      case 'color':
-        return (
-          <div key={name} className="flex flex-col gap-1">
-            {fieldLabel}
-            <input
-              {...noAutofillInputProps}
-              id={fieldId}
-              type="color"
-              autoFocus={name === firstFieldName}
-              className="h-8 w-full cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
-              value={fieldText(value)}
-              onChange={(event) => save(name, event.target.value)}
-            />
-            {description}
-          </div>
-        )
-      case 'tagDeclarator':
-        return (
-          <div key={name} className="flex flex-col gap-1">
-            {fieldLabel}
-            <div className="relative">
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-px left-px flex items-center pl-2 text-xs"
-              >
-                $
-              </span>
-              <input
-                {...noAutofillInputProps}
-                id={fieldId}
-                type="text"
-                autoFocus={name === firstFieldName}
-                className="w-full rounded-sm border border-chalkboard-30 bg-transparent py-1 pl-4 pr-2 text-xs dark:border-chalkboard-70"
-                placeholder={required ? undefined : 'None'}
-                value={fieldText(value)}
-                onChange={(event) =>
-                  save(name, event.target.value.replace(/^\$/, ''))
-                }
-              />
-            </div>
-            {description}
-          </div>
-        )
-      case 'string':
-      case 'number':
-      case 'text':
-      case 'path': {
-        const Input = arg.inputType === 'text' ? 'textarea' : 'input'
-        return (
-          <div key={name} className="flex flex-col gap-1">
-            {fieldLabel}
-            <Input
-              {...noAutofillInputProps}
-              id={fieldId}
-              rows={arg.inputType === 'text' ? 3 : undefined}
-              autoFocus={name === firstFieldName}
-              className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
-              value={fieldText(value)}
-              onChange={(event) => save(name, event.target.value)}
-            />
-            {description}
-          </div>
-        )
-      }
-    }
-  }
-
+  const renderFields = (fields: DialogField[]) => (
+    <ModelingArgumentFields
+      fields={fields}
+      context={context}
+      submittedValues={state.context.argumentsToSubmit}
+      model={kclManager}
+      artifactGraph={kclManager.artifactGraph}
+      settings={settings}
+      wasmPromise={wasmPromise}
+      commandScopes={commandScopes}
+      selection={selection}
+      save={save}
+      updateValidation={updateValidation}
+      firstFieldName={firstFieldName}
+      cameraControls={kclManager.sceneInfra.camControls}
+      renderSelectionList={(value, onChange) => (
+        <DialogSelectionList
+          kclManager={kclManager}
+          wasmPromise={wasmPromise}
+          selectionRanges={value}
+          onChange={onChange}
+        />
+      )}
+    />
+  )
   if (!command) return null
   const advanced = visible.filter(({ arg }) => arg.dialog?.advanced)
   return (
@@ -518,13 +255,13 @@ export default function ModelingDialog({
           {initializing ? (
             <p>Loading arguments...</p>
           ) : (
-            visible.filter(({ arg }) => !arg.dialog?.advanced).map(renderField)
+            renderFields(visible.filter(({ arg }) => !arg.dialog?.advanced))
           )}
           {!initializing && advanced.length > 0 && (
             <details>
               <summary className="cursor-pointer py-1">Advanced</summary>
               <div className="flex flex-col gap-3 pt-2">
-                {advanced.map(renderField)}
+                {renderFields(advanced)}
               </div>
             </details>
           )}

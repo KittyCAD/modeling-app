@@ -5,7 +5,7 @@ import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selecti
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type RustContext from '@src/lib/rustContext'
+import type { KclExpressionRuntime } from '@src/lib/kclHelpers'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
@@ -113,7 +113,7 @@ export async function initializeArguments(
 export async function resolveArguments(
   context: CommandBarContext,
   values: Record<string, unknown>,
-  rustContext: RustContext,
+  rustContext: KclExpressionRuntime,
   ast: Node<Program>,
   artifactGraph?: ArtifactGraph
 ): Promise<Record<string, unknown> | Error> {
