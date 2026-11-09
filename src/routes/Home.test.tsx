@@ -6,7 +6,7 @@ import {
 import type { HomeProjectActionsService } from '@src/registry/contracts/homeProjects'
 import { HomeHeader } from '@src/routes/HomeHeader'
 import { ProjectLibraryPreviewRow } from '@src/routes/HomeProjectCards'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -39,14 +39,20 @@ const projectActions = {
 function renderHomeHeader({
   showFreeCloudProjectTrainingDisclosure,
   showLibraryBackLink = false,
+  onRefresh,
+  isRefreshing = false,
 }: {
   showFreeCloudProjectTrainingDisclosure: boolean
   showLibraryBackLink?: boolean
+  onRefresh?: () => void
+  isRefreshing?: boolean
 }) {
   render(
     <MemoryRouter>
       <HomeHeader
         title="Personal Cloud"
+        onRefresh={onRefresh}
+        isRefreshing={isRefreshing}
         library={cloudLibrary}
         setQuery={vi.fn()}
         sort="modified:desc"
@@ -82,6 +88,24 @@ function renderProjectLibraryPreviewRow(library: ProjectLibrary) {
 }
 
 describe('HomeHeader', () => {
+  it.each([false, true])(
+    'shows the refresh button with loading=%s',
+    (isRefreshing) => {
+      const onRefresh = vi.fn()
+      renderHomeHeader({
+        showFreeCloudProjectTrainingDisclosure: false,
+        onRefresh,
+        isRefreshing,
+      })
+      const button = screen.getByRole('button', { name: 'Refresh projects' })
+      expect(button).toHaveAttribute('aria-busy', String(isRefreshing))
+      if (isRefreshing) expect(button).toBeDisabled()
+      else expect(button).toBeEnabled()
+      fireEvent.click(button)
+      expect(onRefresh).toHaveBeenCalledTimes(isRefreshing ? 0 : 1)
+    }
+  )
+
   it('shows the Free cloud-project training disclosure with the policy link', () => {
     renderHomeHeader({
       showFreeCloudProjectTrainingDisclosure:

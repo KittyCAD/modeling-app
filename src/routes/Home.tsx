@@ -34,6 +34,7 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
@@ -93,6 +94,7 @@ import {
 } from '@src/routes/Onboarding/utils'
 import type { HTMLProps } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
   // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useLocation).
@@ -394,6 +396,28 @@ const Home = () => {
     !loadingLibraryIds.some(
       (id) => !selectedProjectLibraryId || id === selectedProjectLibraryId
     )
+  const refreshProjectList = () => {
+    if (!projectsLoaded) return
+    for (const library of visibleLibraries)
+      if (library.type !== CLOUD_PROJECT_LIBRARY_TYPE)
+        projectLibraryRealizations?.invalidate({ libraryId: library.id })
+    if (
+      !visibleLibraries.some(
+        (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
+      )
+    )
+      return
+    if (!navigator.onLine) {
+      toast.error('Connect to the internet to refresh cloud projects.')
+      return
+    }
+    const cloud = registry.get(cloudStorageService)
+    if (!auth.isLoggedIn.peek() || cloud.projectsLoading.peek()) return
+    void cloud.listProjects().catch((error: unknown) => {
+      reportRejection(error)
+      toast.error('Could not refresh projects. Try again.')
+    })
+  }
   const scopedHomeProjectEntries = routeSelectedProjectLibrary
     ? getHomeProjectEntriesForLibrary(
         homeProjectEntries,
@@ -617,6 +641,8 @@ const Home = () => {
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           data-testid="home-header"
+          onRefresh={refreshProjectList}
+          isRefreshing={!projectsLoaded}
           title={
             selectedProjectLibrary
               ? selectedProjectLibrary.title
