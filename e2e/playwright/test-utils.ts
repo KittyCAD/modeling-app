@@ -58,7 +58,6 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
-import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import {
   isErrorWhitelisted,
   isInterruptedWebKitRequest,
