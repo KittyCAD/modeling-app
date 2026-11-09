@@ -1,2 +1,1 @@
-[test_graphics.EngineRender]
-reason = "BooleanSubtract fails on CPU engine"
+test_graphics = "CpuEngineRender"

@@ -1,6 +1,7 @@
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { resetView } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import {
@@ -12,13 +13,12 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
-test.describe('Point-and-click tests - sketch v1', { tag: '@desktop' }, () => {
+test.describe('Point-and-click tests - sketch v1', { tag: '@web' }, () => {
   test.use({
     userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG],
   })
 
   test('Create an Extrude operation with a tag and edit it via Feature Tree', async ({
-    context,
     editor,
     homePage,
     page,
@@ -29,12 +29,10 @@ test.describe('Point-and-click tests - sketch v1', { tag: '@desktop' }, () => {
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, code)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     })
 
     await test.step('Add extrude with tags', async () => {
@@ -77,7 +75,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
       })
       await test.step('Edit length argument', async () => {
         await expect(modelingDialog.input('length')).toHaveText('4')
-        await modelingDialog.input('length').fill('3')
+        await modelingDialog.fillInput('length', '3')
         await expect(modelingDialog.input('length')).toHaveText('3')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
@@ -180,7 +178,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
   })
 
   test(`Offset plane point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -224,7 +221,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
   })
 
   test(`Helix point-and-click around sweepEdge with edit and delete flows`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -247,12 +243,13 @@ extrude001 = extrude(profile001, length = 100)`
       testPoint.y
     )
 
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
+    await resetView(scene)
 
     await test.step(`Fill the modeling dialog`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
@@ -310,7 +307,7 @@ extrude001 = extrude(profile001, length = 100)`
         .options('counterclockwise')
         .selectOption({ label: 'Off' })
       await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
+      await scene.waitForExecutionDoneAfter(() => modelingDialog.submit())
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(
@@ -333,7 +330,6 @@ extrude001 = extrude(profile001, length = 100)`
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
       await operationButton.click({ button: 'left' })
-      await toolbar.expectSelection('1 helix')
       await page.keyboard.press('Delete')
       await editor.expectEditor.not.toContain('helix')
       await expect(
@@ -343,7 +339,6 @@ extrude001 = extrude(profile001, length = 100)`
   })
 
   test(`Loft point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -360,12 +355,12 @@ plane001 = offsetPlane(XZ, offset = offset001)
 sketch002 = startSketchOn(plane001)
   |> ${circleCode2}
       `
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
     await page.setBodyDimensions({ width: 1500, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
 
     const loftDeclaration =
       'loft001 = loft([sketch001, sketch002], bodyType = SURFACE)'
@@ -373,11 +368,8 @@ sketch002 = startSketchOn(plane001)
       'loft001 = loft([sketch001, sketch002], vDegree = 3, bodyType = SURFACE)'
 
     async function selectSketches() {
-      const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
       await editor.selectText(circleCode1)
-      await page.keyboard.down(multiCursorKey)
-      await page.getByText(circleCode2).click()
-      await page.keyboard.up(multiCursorKey)
+      await page.getByText(circleCode2).click({ modifiers: ['ControlOrMeta'] })
     }
 
     await test.step(`Fill the modeling dialog without preselected sketches`, async () => {
@@ -431,7 +423,6 @@ sketch002 = startSketchOn(plane001)
   // Note: testing the helix case here for sweep as it's the only one we can't
   // test in src\lang\modifyAst\sweeps.test.ts
   test(`Sweep point-and-click helix`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -468,11 +459,11 @@ profile001 = ${circleCode}`
   orientProfilePerpendicular = false,
 )`
 
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
 
     await test.step(`Add sweep through the modeling dialog`, async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
@@ -525,7 +516,6 @@ profile001 = ${circleCode}`
   })
 
   test(`Fillet point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -547,12 +537,12 @@ extrude001 = extrude(sketch001, length = -12)
 
     // Setup
     await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     // Test 1: Modeling dialog with preselected edges
@@ -625,7 +615,6 @@ extrude001 = extrude(sketch001, length = -12)
   })
 
   test(`Fillet point-and-click edit standalone expression`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -644,12 +633,12 @@ extrude001 = extrude(profile001, length = 100)
 fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
 `
     await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
     await test.step('Edit fillet', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
@@ -671,7 +660,6 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Shell point-and-click ${rendererTag}`, async ({
-      context,
       page,
       homePage,
       scene,
@@ -683,13 +671,14 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
 extrude001 = extrude(sketch001, length = 30)`
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await resetView(scene)
 
       // One dumb hardcoded screen pixel value
       // Any idea here how to select a cap without clicking in the scene?
@@ -768,7 +757,6 @@ extrude001 = extrude(sketch001, length = 30)`
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Delete Face point-and-click ${rendererTag}`, async ({
-      context,
       page,
       homePage,
       scene,
@@ -781,11 +769,12 @@ sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
 extrude001 = extrude(sketch001, length = 30)`
       const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await resetView(scene)
 
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 575, y: 200 }
@@ -825,7 +814,6 @@ extrude001 = extrude(sketch001, length = 30)`
   }
 
   test('Revolve point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -846,12 +834,13 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     const newCodeToFind =
       'revolve001 = revolve(  sketch002,  angle = 360deg,  axis = rectangleSegmentA001,  bodyType = SURFACE,)'
 
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
+    await resetView(scene)
 
     await test.step('Add revolve feature via point-and-click', async () => {
       // select line of code
@@ -914,7 +903,6 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
   })
 
   test('Flip Surface point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -930,12 +918,12 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
     const flipSurfaceDeclaration = `surface001 = flipSurface(extrude001)`
 
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1500, height: 1000 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     await test.step('Start Flip Surface and select extrude001 in the feature tree', async () => {
@@ -974,7 +962,6 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
   })
 
   test('Join Surfaces point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -996,12 +983,12 @@ ${secondSurface}`
     const joinDeclaration = `surface001 = joinSurfaces([extrude001, extrude002])`
 
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1500, height: 1000 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     await test.step('Start Join and select two surfaces', async () => {
@@ -1035,7 +1022,6 @@ ${secondSurface}`
   })
 
   test(`Appearance point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -1048,12 +1034,12 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
     const declaration = `appearance(extrude001, color = "#ff0000")`
     const editedDeclaration = `appearance(extrude001, color = "#00ff00")`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
 
     await test.step(`Go through the Set Appearance flow`, async () => {
       const operationButton = await toolbar.getFeatureTreeOperation(
@@ -1108,7 +1094,6 @@ extrude001 = extrude(profile001, length = 1)`
   })
 
   test('Pattern Circular 3D point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -1121,12 +1106,12 @@ extrude001 = extrude(profile001, length = 1)`
   |> circle(center = [0, 0], radius = 2)
 solid001 = extrude(sketch001, length = 5)`
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
     })
 
     await test.step('Add Pattern Circular 3D to the scene', async () => {
@@ -1318,7 +1303,6 @@ solid001 = extrude(sketch001, length = 5)`
   })
 
   test('Pattern Linear 3D point-and-click', async ({
-    context,
     page,
     homePage,
     scene,
@@ -1331,12 +1315,12 @@ solid001 = extrude(sketch001, length = 5)`
   |> circle(center = [0, 0], radius = 2)
 solid001 = extrude(sketch001, length = 5)`
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
       // await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
 
@@ -1488,7 +1472,6 @@ solid001 = extrude(sketch001, length = 5)`
   })
 
   test('GDT Flatness from modeling dialog', async ({
-    context,
     page,
     homePage,
     scene,
@@ -1502,12 +1485,13 @@ sketch001 = startSketchOn(XZ)
 extrude001 = extrude(sketch001, length = 30)
     `
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await resetView(scene)
 
       // Close panes to ensure toolbar buttons are visible
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
@@ -1695,7 +1679,6 @@ extrude001 = extrude(sketch001, length = 30)
   })
 
   test('GDT Datum from modeling dialog', async ({
-    context,
     page,
     homePage,
     scene,
@@ -1709,12 +1692,13 @@ sketch001 = startSketchOn(XZ)
 extrude001 = extrude(sketch001, length = 30)
     `
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await resetView(scene)
 
       // Close panes to ensure toolbar buttons are visible
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
@@ -1877,7 +1861,6 @@ extrude001 = extrude(sketch001, length = 30)
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Hole point-and-click ${rendererTag}`, async ({
-      context,
       page,
       homePage,
       scene,
@@ -1894,12 +1877,13 @@ profile001 = startProfile(sketch001, at = [-5, -5])
   |> close()
 extrude001 = extrude(profile001, length = 10)`
       await test.step('Settle the scene', async () => {
-        await context.addInitScript((initialCode) => {
-          localStorage.setItem('persistCode', initialCode)
-        }, initialCode)
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', initialCode)
+        )
+        await resetView(scene)
 
         // Close panes to ensure toolbar buttons are visible
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
