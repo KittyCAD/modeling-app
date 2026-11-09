@@ -2,7 +2,12 @@ import { useSignals } from '@preact/signals-react/runtime'
 import Loading from '@src/components/Loading'
 import type { Executor } from '@src/lib/executors/registry/contract'
 import type { KclExecutorCapability } from '@src/lib/kcl/executor'
+import type {
+  KclSceneContext,
+  KclSceneViewExtension,
+} from '@src/lib/kcl/registry/contract'
 import type { KclSession } from '@src/lib/kcl/session'
+import { EngineSceneZones } from '@src/registry/contracts/engineScene'
 import { useEffect, useRef } from 'react'
 
 /** Mount the persistent stream even while the current execution is pending or failed. */
@@ -10,12 +15,16 @@ export function KclScene({
   executor,
   capability,
   session,
-  onExtrude,
+  target,
+  active = true,
+  extensions = [],
 }: {
   executor: Executor
   capability: KclExecutorCapability
   session: KclSession
-  onExtrude?: () => void
+  target?: KclSceneContext['target']
+  active?: boolean
+  extensions?: readonly KclSceneViewExtension[]
 }) {
   useSignals()
   const container = useRef<HTMLDivElement>(null)
@@ -33,19 +42,13 @@ export function KclScene({
       className="body-bg relative flex min-h-0 min-w-0 flex-1"
       aria-label="KCL engine scene"
     >
-      {onExtrude && (
-        <div className="absolute left-3 top-3 z-10">
-          <button
-            type="button"
-            className="rounded border border-3 bg-2 px-3 py-1 text-sm disabled:opacity-50"
-            disabled={!session.snapshot.value}
-            onClick={onExtrude}
-          >
-            Extrude
-          </button>
-        </div>
-      )}
       <div ref={container} className="min-h-0 min-w-0 flex-1" />
+      {target && (
+        <EngineSceneZones
+          extensions={extensions}
+          context={{ executor, session, target, active }}
+        />
+      )}
       {!error && connection.type === 'connecting' ? (
         <div role="status" className="body-bg absolute inset-0">
           <Loading isDummy className="h-full w-full">

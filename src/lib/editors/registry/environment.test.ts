@@ -1,3 +1,6 @@
+import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { modelingToolsService } from '@src/lib/modelingTools/registry/contract'
 import kclExtension from '@src/lib/kcl/registry'
 import executorsExtension from '@src/lib/executors/registry'
 import {
@@ -38,6 +41,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 const granted = signal(false)
 const featureFlags = defineRegistryItem({
+  provides: [provideWasmPromise(new Promise<ModuleType>(() => {}))],
   providesServices: [
     provideService(userFeaturesService, {
       has: (flag: string, fallback: boolean) =>
@@ -85,6 +89,9 @@ describe('experimental editor registration', () => {
         enabled
       )
       expect(registry.optional(executorsService) !== undefined).toBe(enabled)
+      expect(registry.optional(modelingToolsService) !== undefined).toBe(
+        enabled
+      )
       expect(registry.get(executorCapabilityValueSpec).length > 0).toBe(enabled)
       expect(registry.get(editorCapabilityValueSpec).length > 0).toBe(enabled)
       for (const command of [OPEN_EDITOR_COMMAND, NEW_EDITOR_COMMAND]) {

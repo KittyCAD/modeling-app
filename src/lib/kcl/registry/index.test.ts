@@ -1,3 +1,8 @@
+import { kclSceneViewExtensionsValueSpec } from '@src/lib/kcl/registry/contract'
+import {
+  modelingToolsService,
+  modelingToolsValueSpec,
+} from '@src/lib/modelingTools/registry/contract'
 import '@src/lib/projectSession/next/testFeature'
 import { defineRegistryItem, Registry } from '@kittycad/registry'
 import kclExtension from '@src/lib/kcl/registry'
@@ -23,6 +28,17 @@ it('registers Modeling and Extrude before WASM finishes loading', () => {
       .find((entry) => entry.id === 'kcl.extrude')
     expect(command?.name).toBe('Extrude')
     expect(command?.disabled).toBe(true)
+    expect(
+      registry
+        .get(kclSceneViewExtensionsValueSpec)
+        .some((extension) => extension.id === 'modeling-tools.toolbar')
+    ).toBe(true)
+    expect(
+      registry
+        .get(modelingToolsValueSpec)
+        .find((tool) => tool.id === command?.id)?.command
+    ).toMatchObject({ name: 'Extrude', groupId: 'kcl-modeling' })
+    expect(registry.get(modelingToolsService).targets.value).toHaveLength(0)
   } finally {
     registry[Symbol.dispose]()
   }

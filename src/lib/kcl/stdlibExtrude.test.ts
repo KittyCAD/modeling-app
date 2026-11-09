@@ -1,3 +1,8 @@
+import { createElement } from 'react'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { ModelingToolbar } from '@src/lib/modelingTools/ModelingToolbar'
+import { createModelingTools } from '@src/lib/modelingTools/tools'
+import { STDLIB_EXTRUDE_COMMAND } from '@src/lib/kcl/extrudeCommand'
 import { fakeKclRuntime } from '@src/lib/kcl/testHelpers/runtime'
 import { modelingTargetBinding } from '@src/lib/kcl/modelingTarget'
 import { createActor } from 'xstate'
@@ -274,7 +279,7 @@ it('rejects an execution change while asynchronous review is pending', async () 
 })
 
 it.each(['resolved', 'untouched default'] as const)(
-  'reviews and applies Extrude to its selected editor with %s length',
+  'opens stdlib Extrude from the toolbar and applies it to its selected editor with %s length',
   async (length) => {
     const fixture = await model()
     const other = await model()
@@ -300,17 +305,28 @@ it.each(['resolved', 'untouched default'] as const)(
       },
     }).start()
     cleanup.push(() => actor.stop())
-    actor.send({
-      type: 'Find and select command',
-      data: {
-        name: 'Extrude',
-        groupId: 'kcl-modeling',
-        argDefaultValues: {
-          modelingTarget: modelingTargetBinding(targets.peek()[0]),
-          ...(length === 'resolved' ? fixture.input.args : {}),
+    const tools = createModelingTools(
+      signal([
+        {
+          id: 'extrude',
+          command: STDLIB_EXTRUDE_COMMAND,
+          icon: 'extrude' as const,
         },
-      },
-    })
+      ]),
+      signal([command]),
+      (event) => actor.send(event)
+    )
+    const attachment = tools.attach(
+      fixture.editor,
+      () => undefined,
+      () => ({
+        modelingTarget: modelingTargetBinding(targets.peek()[0]),
+        ...(length === 'resolved' ? fixture.input.args : {}),
+      })
+    )
+    cleanup.push(attachment.dispose)
+    render(createElement(ModelingToolbar, { tools, target: attachment.target }))
+    fireEvent.click(screen.getByRole('button', { name: 'Extrude' }))
     actor.send({
       type: 'Submit argument',
       data:

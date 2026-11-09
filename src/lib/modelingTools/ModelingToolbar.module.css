@@ -1,0 +1,18 @@
+.toolbar {
+  @apply pointer-events-auto flex max-w-full flex-wrap items-center gap-1 rounded-b border border-t-0 b-4 bg-default/95 p-1 shadow-sm;
+}
+.button.button {
+  @apply m-0 flex min-h-8 items-center gap-1.5 rounded-sm border border-transparent bg-transparent px-2 py-1 text-xs text-default shadow-none;
+}
+.button.button:enabled:hover {
+  @apply b-4 bg-2;
+}
+.button.button:disabled {
+  @apply cursor-not-allowed text-3;
+}
+.button:focus-visible {
+  @apply outline outline-2 outline-primary;
+}
+.group {
+  @apply flex items-center rounded-sm border b-4;
+}

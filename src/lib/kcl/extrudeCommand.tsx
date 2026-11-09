@@ -24,6 +24,12 @@ const ViewerArgumentInput = lazy(
   () => import('@src/lib/kcl/ModelingArgumentInput')
 )
 
+export const STDLIB_EXTRUDE_COMMAND = {
+  id: 'kcl.extrude',
+  name: 'Extrude',
+  groupId: 'kcl-modeling',
+} as const
+
 /** Bind the existing stdlib definition to explicit viewer targets, retaining palette review. */
 export function createViewerExtrudeCommand(
   targets: ReadonlySignal<readonly ModelingTarget[]>,
@@ -151,9 +157,7 @@ export function createViewerExtrudeCommand(
     })
   }
   return {
-    id: 'kcl.extrude',
-    name: 'Extrude',
-    groupId: 'kcl-modeling',
+    ...STDLIB_EXTRUDE_COMMAND,
     icon: extrudeCommandConfig.icon,
     description: 'Extrude profiles in a Modeling editor.',
     scopes: GLOBAL_COMMAND_SCOPES,

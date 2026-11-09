@@ -44,8 +44,8 @@ the responsibility of the editor's contributions.
 
 ## Viewer runtime and palette binding
 
-The Modeling mode contributes an Extrude command and a button that opens it in
-the existing command palette. The Model choice binds an editor and its displayed
+The Modeling mode contributes the stdlib Extrude command as a tool in the
+`modelingTools` toolbar. Its button opens the existing command palette. The Model choice binds an editor and its displayed
 execution. Reexecuting, editing, renaming, or closing that target invalidates the
 choice; changing focus does not retarget the command.
 

@@ -1,16 +1,23 @@
+import { useSignals } from '@preact/signals-react/runtime'
+import { modelingToolsExtension } from '@src/lib/modelingTools/registry'
+import {
+  modelingToolsService,
+  modelingToolsValueSpec,
+} from '@src/lib/modelingTools/registry/contract'
+import { kclSceneViewExtensionsValueSpec } from '@src/lib/kcl/registry/contract'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { computed, signal } from '@preact/signals-core'
-import { createViewerExtrudeCommand } from '@src/lib/kcl/extrudeCommand'
+import {
+  createViewerExtrudeCommand,
+  STDLIB_EXTRUDE_COMMAND,
+} from '@src/lib/kcl/extrudeCommand'
 import {
   modelingTargetBinding,
   type ModelingTarget,
 } from '@src/lib/kcl/modelingTarget'
-import {
-  commandsValueSpec,
-  commandSystemService,
-} from '@src/registry/contracts/commands'
+import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { createViewerKclRuntime } from '@src/lib/kcl/runtime'
 import { bindViewerTransport } from '@src/lib/kcl/transport'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
@@ -116,10 +123,18 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
         services.optional(editorsService)?.editors.peek() ?? []
       )
   )
+  const sceneExtensions = valueSpecs.signal(kclSceneViewExtensionsValueSpec)
   return {
     id: 'kcl',
+    uses: [modelingToolsExtension],
     dispose: sceneSettings.dispose,
     provides: [
+      provide(modelingToolsValueSpec, {
+        id: STDLIB_EXTRUDE_COMMAND.id,
+        command: STDLIB_EXTRUDE_COMMAND,
+        icon: 'extrude',
+        group: 'Solids',
+      }),
       provide(
         commandsValueSpec,
         computed(() =>
@@ -129,7 +144,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
               .has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false)
           )
         ),
-        { key: 'kcl.extrude' }
+        { key: STDLIB_EXTRUDE_COMMAND.id }
       ),
       provide(editorLanguageValueSpec, {
         id: 'kcl',
@@ -155,30 +170,48 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
           host.onDispose(() => {
             targets.value = targets.peek().filter((entry) => entry !== target)
           })
-          return { ...context, target }
+          const session = target.session
+          const attachment = services.get(modelingToolsService).attach(
+            host.editor,
+            () => {
+              const connection = session.state.value
+              if (connection.type === 'error') return connection.error.message
+              if (connection.type !== 'ready')
+                return 'Connect to the engine first'
+              const output = context.executor.output.value
+              if (output.running) return 'Wait for the current code to execute'
+              if (output.errors[capability.id])
+                return 'Fix the execution error first'
+              const snapshot = session.snapshot.value
+              if (
+                !snapshot ||
+                snapshot.contents !== host.editor.contents.value ||
+                snapshot.src !== host.editor.src.value
+              )
+                return 'Wait for the current code to execute'
+              return undefined
+            },
+            () => ({ modelingTarget: modelingTargetBinding(target) })
+          )
+          host.onDispose(attachment.dispose)
+          return { ...context, session, target: attachment.target }
         })({
           id: 'kcl.engine',
           label: 'Modeling',
           priority: 1000,
           matches: '.kcl',
 
-          Component: ({ context }) =>
-            createElement(KclScene, {
+          Component: ({ context, active }) => {
+            useSignals()
+            return createElement(KclScene, {
               executor: context.executor,
               capability,
-              session: getSession(context.executor),
-              onExtrude: () =>
-                services.get(commandSystemService).send({
-                  type: 'Find and select command',
-                  data: {
-                    name: 'Extrude',
-                    groupId: 'kcl-modeling',
-                    argDefaultValues: {
-                      modelingTarget: modelingTargetBinding(context.target),
-                    },
-                  },
-                }),
-            }),
+              session: context.session,
+              target: context.target,
+              active,
+              extensions: sceneExtensions.value,
+            })
+          },
         })
       ),
     ],
