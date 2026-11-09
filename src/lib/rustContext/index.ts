@@ -93,7 +93,8 @@ export default class RustContext {
     public readonly wasmInstancePromise: Promise<ModuleType>,
     private readonly engineCommandManager: ConnectionManager,
     public readonly settingsActor: SettingsActorType,
-    private projectId = 0
+    private projectId = 0,
+    private readonly beforeSketchInsertion?: () => Promise<void>
   ) {
     this.initialization = this.createContextFromWasm()
     void this.initialization.catch((error: unknown) => {
@@ -418,6 +419,11 @@ export default class RustContext {
     }
   }
 
+  /** Only insertion paths call this; drag edits must stay free of storage reads. */
+  async prepareForSketchInsertion() {
+    await this.beforeSketchInsertion?.()
+  }
+
   /** Add a new sketch and enter sketch mode. */
   async newSketch(
     project: ApiProjectId,
@@ -551,6 +557,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
+    await this.prepareForSketchInsertion()
     const instance = await this._checkContextInstance()
 
     try {
@@ -894,6 +901,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
+    await this.prepareForSketchInsertion()
     const instance = await this._checkContextInstance()
 
     try {

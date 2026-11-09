@@ -30,7 +30,10 @@ import {
   projectSession,
   type ProjectSessionService,
 } from '@src/registry/contracts/projectSession'
-import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import {
+  cloudStorageService,
+  type FileOperationsRegistryService,
+} from '@src/registry/contracts/fileOperations'
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
@@ -428,6 +431,29 @@ export class ZDSProject {
     )
     this.files = this.files.filter((file) => !missing.has(file))
     return files.filter((file) => file !== undefined)
+  }
+
+  /** Read through the storage authority before a new sketch/segment is generated. */
+  async prepareForSketchInsertion() {
+    const editor = this.executingEditor.peek()
+    if (!editor)
+      return Promise.reject(new Error('No active editor for sketch insertion.'))
+    const isCurrent = () =>
+      this.app.project === this && this.executingEditor.peek() === editor
+    const id = this.projectIORefSignal.peek().cloudProjectId
+    await editor.refreshFileBeforeSketchInsertion(
+      id
+        ? async (isFileCurrent) => {
+            await this.app.registry
+              .get(cloudStorageService)
+              .refreshProject(id, () => isCurrent() && isFileCurrent())
+          }
+        : undefined
+    )
+    if (!isCurrent())
+      return Promise.reject(
+        new Error('The project changed before sketch insertion.')
+      )
   }
 
   /** Rebuild the complete Rust snapshot after an authoritative storage refresh. */
