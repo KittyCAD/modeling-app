@@ -285,7 +285,7 @@ export const fileLoader =
     )
     assertCurrent()
 
-    void app.refreshProjects().catch(reportRejection)
+    void app.projectLibraries.refreshProjects().catch(reportRejection)
   }
 
 // Loads the settings and by extension the projects in the default directory

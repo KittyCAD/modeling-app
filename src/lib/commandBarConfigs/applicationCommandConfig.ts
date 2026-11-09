@@ -55,7 +55,10 @@ async function onSubmitKCLSampleCreation({
     openedProject?.name === uniqueNameIfNeeded
       ? openedProject.path
       : (existing?.path ??
-        fsZds.join(app.projectDirectoryPath, uniqueNameIfNeeded))
+        fsZds.join(
+          app.projectLibraries.projectDirectoryPath,
+          uniqueNameIfNeeded
+        ))
   const { requestedProjectName: sampleName, initialProject } =
     await downloadKclSample(sample, { assetUrlPrefix: isDesktop() ? '.' : '' })
   // Every sample gets its own folder in an existing project, including samples
@@ -74,7 +77,7 @@ async function onSubmitKCLSampleCreation({
       contents: file.requestedData,
     }))
   )
-  await app.refreshProjects()
+  await app.projectLibraries.refreshProjects()
   if (app.project !== openedProject) return
   await app.projectSession.openFile(
     fsZds.join(sampleRoot, initialProject.entrypointFilePath),
@@ -145,7 +148,10 @@ export function createApplicationCommands({
             selectedFile instanceof File
               ? selectedFile.name
               : getStringAfterLastSeparator(selectedFile)
-          const root = joinOSPaths(app.projectDirectoryPath, uniqueNameIfNeeded)
+          const root = joinOSPaths(
+            app.projectLibraries.projectDirectoryPath,
+            uniqueNameIfNeeded
+          )
           try {
             const content =
               selectedFile instanceof File
@@ -154,7 +160,7 @@ export function createApplicationCommands({
             const paths = await app.projectOperations.writeFiles(root, [
               { path: fileNameWithExtension, contents: content },
             ])
-            await app.refreshProjects()
+            await app.projectLibraries.refreshProjects()
             if (fileNameWithExtension.endsWith('.kcl'))
               await app.projectSession.openFile(paths[0], { projectPath: root })
           } catch (cause) {

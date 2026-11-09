@@ -512,7 +512,16 @@ export function combineProjectLibraryRealizationContributions(
   return Array.from(realizationsByPath.values())
 }
 
+/** Directory selection and refresh behavior shared by project-library consumers. */
+export interface ProjectLibrariesService {
+  readonly projectDirectoryPath: string
+  readonly defaultProjectName: string
+  refreshProjects: () => Promise<void>
+}
+
 export const projectLibrariesContract = defineContract({
+  projectLibrariesService:
+    defineService<ProjectLibrariesService>('project-libraries'),
   projectLibraryRealizationsService:
     defineService<ProjectLibraryRealizationsService>(
       'project-library-realizations'
@@ -552,6 +561,7 @@ export const projectLibrariesContract = defineContract({
 })
 
 export const {
+  projectLibrariesService,
   projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
   projectLibrarySettingDefaultsValueSpec,

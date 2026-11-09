@@ -1,7 +1,7 @@
 import { reportRejection } from '@src/lib/trap'
 
 type HomeLoaderApp = {
-  refreshProjects: () => Promise<unknown>
+  projectLibraries: { refreshProjects: () => Promise<unknown> }
   closeProject: () => void
   settings: {
     actor: {
@@ -12,7 +12,7 @@ type HomeLoaderApp = {
 
 export function loadHomeProjects(app: HomeLoaderApp) {
   app.closeProject()
-  app.refreshProjects().catch(reportRejection)
+  app.projectLibraries.refreshProjects().catch(reportRejection)
   app.settings.actor.send({
     type: 'clear.project',
   })
