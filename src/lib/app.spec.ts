@@ -585,6 +585,80 @@ describe('project system', () => {
     }
   })
 
+  it.each([false, true])(
+    'switches files after a deletion arrives before its watcher notification (missing: %s)',
+    async (missing) => {
+      const app = createAppForTest()
+      const root = '/some-dir/test'
+      const main = `${root}/main.kcl`
+      const dependency = `${root}/dependency.kcl`
+      const healthy = `${root}/healthy.kcl`
+      const failure = missing
+        ? new FileNotFound({
+            operation: 'read-file',
+            path: dependency,
+            cause: { code: 'ENOENT' },
+            message: 'Dependency was deleted',
+          })
+        : new Error('Dependency read permission denied')
+      let deleted = false
+      const read = vi
+        .spyOn(app.projectSession.textFileIO, 'read')
+        .mockImplementation(async (path) => {
+          if (deleted && path === dependency) return Promise.reject(failure)
+          return ''
+        })
+      try {
+        const project = await app.openProject({
+          ...mockProject,
+          children: [main, dependency, healthy].map((path) => ({
+            name: fsZds.basename(path),
+            path,
+            children: null,
+          })),
+        })
+        const editor = await project.openEditor(
+          main,
+          app.singletons.kclManager,
+          '',
+          false
+        )
+        const snapshot = vi
+          .spyOn(editor.rustContext, 'sendOpenProject')
+          .mockResolvedValue(undefined)
+        deleted = true
+        const open = project.openEditor(healthy, editor, undefined, false)
+        if (missing) {
+          await open
+          expect(snapshot).toHaveBeenCalledWith(
+            healthy,
+            expect.arrayContaining([
+              expect.objectContaining({ path: main }),
+              expect.objectContaining({ path: healthy }),
+            ])
+          )
+          expect(snapshot.mock.calls[0][1]).toHaveLength(2)
+          expect(project.files.some((file) => file.path === dependency)).toBe(
+            false
+          )
+          const reads = read.mock.calls.filter(
+            ([path]) => path === dependency
+          ).length
+          await project.openEditor(main, editor, undefined, false)
+          expect(
+            read.mock.calls.filter(([path]) => path === dependency)
+          ).toHaveLength(reads)
+        } else {
+          await expect(open).rejects.toBe(failure)
+          expect(snapshot).not.toHaveBeenCalled()
+        }
+      } finally {
+        read.mockRestore()
+        app.dispose()
+      }
+    }
+  )
+
   it('annotates opened projects with their owning library path', async () => {
     const app = createAppForTest()
 

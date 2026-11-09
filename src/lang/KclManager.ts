@@ -553,6 +553,7 @@ export class KclManager extends File {
   /** Operation key (from getOperationKey) of the most recent live operation. */
   private _liveLatestOperationKey = signal<string | null>(null)
   private activeLiveOperationExecutionId: number | null = null
+  private executionGeneration = 0
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
@@ -1842,6 +1843,12 @@ export class KclManager extends File {
       providedEditor.editorView.state
     )
     providedEditor.clearNamedViews()
+    providedEditor.executeIsStale = null
+    // A reused editor must stop accepting results from its previous file, even
+    // if the user returns to that path before an old execution finishes.
+    providedEditor.executionGeneration += 1
+    providedEditor.endLiveOperationUpdates()
+    providedEditor.isExecuting = false
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
@@ -1872,6 +1879,9 @@ export class KclManager extends File {
         shouldWriteToDisk: false,
       })
     }
+    providedEditor.diagnostics = []
+    providedEditor.errors = []
+    providedEditor.logs = []
     providedEditor.markFileCodeAsSynced(diskCode)
     providedEditor.watchNamedViewInvalidation()
     providedEditor.startWatchingSettings()
@@ -1952,6 +1962,7 @@ export class KclManager extends File {
     this.clearNamedViews()
     this.stopNamedViewInvalidation?.()
     this.stopNamedViewInvalidation = undefined
+    this.executionGeneration += 1
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.sceneSettingsActive.value = false
@@ -2196,12 +2207,16 @@ export class KclManager extends File {
     }
 
     const finishExecution = this.engineCommandManager.trackExecution()
+    const generation = ++this.executionGeneration
+    const currentExecutionId = args.executionId ?? generation
+    const pathThatExecuted = this.path
+    const isCurrent = () =>
+      this.executionGeneration === generation && this.path === pathThatExecuted
 
     try {
       const ast = args.ast || this.ast
       markOnce('code/startExecuteAst')
 
-      const currentExecutionId = args.executionId || Date.now()
       this._cancelTokens.set(currentExecutionId, false)
 
       this.isExecuting = true
@@ -2218,6 +2233,8 @@ export class KclManager extends File {
         callbacks: this.createExecutionCallbacks(currentExecutionId),
       })
 
+      if (!isCurrent()) return
+
       const livePathsToWatch = Object.values(execState.filenames)
         .filter((file) => {
           return file?.type === 'Local'
@@ -2230,28 +2247,28 @@ export class KclManager extends File {
       // Program was not interrupted, setup the scene
       // Do not send send scene commands if the program was interrupted, go to clean up
       if (!isInterrupted) {
-        this.addDiagnostics(
-          await lintAst({
-            ast,
-            sourceCode: this.code,
-            instance: await this.systemDeps.wasmInstancePromise,
-            legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
-            edgeRefactorMetadata: execState.edgeRefactorMetadata,
-            directTagFilletMetadata: execState.directTagFilletMetadata,
-            artifactGraph: execState.artifactGraph,
-          })
-        )
+        const diagnostics = await lintAst({
+          ast,
+          sourceCode: codeThatExecuted,
+          instance: await this.systemDeps.wasmInstancePromise,
+          legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+          edgeRefactorMetadata: execState.edgeRefactorMetadata,
+          directTagFilletMetadata: execState.directTagFilletMetadata,
+          artifactGraph: execState.artifactGraph,
+        })
+        if (!isCurrent()) return
+        this.addDiagnostics(diagnostics)
+        const wasmInstance = await this.systemDeps.wasmInstancePromise
+        if (!isCurrent()) return
         if (this.sceneEntitiesManager) {
           setSelectionFilterToDefault({
             engineCommandManager: this.engineCommandManager,
             kclManager: this,
             sceneEntitiesManager: this.sceneEntitiesManager,
-            wasmInstance: await this.systemDeps.wasmInstancePromise,
+            wasmInstance,
           })
         }
       }
-
-      this.isExecuting = false
 
       // Check the cancellation token for this execution before applying side effects
       if (this._cancelTokens.get(currentExecutionId)) {
@@ -2266,6 +2283,7 @@ export class KclManager extends File {
         ast,
         await this.wasmInstancePromise
       )
+      if (!isCurrent()) return
       if (err(fileSettings)) {
         fileSettings = {}
       }
@@ -2297,6 +2315,7 @@ export class KclManager extends File {
       this.ast = structuredClone(ast)
       // updateArtifactGraph relies on updated executeState/variables
       await this.updateArtifactGraph(execState.artifactGraph)
+      if (!isCurrent()) return
       // Failed runs report their generation too. It is null only when no run
       // reached the engine, which leaves the scene as it was.
       if (execState.engineSceneGeneration !== null) {
@@ -2355,6 +2374,9 @@ export class KclManager extends File {
         )
       )
     } finally {
+      this._cancelTokens.delete(currentExecutionId)
+      // Only this run may release its status; an old run must not stop a new one.
+      if (isCurrent()) this.isExecuting = false
       finishExecution()
     }
   }
