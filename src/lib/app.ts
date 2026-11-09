@@ -67,6 +67,7 @@ import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
   getProjectLibraryCreateProjectOperation,
+  projectLibrariesService,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
@@ -91,14 +92,7 @@ import {
   appRegistryOverridesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
-import { isPathNotFoundError } from '@src/lib/desktop'
-import { routerService } from '@src/registry/contracts/router'
-import { PATHS } from '@src/lib/paths'
-import fsZds from '@src/lib/fs-zds'
-import {
-  getDefaultDirectoryProjectLibraryPath,
-  projectLibrariesFromSettings,
-} from '@src/lib/projectLibraries'
+import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import type { SnapshotFrom } from 'xstate'
 
 const appCommandsSlot = new Slot()
@@ -221,37 +215,8 @@ export class App implements AppSubsystems {
     return this.registry.get(projectOperationsService)
   }
 
-  get projectDirectoryPath(): string {
-    const project = this.project?.projectIORefSignal.value
-    return (
-      project?.libraryPath ??
-      (project
-        ? fsZds.dirname(project.path)
-        : (getDefaultDirectoryProjectLibraryPath(
-            this.settings.get().app.libraries.current
-          ) ?? ''))
-    )
-  }
-
-  get defaultProjectName(): string {
-    return this.settings.get().projects.defaultProjectName.current
-  }
-
-  async refreshProjects() {
-    const current = this.project
-    const directory = this.projectDirectoryPath
-    try {
-      await Promise.all([
-        directory
-          ? this.projectOperations.listProjects(directory)
-          : Promise.resolve([]),
-        this.projectSession.refreshProject(),
-      ])
-    } catch (error) {
-      if (current && this.project === current && isPathNotFoundError(error))
-        await this.registry.get(routerService).navigate(PATHS.HOME)
-      else return Promise.reject(error)
-    }
+  get projectLibraries() {
+    return this.registry.get(projectLibrariesService)
   }
 
   private activeWasmInstance: ModuleType | undefined
@@ -421,7 +386,14 @@ export class App implements AppSubsystems {
         return
       }
 
-      const disposeFSHistory = buildFSHistoryExtension(this, executingEditor)
+      const disposeFSHistory = buildFSHistoryExtension(
+        {
+          fileOperations: this.fileOperations,
+          projectSession: this.projectSession,
+          projectLibraries: this.projectLibraries,
+        },
+        executingEditor
+      )
       const disposeZookeeperHistory = buildZookeeperHistoryExtension({
         fileOperations: this.fileOperations,
         kclManager: executingEditor,
@@ -450,7 +422,7 @@ export class App implements AppSubsystems {
         onProjectFilesReplay: async (replayFiles) => {
           await project.syncReplayedFilesToRust(replayFiles)
           if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            this.refreshProjects().catch(reportRejection)
+            this.projectLibraries.refreshProjects().catch(reportRejection)
           }
         },
       })

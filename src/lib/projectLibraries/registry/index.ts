@@ -6,6 +6,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
+import projectLibrariesRegistryService from '@src/lib/projectLibraries/registry/service'
 import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
@@ -857,6 +858,7 @@ const directoryProjectLibraryDefaultPolicy = defineRegistryItem({
 const projectLibrariesExtension = defineRegistryItem({
   id: 'project-libraries',
   uses: [
+    projectLibrariesRegistryService,
     configuredProjectLibraryRealizations,
     directoryProjectLibraryDefaultPolicy,
     directoryProjectLibraryType,

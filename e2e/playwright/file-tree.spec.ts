@@ -194,7 +194,7 @@ test.describe(
       await expect(page).toHaveURL(
         new RegExp(`/file/${encodeURIComponent(startingFilePath)}$`)
       )
-      await page.evaluate(() => window.app.refreshProjects())
+      await page.evaluate(() => window.app.projectLibraries.refreshProjects())
 
       // Reusing a name allocates a sibling and leaves the original bytes intact.
       const existingContents = await fs.readFile(startingFilePath, 'utf8')
@@ -448,7 +448,7 @@ test.describe(
       const treeItem = (name: string) =>
         filePaneScroll.getByRole('treeitem', { name, exact: true })
       const projectDirectoryPath = () =>
-        page.evaluate(() => window.app.projectDirectoryPath)
+        page.evaluate(() => window.app.projectLibraries.projectDirectoryPath)
       const nestedProjectSettingsFile = async () =>
         fs.join(nestedDir, PROJECT_SETTINGS_FILE_NAME)
 

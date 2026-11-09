@@ -194,7 +194,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onRowEnter={onRowClicked}
             canNavigate={true}
             readOnly={false}
-            overrideApplicationProjectDirectory={app.projectDirectoryPath}
+            overrideApplicationProjectDirectory={
+              app.projectLibraries.projectDirectoryPath
+            }
           />
         </div>
       ) : (

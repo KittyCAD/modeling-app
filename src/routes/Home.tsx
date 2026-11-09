@@ -316,7 +316,7 @@ const Home = () => {
     value: boolean
     error: unknown
   }>({ value: true, error: undefined })
-  const directory = app.projectDirectoryPath
+  const directory = app.projectLibraries.projectDirectoryPath
   useEffect(() => {
     let active = true
     if (directory)

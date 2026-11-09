@@ -78,13 +78,23 @@ function Welcome() {
     }
     // Navigate to the `main.kcl` file
     app.projectSession
-      .openFile(fsZds.join(app.projectDirectoryPath, projectName, 'main.kcl'), {
-        projectPath: fsZds.join(app.projectDirectoryPath, projectName),
-        subRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
+      .openFile(
+        fsZds.join(
+          app.projectLibraries.projectDirectoryPath,
+          projectName,
+          'main.kcl'
         ),
-      })
+        {
+          projectPath: fsZds.join(
+            app.projectLibraries.projectDirectoryPath,
+            projectName
+          ),
+          subRoute: joinRouterPaths(
+            String(PATHS.ONBOARDING),
+            thisOnboardingStatus
+          ),
+        }
+      )
       .catch(reportRejection)
   }, [app, projectName])
 
@@ -151,7 +161,7 @@ function Scene() {
       })
       .then(async (paths) => {
         if (cancelled || app.project !== project) return
-        await app.refreshProjects()
+        await app.projectLibraries.refreshProjects()
         if (cancelled || app.project !== project) return
         await app.projectSession.openFile(paths[0], {
           projectPath: project.path,
@@ -305,9 +315,16 @@ function FeatureTreePane() {
     }
     app.projectSession
       .openFile(
-        fsZds.join(app.projectDirectoryPath, projectName, generatedFileName),
+        fsZds.join(
+          app.projectLibraries.projectDirectoryPath,
+          projectName,
+          generatedFileName
+        ),
         {
-          projectPath: fsZds.join(app.projectDirectoryPath, projectName),
+          projectPath: fsZds.join(
+            app.projectLibraries.projectDirectoryPath,
+            projectName
+          ),
           subRoute: joinRouterPaths(
             String(PATHS.ONBOARDING),
             thisOnboardingStatus
@@ -438,13 +455,23 @@ function PromptToEdit() {
       return
     }
     app.projectSession
-      .openFile(fsZds.join(app.projectDirectoryPath, projectName, 'main.kcl'), {
-        projectPath: fsZds.join(app.projectDirectoryPath, projectName),
-        subRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
+      .openFile(
+        fsZds.join(
+          app.projectLibraries.projectDirectoryPath,
+          projectName,
+          'main.kcl'
         ),
-      })
+        {
+          projectPath: fsZds.join(
+            app.projectLibraries.projectDirectoryPath,
+            projectName
+          ),
+          subRoute: joinRouterPaths(
+            String(PATHS.ONBOARDING),
+            thisOnboardingStatus
+          ),
+        }
+      )
       .catch(reportRejection)
   }, [app, projectName])
 
@@ -557,16 +584,19 @@ function PromptToEditResult() {
     // Navigate to the `main.kcl` file
     app.projectOperations
       .writeFiles(
-        fsZds.join(app.projectDirectoryPath, projectName),
+        fsZds.join(app.projectLibraries.projectDirectoryPath, projectName),
         [{ path: 'main.kcl', contents: modifiedColdPlate }],
         { overwrite: true }
       )
       .then(async () => {
-        await app.refreshProjects()
+        await app.projectLibraries.refreshProjects()
         await app.projectSession.openFile(
-          fsZds.join(app.projectDirectoryPath, projectName),
+          fsZds.join(app.projectLibraries.projectDirectoryPath, projectName),
           {
-            projectPath: fsZds.join(app.projectDirectoryPath, projectName),
+            projectPath: fsZds.join(
+              app.projectLibraries.projectDirectoryPath,
+              projectName
+            ),
             subRoute: joinRouterPaths(
               String(PATHS.ONBOARDING),
               thisOnboardingStatus
