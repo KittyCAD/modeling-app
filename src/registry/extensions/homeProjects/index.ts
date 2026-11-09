@@ -1,3 +1,4 @@
+import { withHomeProjectActionStatus } from '@src/lib/homeProjectActions'
 import { selectCommand } from '@src/lib/commandUtils'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import {
@@ -241,7 +242,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       (target) => target.library.id === targetLibraryId
     )
 
-  const serviceImpl: HomeProjectActionsService = {
+  const serviceImpl: Omit<HomeProjectActionsService, 'pendingActions'> = {
     watchRemoteThumbnail: (id) =>
       ctx.valueSpecs
         .get(homeProjectEntriesValueSpec)
@@ -427,7 +428,12 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
 
   return {
     id: 'home-projects.actions',
-    providesServices: [provideService(homeProjectActionsService, serviceImpl)],
+    providesServices: [
+      provideService(
+        homeProjectActionsService,
+        withHomeProjectActionStatus(serviceImpl)
+      ),
+    ],
   }
 }, 'home-projects.actions')
 

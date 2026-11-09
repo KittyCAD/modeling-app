@@ -1985,6 +1985,150 @@ for (const kind of ['local', 'cloud'] as const) {
         await storage.assertStorage(root)
       })
 
+      test('shows project action progress and closes dialogs while storage takes seven seconds', async ({
+        page,
+        context,
+      }, testInfo) => {
+        test.skip(
+          kind === 'local' && process.env.TARGET !== 'web',
+          'This storage delay uses OPFS Web Locks; native-storage progress is covered at the shared action boundary.'
+        )
+        const storage = await prepareStorage(kind, page, context, testInfo)
+        const root = await storage.seed('Slow project', blankCode)
+        await storage.seed('Other project', blankCode)
+        await storage.refresh()
+        const projectCard = storage.home.projectCard.filter({
+          hasText: 'Slow project',
+        })
+        await expect(projectCard).toBeVisible()
+        await page.clock.install()
+        for (const action of ['rename', 'delete'] as const) {
+          const gate = Promise.withResolvers<undefined>()
+          let started = false
+          const routePattern = /\/user\/projects\/[^/?]+(?:\?.*)?$/
+          const local =
+            kind === 'local'
+              ? await page.evaluateHandle(
+                  async ({ root, action }) => {
+                    const gate = Promise.withResolvers<undefined>()
+                    const acquired = Promise.withResolvers<undefined>()
+                    const lockName = `zds-opfs-write:${window.fsZds.join(root, 'project.toml')}`
+                    // Hold the browser storage lock used by real OPFS reads/writes.
+                    const lock =
+                      action === 'rename'
+                        ? navigator.locks.request(lockName, async () => {
+                            acquired.resolve(undefined)
+                            await gate.promise
+                          })
+                        : Promise.resolve()
+                    if (action === 'rename') await acquired.promise
+                    const prototype = FileSystemDirectoryHandle.prototype
+                    const removeEntry = prototype.removeEntry
+                    let started = false
+                    if (action === 'delete')
+                      prototype.removeEntry = async function (name, options) {
+                        if (
+                          name === window.fsZds.basename(root) &&
+                          this.name ===
+                            window.fsZds.basename(window.fsZds.dirname(root))
+                        ) {
+                          started = true
+                          await gate.promise
+                        }
+                        return removeEntry.call(this, name, options)
+                      }
+                    return {
+                      started: async () =>
+                        action === 'rename'
+                          ? (await navigator.locks.query()).pending?.some(
+                              (entry) => entry.name === lockName
+                            )
+                          : started,
+                      release: () => {
+                        gate.resolve(undefined)
+                        return lock
+                      },
+                      restore: () => {
+                        prototype.removeEntry = removeEntry
+                      },
+                    }
+                  },
+                  { root, action }
+                )
+              : undefined
+          if (kind === 'cloud')
+            await context.route(routePattern, async (route) => {
+              if (
+                route.request().method() ===
+                (action === 'rename' ? 'PUT' : 'DELETE')
+              ) {
+                started = true
+                await gate.promise
+              }
+              await route.fallback()
+            })
+          const card = storage.home.projectCard.filter({
+            hasText:
+              action === 'rename' ? 'Slow project' : 'Renamed slow project',
+          })
+          try {
+            await card.click({ button: 'right' })
+            await page.getByTestId(`project-card-context-${action}`).click()
+            if (action === 'rename') {
+              await page
+                .getByTestId('project-rename-input')
+                .fill('Renamed slow project')
+              await page.keyboard.press('Enter')
+              await expect(
+                page.getByTestId('project-rename-input')
+              ).not.toBeAttached()
+            } else {
+              await page.getByTestId('delete-confirmation').click()
+            }
+            await expect(page.getByRole('dialog')).not.toBeVisible()
+            await expect
+              .poll(() =>
+                local ? local.evaluate((gate) => gate.started()) : started
+              )
+              .toBe(true)
+            const busy = page.getByRole('status', {
+              name: `${action === 'rename' ? 'Renaming' : 'Deleting'} project Renamed slow project`,
+            })
+            await expect(busy).toBeVisible()
+            await page.clock.pauseAt(
+              new Date((await page.evaluate(() => Date.now())) + 1_000)
+            )
+            await page.clock.runFor(7_000)
+            await expect(busy).toBeVisible()
+            await expect(
+              storage.home.projectCard.filter({ hasText: 'Other project' })
+            ).toBeVisible()
+            await expect(page).not.toHaveURL(/\/file\//)
+            await page.clock.resume()
+            gate.resolve(undefined)
+            await local?.evaluate((gate) => gate.release())
+            await expect(busy).not.toBeAttached()
+            if (action === 'delete')
+              await expect(
+                storage.home.projectCard.filter({
+                  hasText: 'Renamed slow project',
+                })
+              ).not.toBeAttached()
+          } finally {
+            gate.resolve(undefined)
+            if (local) {
+              await local.evaluate((gate) => {
+                gate.release()
+                gate.restore()
+              })
+              await local.dispose()
+            }
+            if (kind === 'cloud') await context.unroute(routePattern)
+            await page.clock.resume()
+          }
+        }
+      })
+
       test('renames and deletes a project from Home while preserving the other project', async ({
         page,
         context,

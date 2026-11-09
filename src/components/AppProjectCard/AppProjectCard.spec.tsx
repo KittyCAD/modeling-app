@@ -1,3 +1,4 @@
+import { withHomeProjectActionStatus } from '@src/lib/homeProjectActions'
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import { PATHS } from '@src/lib/paths'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
@@ -104,11 +105,13 @@ const cloudProject = {
 function createProjectActions({
   canOpen = vi.fn(() => true),
   rename = vi.fn().mockResolvedValue(undefined),
+  delete: deleteProject = vi.fn().mockResolvedValue(undefined),
 }: {
   canOpen?: HomeProjectActionsService['canOpen']
   rename?: HomeProjectActionsService['rename']
+  delete?: HomeProjectActionsService['delete']
 } = {}): HomeProjectActionsService {
-  return {
+  const actions = withHomeProjectActionStatus({
     watchRemoteThumbnail: vi.fn(() => vi.fn()),
     canDuplicate: () => true,
     canOpen,
@@ -126,12 +129,23 @@ function createProjectActions({
     }),
     duplicate: vi.fn().mockResolvedValue(undefined),
     rename,
-    delete: vi.fn().mockResolvedValue(undefined),
+    delete: deleteProject,
     getCloneToLibraryTargets: vi.fn(() => []),
     cloneToLibrary: vi.fn().mockResolvedValue(undefined),
     deleteDuplicateRealizations: vi.fn().mockResolvedValue(undefined),
     separateProjectCopies: vi.fn().mockResolvedValue(undefined),
-  }
+  })
+  for (const method of [
+    'open',
+    'duplicate',
+    'rename',
+    'delete',
+    'cloneToLibrary',
+    'deleteDuplicateRealizations',
+    'separateProjectCopies',
+  ] as const)
+    vi.spyOn(actions, method)
+  return actions
 }
 
 function renderProjectCard({
@@ -983,14 +997,20 @@ describe('ProjectCard', () => {
     const pendingDelete = new Promise<void>((resolve) => {
       resolveDelete = resolve
     })
-    const projectActions = createProjectActions()
-    vi.mocked(projectActions.delete).mockReturnValue(pendingDelete)
+    const projectActions = createProjectActions({
+      delete: vi.fn(() => pendingDelete),
+    })
     renderProjectCard({ projectActions })
 
     fireEvent.contextMenu(screen.getByTestId('project-link'))
     fireEvent.click(screen.getByTestId('project-card-context-delete'))
     fireEvent.click(screen.getByTestId('delete-confirmation'))
-    fireEvent.click(screen.getByTestId('delete-confirmation'))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('status', { name: 'Deleting project Old cloud title' })
+    ).toBeVisible()
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-delete'))
 
     expect(projectActions.delete).toHaveBeenCalledTimes(1)
 
@@ -998,6 +1018,102 @@ describe('ProjectCard', () => {
     await waitFor(() =>
       expect(screen.queryByText('Delete Project')).not.toBeInTheDocument()
     )
+  })
+
+  test.each(['local', 'cloud'] as const)(
+    'closes rename immediately and keeps the %s card busy until failure permits retry',
+    async (kind) => {
+      vi.useFakeTimers()
+      vi.stubGlobal(
+        'URL',
+        class extends NativeURL {
+          static createObjectURL = createObjectURLMock
+          static revokeObjectURL = revokeObjectURLMock
+        }
+      )
+      const gate = Promise.withResolvers<undefined>()
+      const rename = vi.fn(() => gate.promise)
+      const projectActions = createProjectActions({ rename })
+      const project: HomeProjectEntry =
+        kind === 'local'
+          ? cloudProject
+          : { ...cloudProject, source: 'remote', localProjectPath: undefined }
+      const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const errorToast = vi.spyOn(toast, 'error').mockImplementation(() => '')
+      renderProjectCard({ project, projectActions })
+      try {
+        clickRenameProject()
+        fireEvent.change(screen.getByTestId('project-rename-input'), {
+          target: { value: 'New title' },
+        })
+        submitRenameProject()
+        expect(
+          screen.queryByTestId('project-rename-input')
+        ).not.toBeInTheDocument()
+        expect(
+          screen.getByRole('status', { name: 'Renaming project New title' })
+        ).toBeVisible()
+        fireEvent.click(screen.getByTestId('project-link'))
+        expect(projectActions.open).not.toHaveBeenCalled()
+        fireEvent.contextMenu(screen.getByTestId('project-link'))
+        fireEvent.click(screen.getByTestId('project-card-context-rename'))
+        expect(
+          screen.queryByTestId('project-rename-input')
+        ).not.toBeInTheDocument()
+        fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' })
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(7_000)
+        })
+        expect(screen.getByRole('status')).toBeVisible()
+        await act(async () => {
+          gate.reject(new Error('Rename failed'))
+          await gate.promise.catch(() => undefined)
+        })
+        expect(screen.queryByRole('status')).not.toBeInTheDocument()
+        expect(screen.getByTestId('project-title')).toHaveTextContent(
+          'Old cloud title'
+        )
+        expect(errorToast).toHaveBeenCalled()
+        clickRenameProject()
+        expect(screen.getByTestId('project-rename-input')).toBeVisible()
+      } finally {
+        gate.resolve(undefined)
+        errorLog.mockRestore()
+        errorToast.mockRestore()
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  test('shows clone progress when the action starts outside the card', async () => {
+    const gate = Promise.withResolvers<undefined>()
+    const actions = createProjectActions()
+    // Drive the same action service used by the command palette.
+    const service = withHomeProjectActionStatus({
+      ...actions,
+      cloneToLibrary: () => gate.promise,
+    })
+    renderProjectCard({ projectActions: service })
+    let pending:
+      | ReturnType<HomeProjectActionsService['cloneToLibrary']>
+      | undefined
+    try {
+      act(() => {
+        pending = service.cloneToLibrary(cloudProject, 'another-library')
+      })
+      expect(
+        screen.getByRole('status', { name: 'Cloning project Old cloud title' })
+      ).toBeVisible()
+      expect(screen.getByRole('listitem')).toHaveAttribute('aria-busy', 'true')
+      await act(async () => {
+        gate.resolve(undefined)
+        await pending
+      })
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    } finally {
+      gate.resolve(undefined)
+      await pending
+    }
   })
 
   test('selects the project title when opening rename from the context menu', async () => {
