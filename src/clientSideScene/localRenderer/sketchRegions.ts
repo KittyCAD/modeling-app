@@ -4,6 +4,7 @@ import type {
   KITTYCAD_GLTF_SKETCH_REGION,
 } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 import { sampleEdge } from '@src/clientSideScene/localRenderer/sampleEdge'
+import { getPatternArtifactForCopyId } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { isErr } from '@src/lib/trap'
 import {
@@ -62,6 +63,16 @@ export function createRegionMeshes(
       // Legacy profiles export internal regions that the engine cannot query.
       // Select their existing profile face instead.
       mesh.userData.faceUuid = path.solid2dId ?? region.regionId
+    }
+    const pattern =
+      region.sketchId &&
+      getPatternArtifactForCopyId(region.sketchId, artifactGraph)
+    if (pattern && pattern.copyFaceIds.length === pattern.copyIds.length) {
+      const copyIndex = pattern.copyIds.indexOf(region.sketchId!)
+      if (copyIndex >= 0) {
+        // Copies have no Path artifact; use their own engine face, not the source profile.
+        mesh.userData.faceUuid = pattern.copyFaceIds[copyIndex]
+      }
     }
     mesh.userData.isSketchRegion = true
     return [mesh]
