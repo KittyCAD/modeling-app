@@ -320,6 +320,7 @@ export async function createCircleActor({
     }
 
     const settings = jsAppSettings(rustContext.settingsActor)
+    await rustContext.prepareForSketchInsertion()
     const result = await rustContext.addSegment(
       0,
       sketchId,

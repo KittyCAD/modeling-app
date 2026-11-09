@@ -846,6 +846,28 @@ describe('KclManager storage checks before sketch insertion', () => {
     }
   )
 
+  it('executes an external local file update while the sketch is already open', async () => {
+    const { app, kclManager } = await setup()
+    enableSketchSolveEditorExecution(kclManager)
+    kclManager.systemDeps.projectPath.value = '/project'
+    const update = vi.spyOn(kclManager, 'updateCodeEditor')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('width = 2')
+    try {
+      kclManager.onWatchEvent.at(-1)?.('change', kclManager.path)
+      await vi.waitFor(() => expect(kclManager.code).toBe('width = 2'))
+      expect(update).toHaveBeenCalledWith(
+        'width = 2',
+        expect.objectContaining({
+          shouldExecute: true,
+          shouldWriteToDisk: false,
+          shouldResetCamera: false,
+        })
+      )
+    } finally {
+      app.dispose()
+    }
+  })
+
   it.each(['local', 'cloud'] as const)(
     'keeps unsaved %s sketch source available while storage is slow',
     async (kind) => {
@@ -1149,6 +1171,49 @@ describe('KclManager delayed artifact publication', () => {
 })
 
 describe('KclManager live operation updates', () => {
+  it('rebuilds the live sketch after a cloud snapshot instead of leaving stale handles', async () => {
+    const { app } = createKclManagerTestHarness()
+    const metadata = createProjectForTest('/project')
+    metadata.cloudProjectId = 'remote'
+    metadata.children = [
+      { name: 'main.kcl', path: metadata.default_file, children: null },
+    ]
+    const read = vi
+      .spyOn(app.projectSession.textFileIO, 'read')
+      .mockResolvedValue('')
+    vi.spyOn(desktop, 'getProjectInfo').mockResolvedValue(metadata)
+    try {
+      const project = await app.openProject(metadata)
+      const editor = await project.openEditor(
+        metadata.default_file,
+        undefined,
+        '',
+        false
+      )
+      project.executingPath = editor.path
+      enableSketchSolveEditorExecution(editor)
+      read.mockResolvedValue('width = 2')
+      const open = vi
+        .spyOn(editor.rustContext, 'sendOpenProject')
+        .mockResolvedValue()
+      const schedule = vi
+        .spyOn(editor, 'scheduleCurrentCodeExecution')
+        .mockImplementation(() => {})
+      const execute = vi
+        .spyOn(editor, 'flushPendingEditorExecution')
+        .mockResolvedValue()
+      const write = vi.spyOn(editor.textFileIO, 'write')
+      await project.reloadFilesFromStorage(() => app.project === project)
+      expect(editor.code).toBe('width = 2')
+      expect(open).toHaveBeenCalledOnce()
+      expect(schedule).toHaveBeenCalledWith(false)
+      expect(execute).toHaveBeenCalledOnce()
+      expect(write).not.toHaveBeenCalled()
+    } finally {
+      app.dispose()
+    }
+  })
+
   it.each([
     { dirty: false, connected: false },
     { dirty: true, connected: false },

@@ -37,7 +37,7 @@ export interface ProjectStorage {
     path: string,
     run: (operations: FileOperationsRegistryService) => Promise<T>
   ) => Promise<T>
-  refresh: (isCurrent: () => boolean, revision?: string) => Promise<void>
+  refresh: (isCurrent: () => boolean, revision?: string) => Promise<{ readonly refreshed: boolean } | void>
   retry: () => Promise<void>
   editorChanged: (path: string) => void
   writeThumbnail: (bytes: Uint8Array) => Promise<void>

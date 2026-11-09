@@ -728,8 +728,7 @@ export class KclManager extends File {
           // -> this must be an external change -> re-execute.
           this.updateCodeEditor(code, {
             // Snapshot backings rebuild the full Rust project and execute once there.
-            shouldExecute:
-              !isInSketchMode && this.storage?.externalChanges !== 'snapshot',
+            shouldExecute: this.storage?.externalChanges !== 'snapshot',
             shouldResetCamera: !isInSketchMode,
             shouldAddToHistory: true,
             // We explicitly do not write to the file here since we are loading from
