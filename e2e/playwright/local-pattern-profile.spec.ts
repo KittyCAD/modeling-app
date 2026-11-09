@@ -91,11 +91,7 @@ copies = patternLinear2d(${version === '2.0' ? 'sketch001' : 'region001'}, insta
             cmd_id: crypto.randomUUID(),
             cmd: { type: 'query_entity_type', entity_id: face.id },
           })
-          if (
-            !result ||
-            !('resp' in result) ||
-            result.resp.type !== 'modeling'
-          )
+          if (!result || !('resp' in result) || result.resp.type !== 'modeling')
             continue
           const response = result.resp.data.modeling_response
           if (response.type !== 'query_entity_type') continue
