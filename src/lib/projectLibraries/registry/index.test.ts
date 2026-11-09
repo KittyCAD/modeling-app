@@ -5,7 +5,10 @@ import {
   Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { homeProjectLoadingLibraryIdsValueSpec } from '@src/registry/contracts/homeProjects'
+import {
+  homeProjectLoadingLibraryIdsValueSpec,
+  homeProjectSettledLibraryIdsValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import {
   type ProjectLibrarySetting,
   projectLibrariesFromSettings,
@@ -90,17 +93,26 @@ describe('project library realizations registry service', () => {
           registry.signal(projectLibraryRealizationsValueSpec).value
         ).toEqual([])
         const loading = registry.signal(homeProjectLoadingLibraryIdsValueSpec)
+        const settled = registry.signal(homeProjectSettledLibraryIdsValueSpec)
+        // No request is running yet; this must still be an unknown, not empty, library.
+        expect(readRealizations).not.toHaveBeenCalled()
+        expect(loading.value).toEqual([])
+        expect(settled.value).toEqual([])
         await vi.waitFor(() => expect(readRealizations).toHaveBeenCalledOnce())
         expect(loading.value).toEqual([
           projectLibrariesFromSettings(libraries)[0].id,
         ])
         await vi.advanceTimersByTimeAsync(7_000)
         expect(loading.value).toHaveLength(1)
+        expect(settled.value).toEqual([])
         if (outcome === 'failure') listing.reject(new Error('Read failed'))
         else listing.resolve([])
         await listing.promise.catch(() => undefined)
         await vi.advanceTimersByTimeAsync(0)
         expect(loading.value).toEqual([])
+        expect(settled.value).toEqual([
+          projectLibrariesFromSettings(libraries)[0].id,
+        ])
       } finally {
         listing.resolve([])
         log.mockRestore()

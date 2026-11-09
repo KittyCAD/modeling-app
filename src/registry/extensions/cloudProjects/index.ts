@@ -1,6 +1,6 @@
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 
-import { computed, effect } from '@preact/signals-core'
+import { computed, effect, signal } from '@preact/signals-core'
 
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -21,12 +21,14 @@ import {
 import {
   homeProjectEntriesValueSpec,
   homeProjectLoadingLibraryIdsValueSpec,
+  homeProjectSettledLibraryIdsValueSpec,
   type HomeProjectEntryContribution,
 } from '@src/registry/contracts/homeProjects'
 
 import { authService } from '@src/registry/contracts/auth'
 
 import { routerService } from '@src/registry/contracts/router'
+import { PATHS } from '@src/lib/paths'
 
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 
@@ -56,6 +58,9 @@ export default defineRegistryItemFactory((ctx) => {
     Promise.reject(new Error('Missing WASM promise.'))
   const auth = ctx.services.signal(authService)
   const router = ctx.services.signal(routerService)
+  const settledAccount = signal<{ id: string | undefined } | undefined>(
+    undefined
+  )
   let disposed = false
   let stop = () => {}
   queueMicrotask(() => {
@@ -64,8 +69,19 @@ export default defineRegistryItemFactory((ctx) => {
       const loggedIn = auth.value?.isLoggedIn.value
       const token = auth.value?.token.value
       const location = router.value?.location.value
-      if (loggedIn && location?.pathname === '/home') {
-        void cloud().listProjects().catch(reportRejection)
+      if (
+        loggedIn &&
+        (location?.pathname === PATHS.HOME ||
+          location?.pathname.startsWith(`${PATHS.LIBRARY}/`))
+      ) {
+        const accountId = auth.value?.user.value?.id
+        void cloud()
+          .listProjects()
+          .catch(reportRejection)
+          .finally(() => {
+            if (!disposed && auth.peek()?.user.peek()?.id === accountId)
+              settledAccount.value = { id: accountId }
+          })
       }
       void token
     })
@@ -119,6 +135,18 @@ export default defineRegistryItemFactory((ctx) => {
   return {
     id: 'cloud-projects',
     provides: [
+      provide(
+        homeProjectSettledLibraryIdsValueSpec,
+        computed(() => {
+          const account = settledAccount.value
+          return auth.value?.isLoggedIn.value &&
+            account &&
+            account.id === auth.value.user.value?.id
+            ? [PERSONAL_CLOUD_PROJECT_LIBRARY_ID]
+            : []
+        }),
+        { key: 'cloud-projects.settled' }
+      ),
       provide(
         homeProjectLoadingLibraryIdsValueSpec,
         computed(() =>

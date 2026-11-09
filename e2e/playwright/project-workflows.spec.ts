@@ -242,6 +242,19 @@ test(
     await storage.refresh()
     const listing = Promise.withResolvers<undefined>()
     const opening = Promise.withResolvers<undefined>()
+    // Record transient empty states too; polling after the request starts misses them.
+    await page.addInitScript(() => {
+      new MutationObserver((records) => {
+        for (const record of records)
+          for (const node of record.addedNodes)
+            if (
+              node instanceof Element &&
+              (node.matches('[data-testid="projects-none"]') ||
+                node.querySelector('[data-testid="projects-none"]'))
+            )
+              document.documentElement.dataset.emptyProjectsFlash = 'true'
+      }).observe(document, { childList: true, subtree: true })
+    })
     const listRoute = /\/user\/projects(?:\?.*)?$/
     let listingStarted = false
     let openingStarted = false
@@ -258,6 +271,11 @@ test(
     try {
       await page.reload({ waitUntil: 'domcontentloaded' })
       await expect.poll(() => listingStarted).toBe(true)
+      expect(
+        await page.evaluate(
+          () => document.documentElement.dataset.emptyProjectsFlash
+        )
+      ).toBeUndefined()
       const listSpinner = page.getByRole('status', {
         name: 'Loading projects',
         exact: true,
