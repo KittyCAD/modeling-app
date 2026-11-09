@@ -1,14 +1,14 @@
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
-import { signal } from '@preact/signals-core'
+import { computed, signal } from '@preact/signals-core'
 import { createViewerExtrudeCommand } from '@src/lib/kcl/extrudeCommand'
 import {
   modelingTargetBinding,
   type ModelingTarget,
 } from '@src/lib/kcl/modelingTarget'
 import {
-  provideCommand,
+  commandsValueSpec,
   commandSystemService,
 } from '@src/registry/contracts/commands'
 import { createViewerKclRuntime } from '@src/lib/kcl/runtime'
@@ -43,7 +43,11 @@ import { createElement } from 'react'
 
 /** KCL contributes syntax, execution, and a standalone engine stream without legacy modeling services. */
 const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
-  const wasmPromise = valueSpecs.get(wasmPromiseValueSpec) ?? initialiseWasm()
+  // Value specs resolve against the completed registry graph, so reading one
+  // inside this factory would reenter graph construction and create a signal cycle.
+  const wasmPromise = computed(
+    () => valueSpecs.get(wasmPromiseValueSpec) ?? initialiseWasm()
+  )
   const targets = signal<readonly ModelingTarget[]>([])
   const sceneSettings = createKclSceneSettings(
     () => services.get(settingsService).current.value
@@ -100,7 +104,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
       })
     },
     (send) =>
-      createViewerKclRuntime(wasmPromise, send, () =>
+      createViewerKclRuntime(wasmPromise.value, send, () =>
         jsAppSettings(services.get(settingsService).current.peek())
       ),
     sceneSettings.current,
@@ -116,12 +120,16 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
     id: 'kcl',
     dispose: sceneSettings.dispose,
     provides: [
-      provideCommand(
-        createViewerExtrudeCommand(targets, wasmPromise, () =>
-          services
-            .get(userFeaturesService)
-            .has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false)
-        )
+      provide(
+        commandsValueSpec,
+        computed(() =>
+          createViewerExtrudeCommand(targets, wasmPromise.value, () =>
+            services
+              .get(userFeaturesService)
+              .has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false)
+          )
+        ),
+        { key: 'kcl.extrude' }
       ),
       provide(editorLanguageValueSpec, {
         id: 'kcl',
