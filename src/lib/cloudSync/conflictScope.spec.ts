@@ -108,14 +108,17 @@ describe('cloud sync conflict scoping', () => {
     const remoteIndexResponse = new Promise<Response>((resolve) => {
       finishRemoteIndex = () => {
         resolve(
-          jsonResponse([
-            {
-              id: otherRemoteProjectId,
-              title: 'Other',
-              revision: 'rev-3',
-              updated_at: '2026-07-08T12:05:00.000Z',
-            },
-          ])
+          jsonResponse({
+            items: [
+              {
+                id: otherRemoteProjectId,
+                title: 'Other',
+                revision: 'rev-3',
+                updated_at: '2026-07-08T12:05:00.000Z',
+              },
+            ],
+            next_page: null,
+          })
         )
       }
     })

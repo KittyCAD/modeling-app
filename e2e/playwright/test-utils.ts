@@ -58,6 +58,7 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
@@ -316,8 +317,8 @@ async function closeKclCodePanel(page: Page) {
 async function openDebugPanel(page: Page) {
   await openPane(page, 'debug-pane-button')
 
-  // The debug pane needs time to load everything.
-  await page.waitForTimeout(3000)
+  // Wait for the lazy pane contents rather than imposing a fixed delay.
+  await expect(page.getByTestId('debug-panel')).toBeAttached()
 }
 
 export async function closeDebugPanel(page: Page) {
@@ -1087,8 +1088,13 @@ export async function setup(
   userFeatures: readonly Feature[] = [],
   {
     cloudSyncEnabled = false,
+    reload = true,
     mockApiRoutes = true,
-  }: { cloudSyncEnabled?: boolean; mockApiRoutes?: boolean } = {}
+  }: {
+    cloudSyncEnabled?: boolean
+    mockApiRoutes?: boolean
+    reload?: boolean
+  } = {}
 ) {
   if (!mockApiRoutes && userFeatures.length > 0)
     throw new Error('userFeatures requires mockApiRoutes to be enabled')
@@ -1198,8 +1204,8 @@ export async function setup(
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 
-  // Trigger a navigation, since loading file:// doesn't.
-  await page.reload()
+  // Electron batches scripts and settings before its final startup navigation.
+  if (reload) await page.reload()
 }
 
 const slowFsMethodNames = [
@@ -1433,6 +1439,24 @@ export function testsInputPath(fileName: string): string {
 
 export function kclSamplesPath(fileName: string): string {
   return path.join('public', 'kcl-samples', fileName)
+}
+
+// Restore the camera used when a model is initially loaded.
+export async function resetView(scene: SceneFixture) {
+  // The camera may already face this way, so no image change is guaranteed.
+  await scene.moveCameraTo({ x: 0, y: -128, z: 64 }, undefined, {
+    waitForImageChange: false,
+  })
+  await doAndWaitForImageDiff(scene.streamWrapper, async () => {
+    await scene.streamWrapper.click({
+      button: 'right',
+      position: { x: 10, y: 100 },
+    })
+    await scene.page
+      .getByTestId('view-controls-menu')
+      .getByRole('button', { name: 'Reset view' })
+      .click()
+  })
 }
 
 export async function doAndWaitForImageDiff(

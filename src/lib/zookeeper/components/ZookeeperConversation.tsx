@@ -737,7 +737,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     if (exchangesLength === 0 || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: 'instant',
     })
   }, [exchangesLength])
 
@@ -746,7 +746,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     if (!isEndOfStream || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: 'instant',
     })
   }, [isEndOfStream])
 
@@ -825,26 +825,29 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                           role="status"
                         >
                           <p className="font-semibold">
-                            Zookeeper stopped before finishing this request.
-                          </p>
-                          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-                            Review the current project, then resume when you're
-                            ready.
-                          </p>
-                          <ActionButton
-                            Element="button"
-                            type="button"
-                            aria-label="Resume interrupted request"
-                            className="h-7 w-fit focus-visible:outline-appForeground"
-                            iconStart={{ icon: 'arrowRight' }}
-                            onClick={props.onResumeInterruptedTurn}
-                            disabled={props.isResumingInterruptedTurn}
-                            tabIndex={0}
-                          >
                             {props.isResumingInterruptedTurn
-                              ? 'Resuming...'
-                              : 'Resume interrupted request'}
-                          </ActionButton>
+                              ? 'Resuming your request...'
+                              : 'This request was interrupted before it finished.'}
+                          </p>
+                          {!props.isResumingInterruptedTurn && (
+                            <>
+                              <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+                                Review the current project, then resume when
+                                you're ready.
+                              </p>
+                              <ActionButton
+                                Element="button"
+                                type="button"
+                                aria-label="Resume interrupted request"
+                                className="h-7 w-fit focus-visible:outline-appForeground"
+                                iconStart={{ icon: 'arrowRight' }}
+                                onClick={props.onResumeInterruptedTurn}
+                                tabIndex={0}
+                              >
+                                Resume interrupted request
+                              </ActionButton>
+                            </>
+                          )}
                         </div>
                       ) : lastExchange &&
                         !isEndOfStream &&

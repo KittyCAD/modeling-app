@@ -24,7 +24,7 @@ hourHandArmLength = clockDiameter / 2 * .25
 minuteHandArmLength = clockDiameter / 2 * .40
 
 // Add assert for clockDiameter
-assert(clockDiameter, isGreaterThan = 450, error = "clock diameter needs to be greater than 400")
+assert(clockDiameter, isGreaterThan = 450, error = "clock diameter needs to be greater than 450")
 
 // What time is it?
 hour = 9
@@ -37,6 +37,8 @@ minuteHandAngle = 90deg - (minute * 6deg)
 // Create the clock body
 profile001 = sketch(on = XY) {
   circle1 = circle(start = [var 250mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  diameter(circle1) == clockDiameter
 }
 
 region001 = region(segments = [profile001.circle1])
@@ -55,6 +57,10 @@ clockBody = extrude(region001, length = clockThickness, tagStart = $capStart001)
 profile002 = sketch(on = faceOf(clockBody, face = END)) {
   outerCircle = circle(start = [var 250mm, var 0mm], center = [var 0mm, var 0mm])
   innerCircle = circle(start = [var 225mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([outerCircle.center, ORIGIN])
+  coincident([innerCircle.center, ORIGIN])
+  diameter(outerCircle) == clockDiameter
+  diameter(innerCircle) == ridgeDiameter
 }
 region002 = region(segments = [profile002.outerCircle])
 clockRidge = extrude(region002, length = ridgeThickness, tagEnd = $capEnd001)
@@ -330,6 +336,8 @@ hide(vGlyph)
 // Create nub for the minute and hour hands
 sketch002 = sketch(on = faceOf(clockBody, face = END)) {
   circle1 = circle(start = [var 15mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  diameter(circle1) == nubDiameter
 }
 region004 = region(segments = [sketch002.circle1])
 nub = extrude(region004, length = numHeight)
