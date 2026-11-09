@@ -1,7 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
-import * as fsp from 'fs/promises'
-import { join } from 'path'
 
 const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(@x) {
   return 5 * x
@@ -64,8 +62,11 @@ extrude001 = extrude(profile001, length = 5)
 hidden001 = hide([cylinder, extrude001])
 `
 
-test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
+test.use({ useTestSettings: true })
+
+test.describe('Feature Tree pane', { tag: '@web' }, () => {
   test('User can go to definition and go to function definition', async ({
+    fs,
     homePage,
     scene,
     editor,
@@ -75,12 +76,11 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     folderSetupFn,
   }) => {
     await folderSetupFn(async (dir) => {
-      const bracketDir = join(dir, 'test-sample')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.writeFile(
-        join(bracketDir, 'main.kcl'),
-        FEATURE_TREE_EXAMPLE_CODE,
-        'utf-8'
+      const bracketDir = await fs.join(dir, 'test-sample')
+      await fs.mkdir(bracketDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(bracketDir, 'main.kcl'),
+        new TextEncoder().encode(FEATURE_TREE_EXAMPLE_CODE)
       )
     })
 
@@ -163,6 +163,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
   })
 
   test('Set appearance menu works on function-created bodies', async ({
+    fs,
     homePage,
     scene,
     toolbar,
@@ -172,12 +173,11 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     folderSetupFn,
   }) => {
     await folderSetupFn(async (dir) => {
-      const sampleDir = join(dir, 'test-sample')
-      await fsp.mkdir(sampleDir, { recursive: true })
-      await fsp.writeFile(
-        join(sampleDir, 'main.kcl'),
-        FEATURE_TREE_FUNCTION_BODY_APPEARANCE_CODE,
-        'utf-8'
+      const sampleDir = await fs.join(dir, 'test-sample')
+      await fs.mkdir(sampleDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(sampleDir, 'main.kcl'),
+        new TextEncoder().encode(FEATURE_TREE_FUNCTION_BODY_APPEARANCE_CODE)
       )
     })
 
@@ -232,10 +232,10 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     folderSetupFn,
   }) => {
     await folderSetupFn(async (dir) => {
-      const sampleDir = join(dir, 'test-sample')
+      const sampleDir = await fs.join(dir, 'test-sample')
       await fs.mkdir(sampleDir, { recursive: true })
       await fs.writeFile(
-        join(sampleDir, 'main.kcl'),
+        await fs.join(sampleDir, 'main.kcl'),
         new TextEncoder().encode(FEATURE_TREE_VISIBILITY_CODE)
       )
     })
@@ -314,6 +314,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
   })
 
   test(`User can edit an extrude operation from the feature tree`, async ({
+    fs,
     homePage,
     scene,
     editor,
@@ -335,9 +336,12 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     const editedParameterValue = '23 * 2'
 
     await folderSetupFn(async (dir) => {
-      const testDir = join(dir, 'test-sample')
-      await fsp.mkdir(testDir, { recursive: true })
-      await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
+      const testDir = await fs.join(dir, 'test-sample')
+      await fs.mkdir(testDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(testDir, 'main.kcl'),
+        new TextEncoder().encode(initialCode)
+      )
     })
 
     await test.step('setup test', async () => {
@@ -435,6 +439,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     })
   })
   test(`User can edit an offset plane operation from the feature tree`, async ({
+    fs,
     homePage,
     scene,
     editor,
@@ -449,9 +454,12 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     const newInput = '5 + 10'
     const expectedCode = testCode(newInput)
     await folderSetupFn(async (dir) => {
-      const testDir = join(dir, 'test-sample')
-      await fsp.mkdir(testDir, { recursive: true })
-      await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
+      const testDir = await fs.join(dir, 'test-sample')
+      await fs.mkdir(testDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(testDir, 'main.kcl'),
+        new TextEncoder().encode(initialCode)
+      )
     })
 
     await test.step('setup test', async () => {
@@ -495,6 +503,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
   })
 
   test(`Delete sketch on offset plane and all profiles from feature tree`, async ({
+    fs,
     page,
     homePage,
     scene,
@@ -511,9 +520,12 @@ profile002 = startProfile(sketch001, at = [0, 7.25])
 profile003 = startProfile(sketch001, at = [0, -4.93])
   |> line(endAbsolute = [-5.56, 0])`
     await folderSetupFn(async (dir) => {
-      const testProject = join(dir, 'test-sample')
-      await fsp.mkdir(testProject, { recursive: true })
-      await fsp.writeFile(join(testProject, 'main.kcl'), beforeKclCode, 'utf-8')
+      const testProject = await fs.join(dir, 'test-sample')
+      await fs.mkdir(testProject, { recursive: true })
+      await fs.writeFile(
+        await fs.join(testProject, 'main.kcl'),
+        new TextEncoder().encode(beforeKclCode)
+      )
     })
     // One dumb hardcoded screen pixel value
     const pointOnSketch = { x: 650, y: 250 }

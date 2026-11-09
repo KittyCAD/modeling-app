@@ -2,11 +2,14 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
+import { resetView } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+
+test.use({ useTestSettings: true })
 
 test.describe(
   'Point and click for boolean workflows - sketch v1',
-  { tag: '@desktop' },
+  { tag: '@web' },
   () => {
     // Boolean operations to test
     const booleanOperations = [
@@ -34,7 +37,6 @@ test.describe(
         operationName.charAt(0).toUpperCase() + operationName.slice(1)
       }`
       test(`Create boolean operation -- ${operationName}`, async ({
-        context,
         homePage,
         modelingDialog,
         editor,
@@ -50,26 +52,21 @@ test.describe(
           ),
           'utf-8'
         )
-        await context.addInitScript((file) => {
-          localStorage.setItem('persistCode', file)
-        }, file)
         await homePage.goToModelingScene()
         await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', file)
+        )
+        await resetView(scene)
         await toolbar.closePane(DefaultLayoutPaneID.Code)
 
         // Test coordinates for selection - these might need adjustment based on actual scene layout
         const cylinderPoint = { x: 592, y: 174 }
-        const secondObjectPoint = { x: 683, y: 273 }
 
         // Create mouse helpers for selecting objects
         const [clickFirstObject] = scene.makeMouseHelpers(
           cylinderPoint.x,
           cylinderPoint.y,
-          { steps: 10 }
-        )
-        const [clickSecondObject] = scene.makeMouseHelpers(
-          secondObjectPoint.x,
-          secondObjectPoint.y,
           { steps: 10 }
         )
 
@@ -89,7 +86,10 @@ test.describe(
           await clickFirstObject({ pixelDiff: 50 })
           await page.waitForTimeout(1000)
 
-          // For subtract, we need to proceed to the next step before selecting the second object
+          // Select the second solid by name; its small faces vary with viewport size.
+          await toolbar.openFeatureTreePane()
+
+          // For subtract, select the tool separately.
           if (operationName !== 'subtract') {
             // should down shift key to select multiple objects
             await page.keyboard.down('Shift')
@@ -98,7 +98,7 @@ test.describe(
           }
 
           // Select second object
-          await clickSecondObject({ pixelDiff: 50 })
+          await (await toolbar.getFeatureTreeOperation('extrude006', 0)).click()
           await page.keyboard.up('Shift')
 
           await page.waitForTimeout(1000)
