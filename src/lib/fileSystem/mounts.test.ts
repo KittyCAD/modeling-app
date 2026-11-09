@@ -12,46 +12,112 @@ import fc from 'fast-check'
 
 describe('project storage routing', () => {
   describe.each([
-    { name: 'POSIX', paths: posix },
-    { name: 'Windows', paths: win32 },
-  ])('nested mounts with $name paths', ({ paths }) => {
+    { name: 'POSIX', paths: posix, baseRoot: '/cloud' },
+    { name: 'Windows', paths: win32, baseRoot: 'C:\\cloud' },
+  ])('flat mounts with $name paths', ({ paths, baseRoot }) => {
     it.each([false, true])(
-      'uses the most specific mount (parent registered first: %s)',
+      'rejects nested roots without changing routing (parent first: %s)',
       async (parentFirst) => {
-        const localRead = vi.fn(async () => new Uint8Array([1]))
-        const parentRead = vi.fn(async () => new Uint8Array([2]))
-        const nestedRead = vi.fn(async () => new Uint8Array([3]))
-        const router = createMountedFileOperations(
-          { ...testFileOperations, readFile: localRead },
-          paths
-        )
-        const parent = {
-          root: paths.resolve('/cloud'),
-          operations: { ...testFileOperations, readFile: parentRead },
-        }
-        const nested = {
-          root: paths.join(parent.root, 'nested'),
-          operations: { ...testFileOperations, readFile: nestedRead },
-        }
-        const mounts = parentFirst ? [parent, nested] : [nested, parent]
-        for (const mount of mounts) router.mount(mount)
-
-        expect(
-          await router.operations.readFile(paths.join(parent.root, 'main.kcl'))
-        ).toEqual(new Uint8Array([2]))
-        expect(await router.operations.readFile(nested.root)).toEqual(
-          new Uint8Array([3])
-        )
-        expect(
-          await router.operations.readFile(paths.join(nested.root, 'main.kcl'))
-        ).toEqual(new Uint8Array([3]))
-        expect(
-          await router.operations.readFile(
-            paths.join(parent.root, 'nested-copy', 'main.kcl')
+        await fc.assert(
+          fc.asyncProperty(
+            fc.array(fc.stringMatching(/^[a-z][a-z0-9_-]{0,10}$/), {
+              minLength: 1,
+              maxLength: 4,
+            }),
+            async (parts) => {
+              const localRead = vi.fn(async () => new Uint8Array([1]))
+              const mountedRead = vi.fn(async () => new Uint8Array([2]))
+              const router = createMountedFileOperations(
+                { ...testFileOperations, readFile: localRead },
+                paths
+              )
+              const parent = paths.resolve(baseRoot, ...parts)
+              const child = paths.join(parent, 'nested')
+              const first = parentFirst ? parent : child
+              const second = parentFirst ? child : parent
+              const unmount = router.mount({
+                root: first,
+                operations: { ...testFileOperations, readFile: mountedRead },
+              })
+              expect(() =>
+                router.mount({ root: second, operations: testFileOperations })
+              ).toThrow('Nested filesystem mounts are not supported')
+              expect(
+                await router.operations.readFile(paths.join(first, 'main.kcl'))
+              ).toEqual(new Uint8Array([2]))
+              expect(
+                await router.operations.readFile(
+                  paths.join(parent + '-copy', 'main.kcl')
+                )
+              ).toEqual(new Uint8Array([1]))
+              unmount()
+              expect(
+                await router.operations.readFile(paths.join(child, 'main.kcl'))
+              ).toEqual(new Uint8Array([1]))
+            }
           )
-        ).toEqual(new Uint8Array([2]))
-        expect(localRead).not.toHaveBeenCalled()
+        )
       }
+    )
+
+    it('routes separate mounts independently even when their names share a prefix', async () => {
+      const router = createMountedFileOperations(testFileOperations, paths)
+      for (const [root, byte] of [
+        [baseRoot, 1],
+        [baseRoot + '-copy', 2],
+      ] as const)
+        router.mount({
+          root,
+          operations: {
+            ...testFileOperations,
+            readFile: async () => new Uint8Array([byte]),
+          },
+        })
+      expect(
+        await router.operations.readFile(paths.join(baseRoot, 'main.kcl'))
+      ).toEqual(new Uint8Array([1]))
+      expect(
+        await router.operations.readFile(
+          paths.join(baseRoot + '-copy', 'main.kcl')
+        )
+      ).toEqual(new Uint8Array([2]))
+    })
+  })
+
+  it.each([
+    ['C:\\Cloud', 'c:\\cloud\\nested'],
+    ['C:\\', 'c:\\nested'],
+    ['\\\\server\\share\\', '\\\\SERVER\\SHARE\\nested'],
+  ])(
+    'rejects nested Windows mounts at %s and %s in either order',
+    (parent, child) => {
+      for (const [first, second] of [
+        [parent, child],
+        [child, parent],
+      ]) {
+        const router = createMountedFileOperations(testFileOperations, win32)
+        router.mount({ root: first, operations: testFileOperations })
+        expect(() =>
+          router.mount({ root: second, operations: testFileOperations })
+        ).toThrow('Nested filesystem mounts are not supported')
+      }
+    }
+  )
+
+  it('replaces the same Windows root even when its casing and spelling differ', async () => {
+    const replacementRead = vi.fn(async () => new Uint8Array([2]))
+    const router = createMountedFileOperations(testFileOperations, win32)
+    const unmountOld = router.mount({
+      root: 'C:\\Cloud',
+      operations: testFileOperations,
+    })
+    router.mount({
+      root: 'c:\\cloud\\.',
+      operations: { ...testFileOperations, readFile: replacementRead },
+    })
+    unmountOld()
+    expect(await router.operations.readFile('C:\\CLOUD\\main.kcl')).toEqual(
+      new Uint8Array([2])
     )
   })
 

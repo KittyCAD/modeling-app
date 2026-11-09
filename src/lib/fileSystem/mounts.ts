@@ -8,7 +8,7 @@ export interface FileOperationsMount {
   readonly operations: FileOperationsRegistryService
 }
 
-/** Routes by captured paths, never by the currently selected project. */
+/** Routes captured paths through non-nested mounts, never the selected project. */
 export function createMountedFileOperations(
   local: FileOperationsRegistryService,
   paths: Pick<
@@ -19,18 +19,10 @@ export function createMountedFileOperations(
   const mounts = new Map<string, FileOperationsMount>()
   const find = (path: string): FileOperationsRegistryService => {
     const absolute = paths.resolve(path)
-    let selectedMount: FileOperationsMount | undefined
-    for (const mount of mounts.values()) {
-      const containsPath =
-        getContainedRelativePath(paths, mount.root, absolute) !== undefined
-      if (
-        containsPath &&
-        (!selectedMount || mount.root.length > selectedMount.root.length)
-      ) {
-        selectedMount = mount
-      }
-    }
-    return selectedMount?.operations ?? local
+    for (const mount of mounts.values())
+      if (getContainedRelativePath(paths, mount.root, absolute) !== undefined)
+        return mount.operations
+    return local
   }
 
   const copyAcross = async (
@@ -117,7 +109,19 @@ export function createMountedFileOperations(
   return {
     operations,
     mount: (mount: FileOperationsMount) => {
-      const root = paths.resolve(mount.root)
+      let root = paths.resolve(mount.root)
+      for (const existing of mounts.values()) {
+        const relative = getContainedRelativePath(paths, existing.root, root)
+        if (relative === '') root = existing.root
+        else if (
+          relative !== undefined ||
+          getContainedRelativePath(paths, root, existing.root) !== undefined
+        ) {
+          // Registration is synchronous; reject invalid configuration before changing routes.
+          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+          throw new Error('Nested filesystem mounts are not supported.')
+        }
+      }
       const registration = { ...mount, root }
       mounts.set(root, registration)
       return () => {
