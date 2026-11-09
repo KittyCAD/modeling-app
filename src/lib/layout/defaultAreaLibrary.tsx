@@ -1,5 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
+import { DEFAULT_SKETCH_SOLVE_DIMMING } from '@src/clientSideScene/sceneUtils'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import { BodiesPane } from '@src/lib/featureTree/BodiesPane'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
@@ -30,8 +30,8 @@ function ModelingArea() {
   const { auth, registry } = useApp()
   const { state, send } = useModelingContext()
   const authToken = auth.useToken()
-  const [sketchSolveStreamDimming, setSketchSolveStreamDimming] = useState(
-    DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
+  const [sketchSolveDimming, setSketchSolveDimming] = useState(
+    DEFAULT_SKETCH_SOLVE_DIMMING
   )
   const engineSceneViewExtensions = registry.signal(
     engineSceneViewExtensionsValueSpec
@@ -44,8 +44,8 @@ function ModelingArea() {
   const engineSceneContext = {
     modelingState: state,
     modelingSend: send,
-    sketchSolveStreamDimming,
-    setSketchSolveStreamDimming,
+    sketchSolveDimming,
+    setSketchSolveDimming,
   }
   const streamClassName = mergeEngineSceneClassNames(
     engineSceneStreamClassNames
@@ -55,7 +55,7 @@ function ModelingArea() {
     <div className="relative z-0 min-w-64 min-h-64 flex flex-col flex-1 items-center overflow-hidden">
       <ConnectionStream
         authToken={authToken}
-        sketchSolveStreamDimming={sketchSolveStreamDimming}
+        sketchSolveDimming={sketchSolveDimming}
         streamClassName={streamClassName || undefined}
         streamLayers={engineSceneStreamLayers}
         streamLayerProps={engineSceneContext}

@@ -22,8 +22,8 @@ export const engineSceneRuntimeExtensionsSlot = new Slot()
 export type EngineSceneExtensionContext = {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
-  sketchSolveStreamDimming: number
-  setSketchSolveStreamDimming: Dispatch<SetStateAction<number>>
+  sketchSolveDimming: number
+  setSketchSolveDimming: Dispatch<SetStateAction<number>>
 }
 
 export type EngineSceneViewExtensionProps = EngineSceneExtensionContext
