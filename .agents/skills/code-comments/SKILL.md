@@ -2,6 +2,7 @@
 name: code-comments
 description: "Use when writing, reviewing, or updating code comments, TODOs, magic-number explanations, or implementation rationale, including stale comments after code changes. Excludes user-facing documentation and std KCL doc-comments in rust/kcl-lib/std/."
 license: MIT
+disable-model-invocation: true
 ---
 
 # Code comments

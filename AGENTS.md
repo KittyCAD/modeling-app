@@ -6,7 +6,7 @@ This file applies to all work in this repository. More-specific `AGENTS.md` file
 
 ## Code comments
 
-- When writing or reviewing implementation comments, follow the [code-comments skill](.agents/skills/code-comments/SKILL.md).
+- Use the [code-comments skill](.agents/skills/code-comments/SKILL.md) only when explicitly requested.
 
 ## Pull requests
 
