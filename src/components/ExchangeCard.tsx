@@ -604,7 +604,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         </ChatBubble>
       )}
       {hasActivity && (
-        <div className="mx-8">
+        <div className="mt-2">
           {!showFullReasoning ? (
             <button
               type="button"
