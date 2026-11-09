@@ -16,6 +16,7 @@ import {
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
 import { KclManager } from '@src/lang/KclManager'
+import { KCLError } from '@src/lang/errors'
 import { File } from '@src/lib/projectSession'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -675,6 +676,88 @@ describe('KclManager file switching', () => {
 })
 
 describe('KclManager diagnostics', () => {
+  it.each([
+    { cloud: false, returnToOriginal: false },
+    { cloud: true, returnToOriginal: false },
+    { cloud: false, returnToOriginal: true },
+    { cloud: true, returnToOriginal: true },
+  ])(
+    'ignores a late missing-import error (cloud: $cloud, return to original file: $returnToOriginal)',
+    async ({ cloud, returnToOriginal }) => {
+      vi.useFakeTimers()
+      const mainCode =
+        '@settings(kclVersion = 3.0)\nimport value from "deleted.kcl"\n'
+      const healthyCode =
+        '@settings(kclVersion = 3.0)\nexport healthyValue = 23\n'
+      const { app, kclManager } = createKclManagerTestHarness(mainCode)
+      const root = cloud ? '/__zoo_cloud__/project' : '/project'
+      kclManager.path = `${root}/main.kcl`
+      const pendingError = createDeferred<undefined>()
+      const state = emptyExecState()
+      const missingImport = new KCLError(
+        'io',
+        `could not find file ${root}/deleted.kcl`,
+        [0, 1, 0],
+        [],
+        [],
+        state.variables,
+        state.operations,
+        state.artifactGraph,
+        {},
+        null
+      )
+      kclManager.engineCommandManager.started = true
+      vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue(healthyCode)
+      vi.spyOn(kclManager, 'flushWriteToFile').mockResolvedValue(true)
+      vi.spyOn(
+        kclManager.rustContext,
+        'waitForAllEngineModelingCommands'
+      ).mockResolvedValue(undefined)
+      const execute = vi
+        .spyOn(kclManager.rustContext, 'execute')
+        .mockImplementationOnce(async () => {
+          await pendingError.promise
+          return Promise.reject(missingImport)
+        })
+        .mockResolvedValue(state)
+      const oldExecution = kclManager.executeAst({ ast: createEmptyAst() })
+      try {
+        await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
+        await KclManager.fromFile(
+          new File(`${root}/healthy.kcl`, kclManager.textFileIO, 2),
+          kclManager.systemDeps,
+          kclManager,
+          undefined,
+          { shouldSyncRustOnOpen: false }
+        )
+        if (returnToOriginal)
+          await KclManager.fromFile(
+            new File(`${root}/main.kcl`, kclManager.textFileIO, 1),
+            kclManager.systemDeps,
+            kclManager,
+            undefined,
+            { shouldSyncRustOnOpen: false }
+          )
+        const ast = await kclManager.safeParse(healthyCode)
+        if (!ast) throw new Error('Expected healthy module to parse')
+        await kclManager.executeAst({ ast })
+        expect(kclManager.diagnostics).toEqual([])
+        await vi.advanceTimersByTimeAsync(7_000)
+        pendingError.resolve(undefined)
+        await oldExecution
+        expect(kclManager.path).toBe(
+          `${root}/${returnToOriginal ? 'main' : 'healthy'}.kcl`
+        )
+        expect(kclManager.diagnostics).toEqual([])
+      } finally {
+        pendingError.resolve(undefined)
+        await oldExecution
+        app.dispose()
+        vi.useRealTimers()
+      }
+    }
+  )
+
   // Compare the diagnostic data exactly; renderMessage only changes its display.
   const withoutRenderMessage = (diagnostics: Diagnostic[]) =>
     diagnostics.map((diagnostic) => {
