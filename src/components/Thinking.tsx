@@ -9,6 +9,7 @@ import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
+import { isImageMimetype } from '@src/lib/mimeTypes'
 import {
   type ReactNode,
   useCallback,
@@ -387,13 +388,6 @@ const bytesToDataUrl = (data: number[], mimetype: string): string => {
   const uint8Array = new Uint8Array(data)
   const blob = new Blob([uint8Array], { type: mimetype })
   return URL.createObjectURL(blob)
-}
-
-/**
- * Check if a mimetype is an image type
- */
-const isImageMimetype = (mimetype: string): boolean => {
-  return mimetype.startsWith('image/')
 }
 
 export const isExportDownloadFile = (file: MlCopilotFile): boolean => {
