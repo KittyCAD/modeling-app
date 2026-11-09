@@ -537,6 +537,20 @@ describe('KclManager storage checks before sketch insertion', () => {
     return { app, kclManager, schedule, execute }
   }
 
+  it('preserves the live sketch and its selection when storage is unchanged', async () => {
+    const { app, kclManager, schedule, execute } = await setup()
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('width = 1')
+    const send = vi.spyOn(kclManager, 'sendModelingEvent')
+    try {
+      await kclManager.refreshFileBeforeSketchInsertion()
+      expect(schedule).not.toHaveBeenCalled()
+      expect(execute).not.toHaveBeenCalled()
+      expect(send).not.toHaveBeenCalled()
+    } finally {
+      app.dispose()
+    }
+  })
+
   it.each(['local', 'cloud'] as const)(
     'uses newer %s contents before generating geometry after a seven-second read',
     async (kind) => {

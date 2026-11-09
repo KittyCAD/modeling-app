@@ -439,6 +439,7 @@ export class KclManager extends File {
   private lastSketchCheckpointRestoreRequestId = 0
   private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
   private lastExecutedCode: string = ''
+  private sketchSourceNeedsRefresh = false
   lastSuccessfulCode: string = ''
   get code(): string {
     return this.editorView.state.doc.toString()
@@ -487,6 +488,7 @@ export class KclManager extends File {
   }
   private markCodeAsExecuted(code: string) {
     this.lastExecutedCode = code
+    if (isCodeTheSame(this.code, code)) this.sketchSourceNeedsRefresh = false
     this._hasEditsSinceLastExecution.value = !isCodeTheSame(this.code, code)
   }
 
@@ -719,6 +721,7 @@ export class KclManager extends File {
             shouldWriteToDisk: false,
           })
           this.markFileCodeAsSynced(code)
+          this.sketchSourceNeedsRefresh = Boolean(isInSketchMode)
 
           toast('Reloading file from disk.', { icon: '📁' })
         }
@@ -1571,11 +1574,16 @@ export class KclManager extends File {
         shouldClearHistory: true,
       })
       this.markFileCodeAsSynced(contents)
+      this.sketchSourceNeedsRefresh = true
     }
-    // A watcher may already have loaded the new text without executing it in
-    // sketch mode. Flush that source too before Rust generates the next edit.
-    if (this.hasEditsSinceLastExecutionSignal.peek())
-      this.scheduleCurrentCodeExecution(false)
+    // Unchanged storage must leave the running sketch and its object IDs alone.
+    // A watcher can load external text without synchronizing the Rust sketch.
+    if (!this.sketchSourceNeedsRefresh) return
+    this.sendModelingEvent({
+      type: 'Set selection',
+      data: { selection: {}, selectionType: 'singleCodeCursor' },
+    })
+    this.scheduleCurrentCodeExecution(false)
     await this.flushPendingEditorExecution()
     if (!isCurrent() || this.hasParseErrors())
       return Promise.reject(
@@ -3502,6 +3510,8 @@ export class KclManager extends File {
       return false
     }
 
+    if (!isCodeTheSame(this.code, nextContent))
+      this.sketchSourceNeedsRefresh = true
     this.updateCodeEditor(nextContent, {
       shouldAddToHistory: false,
       shouldClearHistory: false,
