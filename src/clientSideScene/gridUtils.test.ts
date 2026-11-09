@@ -90,19 +90,29 @@ describe('grid coordinate precision', () => {
     fixedSizeGrid: true,
   }
 
-  it('preserves repeating subdivisions and is stable when snapped again', () => {
+  it('removes floating-point tails from snapped coordinates', () => {
+    expect(
+      snapPointToGrid([8.2, 4.1], {
+        ...options,
+        majorGridSpacing: 2.7,
+        minorGridsPerMajor: 2,
+      })
+    ).toEqual({ point: [8.1, 4.05], snapped: true })
+  })
+
+  it('rounds repeating subdivisions to six decimals and is stable when snapped again', () => {
     const major = snapPointToGrid([2.34, -2.34], options)
     expect(major).toEqual({ point: [2.3333, -2.3333], snapped: true })
 
     const first = snapPointToGrid([0.1, -0.1], options)
     expect(first.snapped).toBe(true)
-    expect(first.point[0] * 17).toBeCloseTo(2.3333, 14)
+    expect(first.point[0]).toBe(0.137253)
     expect(first.point[1]).toBe(-first.point[0])
 
     // Nearest-grid choice on either side of the midpoint to the next line.
     expect(snapPointToGrid([0.2, -0.2], options)).toEqual(first)
     const second = snapPointToGrid([0.21, -0.21], options)
-    expect(second.point[0]).toBeCloseTo(first.point[0] * 2, 14)
+    expect(second.point[0]).toBe(0.274506)
     expect(second.point[1]).toBe(-second.point[0])
     for (const snapped of [major, first, second]) {
       expect(snapPointToGrid(snapped.point, options)).toEqual(snapped)

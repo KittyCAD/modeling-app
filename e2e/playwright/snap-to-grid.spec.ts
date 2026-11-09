@@ -84,7 +84,9 @@ test.describe(
               (setting) => window.app.settings.get().modeling[setting].current,
               setting
             )
-          if (await isEnabled()) return
+          if (await isEnabled()) {
+            return
+          }
 
           await waitForSettingsIdle(page)
           const [openSketchMenu] = scene.makeMouseHelpers(0.8, 0.2, {
@@ -182,7 +184,7 @@ test.describe(
         const expectOnGrid = (values: number[] | null) => {
           expect(values).toHaveLength(4)
           for (const value of values ?? []) {
-            expect(value / step).toBeCloseTo(Math.round(value / step), 10)
+            expect(value).toBeCloseTo(Math.round(value / step) * step, 6)
           }
         }
         expectOnGrid(snappedLineValues)
@@ -193,7 +195,9 @@ test.describe(
         const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
         await expect(pointHandles).toHaveCount(2)
         const pointBox = await pointHandles.first().boundingBox()
-        if (!pointBox) throw new Error('Expected a draggable line endpoint')
+        if (!pointBox) {
+          throw new Error('Expected a draggable line endpoint')
+        }
         const x = pointBox.x + pointBox.width / 2
         const y = pointBox.y + pointBox.height / 2
         const checkpointBeforeDrag = await page.evaluate(
