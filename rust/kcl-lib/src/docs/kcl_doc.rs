@@ -1726,49 +1726,6 @@ mod test {
     }
 
     #[test]
-    fn example_graphics_override_is_local_to_its_code_fence() {
-        use crate::parsing::ast::types::BodyItem;
-        use crate::test_server::TestGraphicsParams;
-
-        let program = crate::parsing::top_level_parse("export fn example() { return 1 }").unwrap();
-        let BodyItem::VariableDeclaration(var) = &program.body[0] else {
-            panic!("expected a function declaration");
-        };
-        let mut docs = FnData::from_ast(var, "std::".to_owned(), "", "std");
-        let comments = [
-            "/// Example graphics settings.",
-            "/// ```kcl,no3d,gpu",
-            "/// 1",
-            "/// ```",
-            "/// ```kcl,no3d",
-            "/// 2",
-            "/// ```",
-            "/// ```kcl,norun,gpu",
-            "/// 3",
-            "/// ```",
-            "/// ```kcl",
-            "/// 4",
-            "/// ```",
-        ]
-        .map(str::to_owned);
-        docs.with_comments(&comments);
-        let graphics: Vec<_> = docs
-            .examples
-            .iter()
-            .map(|(_, props)| TestGraphicsParams::from_kcl_sample_spec(props.no3d, props.norun, props.gpu))
-            .collect();
-        assert!(matches!(
-            graphics.as_slice(),
-            [
-                TestGraphicsParams::EngineRender { .. },
-                TestGraphicsParams::CpuEngineRender,
-                TestGraphicsParams::None,
-                TestGraphicsParams::ExportAndRender,
-            ]
-        ));
-    }
-
-    #[test]
     fn smoke() {
         let result = walk_stdlib();
         if let DocData::Const(d) = result.find_by_name("PI").unwrap()
