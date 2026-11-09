@@ -44,6 +44,9 @@ export const machine = setup({
   },
   actors: {
     createCircle: fromPromise(createCircleActor),
+    finishPreview: fromPromise(async ({ input }: { input: ToolContext }) => {
+      await input.preview?.pending
+    }),
   },
 }).createMachine({
   context: ({ input }): ToolContext => ({
@@ -69,6 +72,10 @@ export const machine = setup({
   description: 'Creates a circle by center and radius',
   states: {
     'ready for center click': {
+      always: {
+        guard: ({ context }) => Boolean(context.unequipRequested),
+        target: 'unequipping',
+      },
       entry: 'add point listener',
       on: {
         'add point': {
@@ -82,6 +89,11 @@ export const machine = setup({
           actions: assign(({ event }) => {
             assertEvent(event, 'add point')
             return {
+              preview: {
+                active: true,
+                pending: Promise.resolve(),
+                segmentIds: [],
+              },
               centerPoint: event.data,
               centerSnapTarget: event.snapTarget,
             }
@@ -94,6 +106,10 @@ export const machine = setup({
     },
 
     [showingRadiusPreview]: {
+      always: {
+        guard: ({ context }) => Boolean(context.unequipRequested),
+        target: 'unequipping',
+      },
       entry: 'show radius preview listener',
       exit: 'remove point listener',
       on: {
@@ -111,6 +127,11 @@ export const machine = setup({
     },
 
     'Creating circle': {
+      // Let the final mutation finish before deleting or unequipping its draft.
+      on: {
+        unequip: { actions: assign({ unequipRequested: true }) },
+        escape: { actions: assign({ unequipRequested: true }) },
+      },
       invoke: {
         src: 'createCircle',
         input: ({ event, context }) => {
@@ -123,7 +144,11 @@ export const machine = setup({
           return {
             centerPoint: context.centerPoint,
             startPoint: event.data,
-            centerSnapTarget: context.centerSnapTarget,
+            circleId: context.preview?.circleId,
+            centerSnapTarget:
+              context.preview?.circleId === undefined
+                ? context.centerSnapTarget
+                : undefined,
             startSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
@@ -140,11 +165,14 @@ export const machine = setup({
             target: 'ready for center click',
             actions: [
               'send result to parent',
+              ({ self }) =>
+                self._parent?.send({ type: 'clear draft entities' }),
               assign({
                 centerPoint: undefined,
                 centerPointId: undefined,
                 centerSnapTarget: undefined,
                 circleId: undefined,
+                preview: undefined,
               }),
             ],
           },
@@ -156,9 +184,18 @@ export const machine = setup({
       },
     },
 
+    done: { type: 'final' },
     unequipping: {
-      type: 'final',
       entry: ['remove point listener'],
+      invoke: {
+        src: 'finishPreview',
+        input: ({ context }) => context,
+        onDone: {
+          target: 'done',
+          actions: ({ self }) =>
+            self._parent?.send({ type: 'delete draft entities' }),
+        },
+      },
       description: 'Any teardown logic should go here.',
     },
   },

@@ -211,6 +211,45 @@ describe('circleTool - XState', () => {
     })
   })
 
+  it('waits for a pending radius update before finishing cancellation', async () => {
+    const { machine, sceneInfra, rustContext, kclManager } = createTestMachine()
+    const actor = createActor(machine, {
+      input: { sceneInfra, rustContext, kclManager, sketchId: 0 },
+    }).start()
+    actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
+    const pending = Promise.withResolvers<undefined>()
+    actor.getSnapshot().context.preview!.pending = pending.promise
+    actor.send({ type: 'escape' })
+    expect(actor.getSnapshot().status).toBe('active')
+    expect(actor.getSnapshot().value).toBe('unequipping')
+    pending.resolve(undefined)
+    await waitFor(actor, (state) => state.status === 'done')
+    actor.stop()
+  })
+
+  it('finishes a pending circle commit before unequipping', async () => {
+    const commit = Promise.withResolvers<{
+      kclSource: SourceDelta
+      sceneGraphDelta: SceneGraphDelta
+    }>()
+    const { machine, sceneInfra, rustContext, kclManager } = createTestMachine({
+      createCircle: () => commit.promise,
+    })
+    const actor = createActor(machine, {
+      input: { sceneInfra, rustContext, kclManager, sketchId: 0 },
+    }).start()
+    actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
+    actor.send({ type: 'add point', data: [30, 40], clickNumber: 2 })
+    actor.send({ type: 'unequip' })
+    expect(actor.getSnapshot().value).toBe('Creating circle')
+    commit.resolve({
+      kclSource: { text: 'circle' },
+      sceneGraphDelta: createSceneGraphDelta([], []),
+    })
+    await waitFor(actor, (state) => state.status === 'done')
+    actor.stop()
+  })
+
   describe('escape during workflow', () => {
     it('should transition to unequipping when escape is pressed in Showing radius preview', async () => {
       const { machine, sceneInfra, rustContext, kclManager } =

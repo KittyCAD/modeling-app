@@ -3286,6 +3286,40 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('local edit')
   })
 
+  it.each([false, true])(
+    'ignores an acknowledged snapshot while newer geometry is in memory (cloud: %s)',
+    async (cloud) => {
+      vi.useFakeTimers()
+      const { app, kclManager } = createKclManagerTestHarness('saved geometry')
+      kclManager.path = '/project/main.kcl'
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: kclManager.path,
+        nextContent: 'saved geometry',
+        shouldSyncRust: false,
+      })
+      kclManager.systemDeps.projectPath.value = '/project'
+      kclManager.systemDeps.project = signal(
+        createProjectForTest('/project', {
+          cloudProjectId: cloud ? 'remote' : undefined,
+        })
+      )
+      kclManager.updateCodeEditor('newer geometry preview', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const read = createDeferred<string>()
+      vi.spyOn(kclManager.textFileIO, 'read').mockReturnValue(read.promise)
+      kclManager.onWatchEvent.at(-1)?.('change', kclManager.path)
+      await vi.advanceTimersByTimeAsync(7_000)
+      read.resolve('saved geometry')
+      await vi.advanceTimersByTimeAsync(0)
+      expect(kclManager.code).toBe('newer geometry preview')
+      expect(kclManager.hasUnsavedLocalChanges()).toBe(true)
+      expect(toastMocks.error).not.toHaveBeenCalled()
+      app.dispose()
+    }
+  )
+
   it('does not reload active editor disk updates while Zookeeper history is pending', async () => {
     const { kclManager } = createKclManagerTestHarness('zookeeper edit')
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
@@ -3598,11 +3632,47 @@ describe('KclManager diagnostics', () => {
           invalidates_ids: true,
           exec_outcome: [] as unknown as SceneGraphDelta['exec_outcome'],
         },
-        writeToDisk: false,
+        writeToDisk: true,
         addToHistory: false,
         checkpointId: preDragCheckpointId,
       },
     })
+  })
+
+  it('saves the recast source returned by a history checkpoint restore', async () => {
+    vi.useFakeTimers()
+    const { app, kclManager } = createKclManagerTestHarness('width = 1')
+    kclManager.path = '/project/main.kcl'
+    kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+      filePath: kclManager.path,
+      nextContent: 'width = 1',
+      shouldSyncRust: false,
+    })
+    kclManager.modelingState = {
+      matches: (value: unknown) => value === 'sketchSolveMode',
+    } as any
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('width = 1')
+    const write = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+    vi.spyOn(
+      kclManager.rustContext,
+      'restoreSketchCheckpoint'
+    ).mockResolvedValue({
+      kclSource: { text: 'width = 1\n' },
+      sceneGraphDelta: {} as SceneGraphDelta,
+    })
+    kclManager.modelingSend = (event) => {
+      if (event.type !== 'update sketch outcome') return
+      kclManager.updateCodeEditor(event.data.sourceDelta.text, {
+        shouldExecute: false,
+        shouldWriteToDisk: event.data.writeToDisk,
+        shouldAddToHistory: false,
+      })
+    }
+    await (kclManager as any).restoreSketchCheckpointForHistory(7)
+    await vi.advanceTimersByTimeAsync(1_500)
+    expect(write).toHaveBeenCalledExactlyOnceWith('width = 1\n')
+    expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+    app.dispose()
   })
 
   it('drops stale ast-driven editor rewrites when the document changed while waiting', async () => {

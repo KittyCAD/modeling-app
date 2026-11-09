@@ -497,6 +497,54 @@ for (const workerWrites of [false, true]) {
   )
 }
 
+test('keeps newer cloud edits when a rejected upload already matches the cloud', async ({
+  page,
+  context,
+}, testInfo) => {
+  const storage = await prepareStorage('cloud', page, context, testInfo)
+  const root = await storage.seed('Already uploaded', blankCode)
+  await storage.refresh()
+  await storage.home.openProject('Already uploaded')
+  await expectEditor(page, blankCode)
+  const gate = Promise.withResolvers<undefined>()
+  let started = false
+  await context.route('**/user/projects/*', async (route) => {
+    if (route.request().method() !== 'PUT' || started) return route.fallback()
+    started = true
+    const upload = await uploadedProject(route)
+    const project = storage.remote.projects.find((project) =>
+      root.endsWith(project.id)
+    )
+    if (!project) throw new Error('Missing cloud project')
+    project.files = upload.files
+    project.revision = String(Number(project.revision) + 1)
+    await gate.promise
+    await route.fulfill({ status: 409, json: { message: 'Already uploaded' } })
+  })
+  const first = `${blankCode}width = 10\n`
+  const newer = `${blankCode}width = 20\n`
+  try {
+    await editThroughUI(page, first)
+    await expect.poll(() => started).toBe(true)
+    await editThroughUI(page, newer)
+    const clock = new Date()
+    await page.clock.install({ time: clock })
+    await page.clock.pauseAt(new Date(clock.getTime() + 1_000))
+    await page.clock.runFor(7_000)
+    await expectEditor(page, newer)
+    gate.resolve(undefined)
+    await page.clock.resume()
+    await expect.poll(() => storage.read(root)).toBe(newer)
+    await expectEditor(page, newer)
+    await expect(
+      page.getByText('This project changed in the cloud.', { exact: false })
+    ).not.toBeVisible()
+  } finally {
+    gate.resolve(undefined)
+    await page.clock.resume()
+  }
+})
+
 // Both implementations execute the same actions and UI assertions. Naming policy
 // and persistence inspection are the explicit implementation-specific boundaries.
 for (const kind of ['local', 'cloud'] as const) {
@@ -607,6 +655,74 @@ for (const kind of ['local', 'cloud'] as const) {
           )
           .toBe(2)
         expect(missingArtifacts).toEqual([])
+      })
+
+      test('previews circle code before the radius click without saving unfinished circles', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const scene = new SceneFixture(page)
+        const toolbar = new ToolbarFixture(page)
+        const initialCode = `${blankCode}profile = sketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 2mm, var 2mm])\n}\n`
+        const root = await storage.seed('Circle live code', initialCode)
+        await storage.refresh()
+        await storage.home.openProject('Circle live code')
+        await scene.settled()
+        await toolbar.openFeatureTreePane()
+        await (await toolbar.getFeatureTreeOperation('profile', 0)).dblclick()
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await page.evaluate(() =>
+          window.app.singletons.kclManager.flushWriteToFile()
+        )
+        const before = await storage.read(root)
+        const code = () =>
+          page.evaluate(() => window.app.singletons.kclManager.code)
+        const [center] = scene.makeMouseHelpers(0.35, 0.35, { format: 'ratio' })
+        const [radius, moveRadius] = scene.makeMouseHelpers(0.6, 0.6, {
+          format: 'ratio',
+        })
+        const [, moveFurther] = scene.makeMouseHelpers(0.7, 0.7, {
+          format: 'ratio',
+        })
+        await toolbar.circleBtn.click()
+        await center()
+        await moveRadius()
+        await expect.poll(code).toContain('circle(')
+        const firstPreview = await code()
+        await moveFurther()
+        await expect.poll(code).not.toBe(firstPreview)
+        const clock = new Date()
+        await page.clock.install({ time: clock })
+        await page.clock.pauseAt(new Date(clock.getTime() + 1_000))
+        await page.clock.runFor(7_000)
+        expect(await storage.read(root)).toBe(before)
+        await page.clock.resume()
+        await page.keyboard.press('Escape')
+        await expect.poll(code).not.toContain('circle(')
+        expect(await storage.read(root)).toBe(before)
+        await toolbar.circleBtn.click()
+        await center()
+        await moveRadius()
+        await expect.poll(code).toContain('circle(')
+        await radius()
+        await expect.poll(() => storage.read(root)).toContain('circle(')
+        await page.keyboard.press('Escape')
+        await expect
+          .poll(
+            async () =>
+              (await storage.read(root))?.match(/circle\(/g)?.length ?? 0
+          )
+          .toBe(1)
+        const undo = page.getByRole('button', { name: /^arrow turn left\b/ })
+        const redo = page.getByRole('button', { name: /^arrow turn right\b/ })
+        await undo.click()
+        await expect.poll(code).not.toContain('circle(')
+        await expect.poll(() => storage.read(root)).not.toContain('circle(')
+        await redo.click()
+        await expect.poll(() => storage.read(root)).toContain('circle(')
       })
 
       test('shows new sketch geometry and coalesces saves while persistence takes seven seconds', async ({

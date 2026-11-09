@@ -716,6 +716,10 @@ export class KclManager extends File {
           return
         }
 
+        // A delayed watcher notification can describe our last acknowledged
+        // save while the editor already contains a newer committed edit or preview.
+        if (isCodeTheSame(code, this._lastKnownFileCode)) return
+
         // Zookeeper history needs to record the active-file edit against the
         // editor's pre-write text, so don't let the watcher preemptively reload
         // it or report its intermediate editor state as an unsaved local edit.
@@ -3892,7 +3896,9 @@ export class KclManager extends File {
         data: {
           sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
-          writeToDisk: false,
+          // Restoring can recast the source after undo scheduled its save.
+          // Persist that final source so the recast cannot invalidate the only save.
+          writeToDisk: true,
           addToHistory: false,
           checkpointId,
         },
