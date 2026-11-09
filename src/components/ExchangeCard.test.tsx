@@ -229,7 +229,7 @@ describe('ExchangeCard replay attachments', () => {
       screen.getByTestId('ml-response-commentary-chat-bubble')
     ).toHaveTextContent('Checking the project.')
     expect(screen.getByTestId('zookeeper-activity-card')).toHaveClass(
-      'border-emerald-500/60'
+      'zk-activity-card-running'
     )
     expect(screen.getByText('Read main.kcl')).toBeVisible()
     expect(

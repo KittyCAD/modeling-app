@@ -570,10 +570,8 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
       ? (latestActivity.label ?? latestActivity.name.replaceAll('_', ' '))
       : 'Thinking...'
   const durationText = `${isEndOfStream ? 'Reasoned' : 'Reasoning'} for ${elapsedLabel}`
-  const activityCardClass = `rounded-md border p-3 text-xs text-chalkboard-70 dark:text-chalkboard-30 ${
-    isEndOfStream
-      ? 'border-chalkboard-30 dark:border-chalkboard-70'
-      : 'border-emerald-500/60 dark:border-emerald-400/60'
+  const activityCardClass = `rounded-md border border-chalkboard-30 p-3 text-xs text-chalkboard-70 dark:border-chalkboard-70 dark:text-chalkboard-30 ${
+    isEndOfStream ? '' : 'zk-activity-card-running'
   }`
 
   return (
