@@ -42,6 +42,8 @@ import {
   getUtils,
   settingsToToml,
   setup,
+  waitForAppLoad,
+  waitForAuthentication,
 } from '@e2e/playwright/test-utils'
 import type { ILog } from '@src/lib/debugger'
 import { isArray } from '@src/lib/utils'
@@ -103,8 +105,14 @@ export class AuthenticatedApp {
     this.testInfo = testInfo
   }
 
-  async initialise(code = '', userFeatures: readonly Feature[] = []) {
-    await setup(this.context, this.page, this.testInfo, userFeatures)
+  async initialise(
+    code = '',
+    userFeatures: readonly Feature[] = [],
+    mockApiRoutes = true
+  ) {
+    await setup(this.context, this.page, this.testInfo, userFeatures, {
+      mockApiRoutes,
+    })
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
@@ -118,7 +126,8 @@ export class AuthenticatedApp {
 
     await this.page.setViewportSize(this.viewPortSize)
 
-    await u.waitForAuthSkipAppStart()
+    await u.waitForAuth()
+    if (!mockApiRoutes) await waitForAuthentication(this.page)
   }
   getInputFile = (fileName: string) => {
     return fsp.readFile(
@@ -145,6 +154,7 @@ export interface Fixtures {
 }
 
 export interface ElectronZooLaunchOptions {
+  args?: string[]
   appDirectory?: string
   executablePath?: string
 }
@@ -163,6 +173,7 @@ export class ElectronZoo {
   public page!: Page
   public context!: BrowserContext
   private tracingEnabled = false
+  private deferInitScriptReloads = false
 
   constructor(private readonly launchOptions: ElectronZooLaunchOptions = {}) {}
 
@@ -193,6 +204,11 @@ export class ElectronZoo {
   // Help remote end by signaling we're done with the connection.
   // If it takes longer than 10s to stop, just resolve.
   async makeAvailableAgain() {
+    // A test may end immediately after a native reload. Resolve the current
+    // document's real owner before asking it to release its engine session.
+    await this.page.waitForFunction(() =>
+      Boolean(window.app?.engineCommandManager)
+    )
     await this.page.evaluate(async () => {
       return new Promise((resolve) => {
         if (
@@ -244,7 +260,8 @@ export class ElectronZoo {
   async createInstanceIfMissing(
     testInfo: TestInfo,
     userFeatures: readonly Feature[] = [],
-    setupTimeout = 120_000
+    setupTimeout = 120_000,
+    mockApiRoutes = true
   ) {
     if (this.disposed) {
       throw new Error('Electron fixture has been disposed')
@@ -266,7 +283,11 @@ export class ElectronZoo {
         ? process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron'
         : undefined)
     const options = {
-      args: [appDirectory ?? '.', '--no-sandbox'],
+      args: [
+        appDirectory ?? '.',
+        '--no-sandbox',
+        ...(this.launchOptions.args ?? []),
+      ],
       ...(appDirectory ? { cwd: appDirectory } : {}),
       timeout: setupTimeout,
       env: {
@@ -326,9 +347,9 @@ export class ElectronZoo {
       }
 
       // We need to patch this because addInitScript will bind too late in our
-      // electron tests, never running. We need to call reload() after each call
-      // to guarantee it runs. Intentionally changing `this`, so no need to
-      // bind.
+      // electron tests, never running. Reload to apply scripts added by tests;
+      // fixture setup batches them before one final navigation.
+      // Intentionally changing `this`, so no need to bind.
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldContextAddInitScript = this.context.addInitScript
       this.context.addInitScript = async function (a, b) {
@@ -336,7 +357,7 @@ export class ElectronZoo {
           this,
           scopedInitScript(a, b, that.projectDirName)
         )
-        await that.page.reload()
+        if (!that.deferInitScriptReloads) await that.page.reload()
         return disposable
       }
 
@@ -348,7 +369,7 @@ export class ElectronZoo {
           this,
           scopedInitScript(a, b, that.projectDirName)
         )
-        await that.page.reload()
+        if (!that.deferInitScriptReloads) await that.page.reload()
         return disposable
       }
     }
@@ -374,13 +395,26 @@ export class ElectronZoo {
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
     }, this.projectDirName)
 
-    await setup(this.context, this.page, testInfo, userFeatures)
+    // Register all fixture scripts without booting the app between each step.
+    // Individual tests retain addInitScript's historical immediate reload.
+    this.deferInitScriptReloads = true
+    try {
+      await setup(this.context, this.page, testInfo, userFeatures, {
+        mockApiRoutes,
+        reload: false,
+      })
+    } finally {
+      this.deferInitScriptReloads = false
+    }
 
-    await this.cleanProjectDir({
-      plugins: playwrightPluginSettings({
-        zookeeperEnabled: testInfo.tags.includes('@zookeeper'),
-      }),
-    })
+    await this.cleanProjectDir(
+      {
+        plugins: playwrightPluginSettings({
+          zookeeperEnabled: testInfo.tags.includes('@zookeeper'),
+        }),
+      },
+      { reload: false }
+    )
 
     // Create a consistent way to resize the page across electron and web.
     // (lee) I had to do everything in the book to make electron change its
@@ -423,14 +457,17 @@ export class ElectronZoo {
     //   return app.reuseWindowForTest();
     // });
 
-    // Always start at the root view
-    await this.page.goto(this.firstUrl)
-
-    // Force a hard reload, destroying the stream and other state
-    await this.page.reload()
+    // One full navigation applies the prepared scripts and settings and destroys
+    // the previous renderer state. A hash-only goto would preserve that state.
+    await this.page.goto(this.firstUrl.split('#')[0])
+    await waitForAppLoad(this.page)
+    if (!mockApiRoutes) await waitForAuthentication(this.page)
   }
 
-  async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
+  async cleanProjectDir(
+    appSettings?: DeepPartial<Settings>,
+    { reload = true }: { reload?: boolean } = {}
+  ) {
     await this.stopSettingsWrites()
 
     try {
@@ -485,7 +522,10 @@ export class ElectronZoo {
       },
     })
     await fsp.writeFile(tempSettingsFilePath, settingsOverridesToml)
-    await this.page.reload()
+    if (reload) {
+      await this.page.reload()
+      await waitForAppLoad(this.page)
+    }
   }
 
   private async stopSettingsWrites() {
@@ -535,10 +575,12 @@ const fixturesForWeb = {
       page,
       context,
       userFeatures,
+      mockApiRoutes,
     }: {
       page: Page
       context: BrowserContext
       userFeatures: readonly Feature[]
+      mockApiRoutes: boolean
     },
     use: FnUse,
     testInfo: TestInfo
@@ -569,7 +611,7 @@ const fixturesForWeb = {
     }
 
     const webApp = new AuthenticatedApp(context, page, testInfo)
-    await webApp.initialise('', userFeatures)
+    await webApp.initialise('', userFeatures, mockApiRoutes)
 
     await use(page)
   },
@@ -635,6 +677,7 @@ const fixturesBasedOnProcessEnvPlatform = {
       ret = async function (fn: (dir: string) => Promise<void>) {
         return fn(projectDirPath)
           .then(() => page.reload())
+          .then(() => waitForAppLoad(page))
           .then(() => ({
             dir: projectDirPath,
           }))
@@ -644,6 +687,7 @@ const fixturesBasedOnProcessEnvPlatform = {
       ret = async function (fn: (dir: string) => Promise<void>) {
         return fn(projectDirName)
           .then(() => page.reload())
+          .then(() => waitForAppLoad(page))
           .then(() => ({
             dir: projectDirName,
           }))

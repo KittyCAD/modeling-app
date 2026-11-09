@@ -1,4 +1,3 @@
-import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
@@ -47,18 +46,13 @@ sketch001 = startSketchOn(YZ)
  */
 test.describe('Face API edge selection', { tag: '@web' }, () => {
   test('Can select Solid3D edges and Surface edges for revolve', async ({
-    context,
     scene,
-    cmdBar,
+    modelingDialog,
     page,
     toolbar,
     editor,
     homePage,
   }) => {
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, testCode)
-
     await homePage.goToModelingScene()
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
@@ -80,71 +74,31 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
         format: 'ratio',
         steps: 5,
       })
-      // Base state object that we'll mutate as we progress
-      const state: CmdBarSerialised = {
-        commandName: 'Revolve',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '',
-          AxisOrEdge: '',
-          Angle: '',
-        },
-        highlightedHeaderArg: 'Profiles',
-        stage: 'arguments',
-      }
 
       await toolbar.revolveButton.click()
-      await cmdBar.expectState(state)
       await scene.settled()
 
       await toolbar.expectSelection('No selection')
+      await expect(modelingDialog.selection('Profiles')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
       await clickProfile()
-      await toolbar.expectSelection('1 profile')
-
-      // Update state after profile selection
-      state.currentArgKey = 'axisOrEdge'
-      state.headerArguments.Profiles = '1 profile'
-      state.highlightedHeaderArg = 'axisOrEdge'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state)
+      await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
 
       // Select Edge option
-      await cmdBar.selectOption({ name: 'Edge' }).click()
-      state.currentArgKey = 'edge'
-      state.headerArguments.AxisOrEdge = 'Edge'
-      state.headerArguments.Edge = ''
-      state.highlightedHeaderArg = 'edge'
-      await cmdBar.expectState(state)
+      await modelingDialog
+        .options('axis or edge')
+        .selectOption({ label: 'Edge' })
+      await modelingDialog.selection('Edge').click()
 
       // select edge
-      await toolbar.expectSelection('1 profile')
+      await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
       await mv()
       await clickEdge()
       await toolbar.expectSelection('1 edge')
 
-      // Update state after edge selection
-      state.currentArgKey = 'angle'
-      state.currentArgValue = '360deg'
-      state.headerArguments.Edge = '1 edge'
-      state.highlightedHeaderArg = 'angle'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state)
-
-      // Closed profiles use the default solid body type and go directly to review.
-      state.currentArgKey = ''
-      state.currentArgValue = ''
-      state.highlightedHeaderArg = ''
-      state.headerArguments.Angle = '360deg'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: state.commandName,
-        headerArguments: state.headerArguments,
-        stage: 'review',
-        reviewValidationError: undefined,
-      })
-
-      await scene.waitForExecutionDoneAfter(() => cmdBar.submit())
+      await scene.waitForExecutionDoneAfter(() => modelingDialog.submit())
 
       // Assert code contains revolve
       await editor.expectEditor.toContain(`revolve`)
@@ -169,77 +123,37 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
         { x: 11.16, y: -10.1, z: 10.71 }
       )
 
-      // Base state object that we'll mutate as we progress
-      const state: CmdBarSerialised = {
-        commandName: 'Revolve',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '',
-          AxisOrEdge: '',
-          Angle: '',
-        },
-        highlightedHeaderArg: 'Profiles',
-        stage: 'arguments',
-      }
-
       // Click revolve tool again
       await toolbar.revolveButton.click()
-      await cmdBar.expectState(state)
       await scene.settled()
 
       await toolbar.expectSelection('1 edge')
+      await expect(modelingDialog.selection('Profiles')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
       await clickProfile2()
-      await toolbar.expectSelection('1 profile')
+      await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
       await page.waitForTimeout(500)
 
-      // Update state after profile selection
-      state.currentArgKey = 'axisOrEdge'
-      state.headerArguments.Profiles = '1 profile'
-      state.highlightedHeaderArg = 'axisOrEdge'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state)
-
       // Select Edge option
-      await cmdBar.selectOption({ name: 'Edge' }).click()
-      state.currentArgKey = 'edge'
-      state.headerArguments.AxisOrEdge = 'Edge'
-      state.headerArguments.Edge = ''
-      state.highlightedHeaderArg = 'edge'
-      await cmdBar.expectState(state)
+      await modelingDialog
+        .options('axis or edge')
+        .selectOption({ label: 'Edge' })
+      await modelingDialog.selection('Edge').click()
 
       // Click edge using ratio clicks
-      await toolbar.expectSelection('1 profile')
+      await expect(modelingDialog.selection('Profiles')).toHaveText('1 profile')
+      await modelingDialog.moveTo({ x: 0, y: 80 })
       await clickEdge2()
       await toolbar.expectSelection('1 edge')
-
-      // Update state after edge selection
-      state.currentArgKey = 'angle'
-      state.currentArgValue = '360deg'
-      state.headerArguments.Edge = '1 edge'
-      state.highlightedHeaderArg = 'angle'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state)
-
-      // Closed profiles use the default solid body type and go directly to review.
-      state.currentArgKey = ''
-      state.currentArgValue = ''
-      state.highlightedHeaderArg = ''
-      state.headerArguments.Angle = '360deg'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: state.commandName,
-        headerArguments: state.headerArguments,
-        stage: 'review',
-        reviewValidationError: undefined,
-      })
 
       const codeBeforeSecondRevolveSubmit = await editor.getCurrentCode()
       const revolveCountBeforeSecondSubmit = (
         codeBeforeSecondRevolveSubmit.match(/\brevolve\(/g) ?? []
       ).length
 
-      await scene.waitForExecutionDoneAfter(() => cmdBar.submit())
+      await scene.waitForExecutionDoneAfter(() => modelingDialog.submit())
 
       const codeAfterSecondRevolveSubmit = await editor.getCurrentCode()
       const revolveCountAfterSecondSubmit = (
@@ -260,9 +174,8 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
   })
 
   test('Can select split edges for fillet', async ({
-    context,
     scene,
-    cmdBar,
+    modelingDialog,
     page,
     toolbar,
     editor,
@@ -271,10 +184,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     const [clickEdge] = scene.makeMouseHelpers(0.1709, 0.4864, {
       format: 'ratio',
     })
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, testCode)
-
     await homePage.goToModelingScene()
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
@@ -291,44 +200,14 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     // Click on the split edge using ratio clicks to select it first
     await clickEdge()
 
-    // Base state object that we'll mutate as we progress
-    const state: CmdBarSerialised = {
-      commandName: 'Fillet',
-      currentArgKey: 'selection',
-      currentArgValue: '',
-      headerArguments: {
-        Selection: '',
-        Radius: '',
-      },
-      highlightedHeaderArg: 'selection',
-      stage: 'arguments',
-    }
-
     // Click fillet tool - the edge should already be selected
     await toolbar.filletButton.click()
-    await cmdBar.expectState(state)
-
-    // Edge should already be selected, progress to radius
-    state.currentArgKey = 'radius'
-    state.currentArgValue = '5' // Default radius
-    state.headerArguments.Selection = '1 edge'
-    state.highlightedHeaderArg = 'radius'
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState(state)
 
     // Set radius to 0.75mm
-    await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.75')
-    state.currentArgValue = '0.75'
-    state.headerArguments.Radius = '0.75'
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      commandName: state.commandName,
-      headerArguments: state.headerArguments,
-      stage: 'review',
-      reviewValidationError: undefined,
-    })
+    await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
+    await modelingDialog.input('radius').fill('0.75')
 
-    await cmdBar.submit()
+    await modelingDialog.submit()
 
     // Assert code contains fillet
     await editor.expectEditor.toContain('fillet')
@@ -338,10 +217,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
   })
 
   test('Can use an edge-extruded surface boundary as a Helix axis', async ({
-    context,
     page,
     scene,
-    cmdBar,
+    modelingDialog,
     editor,
     toolbar,
     homePage,
@@ -360,14 +238,6 @@ surface001 = extrude(
 )
 hide(sketch001)`
 
-    await context.addInitScript(
-      ({ initialCode }) => {
-        localStorage.setItem('persistCode', initialCode)
-      },
-      {
-        initialCode: code,
-      }
-    )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
@@ -387,22 +257,11 @@ hide(sketch001)`
     await clearSelection()
     await expect(toolbar.selectionStatus).not.toContainText('edge')
     await toolbar.helixButton.click()
-    await cmdBar.selectOption({ name: 'Edge' }).click()
+    await modelingDialog.options('mode').selectOption({ label: 'Edge' })
+    await modelingDialog.selection('Edge').click()
+    await modelingDialog.moveTo({ x: 0, y: 80 })
     await clickSurfaceEdge()
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      commandName: 'Helix',
-      currentArgKey: 'revolutions',
-      currentArgValue: '1',
-      headerArguments: {
-        Mode: 'Edge',
-        Edge: '1 edge',
-        AngleStart: '',
-        Revolutions: '',
-        Radius: '',
-      },
-      highlightedHeaderArg: 'revolutions',
-      stage: 'arguments',
-    })
+    await expect(modelingDialog.selection('Edge')).toHaveText('1 edge')
+    await expect(modelingDialog.input('revolutions')).toHaveText('1')
   })
 })

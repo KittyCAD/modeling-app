@@ -148,17 +148,10 @@ test.describe(
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
 
-      // Let the reload from folderSetupFn finish initializing before replacing
-      // the document; WebKit otherwise interrupts in-flight OPFS reads.
+      // Use app navigation so WebKit doesn't interrupt startup filesystem and
+      // API requests by replacing the document while they are still in flight.
       await homePage.projectsLoaded()
-
-      const startingFilePath = await fs.join(
-        dir,
-        'browser-file-tree-project',
-        'parts',
-        'existing.kcl'
-      )
-      await page.goto(`/file/${encodeURIComponent(startingFilePath)}`)
+      await homePage.openProject('browser-file-tree-project')
       await scene.settled()
       await u.openFilePanel()
       await expect
@@ -185,6 +178,18 @@ test.describe(
       })
       await expect(partsFolder).toBeVisible()
       await partsFolder.click()
+      await filePaneScroll
+        .getByRole('treeitem', { name: 'existing.kcl', exact: true })
+        .click()
+      const startingFilePath = await fs.join(
+        dir,
+        'browser-file-tree-project',
+        'parts',
+        'existing.kcl'
+      )
+      await expect(page).toHaveURL(
+        new RegExp(`/file/${encodeURIComponent(startingFilePath)}$`)
+      )
       await page.evaluate(() => {
         const appWindow = window as any
         const systemIOActor = window.app.systemIOActor as any

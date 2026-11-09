@@ -46,6 +46,7 @@ import {
   EngineConnectionManagerEvents,
   EngineConnectionStateType,
   getResponseErrorMessage,
+  isExecutionBoundaryCommand,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
   validateStreamDimensions,
   type EngineDisconnectEventDetail,
@@ -110,6 +111,10 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  /** Read-only identity of the actual engine connection, including reconnects. */
+  get engineSessionId(): string | undefined {
+    return this.connection?.id
+  }
   private reconnectingConnection: Connection | undefined
   private prepareForReconnect:
     | ((signal: AbortSignal) => Promise<undefined | Error>)
@@ -345,7 +350,7 @@ export class ConnectionManager extends EventTarget {
     setStreamIsReady,
     callbackOnUnitTestingConnection,
     unitTestWebrtc,
-    unitTestPool,
+    unitTestGeometryOnly,
     rustContext,
     kclVersion,
     prepareForReconnect,
@@ -356,7 +361,7 @@ export class ConnectionManager extends EventTarget {
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestWebrtc?: boolean
-    unitTestPool?: 'cpu'
+    unitTestGeometryOnly?: boolean
     rustContext?: RustContext
     kclVersion?: KclVersion
     prepareForReconnect?: (signal: AbortSignal) => Promise<undefined | Error>
@@ -409,7 +414,7 @@ export class ConnectionManager extends EventTarget {
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
       unitTestWebrtc,
-      unitTestPool,
+      unitTestGeometryOnly,
       handleMessage,
       getCloudProjectId: () =>
         this.systemDeps.settingsActor.getSnapshot().context.currentProject
@@ -1630,7 +1635,8 @@ export class ConnectionManager extends EventTarget {
       JSON.parse(idToRangeStr)
     // Current execution is stale, going to interrupt, a new execution will trigger
     // Used in conjunction with rejectAllModelingCommands
-    if (this.executionIsStale) {
+    // Preserve execution boundaries so interruption can still restore rendering quality.
+    if (!isExecutionBoundaryCommand(command) && this.executionIsStale) {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
     try {

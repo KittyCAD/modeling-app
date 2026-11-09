@@ -151,7 +151,7 @@ export const PromptCard = (props: PromptCardProps) => {
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(false)
 
   const cssCard = `flex flex-col p-2 gap-2 justify-between
-    transition-height duration-500 overflow-hidden
+    overflow-hidden
     ${props.disabled ? 'text-chalkboard-60' : ''}
   `
 

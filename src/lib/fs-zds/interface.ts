@@ -6,6 +6,11 @@ export interface CopyOptions {
   readonly force?: boolean
 }
 
+/** Whether metadata describes a link's target (default) or the link itself. */
+export interface StatOptions {
+  readonly followSymlinks?: boolean
+}
+
 /** File replacement policy supported by every filesystem backing. */
 export interface WriteFileOptions {
   readonly flag?: 'w' | 'wx'
@@ -76,7 +81,7 @@ export interface IZooDesignStudioFS {
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<undefined | void>
   readdir: (path: string, options?: any) => Promise<string[]>
-  stat: (path: string, options?: any) => Promise<IStat>
+  stat: (path: string, options?: StatOptions) => Promise<IStat>
   mkdir: (path: string, options?: any) => Promise<undefined | string>
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   rm: (path: string, options?: any) => Promise<undefined | void>
