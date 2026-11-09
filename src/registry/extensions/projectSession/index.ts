@@ -1,5 +1,5 @@
-import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
-import { FileSaveStatus } from '@src/components/FileSaveStatus'
+import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import { createElement, lazy, Suspense } from 'react'
 import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
 import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
@@ -55,6 +55,12 @@ import {
   projectSession,
   type ProjectSessionService,
 } from '@src/registry/contracts/projectSession'
+
+// Save status reads app context, so load it after App has initialized.
+const FileSaveStatus = lazy(async () => {
+  const { FileSaveStatus } = await import('@src/components/FileSaveStatus')
+  return { default: FileSaveStatus }
+})
 
 export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const project = signal<ZDSProject | undefined>(undefined)
@@ -380,10 +386,10 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   return {
     id: 'project-session-extension',
     provides: [
-      provide(appHeaderItemsValueSpec, {
+      provide(statusBarLocalItemsValueSpec, {
         id: 'file-save-status',
         order: 20,
-        Component: FileSaveStatus,
+        component: () => createElement(Suspense, { fallback: null }, createElement(FileSaveStatus)),
       }),
     ],
     providesServices: [provideService(projectSession, serviceImpl)],

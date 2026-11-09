@@ -298,6 +298,49 @@ for (const cached of [false, true]) {
   })
 }
 
+test('keeps the modeling viewport stable when the save status changes @web', async ({
+  page,
+  context,
+}, testInfo) => {
+  const storage = await prepareStorage('local', page, context, testInfo, {
+    modeling: true,
+  })
+  await storage.seed('Stable save status', solidCode)
+  await storage.refresh()
+  await storage.home.openProject('Stable save status')
+  await new SceneFixture(page).settled()
+  await page.evaluate(() => window.app.singletons.kclManager.flushWriteToFile())
+  const stream = page.getByTestId('stream')
+  const header = page.getByTestId('app-header')
+  const statusBar = page.locator('#statusbar')
+  const originalHeader = await header.boundingBox()
+  const originalStream = await stream.boundingBox()
+  const video = await page.locator('#video-stream').elementHandle()
+  for (const state of ['saving', 'failed', 'saved'] as const) {
+    await page.evaluate((state) => {
+      window.app.singletons.kclManager.saveState.value = state
+    }, state)
+    if (state === 'saving')
+      await expect(
+        statusBar.getByRole('status').filter({ hasText: 'Saving...' })
+      ).toBeVisible()
+    if (state === 'failed')
+      await expect(
+        statusBar.getByRole('button', { name: 'Save failed. Retry' })
+      ).toBeVisible()
+    if (state === 'saved')
+      await expect(statusBar.getByRole('status')).not.toBeAttached()
+    expect(await header.boundingBox(), state).toEqual(originalHeader)
+    expect(await stream.boundingBox(), state).toEqual(originalStream)
+    expect(
+      await video?.evaluate(
+        (node) => node === document.getElementById('video-stream')
+      ),
+      state
+    ).toBe(true)
+  }
+})
+
 test('polls cloud project membership, pauses offline and stops outside the projects view @web', async ({
   page,
   context,
@@ -1731,7 +1774,9 @@ for (const kind of ['local', 'cloud'] as const) {
           gate.resolve(undefined)
           await localFailure.evaluate((f) => f.release())
           await page.clock.resume()
-          const retry = page.getByRole('button', { name: 'Save failed. Retry' })
+          const retry = page.locator('#statusbar').getByRole('button', {
+            name: 'Save failed. Retry',
+          })
           await expect(retry).toBeVisible()
           await expectEditor(page, code)
           expect(await storage.read(root)).toBe(blankCode)
