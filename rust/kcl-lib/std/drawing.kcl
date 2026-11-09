@@ -1,0 +1,84 @@
+/// Paper sheets for CAD drawings.
+///
+/// Sheets describe physical paper, independently of screen pixels or model units.
+/// This module requires KCL 3.0 or later.
+
+@no_std
+@settings(kclVersion = 3.0, defaultLengthUnit = mm, experimentalFeatures = allow)
+
+import toMillimeters from "std::units"
+
+/// Standard paper sizes, with the shorter edge as the width.
+@(added_in = "3.0")
+export type PaperSize {
+  /// ISO A3: 297mm by 420mm.
+  | A3
+  /// ISO A4: 210mm by 297mm.
+  | A4
+  /// US Letter: 8.5in by 11in.
+  | Letter
+  /// US Legal: 8.5in by 14in.
+  | Legal
+}
+
+/// The direction of the paper's longer edge.
+@(added_in = "3.0")
+export type Orientation {
+  /// The longer edge is vertical.
+  | Portrait
+  /// The longer edge is horizontal.
+  | Landscape
+}
+
+/// A paper sheet, with physical width and height in millimeters.
+@(added_in = "3.0")
+export type Sheet = { size: PaperSize, orientation: Orientation, width: number(mm), height: number(mm) }
+
+// KCL currently permits only literal parameter defaults. Keep the enum fallback
+// in this module until enum-valued defaults can be expressed in the signature.
+@(impl = std_rust, feature_tree = false)
+fn sheetOrientation(fallback: Orientation, orientation?: Orientation): Orientation {}
+
+/// Create a drawing sheet of a standard paper size.
+///
+/// Dimensions retain their physical meaning regardless of the program's default
+/// length unit. Creating a sheet does not create model geometry.
+///
+/// ```kcl,no3d
+/// @settings(kclVersion = 3.0)
+///
+/// detail = drawing::sheet(drawing::PaperSize::A4)
+/// assembly = drawing::sheet(
+///   drawing::PaperSize::Letter,
+///   orientation = drawing::Orientation::Landscape,
+/// )
+/// ```
+@(added_in = "3.0", feature_tree = false)
+export fn sheet(
+  /// The standard size of the paper.
+  @size: PaperSize,
+  /// Landscape by default; portrait places the paper's shorter edge horizontally.
+  orientation?: Orientation,
+): Sheet {
+  paperOrientation = sheetOrientation(orientation = orientation, fallback = Orientation::Landscape)
+  dimensions = if size == PaperSize::A3 {
+    [297mm, 420mm]
+  } else if size == PaperSize::A4 {
+    [210mm, 297mm]
+  } else if size == PaperSize::Letter {
+    [8.5in, 11in]
+  } else {
+    [8.5in, 14in]
+  }
+  orientedDimensions = if paperOrientation == Orientation::Portrait {
+    dimensions
+  } else {
+    [dimensions[1], dimensions[0]]
+  }
+  return {
+    size = size,
+    orientation = paperOrientation,
+    width = toMillimeters(orientedDimensions[0]),
+    height = toMillimeters(orientedDimensions[1]),
+  }
+}
