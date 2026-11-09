@@ -20,6 +20,7 @@ import {
 
 import {
   homeProjectEntriesValueSpec,
+  homeProjectLoadingLibraryIdsValueSpec,
   type HomeProjectEntryContribution,
 } from '@src/registry/contracts/homeProjects'
 
@@ -118,6 +119,15 @@ export default defineRegistryItemFactory((ctx) => {
   return {
     id: 'cloud-projects',
     provides: [
+      provide(
+        homeProjectLoadingLibraryIdsValueSpec,
+        computed(() =>
+          auth.value?.isLoggedIn.value && cloud().projectsLoading.value
+            ? [PERSONAL_CLOUD_PROJECT_LIBRARY_ID]
+            : []
+        ),
+        { key: 'cloud-projects.loading' }
+      ),
       provide(homeProjectEntriesValueSpec, entries, {
         key: 'cloud-projects.entries',
       }),
