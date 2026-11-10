@@ -2,6 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { runInNewContext } from 'node:vm'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Signal } from '@src/lib/signal'
+import { act, fireEvent, render, screen } from '@testing-library/react'
+import { createElement } from 'react'
+import toast from 'react-hot-toast'
 import {
   Box3,
   Euler,
@@ -15,7 +18,12 @@ import {
   DriverSpaceMouseController,
   type SpaceMouseCameraControls,
 } from './driverSpaceMouse'
-import { SpaceMouseController, spaceMouseState } from './spaceMouseController'
+import { SpaceMouseStatusBarItem } from './SpaceMouseStatusBarItem'
+import {
+  activeSpaceMouseController,
+  SpaceMouseController,
+  spaceMouseState,
+} from './spaceMouseController'
 import vendorSource from '@public/vendor/3dconnexion.min.js?raw'
 
 vi.mock('/vendor/3dconnexion.min.js?url', () => ({
@@ -94,10 +102,11 @@ afterEach(() => {
   vi.useRealTimers()
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
+  activeSpaceMouseController.value = null
   document.body.replaceChildren()
 })
 
-describe('SpaceMouse automatic connection', () => {
+describe('SpaceMouse connection', () => {
   function setupController() {
     const { driver, controls, scene } = setup()
     driver.dispose()
@@ -106,6 +115,9 @@ describe('SpaceMouse automatic connection', () => {
   }
 
   it('connects on desktop without taking keyboard focus from an editor', async () => {
+    const success = vi
+      .spyOn(toast, 'success')
+      .mockReturnValue('spacemouse-connected')
     vi.mocked(isDesktop).mockReturnValue(true)
     const { controller } = setupController()
     const editor = document.createElement('input')
@@ -119,7 +131,36 @@ describe('SpaceMouse automatic connection', () => {
     sdk.client.on3dmouseCreated()
     expect(await connection).toBeUndefined()
     expect(spaceMouseState.value.status).toBe('connected')
-    expect(document.activeElement).toBe(editor)
+    expect(editor).toHaveFocus()
+    expect(success).not.toHaveBeenCalled()
+    controller.dispose()
+  })
+
+  it('connects from the status bar, confirms readiness once, and disconnects', async () => {
+    const success = vi
+      .spyOn(toast, 'success')
+      .mockReturnValue('spacemouse-connected')
+    const { controller } = setupController()
+    activeSpaceMouseController.value = controller
+    const view = render(createElement(SpaceMouseStatusBarItem))
+    fireEvent.click(screen.getByRole('button', { name: /Connect SpaceMouse/ }))
+    await vi.waitFor(() => expect(FakeDriver.instances).toHaveLength(1))
+    expect(screen.getByText('SpaceMouse: Connecting')).toBeInTheDocument()
+    const sdk = FakeDriver.instances[0]
+    sdk.client.onConnect()
+    expect(success).not.toHaveBeenCalled()
+    await act(async () => sdk.client.on3dmouseCreated())
+    expect(await screen.findByText('SpaceMouse: Connected')).toBeInTheDocument()
+    expect(success).toHaveBeenCalledWith('SpaceMouse connected.', {
+      id: 'spacemouse-connected',
+    })
+    await controller.connect()
+    expect(success).toHaveBeenCalledTimes(1)
+    fireEvent.click(
+      screen.getByRole('button', { name: /Disconnect SpaceMouse/ })
+    )
+    expect(screen.getByText('SpaceMouse: Disconnected')).toBeInTheDocument()
+    view.unmount()
     controller.dispose()
   })
 

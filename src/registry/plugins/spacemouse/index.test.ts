@@ -1,7 +1,7 @@
 import { Registry, pluginsValueSpec } from '@kittycad/registry'
 import { engineSceneViewExtensionsValueSpec } from '@src/registry/contracts/engineScene'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { viewControlMenuSectionsValueSpec } from '@src/registry/contracts/viewControlMenu'
+import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
 import { describe, expect, it } from 'vitest'
 import spaceMouse from '.'
@@ -36,7 +36,7 @@ describe('SpaceMouse plugin', () => {
     )
     expect(registry.get(plugin.service).active.value).toBe(false)
     expect(registry.get(engineSceneViewExtensionsValueSpec)).toEqual([])
-    expect(registry.get(viewControlMenuSectionsValueSpec)).toEqual([])
+    expect(registry.get(statusBarGlobalItemsValueSpec)).toEqual([])
 
     await registry.get(plugin.service).enable()
 
@@ -45,13 +45,13 @@ describe('SpaceMouse plugin', () => {
       registry.get(engineSceneViewExtensionsValueSpec).map((item) => item.id)
     ).toEqual(['spacemouse.controller'])
     expect(
-      registry.get(viewControlMenuSectionsValueSpec).map((item) => item.id)
-    ).toEqual(['spacemouse.connect'])
+      registry.get(statusBarGlobalItemsValueSpec).map((item) => item.id)
+    ).toEqual(['spacemouse.status'])
 
     await registry.get(plugin.service).disable()
 
     expect(registry.get(plugin.service).active.value).toBe(false)
     expect(registry.get(engineSceneViewExtensionsValueSpec)).toEqual([])
-    expect(registry.get(viewControlMenuSectionsValueSpec)).toEqual([])
+    expect(registry.get(statusBarGlobalItemsValueSpec)).toEqual([])
   })
 })

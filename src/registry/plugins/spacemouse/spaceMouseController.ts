@@ -1,6 +1,7 @@
 import { signal } from '@preact/signals-core'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isErr } from '@src/lib/trap'
+import toast from 'react-hot-toast'
 import {
   DriverSpaceMouseController,
   type SpaceMouseCameraControls,
@@ -46,10 +47,10 @@ export class SpaceMouseController {
       }
     }
     if (revision !== this.connectionRevision) return
-    return this.connect()
+    return this.connect({ showSuccessToast: false })
   }
 
-  async connect(): Promise<undefined | Error> {
+  async connect({ showSuccessToast = true } = {}): Promise<undefined | Error> {
     if (this.disposed || this.driver) return
     this.connectionRevision += 1
     spaceMouseState.value = { status: 'connecting' }
@@ -71,6 +72,8 @@ export class SpaceMouseController {
       return result
     }
     spaceMouseState.value = { status: 'connected' }
+    if (showSuccessToast)
+      toast.success('SpaceMouse connected.', { id: 'spacemouse-connected' })
   }
 
   disconnect() {

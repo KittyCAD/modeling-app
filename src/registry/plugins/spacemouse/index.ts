@@ -1,6 +1,6 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
 import { engineSceneViewExtensionsValueSpec } from '@src/registry/contracts/engineScene'
-import { viewControlMenuSectionsValueSpec } from '@src/registry/contracts/viewControlMenu'
+import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { Suspense, createElement, lazy } from 'react'
 
@@ -11,11 +11,9 @@ const SpaceMouseSceneController = lazy(async () => {
   return { default: SpaceMouseSceneController }
 })
 
-const SpaceMouseViewControlMenuSection = lazy(async () => {
-  const { SpaceMouseViewControlMenuSection } = await import(
-    './SpaceMouseViewControlMenuSection'
-  )
-  return { default: SpaceMouseViewControlMenuSection }
+const SpaceMouseStatusBarItem = lazy(async () => {
+  const { SpaceMouseStatusBarItem } = await import('./SpaceMouseStatusBarItem')
+  return { default: SpaceMouseStatusBarItem }
 })
 
 const SpaceMouseSceneOverlay = () =>
@@ -25,11 +23,11 @@ const SpaceMouseSceneOverlay = () =>
     createElement(SpaceMouseSceneController)
   )
 
-const SpaceMouseMenuSection = () =>
+const SpaceMouseStatus = () =>
   createElement(
     Suspense,
     { fallback: null },
-    createElement(SpaceMouseViewControlMenuSection)
+    createElement(SpaceMouseStatusBarItem)
   )
 
 const spaceMouseControls = defineRegistryItem({
@@ -40,10 +38,10 @@ const spaceMouseControls = defineRegistryItem({
       order: 10,
       Component: SpaceMouseSceneOverlay,
     }),
-    provide(viewControlMenuSectionsValueSpec, {
-      id: 'spacemouse.connect',
-      order: 50,
-      Component: SpaceMouseMenuSection,
+    provide(statusBarGlobalItemsValueSpec, {
+      id: 'spacemouse.status',
+      order: 40,
+      component: SpaceMouseStatus,
     }),
   ],
 })
