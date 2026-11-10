@@ -139,7 +139,7 @@ function mountAppToReact(app: App) {
               },
             }}
           />
-          <ModalContainer />
+          <ModalContainer enterTimeout={0} exitTimeout={0} />
         </AppStreamProvider>
       </HotkeysProvider>
     </AppContext.Provider>

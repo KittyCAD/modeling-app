@@ -5,14 +5,14 @@ description: Physical properties subtract_with_pattern_cut_thru.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 14.05707214165922,
+      "x": 250.0,
       "y": 0.8599999999999959,
-      "z": 250.0
+      "z": -14.057072141659162
     },
     "dimensions": {
-      "x": 29.07414428331844,
+      "x": 500.0,
       "y": 27.21600000000006,
-      "z": 500.0
+      "z": 29.074144283318553
     },
     "unit": "mm"
   },

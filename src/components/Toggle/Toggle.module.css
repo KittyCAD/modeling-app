@@ -41,7 +41,6 @@
   top: 50%;
   left: 50%;
   translate: calc(-100% - var(--padding) + var(--border)) -50%;
-  transition: translate 0.08s ease-out;
 }
 
 :global(.dark) .toggle > span::after {
