@@ -1,4 +1,3 @@
+test_graphics = "CpuEngineRender"
 kcl_versions = ["1.0"]
 redact_uuids = true
-[test_graphics.EngineRender]
-reason = "CPU and GPU both fail the current physical-properties baseline; investigate shared import baseline before migrating"
