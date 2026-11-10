@@ -27,6 +27,8 @@ Remove comments that merely restate code. Preserve tool directives and machine-r
 
 ## Write precisely
 
+Use the domain language from `GLOSSARY.md`.
+
 Use full sentences, concrete terms, and active voice. Name the actor and expand unfamiliar abbreviations. Replace "obviously," "trivially," "just," and "of course" with reasoning.
 
 Match detail to complexity, without comment quotas. Prioritize accuracy and comprehension over grammatical polish. Prefer enforceable types, checks, or focused tests where practical; retain explanations of why a property matters.
