@@ -166,6 +166,7 @@ test('preserves bytes across partial worker writes and reads', async () => {
         await expect(
           send({ id: 1, type: 'write-file', targetPath, data: contents })
         ).resolves.toEqual({ id: 1, ok: true })
+        expect(Array.from(stored)).toEqual(Array.from(contents))
         const response = await send({ id: 2, type: 'read-file', targetPath })
         if (!response.ok || !response.data)
           throw new Error('Expected worker bytes')

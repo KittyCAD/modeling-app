@@ -69,7 +69,10 @@ describe.each(profiles)(
       try {
         const first = scheduler.operations.writeFile(file, new Uint8Array([1]))
         await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
-        const second = scheduler.operations.writeFile(alias, new Uint8Array([2]))
+        const second = scheduler.operations.writeFile(
+          alias,
+          new Uint8Array([2])
+        )
         const observed = vi.fn()
         const read = scheduler.operations.readFile(alias).then(observed)
         vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] })
