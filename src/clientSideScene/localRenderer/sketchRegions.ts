@@ -4,6 +4,7 @@ import type {
   KITTYCAD_GLTF_SKETCH_REGION,
 } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 import { sampleEdge } from '@src/clientSideScene/localRenderer/sampleEdge'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import { isErr } from '@src/lib/trap'
 import {
   BufferAttribute,
@@ -30,7 +31,10 @@ type RegionPlane = { origin: Vector3; xAxis: Vector3; yAxis: Vector3 }
  * drawn. They are tagged like faces, so a region is hovered, clicked and
  * highlighted the same way a face is.
  */
-export function createRegionMeshes(gltf: KITTYCAD_GLTF): Mesh[] {
+export function createRegionMeshes(
+  gltf: KITTYCAD_GLTF,
+  artifactGraph: ArtifactGraph
+): Mesh[] {
   const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
   const regions = gltf.userData.KITTYCAD?.regions ?? []
   if (!brep || regions.length === 0) {
@@ -47,6 +51,18 @@ export function createRegionMeshes(gltf: KITTYCAD_GLTF): Mesh[] {
     const mesh = new Mesh(geometry, material)
     mesh.name = `region_${region.regionId}`
     mesh.userData.faceUuid = region.regionId
+
+    const path = region.sketchId && artifactGraph.get(region.sketchId)
+    if (
+      path &&
+      path.type === 'path' &&
+      path.subType === 'sketch' &&
+      !path.sketchBlockId
+    ) {
+      // Legacy profiles export internal regions that the engine cannot query.
+      // Select their existing profile face instead.
+      mesh.userData.faceUuid = path.solid2dId ?? region.regionId
+    }
     mesh.userData.isSketchRegion = true
     return [mesh]
   })

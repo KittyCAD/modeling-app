@@ -1,7 +1,7 @@
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import { doAndWaitForImageDiff } from '@e2e/playwright/test-utils'
+import { resetView } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import {
@@ -12,50 +12,6 @@ import {
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
-
-// Restore the camera used when these files were preloaded.
-async function resetView(scene: SceneFixture) {
-  if (test.info().tags.includes('@localRenderer')) {
-    // Keep the isometric framing used by the projected selections.
-    // Plane hiding is deferred after execution. Wait for both the current model
-    // and that visibility update so zoom-to-fit frames the model, not the planes.
-    await expect
-      .poll(
-        () =>
-          scene.page.evaluate(() => {
-            const manager = window.app.singletons.kclManager
-            const view = manager.sceneInfra.localRenderer
-            return (
-              !manager.isExecuting &&
-              view?.isLoadedSceneCurrent() &&
-              !view.hasVisibleDefaultPlanes
-            )
-          }),
-        { timeout: 30_000 }
-      )
-      .toBe(true)
-    await scene.page.evaluate(() =>
-      window.app.singletons.kclManager.sceneInfra.camControls.viewIsometric({
-        padding: 0.1,
-      })
-    )
-    return
-  }
-  // The camera may already face this way, so no image change is guaranteed.
-  await scene.moveCameraTo({ x: 0, y: -128, z: 64 }, undefined, {
-    waitForImageChange: false,
-  })
-  await doAndWaitForImageDiff(scene.streamWrapper, async () => {
-    await scene.streamWrapper.click({
-      button: 'right',
-      position: { x: 10, y: 100 },
-    })
-    await scene.page
-      .getByTestId('view-controls-menu')
-      .getByRole('button', { name: 'Reset view' })
-      .click()
-  })
-}
 
 test.describe('Point-and-click tests', { tag: '@web' }, () => {
   test.use({
@@ -1443,12 +1399,8 @@ extrude001 = extrude(region001, length = -12)`
         await toolbar.chamferButton.click()
         await modelingDialog.selection('Selection').click()
 
-        await page.waitForTimeout(1000)
         await expect(modelingDialog.input('length')).toHaveText('5')
 
-        await page.waitForTimeout(1000)
-
-        await page.waitForTimeout(1000)
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
       })

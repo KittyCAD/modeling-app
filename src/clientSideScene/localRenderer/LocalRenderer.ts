@@ -370,7 +370,8 @@ export class LocalRenderer {
       filter.includes('edge')
         ? { source: edgeRenderer.lines, targets: edgeTargets }
         : undefined,
-      filter.includes('curve')
+      // Object-selection commands accept paths and helices, not just solids.
+      filter.includes('curve') || getBodySelectionType(filter) === 'object'
         ? { source: sketchLineRenderer.lines, targets: sketchLineTargets }
         : undefined
     )
@@ -1343,7 +1344,10 @@ export class LocalRenderer {
       gpu?.edgeRenderer.addTo(gltf.scene)
       gpu?.sketchLineRenderer.buildEdges(gltf, getSketchSegmentEdges(gltf))
       gpu?.sketchLineRenderer.addTo(gltf.scene)
-      for (const mesh of createRegionMeshes(gltf)) {
+      for (const mesh of createRegionMeshes(
+        gltf,
+        this.kclManager.artifactGraph
+      )) {
         gltf.scene.add(mesh)
       }
 

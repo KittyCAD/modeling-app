@@ -1,4 +1,2 @@
+test_graphics = "CpuEngineRender"
 kcl_versions = ["2.0", "3.0"]
-
-[test_graphics.EngineRender]
-reason="KCL 3.0 bounding box is different on CPU engine than GPU engine"
