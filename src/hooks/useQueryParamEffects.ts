@@ -1,4 +1,3 @@
-
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   downloadProjectById,
