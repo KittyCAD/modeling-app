@@ -1,6 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
 import type { EditorSelection } from '@codemirror/state'
-import { computed } from '@preact/signals-core'
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
@@ -205,8 +204,8 @@ export const FeatureTreePaneContents = memo(() => {
     platform
   )
   const { kclManager } = useSingletons()
-  const executionService = computed(() => app.registry.optional(projectSession))
-    .value?.executingEditor.value
+  const executionService =
+    app.registry.optional(projectSession)?.executingEditor.value
   const { engineCommandManager, rustContext } = kclManager
   const {
     send: modelingSend,

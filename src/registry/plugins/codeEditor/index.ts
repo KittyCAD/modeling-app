@@ -1,4 +1,3 @@
-import { computed } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
@@ -54,8 +53,8 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
   const automaticallyRenderEnabled = useSelector(app.settings.actor, (state) =>
     getAutomaticallyRenderEnabledFromSettings(state.context)
   )
-  const executionService = computed(() => app.registry.optional(projectSession))
-    .value?.executingEditor.value
+  const executionService =
+    app.registry.optional(projectSession)?.executingEditor.value
   const hasEditsSinceLastExecution =
     executionService?.hasEditsSinceLastExecution.value ?? false
   const keymap = app.registry.optional(keymapService)

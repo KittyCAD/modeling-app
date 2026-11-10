@@ -23,46 +23,34 @@ export const layoutContract = contract({
   layoutService: service<LayoutService>('layout.service'),
   layoutAreaLibraryFacet: new Facet<Partial<AreaLibrary>, AreaLibrary>(
     'layout.areaLibrary',
-    (inputs) => Object.assign({}, {}, ...inputs)
+    (inputs) => Object.assign({}, ...inputs)
   ),
   layoutActionLibraryFacet: new Facet<Partial<ActionLibrary>, ActionLibrary>(
     'layout.actionLibrary',
-    (inputs) => Object.assign({}, {}, ...inputs)
+    (inputs) => Object.assign({}, ...inputs)
   ),
   layoutContributionsFacet: new Facet<
     LayoutContribution,
     readonly LayoutContribution[]
-  >('layout.contributions', (inputs) =>
-    inputs.length
-      ? ((inputs) => {
-          const seen = new Set<string>()
-          return inputs.filter((contribution) => {
-            if (seen.has(contribution.id)) {
-              return false
-            }
-            seen.add(contribution.id)
-            return true
-          })
-        })(inputs)
-      : []
-  ),
+  >('layout.contributions', (inputs) => {
+    const seen = new Set<string>()
+    return inputs.filter((contribution) => {
+      if (seen.has(contribution.id)) return false
+      seen.add(contribution.id)
+      return true
+    })
+  }),
   layoutUserFeatureTransformationsFacet: new Facet<
     UserFeatureLayoutTransformation,
     readonly UserFeatureLayoutTransformation[]
-  >('layout.userFeatureTransformations', (inputs) =>
-    inputs.length
-      ? ((inputs) => {
-          const seen = new Set<string>()
-          return inputs.filter((transformation) => {
-            if (seen.has(transformation.id)) {
-              return false
-            }
-            seen.add(transformation.id)
-            return true
-          })
-        })(inputs)
-      : []
-  ),
+  >('layout.userFeatureTransformations', (inputs) => {
+    const seen = new Set<string>()
+    return inputs.filter((transformation) => {
+      if (seen.has(transformation.id)) return false
+      seen.add(transformation.id)
+      return true
+    })
+  }),
 })
 
 export const {
