@@ -4,13 +4,17 @@ import type {
   CopyOptions,
   FileContents,
   FileStat,
+  StatOptions,
 } from '@src/lib/fileSystem/fileOperations'
 
 /** Promise facade for coordinated project-directory and file operations. */
 export interface FileOperationsRegistryService {
   readonly pending: () => Promise<number>
-  /** Observe one path while coordinated mutations of it are excluded. */
-  readonly stat: (path: string) => Promise<FileStat>
+  /**
+   * Observe one path while coordinated mutations of it are excluded.
+   * Follows symbolic links unless disabled to inspect the directory entry itself.
+   */
+  readonly stat: (path: string, options?: StatOptions) => Promise<FileStat>
   /** Check whether the current platform grant allows reading and writing. */
   readonly canReadWrite: (path: string) => Promise<boolean>
   /**

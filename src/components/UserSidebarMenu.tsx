@@ -1,4 +1,4 @@
-import { Popover, Transition } from '@headlessui/react'
+import { Popover } from '@headlessui/react'
 import type { UserResponse } from '@kittycad/lib'
 import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
@@ -13,7 +13,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: user-menu navigation and route-derived context (useLocation, useNavigate).
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -243,65 +243,56 @@ const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
           User menu
         </Tooltip>
       </Popover.Button>
-      <Transition
-        enter="duration-100 ease-out"
-        enterFrom="opacity-0 -translate-y-2"
-        enterTo="opacity-100 translate-y-0"
-        as={Fragment}
-      >
-        <Popover.Panel
-          data-testid="user-dropdown"
-          className={`z-10 absolute top-full right-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
+      <Popover.Panel
+        data-testid="user-dropdown"
+        className={`z-10 absolute top-full right-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
-        >
-          {({ close }) => (
-            <>
-              {user && (
-                <div className="flex flex-col gap-1 px-2.5 py-3 bg-chalkboard-20 dark:bg-chalkboard-80/50">
-                  <p className="m-0 text-mono text-xs" data-testid="username">
-                    {displayedName || ''}
+      >
+        {({ close }) => (
+          <>
+            {user && (
+              <div className="flex flex-col gap-1 px-2.5 py-3 bg-chalkboard-20 dark:bg-chalkboard-80/50">
+                <p className="m-0 text-mono text-xs" data-testid="username">
+                  {displayedName || ''}
+                </p>
+                {displayedName !== user.email && (
+                  <p
+                    className="m-0 overflow-ellipsis overflow-hidden text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+                    data-testid="email"
+                  >
+                    {user.email}
                   </p>
-                  {displayedName !== user.email && (
-                    <p
-                      className="m-0 overflow-ellipsis overflow-hidden text-chalkboard-70 dark:text-chalkboard-40 text-xs"
-                      data-testid="email"
-                    >
-                      {user.email}
-                    </p>
-                  )}
-                </div>
-              )}
-              <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
-                {userMenuItems.map((props, index) => {
-                  if (props === 'break') {
-                    return index !== userMenuItems.length - 1 ? (
-                      <li key={`break-${index}`} className="contents">
-                        <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
-                      </li>
-                    ) : null
-                  }
-
-                  const { id, children, ...rest } = props
-                  return (
-                    <li key={id} className="contents">
-                      <ActionButton
-                        {...rest}
-                        className="!font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 !border-none text-left focus-visible:outline-appForeground"
-                        onMouseUp={() => {
-                          close()
-                        }}
-                      >
-                        {children}
-                      </ActionButton>
+                )}
+              </div>
+            )}
+            <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
+              {userMenuItems.map((props, index) => {
+                if (props === 'break') {
+                  return index !== userMenuItems.length - 1 ? (
+                    <li key={`break-${index}`} className="contents">
+                      <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
                     </li>
-                  )
-                })}
-              </ul>
-            </>
-          )}
-        </Popover.Panel>
-      </Transition>
+                  ) : null
+                }
+
+                const { id, children, ...rest } = props
+                // Let the action's click run before unmounting its menu.
+                return (
+                  <li key={id} className="contents" onClick={() => close()}>
+                    <ActionButton
+                      {...rest}
+                      className="!font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 !border-none text-left focus-visible:outline-appForeground"
+                    >
+                      {children}
+                    </ActionButton>
+                  </li>
+                )
+              })}
+            </ul>
+          </>
+        )}
+      </Popover.Panel>
     </Popover>
   )
 }

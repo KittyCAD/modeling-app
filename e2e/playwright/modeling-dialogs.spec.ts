@@ -34,7 +34,8 @@ sketch001 = sketch(on = XZ) {
     // Reproduce the reported sticky-Shift flow: clicking a region can retain
     // the editor's sketch selection, which Extrude Profiles must reject.
     await editor.selectText('sketch(on = XZ)')
-    const [selectProfile] = scene.makeMouseHelpers(0.38, 0.5, {
+    // The Extrude tooltip can cover the upper part of this region in WebKit.
+    const [selectProfile] = scene.makeMouseHelpers(0.38, 0.6, {
       format: 'ratio',
     })
     await page.keyboard.down('Shift')

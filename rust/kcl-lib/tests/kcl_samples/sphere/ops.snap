@@ -6,7 +6,7 @@ description: Operations executed sphere.kcl
   "public/kcl-samples/sphere/main.kcl": [
     {
       "type": "VariableDeclaration",
-      "name": "diameter",
+      "name": "sphereDiameter",
       "value": {
         "type": "Number",
         "value": 10.0,
@@ -323,6 +323,162 @@ description: Operations executed sphere.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 3
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Known",
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Known",
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 4
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 5
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "horizontal",
       "unlabeledArg": {
         "value": {
@@ -348,7 +504,7 @@ description: Operations executed sphere.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 3
+            "index": 6
           },
           {
             "type": "ExpressionStatementExpr"
@@ -384,7 +540,7 @@ description: Operations executed sphere.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 4
+            "index": 7
           },
           {
             "type": "ExpressionStatementExpr"

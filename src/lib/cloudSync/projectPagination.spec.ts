@@ -138,27 +138,34 @@ describe('remote inventory pagination and local data safety', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 
-  it.each([true, false])(
-    'confirms missing projects individually for paginated=%s inventories',
-    async (paginated) => {
-      fetchMock.mockImplementation(async (input) => {
-        if (getFetchUrl(input) === listUrl) {
-          return jsonResponse(paginated ? { items: [], next_page: null } : [])
-        }
-        if (getFetchUrl(input) === detailUrl) {
-          return jsonResponse(project)
-        }
-        return jsonResponse({ message: 'Unexpected request' }, 500)
-      })
-      startSync()
-      await waitForSync('idle')
-      expect(fetchMock.mock.calls.map(([input]) => getFetchUrl(input))).toEqual(
-        [listUrl, detailUrl]
-      )
-      expect(cloudSyncRemoteProjects.value).toEqual([project])
-      await expectLocalPreserved()
-    }
-  )
+  it('confirms missing projects individually after a complete inventory', async () => {
+    fetchMock.mockImplementation(async (input) => {
+      if (getFetchUrl(input) === listUrl) {
+        return jsonResponse({ items: [], next_page: null })
+      }
+      if (getFetchUrl(input) === detailUrl) {
+        return jsonResponse(project)
+      }
+      return jsonResponse({ message: 'Unexpected request' }, 500)
+    })
+    startSync()
+    await waitForSync('idle')
+    expect(fetchMock.mock.calls.map(([input]) => getFetchUrl(input))).toEqual([
+      listUrl,
+      detailUrl,
+    ])
+    expect(cloudSyncRemoteProjects.value).toEqual([project])
+    await expectLocalPreserved()
+  })
+
+  it('preserves local data and the previous inventory on a legacy array response', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse([]))
+    startSync()
+    await waitForSync('failed')
+    expect(cloudSyncRemoteProjects.value).toEqual([project])
+    await expectLocalPreserved()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
 
   it.each([403, 429, 500])(
     'preserves local data when confirmation fails with %s',

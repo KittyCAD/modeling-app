@@ -1,3 +1,4 @@
+import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
@@ -292,6 +293,10 @@ function useProjectLibraryDrag({
 const Home = () => {
   useSignals()
   const app = useApp()
+  const projectShellEnabled = app.userFeatures.useHas(
+    PROJECT_SHELL_FEATURE,
+    false
+  )
   const { auth, billing, commands, settings, registry } = app
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
@@ -747,6 +752,7 @@ const Home = () => {
         </aside>
         {selectedProjectLibrary || libraryId ? (
           <ProjectGrid
+            projectShellEnabled={projectShellEnabled}
             searchResults={searchResults ?? []}
             projects={scopedHomeProjectEntries}
             localProjectsLoaded={projects !== undefined}
@@ -763,6 +769,7 @@ const Home = () => {
           />
         ) : (
           <ProjectLibraryOverview
+            projectShellEnabled={projectShellEnabled}
             libraries={projectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
@@ -808,6 +815,7 @@ const Home = () => {
 }
 
 interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
+  projectShellEnabled: boolean
   libraries: ProjectLibrary[]
   searchResults: HomeProjectEntry[]
   projects: HomeProjectEntry[]
@@ -833,6 +841,7 @@ function shouldShowLoadingMoreProjects(
 }
 
 function ProjectLibraryOverview({
+  projectShellEnabled,
   libraries,
   searchResults,
   projects,
@@ -889,6 +898,7 @@ function ProjectLibraryOverview({
             <div className="flex flex-col gap-8">
               {libraryRows.map(({ library, libraryProjects, projects }) => (
                 <ProjectLibraryPreviewRow
+                  projectShellEnabled={projectShellEnabled}
                   key={library.id}
                   library={library}
                   projects={projects}
@@ -955,6 +965,7 @@ function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
 }
 
 interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
+  projectShellEnabled: boolean
   searchResults: HomeProjectEntry[]
   projects: HomeProjectEntry[]
   localProjectsLoaded: boolean
@@ -970,6 +981,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
 }
 
 function ProjectGrid({
+  projectShellEnabled,
   searchResults,
   projects,
   localProjectsLoaded,
@@ -1000,6 +1012,7 @@ function ProjectGrid({
         <>
           {searchResults.length > 0 ? (
             <ProjectCardList
+              projectShellEnabled={projectShellEnabled}
               projects={sortedSearchResults}
               projectStatuses={projectStatuses}
               projectActions={projectActions}

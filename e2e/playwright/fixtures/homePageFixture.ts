@@ -125,7 +125,7 @@ export class HomePageFixture {
     await this.projectTextName.fill(projectTitle)
     await this.projectButtonContinue.click()
 
-    await this.page.waitForTimeout(1000)
+    // The stream visibility assertion also waits for project navigation.
     await closeOnboardingModalIfPresent(this.page)
   }
 

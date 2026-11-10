@@ -25,6 +25,7 @@ function makeRemoteProject(
     },
     publication_status: 'draft',
     revision: 'revision-1',
+    metadata_revision: 'metadata-revision-1',
     title: 'Bracket',
     updated_at: '2026-04-09T15:00:00Z',
     ...overrides,

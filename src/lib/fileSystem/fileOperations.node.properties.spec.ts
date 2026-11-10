@@ -56,7 +56,7 @@ const decodeVersion = (contents: Uint8Array): VersionedContents =>
  * must separately guarantee that an individual successful write is atomic;
  * cross-runtime ordering requires a shared platform or server authority.
  */
-describe('coordinated filesystem operation streams', () => {
+describe('coordinated filesystem operation properties on NodeFS', () => {
   const runtimes: FileOperationsRuntime[] = []
   const roots: string[] = []
 

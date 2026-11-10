@@ -173,9 +173,12 @@ export async function routeCloudProjects(
         .fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(
-            listedProjects.map((project) => cloudProjectResponse(project))
-          ),
+          body: JSON.stringify({
+            items: listedProjects.map((project) =>
+              cloudProjectResponse(project)
+            ),
+            next_page: null,
+          }),
         })
         .catch(() => undefined)
       return

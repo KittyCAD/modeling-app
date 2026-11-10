@@ -7,6 +7,7 @@ import type { PrevVariable } from '@src/lang/queryAst'
 import type { BinaryPart } from '@src/lang/wasm'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { flushSync } from 'react-dom'
 
 export const AvailableVars = ({
   onVarClick,
@@ -58,14 +59,13 @@ export const addToInputHelper =
     } else {
       newValue = inputRef.current?.value + varName
     }
-    setValue(newValue)
+    // Commit the controlled value before setting its caret, so React cannot
+    // subsequently overwrite the selection with an asynchronous value update.
+    flushSync(() => setValue(newValue))
     inputRef.current?.focus()
-    setTimeout(() => {
-      // run in the next render cycle
-      const _selectionEnd =
-        typeof selectionEnd === 'number' ? selectionEnd : newValue.length
-      inputRef.current?.setSelectionRange(_selectionEnd, _selectionEnd)
-    })
+    const nextSelection =
+      typeof selectionEnd === 'number' ? selectionEnd : newValue.length
+    inputRef.current?.setSelectionRange(nextSelection, nextSelection)
   }
 
 function stringSplice(str: string, index: number, count: number, add: string) {

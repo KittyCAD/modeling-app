@@ -1,3 +1,3 @@
 redact_uuids = true
-[test_graphics.EngineRender]
-reason = "No bodies to export"
+# This fixture exercises language behavior without producing geometry.
+test_graphics = "None"

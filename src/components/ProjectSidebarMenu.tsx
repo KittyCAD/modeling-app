@@ -1,4 +1,4 @@
-import { Popover, Transition } from '@headlessui/react'
+import { Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
@@ -31,14 +31,7 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import { useSelector } from '@xstate/react'
-import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project-menu navigation (useNavigate).
 import { Link, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
@@ -163,7 +156,7 @@ function AppLogoLink({
         onHomeNavigate()
       }}
       to={PATHS.HOME}
-      className="cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm before:transition-[filter] before:duration-100 before:ease-out hover:hue-rotate-0 dark:hover:brightness-100 hover:before:drop-shadow-tab-sm"
+      className="cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm hover:hue-rotate-0 dark:hover:brightness-100 hover:before:drop-shadow-tab-sm"
     >
       <Logo
         data-onboarding-id="app-logo"
@@ -533,61 +526,51 @@ function ProjectMenuPopover({
         file={file}
         contributedBadges={projectBreadcrumbBadges}
       />
-
-      <Transition
-        enter="duration-100 ease-out"
-        enterFrom="opacity-0 -translate-y-2"
-        enterTo="opacity-100 translate-y-0"
-        as={Fragment}
-      >
-        <Popover.Panel
-          data-testid="project-sidebar-menu"
-          className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
+      <Popover.Panel
+        data-testid="project-sidebar-menu"
+        className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
-        >
-          {({ close }) => (
-            <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
-              {projectMenuItems.map((props, index) => {
-                if (isProjectMenuBreak(props)) {
-                  return index !== projectMenuItems.length - 1 ? (
-                    <li key={props.id} className="contents">
-                      <hr className="my-0 border-chalkboard-20 dark:border-chalkboard-80" />
-                    </li>
-                  ) : null
-                }
-
-                if (isContributedProjectMenuItem(props)) {
-                  const Component = props.item.Component
-                  return Component ? (
-                    <Component
-                      key={props.item.id}
-                      context={props.context}
-                      className={menuItemClassName}
-                      close={close}
-                    />
-                  ) : null
-                }
-
-                const { id, className, children, ...rest } = props
-                return (
-                  <li key={id} className="contents">
-                    <ActionButton
-                      {...rest}
-                      className={menuItemClassName + (className ?? '')}
-                      onMouseUp={() => {
-                        close()
-                      }}
-                    >
-                      {children}
-                    </ActionButton>
+      >
+        {({ close }) => (
+          <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
+            {projectMenuItems.map((props, index) => {
+              if (isProjectMenuBreak(props)) {
+                return index !== projectMenuItems.length - 1 ? (
+                  <li key={props.id} className="contents">
+                    <hr className="my-0 border-chalkboard-20 dark:border-chalkboard-80" />
                   </li>
-                )
-              })}
-            </ul>
-          )}
-        </Popover.Panel>
-      </Transition>
+                ) : null
+              }
+
+              if (isContributedProjectMenuItem(props)) {
+                const Component = props.item.Component
+                return Component ? (
+                  <Component
+                    key={props.item.id}
+                    context={props.context}
+                    className={menuItemClassName}
+                    close={close}
+                  />
+                ) : null
+              }
+
+              const { id, className, children, ...rest } = props
+              // Let the action's click run before unmounting its menu.
+              return (
+                <li key={id} className="contents" onClick={() => close()}>
+                  <ActionButton
+                    {...rest}
+                    className={menuItemClassName + (className ?? '')}
+                  >
+                    {children}
+                  </ActionButton>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </Popover.Panel>
     </Popover>
   )
 }

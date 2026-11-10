@@ -1540,7 +1540,7 @@ export const ProjectExplorer = ({
       ref={projectExplorerRef}
     >
       <div
-        className={`overflow-auto absolute pb-12 inset-0 transition-all duration-150 ${
+        className={`overflow-auto absolute pb-12 inset-0 ${
           activeIndex === -1 ? 'border-sky-500' : ''
         } ${
           isExternalDragOver && !highlightedEntry

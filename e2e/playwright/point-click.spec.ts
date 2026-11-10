@@ -1,7 +1,7 @@
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import { doAndWaitForImageDiff } from '@e2e/playwright/test-utils'
+import { resetView } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import {
@@ -12,24 +12,6 @@ import {
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
-
-// Restore the camera used when these files were preloaded.
-async function resetView(scene: SceneFixture) {
-  // The camera may already face this way, so no image change is guaranteed.
-  await scene.moveCameraTo({ x: 0, y: -128, z: 64 }, undefined, {
-    waitForImageChange: false,
-  })
-  await doAndWaitForImageDiff(scene.streamWrapper, async () => {
-    await scene.streamWrapper.click({
-      button: 'right',
-      position: { x: 10, y: 100 },
-    })
-    await scene.page
-      .getByTestId('view-controls-menu')
-      .getByRole('button', { name: 'Reset view' })
-      .click()
-  })
-}
 
 test.describe('Point-and-click tests', { tag: '@web' }, () => {
   test.use({
@@ -1384,12 +1366,8 @@ extrude001 = extrude(region001, length = -12)`
       await toolbar.chamferButton.click()
       await modelingDialog.selection('Selection').click()
 
-      await page.waitForTimeout(1000)
       await expect(modelingDialog.input('length')).toHaveText('5')
 
-      await page.waitForTimeout(1000)
-
-      await page.waitForTimeout(1000)
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
     })
@@ -2967,7 +2945,10 @@ extrude001 = extrude(region001, length = 30)`
     await test.step('Edit GDT Flatness', async () => {
       await test.step('Open edit mode from feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
+        const gdtOperation = await toolbar.getFeatureTreeOperation(
+          'annotation001',
+          0
+        )
         await gdtOperation.dblclick()
         // Should open the modeling dialog in edit mode
         await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
@@ -3040,7 +3021,10 @@ extrude001 = extrude(region001, length = 30)`
 
     await test.step('Delete GDT Flatness', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const gdtOperation = await toolbar.getFeatureTreeOperation('note001', 0)
+      const gdtOperation = await toolbar.getFeatureTreeOperation(
+        'annotation001',
+        0
+      )
       // Delete the GDT operation
       await gdtOperation.click({ button: 'left' })
       await page.keyboard.press('Delete')
@@ -3760,7 +3744,7 @@ sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
 }
 body001 = extrude(region(segments = [sketch001.circle1]), length = 10mm)
-note001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontSize = 8mm)`
+annotation001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontSize = 8mm)`
       )
     )
     await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
@@ -3775,14 +3759,14 @@ note001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontSize = 
       exact: true,
     })
     await expect(exceptions).toHaveText('1 sweep')
-    await (await toolbar.getFeatureTreeOperation('Note', 0)).click({
+    await (await toolbar.getFeatureTreeOperation('annotation001', 0)).click({
       modifiers: ['Shift'],
     })
     await expect(exceptions).toHaveText('1 sweep, 1 annotation')
     await scene.waitForExecutionDoneAfter(() =>
       dialog.getByRole('button', { name: 'Submit', exact: true }).click()
     )
-    await editor.expectEditor.toContain('except = [body001, note001]')
+    await editor.expectEditor.toContain('except = [body001, annotation001]')
   })
 
   test('Creates, edits visibility, and removes a Named View from the pane', async ({

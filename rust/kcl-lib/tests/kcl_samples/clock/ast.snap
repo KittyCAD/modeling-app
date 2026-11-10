@@ -734,11 +734,11 @@ description: Result of parsing clock.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "\"clock diameter needs to be greater than 400\"",
+                "raw": "\"clock diameter needs to be greater than 450\"",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
-                "value": "clock diameter needs to be greater than 400"
+                "value": "clock diameter needs to be greater than 450"
               }
             }
           ],
@@ -1258,6 +1258,192 @@ description: Result of parsing clock.kcl
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "ORIGIN",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "diameter",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "clockDiameter",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
                 }
               ],
               "moduleId": 0,
@@ -2170,6 +2356,378 @@ description: Result of parsing clock.kcl
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "outerCircle",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "ORIGIN",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "innerCircle",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "ORIGIN",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "diameter",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "outerCircle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "clockDiameter",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "diameter",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "innerCircle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "ridgeDiameter",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
                 }
               ],
               "moduleId": 0,
@@ -26210,6 +26768,192 @@ description: Result of parsing clock.kcl
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "ORIGIN",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "diameter",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "nubDiameter",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
                 }
               ],
               "moduleId": 0,

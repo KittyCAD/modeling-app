@@ -1,6 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import type { ArtifactCameraLook } from '@rust/kcl-lib/bindings/Artifact'
-import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import type { ComponentProps, ReactNode } from 'react'
 import { useRef } from 'react'
 
@@ -11,10 +10,12 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
-import { listNamedViews } from '@src/lang/std/kclNamedViews'
+import {
+  listNamedViews,
+  namedViewDisplayNames,
+} from '@src/lang/std/kclNamedViews'
 import { ROOT_MODULE_ID } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { FILE_EXT } from '@src/lib/constants'
 import { sendDeleteCommand } from '@src/lib/featureTree'
 import type {
   ActivationTarget,
@@ -56,15 +57,6 @@ export function canManageNamedView(view: KclNamedView): boolean {
   )
 }
 
-function moduleName(path: ModulePath | undefined): string | undefined {
-  if (path === undefined || path.type === 'Main') {
-    return undefined
-  }
-
-  const file = path.value.replace(/^.*\//, '')
-  return file.endsWith(FILE_EXT) ? file.slice(0, -FILE_EXT.length) : file
-}
-
 function cameraLookLabel(look: ArtifactCameraLook): string {
   switch (look.type) {
     case 'oriented':
@@ -81,16 +73,10 @@ function cameraLookLabel(look: ArtifactCameraLook): string {
  * module, as `bracket::Front`. Unique names are left bare.
  */
 export function viewRows(views: KclNamedView[]): ViewRow[] {
-  const nameCounts = new Map<string, number>()
-  for (const view of views) {
-    const name = view.artifact.name
-    nameCounts.set(name, (nameCounts.get(name) ?? 0) + 1)
-  }
+  const names = namedViewDisplayNames(views)
 
-  const declared = views.map((view): ViewRow => {
+  const declared = views.map((view, index): ViewRow => {
     const name = view.artifact.name
-    const module = moduleName(view.modulePath)
-    const collides = (nameCounts.get(name) ?? 0) > 1
     const { camera } = view.artifact
     const details = [
       cameraLookLabel(camera.look),
@@ -102,7 +88,7 @@ export function viewRows(views: KclNamedView[]): ViewRow[] {
 
     return {
       key: view.artifact.id,
-      label: collides && module ? `${module}::${name}` : name,
+      label: names[index],
       details,
       identity: { name, moduleKey: moduleKeyOf(view.modulePath) },
       target: { kind: 'declared', view },

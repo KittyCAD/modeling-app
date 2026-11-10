@@ -59,13 +59,16 @@ function installFetchMock() {
     const method = getFetchMethod(input, init)
 
     if (url === `${baseUrl}/user/projects` && method === 'GET') {
-      return jsonResponse([
-        {
-          id: remoteProjectId,
-          title: remoteProjectTitle,
-          revision: 'rev-1',
-        },
-      ])
+      return jsonResponse({
+        items: [
+          {
+            id: remoteProjectId,
+            title: remoteProjectTitle,
+            revision: 'rev-1',
+          },
+        ],
+        next_page: null,
+      })
     }
     if (url === remoteProjectUrl && method === 'GET') {
       return jsonResponse({

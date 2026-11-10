@@ -33,7 +33,8 @@ if (typeof process !== 'undefined' && process.title !== 'browser') {
     rename: fs.rename,
     writeFile: fs.writeFile,
     readdir: fs.readdir,
-    stat: fs.stat,
+    stat: (path, options) =>
+      options?.followSymlinks === false ? fs.lstat(path) : fs.stat(path),
     mkdir: fs.mkdir,
     rm: fs.rm,
     detach,

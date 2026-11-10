@@ -123,7 +123,7 @@ describe('cloud sync reliability', () => {
       const url = getFetchUrl(input)
       const method = getFetchMethod(input, init)
       if (url === `${baseUrl}/user/projects` && method === 'GET') {
-        return jsonResponse([])
+        return jsonResponse({ items: [], next_page: null })
       }
       return jsonResponse(
         { message: `Unexpected fetch: ${method} ${url}` },

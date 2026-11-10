@@ -147,7 +147,10 @@ describe('cloud sync status coalescing', () => {
       const url = getFetchUrl(input)
       const method = getFetchMethod(input, init)
       if (url === `${baseUrl}/user/projects` && method === 'GET') {
-        return jsonResponse(projects.map(remoteProjectResponse))
+        return jsonResponse({
+          items: projects.map(remoteProjectResponse),
+          next_page: null,
+        })
       }
 
       const project = projects.find(

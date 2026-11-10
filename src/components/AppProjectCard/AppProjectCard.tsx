@@ -38,6 +38,7 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
   projectStatus?: ProjectStatus
   density?: 'default' | 'compact'
+  projectShellEnabled?: boolean
   showCloudSyncUi?: boolean
   showDetails?: boolean
   showSourceStatusBadges?: boolean
@@ -150,6 +151,7 @@ function AppProjectCard({
   fileOperations,
   projectStatus,
   density = 'default',
+  projectShellEnabled = false,
   showCloudSyncUi = true,
   showDetails = true,
   showSourceStatusBadges = true,
@@ -250,19 +252,22 @@ function AppProjectCard({
       return
     }
 
-    // Context menu actions run before the Headless UI dialog finishes closing.
-    // Select after that focus restoration so project rename behaves like the
-    // old hover action buttons.
-    const timeout = window.setTimeout(() => {
-      if (!inputRef.current) {
+    // Headless UI restores focus in an unmount microtask. This effect runs
+    // after that cleanup has queued, so select the committed rename input
+    // after the old focus owner releases it, without a timer or extra frame.
+    let cancelled = false
+    queueMicrotask(() => {
+      if (cancelled || !inputRef.current) {
         return
       }
 
       inputRef.current.focus()
       inputRef.current.select()
-    }, 0)
+    })
 
-    return () => window.clearTimeout(timeout)
+    return () => {
+      cancelled = true
+    }
   }, [isEditing])
 
   useEffect(() => {
@@ -625,6 +630,13 @@ function AppProjectCard({
           return
         }
 
+        if (projectShellEnabled && e.shiftKey && project.localProjectPath) {
+          void navigate(
+            `${PATHS.LOCAL}/${encodeURIComponent(project.localProjectPath)}`
+          )
+          return
+        }
+
         void projectActions
           .open(project)
           .then((result) => {
@@ -637,7 +649,15 @@ function AppProjectCard({
           .catch(reportRejection)
       }}
       renderOpenLink={({ href: _href, ...linkProps }) => (
-        <Link {...linkProps} to={openHref} />
+        <Link
+          {...linkProps}
+          to={openHref}
+          title={
+            projectShellEnabled && canOpen && project.localProjectPath
+              ? 'Shift-click to open without an editor'
+              : undefined
+          }
+        />
       )}
     />
   )

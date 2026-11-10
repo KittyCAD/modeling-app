@@ -23,24 +23,27 @@ function respond(body: unknown, status = 200) {
 
 beforeEach(() => {
   fetchMock.mockReset()
-  fetchMock.mockResolvedValue(respond([]))
+  fetchMock.mockResolvedValue(respond({ items: [], next_page: null }))
 })
 
 describe('useProjectStatuses', () => {
   test('fetches once and maps publication details by remote project ID', async () => {
     fetchMock.mockResolvedValue(
-      respond([
-        {
-          id: 'project-pending',
-          publication_status: 'pending_review',
-          publication: { feedback: null },
-        },
-        {
-          id: 'project-changes-requested',
-          publication_status: 'changes_requested',
-          publication: { feedback: 'Add another view.' },
-        },
-      ])
+      respond({
+        items: [
+          {
+            id: 'project-pending',
+            publication_status: 'pending_review',
+            publication: { feedback: null },
+          },
+          {
+            id: 'project-changes-requested',
+            publication_status: 'changes_requested',
+            publication: { feedback: 'Add another view.' },
+          },
+        ],
+        next_page: null,
+      })
     )
 
     const { result } = renderHook(() =>
@@ -91,27 +94,33 @@ describe('useProjectStatuses', () => {
   test('refetches when the set of linked Home projects changes', async () => {
     fetchMock
       .mockResolvedValueOnce(
-        respond([
-          {
-            id: 'project-a',
-            publication_status: 'pending_review',
-            publication: { feedback: null },
-          },
-        ])
+        respond({
+          items: [
+            {
+              id: 'project-a',
+              publication_status: 'pending_review',
+              publication: { feedback: null },
+            },
+          ],
+          next_page: null,
+        })
       )
       .mockResolvedValueOnce(
-        respond([
-          {
-            id: 'project-a',
-            publication_status: 'pending_review',
-            publication: { feedback: null },
-          },
-          {
-            id: 'project-b',
-            publication_status: 'published',
-            publication: { feedback: null },
-          },
-        ])
+        respond({
+          items: [
+            {
+              id: 'project-a',
+              publication_status: 'pending_review',
+              publication: { feedback: null },
+            },
+            {
+              id: 'project-b',
+              publication_status: 'published',
+              publication: { feedback: null },
+            },
+          ],
+          next_page: null,
+        })
       )
 
     const { result, rerender } = renderHook(

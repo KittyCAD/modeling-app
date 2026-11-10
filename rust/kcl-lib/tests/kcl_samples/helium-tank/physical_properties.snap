@@ -24,6 +24,6 @@ description: Physical properties helium-tank.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1458.5963860735685
+    "value": 1458.5963860735696
   }
 }

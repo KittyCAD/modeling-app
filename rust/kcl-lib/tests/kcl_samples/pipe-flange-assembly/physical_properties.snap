@@ -6,13 +6,13 @@ description: Physical properties pipe-flange-assembly.kcl
   "bounding_box": {
     "center": {
       "x": 0.0,
-      "y": -30.47999999999999,
-      "z": 59.20739999999998
+      "y": 0.0,
+      "z": -1.9176999999999964
     },
     "dimensions": {
       "x": 182.88,
-      "y": 243.83999999999995,
-      "z": 208.73719999999997
+      "y": 182.88,
+      "z": 330.9874
     },
     "unit": "mm"
   },

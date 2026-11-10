@@ -1491,7 +1491,7 @@ const OperationItem = ({
                 `[data-module-branch="${referenceModuleId}"]`
               ) as HTMLElement | null
               if (branch) {
-                branch.scrollIntoView({ block: 'center', behavior: 'smooth' })
+                branch.scrollIntoView({ block: 'center', behavior: 'instant' })
                 // Brief highlight on the module heading row.
                 const row = branch.querySelector<HTMLElement>(
                   '[data-testid="feature-tree-operation-item"]'

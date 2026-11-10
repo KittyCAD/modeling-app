@@ -18,7 +18,7 @@ The left side is for "global" items like your network status, and the right side
 
 The interface within Design Studio where users can choose which project to open, and can create new ones. It consists of a Top Bar, Project Browser, and Status Bar.
 
-![Home interface in ZDS](/public/glossary/home.png)
+![Home interface in ZDS](../public/glossary/home.png)
 
 ## Project Browser
 
@@ -28,7 +28,7 @@ The element found in the middle of the Home interface. It shows projects availab
 
 The interface within Design Studio where the user does the real CAD work. It consists of a Top Bar, a Layout, and a Status Bar.
 
-![Workspace interface in ZDS](/public/glossary/workspace.png)
+![Workspace interface in ZDS](../public/glossary/workspace.png)
 
 ## Workbench
 
@@ -78,7 +78,7 @@ An Area housing a code editor for our underlying language for CAD, called [KCL](
 
 An Area housing a chat interface with our AI agent. From it you can ask questions about your project, generate CAD models, request edits, and more.
 
-![Zookeeper](/public/glossary/zookeeper.png)
+![Zookeeper](../public/glossary/zookeeper.png)
 
 ### Prompt
 

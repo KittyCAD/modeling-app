@@ -40,7 +40,7 @@ export function SettingsSectionsList({
               ?.querySelector(`#category-${category}`)
               ?.scrollIntoView({
                 block: 'center',
-                behavior: 'smooth',
+                behavior: 'instant',
               })
           }
           className="capitalize text-left border-none px-1"
@@ -52,7 +52,7 @@ export function SettingsSectionsList({
         onClick={() =>
           scrollRef.current?.querySelector(`#settings-resets`)?.scrollIntoView({
             block: 'center',
-            behavior: 'smooth',
+            behavior: 'instant',
           })
         }
         className="capitalize text-left border-none px-1"
@@ -63,7 +63,7 @@ export function SettingsSectionsList({
         onClick={() =>
           scrollRef.current?.querySelector(`#settings-about`)?.scrollIntoView({
             block: 'center',
-            behavior: 'smooth',
+            behavior: 'instant',
           })
         }
         className="capitalize text-left border-none px-1"

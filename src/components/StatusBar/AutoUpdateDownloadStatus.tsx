@@ -26,7 +26,7 @@ export function AutoUpdateDownloadStatus({
     >
       <div className="absolute inset-x-0 top-0 h-[2px] bg-chalkboard-30 dark:bg-chalkboard-80">
         <div
-          className="h-full bg-primary transition-all duration-150 ease-linear"
+          className="h-full bg-primary"
           data-testid="auto-update-download-progress-bar"
           style={{ width: `${percent}%` }}
         />

@@ -34,7 +34,7 @@ ifdef WINDOWS
 bootstrap:
 	npm run install:rust:windows
 else
-bootstrap: ~/.asdfrc
+bootstrap:
 	asdf plugin add just
 	asdf plugin add nodejs
 	asdf plugin add python

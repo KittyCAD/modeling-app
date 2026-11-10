@@ -570,14 +570,14 @@ describe('ZookeeperConversationPane', () => {
     expect(fake.checkBillingAccess).toHaveBeenCalledOnce()
   })
 
-  test('requires an explicit resume for an interrupted turn', () => {
+  test('keeps prompts disabled and wires manual fallback for an interrupted turn', () => {
     const fake = createFakeController({
       actorContext: {
         awaitingResponse: false,
         conversation: interruptedConversation,
       },
       actorValue: ZookeeperManagerStates.WaitForContinueCheck,
-      isResumingInterruptedTurn: true,
+      isResumingInterruptedTurn: false,
     })
     render(
       <MemoryRouter>
@@ -587,7 +587,7 @@ describe('ZookeeperConversationPane', () => {
 
     const props = latestConversationProps()
     expect(props.interruptedTurnAwaitingResume).toBe(true)
-    expect(props.isResumingInterruptedTurn).toBe(true)
+    expect(props.isResumingInterruptedTurn).toBe(false)
     expect(props.disabled).toBe(true)
     expect(props.hasPromptCompleted).toBe(false)
 
