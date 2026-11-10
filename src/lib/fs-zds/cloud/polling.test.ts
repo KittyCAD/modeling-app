@@ -137,6 +137,31 @@ describe('cloud project polling', () => {
     expect(check).toHaveBeenCalledTimes(2)
   })
 
+  it.each(['success', 'failure'] as const)(
+    'stays paused when a seven-second probe finishes with %s while disabled',
+    async (outcome) => {
+      const { check, poller, onError } = setup()
+      const gate = Promise.withResolvers<boolean>()
+      const failure = new Error('Connection lost')
+      check.mockReturnValueOnce(gate.promise)
+      await vi.advanceTimersByTimeAsync(0)
+      expect(check).toHaveBeenCalledOnce()
+      poller.setEnabled(false)
+      await vi.advanceTimersByTimeAsync(7_000)
+      if (outcome === 'success') gate.resolve(false)
+      else gate.reject(failure)
+      await vi.advanceTimersByTimeAsync(120_000)
+      expect(check).toHaveBeenCalledOnce()
+      expect(onError.mock.calls).toEqual(
+        outcome === 'failure' ? [[failure]] : []
+      )
+      poller.setEnabled(true)
+      await vi.advanceTimersByTimeAsync(0)
+      expect(check).toHaveBeenCalledTimes(2)
+      poller.dispose()
+    }
+  )
+
   it('honors Retry-After even when edits, focus, or reconnect request earlier checks', async () => {
     const { check, poller, onError } = setup()
     const error = Object.assign(new Error('Rate limited'), {
