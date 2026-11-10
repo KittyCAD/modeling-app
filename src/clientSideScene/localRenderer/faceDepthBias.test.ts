@@ -1,4 +1,10 @@
-import { CircleGeometry, Group, Mesh, PlaneGeometry } from 'three'
+import {
+  CircleGeometry,
+  Group,
+  Mesh,
+  PlaneGeometry,
+  SphereGeometry,
+} from 'three'
 import { MeshStandardNodeMaterial } from 'three/webgpu'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -42,13 +48,94 @@ describe('solid face depth priority', () => {
     )
   })
 
+  it('leaves curved faces and separate planes unchanged, including shared materials', () => {
+    const root = new Group()
+    const shared = new MeshStandardNodeMaterial()
+    const dispose = vi.spyOn(shared, 'dispose')
+    const small = new Mesh(new PlaneGeometry(1, 1), shared)
+    const large = new Mesh(new PlaneGeometry(2, 2), shared)
+    const separate = new Mesh(new PlaneGeometry(3, 3), shared)
+    separate.position.z = 1e-6
+    const curved = new Mesh(new SphereGeometry(1, 16, 16), shared)
+    for (const [index, face] of [small, large, separate, curved].entries()) {
+      face.userData.bodyMeshIndex = index
+      root.add(face)
+    }
+    applyFaceDepthBias(root)
+    expect(large.material.polygonOffsetUnits).toBe(16)
+    for (const face of [small, separate, curved])
+      expect(face.material).toBe(shared)
+    expect(dispose).not.toHaveBeenCalled()
+    dispose.mockRestore()
+  })
+
+  it('groups opposite windings and planes across bucket boundaries', () => {
+    const root = new Group()
+    const small = new Mesh(
+      new CircleGeometry(1, 32),
+      new MeshStandardNodeMaterial()
+    )
+    const large = new Mesh(
+      new PlaneGeometry(10, 10),
+      new MeshStandardNodeMaterial()
+    )
+    small.rotation.x = Math.PI
+    small.position.z = 1.01e-7
+    large.position.z = 0.99e-7
+    small.userData.bodyMeshIndex = 0
+    large.userData.bodyMeshIndex = 1
+    root.add(small, large)
+    applyFaceDepthBias(root)
+    expect(large.material.polygonOffsetUnits).toBe(16)
+    expect(small.material.polygonOffset).toBe(false)
+  })
+
+  it('does not treat slightly diverging large faces as coplanar', () => {
+    const root = new Group()
+    const first = new Mesh(
+      new PlaneGeometry(10, 10),
+      new MeshStandardNodeMaterial()
+    )
+    const tilted = new Mesh(
+      new PlaneGeometry(20, 20),
+      new MeshStandardNodeMaterial()
+    )
+    tilted.rotation.x = 5e-7
+    first.userData.bodyMeshIndex = 0
+    tilted.userData.bodyMeshIndex = 1
+    root.add(first, tilted)
+    applyFaceDepthBias(root)
+    expect(first.material.polygonOffset).toBe(false)
+    expect(tilted.material.polygonOffset).toBe(false)
+  })
+
+  it('keeps offsets local to each plane in a model with many faces', () => {
+    const root = new Group()
+    const shared = new MeshStandardNodeMaterial()
+    const largerFaces = []
+    for (let i = 0; i < 300; i++) {
+      const large = new Mesh(new PlaneGeometry(2 + i, 2 + i), shared)
+      const small = new Mesh(new PlaneGeometry(1, 1), shared)
+      for (const face of [large, small]) {
+        face.position.z = i * 0.01
+        face.userData.bodyMeshIndex = i
+        root.add(face)
+      }
+      largerFaces.push(large)
+    }
+    applyFaceDepthBias(root)
+    expect(
+      largerFaces.every((face) => face.material.polygonOffsetUnits === 16)
+    ).toBe(true)
+  })
+
   it('accounts for world transforms and indexed and non-indexed tessellation', () => {
     const root = new Group()
     const shared = new MeshStandardNodeMaterial()
     const small = new Mesh(new PlaneGeometry(1, 1, 8, 8).toNonIndexed(), shared)
     const large = new Mesh(new PlaneGeometry(1, 1), shared)
     large.scale.set(2, 3, 1)
-    large.rotation.set(0.5, 1, 0.2)
+    root.rotation.set(0.5, 1, 0.2)
     for (const face of [small, large]) {
       face.userData.bodyMeshIndex = 0
       root.add(face)
@@ -71,7 +158,9 @@ describe('deferred face priority', () => {
     const material = new MeshStandardNodeMaterial()
     const face = new Mesh(new PlaneGeometry(1, 1, 100, 100), material)
     face.userData.bodyMeshIndex = 0
-    root.add(face)
+    const cap = new Mesh(new CircleGeometry(0.1, 32), material)
+    cap.userData.bodyMeshIndex = 1
+    root.add(face, cap)
     vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
       callback(0)
       return 1
@@ -96,6 +185,19 @@ describe('deferred face priority', () => {
     resume()
     expect(await applying).toBe(true)
     expect(face.material).not.toBe(material)
+  })
+
+  it('skips the second render when no faces need an offset', async () => {
+    const { root, face, material } = model()
+    root.remove(root.children[1])
+    expect(
+      await applyFaceDepthBiasDeferred(
+        root,
+        () => true,
+        async () => {}
+      )
+    ).toBe(false)
+    expect(face.material).toBe(material)
   })
 
   it('abandons a replaced model between processing slices without changing materials', async () => {
