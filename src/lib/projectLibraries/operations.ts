@@ -229,6 +229,7 @@ export async function cloneProjectIntoLocalDirectory({
   defaultFile,
   requestedProjectTitle = sourceProjectName,
   wasmInstancePromise,
+  files: sourceFiles,
 }: {
   fileOperations: FileOperationsRegistryService
   projectDirectoryPath: string
@@ -237,6 +238,7 @@ export async function cloneProjectIntoLocalDirectory({
   defaultFile?: string
   requestedProjectTitle?: string
   wasmInstancePromise: Promise<ModuleType> | ModuleType
+  files?: readonly { relativePath: string; data: Uint8Array }[]
 }): Promise<CloneProjectIntoLocalDirectoryResult> {
   const relativeDirectory = fsZds.relative(
     sourceProjectPath,
@@ -263,10 +265,13 @@ export async function cloneProjectIntoLocalDirectory({
     return Promise.reject(
       new Error('The project entrypoint must be inside the source project.')
     )
-  const files = await collectProjectFilesForUpload({
-    fileOperations,
-    projectRoot: sourceProjectPath,
-  })
+  const files =
+    sourceFiles ??
+    (await collectProjectFilesForUpload({
+      fileOperations,
+      projectRoot: sourceProjectPath,
+      includeIgnored: true,
+    }))
   const project = await createProjectInLocalDirectory({
     fileOperations,
     projectDirectoryPath,

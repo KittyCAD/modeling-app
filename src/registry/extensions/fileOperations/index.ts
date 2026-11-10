@@ -103,6 +103,14 @@ export function createFileOperationsServices(
   }
   const stopThumbnailWatcher = effect(() => {
     const watched = thumbnailWatches.value
+    const visible = new Set(projects.value.map((project) => project.id))
+    for (const id of thumbnails.peek().keys())
+      if (!visible.has(id)) {
+        const next = new Map(thumbnails.peek())
+        next.delete(id)
+        thumbnails.value = next
+        thumbnailVersions.delete(id)
+      }
     for (const project of projects.value)
       if (watched.has(project.id)) loadThumbnail(project)
   })
@@ -232,10 +240,10 @@ export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
       backing,
       () => ({
         enabled: true,
-        token: ctx.services.optional(authService)?.token.peek(),
+        token: ctx.services.optional(authService)?.token.value,
         accountId:
-          ctx.services.optional(authService)?.user.peek()?.id ||
-          ctx.services.optional(authService)?.token.peek(),
+          ctx.services.optional(authService)?.user.value?.id ||
+          ctx.services.optional(authService)?.token.value,
       }),
       () =>
         ctx.valueSpecs.get(wasmPromiseValueSpec) ??

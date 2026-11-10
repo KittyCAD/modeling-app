@@ -1,4 +1,9 @@
 import {
+  authService,
+  type AuthRegistryService,
+} from '@src/registry/contracts/auth'
+import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
+import {
   defineRegistryItem,
   provide,
   provideService,
@@ -113,6 +118,69 @@ describe('home project actions', () => {
       expect(
         registry.get(homeProjectActionsService).canDuplicate(project)
       ).toBe(true)
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+  it('cancels a clone before the destination receives files when the account changes', async () => {
+    const sourceSetting = { title: 'Dataset', path: '/source', type: 'dataset' }
+    const targetSetting = {
+      title: 'Destination',
+      path: '/destination',
+      type: 'target',
+    }
+    const configured = [sourceSetting, targetSetting]
+    const [source, target] = projectLibrariesFromSettings(configured)
+    const user = signal({ id: 'first-account' })
+    const gate = Promise.withResolvers<{
+      localProjectPath: string
+      localProjectName: string
+    }>()
+    const cloneFrom = vi.fn(() => gate.promise)
+    const cloneTo = vi.fn()
+    const registry = new Registry()
+    registry.configure([
+      homeProjectsExtension,
+      defineRegistryItem({
+        id: 'account-clone-test',
+        provides: [
+          provide(projectLibraryTypesValueSpec, {
+            type: 'dataset',
+            title: 'Dataset',
+            operations: { cloneProjectFrom: { run: cloneFrom } },
+          }),
+          provide(projectLibraryTypesValueSpec, {
+            type: 'target',
+            title: 'Target',
+            operations: { cloneProjectTo: { run: cloneTo } },
+          }),
+        ],
+        providesServices: [
+          provideService(authService, {
+            user,
+            token: signal('token'),
+          } as unknown as AuthRegistryService),
+          provideService(settingsService, {
+            current: signal({ app: { libraries: { current: configured } } }),
+          } as unknown as SettingsRegistryService),
+        ],
+      }),
+    ])
+    try {
+      const cloning = registry
+        .get(homeProjectActionsService)
+        .cloneToLibrary(
+          { ...project, libraryIds: [source.id], readWriteAccess: false },
+          target.id
+        )
+      expect(cloneFrom).toHaveBeenCalledOnce()
+      user.value = { id: 'second-account' }
+      gate.resolve({
+        localProjectPath: '/source/model',
+        localProjectName: 'Model',
+      })
+      await expect(cloning).rejects.toThrow('Your account changed')
+      expect(cloneTo).not.toHaveBeenCalled()
     } finally {
       registry[Symbol.dispose]()
     }

@@ -178,6 +178,7 @@ export interface ProjectLibraryCloneProjectSource {
   localProjectPath: string
   localProjectName: string
   defaultFile?: string
+  files?: readonly { relativePath: string; data: Uint8Array }[]
 }
 
 export interface ProjectLibraryCloneProjectToInput
@@ -265,6 +266,8 @@ export interface ProjectLibraryRelationshipMembershipPolicy {
 export interface ProjectLibraryTypeContribution {
   type: ProjectLibraryType
   title: string
+  /** Libraries discovered by this type in addition to configured settings. */
+  libraries?: readonly ProjectLibrary[]
   icon?: string
   order?: number
   /** Initial value used when settings are seeded or migrated for this type. */
@@ -326,6 +329,14 @@ export function combineProjectLibraryTypes(
       ...previousContribution,
       ...contribution,
     }
+    const libraries = [
+      ...(previousContribution?.libraries ?? []),
+      ...(contribution.libraries ?? []),
+    ]
+    if (libraries.length)
+      nextContribution.libraries = [
+        ...new Map(libraries.map((library) => [library.id, library])).values(),
+      ]
     if (Object.keys(operations).length > 0) {
       nextContribution.operations = operations
     }

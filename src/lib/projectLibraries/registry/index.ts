@@ -469,7 +469,10 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         const typeById = libraryTypes.value
         const invalidation = readProjectLibraryRealizationsInvalidation()
         const libraries = currentSettings
-          ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+          ? projectLibrariesFromSettings(
+              currentSettings.app.libraries.current,
+              typeById
+            )
           : []
         const activeLibraryIds = new Set(libraries.map((library) => library.id))
         currentLibraryIds = libraries.map((library) => library.id)
@@ -763,6 +766,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           projectDirectoryPath: library.path,
           sourceProjectPath: source.localProjectPath,
           sourceProjectName: source.localProjectName,
+          files: source.files,
           defaultFile: source.defaultFile,
           requestedProjectTitle:
             requestedProjectTitle ?? getHomeProjectDisplayName(project),

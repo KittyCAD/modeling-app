@@ -18,7 +18,7 @@ export function createKCClient(
       opts.credentials = 'include'
     }
     const response = await impl(input, opts)
-    notifySessionExpiredFromResponse(response)
+    if (!opts.signal?.aborted) notifySessionExpiredFromResponse(response)
     return response
   }
   return new Client({ token, baseUrl, fetch: injectedFetch })
