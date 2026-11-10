@@ -1,3 +1,4 @@
+import type { FileOperationsMount } from '@src/lib/fileSystem/mounts'
 import { posix, win32 } from '@chainner/node-path'
 import {
   createMountedFileOperations,
@@ -420,4 +421,98 @@ it('routes Windows mount roots independently of drive and directory casing', asy
     await router.operations.readFile('c:\\cloud\\project\\main.kcl')
   ).toEqual(new Uint8Array([2]))
   expect(localRead).not.toHaveBeenCalled()
+})
+
+it('uses replacement mount contributions without losing the local backing', async () => {
+  const memory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+  const backing = createFileOperationsRuntime(memory)
+  const localMemory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+  await localMemory.mkdir('/projects', { recursive: true })
+  const local = createFileOperationsRuntime(localMemory)
+  await memory.mkdir('/projects', { recursive: true })
+  await memory.writeFile(
+    '/projects/main.kcl',
+    new TextEncoder().encode('mounted')
+  )
+  let contributions = [{ root: '/projects', operations: backing.operations }]
+  const router = createMountedFileOperations(
+    local.operations,
+    posix,
+    () => contributions
+  )
+  try {
+    expect(
+      new TextDecoder().decode(
+        await router.operations.readFile('/projects/main.kcl')
+      )
+    ).toBe('mounted')
+    contributions = []
+    await router.operations.writeFile('/projects/main.kcl', 'local')
+    contributions = [
+      {
+        root: '/projects',
+        operations: {
+          ...backing.operations,
+          readFile: async () => new TextEncoder().encode('replacement'),
+        },
+      },
+    ]
+    expect(
+      new TextDecoder().decode(
+        await router.operations.readFile('/projects/main.kcl')
+      )
+    ).toBe('replacement')
+    contributions = []
+    expect(
+      new TextDecoder().decode(
+        await router.operations.readFile('/projects/main.kcl')
+      )
+    ).toBe('local')
+  } finally {
+    await backing.dispose()
+    await local.dispose()
+  }
+})
+
+it('recovers from invalid contributed mounts without retaining a partial registration', async () => {
+  const original = {
+    root: '/original',
+    operations: {
+      ...testFileOperations,
+      readFile: async () => new Uint8Array([1]),
+    },
+  }
+  const invalidParent = { root: '/replacement', operations: testFileOperations }
+  let contributions: readonly FileOperationsMount[] = [original]
+  const router = createMountedFileOperations(
+    testFileOperations,
+    posix,
+    () => contributions
+  )
+  expect(await router.operations.readFile('/original/main.kcl')).toEqual(
+    new Uint8Array([1])
+  )
+  contributions = [
+    invalidParent,
+    { root: '/replacement/nested', operations: testFileOperations },
+  ]
+  expect(() => router.operations.readFile('/original/main.kcl')).toThrow(
+    'Nested filesystem mounts are not supported'
+  )
+  contributions = [
+    original,
+    {
+      root: '/replacement/nested',
+      operations: {
+        ...testFileOperations,
+        readFile: async () => new Uint8Array([2]),
+      },
+    },
+  ]
+  expect(await router.operations.readFile('/original/main.kcl')).toEqual(
+    new Uint8Array([1])
+  )
+  expect(
+    await router.operations.readFile('/replacement/nested/main.kcl')
+  ).toEqual(new Uint8Array([2]))
 })

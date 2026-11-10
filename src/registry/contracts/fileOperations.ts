@@ -1,5 +1,10 @@
+import type { FileOperationsMount } from '@src/lib/fileSystem/mounts'
 import type { MemoryFileDeletion } from '@src/lib/fileSystem/deletionHistory'
-import { defineContract, defineService } from '@kittycad/registry'
+import {
+  appendValueSpec,
+  defineContract,
+  defineService,
+} from '@kittycad/registry'
 import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
 import type {
   CopyOptions,
@@ -68,3 +73,6 @@ export const fileOperationsContract = defineContract({
 })
 
 export const { fileOperationsService } = fileOperationsContract
+
+export const fileOperationsMountsValueSpec =
+  appendValueSpec<FileOperationsMount>('fileOperations.mounts')

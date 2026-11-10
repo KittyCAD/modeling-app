@@ -6,6 +6,10 @@ import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 export interface FileOperationsMount {
   readonly root: string
   readonly operations: FileOperationsRegistryService
+  readonly batch?: <T>(
+    path: string,
+    run: (operations: FileOperationsRegistryService) => Promise<T>
+  ) => Promise<T>
 }
 
 /** Routes captured paths through non-nested mounts, never the selected project. */
@@ -14,15 +18,40 @@ export function createMountedFileOperations(
   paths: Pick<
     IZooDesignStudioFS,
     'resolve' | 'relative' | 'sep' | 'join' | 'dirname'
-  >
+  >,
+  contributions: () => readonly FileOperationsMount[] = () => []
 ) {
   const mounts = new Map<string, FileOperationsMount>()
-  const find = (path: string): FileOperationsRegistryService => {
+  let previousContributions: readonly FileOperationsMount[] | undefined
+  let unregisterContributions: (() => void)[] = []
+  const syncContributions = () => {
+    const next = contributions()
+    if (next === previousContributions) return
+    const previousMounts = new Map(mounts)
+    for (const unregister of unregisterContributions) unregister()
+    try {
+      const registrations = next.map(mount)
+      unregisterContributions = registrations
+      previousContributions = next
+    } catch (error) {
+      mounts.clear()
+      for (const [root, registration] of previousMounts)
+        mounts.set(root, registration)
+      // Reject invalid registration without leaving a partially installed routing table.
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw error
+    }
+  }
+  const findMount = (path: string) => {
+    syncContributions()
     const absolute = paths.resolve(path)
-    for (const mount of mounts.values())
-      if (getContainedRelativePath(paths, mount.root, absolute) !== undefined)
-        return mount.operations
-    return local
+    return [...mounts.values()].find(
+      (mount) =>
+        getContainedRelativePath(paths, mount.root, absolute) !== undefined
+    )
+  }
+  const find = (path: string): FileOperationsRegistryService => {
+    return findMount(path)?.operations ?? local
   }
 
   const copyAcross = async (
@@ -54,14 +83,16 @@ export function createMountedFileOperations(
     }
   }
   const operations: FileOperationsRegistryService = {
-    pending: async () =>
-      (
+    pending: async () => {
+      syncContributions()
+      return (
         await Promise.all(
           [local, ...[...mounts.values()].map((m) => m.operations)].map((o) =>
             o.pending()
           )
         )
-      ).reduce((a, b) => a + b, 0),
+      ).reduce((a, b) => a + b, 0)
+    },
     stat: (path, options) => find(path).stat(path, options),
     canReadWrite: (path) => find(path).canReadWrite(path),
     exists: (path) => find(path).exists(path),
@@ -106,27 +137,35 @@ export function createMountedFileOperations(
       )
     },
   }
+  const mount = (mount: FileOperationsMount) => {
+    let root = paths.resolve(mount.root)
+    for (const existing of mounts.values()) {
+      const relative = getContainedRelativePath(paths, existing.root, root)
+      if (relative === '') root = existing.root
+      else if (
+        relative !== undefined ||
+        getContainedRelativePath(paths, root, existing.root) !== undefined
+      ) {
+        // Registration is synchronous; reject invalid configuration before changing routes.
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new Error('Nested filesystem mounts are not supported.')
+      }
+    }
+    const registration = { ...mount, root }
+    mounts.set(root, registration)
+    return () => {
+      if (mounts.get(root) === registration) mounts.delete(root)
+    }
+  }
   return {
     operations,
-    mount: (mount: FileOperationsMount) => {
-      let root = paths.resolve(mount.root)
-      for (const existing of mounts.values()) {
-        const relative = getContainedRelativePath(paths, existing.root, root)
-        if (relative === '') root = existing.root
-        else if (
-          relative !== undefined ||
-          getContainedRelativePath(paths, root, existing.root) !== undefined
-        ) {
-          // Registration is synchronous; reject invalid configuration before changing routes.
-          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-          throw new Error('Nested filesystem mounts are not supported.')
-        }
-      }
-      const registration = { ...mount, root }
-      mounts.set(root, registration)
-      return () => {
-        if (mounts.get(root) === registration) mounts.delete(root)
-      }
+    mount,
+    batch: <T>(
+      path: string,
+      run: (operations: FileOperationsRegistryService) => Promise<T>
+    ) => {
+      const backing = findMount(path)
+      return backing?.batch ? backing.batch(path, run) : run(operations)
     },
   }
 }
