@@ -399,11 +399,13 @@ for (const kind of ['local', 'cloud'] as const) {
         let started = false
         const listRoute = /\/user\/projects(?:\?.*)?$/
         const button = page.getByRole('button', { name: 'Refresh projects' })
-        await expect(button).toBeEnabled()
         if (kind === 'cloud') {
           const clock = new Date()
           await page.clock.install({ time: clock })
           await page.clock.pauseAt(new Date(clock.getTime() + 1_000))
+        }
+        await expect(button).toBeEnabled()
+        if (kind === 'cloud') {
           await context.route(listRoute, async (route) => {
             started = true
             await gate.promise
