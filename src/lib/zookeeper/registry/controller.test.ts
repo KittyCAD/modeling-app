@@ -427,31 +427,36 @@ describe('Zookeeper session controller', () => {
     })
   })
 
-  it('starts migration through normal submission only when idle', async () => {
+  it('queues migration after ordinary prompts until the actor is ready', async () => {
     const { actor, controller } = createHarness({
       actorState: 'ready-await',
       actorContext: { awaitingResponse: true },
     })
+    controller.sendOrQueue('finish the bracket', undefined, [])
     controller.migrateKcl()
-    expect(controller.queue.value).toHaveLength(0)
+    const submission = controller.queue.value[1]
+    expect(controller.queue.value).toHaveLength(2)
+    expect(projectFilesMocks.collect).not.toHaveBeenCalled()
 
     actor.emit('ready-await', { awaitingResponse: false })
-    controller.migrateKcl()
-    const submission = controller.queue.value[0]
-    controller.migrateKcl()
 
     await vi.waitFor(() => {
       expect(
         sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
-      ).toHaveLength(1)
+      ).toHaveLength(2)
     })
-    expect(projectFilesMocks.collect).toHaveBeenCalledWith(
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.MessageSend).map(
+        ({ prompt }) => prompt
+      )
+    ).toEqual(['finish the bracket', 'Migrate this project to KCL 3.0.'])
+    expect(projectFilesMocks.collect).toHaveBeenLastCalledWith(
       expect.objectContaining({
         skipUnreadableFiles: false,
       })
     )
     expect(
-      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)[0]
+      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)[1]
     ).toMatchObject({
       prompt: 'Migrate this project to KCL 3.0.',
       additionalFiles: [],
