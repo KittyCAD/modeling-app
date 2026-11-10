@@ -408,6 +408,10 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
       await homePage.goToModelingScene()
       await scene.settled()
 
+      await expect
+        .poll(() => page.evaluate(() => window.app.singletons.kclManager.read()))
+        .toBe(code)
+
       if (await page.evaluate(() => window.engineCommandManager.geometryOnly)) {
         await scene.moveCameraTo(
           { x: 7, y: -5, z: 8 },
