@@ -76,6 +76,7 @@ import {
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
+import { HomeBillingReminder } from '@src/routes/HomeBillingReminder'
 import { HomeHeader } from '@src/routes/HomeHeader'
 import {
   type ProjectCardDragProps,
@@ -320,6 +321,7 @@ const Home = () => {
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
+  const user = auth.useUser()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
 
@@ -706,6 +708,14 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
+            {user && (
+              <li className="contents">
+                <HomeBillingReminder
+                  userId={user.id}
+                  billingContext={billingContext}
+                />
+              </li>
+            )}
             <li className="contents">
               <Announcements token={apiToken} />
             </li>
