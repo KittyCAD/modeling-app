@@ -449,6 +449,7 @@ for (const kind of ['local', 'cloud'] as const) {
         page,
         context,
       }, testInfo) => {
+        if (kind === 'cloud') await page.clock.install()
         const storage = await prepareStorage(kind, page, context, testInfo)
         await storage.seed('Original project', blankCode)
         await storage.refresh()
@@ -460,9 +461,9 @@ for (const kind of ['local', 'cloud'] as const) {
         const listRoute = /\/user\/projects(?:\?.*)?$/
         const button = page.getByRole('button', { name: 'Refresh projects' })
         if (kind === 'cloud') {
-          const clock = new Date()
-          await page.clock.install({ time: clock })
-          await page.clock.pauseAt(new Date(clock.getTime() + 1_000))
+          await page.clock.pauseAt(
+            new Date((await page.evaluate(() => Date.now())) + 1_000)
+          )
         }
         await expect(button).toBeEnabled()
         if (kind === 'cloud') {

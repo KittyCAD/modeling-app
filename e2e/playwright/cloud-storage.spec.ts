@@ -139,6 +139,7 @@ test(
   'pauses cloud polling while hidden or offline and checks immediately on return',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
+    await page.clock.install()
     await mockClientErrorReports(context)
     await mockCloudStorage(context)
     await setup(context, page, testInfo)
@@ -146,9 +147,9 @@ test(
       `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
     )
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-    const time = new Date()
-    await page.clock.install({ time })
-    await page.clock.pauseAt(new Date(time.getTime() + 1_000))
+    await page.clock.pauseAt(
+      new Date((await page.evaluate(() => Date.now())) + 1_000)
+    )
     const probes = await page.evaluateHandle((projectId) => {
       const originalFetch = window.fetch
       let started = 0
