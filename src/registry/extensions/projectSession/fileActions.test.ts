@@ -239,6 +239,47 @@ describe('direct project session file actions', () => {
     }
   )
 
+  it('discards metadata read before a newer cloud snapshot was adopted', async () => {
+    let reconcile:
+      | ((
+          root: string,
+          files: { relativePath: string; data: Uint8Array }[]
+        ) => void)
+      | undefined
+    const s = setup({
+      subscribeReconciled: (listener: NonNullable<typeof reconcile>) => {
+        reconcile = listener
+        return () => {}
+      },
+    } as unknown as CloudStorageService)
+    const metadataRead = Promise.withResolvers<Project>()
+    Object.assign(s.project.executingEditor.peek()!, {
+      adoptCloudSnapshot: vi.fn(),
+    })
+    Object.assign(s.project, {
+      reloadFilesFromStorage: async () => {
+        s.project.projectIORefSignal.value = metadata('New cloud title')
+      },
+    })
+    vi.mocked(getProjectInfo).mockReturnValueOnce(metadataRead.promise)
+    try {
+      await vi.waitFor(() => expect(reconcile).toBeDefined())
+      const refreshing = s.session.refreshProject()
+      await vi.waitFor(() => expect(getProjectInfo).toHaveBeenCalledOnce())
+      reconcile!('/project', [
+        {
+          relativePath: 'parts/main.kcl',
+          data: new TextEncoder().encode('new source'),
+        },
+      ])
+      metadataRead.resolve(metadata('Older title'))
+      await refreshing
+      expect(s.project.projectIORefSignal.peek().title).toBe('New cloud title')
+    } finally {
+      metadataRead.resolve(metadata('Older title'))
+    }
+  })
+
   it('stages cloud thumbnails and forwards editor activity without file writes', async () => {
     const stageThumbnail = vi.fn(async () => {})
     const editorChanged = vi.fn()

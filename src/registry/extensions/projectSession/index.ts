@@ -340,6 +340,9 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
           root,
           file ? new TextDecoder().decode(file.data) : undefined
         )
+        // A new snapshot invalidates older metadata reads, while metadata scans
+        // must leave the snapshot rebuild running.
+        refreshGeneration += 1
         const generation = ++reconciliationGeneration
         const isCurrent = () =>
           project.peek() === current && reconciliationGeneration === generation
