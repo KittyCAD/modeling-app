@@ -1,4 +1,4 @@
-import { createProjectPoller } from '@src/lib/fs-zds/cloud/polling'
+import { createProjectPoller } from '@src/lib/cloudProjects/runtime/polling'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 beforeEach(() => vi.useFakeTimers())

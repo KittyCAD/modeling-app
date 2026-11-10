@@ -1,12 +1,12 @@
 import { posix as archivePaths } from '@chainner/node-path'
-import { withCloudFailureContext } from '@src/lib/fs-zds/cloud/failureContext'
-import { normalizeRelativePath } from '@src/lib/fs-zds/cloud/paths'
+import { withCloudFailureContext } from '@src/lib/cloudProjects/runtime/failureContext'
+import { normalizeRelativePath } from '@src/lib/cloudProjects/runtime/paths'
 import type {
   ProjectArchiveFile,
   ProjectUploadBody,
   ProjectUploadPublicationMetadata,
   Revision,
-} from '@src/lib/fs-zds/cloud/types'
+} from '@src/lib/cloudProjects/runtime/types'
 import {
   PROJECT_ENTRYPOINT,
   PROJECT_SETTINGS_FILE_NAME,

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import {
   decodeCloudDirectories,
   encodeCloudDirectories,
-} from '@src/lib/fs-zds/cloud/directories'
+} from '@src/lib/cloudProjects/runtime/directories'
 
 describe('cloud empty directory metadata', () => {
   const paths = fc.array(

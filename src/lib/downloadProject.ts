@@ -1,1 +1,1 @@
-export * from '@src/lib/fs-zds/cloud/project'
+export * from '@src/lib/cloudProjects/runtime/project'

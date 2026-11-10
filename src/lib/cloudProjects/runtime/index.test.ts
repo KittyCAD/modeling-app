@@ -1,13 +1,13 @@
-import { CLOUD_DIRECTORIES_FILE } from '@src/lib/fs-zds/cloud/directories'
+import { CLOUD_DIRECTORIES_FILE } from '@src/lib/cloudProjects/runtime/directories'
 import { posix, win32 } from '@chainner/node-path'
-import * as api from '@src/lib/fs-zds/cloud/api'
-import { parseProjectArchive } from '@src/lib/fs-zds/cloud/archive'
-import { createCloudFileSystem } from '@src/lib/fs-zds/cloud'
+import * as api from '@src/lib/cloudProjects/runtime/api'
+import { parseProjectArchive } from '@src/lib/cloudProjects/runtime/archive'
+import { createCloudProjectRuntime } from '@src/lib/cloudProjects/runtime'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import noopfs from '@src/lib/fs-zds/noopfs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
+vi.mock('@src/lib/cloudProjects/runtime/api', async (original) => ({
   ...(await original<typeof api>()),
   getRemoteProject: vi.fn(),
   downloadRemoteProjectArchive: vi.fn(),
@@ -15,12 +15,12 @@ vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
   createRemoteProject: vi.fn(),
   deleteRemoteProject: vi.fn(),
 }))
-vi.mock('@src/lib/fs-zds/cloud/archive', () => ({
+vi.mock('@src/lib/cloudProjects/runtime/archive', () => ({
   parseProjectArchive: vi.fn(),
 }))
 const remote = { id: 'one', revision: '1', description: '', category_ids: [] }
 const encoder = new TextEncoder()
-const instances: ReturnType<typeof createCloudFileSystem>[] = []
+const instances: ReturnType<typeof createCloudProjectRuntime>[] = []
 beforeEach(() => {
   vi.mocked(api.getRemoteProject).mockResolvedValue(remote)
   vi.mocked(api.downloadRemoteProjectArchive).mockResolvedValue(
@@ -50,7 +50,7 @@ describe.each([
   const setup = (accountId = () => 'account') => {
     const diskWrite = vi.fn()
     const diskRemove = vi.fn()
-    const fs = createCloudFileSystem(
+    const fs = createCloudProjectRuntime(
       { ...noopfs.impl, ...paths, writeFile: diskWrite, rm: diskRemove },
       () => ({ enabled: true, accountId: accountId() })
     )

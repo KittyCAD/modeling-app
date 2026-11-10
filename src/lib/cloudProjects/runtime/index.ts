@@ -2,22 +2,22 @@ import {
   CLOUD_DIRECTORIES_FILE,
   decodeCloudDirectories,
   encodeCloudDirectories,
-} from '@src/lib/fs-zds/cloud/directories'
+} from '@src/lib/cloudProjects/runtime/directories'
 import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import { signal } from '@preact/signals-core'
 import { v4 } from 'uuid'
-import * as api from '@src/lib/fs-zds/cloud/api'
+import * as api from '@src/lib/cloudProjects/runtime/api'
 import {
   parseProjectArchive,
   withProjectTitleInArchiveFiles,
   withUpdatedProjectTomlInArchiveFiles,
-} from '@src/lib/fs-zds/cloud/archive'
+} from '@src/lib/cloudProjects/runtime/archive'
 import type {
   CloudApiConfig,
   ProjectArchiveFile,
   RemoteProject,
   RemoteProjectSummary,
-} from '@src/lib/fs-zds/cloud/types'
+} from '@src/lib/cloudProjects/runtime/types'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
@@ -51,7 +51,7 @@ export interface CloudProjectUpdate {
 }
 
 /** A cloud filesystem backed by memory, with serialized revision-checked saves. */
-export function createCloudFileSystem(
+export function createCloudProjectRuntime(
   paths: IZooDesignStudioFS,
   config: () => CloudApiConfig
 ) {
@@ -872,4 +872,4 @@ export function createCloudFileSystem(
   }
 }
 
-export type CloudFileSystem = ReturnType<typeof createCloudFileSystem>
+export type CloudFileSystem = ReturnType<typeof createCloudProjectRuntime>

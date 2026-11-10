@@ -3,7 +3,7 @@ import {
   getCloudFailureCause,
   getCloudFailureContext,
   withCloudFailureContext,
-} from '@src/lib/fs-zds/cloud/failureContext'
+} from '@src/lib/cloudProjects/runtime/failureContext'
 import { describe, expect, it } from 'vitest'
 
 describe('cloud storage failure context', () => {

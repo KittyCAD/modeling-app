@@ -1,7 +1,7 @@
 import fc from 'fast-check'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { createProjectPoller } from '@src/lib/fs-zds/cloud/polling'
+import { createProjectPoller } from '@src/lib/cloudProjects/runtime/polling'
 
 const elapsedTime = fc.oneof(
   fc.constantFrom(0, 1, 1_499, 1_500, 1_800, 7_000, 30_000, 60_000),

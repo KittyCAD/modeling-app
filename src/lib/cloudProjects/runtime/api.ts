@@ -5,12 +5,12 @@ import {
   CloudStorageError,
   withCloudFailureContext,
   withCloudFailureContextSync,
-} from '@src/lib/fs-zds/cloud/failureContext'
+} from '@src/lib/cloudProjects/runtime/failureContext'
 import {
   getMimeType,
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
-} from '@src/lib/fs-zds/cloud/archive'
+} from '@src/lib/cloudProjects/runtime/archive'
 import type {
   CloudApiConfig,
   ProjectArchiveFile,
@@ -18,7 +18,7 @@ import type {
   RemoteProject,
   RemoteProjectSummary,
   Revision,
-} from '@src/lib/fs-zds/cloud/types'
+} from '@src/lib/cloudProjects/runtime/types'
 import { isArray } from '@src/lib/utils'
 
 /** HTTP failure returned by the cloud API request boundary. */

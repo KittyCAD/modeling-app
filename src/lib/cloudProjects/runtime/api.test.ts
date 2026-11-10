@@ -12,8 +12,8 @@ import {
   getRemoteProjectThumbnailUrl,
   listRemoteProjects,
   updateRemoteProject,
-} from '@src/lib/fs-zds/cloud/api'
-import type { ProjectArchiveFile } from '@src/lib/fs-zds/cloud/types'
+} from '@src/lib/cloudProjects/runtime/api'
+import type { ProjectArchiveFile } from '@src/lib/cloudProjects/runtime/types'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
 afterEach(() => {
