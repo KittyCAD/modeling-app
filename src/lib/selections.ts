@@ -73,6 +73,7 @@ import {
   getOriginalSegmentArtifact,
   getSegmentArtifactForEdgeCut,
   getPatternArtifactForCopyId,
+  getPatternCopyOutputIndex,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
   getSolid2dCodeRef,
@@ -1966,8 +1967,10 @@ export async function getEventForQueryEntityTypeWithPoint(
   if (entityRef.type === 'region' && engineTopologyFallbackEarly) {
     const pathId = engineTopologyFallbackEarly.parentId
     const pattern = getPatternArtifactForCopyId(pathId, artifactGraph)
-    const patternIndex = pattern ? pattern.copyIds.indexOf(pathId) + 1 : 0
-    if (pattern && patternIndex > 0) {
+    const patternIndex = pattern
+      ? getPatternCopyOutputIndex(pathId, pattern, artifactGraph)
+      : undefined
+    if (pattern && patternIndex !== undefined) {
       return {
         type: 'Set selection',
         data: {

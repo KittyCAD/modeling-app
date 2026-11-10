@@ -55,19 +55,46 @@ test('selects individual legacy pattern profiles @localRenderer @web', async ({
   }
 })
 
-for (const version of ['2.0', '3.0-preview']) {
-  test(`selects patterned sketch-block profiles ${version} @localRenderer @web`, async ({
+const regionCases = [
+  {
+    name: 'KCL 3.0',
+    version: '3.0-preview',
+    extraCircle: '',
+    regions: 'region001 = region(segments = [sketch001.circle1])',
+    input: 'region001',
+    inputIndex: 0,
+    hideSource: false,
+  },
+  {
+    name: 'KCL 3.0 array input',
+    version: '3.0-preview',
+    extraCircle:
+      '  circle2 = circle(start = [var 5mm, var 12.5mm], center = [var 2.5mm, var 12.5mm])',
+    regions:
+      'region001 = region(segments = [sketch001.circle1])\nregion002 = region(segments = [sketch001.circle2])',
+    input: '[region001, region002]',
+    inputIndex: 1,
+    hideSource: false,
+  },
+]
+
+for (const fixture of regionCases) {
+  test(`extrudes individual patterned regions ${fixture.name} @localRenderer @web`, async ({
     page,
     homePage,
     scene,
     editor,
+    toolbar,
+    modelingDialog,
   }) => {
-    const code = `@settings(kclVersion = "${version}")
+    const code = `@settings(kclVersion = "${fixture.version}")
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 5mm, var 2.5mm], center = [var 2.5mm, var 2.5mm])
+${fixture.extraCircle}
 }
-${version === '2.0' ? '' : 'region001 = region(segments = [sketch001.circle1])'}
-copies = patternLinear2d(${version === '2.0' ? 'sketch001' : 'region001'}, instances = 3, distance = 8, axis = [1, 0])`
+${fixture.regions}
+copies = patternLinear2d(${fixture.input}, instances = 3, distance = 8mm, axis = [1, 0])
+${fixture.hideSource ? 'hidden001 = hide(sketch001)' : ''}`
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
@@ -75,35 +102,61 @@ copies = patternLinear2d(${version === '2.0' ? 'sketch001' : 'region001'}, insta
     await editor.closePane()
     await scene.moveCameraTo({ x: 10, y: 2.5, z: 50 }, { x: 10, y: 2.5, z: 0 })
     for (const copyIndex of [0, 1]) {
-      const target = await page.evaluate(async (copyIndex) => {
-        const manager = window.app.singletons.kclManager
-        const pattern = [...manager.artifactGraph.values()].find(
-          (a) => a.type === 'pattern'
+      if (copyIndex > 0) {
+        await editor.openPane()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', code)
         )
-        if (pattern?.type !== 'pattern' || !manager.sceneInfra.localRenderer)
-          throw new Error('Expected a local pattern')
-        const faces = (
-          await manager.sceneInfra.localRenderer.getProjectedEntities()
-        ).filter((e) => e.kind === 'face' && e.visible)
-        for (const [index, face] of faces.entries()) {
-          const result = await window.engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: crypto.randomUUID(),
-            cmd: { type: 'query_entity_type', entity_id: face.id },
-          })
-          if (!result || !('resp' in result) || result.resp.type !== 'modeling')
-            continue
-          const response = result.resp.data.modeling_response
-          if (response.type !== 'query_entity_type') continue
-          const ref = response.data.reference
-          if (
-            ref?.type === 'region' &&
-            ref.topology_fallback?.parent_id === pattern.copyIds[copyIndex]
+        await editor.closePane()
+        await scene.moveCameraTo(
+          { x: 10, y: 2.5, z: 50 },
+          { x: 10, y: 2.5, z: 0 }
+        )
+      }
+      const target = await page.evaluate(
+        async ({ copyIndex, inputIndex }) => {
+          const manager = window.app.singletons.kclManager
+          const pattern = [...manager.artifactGraph.values()].filter(
+            (a) => a.type === 'pattern'
+          )[inputIndex]
+          if (pattern?.type !== 'pattern' || !manager.sceneInfra.localRenderer)
+            throw new Error('Expected a local pattern')
+          const faces = (
+            await manager.sceneInfra.localRenderer.getProjectedEntities()
+          ).filter((e) => e.kind === 'face' && e.visible)
+          const references = []
+          for (const [index, face] of faces.entries()) {
+            const result = await window.engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: crypto.randomUUID(),
+              cmd: { type: 'query_entity_type', entity_id: face.id },
+            })
+            if (
+              !result ||
+              !('resp' in result) ||
+              result.resp.type !== 'modeling'
+            )
+              continue
+            const response = result.resp.data.modeling_response
+            if (response.type !== 'query_entity_type') continue
+            const ref = response.data.reference
+            references.push(ref)
+            if (
+              ref?.type === 'region' &&
+              ref.topology_fallback?.parent_id === pattern.copyIds[copyIndex]
+            ) {
+              return { index, id: face.id }
+            }
+          }
+          throw new Error(
+            `Expected the copied region to be visible: ${JSON.stringify({ copies: pattern.copyIds, references })}`
           )
-            return { index, id: face.id }
+        },
+        {
+          copyIndex,
+          inputIndex: fixture.inputIndex,
         }
-        throw new Error('Expected the copied region to be visible')
-      }, copyIndex)
+      )
       const [clickCopy] = await scene.findFace(target.index, { visible: true })
       await clickCopy()
       await expect(page.getByTestId('selection-status')).toContainText(
@@ -124,6 +177,31 @@ copies = patternLinear2d(${version === '2.0' ? 'sketch001' : 'region001'}, insta
             data: { modeling_response: { data: { entity_ids: [target.id] } } },
           },
         })
+      await toolbar.extrudeButton.click()
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await scene.settled()
+      const outputIndex = fixture.inputIndex * 3 + copyIndex + 1
+      await editor.expectEditor.toContain(
+        `extrude(copies[${outputIndex}], length = 5)`
+      )
+      await expect
+        .poll(() =>
+          page.evaluate(
+            () =>
+              [
+                ...window.app.singletons.kclManager.artifactGraph.values(),
+              ].filter((artifact) => artifact.type === 'sweep').length
+          )
+        )
+        .toBeGreaterThan(0)
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.app.singletons.kclManager.diagnostics)
+        )
+        .toEqual([])
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+      await editor.closePane()
     }
   })
 }
