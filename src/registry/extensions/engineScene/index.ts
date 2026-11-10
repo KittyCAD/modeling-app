@@ -24,6 +24,7 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { createElement, lazy, Suspense } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
@@ -364,7 +365,10 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
     provides: [
       provideCommand(
         captureScreenshotCommand(() =>
-          saveViewportScreenshot(ctx.services.get(fileOperationsService))
+          saveViewportScreenshot(
+            ctx.services.get(fileOperationsService),
+            ctx.services.get(viewportScreenshotService)
+          )
         )
       ),
       provideCommand(openMeasureToolCommand),

@@ -1,8 +1,6 @@
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { isPlaywright } from '@src/lib/isPlaywright'
-import { engineStreamZoomToFit, engineViewIsometric } from '@src/lib/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 /**
  * Reset the camera position to a baseline, which is isometric for
@@ -14,18 +12,16 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
  */
 export async function resetCameraPosition({
   sceneInfra,
-  engineCommandManager,
   settingsActor,
 }: {
   sceneInfra: SceneInfra
-  engineCommandManager: ConnectionManager
   settingsActor: SettingsActorType
 }) {
   // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
   // written with zoom_to_fit with padding 0.1
   const padding = 0.1
   if (isPlaywright()) {
-    await engineStreamZoomToFit({ engineCommandManager, padding })
+    await sceneInfra.camControls.zoomToFit({ padding })
   } else {
     // Get user camera projection
     const cameraProjection =
@@ -34,9 +30,24 @@ export async function resetCameraPosition({
     // We need to keep the users projection setting when resetting their camera
     await sceneInfra.camControls.setCameraProjection(cameraProjection)
 
-    await engineViewIsometric({
-      engineCommandManager,
-      padding,
-    })
+    await sceneInfra.camControls.viewIsometric({ padding })
+  }
+}
+
+/**
+ * Reset the camera after an execution. The local renderer loads the new model
+ * only after the execution, so it resets once that model is on screen.
+ */
+export async function resetCameraAfterExecution({
+  sceneInfra,
+  settingsActor,
+}: {
+  sceneInfra: SceneInfra
+  settingsActor: SettingsActorType
+}) {
+  if (sceneInfra.localRenderer) {
+    sceneInfra.localRenderer.resetCameraAfterModelLoad()
+  } else {
+    await resetCameraPosition({ sceneInfra, settingsActor })
   }
 }
