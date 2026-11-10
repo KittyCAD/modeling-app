@@ -118,12 +118,12 @@ export interface Origin {
 }
 
 /** Provider provenance survives composition so conflicts identify their sources. */
-export interface Provider<T> extends Origin {
+interface Provider<T> extends Origin {
   readonly value: T
 }
 
 /** Cardinality is explicit; absence and conflict never silently choose a winner. */
-export type Resolution<T> =
+type Resolution<T> =
   | { readonly kind: 'missing' }
   | { readonly kind: 'ready'; readonly value: T }
   | {
@@ -214,13 +214,13 @@ export type Contract = Readonly<Record<string, Facet<never, unknown>>>
  * `Binding.install` registers sources through `contribute`, which checks each
  * source against its Facet's input type. The Facet retains that typed pairing.
  */
-export interface Sink {
+interface Sink {
   readonly origin: Origin
   readonly runtime?: CellRegistry
   contribute<I, O>(facet: Facet<I, O>, source: Source<NoInfer<I>>): void
 }
 
-export interface ContributionOptions {
+interface ContributionOptions {
   readonly key?: Key
   readonly precedence?: Precedence
 }
@@ -263,7 +263,7 @@ export function slot(items: readonly Item[] = [], key?: Key): Subtree {
   return { key, create: () => ({ items: initial }) }
 }
 
-export type Cleanup = () => void | PromiseLike<void>
+type Cleanup = () => void | PromiseLike<void>
 
 /** Initial children and owner cleanup; replacing children retains this instance. */
 export interface Instance {

@@ -10,12 +10,14 @@ import {
   provide,
   required,
   ServiceResolutionError,
-  type Sink,
+  type Binding,
   type Source,
   type Subtree,
   service,
   slot,
 } from './algebra'
+
+type Sink = Parameters<Binding['install']>[0]
 
 // A small ID domain deliberately exercises duplicates, escaping, and empty labels.
 const label = fc.oneof(

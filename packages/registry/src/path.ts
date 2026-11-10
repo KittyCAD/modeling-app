@@ -1,5 +1,5 @@
 /** A declared graph edge and its index in the selected sequence. */
-export type PathStep = readonly [edge: 'items' | 'dependencies', index: number]
+type PathStep = readonly [edge: 'items' | 'dependencies', index: number]
 
 /**
  * An occurrence within one planning input, not an item identity. Traversal supplies
