@@ -1,5 +1,5 @@
 import { posix } from '@chainner/node-path'
-import { createProjectOperations } from '@src/lib/fileSystem/projectOperations'
+import { createProjectOperations } from '@src/lib/projectSession/projectOperations'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'

@@ -2,7 +2,7 @@ import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import {
   collectProjectFiles as collectProjectFilesWithFileOperations,
   collectProjectFilesForUpload,
-} from '@src/lib/fileSystem/projectFiles'
+} from '@src/lib/projectSession/projectFiles'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
