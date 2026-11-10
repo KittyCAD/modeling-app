@@ -1,6 +1,16 @@
 /**
- * Providers acquire mode resources; commands and UI manage buffers.
- * This guards synchronous calls into this service, not arbitrary extension code or scheduled work.
+ * Mode providers and cleanup callbacks can capture `EditorsService`. Letting
+ * them close an editor or change its mode could trigger more setup or cleanup
+ * before the current callback has finished acquiring or releasing resources.
+ *
+ * The `EditorsService` implementation shares one instance across its editors.
+ * `createEditorModes` wraps each mode's `bind` callback and registered
+ * `onDispose` callbacks in `run`. During those callbacks,
+ * `assertCanManageEditors` rejects service calls that open or close editors or
+ * change their source, language, or selected mode, including for other editors.
+ *
+ * The guard lasts only until the callback returns. It does not intercept
+ * deferred work or direct changes to an editor's CodeMirror document.
  */
 export function createEditorContextBoundary() {
   let depth = 0
