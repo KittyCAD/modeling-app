@@ -189,6 +189,56 @@ describe('direct project session file actions', () => {
     expect(stop).toHaveBeenCalledOnce()
   })
 
+  it.each([false, true])(
+    'finishes cloud reconciliation across a metadata refresh unless the project changes (switched: %s)',
+    async (switched) => {
+      let reconcile:
+        | ((
+            root: string,
+            files: { relativePath: string; data: Uint8Array }[]
+          ) => void)
+        | undefined
+      const s = setup({
+        subscribeReconciled: (listener: NonNullable<typeof reconcile>) => {
+          reconcile = listener
+          return () => {}
+        },
+      } as unknown as CloudStorageService)
+      const gate = Promise.withResolvers<undefined>()
+      const completed = Promise.withResolvers<undefined>()
+      let renderedSource = 'previous geometry'
+      Object.assign(s.project.executingEditor.peek()!, {
+        adoptCloudSnapshot: vi.fn(),
+      })
+      Object.assign(s.project, {
+        reloadFilesFromStorage: async (isCurrent: () => boolean) => {
+          await gate.promise
+          if (isCurrent()) renderedSource = 'cloud geometry'
+          completed.resolve(undefined)
+        },
+      })
+      try {
+        await vi.waitFor(() => expect(reconcile).toBeDefined())
+        reconcile!('/project', [
+          {
+            relativePath: 'parts/main.kcl',
+            data: new TextEncoder().encode('cloud geometry'),
+          },
+        ])
+        vi.mocked(getProjectInfo).mockResolvedValueOnce(metadata('Fresh title'))
+        await s.session.refreshProject()
+        if (switched) s.session.setProject(createProject().project)
+        gate.resolve(undefined)
+        await completed.promise
+        expect(renderedSource).toBe(
+          switched ? 'previous geometry' : 'cloud geometry'
+        )
+      } finally {
+        gate.resolve(undefined)
+      }
+    }
+  )
+
   it('stages cloud thumbnails and forwards editor activity without file writes', async () => {
     const stageThumbnail = vi.fn(async () => {})
     const editorChanged = vi.fn()

@@ -52,6 +52,7 @@ import {
 export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const project = signal<ZDSProject | undefined>(undefined)
   let refreshGeneration = 0
+  let reconciliationGeneration = 0
   const executingEditor = computed(() => {
     const currentProject = project.value
     const editor = currentProject?.executingEditor.value
@@ -339,9 +340,9 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
           root,
           file ? new TextDecoder().decode(file.data) : undefined
         )
-        const generation = ++refreshGeneration
+        const generation = ++reconciliationGeneration
         const isCurrent = () =>
-          project.peek() === current && refreshGeneration === generation
+          project.peek() === current && reconciliationGeneration === generation
         void current
           .reloadFilesFromStorage(isCurrent)
           .then(async () => {
