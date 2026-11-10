@@ -7,6 +7,6 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./examples/algebra": "./src/examples/algebra.ts"
+    "./examples/document-workspace": "./src/examples/document-workspace.ts"
   }
 }
