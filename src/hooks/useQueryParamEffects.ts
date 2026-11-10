@@ -1,4 +1,3 @@
-
 import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import { base64ToString } from '@src/lib/base64'
 import type { App } from '@src/lib/app'
