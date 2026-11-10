@@ -333,7 +333,7 @@ const SignIn = () => {
                   <span className="px-2 md:px-3 py-1 text-xs md:text-base rounded-full bg-primary/10 text-primary">
                     v{APP_VERSION}
                   </span>
-                  <AutoUpdateStatus />
+                  <AutoUpdateStatus tooltipPosition="bottom-left" />
                 </div>
               )}
             </div>
