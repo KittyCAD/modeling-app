@@ -72,6 +72,13 @@ function waitForSettingsIdle(actor: SettingsActorType) {
   return waitFor(actor, (snapshot) => snapshot.matches('idle'))
 }
 
+function setEditorBuffer(editor: KclManager, code: string) {
+  editor.updateCodeEditor(code, {
+    shouldExecute: false,
+    shouldWriteToDisk: false,
+  })
+}
+
 function createDeferred<T>() {
   let resolve!: (value: T) => void
   let reject!: (reason?: unknown) => void
@@ -113,6 +120,27 @@ function engineExecutionError(): KclErrorWithOutputs {
     defaultPlanes: null,
     engineSceneGeneration: 2,
   }
+}
+
+function commitEditorBuffer(editor: KclManager, code: string) {
+  editor.updateCodeEditor(code, {
+    shouldExecute: false,
+    shouldWriteToDisk: true,
+  })
+}
+
+function switchFileInBackground(
+  editor: KclManager,
+  path: string,
+  code?: string
+) {
+  return KclManager.fromFile(
+    new File(path, editor.textFileIO),
+    editor.systemDeps,
+    editor,
+    code,
+    { shouldSyncRustOnOpen: false, backgroundSave: true }
+  )
 }
 
 async function flushPromises(count = 2) {
@@ -701,7 +729,7 @@ describe('KclManager settings ownership', () => {
       try {
         await waitForSettingsIdle(app.settings.actor)
         const mocks = mockEngineSettings(kclManager)
-        const pending = createDeferred<KclManager['execState']>()
+        const pending = Promise.withResolvers<KclManager['execState']>()
         mocks.clearScene.mockReturnValue(pending.promise)
         kclManager.setSceneSettingsActive(true)
         app.settings.get().modeling.backfaceColor.user = '#123456'
@@ -725,7 +753,7 @@ describe('KclManager settings ownership', () => {
     try {
       await waitForSettingsIdle(app.settings.actor)
       const mocks = mockEngineSettings(kclManager)
-      const pending = createDeferred<KclManager['execState']>()
+      const pending = Promise.withResolvers<KclManager['execState']>()
       mocks.clearScene.mockReturnValue(pending.promise)
       kclManager.setSceneSettingsActive(true)
       const settings = app.settings.get()
@@ -950,22 +978,13 @@ describe('KclManager storage checks before sketch insertion', () => {
       })
       const saves: Promise<boolean>[] = []
       try {
-        kclManager.updateCodeEditor('width = 2', {
-          shouldExecute: false,
-          shouldWriteToDisk: false,
-        })
+        setEditorBuffer(kclManager, 'width = 2')
         saves.push(kclManager.flushWriteToFile())
         await vi.advanceTimersByTimeAsync(0)
         expect(write).toHaveBeenCalledOnce()
-        kclManager.updateCodeEditor('width = 3', {
-          shouldExecute: false,
-          shouldWriteToDisk: false,
-        })
+        setEditorBuffer(kclManager, 'width = 3')
         saves.push(kclManager.flushWriteToFile())
-        kclManager.updateCodeEditor('width = 4', {
-          shouldExecute: false,
-          shouldWriteToDisk: false,
-        })
+        setEditorBuffer(kclManager, 'width = 4')
         saves.push(kclManager.flushWriteToFile())
         read.mockClear()
         let ready = false
@@ -1021,22 +1040,13 @@ describe('KclManager storage checks before sketch insertion', () => {
         stored = code
       })
     try {
-      kclManager.updateCodeEditor('width = 2', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, 'width = 2')
       const first = kclManager.writeToFile()
       await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
       expect(write).toHaveBeenCalledOnce()
-      kclManager.updateCodeEditor('width = 3', {
-        shouldExecute: false,
-        shouldWriteToDisk: true,
-      })
+      commitEditorBuffer(kclManager, 'width = 3')
       await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS - 1)
-      kclManager.updateCodeEditor('width = 4', {
-        shouldExecute: false,
-        shouldWriteToDisk: true,
-      })
+      commitEditorBuffer(kclManager, 'width = 4')
       gate.resolve(undefined)
       await first
       expect(stored).toBe('width = 2')
@@ -1071,25 +1081,16 @@ describe('KclManager storage checks before sketch insertion', () => {
         })
       const refresh = vi.fn(async () => {})
       try {
-        kclManager.updateCodeEditor('width = 2', {
-          shouldExecute: false,
-          shouldWriteToDisk: true,
-        })
+        commitEditorBuffer(kclManager, 'width = 2')
         await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS - 1)
         await kclManager.refreshFileBeforeSketchInsertion(
           kind === 'cloud' ? refresh : undefined
         )
         expect(write).not.toHaveBeenCalled()
         expect(refresh).not.toHaveBeenCalled()
-        kclManager.updateCodeEditor('width = 3', {
-          shouldExecute: false,
-          shouldWriteToDisk: true,
-        })
+        commitEditorBuffer(kclManager, 'width = 3')
         // Moving the pointer previews the following segment without committing it.
-        kclManager.updateCodeEditor('width = 4', {
-          shouldExecute: false,
-          shouldWriteToDisk: false,
-        })
+        setEditorBuffer(kclManager, 'width = 4')
         read.mockClear()
         await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS - 1)
         expect(write).not.toHaveBeenCalled()
@@ -1119,21 +1120,12 @@ describe('KclManager storage checks before sketch insertion', () => {
         stored = code
       })
     try {
-      kclManager.updateCodeEditor('width = 2', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, 'width = 2')
       const first = kclManager.flushWriteToFile()
       await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
-      kclManager.updateCodeEditor('width = 4', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, 'width = 4')
       const latest = kclManager.flushWriteToFile()
-      kclManager.updateCodeEditor('width = 5', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, 'width = 5')
       gate.resolve(undefined)
       await Promise.all([first, latest])
       expect(stored).toBe('width = 4')
@@ -1159,16 +1151,10 @@ describe('KclManager storage checks before sketch insertion', () => {
         kclManager.adoptCloudSnapshot('/project', 'width = 99')
       })
     try {
-      kclManager.updateCodeEditor('width = 2', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, 'width = 2')
       const first = kclManager.flushWriteToFile()
       await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
-      kclManager.updateCodeEditor('width = 3', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, 'width = 3')
       const second = kclManager.flushWriteToFile()
       gate.resolve(undefined)
       await Promise.all([first, second])
@@ -1193,11 +1179,7 @@ describe('KclManager storage checks before sketch insertion', () => {
         const ready = kclManager.refreshFileBeforeSketchInsertion()
         const rejected = expect(ready).rejects.toThrow()
         await vi.waitFor(() => expect(read).toHaveBeenCalledOnce())
-        if (change === 'typing')
-          kclManager.updateCodeEditor('width = 3', {
-            shouldExecute: false,
-            shouldWriteToDisk: false,
-          })
+        if (change === 'typing') setEditorBuffer(kclManager, 'width = 3')
         else if (change === 'switching') kclManager.path = '/project/other.kcl'
         else if (change === 'closing') kclManager.close()
         if (change === 'read failure') gate.reject(new Error('Read failed'))
@@ -1484,11 +1466,7 @@ describe('KclManager live operation updates', () => {
         editor.engineCommandManager.connection = {
           connected,
         } as typeof editor.engineCommandManager.connection
-        if (dirty)
-          editor.updateCodeEditor('local draft', {
-            shouldExecute: false,
-            shouldWriteToDisk: false,
-          })
+        if (dirty) setEditorBuffer(editor, 'local draft')
         read.mockResolvedValue('downloaded source')
         const write = vi.spyOn(editor.textFileIO, 'write')
         const open = vi
@@ -1568,11 +1546,7 @@ describe('KclManager live operation updates', () => {
         vi.spyOn(editor.rustContext, 'execute').mockResolvedValue(
           editor.execState
         )
-        const edit = (code: string) =>
-          editor.updateCodeEditor(code, {
-            shouldExecute: false,
-            shouldWriteToDisk: false,
-          })
+        const edit = (code: string) => setEditorBuffer(editor, code)
         const onExecutionDone = vi.fn(() => {
           expect(editor.isExecuting).toBe(false)
         })
@@ -2043,10 +2017,7 @@ describe('KclManager sketch outcomes', () => {
       delta.exec_outcome.operations.map[0] = [operation, { type: 'GroupEnd' }]
 
       expect(kclManager.ast.body).toHaveLength(0)
-      kclManager.updateCodeEditor(code, {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, code)
       kclManager.syncSketchSolveOutcome(code, delta, {
         refreshLintDiagnostics: false,
       })
@@ -2143,7 +2114,7 @@ describe('KclManager diagnostics', () => {
       const { app, kclManager } = createKclManagerTestHarness(mainCode)
       const root = cloud ? '/__zoo_cloud__/project' : '/project'
       kclManager.path = `${root}/main.kcl`
-      const pendingError = createDeferred<undefined>()
+      const pendingError = Promise.withResolvers<undefined>()
       const state = emptyExecState()
       const missingImport = new KCLError(
         'io',
@@ -2618,7 +2589,7 @@ describe('KclManager diagnostics', () => {
     vi.useFakeTimers()
 
     const { kclManager } = createKclManagerTestHarness('a')
-    const execution = createDeferred<undefined>()
+    const execution = Promise.withResolvers<undefined>()
     vi.spyOn(kclManager, 'executeCode').mockReturnValue(execution.promise)
 
     kclManager.engineCommandManager.connection = { connected: true } as any
@@ -2846,7 +2817,7 @@ describe('KclManager diagnostics', () => {
     vi.useFakeTimers()
 
     const { kclManager } = createKclManagerTestHarness('x = 1')
-    const deferredExecution = createDeferred<undefined>()
+    const deferredExecution = Promise.withResolvers<undefined>()
     const modelingSendSpy = vi.fn()
     enableSketchSolveEditorExecution(kclManager)
     kclManager.modelingSend = modelingSendSpy
@@ -2880,7 +2851,7 @@ describe('KclManager diagnostics', () => {
     const { kclManager } = createKclManagerTestHarness('x = 1')
     const sceneGraphDelta = createEmptySceneGraphDelta()
     const deferredSetProgram =
-      createDeferred<
+      Promise.withResolvers<
         Awaited<ReturnType<typeof kclManager.rustContext.hackSetProgram>>
       >()
     const modelingSendSpy = vi.fn()
@@ -3064,13 +3035,7 @@ describe('KclManager diagnostics', () => {
       .spyOn(kclManager, 'executeCode')
       .mockResolvedValue(undefined)
     kclManager.scheduleCurrentCodeExecution(true)
-    await KclManager.fromFile(
-      new File('/project/b.kcl', kclManager.textFileIO),
-      kclManager.systemDeps,
-      kclManager,
-      'target',
-      { shouldSyncRustOnOpen: false, backgroundSave: true }
-    )
+    await switchFileInBackground(kclManager, '/project/b.kcl', 'target')
     await vi.advanceTimersByTimeAsync(1_000)
     expect(kclManager.code).toBe('target')
     expect(execute).not.toHaveBeenCalled()
@@ -3089,29 +3054,14 @@ describe('KclManager diagnostics', () => {
     const write = vi
       .spyOn(kclManager.textFileIO, 'write')
       .mockImplementation(async () => gate.promise)
-    kclManager.updateCodeEditor('edited source', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-    })
-    await KclManager.fromFile(
-      new File('/project/b.kcl', kclManager.textFileIO),
-      kclManager.systemDeps,
-      kclManager,
-      undefined,
-      { shouldSyncRustOnOpen: false, backgroundSave: true }
-    )
+    setEditorBuffer(kclManager, 'edited source')
+    await switchFileInBackground(kclManager, '/project/b.kcl', undefined)
     expect(kclManager.path).toBe('/project/b.kcl')
     expect(kclManager.code).toBe('target')
     await vi.waitFor(() =>
       expect(write).toHaveBeenCalledWith('/project/a.kcl', 'edited source')
     )
-    await KclManager.fromFile(
-      new File('/project/a.kcl', kclManager.textFileIO),
-      kclManager.systemDeps,
-      kclManager,
-      undefined,
-      { shouldSyncRustOnOpen: false, backgroundSave: true }
-    )
+    await switchFileInBackground(kclManager, '/project/a.kcl', undefined)
     expect(kclManager.code).toBe('edited source')
     gate.resolve(undefined)
     await vi.waitFor(() =>
@@ -3141,23 +3091,11 @@ describe('KclManager diagnostics', () => {
         files.set(path, code)
         await gate.promise
       })
-    kclManager.updateCodeEditor('first edit', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-    })
+    setEditorBuffer(kclManager, 'first edit')
     const saving = kclManager.flushWriteToFile()
     await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
-    kclManager.updateCodeEditor('latest edit', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-    })
-    await KclManager.fromFile(
-      new File('/project/b.kcl', kclManager.textFileIO),
-      kclManager.systemDeps,
-      kclManager,
-      undefined,
-      { shouldSyncRustOnOpen: false, backgroundSave: true }
-    )
+    setEditorBuffer(kclManager, 'latest edit')
+    await switchFileInBackground(kclManager, '/project/b.kcl', undefined)
     expect(kclManager.code).toBe('target')
     gate.resolve(undefined)
     await saving
@@ -3186,29 +3124,11 @@ describe('KclManager diagnostics', () => {
         stored = code
         await gate.promise
       })
-    kclManager.updateCodeEditor('outgoing edit', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-    })
-    await KclManager.fromFile(
-      new File('/project/b.kcl', kclManager.textFileIO),
-      kclManager.systemDeps,
-      kclManager,
-      undefined,
-      { shouldSyncRustOnOpen: false, backgroundSave: true }
-    )
+    setEditorBuffer(kclManager, 'outgoing edit')
+    await switchFileInBackground(kclManager, '/project/b.kcl', undefined)
     await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
-    await KclManager.fromFile(
-      new File('/project/a.kcl', kclManager.textFileIO),
-      kclManager.systemDeps,
-      kclManager,
-      undefined,
-      { shouldSyncRustOnOpen: false, backgroundSave: true }
-    )
-    kclManager.updateCodeEditor('newer edit', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-    })
+    await switchFileInBackground(kclManager, '/project/a.kcl', undefined)
+    setEditorBuffer(kclManager, 'newer edit')
     kclManager.onWatchEvent.at(-1)?.('change', '/project/a.kcl')
     await flushPromises()
     expect(kclManager.code).toBe('newer edit')
@@ -3238,20 +3158,11 @@ describe('KclManager diagnostics', () => {
       .mockResolvedValue(undefined)
     try {
       // Start a real save and leave its read pending before any bytes are written.
-      kclManager.updateCodeEditor('outgoing edit', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, 'outgoing edit')
       const changed = kclManager.flushWriteToFile()
       await vi.advanceTimersByTimeAsync(0)
       expect(read).toHaveBeenCalledOnce()
-      await KclManager.fromFile(
-        new File('/project/b.kcl', kclManager.textFileIO),
-        kclManager.systemDeps,
-        kclManager,
-        'target',
-        { shouldSyncRustOnOpen: false, backgroundSave: true }
-      )
+      await switchFileInBackground(kclManager, '/project/b.kcl', 'target')
       await vi.advanceTimersByTimeAsync(7_000)
       expect(kclManager.code).toBe('target')
       expect(read).toHaveBeenCalledOnce()
@@ -3288,24 +3199,12 @@ describe('KclManager diagnostics', () => {
           if (outcome === 'failure')
             throw new Error('Superseded acknowledgement failed')
         })
-      kclManager.updateCodeEditor('first edit', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, 'first edit')
       const saving = kclManager.flushWriteToFile()
       try {
         await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
-        kclManager.updateCodeEditor('superseded outgoing edit', {
-          shouldExecute: false,
-          shouldWriteToDisk: false,
-        })
-        await KclManager.fromFile(
-          new File('/project/b.kcl', kclManager.textFileIO),
-          kclManager.systemDeps,
-          kclManager,
-          'target',
-          { shouldSyncRustOnOpen: false, backgroundSave: true }
-        )
+        setEditorBuffer(kclManager, 'superseded outgoing edit')
+        await switchFileInBackground(kclManager, '/project/b.kcl', 'target')
         gate.resolve(undefined)
         await saving
         await kclManager.waitForFileSaves()
@@ -3342,27 +3241,12 @@ describe('KclManager diagnostics', () => {
         stored = code
         await gate.promise
       })
-    kclManager.updateCodeEditor('outgoing edit', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-    })
+    setEditorBuffer(kclManager, 'outgoing edit')
     try {
-      await KclManager.fromFile(
-        new File('/project/b.kcl', kclManager.textFileIO),
-        kclManager.systemDeps,
-        kclManager,
-        'target',
-        { shouldSyncRustOnOpen: false, backgroundSave: true }
-      )
+      await switchFileInBackground(kclManager, '/project/b.kcl', 'target')
       await vi.advanceTimersByTimeAsync(0)
       expect(write).toHaveBeenCalledOnce()
-      await KclManager.fromFile(
-        new File('/project/a.kcl', kclManager.textFileIO),
-        kclManager.systemDeps,
-        kclManager,
-        undefined,
-        { shouldSyncRustOnOpen: false, backgroundSave: true }
-      )
+      await switchFileInBackground(kclManager, '/project/a.kcl', undefined)
       // The watcher can observe the bytes before the write acknowledgement arrives.
       kclManager.onWatchEvent.at(-1)?.('change', kclManager.path)
       await vi.advanceTimersByTimeAsync(0)
@@ -3405,22 +3289,13 @@ describe('KclManager diagnostics', () => {
         stored = code
       })
     try {
-      kclManager.updateCodeEditor('first', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, 'first')
       const first = kclManager.writeToFile()
       await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
-      kclManager.updateCodeEditor('second', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, 'second')
       const second = kclManager.writeToFile()
       await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
-      kclManager.updateCodeEditor('latest', {
-        shouldExecute: false,
-        shouldWriteToDisk: true,
-      })
+      commitEditorBuffer(kclManager, 'latest')
       gate.resolve(undefined)
       await vi.advanceTimersByTimeAsync(0)
       await Promise.all([first, second])
@@ -3460,25 +3335,14 @@ describe('KclManager diagnostics', () => {
     const write = vi
       .spyOn(kclManager.textFileIO, 'write')
       .mockReturnValue(acknowledgement.promise)
-    kclManager.updateCodeEditor('saved edit', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-    })
+    setEditorBuffer(kclManager, 'saved edit')
     try {
-      await KclManager.fromFile(
-        new File('/project/b.kcl', kclManager.textFileIO),
-        kclManager.systemDeps,
-        kclManager,
-        'target',
-        { shouldSyncRustOnOpen: false, backgroundSave: true }
-      )
+      await switchFileInBackground(kclManager, '/project/b.kcl', 'target')
       await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
-      const reopening = KclManager.fromFile(
-        new File('/project/a.kcl', kclManager.textFileIO),
-        kclManager.systemDeps,
+      const reopening = switchFileInBackground(
         kclManager,
-        undefined,
-        { shouldSyncRustOnOpen: false, backgroundSave: true }
+        '/project/a.kcl',
+        undefined
       )
       await vi.waitFor(() => expect(read).toHaveBeenCalledTimes(2))
       acknowledgement.resolve(undefined)
@@ -3509,18 +3373,9 @@ describe('KclManager diagnostics', () => {
     const write = vi
       .spyOn(kclManager.textFileIO, 'write')
       .mockResolvedValue(undefined)
-    kclManager.updateCodeEditor('outgoing edit', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-    })
+    setEditorBuffer(kclManager, 'outgoing edit')
     try {
-      await KclManager.fromFile(
-        new File('/project/b.kcl', kclManager.textFileIO),
-        kclManager.systemDeps,
-        kclManager,
-        'target',
-        { shouldSyncRustOnOpen: false, backgroundSave: true }
-      )
+      await switchFileInBackground(kclManager, '/project/b.kcl', 'target')
       kclManager.close()
       const watch = vi.spyOn(kclManager, 'watch')
       gate.resolve('original')
@@ -3546,29 +3401,14 @@ describe('KclManager diagnostics', () => {
     const write = vi
       .spyOn(kclManager.textFileIO, 'write')
       .mockRejectedValue(new Error('Offline'))
-    kclManager.updateCodeEditor('unsaved source', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-    })
-    await KclManager.fromFile(
-      new File('/project/b.kcl', kclManager.textFileIO),
-      kclManager.systemDeps,
-      kclManager,
-      'target',
-      { shouldSyncRustOnOpen: false, backgroundSave: true }
-    )
+    setEditorBuffer(kclManager, 'unsaved source')
+    await switchFileInBackground(kclManager, '/project/b.kcl', 'target')
     await vi.waitFor(() =>
       expect(toastMocks.error).toHaveBeenCalledWith(
         'Could not save the outgoing file. Its edits remain in memory.'
       )
     )
-    await KclManager.fromFile(
-      new File('/project/a.kcl', kclManager.textFileIO),
-      kclManager.systemDeps,
-      kclManager,
-      undefined,
-      { shouldSyncRustOnOpen: false, backgroundSave: true }
-    )
+    await switchFileInBackground(kclManager, '/project/a.kcl', undefined)
     expect(kclManager.code).toBe('unsaved source')
     read.mockRestore()
     write.mockRestore()
@@ -3731,11 +3571,8 @@ describe('KclManager diagnostics', () => {
           cloudProjectId: cloud ? 'remote' : undefined,
         })
       )
-      kclManager.updateCodeEditor('newer geometry preview', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
-      const read = createDeferred<string>()
+      setEditorBuffer(kclManager, 'newer geometry preview')
+      const read = Promise.withResolvers<string>()
       vi.spyOn(kclManager.textFileIO, 'read').mockReturnValue(read.promise)
       kclManager.onWatchEvent.at(-1)?.('change', kclManager.path)
       await vi.advanceTimersByTimeAsync(7_000)
@@ -3891,7 +3728,7 @@ describe('KclManager diagnostics', () => {
 
   it('does not overwrite dirty editor state when an external reload resolves later', async () => {
     const { kclManager } = createKclManagerTestHarness('local base')
-    const deferredRead = createDeferred<string>()
+    const deferredRead = Promise.withResolvers<string>()
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
 
     kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
@@ -3936,7 +3773,7 @@ describe('KclManager diagnostics', () => {
 
   it('drops stale sketch checkpoint restores when a newer local edit lands first', async () => {
     const { kclManager } = createKclManagerTestHarness('checkpoint base')
-    const deferredRestore = createDeferred<{
+    const deferredRestore = Promise.withResolvers<{
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
     }>()
@@ -4106,7 +3943,8 @@ describe('KclManager diagnostics', () => {
   it('drops stale ast-driven editor rewrites when the document changed while waiting', async () => {
     const { kclManager } = createKclManagerTestHarness('x = 1')
     const originalWasmPromise = kclManager.wasmInstancePromise
-    const deferredWasm = createDeferred<Awaited<typeof originalWasmPromise>>()
+    const deferredWasm =
+      Promise.withResolvers<Awaited<typeof originalWasmPromise>>()
     const ast = await kclManager.safeParse('x = 2')
 
     if (ast === null) {
@@ -4136,7 +3974,8 @@ describe('KclManager diagnostics', () => {
   it('allows ast-driven editor rewrites to survive intermediate programmatic updates when requested', async () => {
     const { kclManager } = createKclManagerTestHarness('x = 1')
     const originalWasmPromise = kclManager.wasmInstancePromise
-    const deferredWasm = createDeferred<Awaited<typeof originalWasmPromise>>()
+    const deferredWasm =
+      Promise.withResolvers<Awaited<typeof originalWasmPromise>>()
     const ast = await kclManager.safeParse('x = 2')
 
     if (ast === null) {
@@ -4241,16 +4080,10 @@ describe('KclManager diagnostics', () => {
       const write = vi
         .spyOn(kclManager, 'write')
         .mockReturnValueOnce(gate.promise)
-      kclManager.updateCodeEditor('submitted edit', {
-        shouldExecute: false,
-        shouldWriteToDisk: true,
-      })
+      commitEditorBuffer(kclManager, 'submitted edit')
       await vi.advanceTimersByTimeAsync(1_500)
       expect(write).toHaveBeenCalledOnce()
-      kclManager.updateCodeEditor('queued stale edit', {
-        shouldExecute: false,
-        shouldWriteToDisk: true,
-      })
+      commitEditorBuffer(kclManager, 'queued stale edit')
       kclManager.adoptStorageSnapshot('/cloud/project', 'cloud truth')
       await vi.advanceTimersByTimeAsync(7_000)
       if (outcome === 'success') gate.resolve(undefined)
@@ -4356,7 +4189,7 @@ describe('KclManager diagnostics', () => {
       )
       localStorage.setItem('kclRecovery:/unopened/main.kcl', 'obsolete draft')
       localStorage.setItem('unrelated-setting', 'keep')
-      const download = createDeferred<string>()
+      const download = Promise.withResolvers<string>()
       vi.spyOn(kclManager.textFileIO, 'read').mockReturnValueOnce(
         download.promise
       )
@@ -4379,10 +4212,7 @@ describe('KclManager diagnostics', () => {
 
       // Subsequent saves must preserve the contents loaded from storage.
       vi.spyOn(reopened.textFileIO, 'read').mockResolvedValue(contents)
-      reopened.updateCodeEditor(`${contents}\n// next edit`, {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(reopened, `${contents}\n// next edit`)
       const saving = reopened.writeToFile()
       await vi.advanceTimersByTimeAsync(1_500)
       await saving
@@ -4407,10 +4237,7 @@ describe('KclManager diagnostics', () => {
           cloudProjectId: cloud ? 'remote' : undefined,
         })
       )
-      kclManager.updateCodeEditor('offline edit', {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, 'offline edit')
       await vi.advanceTimersByTimeAsync(7_000)
       expect(kclManager.code).toBe('offline edit')
       expect(kclManager.hasUnsavedLocalChanges()).toBe(true)
@@ -4436,10 +4263,7 @@ describe('KclManager diagnostics', () => {
         nextContent: 'base',
         shouldSyncRust: false,
       })
-      kclManager.updateCodeEditor(draft, {
-        shouldExecute: false,
-        shouldWriteToDisk: false,
-      })
+      setEditorBuffer(kclManager, draft)
       kclManager.adoptStorageSnapshot('/cloud/project', cloud)
       expect(kclManager.code).toBe(cloud ?? '')
       expect(kclManager.hasUnsavedLocalChanges()).toBe(false)

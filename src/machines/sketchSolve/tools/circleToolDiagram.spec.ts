@@ -49,19 +49,23 @@ function createTestMachine(mockActors?: {
   }
 }
 
+function startCircleTool() {
+  const fixture = createTestMachine()
+  const actor = createActor(fixture.machine, {
+    input: {
+      sceneInfra: fixture.sceneInfra,
+      rustContext: fixture.rustContext,
+      kclManager: fixture.kclManager,
+      sketchId: 0,
+    },
+  }).start()
+  return { actor, sceneInfra: fixture.sceneInfra }
+}
+
 describe('circleTool - XState', () => {
   describe('when initialized', () => {
     it('should have default context values', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine()
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
+      const { actor } = startCircleTool()
 
       const context = actor.getSnapshot().context
       expect(context.centerPointId).toBeUndefined()
@@ -72,16 +76,7 @@ describe('circleTool - XState', () => {
     })
 
     it('should call setCallbacks on entry to ready for center click', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine()
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
+      const { actor, sceneInfra } = startCircleTool()
 
       await new Promise((resolve) => setTimeout(resolve, 0))
       expect(sceneInfra.setCallbacks).toHaveBeenCalled()
@@ -91,16 +86,7 @@ describe('circleTool - XState', () => {
 
   describe('escape key handling', () => {
     it('should transition to unequipping when escape is pressed in ready for center click', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine()
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
+      const { actor } = startCircleTool()
 
       actor.send({ type: 'escape' })
 
@@ -111,16 +97,7 @@ describe('circleTool - XState', () => {
 
   describe('unequip handling', () => {
     it('should transition to unequipping when unequip event is sent', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine()
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
+      const { actor } = startCircleTool()
 
       actor.send({ type: 'unequip' })
 
@@ -131,16 +108,7 @@ describe('circleTool - XState', () => {
 
   describe('two-click workflow', () => {
     it('should store center point on first click and transition to Showing radius preview', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine()
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
+      const { actor } = startCircleTool()
 
       actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
 
@@ -151,16 +119,7 @@ describe('circleTool - XState', () => {
     })
 
     it('should transition to Creating circle on second click', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine()
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
+      const { actor } = startCircleTool()
 
       actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
       await waitFor(actor, (state) => state.matches(showingRadiusPreview))
@@ -252,16 +211,7 @@ describe('circleTool - XState', () => {
 
   describe('escape during workflow', () => {
     it('should transition to unequipping when escape is pressed in Showing radius preview', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine()
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
+      const { actor } = startCircleTool()
 
       actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
       await waitFor(actor, (state) => state.matches(showingRadiusPreview))
