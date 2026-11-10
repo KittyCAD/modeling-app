@@ -23,7 +23,7 @@ for (const autoSelect of [false, true]) {
         })
         const showProjects = () => {
           document.body.innerHTML =
-            '<a data-testid="project-link" href="#/file/main.kcl">Project</a>'
+            '<button aria-label="Refresh projects" aria-busy="false">Refresh</button><a data-testid="project-link" href="#/file/main.kcl">Project</a>'
         }
         const link = document.querySelector('a')
         link?.addEventListener('click', (event) => {
