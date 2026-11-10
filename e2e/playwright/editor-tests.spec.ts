@@ -766,11 +766,12 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if you write invalid kcl you get inlined errors',
     { tag: '@web' },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, scene }) => {
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.connectionEstablished()
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
