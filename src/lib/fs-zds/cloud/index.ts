@@ -62,12 +62,15 @@ export function createCloudFileSystem(
   const projects = signal<readonly RemoteProjectSummary[]>([])
   let listGeneration = 0
   const opened = new Map<string, OpenCloudProject>()
-  const activityVersions = new Map<string, number>()
-  const activityListeners = new Set<(id: string) => void>()
+  // Update checks capture these per-project counters and discard downloaded
+  // snapshots if edits or acknowledged revision changes advance them.
+  const projectChangeCounters = new Map<string, number>()
+  // Notify subscribers when a project changes so they can adjust polling.
+  const projectChangeSubscribers = new Set<(id: string) => void>()
   const polling = new Map<string, Promise<CloudProjectUpdate>>()
-  const activity = (id: string) => {
-    activityVersions.set(id, (activityVersions.get(id) ?? 0) + 1)
-    for (const listener of activityListeners) listener(id)
+  const recordProjectChange = (id: string) => {
+    projectChangeCounters.set(id, (projectChangeCounters.get(id) ?? 0) + 1)
+    for (const listener of projectChangeSubscribers) listener(id)
   }
   const pendingThumbnails = new Map<
     string,
@@ -198,7 +201,7 @@ export function createCloudFileSystem(
       remote,
     ]
     state(id, { state: 'saved' })
-    if (project?.remote.revision !== remote.revision) activity(id)
+    if (project?.remote.revision !== remote.revision) recordProjectChange(id)
   }
   const reconcile = async (id: string, requestConfig: CloudApiConfig) => {
     const project = opened.get(id)!
@@ -398,7 +401,7 @@ export function createCloudFileSystem(
   }
   const mutate = <T>(path: string, work: () => Promise<T>) => {
     const id = idFor(path)
-    activity(id)
+    recordProjectChange(id)
     return enqueue(id, work)
   }
   const read = async <T>(path: string, run: () => Promise<T>): Promise<T> => {
@@ -532,7 +535,7 @@ export function createCloudFileSystem(
       await memory.rm(pathFor(id), { recursive: true, force: true })
     clearThumbnail(id)
     opened.delete(id)
-    activityVersions.delete(id)
+    projectChangeCounters.delete(id)
     const remainingSaves = new Map(saves.peek())
     remainingSaves.delete(id)
     saves.value = remainingSaves
@@ -630,12 +633,12 @@ export function createCloudFileSystem(
     },
     editorChanged: (path: string) => {
       const id = idFor(path)
-      activity(id)
+      recordProjectChange(id)
       deferThumbnail(id)
     },
-    subscribeActivity: (listener: (id: string) => void) => {
-      activityListeners.add(listener)
-      return () => activityListeners.delete(listener)
+    subscribeProjectChanges: (listener: (id: string) => void) => {
+      projectChangeSubscribers.add(listener)
+      return () => projectChangeSubscribers.delete(listener)
     },
     pending: () => pendingRequests,
     subscribeReconciled: (
@@ -662,7 +665,7 @@ export function createCloudFileSystem(
           new Error('Cloud project is not open for this account.')
         )
       const startingRevision = project.remote.revision
-      const version = activityVersions.get(id)
+      const changeCounter = projectChangeCounters.get(id)
       const controller = new AbortController()
       const timeout = setTimeout(() => controller.abort(), 60_000)
       const current = () =>
@@ -686,7 +689,7 @@ export function createCloudFileSystem(
         const safe = () =>
           current() &&
           canApply() &&
-          activityVersions.get(id) === version &&
+          projectChangeCounters.get(id) === changeCounter &&
           saves.peek().get(id)?.state !== 'failed' &&
           !opened.get(id)?.needsReconciliation
         if (!safe()) return { changed, refreshed: false }
@@ -809,7 +812,7 @@ export function createCloudFileSystem(
       run: (backing: IZooDesignStudioFS) => Promise<T>
     ) => {
       const id = idFor(path)
-      activity(id)
+      recordProjectChange(id)
       return enqueue(id, () => run(memory))
     },
     retry: (id: string) =>
