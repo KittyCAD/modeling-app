@@ -354,14 +354,23 @@ export const fileLoader =
     assertCurrent()
 
     const projectRef = await app.openProject(project, assertCurrent)
+    // Test seeds must reach storage too: sketch refresh and autosave use it
+    // as their baseline rather than treating an injected buffer as saved bytes.
+    const testCode =
+      window.electron?.process.env.NODE_ENV === 'test'
+        ? kclManager.localStoragePersistCode()
+        : undefined
+    if (testCode !== undefined) {
+      await app.fileOperations.writeFile(
+        fsZds.resolve(project.path, currentFilePath || PROJECT_ENTRYPOINT),
+        testCode
+      )
+      assertCurrent()
+    }
     await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager,
-      // If persistCode in localStorage is present, it'll persist that code
-      // through *anything*. INTENDED FOR TESTS.
-      window.electron?.process.env.NODE_ENV === 'test'
-        ? kclManager.localStoragePersistCode()
-        : undefined,
+      undefined,
       true,
       assertCurrent
     )
