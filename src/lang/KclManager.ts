@@ -227,6 +227,9 @@ interface EditorFileSave {
 }
 
 interface EditorFileSaveSnapshot extends EditorFileSave {
+  mode: 'current' | 'outgoing'
+  baseline: string
+  previousWrites: readonly { newCode: string }[]
   fileSelectionGeneration: number
   cloudSnapshotGeneration: number
 }
@@ -695,8 +698,8 @@ export class KclManager extends File {
     // unless the change was initiated by us (the currently running instance).
     const requestedDocumentVersion = this._documentVersion
     const ownPendingCode =
-      this.fileSwitchSaves.get(path)?.code ??
-      this.inFlightFileWrites.get(path)?.code
+      this.fileSwitchSaves.get(path)?.newCode ??
+      this.inFlightFileWrites.get(path)?.newCode
     this.textFileIO
       .read(path)
       .then((code) => {
@@ -794,14 +797,9 @@ export class KclManager extends File {
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
   private _kclVersion: string = ''
-  private inFlightFileWrites = new Map<
-    string,
-    { code: string; promise: Promise<void> }
-  >()
-  private fileSwitchSaves = new Map<
-    string,
-    { code: string; baseline: string; promise: Promise<void> }
-  >()
+  // Written contents identify our own watcher events; retained buffers survive failed navigation saves.
+  private inFlightFileWrites = new Map<string, { newCode: string }>()
+  private fileSwitchSaves = new Map<string, EditorFileSaveSnapshot>()
   private readonly fileSaveQueue = createLatestFileSaveQueue(
     (request: EditorFileSaveSnapshot) => this.persistFileSnapshot(request)
   )
@@ -2056,7 +2054,7 @@ export class KclManager extends File {
     options.assertCurrent?.()
     const pendingSave =
       providedEditor?.fileSwitchSaves.get(file.path) ?? pendingBeforeRead
-    const initialCode = pendingSave?.code ?? diskCode
+    const initialCode = pendingSave?.newCode ?? diskCode
 
     if (!providedEditor) {
       const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
@@ -2226,7 +2224,7 @@ export class KclManager extends File {
   private markFileCodeAsSynced(code: string) {
     this._lastKnownFileCode = normalizeLineEndings(code)
     this.saveState.value =
-      this.hasUnsavedLocalChanges() && this.fileSaveQueue.has(this.path)
+      this.hasUnsavedLocalChanges() && this.fileSaveQueue.hasEdits(this.path)
         ? 'saving'
         : 'saved'
   }
@@ -2242,10 +2240,7 @@ export class KclManager extends File {
         { id: 'cloud-project-conflict' }
       )
     }
-    clearTimeout(this.timeoutWriter)
-    clearTimeout(this.timeoutRewatch)
-    this.timeoutWriter = undefined
-    this.timeoutRewatch = undefined
+    this.cancelScheduledFileSave()
     this._documentVersion += 1
     this.cloudSnapshotGeneration += 1
     const belongs = (path: string) =>
@@ -4122,9 +4117,7 @@ export class KclManager extends File {
       // file that owned the buffer when the debounce was scheduled.
       const requestedPath = this.path
       // Reset the timer on every edit; save only after uninterrupted inactivity.
-      clearTimeout(this.timeoutWriter)
-      clearTimeout(this.timeoutRewatch)
-      this.timeoutWriter = undefined
+      this.cancelScheduledFileSave()
       const request = {
         newCode,
         requestedDocumentVersion,
@@ -4133,11 +4126,7 @@ export class KclManager extends File {
       }
       // Capture committed source now: the next segment's pointer preview can
       // change the document before the quiet period ends, without being a save.
-      const snapshot = {
-        ...request,
-        fileSelectionGeneration: this.fileSelectionGeneration,
-        cloudSnapshotGeneration: this.cloudSnapshotGeneration,
-      }
+      const snapshot = this.captureFileSave(request, 'current')
       const save = new Promise<void>((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
           this.timeoutWriter = undefined
@@ -4161,54 +4150,19 @@ export class KclManager extends File {
       (this.timeoutWriter === undefined && !this.hasUnsavedLocalChanges())
     )
       return
-    clearTimeout(this.timeoutWriter)
-    clearTimeout(this.timeoutRewatch)
-    this.timeoutWriter = undefined
-    this.timeoutRewatch = undefined
-    const previous = this.fileSwitchSaves.get(path)
-    const inFlight = this.inFlightFileWrites.get(path)
-    if (previous?.code === this.code) return
-    const snapshot = {
-      code: this.code,
-      baseline: this._lastKnownFileCode,
-      promise: Promise.resolve(),
-    }
+    this.cancelScheduledFileSave()
+    if (this.fileSwitchSaves.get(path)?.newCode === this.code) return
+    const snapshot = this.captureFileSave(
+      {
+        newCode: this.code,
+        requestedDocumentVersion: this._documentVersion,
+        requestedPath: path,
+        options: {},
+      },
+      'outgoing'
+    )
     this.fileSwitchSaves.set(path, snapshot)
-    snapshot.promise = (async () => {
-      await previous?.promise.catch(() => undefined)
-      await inFlight?.promise.catch(() => undefined)
-      if (isMainKclPath(path) && snapshot.code.trim() === '') {
-        const wasm = await this.wasmInstancePromise
-        if (typeof wasm !== 'string') {
-          const seeded = ensureDefaultKclVersionOnBlankMain(
-            path,
-            snapshot.code,
-            wasm
-          )
-          if (!err(seeded)) snapshot.code = seeded
-        }
-      }
-      const contents = normalizeLineEndings(await this.textFileIO.read(path))
-      if (!isCodeTheSame(contents, snapshot.code)) {
-        if (
-          !isCodeTheSame(contents, snapshot.baseline) &&
-          !(previous && isCodeTheSame(contents, previous.code)) &&
-          !(inFlight && isCodeTheSame(contents, inFlight.code))
-        )
-          return Promise.reject(
-            new Error(
-              'File changed since this buffer was loaded. Outgoing edits remain in memory.'
-            )
-          )
-        await this.textFileIO.write(path, snapshot.code)
-      }
-      snapshot.baseline = snapshot.code
-      if (this.fileSwitchSaves.get(path) === snapshot)
-        this.fileSwitchSaves.delete(path)
-      if (this.path === path && isCodeTheSame(this.code, snapshot.code))
-        this.markFileCodeAsSynced(snapshot.code)
-    })()
-    void snapshot.promise.catch((error: unknown) => {
+    void this.fileSaveQueue.enqueue(snapshot).catch((error: unknown) => {
       reportFileOperationError({
         error,
         operation: 'save_kcl_file',
@@ -4216,7 +4170,7 @@ export class KclManager extends File {
         source: 'KclManager',
         extra: {
           phase: 'save_outgoing_file',
-          contentLength: snapshot.code.length,
+          contentLength: snapshot.newCode.length,
         },
       })
       toast.error(
@@ -4226,15 +4180,11 @@ export class KclManager extends File {
   }
 
   async waitForFileSaves() {
-    await Promise.allSettled([
-      ...[...this.fileSwitchSaves.values()].map((save) => save.promise),
-      ...[...this.inFlightFileWrites.values()].map((save) => save.promise),
-      this.fileSaveQueue.settled(),
-    ])
+    await this.fileSaveQueue.settled()
   }
 
   getPendingFileCode(path: string) {
-    return this.fileSwitchSaves.get(path)?.code
+    return this.fileSwitchSaves.get(path)?.newCode
   }
 
   async flushWriteToFile(
@@ -4245,15 +4195,12 @@ export class KclManager extends File {
     }
 
     const hasPendingWrite =
-      this.timeoutWriter !== undefined || this.fileSaveQueue.has(this.path)
+      this.timeoutWriter !== undefined || this.fileSaveQueue.hasEdits(this.path)
     if (!hasPendingWrite && !this.hasUnsavedLocalChanges()) {
       return true
     }
 
-    clearTimeout(this.timeoutWriter)
-    clearTimeout(this.timeoutRewatch)
-    this.timeoutWriter = undefined
-    this.timeoutRewatch = undefined
+    this.cancelScheduledFileSave()
 
     const flushCurrentBuffer = () =>
       this.performDelayedWriteToFile({
@@ -4286,42 +4233,61 @@ export class KclManager extends File {
       request.requestedPath !== this.path
     )
       return Promise.resolve()
-    return this.fileSaveQueue.save({
-      ...request,
-      fileSelectionGeneration: this.fileSelectionGeneration,
-      cloudSnapshotGeneration: this.cloudSnapshotGeneration,
-    })
+    return this.fileSaveQueue.save(this.captureFileSave(request, 'current'))
   }
 
-  private async persistFileSnapshot({
-    newCode,
-    requestedDocumentVersion,
-    requestedPath,
-    options,
-    fileSelectionGeneration,
-    cloudSnapshotGeneration,
-  }: EditorFileSaveSnapshot) {
+  private cancelScheduledFileSave() {
+    clearTimeout(this.timeoutWriter)
+    clearTimeout(this.timeoutRewatch)
+    this.timeoutWriter = undefined
+    this.timeoutRewatch = undefined
+  }
+
+  private captureFileSave(
+    request: EditorFileSave,
+    mode: EditorFileSaveSnapshot['mode']
+  ): EditorFileSaveSnapshot {
+    return {
+      ...request,
+      mode,
+      baseline: this._lastKnownFileCode,
+      fileSelectionGeneration: this.fileSelectionGeneration,
+      cloudSnapshotGeneration: this.cloudSnapshotGeneration,
+      previousWrites: [
+        this.inFlightFileWrites.get(request.requestedPath),
+        this.fileSwitchSaves.get(request.requestedPath),
+      ].filter((write) => write !== undefined),
+    }
+  }
+
+  private async persistFileSnapshot(request: EditorFileSaveSnapshot) {
+    const {
+      requestedPath,
+      options,
+      mode,
+      previousWrites: predecessors,
+    } = request
+    // Failed retained buffers need their contents, not a chain of older save requests.
+    request.previousWrites = []
+    let { newCode } = request
     if (!requestedPath)
       return Promise.reject(new Error('currentFilePath not set'))
     const isCurrent = () =>
-      !this.closed &&
-      requestedPath === this.path &&
-      fileSelectionGeneration === this.fileSelectionGeneration &&
-      cloudSnapshotGeneration === this.cloudSnapshotGeneration
+      request.cloudSnapshotGeneration === this.cloudSnapshotGeneration &&
+      (mode === 'outgoing' ||
+        (!this.closed &&
+          requestedPath === this.path &&
+          request.fileSelectionGeneration === this.fileSelectionGeneration))
     if (!isCurrent()) return
 
-    const seeded = await this.seedDefaultKclVersionOnBlankMain(
-      requestedDocumentVersion,
-      requestedPath
-    )
-    if (seeded !== undefined) newCode = seeded
-
-    const baseline = this._lastKnownFileCode
-    const previousWrite =
-      this.inFlightFileWrites.get(requestedPath) ??
-      this.fileSwitchSaves.get(requestedPath)
-    await previousWrite?.promise.catch(() => undefined)
+    const seeded = await this.seedDefaultKclVersionOnBlankMain(request)
+    if (seeded !== undefined) {
+      newCode = seeded
+      if (mode === 'outgoing') request.newCode = seeded
+    }
     if (!isCurrent()) return
+    const baseline =
+      mode === 'outgoing' ? request.baseline : this._lastKnownFileCode
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
@@ -4329,37 +4295,40 @@ export class KclManager extends File {
       )
     } catch (err: unknown) {
       if (!isCurrent()) return
+      if (mode === 'outgoing') return Promise.reject(err)
       if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
-        this.saveState.value = 'failed'
-        reportFileOperationError({
-          error: err,
-          operation: 'save_kcl_file',
-          risk: 'write',
-          source: 'KclManager',
-          extra: {
-            phase: 'read_before_write',
-            hasUnsavedChanges: this.hasUnsavedLocalChanges(),
-            contentLength: newCode.length,
-          },
-        })
-        return Promise.reject(err)
+        return this.reportFileSaveFailure(err, 'read_before_write', newCode)
       }
     }
 
     if (!isCurrent()) return
     if (currentDiskCode !== null && isCodeTheSame(currentDiskCode, newCode)) {
-      this.markFileCodeAsSynced(currentDiskCode)
+      this.finishFileSave(request, currentDiskCode)
       return
     }
 
+    // Once a newer save advances the baseline, an older acknowledgement
+    // must no longer explain away an external change.
+    const previousWrites =
+      mode === 'outgoing' || isCodeTheSame(baseline, request.baseline)
+        ? predecessors
+        : []
     const diskChangedSinceLastSync =
       currentDiskCode !== null
         ? !isCodeTheSame(currentDiskCode, baseline) &&
-          !(previousWrite && isCodeTheSame(currentDiskCode, previousWrite.code))
+          !previousWrites.some((write) =>
+            isCodeTheSame(currentDiskCode, write.newCode)
+          )
         : baseline.length > 0
     if (diskChangedSinceLastSync) {
+      if (mode === 'outgoing')
+        return Promise.reject(
+          new Error(
+            'File changed since this buffer was loaded. Outgoing edits remain in memory.'
+          )
+        )
       console.warn(
         'File changed on disk since last sync. Skipping save to avoid overwriting newer contents.'
       )
@@ -4371,50 +4340,80 @@ export class KclManager extends File {
       return
     }
 
-    this.saveState.value = 'saving'
-    this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-    this.unwatch()
+    if (mode === 'current') {
+      this.saveState.value = 'saving'
+      this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+      this.unwatch()
+    }
 
     try {
-      const write = { code: newCode, promise: this.write(newCode) }
+      const write = { newCode }
       this.inFlightFileWrites.set(requestedPath, write)
       try {
-        await write.promise
+        if (mode === 'outgoing')
+          await this.textFileIO.write(requestedPath, newCode)
+        else await this.write(newCode)
       } finally {
         if (this.inFlightFileWrites.get(requestedPath) === write)
           this.inFlightFileWrites.delete(requestedPath)
       }
       if (!isCurrent()) return
-      if (this.fileSwitchSaves.get(requestedPath)?.code === newCode)
-        this.fileSwitchSaves.delete(requestedPath)
-      this.markFileCodeAsSynced(newCode)
+      this.finishFileSave(request, newCode)
 
-      // After a cooldown, start watching this file again on disk.
-      this.timeoutRewatch = setTimeout(() => {
-        this.watch()
-        this.timeoutRewatch = undefined
-      }, 1_000)
+      // Navigation saves leave the target file's watcher alone.
+      if (mode === 'current')
+        this.timeoutRewatch = setTimeout(() => {
+          this.watch()
+          this.timeoutRewatch = undefined
+        }, 1_000)
     } catch (err: unknown) {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
       if (!isCurrent()) return
-      this.saveState.value = 'failed'
-      console.warn('error saving file', err)
-      if (!isPathNotFoundError(err)) {
-        reportFileOperationError({
-          error: err,
-          operation: 'save_kcl_file',
-          risk: 'write',
-          source: 'KclManager',
-          extra: {
-            phase: 'write',
-            hasUnsavedChanges: this.hasUnsavedLocalChanges(),
-            contentLength: newCode.length,
-          },
-        })
-      }
-      toast.error('Error saving file, please check file permissions.')
-      return Promise.reject(err)
+      if (mode === 'outgoing') return Promise.reject(err)
+      return this.reportFileSaveFailure(err, 'write', newCode)
     }
+  }
+
+  private reportFileSaveFailure(
+    error: unknown,
+    phase: 'read_before_write' | 'write',
+    code: string
+  ) {
+    this.saveState.value = 'failed'
+    if (phase === 'read_before_write' || !isPathNotFoundError(error))
+      reportFileOperationError({
+        error,
+        operation: 'save_kcl_file',
+        risk: 'write',
+        source: 'KclManager',
+        extra: {
+          phase,
+          hasUnsavedChanges: this.hasUnsavedLocalChanges(),
+          contentLength: code.length,
+        },
+      })
+    if (phase === 'write') {
+      console.warn('error saving file', error)
+      toast.error('Error saving file, please check file permissions.')
+    }
+    return Promise.reject(error)
+  }
+
+  private finishFileSave(request: EditorFileSaveSnapshot, code: string) {
+    if (request.mode === 'outgoing') request.baseline = code
+    const retained = this.fileSwitchSaves.get(request.requestedPath)
+    if (
+      retained &&
+      (request.mode === 'outgoing'
+        ? retained === request
+        : retained.newCode === code)
+    )
+      this.fileSwitchSaves.delete(request.requestedPath)
+    if (
+      request.mode === 'current' ||
+      (this.path === request.requestedPath && isCodeTheSame(this.code, code))
+    )
+      this.markFileCodeAsSynced(code)
   }
 
   /**
@@ -4422,39 +4421,33 @@ export class KclManager extends File {
    * version to prevent them from implicitly falling back to a legacy version.
    */
   private async seedDefaultKclVersionOnBlankMain(
-    requestedDocumentVersion: number,
-    requestedPath: string
+    request: EditorFileSaveSnapshot
   ): Promise<string | undefined> {
-    if (!isMainKclPath(requestedPath) || this.code.trim() !== '') {
-      return undefined
-    }
-
+    const { requestedPath, requestedDocumentVersion, mode } = request
+    const currentCode = mode === 'outgoing' ? request.newCode : this.code
+    if (!isMainKclPath(requestedPath) || currentCode.trim() !== '') return
     const wasmInstance = await this.wasmInstancePromise
-    if (typeof wasmInstance === 'string') {
-      return undefined
-    }
+    if (typeof wasmInstance === 'string') return
     if (
-      requestedDocumentVersion !== this._documentVersion ||
-      requestedPath !== this.path
-    ) {
-      return undefined
-    }
-
-    const currentCode = this.code
+      mode === 'current' &&
+      (requestedDocumentVersion !== this._documentVersion ||
+        requestedPath !== this.path)
+    )
+      return
     const seeded = ensureDefaultKclVersionOnBlankMain(
       requestedPath,
       currentCode,
       wasmInstance
     )
-    if (err(seeded) || seeded === currentCode) {
-      return undefined
+    if (err(seeded) || seeded === currentCode) return
+    // Navigation saves seed their captured buffer without editing the newly selected file.
+    if (mode === 'current') {
+      this.updateCodeEditor(seeded, {
+        shouldExecute: true,
+        shouldWriteToDisk: false,
+      })
+      notifyDefaultKclVersionSeeded()
     }
-
-    this.updateCodeEditor(seeded, {
-      shouldExecute: true,
-      shouldWriteToDisk: false,
-    })
-    notifyDefaultKclVersionSeeded()
     return seeded
   }
 

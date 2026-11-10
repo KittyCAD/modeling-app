@@ -3219,6 +3219,323 @@ describe('KclManager diagnostics', () => {
     write.mockRestore()
   })
 
+  it('serializes navigation behind a slow pre-write read without blocking the target editor', async () => {
+    vi.useFakeTimers()
+    const { app, kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+      filePath: kclManager.path,
+      nextContent: 'original',
+      shouldSyncRust: false,
+    })
+    const gate = Promise.withResolvers<string>()
+    const read = vi
+      .spyOn(kclManager.textFileIO, 'read')
+      .mockReturnValueOnce(gate.promise)
+      .mockResolvedValue('original')
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockResolvedValue(undefined)
+    try {
+      // Start a real save and leave its read pending before any bytes are written.
+      kclManager.updateCodeEditor('outgoing edit', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const changed = kclManager.flushWriteToFile()
+      await vi.advanceTimersByTimeAsync(0)
+      expect(read).toHaveBeenCalledOnce()
+      await KclManager.fromFile(
+        new File('/project/b.kcl', kclManager.textFileIO),
+        kclManager.systemDeps,
+        kclManager,
+        'target',
+        { shouldSyncRustOnOpen: false, backgroundSave: true }
+      )
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(kclManager.code).toBe('target')
+      expect(read).toHaveBeenCalledOnce()
+      expect(write).not.toHaveBeenCalled()
+      gate.resolve('original')
+      await Promise.all([changed, kclManager.waitForFileSaves()])
+      expect(write.mock.calls).toEqual([['/project/a.kcl', 'outgoing edit']])
+      expect(kclManager.code).toBe('target')
+    } finally {
+      gate.resolve('original')
+      await kclManager.waitForFileSaves()
+      app.dispose()
+      vi.useRealTimers()
+    }
+  })
+
+  it.each(['success', 'failure'])(
+    'invalidates a queued outgoing save when a cloud snapshot supersedes it (%s)',
+    async (outcome) => {
+      const { app, kclManager } = createKclManagerTestHarness('original')
+      kclManager.path = '/project/a.kcl'
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: kclManager.path,
+        nextContent: 'original',
+        shouldSyncRust: false,
+      })
+      const gate = Promise.withResolvers<undefined>()
+      vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('original')
+      const write = vi
+        .spyOn(kclManager.textFileIO, 'write')
+        .mockImplementation(async () => {
+          await gate.promise
+          kclManager.adoptCloudSnapshot('/project', 'target')
+          if (outcome === 'failure')
+            throw new Error('Superseded acknowledgement failed')
+        })
+      kclManager.updateCodeEditor('first edit', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const saving = kclManager.flushWriteToFile()
+      try {
+        await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
+        kclManager.updateCodeEditor('superseded outgoing edit', {
+          shouldExecute: false,
+          shouldWriteToDisk: false,
+        })
+        await KclManager.fromFile(
+          new File('/project/b.kcl', kclManager.textFileIO),
+          kclManager.systemDeps,
+          kclManager,
+          'target',
+          { shouldSyncRustOnOpen: false, backgroundSave: true }
+        )
+        gate.resolve(undefined)
+        await saving
+        await kclManager.waitForFileSaves()
+        expect(write).toHaveBeenCalledOnce()
+        expect(kclManager.code).toBe('target')
+        expect(kclManager.getPendingFileCode('/project/a.kcl')).toBeUndefined()
+        expect(kclManager.saveState.value).toBe('saved')
+      } finally {
+        gate.resolve(undefined)
+        await kclManager.waitForFileSaves()
+        app.dispose()
+      }
+    }
+  )
+
+  it('flushes a clean reopened file without waiting for its outgoing acknowledgement', async () => {
+    vi.useFakeTimers()
+    const { app, kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    kclManager.systemDeps.projectPath.value = '/project'
+    kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+      filePath: kclManager.path,
+      nextContent: 'original',
+      shouldSyncRust: false,
+    })
+    let stored = 'original'
+    const gate = Promise.withResolvers<undefined>()
+    vi.spyOn(kclManager.textFileIO, 'read').mockImplementation(
+      async () => stored
+    )
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockImplementation(async (_path, code) => {
+        stored = code
+        await gate.promise
+      })
+    kclManager.updateCodeEditor('outgoing edit', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    try {
+      await KclManager.fromFile(
+        new File('/project/b.kcl', kclManager.textFileIO),
+        kclManager.systemDeps,
+        kclManager,
+        'target',
+        { shouldSyncRustOnOpen: false, backgroundSave: true }
+      )
+      await vi.advanceTimersByTimeAsync(0)
+      expect(write).toHaveBeenCalledOnce()
+      await KclManager.fromFile(
+        new File('/project/a.kcl', kclManager.textFileIO),
+        kclManager.systemDeps,
+        kclManager,
+        undefined,
+        { shouldSyncRustOnOpen: false, backgroundSave: true }
+      )
+      // The watcher can observe the bytes before the write acknowledgement arrives.
+      kclManager.onWatchEvent.at(-1)?.('change', kclManager.path)
+      await vi.advanceTimersByTimeAsync(0)
+      expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+      let flushed = false
+      const flushing = kclManager.flushWriteToFile().then((result) => {
+        flushed = result
+      })
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(flushed).toBe(true)
+      expect(write).toHaveBeenCalledOnce()
+      gate.resolve(undefined)
+      await Promise.all([flushing, kclManager.waitForFileSaves()])
+    } finally {
+      gate.resolve(undefined)
+      await kclManager.waitForFileSaves()
+      app.dispose()
+      vi.useRealTimers()
+    }
+  })
+
+  it('does not accept an old acknowledgement after a newer save changed the baseline', async () => {
+    vi.useFakeTimers()
+    const { app, kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+      filePath: kclManager.path,
+      nextContent: 'original',
+      shouldSyncRust: false,
+    })
+    let stored = 'original'
+    const gate = Promise.withResolvers<undefined>()
+    vi.spyOn(kclManager.textFileIO, 'read').mockImplementation(
+      async () => stored
+    )
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockImplementation(async (_path, code) => {
+        if (code === 'first') await gate.promise
+        stored = code
+      })
+    try {
+      kclManager.updateCodeEditor('first', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const first = kclManager.writeToFile()
+      await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
+      kclManager.updateCodeEditor('second', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const second = kclManager.writeToFile()
+      await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
+      kclManager.updateCodeEditor('latest', {
+        shouldExecute: false,
+        shouldWriteToDisk: true,
+      })
+      gate.resolve(undefined)
+      await vi.advanceTimersByTimeAsync(0)
+      await Promise.all([first, second])
+      expect(stored).toBe('second')
+      // Another client restores earlier contents while the newest edit is still debouncing.
+      stored = 'first'
+      await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
+      expect(write.mock.calls.map(([, code]) => code)).toEqual([
+        'first',
+        'second',
+      ])
+      expect(stored).toBe('first')
+      expect(kclManager.code).toBe('latest')
+      expect(kclManager.hasUnsavedLocalChanges()).toBe(true)
+    } finally {
+      gate.resolve(undefined)
+      await kclManager.waitForFileSaves()
+      app.dispose()
+      vi.useRealTimers()
+    }
+  })
+
+  it('reopens a clean saved buffer when its disk read overlaps the outgoing acknowledgement', async () => {
+    const { app, kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+      filePath: kclManager.path,
+      nextContent: 'original',
+      shouldSyncRust: false,
+    })
+    const acknowledgement = Promise.withResolvers<undefined>()
+    const readGate = Promise.withResolvers<string>()
+    const read = vi
+      .spyOn(kclManager.textFileIO, 'read')
+      .mockResolvedValueOnce('original')
+      .mockReturnValue(readGate.promise)
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockReturnValue(acknowledgement.promise)
+    kclManager.updateCodeEditor('saved edit', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    try {
+      await KclManager.fromFile(
+        new File('/project/b.kcl', kclManager.textFileIO),
+        kclManager.systemDeps,
+        kclManager,
+        'target',
+        { shouldSyncRustOnOpen: false, backgroundSave: true }
+      )
+      await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
+      const reopening = KclManager.fromFile(
+        new File('/project/a.kcl', kclManager.textFileIO),
+        kclManager.systemDeps,
+        kclManager,
+        undefined,
+        { shouldSyncRustOnOpen: false, backgroundSave: true }
+      )
+      await vi.waitFor(() => expect(read).toHaveBeenCalledTimes(2))
+      acknowledgement.resolve(undefined)
+      await kclManager.waitForFileSaves()
+      readGate.resolve('original')
+      await reopening
+      expect(kclManager.code).toBe('saved edit')
+      expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+      expect(kclManager.getPendingFileCode('/project/a.kcl')).toBeUndefined()
+    } finally {
+      acknowledgement.resolve(undefined)
+      readGate.resolve('original')
+      await kclManager.waitForFileSaves()
+      app.dispose()
+    }
+  })
+
+  it('finishes a captured outgoing save after closing without changing the target buffer or rearming its watcher', async () => {
+    const { app, kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+      filePath: kclManager.path,
+      nextContent: 'original',
+      shouldSyncRust: false,
+    })
+    const gate = Promise.withResolvers<string>()
+    vi.spyOn(kclManager.textFileIO, 'read').mockReturnValue(gate.promise)
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockResolvedValue(undefined)
+    kclManager.updateCodeEditor('outgoing edit', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    try {
+      await KclManager.fromFile(
+        new File('/project/b.kcl', kclManager.textFileIO),
+        kclManager.systemDeps,
+        kclManager,
+        'target',
+        { shouldSyncRustOnOpen: false, backgroundSave: true }
+      )
+      kclManager.close()
+      const watch = vi.spyOn(kclManager, 'watch')
+      gate.resolve('original')
+      await kclManager.waitForFileSaves()
+      expect(write.mock.calls).toEqual([['/project/a.kcl', 'outgoing edit']])
+      expect(kclManager.code).toBe('target')
+      expect(watch).not.toHaveBeenCalled()
+      expect(kclManager.watching).toBe(false)
+    } finally {
+      gate.resolve('original')
+      await kclManager.waitForFileSaves()
+      app.dispose()
+    }
+  })
+
   it('retains outgoing edits in memory if their background save fails', async () => {
     const { kclManager } = createKclManagerTestHarness('original')
     kclManager.path = '/project/a.kcl'
