@@ -3869,6 +3869,7 @@ annotation001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontS
 
   test('Creates, edits visibility, and removes a Named View from the pane', async ({
     page,
+    modelingDialog,
     homePage,
     scene,
     editor,
@@ -3915,7 +3916,7 @@ region001 = region(segments = [sketch001.circle1])`
       .getByRole('combobox', { name: /^orientation/i })
       .selectOption({ label: 'Front' })
     await dialog.getByText('Advanced', { exact: true }).click()
-    await dialog.getByRole('textbox', { name: /^distance/i }).fill('200mm')
+    await modelingDialog.fillInput('distance', '200mm')
     await dialog
       .locator('#command-kcl-input-distance-variable-checkbox')
       .check()
@@ -3971,7 +3972,7 @@ region001 = region(segments = [sketch001.circle1])`
       .getByRole('combobox', { name: /^orientation/i })
       .selectOption({ label: 'Top' })
     await dialog.getByText('Advanced', { exact: true }).click()
-    await dialog.getByRole('textbox', { name: /^distance/i }).fill('200mm')
+    await modelingDialog.fillInput('distance', '200mm')
     await dialog
       .locator('#command-kcl-input-distance-variable-checkbox')
       .check()

@@ -48,13 +48,40 @@ export class ModelingDialogFixture {
     return this.locator.getByRole('textbox', { name: fieldLabel(label) })
   }
 
-  async fillInput(label: string, value: string) {
+  async fillInput(label: string | RegExp, value: string) {
     const input = this.input(label)
-    await input.press('ControlOrMeta+A')
+    const native = await input.evaluate(
+      (element) =>
+        element instanceof HTMLInputElement ||
+        element instanceof HTMLTextAreaElement
+    )
+    if (native) {
+      await input.fill(value)
+      await expect(input).toHaveValue(value)
+      return
+    }
+    const empty = await input.evaluate(
+      (element) =>
+        !element.textContent || !!element.querySelector('.cm-placeholder')
+    )
+    await expect(input).toBeEditable()
+    if (empty) await input.click()
+    else await input.press('ControlOrMeta+A')
     if (value) {
-      await this.page.keyboard.insertText(value)
+      // Native insertion into empty dialog fields crashes Mac WebKit.
+      await input.evaluate((element, text) => {
+        const clipboardData = new DataTransfer()
+        clipboardData.setData('text/plain', text)
+        element.dispatchEvent(
+          new ClipboardEvent('paste', {
+            clipboardData,
+            bubbles: true,
+            cancelable: true,
+          })
+        )
+      }, value)
       await expect(input).toHaveText(value)
-    } else {
+    } else if (!empty) {
       await input.press('Backspace')
     }
   }
