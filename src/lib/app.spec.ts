@@ -1,6 +1,7 @@
 import '@src/lib/projectSession/next/testFeature'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import type { Feature } from '@kittycad/lib'
@@ -1214,6 +1215,77 @@ describe('project system', () => {
       await fsZds.rm(projectPath, { recursive: true, force: true })
     }
   })
+
+  it.each([false, true])(
+    'waits for project registration before forwarding an inactive file change (closed: %s)',
+    async (closed) => {
+      const projectPath = `/tmp/app-watcher-open-${crypto.randomUUID()}`
+      const mainPath = fsZds.join(projectPath, 'main.kcl')
+      const alternatePath = fsZds.join(projectPath, 'alternate.kcl')
+      const app = createAppForTest()
+      const snapshot = Promise.withResolvers<undefined>()
+      let notify: ((event: string, path: string) => void) | undefined
+      vi.spyOn(app.projectSession.textFileIO, 'watch').mockImplementation(
+        (path, _key, onEvent) => {
+          if (path === projectPath && !notify) notify = onEvent
+        }
+      )
+      try {
+        await writeText(mainPath, '@settings(kclVersion = 3.0)\nwidth = 1\n')
+        await writeText(
+          alternatePath,
+          '@settings(kclVersion = 3.0)\nwidth = 2\n'
+        )
+        const metadata = createProjectForTest(projectPath, {
+          default_file: mainPath,
+          children: [
+            { name: 'main.kcl', path: mainPath, children: null },
+            { name: 'alternate.kcl', path: alternatePath, children: null },
+          ],
+        })
+        const project = await app.openProject(metadata)
+        const editor = await project.openEditor(mainPath)
+        const mainId = editor.id
+        const open = vi
+          .spyOn(editor.rustContext, 'sendOpenProject')
+          .mockReturnValue(snapshot.promise)
+        const update = vi
+          .spyOn(editor.rustContext, 'sendUpdateFile')
+          .mockResolvedValue()
+        await project.openEditor(
+          alternatePath,
+          editor,
+          undefined,
+          true,
+          undefined,
+          { deferModeling: true }
+        )
+        await vi.waitFor(() => expect(open).toHaveBeenCalledOnce())
+        const changed = '@settings(kclVersion = 3.0)\nwidth = 3\n'
+        await writeText(mainPath, changed)
+        const inactive = project.files.find((file) => file.path === mainPath)!
+        vi.spyOn(inactive, 'read').mockResolvedValue(changed)
+        expect(notify).toBeDefined()
+        vi.useFakeTimers()
+        notify!('change', mainPath)
+        await vi.advanceTimersByTimeAsync(7_000)
+        expect(update).not.toHaveBeenCalled()
+        if (closed) app.closeProject()
+        snapshot.resolve(undefined)
+        await project.modelingReady
+        if (closed) expect(update).not.toHaveBeenCalled()
+        else
+          await vi.waitFor(() =>
+            expect(update).toHaveBeenCalledWith(mainId, changed)
+          )
+      } finally {
+        snapshot.resolve(undefined)
+        vi.useRealTimers()
+        app.dispose()
+        await fsZds.rm(projectPath, { recursive: true, force: true })
+      }
+    }
+  )
 
   it('does not let a superseded route load replace the active editor', async () => {
     const projectPath = `/tmp/app-stale-route-load-${crypto.randomUUID()}`

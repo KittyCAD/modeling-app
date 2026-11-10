@@ -366,11 +366,16 @@ export class ZDSProject {
           break
         case 'change':
           if (foundFile && path !== this.executingPath) {
-            foundFile
-              .read()
-              .then((text) =>
-                editor?.rustContext.sendUpdateFile(foundFile.id, text)
-              )
+            this.modelingReady
+              .then(() => foundFile.read())
+              .then((text) => {
+                if (
+                  this.app.project === this &&
+                  this.files.includes(foundFile) &&
+                  path !== this.executingPath
+                )
+                  return editor?.rustContext.sendUpdateFile(foundFile.id, text)
+              })
               .catch(reportRejection)
           }
           break
