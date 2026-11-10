@@ -403,6 +403,7 @@ export default class RustContext {
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
+        this.namedViewsInvalidated.dispatch()
         return Promise.reject(checkpointId)
       }
       return {
@@ -412,6 +413,7 @@ export default class RustContext {
         checkpointId,
       }
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
@@ -466,6 +468,7 @@ export default class RustContext {
       )
       return result
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }

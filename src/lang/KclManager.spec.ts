@@ -793,48 +793,81 @@ describe('KclManager resolved views', () => {
     expect(kclManager.execState.namedViews).toBeNull()
   })
 
-  it.each(['program synchronization', 'sketch deletion'])(
-    'clears results when %s rejects',
+  it.each([
+    'program synchronization',
+    'sketch creation',
+    'sketch deletion',
+    'sketch exit',
+  ])('clears results when %s rejects', async (operation) => {
+    await executeActualViews(resolvedViews('old-object'))
+    let execution: Promise<unknown>
+    if (operation === 'program synchronization') {
+      vi.spyOn(
+        instance.Context.prototype,
+        'hack_set_program'
+      ).mockRejectedValueOnce(engineExecutionError())
+      execution = kclManager.rustContext.hackSetProgram(createEmptyAst(), {})
+    } else if (operation === 'sketch creation') {
+      vi.spyOn(instance.Context.prototype, 'new_sketch').mockRejectedValueOnce(
+        engineExecutionError()
+      )
+      execution = kclManager.rustContext.newSketch(0, 0, 0, {
+        on: { default: 'xy' },
+      })
+    } else if (operation === 'sketch deletion') {
+      vi.spyOn(
+        instance.Context.prototype,
+        'delete_sketch'
+      ).mockRejectedValueOnce(engineExecutionError())
+      execution = kclManager.rustContext.deleteSketch(0, 1, {})
+    } else {
+      vi.spyOn(instance.Context.prototype, 'exit_sketch').mockRejectedValueOnce(
+        engineExecutionError()
+      )
+      execution = kclManager.rustContext.exitSketch(0, 1)
+    }
+
+    await expect(execution).rejects.toMatchObject({ kind: 'engine' })
+    expect(kclManager.execState.namedViews).toBeNull()
+  })
+
+  it.each(['program synchronization', 'sketch creation'])(
+    'clears results when %s returns unusable checkpoint metadata',
     async (operation) => {
       await executeActualViews(resolvedViews('old-object'))
+      const delta = createSceneGraphDelta([])
+      const checkpointId = BigInt(Number.MAX_SAFE_INTEGER) + 1n
       let execution: Promise<unknown>
       if (operation === 'program synchronization') {
         vi.spyOn(
           instance.Context.prototype,
           'hack_set_program'
-        ).mockRejectedValueOnce(engineExecutionError())
+        ).mockResolvedValueOnce({
+          type: 'Success',
+          execOutcome: delta.exec_outcome,
+          sceneGraph: delta.new_graph,
+          checkpointId,
+        })
         execution = kclManager.rustContext.hackSetProgram(createEmptyAst(), {})
       } else {
         vi.spyOn(
           instance.Context.prototype,
-          'delete_sketch'
-        ).mockRejectedValueOnce(engineExecutionError())
-        execution = kclManager.rustContext.deleteSketch(0, 1, {})
+          'new_sketch'
+        ).mockResolvedValueOnce({
+          sourceDelta: { text: '' },
+          sceneGraphDelta: delta,
+          sketchId: 1,
+          checkpointId,
+        })
+        execution = kclManager.rustContext.newSketch(0, 0, 0, {
+          on: { default: 'xy' },
+        })
       }
 
-      await expect(execution).rejects.toMatchObject({ kind: 'engine' })
+      await expect(execution).rejects.toThrow('outside the safe integer range')
       expect(kclManager.execState.namedViews).toBeNull()
     }
   )
-
-  it('clears results when a successful program sync returns unusable checkpoint metadata', async () => {
-    await executeActualViews(resolvedViews('old-object'))
-    const delta = createSceneGraphDelta([])
-    vi.spyOn(
-      instance.Context.prototype,
-      'hack_set_program'
-    ).mockResolvedValueOnce({
-      type: 'Success',
-      execOutcome: delta.exec_outcome,
-      sceneGraph: delta.new_graph,
-      checkpointId: BigInt(Number.MAX_SAFE_INTEGER) + 1n,
-    })
-
-    await expect(
-      kclManager.rustContext.hackSetProgram(createEmptyAst(), {})
-    ).rejects.toThrow('outside the safe integer range')
-    expect(kclManager.execState.namedViews).toBeNull()
-  })
 
   it('clears results when a project is opened', async () => {
     await executeActualViews(resolvedViews('old-project-object'))
