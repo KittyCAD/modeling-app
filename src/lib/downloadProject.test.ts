@@ -5,8 +5,8 @@ import env from '@src/env'
 import {
   createOpenProjectIdUrl,
   downloadProjectById,
-  getProjectNameById,
-} from '@src/lib/fs-zds/cloud/project'
+  getPublicProjectNameById,
+} from '@src/lib/fs-zds/cloud/publicProject'
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -21,7 +21,7 @@ describe('downloadProject helpers', () => {
     )
   })
 
-  test('getProjectNameById reads and sanitizes the project title', async () => {
+  test('getPublicProjectNameById reads and sanitizes the public project title', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
       Response.json({
         categories: [],
@@ -34,7 +34,7 @@ describe('downloadProject helpers', () => {
       })
     )
 
-    const result = await getProjectNameById('project-123')
+    const result = await getPublicProjectNameById('project-123')
 
     expect(fetchSpy).toHaveBeenCalledWith(
       expect.stringContaining('/projects/public/project-123'),

@@ -163,7 +163,7 @@ export function useQueryParamEffects() {
 
       const projectName = await app.registry
         .get(cloudStorageService)
-        .getProjectNameById(projectId)
+        .getPublicProjectNameById(projectId)
       if (err(projectName)) {
         return Promise.reject(projectName)
       }
