@@ -496,7 +496,7 @@ export function createCloudProjectRuntime(
       return Promise.reject(
         new Error('Delete a cloud project through project management.')
       )
-    activity(id)
+    recordProjectChange(id)
     return enqueue(id, async (previous) => {
       const project = opened.get(id)!
       if (previous?.state === 'failed' || !project.remote.revision)
@@ -534,7 +534,7 @@ export function createCloudProjectRuntime(
       return Promise.reject(
         new Error('Cloud account changed during file restoration.')
       )
-    activity(deletion.projectId)
+    recordProjectChange(deletion.projectId)
     const result = await enqueue(deletion.projectId, async (previous) => {
       if (!deletionOwner(deletion) || previous?.state === 'failed')
         return Promise.reject(
