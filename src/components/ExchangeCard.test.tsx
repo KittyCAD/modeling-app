@@ -1,15 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { ExchangeCard } from '@src/components/ExchangeCard'
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
 describe('ExchangeCard replay attachments', () => {
-  beforeEach(() => {
-    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:image-preview')
-    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
-  })
-
-  afterEach(() => vi.restoreAllMocks())
-
   const attachmentRef = {
     prompt_id: '00000000-0000-4000-8000-000000000001',
     seq: 3,
@@ -23,8 +16,8 @@ describe('ExchangeCard replay attachments', () => {
       content: 'Use this reference',
       additional_files: [
         {
-          name: 'reference.png',
-          mimetype: 'image/png',
+          name: 'reference.txt',
+          mimetype: 'text/plain',
           data: [],
           attachment_ref: attachmentRef,
         },
@@ -36,15 +29,34 @@ describe('ExchangeCard replay attachments', () => {
     onClickClearChat: vi.fn(),
   }
 
-  test('requests replay attachment bytes and shows its loading state', () => {
+  test('loads attachments in the preview dialog and retries failures', async () => {
     const onFetchAttachment = vi.fn()
     const { rerender } = render(
       <ExchangeCard {...exchangeProps} onFetchAttachment={onFetchAttachment} />
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /Image/ }))
+    fireEvent.click(screen.getByRole('button', { name: /reference\.txt/ }))
     expect(onFetchAttachment).toHaveBeenCalledOnce()
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
+    const dialog = screen.getByRole('dialog', { name: 'Text preview' })
+
+    rerender(
+      <ExchangeCard
+        {...exchangeProps}
+        onFetchAttachment={onFetchAttachment}
+        attachmentFetches={{
+          [attachmentKey]: {
+            status: 'error',
+            message: 'Attachment unavailable',
+          },
+        }}
+      />
+    )
+    expect(within(dialog).getByRole('alert')).toHaveTextContent(
+      'Attachment unavailable'
+    )
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Retry' }))
+    expect(onFetchAttachment).toHaveBeenCalledTimes(2)
 
     rerender(
       <ExchangeCard
@@ -56,9 +68,10 @@ describe('ExchangeCard replay attachments', () => {
       />
     )
 
-    expect(
-      screen.getByRole('button', { name: /Image Loading…/ })
-    ).toBeDisabled()
+    expect(within(dialog).getByRole('status')).toHaveTextContent(
+      'Loading attachment…'
+    )
+    expect(within(dialog).queryByRole('button', { name: 'Retry' })).toBeNull()
 
     rerender(
       <ExchangeCard
@@ -69,20 +82,24 @@ describe('ExchangeCard replay attachments', () => {
             status: 'loaded',
             file: {
               ...exchangeProps.request.additional_files[0],
-              data: [1, 2, 3],
+              data: Array.from(
+                new TextEncoder().encode('First line\nSecond line')
+              ),
             },
           },
         }}
       />
     )
 
-    expect(
-      screen.queryByRole('button', { name: 'Attachment preview' })
-    ).toBeNull()
-    expect(
-      screen.getByRole('img', { name: 'Attachment preview' })
-    ).toHaveAttribute('src', 'blob:image-preview')
-    expect(screen.queryByText('Loaded')).not.toBeInTheDocument()
+    await within(dialog).findByText(/First line/)
+    expect(dialog.querySelector('pre')?.textContent).toBe(
+      'First line\nSecond line'
+    )
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Close preview' })
+    )
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /reference\.txt/ })).toBeEnabled()
   })
 
   test('renders a metadata-only server file without a reasoning message', () => {

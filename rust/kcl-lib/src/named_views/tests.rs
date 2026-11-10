@@ -188,6 +188,10 @@ fn sweeps_with_non_path_artifacts_use_their_own_ids() {
         id: id(2),
         path_ids: Vec::new(),
         code_ref: Default::default(),
+        plane_info: None,
+        size: None,
+        hidden: false,
+        color: None,
     })]);
     for (sub_type, _) in LINKED_SWEEP_ENGINE_IDS {
         let body = sweep(sub_type, id(1), Some(id(2)));
@@ -230,6 +234,10 @@ fn identity_kinds_use_their_artifact_ids_without_visibility_filtering() {
             id: id(8),
             path_ids: vec![id(5)],
             code_ref: Default::default(),
+            plane_info: None,
+            size: None,
+            hidden: false,
+            color: None,
         }),
         Artifact::ImportedGeometry(ImportedGeometryArtifact {
             id: id(9),
@@ -292,6 +300,10 @@ fn plane(artifact_id: ArtifactId) -> Artifact {
         id: artifact_id,
         path_ids: Vec::new(),
         code_ref: Default::default(),
+        plane_info: None,
+        size: None,
+        hidden: false,
+        color: None,
     })
 }
 
@@ -1063,6 +1075,10 @@ fn only_standalone_graph_planes_enter_visibility() {
                 id: id(2),
                 path_ids: vec![id(5)],
                 code_ref: Default::default(),
+                plane_info: None,
+                size: None,
+                hidden: false,
+                color: None,
             }),
             Artifact::PlaneOfFace(PlaneOfFace {
                 id: id(3),
