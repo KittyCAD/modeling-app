@@ -18,7 +18,7 @@ export interface PluginController {
   toggle(): Promise<void>
 }
 
-export interface PluginInfo {
+interface PluginInfo {
   readonly id: string
   readonly title: string
   readonly description: string

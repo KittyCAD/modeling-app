@@ -22,13 +22,13 @@ import { formatPath, type ItemPath } from './path'
 import { DependencyCycleError, plan } from './planner'
 
 /** One selected graph occurrence; keys and acquisition origins survive reconfiguration. */
-export interface DebugItem {
+interface DebugItem {
   readonly kind: 'binding' | 'subtree'
   readonly key: Key
   readonly origin: Origin
 }
 
-export interface RegistryInspection {
+interface RegistryInspection {
   readonly subtrees: number
   readonly bindings: number
   readonly facets: number
