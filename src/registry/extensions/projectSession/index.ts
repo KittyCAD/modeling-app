@@ -94,6 +94,11 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       }
       return current.projectIORefSignal.peek()
     },
+    // TODO: Separate route navigation from the session's file-switch lifecycle.
+    // The route layer should own onboarding and URL/query parameters; the session
+    // should own language-server document changes and engine cancellation. Keep
+    // them coordinated here until then so navigation cannot leave diagnostics or
+    // modeling commands attached to the previous file.
     openFile: async (path, options = {}) => {
       const router = ctx.services.get(routerService)
       const location = router.getLocation()
