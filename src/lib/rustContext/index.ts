@@ -41,6 +41,45 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import toast from 'react-hot-toast'
 
+/**
+ * Named-view lifecycle contract for editor and executor refactors.
+ *
+ * `ExecOutcome.namedViews` contains resolved views for the program that ran.
+ * Its visibility maps contain engine object UUIDs and are valid only for that
+ * program's engine scene. Invalidation clears the stored value to `null`.
+ *
+ * Clear the stored views when:
+ * - The active executing file changes.
+ * - A project is opened.
+ * - The editor closes.
+ * - A reset of the engine scene is requested, even if the request fails.
+ * - A non-mock execution fails through any of these operations:
+ *   - Program execution (`execute`).
+ *   - Program synchronization (`hackSetProgram`), including returned failures.
+ *   - Sketch creation (`newSketch`).
+ *   - Sketch deletion (`deleteSketch`).
+ *   - Sketch exit (`exitSketch`).
+ * - A non-mock execution result has invalid checkpoint metadata.
+ *
+ * Handle `ExecOutcome` values as follows:
+ * - For a successful non-mock execution, store `ExecOutcome.namedViews`,
+ *   including `null`.
+ * - An empty `ExecOutcome.namedViews.defaultView` is a valid result.
+ * - Use `ExecOutcome.namedViews` from a successful cached execution.
+ * - Mock execution leaves the stored views unchanged, even if it fails.
+ * - A sketch update with `ExecOutcome.namedViews === null` leaves the stored
+ *   views unchanged.
+ * - Ignore `ExecOutcome.namedViews` from cancelled executions.
+ * - Entries in `ExecOutcome.namedViews.failures` do not invalidate:
+ *   - `ExecOutcome.namedViews.defaultView`.
+ *   - `ExecOutcome.namedViews.namedViews`.
+ * - Editing or parsing the same file without executing it leaves the stored
+ *   views unchanged.
+ *
+ * Any editor or executor refactor must preserve this contract.
+ *
+ * Regression coverage: `KclManager.spec.ts`, "KclManager resolved views".
+ */
 export default class RustContext {
   private initialization: Promise<Context> | undefined
   private contextChanged = new AbortController()
@@ -48,6 +87,7 @@ export default class RustContext {
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
   public readonly planesCreated = new LegacySignal()
+  public readonly namedViewsInvalidated = new LegacySignal()
 
   constructor(
     public readonly wasmInstancePromise: Promise<ModuleType>,
@@ -77,6 +117,7 @@ export default class RustContext {
 
   /** Project lifecycle method for WASM, setting up initial snapshot of project */
   async sendOpenProject(currentFilePath: string | null, kclFiles: ApiFile[]) {
+    this.namedViewsInvalidated.dispatch()
     const context = await this._checkContextInstance()
     await context.open_project(
       this.projectId,
@@ -140,6 +181,7 @@ export default class RustContext {
       // Return the result.
       return outcome
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       this.setDefaultPlanes(err.defaultPlanes)
       return Promise.reject(err)
@@ -256,6 +298,7 @@ export default class RustContext {
     path?: string
   ): Promise<ExecState> {
     const instance = await this._checkContextInstance()
+    this.namedViewsInvalidated.dispatch()
 
     try {
       const result = await instance.bustCacheAndResetScene(
@@ -319,11 +362,13 @@ export default class RustContext {
         JSON.stringify(settings)
       )
       if (result.type !== 'Success') {
+        this.namedViewsInvalidated.dispatch()
         return result
       }
 
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
+        this.namedViewsInvalidated.dispatch()
         return Promise.reject(checkpointId)
       }
 
@@ -332,6 +377,7 @@ export default class RustContext {
         checkpointId,
       }
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
@@ -396,6 +442,7 @@ export default class RustContext {
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
+        this.namedViewsInvalidated.dispatch()
         return Promise.reject(checkpointId)
       }
       return {
@@ -405,6 +452,7 @@ export default class RustContext {
         checkpointId,
       }
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
@@ -459,6 +507,7 @@ export default class RustContext {
       )
       return result
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
@@ -487,6 +536,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
