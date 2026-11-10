@@ -1,4 +1,5 @@
 import { Menu } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -17,7 +18,13 @@ export function ZookeeperConversationPaneWrapper(
     controller: ZookeeperSessionController
   }
 ) {
-  const { auth, settings } = useApp()
+  useSignals()
+  const { auth, settings, userFeatures, projectSignal } = useApp()
+  const migrationEnabled = userFeatures.useHas('zookeeper_kcl_migration', false)
+  const canMigrateKcl =
+    migrationEnabled &&
+    projectSignal.value?.executingEditor.value?.kclProgramVersionSignal
+      .value === '2.0'
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const { context: contextModeling } = useModelingContext()
@@ -38,6 +45,7 @@ export function ZookeeperConversationPaneWrapper(
       />
       <ZookeeperConversationPane
         controller={controller}
+        canMigrateKcl={canMigrateKcl}
         selectionRanges={contextModeling.selectionRanges}
         zookeeperMode={settingsValues.app.zookeeperMode}
         userAvatarSrc={user?.image}
