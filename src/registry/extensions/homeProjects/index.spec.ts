@@ -63,12 +63,14 @@ describe('home project actions', () => {
       }),
     ])
     try {
-      expect(
-        registry
-          .get(homeProjectActionsService)
-          .watchRemoteThumbnail('remote-one')
-      ).toBe(stop)
+      const stopWatching = registry
+        .get(homeProjectActionsService)
+        .watchRemoteThumbnail('remote-one')
       expect(watchThumbnail).toHaveBeenCalledWith('remote-one')
+      expect(stop).not.toHaveBeenCalled()
+      if (!stopWatching) throw new Error('Missing thumbnail watcher cleanup')
+      stopWatching()
+      expect(stop).toHaveBeenCalledOnce()
     } finally {
       registry[Symbol.dispose]()
     }

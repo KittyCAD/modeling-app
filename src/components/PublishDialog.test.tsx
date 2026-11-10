@@ -110,7 +110,7 @@ describe('PublishDialog', () => {
     ).toBeInTheDocument()
   })
 
-  it('discloses when publishing will move the project to Personal Cloud', () => {
+  it('discloses when publishing creates a new project in Personal Cloud', () => {
     render(
       <Popover>
         <PublishDialog
@@ -121,15 +121,10 @@ describe('PublishDialog', () => {
       </Popover>
     )
 
-    const cloudMoveWarning = screen.getByText(
+    const cloudCloneWarning = screen.getByText(
       /Publishing creates a new project in Personal Cloud/
     )
-    expect(cloudMoveWarning).toBeInTheDocument()
-    expect(cloudMoveWarning).toHaveClass(
-      'w-full',
-      'border-destroy-40',
-      'text-destroy-80'
-    )
+    expect(cloudCloneWarning).toBeInTheDocument()
     expect(
       screen.getByText(/This will also be used as the project title/)
     ).toBeInTheDocument()

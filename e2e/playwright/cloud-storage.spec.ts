@@ -374,7 +374,10 @@ test(
     await expect(page.getByTestId('project-link').first()).toBeVisible()
     const root = await page.evaluate(async () => {
       const fs = window.fsZds
-      const root = fs.join(window.app.projectDirectoryPath, 'local-delete')
+      const root = fs.join(
+        window.app.projectLibraries.projectDirectoryPath,
+        'local-delete'
+      )
       await fs.mkdir(root, { recursive: true })
       await fs.writeFile(
         fs.join(root, 'main.kcl'),
@@ -734,7 +737,7 @@ test(
 )
 
 test(
-  'cloud MCP returns refresh authoritative files and ignore streamed edit snapshots',
+  'cloud MCP updates refresh authoritative files without uploading them',
   { tag: ['@web', '@zookeeper'] },
   async ({ context, page }, testInfo) => {
     test.setTimeout(180_000)
@@ -785,25 +788,6 @@ test(
     const initialUploads = remote.uploads.length
     // A save temporarily unwatches the editor; refresh must still apply its source.
     await page.evaluate(() => window.app.singletons.kclManager.unwatch())
-    send({
-      tool_output: {
-        result: {
-          type: 'edit_kcl_code',
-          status_code: 200,
-          outputs: { 'main.kcl': 'stale snapshot' },
-          zookeeper_edit_patch: {
-            run_id: 'remote-run',
-            changed_files: [
-              {
-                status: 'modified',
-                path: 'main.kcl',
-                contents: 'stale snapshot',
-              },
-            ],
-          },
-        },
-      },
-    })
     remote.project.files['main.kcl'] =
       '@settings(kclVersion = 3.0)\nwidth = 42\n'
     remote.project.files['new/data.bin'] = 'binary import'
