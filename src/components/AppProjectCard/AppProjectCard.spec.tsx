@@ -1068,7 +1068,7 @@ describe('ProjectCard', () => {
         expect(screen.getByTestId('project-title')).toHaveTextContent(
           'Old cloud title'
         )
-        expect(errorToast).toHaveBeenCalled()
+        expect(errorToast).toHaveBeenCalledOnce()
         clickRenameProject()
         expect(screen.getByTestId('project-rename-input')).toBeVisible()
       } finally {
