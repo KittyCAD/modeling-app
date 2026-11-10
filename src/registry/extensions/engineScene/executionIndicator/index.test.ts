@@ -22,6 +22,8 @@ function createProjectSession(
   const project = signal<ZDSProject | undefined>(undefined)
   const libraryId = signal<string | undefined>(undefined)
   return {
+    storageFor: vi.fn(),
+    applyStorageSnapshot: vi.fn(async () => {}),
     editorChanged: vi.fn(),
     writeThumbnail: vi.fn(async () => {}),
     refreshProject: vi.fn(async () => undefined),

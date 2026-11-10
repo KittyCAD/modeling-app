@@ -454,7 +454,7 @@ describe('switching files', () => {
       '/proj/note.md',
       'debounced stale'
     )
-    mod.adoptCloudTextSnapshot(
+    mod.adoptStorageTextSnapshot(
       '/proj',
       new Map([['/proj/note.md', new TextEncoder().encode('cloud truth')]])
     )
@@ -495,7 +495,7 @@ describe('switching files', () => {
         'local edit'
       )
 
-      mod.adoptCloudTextSnapshot(
+      mod.adoptStorageTextSnapshot(
         '/proj',
         new Map([['/proj/note.md', contents]])
       )
@@ -520,7 +520,7 @@ describe('switching files', () => {
       '/proj/note.md',
       'accepted edit'
     )
-    mod.adoptCloudTextSnapshot(
+    mod.adoptStorageTextSnapshot(
       '/proj',
       new Map([['/proj/note.md', new TextEncoder().encode('accepted edit')]])
     )

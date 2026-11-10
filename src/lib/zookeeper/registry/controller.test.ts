@@ -269,14 +269,14 @@ function createHarness({
   } as unknown as ZDSProject
   const projectSignal = signal<ZDSProject | undefined>(zdsProject)
   const refreshProject = vi.fn(
-    async (_id: string, _isCurrent?: () => boolean) => undefined
+    async (_id: string, _isCurrent?: () => boolean, _revision?: string) =>
+      undefined
   )
   const readFolders = vi.fn(async () => undefined)
   const fileExists = vi.fn(async () => true)
   const navigateToFile = vi.fn(async (_data: unknown) => undefined)
   const dependencies = {
     apiToken,
-    cloudStorage: { refreshProject },
     billing: { send: billingSend },
     conversationStore,
     fileOperations: {
@@ -287,7 +287,14 @@ function createHarness({
     project: projectSignal,
     projectId: initialProjectId,
     projectPath,
-    session: { refreshProject: readFolders, openFile: navigateToFile },
+    session: {
+      refreshProject: readFolders,
+      openFile: navigateToFile,
+      storageFor: () => ({
+        refresh: (isCurrent: () => boolean, revision?: string) =>
+          refreshProject(cloudProjectId!, isCurrent, revision),
+      }),
+    },
     projectOperations: { applyEdits: vi.fn() },
   } as unknown as ZookeeperSessionControllerDependencies
   const controller = createZookeeperSessionController(dependencies)

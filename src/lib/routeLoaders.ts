@@ -1,6 +1,7 @@
 import fsZds from '@src/lib/fs-zds'
 import { authService } from '@src/registry/contracts/auth'
-import { cloudStorageService } from '@src/registry/contracts/fileOperations'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+
 import { resolveProjectLocation } from '@src/lib/fileSystem/mounts'
 import { reportRejection } from '@src/lib/trap'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'

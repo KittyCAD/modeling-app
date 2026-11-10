@@ -15,7 +15,8 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
   CurrentProjectPublicationDetails,
   ProjectPublishSubmission,
-} from '@src/registry/contracts/fileOperations'
+} from '@src/lib/publishing/publication'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type PublishDialogMarkdownEditorKeymap = {

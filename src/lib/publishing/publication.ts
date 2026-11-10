@@ -3,14 +3,14 @@ import {
   createRemoteProject,
   getRemoteProject as getCloudProject,
   updateRemoteProject,
-} from '@src/lib/fs-zds/cloud/api'
+} from '@src/lib/cloudProjects/runtime/api'
 import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { collectProjectFilesForUpload } from '@src/lib/projectSession/projectFiles'
 import type {
   ProjectArchiveFile,
   ProjectUploadPublicationMetadata,
-} from '@src/lib/fs-zds/cloud/types'
+} from '@src/lib/cloudProjects/runtime/types'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import { readProjectSettingsFile } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'

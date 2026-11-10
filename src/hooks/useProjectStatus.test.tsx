@@ -1,4 +1,4 @@
-import * as publication from '@src/registry/extensions/fileOperations/publication'
+import * as publication from '@src/lib/publishing/publication'
 import { Client } from '@kittycad/lib'
 import { useProjectStatuses } from '@src/hooks/useProjectStatus'
 import { renderHook, waitFor } from '@testing-library/react'

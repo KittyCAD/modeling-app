@@ -1,4 +1,5 @@
-import type { CloudStorageService } from '@src/registry/extensions/fileOperations'
+import type { CloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+
 import type {
   KclProjectPublicationStatus,
   ProjectSummaryResponse,

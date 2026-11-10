@@ -1,9 +1,11 @@
+import * as cloudPolling from '@src/lib/cloudProjects/polling'
 import '@src/lib/projectSession/next/testFeature'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
-import { cloudStorageService } from '@src/registry/contracts/fileOperations'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -688,6 +690,43 @@ describe('project system', () => {
     } finally {
       read.mockRestore()
       app.dispose()
+    }
+  })
+
+  it('keeps cloud polling through tree refreshes and disposes it when the opening changes', async () => {
+    const stops: ReturnType<typeof vi.fn>[] = []
+    const polling = vi
+      .spyOn(cloudPolling, 'watchCloudProject')
+      .mockImplementation(() => {
+        const stop = vi.fn()
+        stops.push(stop)
+        return stop
+      })
+    const app = createAppForTest()
+    try {
+      const root = app.registry.get(cloudStorageService).pathFor('one')
+      const metadata = { ...mockProject, path: root, cloudProjectId: 'one' }
+      const opening = await app.openProject(metadata)
+      await vi.waitFor(() => expect(polling).toHaveBeenCalledOnce())
+      opening.projectIORefSignal.value = {
+        ...opening.projectIORefSignal.peek(),
+        title: 'Refreshed',
+      }
+      expect(polling).toHaveBeenCalledOnce()
+      expect(stops[0]).not.toHaveBeenCalled()
+      await app.openProject(metadata)
+      expect(stops[0]).toHaveBeenCalledOnce()
+      expect(polling).toHaveBeenCalledTimes(2)
+      app.closeProject()
+      expect(stops[1]).toHaveBeenCalledOnce()
+      opening.projectIORefSignal.value = {
+        ...opening.projectIORefSignal.peek(),
+        title: 'Old opening',
+      }
+      expect(polling).toHaveBeenCalledTimes(2)
+    } finally {
+      app.dispose()
+      polling.mockRestore()
     }
   })
 

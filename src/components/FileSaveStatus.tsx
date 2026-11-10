@@ -1,30 +1,25 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
-import { cloudStorageService } from '@src/registry/contracts/fileOperations'
+
 import { reportRejection } from '@src/lib/trap'
-import { useIsOffline } from '@src/hooks/network/useIsOffline'
 
 export function FileSaveStatus({ app, className }: AppHeaderItemProps) {
   useSignals()
-  const offline = useIsOffline()
-  const cloud = app.registry.get(cloudStorageService)
   const path = app.projectSignal.value?.path
   if (!path) return null
   const editor = app.projectSignal.value?.executingEditor.value
-  const isCloud = path.startsWith(cloud.root)
-  const id = isCloud ? cloud.idFor(path) : undefined
-  const status = id
-    ? cloud.saves.value.get(id)
-    : editor
-      ? { state: editor.saveState.value }
-      : undefined
+  const storage = app.projectSession.storageFor(path)
+  const availability = storage.writeAvailability.value
+  const status =
+    storage.saveState?.value ??
+    (editor ? { state: editor.saveState.value } : undefined)
   const retry = async () => {
-    if (!id) {
+    if (!storage.saveState) {
       await editor?.flushWriteToFile()
       return
     }
     const requestedPath = editor?.path
-    await cloud.retry(id)
+    await storage.retry()
     if (
       !editor ||
       app.projectSignal.peek()?.executingEditor.peek() !== editor ||
@@ -33,7 +28,7 @@ export function FileSaveStatus({ app, className }: AppHeaderItemProps) {
       return
     const contents = await editor.textFileIO.read(requestedPath)
     if (
-      cloud.saves.peek().get(id)?.state === 'saved' &&
+      storage.saveState?.peek()?.state === 'saved' &&
       editor.code === contents
     )
       editor.synchronizeCurrentEditorAfterDirectGlobalReplay({
@@ -42,10 +37,10 @@ export function FileSaveStatus({ app, className }: AppHeaderItemProps) {
         shouldSyncRust: false,
       })
   }
-  if (isCloud && offline)
+  if (!availability.writable)
     return (
       <span role="status" className={className}>
-        Offline. Cloud project is read-only.
+        {availability.reason}
       </span>
     )
   if (!status || status.state === 'saved') return null

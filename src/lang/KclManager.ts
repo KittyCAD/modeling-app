@@ -79,7 +79,6 @@ import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
-import { isOffline } from '@src/lib/networkStatus'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -712,10 +711,9 @@ export class KclManager extends File {
           // Nothing written out yet by ourselves, or it's not the same as the current file content
           // -> this must be an external change -> re-execute.
           this.updateCodeEditor(code, {
-            // Cloud refreshes rebuild the full Rust snapshot and execute once there.
+            // Snapshot backings rebuild the full Rust project and execute once there.
             shouldExecute:
-              !isInSketchMode &&
-              !this.systemDeps.project.peek()?.cloudProjectId,
+              !isInSketchMode && this.storage?.externalChanges !== 'snapshot',
             shouldResetCamera: !isInSketchMode,
             shouldAddToHistory: true,
             // We explicitly do not write to the file here since we are loading from
@@ -770,7 +768,13 @@ export class KclManager extends File {
   >()
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
-  readonly cloudReadOnlyCompartment = new Compartment()
+  private get storage() {
+    return this.systemDeps.projectSession?.storageFor(
+      this.systemDeps.project.peek()?.path ?? this.path
+    )
+  }
+
+  readonly storageReadOnlyCompartment = new Compartment()
   private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
@@ -1880,7 +1884,7 @@ export class KclManager extends File {
 
     return [
       baseEditorExtensions(),
-      this.cloudReadOnlyCompartment.of([]),
+      this.storageReadOnlyCompartment.of([]),
       EditorState.transactionFilter.of((transaction) => {
         const loadingContents =
           transaction.annotation(updateOutsideEditorEvent.type) &&
@@ -1888,8 +1892,7 @@ export class KclManager extends File {
             (effect) => effect.is(requestWriteToFile) && !effect.value
           )
         return transaction.docChanged &&
-          this.systemDeps.project.peek()?.cloudProjectId &&
-          isOffline() &&
+          this.storage?.writeAvailability.peek().writable === false &&
           !loadingContents
           ? []
           : transaction
@@ -2133,8 +2136,8 @@ export class KclManager extends File {
     this.persistRecoverySnapshot()
   }
 
-  /** Discard buffers and saves based on a cloud revision that has been superseded. */
-  adoptCloudSnapshot(root: string, contents: string | undefined) {
+  /** Discard buffers and saves based on a storage snapshot that has been superseded. */
+  adoptStorageSnapshot(root: string, contents: string | undefined) {
     if (
       this.hasUnsavedLocalChanges() &&
       !isCodeTheSame(this.code, contents ?? '')
@@ -3936,8 +3939,7 @@ export class KclManager extends File {
 
     if (
       resolvedOptions.shouldWriteToDisk &&
-      this.systemDeps.project.peek()?.cloudProjectId &&
-      isOffline()
+      this.storage?.writeAvailability.peek().writable === false
     )
       return
 

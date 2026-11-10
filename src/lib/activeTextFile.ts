@@ -120,7 +120,7 @@ async function performWrite(
 }
 
 /** Replace text buffers when a cloud conflict is resolved in favor of storage. */
-export function adoptCloudTextSnapshot(
+export function adoptStorageTextSnapshot(
   root: string,
   files: ReadonlyMap<string, Uint8Array>
 ) {

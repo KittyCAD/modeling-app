@@ -1,3 +1,4 @@
+import fsZds from '@src/lib/fs-zds'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 
 import { computed, effect, signal } from '@preact/signals-core'
@@ -8,10 +9,8 @@ import {
   getDefaultCloudProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 
-import {
-  cloudStorageService,
-  fileOperationsService,
-} from '@src/registry/contracts/fileOperations'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
@@ -110,6 +109,8 @@ export default defineRegistryItemFactory((ctx) => {
         name: project.id,
         title: project.title ?? 'Untitled',
         remoteProjectId: project.id,
+        projectPath: fsZds.join(cloud().root, project.id),
+        watchThumbnail: () => cloud().watchThumbnail(project.id),
         thumbnail: thumbnails.has(project.id)
           ? { type: 'remote', url: thumbnails.get(project.id)! }
           : undefined,
@@ -142,7 +143,7 @@ export default defineRegistryItemFactory((ctx) => {
   }
   window.addEventListener('beforeunload', beforeUnload)
   return {
-    id: 'cloud-projects',
+    id: 'cloud-projects-library',
     provides: [
       provide(
         homeProjectSettledLibraryIdsValueSpec,
@@ -298,4 +299,4 @@ export default defineRegistryItemFactory((ctx) => {
       window.removeEventListener('beforeunload', beforeUnload)
     },
   }
-}, 'cloud-projects')
+}, 'cloud-projects-library')

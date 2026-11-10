@@ -29,10 +29,7 @@ import {
   projectSession,
   type ProjectSessionService,
 } from '@src/registry/contracts/projectSession'
-import {
-  cloudStorageService,
-  type FileOperationsRegistryService,
-} from '@src/registry/contracts/fileOperations'
+import { type FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
@@ -45,7 +42,7 @@ export interface ProjectSystemDeps {
   modelingReady?: () => Promise<void>
   projectSession?: Pick<
     ProjectSessionService,
-    'editorChanged' | 'writeThumbnail'
+    'editorChanged' | 'writeThumbnail' | 'storageFor'
   >
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
@@ -444,16 +441,10 @@ export class ZDSProject {
       return Promise.reject(new Error('No active editor for sketch insertion.'))
     const isCurrent = () =>
       this.app.project === this && this.executingEditor.peek() === editor
-    const id = this.projectIORefSignal.peek().cloudProjectId
-    await editor.refreshFileBeforeSketchInsertion(
-      id
-        ? async (isFileCurrent) => {
-            await this.app.registry
-              .get(cloudStorageService)
-              .refreshProject(id, () => isCurrent() && isFileCurrent())
-          }
-        : undefined
-    )
+    const storage = this.app.projectSession.storageFor(this.path)
+    await editor.refreshFileBeforeSketchInsertion(async (isFileCurrent) => {
+      await storage.refresh(() => isCurrent() && isFileCurrent())
+    })
     if (!isCurrent())
       return Promise.reject(
         new Error('The project changed before sketch insertion.')

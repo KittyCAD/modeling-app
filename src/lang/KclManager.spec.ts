@@ -2413,9 +2413,9 @@ describe('KclManager diagnostics', () => {
   })
 
   it.each([false, true])(
-    'reloads clean editor state and defers cloud execution to the project refresh (cloud: %s)',
-    async (cloud) => {
-      const { kclManager } = createKclManagerTestHarness('from disk')
+    'reloads clean editor state and defers execution to snapshot storage refresh (snapshot storage: %s)',
+    async (snapshotStorage) => {
+      const { app, kclManager } = createKclManagerTestHarness('from disk')
       const update = vi.spyOn(kclManager, 'updateCodeEditor')
 
       kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
@@ -2423,7 +2423,15 @@ describe('KclManager diagnostics', () => {
         createProjectForTest('/tmp/project')
       )
       kclManager.systemDeps.projectPath.value = '/tmp/project'
-      if (cloud) kclManager.systemDeps.project.value!.cloudProjectId = 'remote'
+      const storage = app.projectSession.storageFor('/tmp/project')
+      kclManager.systemDeps.projectSession = {
+        editorChanged: app.projectSession.editorChanged,
+        writeThumbnail: app.projectSession.writeThumbnail,
+        storageFor: () => ({
+          ...storage,
+          externalChanges: snapshotStorage ? 'snapshot' : 'files',
+        }),
+      }
       ;(kclManager as any).markFileCodeAsSynced('from disk')
 
       vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external edit')
@@ -2438,12 +2446,35 @@ describe('KclManager diagnostics', () => {
       expect(update).toHaveBeenCalledWith(
         'external edit',
         expect.objectContaining({
-          shouldExecute: !cloud,
+          shouldExecute: !snapshotStorage,
           shouldWriteToDisk: false,
         })
       )
     }
   )
+
+  it('blocks edits when storage denies writes while allowing authoritative contents to load', () => {
+    const { app, kclManager } = createKclManagerTestHarness('original')
+    const storage = app.projectSession.storageFor('/project')
+    kclManager.systemDeps.projectSession = {
+      editorChanged: app.projectSession.editorChanged,
+      writeThumbnail: app.projectSession.writeThumbnail,
+      storageFor: () => ({
+        ...storage,
+        writeAvailability: signal({ writable: false, reason: 'Read only' }),
+      }),
+    }
+    kclManager.updateCodeEditor('blocked', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+    })
+    expect(kclManager.code).toBe('original')
+    kclManager.updateCodeEditor('authoritative', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    expect(kclManager.code).toBe('authoritative')
+  })
 
   it('does not reload Zookeeper disk watcher updates into the active editor', async () => {
     const { kclManager } = createKclManagerTestHarness('from disk')
@@ -2996,7 +3027,7 @@ describe('KclManager diagnostics', () => {
         'kclRecovery:/cloud/project-other/main.kcl',
         'other project buffer'
       )
-      kclManager.adoptCloudSnapshot('/cloud/project', 'cloud truth')
+      kclManager.adoptStorageSnapshot('/cloud/project', 'cloud truth')
       expect(
         localStorage.getItem('kclRecovery:/cloud/project/closed.kcl')
       ).toBeNull()
@@ -3131,7 +3162,7 @@ describe('KclManager diagnostics', () => {
         shouldExecute: false,
         shouldWriteToDisk: false,
       })
-      kclManager.adoptCloudSnapshot('/cloud/project', cloud)
+      kclManager.adoptStorageSnapshot('/cloud/project', cloud)
       expect(kclManager.code).toBe(cloud ?? '')
       expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
       if (warns)

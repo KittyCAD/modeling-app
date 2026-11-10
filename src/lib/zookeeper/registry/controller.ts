@@ -30,7 +30,7 @@ import { S } from '@src/machines/utils'
 import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
 import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
-import type { CloudStorageService } from '@src/registry/contracts/fileOperations'
+
 import type { CloudProjectToolChange } from '@src/lib/zookeeper/cloudProjectTools'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
@@ -41,12 +41,14 @@ export interface ZookeeperSessionControllerDependencies {
   billing: BillingRegistryService
   conversationStore: ZookeeperConversationStore
   fileOperations: FileOperationsRegistryService
-  cloudStorage?: Pick<CloudStorageService, 'refreshProject'>
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
   projectId: string | undefined
   projectPath: string
-  session: Pick<ProjectSessionService, 'refreshProject' | 'openFile'>
+  session: Pick<
+    ProjectSessionService,
+    'refreshProject' | 'openFile' | 'storageFor'
+  >
   projectOperations: Pick<ProjectOperationsService, 'applyEdits'>
 }
 
@@ -643,8 +645,9 @@ class SessionController implements ZookeeperSessionController {
 
   private refreshCloudProjectFromSnapshot(snapshot: ZookeeperSnapshot) {
     const projectId = this.getProject()?.cloudProjectId
-    const cloud = this.deps.cloudStorage
-    if (!projectId || !cloud) return
+    const project = this.getProject()
+    if (!projectId || !project) return
+    const storage = this.deps.session.storageFor(project.path)
     const change = snapshot.context.cloudProjectChange
     let refresh = false
     if (change && change !== this.lastCloudChange) {
@@ -671,7 +674,7 @@ class SessionController implements ZookeeperSessionController {
       .catch(reportRejection)
       .then(async () => {
         if (!isCurrent()) return
-        await cloud.refreshProject(projectId, isCurrent, change?.revision)
+        await storage.refresh(isCurrent, change?.revision)
         filesRefreshed = true
         if (!isCurrent()) return
         const project = this.getReadyZdsProject()

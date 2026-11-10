@@ -1,6 +1,6 @@
 import type { ProjectResponse } from '@kittycad/lib'
 import type { Project } from '@src/lib/project'
-import type { ProjectArchiveFile } from '@src/lib/fs-zds/cloud/types'
+import type { ProjectArchiveFile } from '@src/lib/cloudProjects/runtime/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 function makeRemoteProject(
@@ -87,7 +87,7 @@ const mockState = vi.hoisted(() => ({
   ]),
 }))
 
-vi.mock('@src/lib/fs-zds/cloud/api', () => ({
+vi.mock('@src/lib/cloudProjects/runtime/api', () => ({
   createRemoteProject: mockState.createProject,
   getRemoteProject: async (_config: unknown, id: string) => ({
     ...(await mockState.getProject()),
@@ -168,7 +168,7 @@ import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import {
   getCurrentProjectPublicationDetails as getCurrentProjectPublicationDetailsWithFileOperations,
   publishCurrentProject as publishCurrentProjectWithFileOperations,
-} from '@src/registry/extensions/fileOperations/publication'
+} from '@src/lib/publishing/publication'
 
 const publishCurrentProject = (
   args: Omit<

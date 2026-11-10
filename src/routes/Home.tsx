@@ -45,10 +45,8 @@ import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
-import {
-  cloudStorageService,
-  type FileOperationsRegistryService,
-} from '@src/registry/contracts/fileOperations'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+import { type FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,

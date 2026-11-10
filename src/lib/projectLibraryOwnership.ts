@@ -1,5 +1,5 @@
 import fsZds from '@src/lib/fs-zds'
-import { normalizeProjectPath } from '@src/lib/fs-zds/cloud/paths'
+import { normalizeProjectPath } from '@src/lib/cloudProjects/runtime/paths'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   isPathInDirectoryProjectLibrary,

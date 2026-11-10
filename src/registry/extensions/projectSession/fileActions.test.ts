@@ -1,4 +1,9 @@
 import { posix } from '@chainner/node-path'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import {
+  projectStorageProvidersValueSpec,
+  type ProjectStorage,
+} from '@src/lib/projectSession/storage'
 import {
   defineRegistryItem,
   provide,
@@ -14,13 +19,16 @@ import type { ZDSProject } from '@src/lib/projectSession'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   cloudStorageService,
+  type CloudStorageService,
+} from '@src/lib/cloudProjects/registry/contract'
+import {
   fileOperationsService,
   type FileOperationsRegistryService,
-  type CloudStorageService,
 } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { routerService } from '@src/registry/contracts/router'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { cloudProjectSessionExtension } from '@src/lib/cloudProjects/registry/session'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { createRouterRegistryService } from '@src/registry/extensions/router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -32,7 +40,7 @@ vi.mock('@src/lib/desktop', () => ({
 }))
 vi.mock('@src/lib/activeTextFile', () => ({
   flushActiveTextFileWrite: vi.fn(async () => {}),
-  adoptCloudTextSnapshot: vi.fn(),
+  adoptStorageTextSnapshot: vi.fn(),
 }))
 
 const metadata = (title = 'Project'): Project => ({
@@ -68,7 +76,18 @@ function createProject(path = '/project/parts/main.kcl') {
   } as unknown as ZDSProject
   return { project, filePath, flush }
 }
-function setup(cloud?: CloudStorageService) {
+function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
+  if (cloud) {
+    cloud = Object.assign(
+      {
+        root: '/',
+        idFor: (path: string) =>
+          posix.relative(cloud!.root, path).match(/^[^/]+/)?.[0] ?? '',
+        saves: signal(new Map()),
+      },
+      cloud
+    )
+  }
   const exists = vi.fn(async () => false)
   const rename = vi.fn(async () => {})
   const router = createRouterRegistryService()
@@ -78,10 +97,14 @@ function setup(cloud?: CloudStorageService) {
   const lateCloud = new Slot()
   registry.configure([
     projectSessionRegistryItem,
+    cloudProjectSessionExtension,
     lateCloud.of(),
     defineRegistryItem({
       provides: [
         provide(wasmPromiseValueSpec, Promise.resolve({} as ModuleType)),
+        ...(storage
+          ? [provide(projectStorageProvidersValueSpec, () => storage)]
+          : []),
       ],
       providesServices: [
         provideService(fileOperationsService, {
@@ -140,7 +163,7 @@ describe('direct project session file actions', () => {
     const s = setup()
     const adopt = vi.fn()
     Object.assign(s.project.executingEditor.peek()!, {
-      adoptCloudSnapshot: adopt,
+      adoptStorageSnapshot: adopt,
     })
     const reload = vi.fn(async () => {})
     Object.assign(s.project, { reloadFilesFromStorage: reload })
@@ -198,7 +221,7 @@ describe('direct project session file actions', () => {
         },
       } as unknown as CloudStorageService)
       Object.assign(s.project.executingEditor.peek()!, {
-        adoptCloudSnapshot: vi.fn(),
+        adoptStorageSnapshot: vi.fn(),
       })
       const pending = Promise.withResolvers<undefined>()
       const reload = vi.fn(async (_isCurrent: () => boolean) => pending.promise)
@@ -251,7 +274,11 @@ describe('direct project session file actions', () => {
   })
 
   it('preserves cloud identity and library ownership when refreshing the tree', async () => {
-    const s = setup()
+    const s = setup({
+      root: '/',
+      idFor: () => 'project',
+      saves: signal(new Map()),
+    } as unknown as CloudStorageService)
     s.project.projectIORefSignal.value = {
       ...metadata(),
       cloudProjectId: 'remote',
@@ -398,4 +425,58 @@ describe('direct project session file actions', () => {
     expect(s.filePath.value).toBe('/cloud/project/renamed/main.kcl')
     expect(s.rename).not.toHaveBeenCalled()
   })
+})
+
+function storageForTest(): ProjectStorage {
+  return {
+    root: '/project',
+    writeAvailability: signal({ writable: true }),
+    externalChanges: 'snapshot',
+    deletionHistory: 'storage',
+    createMissingEntrypoint: false,
+    watch: vi.fn(() => vi.fn()),
+    batch: vi.fn(async (_path, run) => run({ ...testFileOperations })),
+    refresh: vi.fn(async () => {}),
+    retry: vi.fn(async () => {}),
+    editorChanged: vi.fn(),
+    writeThumbnail: vi.fn(async () => {}),
+  }
+}
+
+it('releases captured watchers when a watch is replaced, removed, or the session is disposed', () => {
+  const storage = storageForTest()
+  const first = vi.fn()
+  const second = vi.fn()
+  const third = vi.fn()
+  vi.mocked(storage.watch)
+    .mockReturnValueOnce(first)
+    .mockReturnValueOnce(second)
+    .mockReturnValueOnce(third)
+  const s = setup(undefined, storage)
+  const io = s.session.textFileIO
+  io.watch('/project/main.kcl', 'editor', vi.fn())
+  io.watch('/project/main.kcl', 'editor', vi.fn())
+  expect(first).toHaveBeenCalledOnce()
+  expect(second).not.toHaveBeenCalled()
+  io.unwatch('/project/main.kcl', 'editor')
+  expect(second).toHaveBeenCalledOnce()
+  io.watch('/project/other.kcl', 'editor', vi.fn())
+  s.registry[Symbol.dispose]()
+  registries.splice(registries.indexOf(s.registry), 1)
+  expect(third).toHaveBeenCalledOnce()
+})
+
+it('uses the provider entrypoint policy when refreshing a project', async () => {
+  const s = setup(undefined, storageForTest())
+  vi.mocked(getProjectInfo).mockResolvedValueOnce(metadata('Snapshot'))
+  await s.session.refreshProject()
+  expect(getProjectInfo).toHaveBeenCalledWith(
+    expect.anything(),
+    '/project',
+    expect.anything(),
+    { createMissingEntrypoint: false }
+  )
+  expect(s.session.project.peek()?.projectIORefSignal.peek().title).toBe(
+    'Snapshot'
+  )
 })

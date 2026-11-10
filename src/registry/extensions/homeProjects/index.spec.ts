@@ -15,14 +15,14 @@ import {
 import {
   type HomeProjectEntry,
   homeProjectActionsService,
+  homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { cloudStorageService } from '@src/registry/contracts/fileOperations'
-import type { CloudStorageService } from '@src/registry/contracts/fileOperations'
+
 import homeProjectsExtension from '@src/registry/extensions/homeProjects'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -47,7 +47,7 @@ const project = {
 } satisfies HomeProjectEntry
 
 describe('home project actions', () => {
-  it('connects visible Home cards to the fileOperations thumbnail watcher', () => {
+  it('connects visible Home cards to their provider thumbnail watcher', () => {
     const stop = vi.fn()
     const watchThumbnail = vi.fn(() => stop)
     const registry = new Registry()
@@ -55,18 +55,16 @@ describe('home project actions', () => {
       homeProjectsExtension,
       defineRegistryItem({
         id: 'thumbnail-storage',
-        providesServices: [
-          provideService(cloudStorageService, {
-            watchThumbnail,
-          } as unknown as CloudStorageService),
+        provides: [
+          provide(homeProjectEntriesValueSpec, { ...project, watchThumbnail }),
         ],
       }),
     ])
     try {
       const stopWatching = registry
         .get(homeProjectActionsService)
-        .watchRemoteThumbnail('remote-one')
-      expect(watchThumbnail).toHaveBeenCalledWith('remote-one')
+        .watchRemoteThumbnail(project.remoteProjectId)
+      expect(watchThumbnail).toHaveBeenCalledOnce()
       expect(stop).not.toHaveBeenCalled()
       if (!stopWatching) throw new Error('Missing thumbnail watcher cleanup')
       stopWatching()

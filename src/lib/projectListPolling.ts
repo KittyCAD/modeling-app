@@ -1,4 +1,4 @@
-import { createProjectPoller } from '@src/lib/fs-zds/cloud/polling'
+import { createProjectPoller } from '@src/lib/cloudProjects/runtime/polling'
 
 /** Scope the existing non-overlapping poll schedule to a visible, connected list. */
 export function pollProjectList(

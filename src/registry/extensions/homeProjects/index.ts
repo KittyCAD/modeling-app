@@ -24,10 +24,7 @@ import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/
 
 import { commandSystemService } from '@src/registry/contracts/commands'
 
-import {
-  cloudStorageService,
-  fileOperationsService,
-} from '@src/registry/contracts/fileOperations'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 
 import {
   type HomeProjectActionsService,
@@ -244,7 +241,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
 
   const serviceImpl: HomeProjectActionsService = {
     watchRemoteThumbnail: (id) =>
-      ctx.services.optional(cloudStorageService)?.watchThumbnail(id),
+      ctx.valueSpecs
+        .get(homeProjectEntriesValueSpec)
+        .find((entry) => entry.remoteProjectId === id)
+        ?.watchThumbnail?.(),
     canOpen: (project) =>
       Boolean(
         (project.readWriteAccess &&
@@ -458,10 +458,7 @@ const cloneProjectToLibraryProjectMenuItem = defineRegistryItemFactory(
         .find(
           (entry) =>
             entry.localProjectPath === projectPath ||
-            (entry.remoteProjectId &&
-              ctx.services
-                .get(cloudStorageService)
-                .pathFor(entry.remoteProjectId) === projectPath)
+            entry.projectPath === projectPath
         )
 
     return {

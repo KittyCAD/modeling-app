@@ -67,6 +67,10 @@ export interface HomeProjectEntry {
   libraryIds?: readonly string[]
   name: string
   title?: string
+  /** Storage address supplied by the provider, including projects not yet opened. */
+  projectPath?: string
+  /** Watch a provider's thumbnail while the card is visible. */
+  watchThumbnail?: () => () => void
   localProjectPath?: string
   localProjectName?: string
   remoteProjectId?: string

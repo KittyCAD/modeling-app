@@ -1,14 +1,17 @@
-import type * as ArchiveModule from '@src/lib/fs-zds/cloud/archive'
-import { parseProjectArchive } from '@src/lib/fs-zds/cloud/archive'
+import { signal } from '@preact/signals-core'
+import { createCloudProjectStorageProvider } from '@src/lib/cloudProjects/storage'
+import type * as ArchiveModule from '@src/lib/cloudProjects/runtime/archive'
+import { parseProjectArchive } from '@src/lib/cloudProjects/runtime/archive'
 import { posix } from '@chainner/node-path'
+import { createCloudProjectsServices } from '@src/lib/cloudProjects/service'
 import { createFileOperationsServices } from '@src/registry/extensions/fileOperations'
-import * as api from '@src/lib/fs-zds/cloud/api'
+import * as api from '@src/lib/cloudProjects/runtime/api'
 import nodefs from '@src/lib/fs-zds/nodefs'
-import { publishCurrentProject } from '@src/registry/extensions/fileOperations/publication'
+import { publishCurrentProject } from '@src/lib/publishing/publication'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
+vi.mock('@src/lib/cloudProjects/runtime/api', async (original) => ({
   CloudApiError: (await original<typeof api>()).CloudApiError,
   getRemoteProject: vi.fn(),
   downloadRemoteProjectArchive: vi.fn(),
@@ -18,10 +21,10 @@ vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
   listRemoteProjects: vi.fn(),
   getRemoteProjectThumbnailUrl: vi.fn(),
 }))
-vi.mock('@src/registry/extensions/fileOperations/publication', () => ({
+vi.mock('@src/lib/publishing/publication', () => ({
   publishCurrentProject: vi.fn(),
 }))
-vi.mock('@src/lib/fs-zds/cloud/archive', async (original) => ({
+vi.mock('@src/lib/cloudProjects/runtime/archive', async (original) => ({
   ...(await original<typeof ArchiveModule>()),
   parseProjectArchive: vi.fn(async () => [
     { relativePath: 'main.kcl', data: new TextEncoder().encode('original') },
@@ -33,7 +36,7 @@ vi.mock('@src/lib/fs-zds/cloud/archive', async (original) => ({
 }))
 
 const remote = { id: 'one', revision: '1', description: '', category_ids: [] }
-const runtimes: ReturnType<typeof createFileOperationsServices>[] = []
+const runtimes: { dispose: () => Promise<void> }[] = []
 beforeEach(() => {
   vi.mocked(parseProjectArchive).mockResolvedValue([
     { relativePath: 'main.kcl', data: new TextEncoder().encode('original') },
@@ -62,13 +65,25 @@ afterEach(async () => {
 })
 const setup = (accountId?: () => string) => {
   const diskWrite = vi.fn()
-  const services = createFileOperationsServices(
-    { ...nodefs.impl, ...posix, writeFile: diskWrite },
-    () => ({ enabled: true, accountId: accountId?.() })
+  const paths = { ...nodefs.impl, ...posix, writeFile: diskWrite }
+  const services = createCloudProjectsServices(paths, () => ({
+    enabled: true,
+    accountId: accountId?.(),
+  }))
+  const files = createFileOperationsServices(paths, undefined, () => [
+    services.mount,
+  ])
+  runtimes.push(services, files)
+  const offline = signal(false)
+  const storageFor = createCloudProjectStorageProvider(
+    services.cloud,
+    posix,
+    offline
   )
-  runtimes.push(services)
   return {
-    storage: { ...services.cloud, operations: services.operations },
+    offline,
+    storageFor,
+    storage: { ...services.cloud, operations: files.operations },
     diskWrite,
   }
 }
@@ -648,4 +663,38 @@ describe('memory cloud storage', () => {
     expect(api.getRemoteProject).toHaveBeenCalledTimes(2)
     expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
   })
+})
+
+it('reports offline write policy only for paths belonging to cloud storage', async () => {
+  const { storage, storageFor, offline } = setup()
+  const root = await storage.openProject('one')
+  const project = storageFor(root)!
+  expect(storageFor(`${root}/parts/main.kcl`)).toBe(project)
+  expect(storageFor(`${storage.root}-copy/one`)).toBeUndefined()
+  expect(storageFor('/local/main.kcl')).toBeUndefined()
+  expect(project.writeAvailability.value).toEqual({ writable: true })
+  offline.value = true
+  expect(project.writeAvailability.value).toEqual({
+    writable: false,
+    reason: 'Offline. Cloud project is read-only.',
+  })
+  offline.value = false
+  expect(project.writeAvailability.value).toEqual({ writable: true })
+})
+
+it('watches only the captured subtree and stops delivering changes after disposal', async () => {
+  const { storage, storageFor } = setup()
+  const root = await storage.openProject('one')
+  const project = storageFor(root)!
+  await storage.operations.createDirectory(`${root}/parts`)
+  const changes: string[] = []
+  const stop = project.watch(`${root}/parts`, 'watch', (_type, path) => {
+    changes.push(path)
+  })
+  await storage.operations.writeFile(`${root}/other.kcl`, 'outside')
+  await storage.operations.writeFile(`${root}/parts/main.kcl`, 'inside')
+  expect(changes).toEqual([`${root}/parts/main.kcl`])
+  stop()
+  await storage.operations.writeFile(`${root}/parts/main.kcl`, 'later')
+  expect(changes).toEqual([`${root}/parts/main.kcl`])
 })

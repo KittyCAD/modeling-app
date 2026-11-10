@@ -1,6 +1,7 @@
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
+import { FileSaveStatus } from '@src/components/FileSaveStatus'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
-import { isOffline } from '@src/lib/networkStatus'
 import { getProjectInfo, writeProjectThumbnailFile } from '@src/lib/desktop'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -21,14 +22,19 @@ import { lspService } from '@src/lang/lsp/registry/contract'
 import { ExpectedFileOperationError } from '@src/lib/fileSystem/operationErrors'
 import {
   flushActiveTextFileWrite,
-  adoptCloudTextSnapshot,
+  adoptStorageTextSnapshot,
 } from '@src/lib/activeTextFile'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
   provideService,
+  provide,
 } from '@kittycad/registry'
-import { computed, signal, effect } from '@preact/signals-core'
+import { computed, signal } from '@preact/signals-core'
+import {
+  projectStorageProvidersValueSpec,
+  type ProjectStorage,
+} from '@src/lib/projectSession/storage'
 import type { ZDSProject } from '@src/lib/projectSession'
 import {
   createTextFileIO,
@@ -36,7 +42,6 @@ import {
 } from '@src/lib/projectSession/textFileIO'
 import {
   type FileOperationsRegistryService,
-  cloudStorageService,
   fileOperationsService,
 } from '@src/registry/contracts/fileOperations'
 import {
@@ -68,57 +73,88 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const currentProjectLibraryId = signal<string | undefined>(undefined)
   let textFileIO: TextFileIO | undefined
   const electron = window.electron
-  const cloudWatchers = new Map<string, () => void>()
+  const watchers = new Map<string, () => void>()
+  const storageFor = (path: string): ProjectStorage => {
+    for (const resolve of ctx.valueSpecs.get(
+      projectStorageProvidersValueSpec
+    )) {
+      const storage = resolve(path)
+      if (storage) return storage
+    }
+    return {
+      root: path,
+      writeAvailability: computed(() => ({ writable: true })),
+      externalChanges: 'files',
+      deletionHistory: 'archive',
+      createMissingEntrypoint: true,
+      watch: (path, key, onEvent) => {
+        electron?.watchFileOn(path, key, onEvent)
+        return () => electron?.watchFileOff(path, key)
+      },
+      batch: (_path, run) => run(ctx.services.get(fileOperationsService)),
+      refresh: async () => {},
+      retry: async () => {},
+      editorChanged: () => {},
+      writeThumbnail: (bytes) =>
+        writeProjectThumbnailFile(
+          ctx.services.get(fileOperationsService),
+          bytes,
+          path
+        ),
+    }
+  }
 
   const serviceImpl: ProjectSessionService = {
-    editorChanged: (path) => {
-      const cloud = ctx.services.optional(cloudStorageService)
-      if (cloud?.root && path.startsWith(`${cloud.root}${fsZds.sep}`))
-        cloud.editorChanged(path)
+    applyStorageSnapshot: (root, files) => {
+      const current = project.peek()
+      if (!current || current.path !== root) return
+      adoptStorageTextSnapshot(
+        root,
+        new Map(
+          files.map((file) => [fsZds.join(root, file.relativePath), file.data])
+        )
+      )
+      const editor = current.executingEditor.peek()
+      const file = files.find(
+        (file) => fsZds.join(root, file.relativePath) === editor?.path
+      )
+      editor?.adoptStorageSnapshot(
+        root,
+        file ? new TextDecoder().decode(file.data) : undefined
+      )
+      // Tree refreshes must not cancel rebuilding an adopted storage snapshot.
+      ++refreshGeneration
+      const generation = ++reconciliationGeneration
+      const isCurrent = () =>
+        project.peek() === current && reconciliationGeneration === generation
+      return current
+        .reloadFilesFromStorage(isCurrent)
+        .then(async () => {
+          if (!isCurrent()) return
+          if (!file) {
+            const target = current.projectIORefSignal.peek().default_file
+            if (target) await serviceImpl.openFile(target)
+            else await ctx.services.get(routerService).navigate(PATHS.HOME)
+          }
+        })
+        .catch(reportRejection)
     },
-    writeThumbnail: (path, bytes) => {
-      const cloud = ctx.services.optional(cloudStorageService)
-      return cloud?.root && path.startsWith(`${cloud.root}${fsZds.sep}`)
-        ? cloud.stageThumbnail(path, bytes)
-        : writeProjectThumbnailFile(
-            ctx.services.get(fileOperationsService),
-            bytes,
-            path
-          )
-    },
+    storageFor,
+    editorChanged: (path) => storageFor(path).editorChanged(path),
+    writeThumbnail: (path, bytes) => storageFor(path).writeThumbnail(bytes),
     get textFileIO() {
       return (textFileIO ??= createTextFileIO(
         ctx.services.get(fileOperationsService),
         {
           watch: (path, key, onEvent) => {
-            const cloud = ctx.services.optional(cloudStorageService)
-            if (
-              cloud &&
-              path.startsWith(
-                `${cloud.root}${window.electron?.os.isWindows ? '\\' : '/'}`
-              )
-            ) {
-              const watchKey = `${key}:${path}`
-              cloudWatchers.get(watchKey)?.()
-              cloudWatchers.set(
-                watchKey,
-                cloud.subscribe((changes) => {
-                  for (const change of changes)
-                    if (
-                      change.path === path ||
-                      change.path.startsWith(`${path}/`) ||
-                      change.path.startsWith(`${path}\\`)
-                    )
-                      onEvent(change.eventType, change.path)
-                })
-              )
-            } else electron?.watchFileOn(path, key, onEvent)
+            const watchKey = `${key}:${path}`
+            watchers.get(watchKey)?.()
+            watchers.set(watchKey, storageFor(path).watch(path, key, onEvent))
           },
           unwatch: (path, key) => {
             const watchKey = `${key}:${path}`
-            cloudWatchers.get(watchKey)?.()
-            cloudWatchers.delete(watchKey)
-            electron?.watchFileOff(path, key)
+            watchers.get(watchKey)?.()
+            watchers.delete(watchKey)
           },
         }
       ))
@@ -134,7 +170,10 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         ctx.services.get(fileOperationsService),
         current.path,
         await wasm,
-        { createMissingEntrypoint: !metadata.cloudProjectId }
+        {
+          createMissingEntrypoint: storageFor(current.path)
+            .createMissingEntrypoint,
+        }
       )
       if (project.peek() !== current || refreshGeneration !== generation) return
       current.projectIORefSignal.value = {
@@ -232,10 +271,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
             fsZds.relative(source, path.peek())
           )
       }
-      const cloud = ctx.services.optional(cloudStorageService)
-      if (cloud && source.startsWith(`${cloud.root}${fsZds.sep}`))
-        await cloud.batch(source, rename)
-      else await rename(operations)
+      await storageFor(source).batch(source, rename)
     },
     project,
     executingEditor,
@@ -253,78 +289,19 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     },
   }
 
-  const cloudService = ctx.services.signal(cloudStorageService)
-  let disposed = false
-  const resumeCloudSaves = async () => {
-    const current = project.peek()
-    const cloud = cloudService.peek()
-    const id = current?.projectIORefSignal.peek().cloudProjectId
-    if (disposed || isOffline() || !current || !cloud || !id) return
-    // Retry the staged snapshot first: a failed acknowledgement can leave the
-    // storage buffer equal to the editor even though saving is not confirmed.
-    await cloud.retry(id)
-    if (disposed || isOffline() || project.peek() !== current) return
-    await current.executingEditor.peek()?.flushWriteToFile()
-    if (disposed || isOffline() || project.peek() !== current) return
-    await flushActiveTextFileWrite()
-  }
-  const onOnline = () => {
-    void resumeCloudSaves().catch(reportRejection)
-  }
-  window.addEventListener('online', onOnline)
-  let stopReconciliation: (() => void) | undefined
-  queueMicrotask(() => {
-    if (disposed) return
-    stopReconciliation = effect(() =>
-      cloudService.value?.subscribeReconciled?.((root, files) => {
-        const current = project.peek()
-        if (!current || current.path !== root) return
-        adoptCloudTextSnapshot(
-          root,
-          new Map(
-            files.map((file) => [
-              fsZds.join(root, file.relativePath),
-              file.data,
-            ])
-          )
-        )
-        const editor = current.executingEditor.peek()
-        const file = files.find(
-          (file) => fsZds.join(root, file.relativePath) === editor?.path
-        )
-        editor?.adoptCloudSnapshot(
-          root,
-          file ? new TextDecoder().decode(file.data) : undefined
-        )
-        // Tree refreshes must not cancel rebuilding an adopted cloud snapshot.
-        ++refreshGeneration
-        const generation = ++reconciliationGeneration
-        const isCurrent = () =>
-          project.peek() === current && reconciliationGeneration === generation
-        void current
-          .reloadFilesFromStorage(isCurrent)
-          .then(async () => {
-            if (!isCurrent()) return
-            if (!file) {
-              const target = current.projectIORefSignal.peek().default_file
-              if (target) await serviceImpl.openFile(target)
-              else await ctx.services.get(routerService).navigate(PATHS.HOME)
-            }
-          })
-          .catch(reportRejection)
-      })
-    )
-  })
-
   return {
     id: 'project-session-extension',
+    provides: [
+      provide(appHeaderItemsValueSpec, {
+        id: 'file-save-status',
+        order: 20,
+        Component: FileSaveStatus,
+      }),
+    ],
     providesServices: [provideService(projectSession, serviceImpl)],
     dispose: () => {
-      disposed = true
-      window.removeEventListener('online', onOnline)
-      stopReconciliation?.()
-      for (const stop of cloudWatchers.values()) stop()
-      cloudWatchers.clear()
+      for (const stop of watchers.values()) stop()
+      watchers.clear()
     },
   }
 }, 'project-session-extension')

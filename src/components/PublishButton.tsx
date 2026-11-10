@@ -15,7 +15,7 @@ import {
 
 import type { App } from '@src/lib/app'
 
-import { cloudStorageService } from '@src/registry/contracts/fileOperations'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 
 import fsZds from '@src/lib/fs-zds'
 
@@ -26,9 +26,9 @@ import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import {
   cloneOpenedProjectToCloudLibrary,
   updateProjectTitleForPublication,
-} from '@src/lib/projectLibraries/cloneOpenedProjectToCloudLibrary'
+} from '@src/lib/cloudProjects/cloneOpenedProjectToCloudLibrary'
 
-import { type CurrentProjectPublicationDetails } from '@src/registry/contracts/fileOperations'
+import { type CurrentProjectPublicationDetails } from '@src/lib/publishing/publication'
 
 import { err } from '@src/lib/trap'
 

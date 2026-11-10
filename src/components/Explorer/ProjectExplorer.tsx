@@ -40,7 +40,7 @@ import { isErr, trap, reportRejection } from '@src/lib/trap'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE } from '@src/registry/contracts/commands'
-import { cloudStorageService } from '@src/registry/contracts/fileOperations'
+
 import {
   keymapService,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
@@ -1026,10 +1026,12 @@ export const ProjectExplorer = ({
               isPathWithinFileExplorerEntry(file?.path, child.path) &&
               canNavigate
 
-            const cloud = registry.optional(cloudStorageService)
-            if (cloud && child.path.startsWith(`${cloud.root}${fsZds.sep}`)) {
+            if (
+              app.projectSession.storageFor(project.path).deletionHistory ===
+              'storage'
+            ) {
               runFileTreeMutation(async () => {
-                // Cloud saves retain the parent revision; only local entries
+                // Storage-owned history retains the previous revision; archive entries
                 // need an archive move and an archive-based history event.
                 await fileOperations.remove(child.path)
                 if (shouldWeNavigate && app.project?.path === project.path)

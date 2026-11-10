@@ -25,8 +25,6 @@ import {
   editorVisualTheme,
 } from '@src/editor/plugins/theme'
 import usePlatform from '@src/hooks/usePlatform'
-import { useIsOffline } from '@src/hooks/network/useIsOffline'
-import { isOffline } from '@src/lib/networkStatus'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import {
   type ActiveTextFile,
@@ -91,10 +89,11 @@ export const EditorPaneContents = () => {
   useSignals()
   const { kclManager } = useSingletons()
   const app = useApp()
-  const offline = useIsOffline()
-  const readOnly = Boolean(
-    offline && app.projectSignal.value?.projectIORefSignal.value.cloudProjectId
-  )
+  const project = app.projectSignal.value
+  const readOnly = project
+    ? !app.projectSession.storageFor(project.path).writeAvailability.value
+        .writable
+    : false
   const editorPath = kclManager.path
   const activeTextFile = activeTextFileSignal.value
   const { isFileLoading } = useContext(RouteProviderContext)
@@ -103,7 +102,7 @@ export const EditorPaneContents = () => {
 
   useEffect(() => {
     kclManager.editorView.dispatch({
-      effects: kclManager.cloudReadOnlyCompartment.reconfigure([
+      effects: kclManager.storageReadOnlyCompartment.reconfigure([
         EditorState.readOnly.of(readOnly),
         EditorView.editable.of(!readOnly),
       ]),
@@ -229,9 +228,9 @@ function TextFileEditor({
           textReadOnlyCompartment.of([]),
           EditorState.transactionFilter.of((transaction) =>
             transaction.docChanged &&
-            app.projectSignal.peek()?.projectIORefSignal.peek()
-              .cloudProjectId &&
-            isOffline()
+            !app.projectSession
+              .storageFor(activeTextFile.path)
+              .writeAvailability.peek().writable
               ? []
               : transaction
           ),

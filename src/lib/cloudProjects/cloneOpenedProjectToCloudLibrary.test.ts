@@ -4,7 +4,7 @@ import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
 } from '@src/lib/projectLibraries'
-import { cloneOpenedProjectToCloudLibrary } from '@src/lib/projectLibraries/cloneOpenedProjectToCloudLibrary'
+import { cloneOpenedProjectToCloudLibrary } from '@src/lib/cloudProjects/cloneOpenedProjectToCloudLibrary'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,

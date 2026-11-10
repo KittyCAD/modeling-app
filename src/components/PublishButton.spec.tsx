@@ -1,7 +1,7 @@
 import type {
   ProjectPublishSubmission,
   PublishedProject,
-} from '@src/registry/extensions/fileOperations/publication'
+} from '@src/lib/publishing/publication'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
@@ -24,7 +24,7 @@ vi.mock('@src/hooks/useProjectStatus', () => ({
   useProjectStatus: mockState.useProjectStatus,
 }))
 
-vi.mock('@src/registry/extensions/fileOperations/publication', () => ({
+vi.mock('@src/lib/publishing/publication', () => ({
   publishCurrentProject: mockState.publishCurrentProject,
   getCurrentProjectPublicationDetails:
     mockState.getCurrentProjectPublicationDetails,
@@ -43,7 +43,8 @@ vi.mock('@src/components/PublishDialog', () => ({
 
 import { PublishButton } from '@src/components/PublishButton'
 import type { App } from '@src/lib/app'
-import { cloudStorageService } from '@src/registry/contracts/fileOperations'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
