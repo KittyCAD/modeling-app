@@ -47,6 +47,7 @@ import {
   waitForAuthentication,
 } from '@e2e/playwright/test-utils'
 import type { ILog } from '@src/lib/debugger'
+import { Themes } from '@src/lib/theme'
 import { isArray } from '@src/lib/utils'
 
 const TEST_PROJECT_SETTINGS =
@@ -626,11 +627,13 @@ const fixturesForWeb = {
       context,
       userFeatures,
       mockApiRoutes,
+      useTestSettings,
     }: {
       page: Page
       context: BrowserContext
       userFeatures: readonly Feature[]
       mockApiRoutes: boolean
+      useTestSettings: boolean
     },
     use: FnUse,
     testInfo: TestInfo
@@ -662,6 +665,32 @@ const fixturesForWeb = {
 
     const webApp = new AuthenticatedApp(context, page, testInfo)
     await webApp.initialise('', userFeatures, mockApiRoutes)
+
+    if (useTestSettings) {
+      // The web filesystem does not read TEST_SETTINGS from localStorage.
+      // Persist the same defaults before tests create projects or reload.
+      await page.evaluate((theme) => {
+        const settings = window.app.settings.get()
+        settings.app.onboardingStatus.user = 'dismissed'
+        settings.debug.showPanel.user = true
+        settings.debug.showModelingMachineState.user = true
+        settings.modeling.defaultUnit.user = 'in'
+        settings.modeling.enableSSAO.user = false
+        settings.modeling.mouseControls.user = 'Zoo'
+        settings.modeling.cameraProjection.user = 'perspective'
+        settings.modeling.fixedSizeGrid.user = false
+        settings.modeling.gizmoType.user = 'axis'
+        settings.textEditor.textWrapping.user = true
+        window.app.settings.send({ type: 'Set all settings', settings })
+        window.app.settings.send({
+          type: 'set.app.theme',
+          data: { level: 'user', value: theme },
+        })
+      }, Themes.Dark)
+      await page.waitForFunction(() =>
+        window.app.settings.actor.getSnapshot().matches('idle')
+      )
+    }
 
     // Web settings live in OPFS; the localStorage seed alone cannot select
     // a renderer. Persist the choice before a modeling scene mounts; no reload
