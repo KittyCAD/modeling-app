@@ -427,6 +427,44 @@ describe('Zookeeper session controller', () => {
     })
   })
 
+  it('starts migration through normal submission only when idle', async () => {
+    const { actor, controller } = createHarness({
+      actorState: 'ready-await',
+      actorContext: { awaitingResponse: true },
+    })
+    controller.migrateKcl()
+    expect(controller.queue.value).toHaveLength(0)
+
+    actor.emit('ready-await', { awaitingResponse: false })
+    controller.migrateKcl()
+    const submission = controller.queue.value[0]
+    controller.migrateKcl()
+
+    await vi.waitFor(() => {
+      expect(
+        sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
+      ).toHaveLength(1)
+    })
+    expect(projectFilesMocks.collect).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skipUnreadableFiles: false,
+      })
+    )
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)[0]
+    ).toMatchObject({
+      prompt: 'Migrate this project to KCL 3.0.',
+      additionalFiles: [],
+      migration: {
+        request_id: submission.id,
+        project_snapshot: {
+          project_id: `local:${projectId}`,
+          snapshot_id: submission.id,
+        },
+      },
+    })
+  })
+
   it('updates one bottom-center progress notification without a mounted pane', () => {
     const loading = vi
       .spyOn(toast, 'loading')

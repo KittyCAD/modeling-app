@@ -1,3 +1,4 @@
+import type { KclMigrationRequest } from '@kittycad/lib'
 import {
   effect,
   type ReadonlySignal,
@@ -50,6 +51,7 @@ export interface QueuedMessage {
   text: string
   mode?: MlCopilotModeId
   attachments: File[]
+  migration?: Pick<KclMigrationRequest, 'request_id' | 'project_snapshot'>
 }
 
 export interface ZookeeperSessionController {
@@ -64,6 +66,7 @@ export interface ZookeeperSessionController {
   clearConversation(): Promise<void>
   dispose(): Promise<void>
   reconnect(): void
+  migrateKcl(): void
   removeQueued(id: string): void
   resumeInterruptedTurn(): void
   sendOrQueue(
@@ -241,6 +244,44 @@ class SessionController implements ZookeeperSessionController {
     }
     this.queueSignal.value = [...this.queueSignal.peek(), message]
     this.flushQueue(this.actor.getSnapshot())
+  }
+
+  migrateKcl() {
+    const snapshot = this.actor.getSnapshot()
+    if (
+      !this.active ||
+      this.isClearingChatSignal.peek() ||
+      this.activeSubmission !== undefined ||
+      this.queueSignal.peek().length > 0 ||
+      !this.isReadyForPrompt(snapshot)
+    ) {
+      return
+    }
+    const project = this.getReadyZdsProject()?.projectIORefSignal.value
+    if (!project) return
+
+    const projectId = project.cloudProjectId
+      ? `cloud:${project.cloudProjectId}`
+      : this.projectId
+        ? `local:${this.projectId}`
+        : undefined
+    if (!projectId) {
+      toast.error('Save the project before migrating to KCL 3.0.')
+      return
+    }
+    const requestId = crypto.randomUUID()
+    this.queueSignal.value = [
+      {
+        id: requestId,
+        text: 'Migrate this project to KCL 3.0.',
+        attachments: [],
+        migration: {
+          request_id: requestId,
+          project_snapshot: { project_id: projectId, snapshot_id: requestId },
+        },
+      },
+    ]
+    this.flushQueue(snapshot)
   }
 
   removeQueued(id: string) {
@@ -502,9 +543,7 @@ class SessionController implements ZookeeperSessionController {
   }
 
   private async process(
-    prompt: string,
-    mode: MlCopilotModeId | undefined,
-    attachments: File[],
+    { text: prompt, mode, attachments, migration }: QueuedMessage,
     isCurrent = () => true
   ): Promise<boolean> {
     const zdsProject = this.getReadyZdsProject()
@@ -528,6 +567,7 @@ class SessionController implements ZookeeperSessionController {
           selectedFilePath: editorPath,
           fileNames: kclManager.execState.filenames,
           projectContext: project,
+          ...(migration ? { skipUnreadableFiles: false } : {}),
         }),
         kclManager.wasmInstancePromise,
       ])
@@ -582,6 +622,7 @@ class SessionController implements ZookeeperSessionController {
       wasmInstance,
       mode,
       additionalFiles: attachments,
+      ...(migration ? { migration } : {}),
     })
     return true
   }
@@ -933,9 +974,7 @@ class SessionController implements ZookeeperSessionController {
     let processingFailed = false
 
     void this.process(
-      next.text,
-      next.mode,
-      next.attachments,
+      next,
       () =>
         this.activeSubmission === submission &&
         !this.isClearingChatSignal.peek() &&
