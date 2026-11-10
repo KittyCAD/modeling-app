@@ -8,7 +8,10 @@ import type { Editor } from '@src/lib/editors/registry/contract'
 export function createEditorDocument(contents: string) {
   const text = signal(contents)
   const lifetime = new AbortController()
-  let state = EditorState.create({ doc: contents, extensions: [history()] })
+  let state = EditorState.create({
+    doc: contents,
+    extensions: [history(), EditorState.allowMultipleSelections.of(true)],
+  })
   const listeners = new Set<(transaction: Transaction) => void>()
   const apply = (transaction: Transaction) => {
     if (lifetime.signal.aborted) return

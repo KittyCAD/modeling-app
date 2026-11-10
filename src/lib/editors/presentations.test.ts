@@ -1,5 +1,5 @@
 import '@src/lib/projectSession/next/testFeature'
-import { EditorState } from '@codemirror/state'
+import { EditorState, EditorSelection } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { Registry, Slot, defineRegistryItem, provide } from '@kittycad/registry'
 import { beforeAll, afterEach, expect, it, vi } from 'vitest'
@@ -149,4 +149,23 @@ it('releases Code contribution resources on withdrawal and reacquires them per s
   expect(second.codeView.peek()!.state.doc.toString()).toBe('original')
   editors.closeView(second.id)
   expect(release).toHaveBeenCalledTimes(4)
+})
+
+it('retains multiple cursor positions in document undo history', () => {
+  const editors = setup()
+  const editor = editors.createEditor('abcd')
+  const view = editors.createView(editor).codeView.peek()!
+  view.dispatch({
+    selection: EditorSelection.create([
+      EditorSelection.cursor(1),
+      EditorSelection.cursor(3),
+    ]),
+  })
+  view.dispatch(view.state.replaceSelection('X'))
+  expect(editor.contents.peek()).toBe('aXbcXd')
+  expect(editor.undo()).toBe(true)
+  expect(editor.contents.peek()).toBe('abcd')
+  expect(editor.state.selection.ranges.map((range) => range.anchor)).toEqual([
+    1, 3,
+  ])
 })
