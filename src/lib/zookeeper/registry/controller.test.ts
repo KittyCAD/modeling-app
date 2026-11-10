@@ -508,17 +508,26 @@ describe('Zookeeper session controller', () => {
         ],
       },
     }
-    h.actor.emit('wait-for-continue-check', context)
-    await waitFor(() => expect(h.refreshProject).toHaveBeenCalledOnce())
-    expect(sentEvents(h.actor, ZookeeperManagerStates.ContinueCheck)).toEqual(
-      []
-    )
-    gate.resolve(undefined)
-    await waitFor(() =>
-      expect(
-        sentEvents(h.actor, ZookeeperManagerStates.ContinueCheck)
-      ).toHaveLength(1)
-    )
+    try {
+      h.actor.emit('wait-for-continue-check', context)
+      await waitFor(() => expect(h.refreshProject).toHaveBeenCalledOnce())
+      vi.useFakeTimers()
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(sentEvents(h.actor, ZookeeperManagerStates.ContinueCheck)).toEqual(
+        []
+      )
+      expect(h.reloadFiles).not.toHaveBeenCalled()
+      gate.resolve(undefined)
+      vi.useRealTimers()
+      await waitFor(() =>
+        expect(
+          sentEvents(h.actor, ZookeeperManagerStates.ContinueCheck)
+        ).toHaveLength(1)
+      )
+    } finally {
+      gate.resolve(undefined)
+      vi.useRealTimers()
+    }
   })
 
   it('drains an in-flight refresh on dispose without updating a replacement session', async () => {
