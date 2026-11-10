@@ -47,6 +47,7 @@ import {
   EngineConnectionManagerEvents,
   EngineConnectionStateType,
   getResponseErrorMessage,
+  isExecutionBoundaryCommand,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
   validateStreamDimensions,
   type EngineDisconnectEventDetail,
@@ -1776,7 +1777,8 @@ export class ConnectionManager extends EventTarget {
       JSON.parse(idToRangeStr)
     // Current execution is stale, going to interrupt, a new execution will trigger
     // Used in conjunction with rejectAllModelingCommands
-    if (this.executionIsStale) {
+    // Preserve execution boundaries so interruption can still restore rendering quality.
+    if (!isExecutionBoundaryCommand(command) && this.executionIsStale) {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
     try {
