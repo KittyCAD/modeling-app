@@ -287,7 +287,7 @@ function TextFileEditor({
               })
             }}
           >
-            Import
+            Import in current file
           </ActionButton>
         )}
       </div>

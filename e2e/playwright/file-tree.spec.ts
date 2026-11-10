@@ -80,7 +80,7 @@ test(
     await expect(
       page
         .locator('#code-pane')
-        .getByRole('button', { name: 'Import', exact: true })
+        .getByRole('button', { name: 'Import in current file', exact: true })
     ).not.toBeVisible()
 
     await toolbar.openFile('config')

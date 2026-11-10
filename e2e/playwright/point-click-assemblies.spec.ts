@@ -590,9 +590,10 @@ test.describe(
             })
           ).toBeVisible()
           await expect(
-            page
-              .locator('#code-pane')
-              .getByRole('button', { name: 'Import', exact: true })
+            page.locator('#code-pane').getByRole('button', {
+              name: 'Import in current file',
+              exact: true,
+            })
           ).toBeVisible()
           await insertPartIntoAssembly(
             'cube.step',
@@ -641,7 +642,10 @@ test.describe(
           await toolbar.openFile(complexPlmFileName)
           await page
             .locator('#code-pane')
-            .getByRole('button', { name: 'Import', exact: true })
+            .getByRole('button', {
+              name: 'Import in current file',
+              exact: true,
+            })
             .click()
 
           // Check getPathFilenameInVariableCase output
