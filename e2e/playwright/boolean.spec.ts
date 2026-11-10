@@ -73,6 +73,10 @@ test.describe(
               'aria-label',
               commandName
             )
+            const targets = modelingDialog.selection(
+              operationName === 'split' ? 'Targets' : 'Solids'
+            )
+            await expect(targets).toHaveAttribute('aria-pressed', 'true')
             // Select first object in the scene, expect there to be a pixel diff from the selection color change
             const [clickFirstObject] = await scene.makeSelectionHelpers({
               kind: 'face',
@@ -80,7 +84,7 @@ test.describe(
               stream: { x: 592, y: 174, format: 'pixels' },
             })
             await clickFirstObject({ pixelDiff: 50 })
-            await page.waitForTimeout(1000)
+            await expect(targets).toHaveText('1 sweep')
 
             // For subtract, select the tool separately.
             if (operationName !== 'subtract') {
@@ -88,6 +92,10 @@ test.describe(
               await page.keyboard.down('Shift')
             } else {
               await modelingDialog.selection('Tools').click()
+              await expect(modelingDialog.selection('Tools')).toHaveAttribute(
+                'aria-pressed',
+                'true'
+              )
             }
 
             // Local selection resolves asynchronously; keep Shift held until both
@@ -97,7 +105,7 @@ test.describe(
               const [clickSecondObject] = await scene.makeSelectionHelpers({
                 kind: 'face',
                 index: 1,
-                stream: { x: 683, y: 273, format: 'pixels' },
+                stream: { x: 500, y: 300, format: 'pixels' },
               })
               await clickSecondObject({ pixelDiff: 50 })
 
