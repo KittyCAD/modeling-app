@@ -5,14 +5,10 @@ import {
   type Contract,
   contract,
   contribute,
-  createScope,
   Facet,
   type InputOf,
   type OutputOf,
-  optional,
   provide,
-  required,
-  type ScopeHost,
   type Service,
   ServiceResolutionError,
   type Signal,
@@ -20,7 +16,8 @@ import {
   type Subtree,
   service,
   slot,
-} from './algebra'
+} from './next'
+import { createScope, optional, required, type ScopeHost } from './algebra'
 
 it('keeps capability and facet types through a shared contract', () => {
   const contract = {

@@ -3,7 +3,7 @@ import { itemKey } from './algebra'
 import { formatPath, type ItemPath } from './path'
 
 /** A unique executable item and the path where planning first encountered it. */
-export interface PlannedItem {
+interface PlannedItem {
   readonly item: Binding | Subtree
   readonly path: ItemPath
 }
