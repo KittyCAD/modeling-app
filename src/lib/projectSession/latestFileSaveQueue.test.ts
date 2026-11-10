@@ -101,7 +101,6 @@ describe('latest file save queue', () => {
           const gate = Promise.withResolvers<undefined>()
           const actual = new Map<string, string[]>()
           const active = new Set<string>()
-          const expected = new Map<string, typeof requests>()
           const queue = createLatestFileSaveQueue(
             async (request: (typeof requests)[number]) => {
               expect(active.has(request.requestedPath)).toBe(false)
@@ -113,32 +112,36 @@ describe('latest file save queue', () => {
               active.delete(request.requestedPath)
             }
           )
-          const pending = requests.map((request) => {
-            const scheduled = expected.get(request.requestedPath) ?? []
-            // The first request is already running. Only adjacent waiting edits coalesce.
-            if (
-              scheduled.length > 1 &&
-              !request.navigation &&
-              scheduled.at(-1)?.navigation === false
+          // Declarative oracle: keep the running request, every navigation
+          // snapshot, and the final edit before each navigation or end of history.
+          const expected = new Map(
+            [...new Set(requests.map((request) => request.requestedPath))].map(
+              (path) => {
+                const history = requests.filter(
+                  (request) => request.requestedPath === path
+                )
+                return [
+                  path,
+                  history
+                    .filter(
+                      (request, index) =>
+                        index === 0 ||
+                        request.navigation ||
+                        index === history.length - 1 ||
+                        history[index + 1].navigation
+                    )
+                    .map((request) => request.code),
+                ]
+              }
             )
-              scheduled[scheduled.length - 1] = request
-            else scheduled.push(request)
-            expected.set(request.requestedPath, scheduled)
-            return request.navigation
-              ? queue.enqueue(request)
-              : queue.save(request)
-          })
+          )
+          const pending = requests.map((request) =>
+            request.navigation ? queue.enqueue(request) : queue.save(request)
+          )
           try {
             gate.resolve(undefined)
             await Promise.all(pending)
-            expect(actual).toEqual(
-              new Map(
-                [...expected].map(([path, values]) => [
-                  path,
-                  values.map((value) => value.code),
-                ])
-              )
-            )
+            expect(actual).toEqual(expected)
             expect(active.size).toBe(0)
             for (const path of expected.keys())
               expect(queue.has(path)).toBe(false)

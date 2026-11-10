@@ -102,6 +102,24 @@ const cloudProject = {
   defaultFile: '/projects/old-cloud-title/main.kcl',
 } satisfies HomeProjectEntry
 
+function cardProject(kind: 'local' | 'cloud'): HomeProjectEntry {
+  return kind === 'local'
+    ? {
+        ...cloudProject,
+        id: 'local:/projects/old-cloud-title',
+        status: 'local',
+        remoteProjectId: undefined,
+      }
+    : {
+        ...cloudProject,
+        source: 'remote',
+        status: 'cloud-only',
+        localProjectPath: undefined,
+        localProjectName: undefined,
+        thumbnail: undefined,
+      }
+}
+
 function createProjectActions({
   canOpen = vi.fn(() => true),
   rename = vi.fn().mockResolvedValue(undefined),
@@ -251,15 +269,7 @@ describe('ProjectCard', () => {
       const navigation = Promise.withResolvers<undefined>()
       const projectActions = createProjectActions()
       vi.mocked(projectActions.open).mockReturnValue(opening.promise)
-      const project: HomeProjectEntry =
-        kind === 'local'
-          ? cloudProject
-          : {
-              ...cloudProject,
-              source: 'remote',
-              status: 'cloud-only',
-              localProjectPath: undefined,
-            }
+      const project = cardProject(kind)
       const router = createMemoryRouter(
         [
           {
@@ -334,15 +344,7 @@ describe('ProjectCard', () => {
       vi.mocked(projectActions.open).mockResolvedValue({
         defaultFile: '/project/main.kcl',
       })
-      const project: HomeProjectEntry =
-        kind === 'local'
-          ? cloudProject
-          : {
-              ...cloudProject,
-              source: 'remote',
-              status: 'cloud-only',
-              localProjectPath: undefined,
-            }
+      const project = cardProject(kind)
       window.history.replaceState(null, '', '/home')
       const view = render(
         <BrowserRouter>
@@ -674,12 +676,8 @@ describe('ProjectCard', () => {
     'returns a %s project to its original title before refreshed metadata arrives',
     async (kind) => {
       const project = {
-        ...cloudProject,
-        id: kind === 'local' ? 'local:/projects/original' : cloudProject.id,
+        ...cardProject(kind),
         title: 'Original',
-        status: kind === 'local' ? 'local' : 'synced',
-        remoteProjectId:
-          kind === 'local' ? undefined : cloudProject.remoteProjectId,
       } satisfies HomeProjectEntry
       const rename = vi.fn().mockResolvedValue(undefined)
       renderProjectCard({
@@ -955,7 +953,7 @@ describe('ProjectCard', () => {
     ).not.toBeInTheDocument()
   })
 
-  test('opens move to library from the card context menu', () => {
+  test('opens clone to library from the card context menu', () => {
     const onCloneToLibrary = vi.fn()
     render(
       <BrowserRouter>
@@ -1034,10 +1032,7 @@ describe('ProjectCard', () => {
       const gate = Promise.withResolvers<undefined>()
       const rename = vi.fn(() => gate.promise)
       const projectActions = createProjectActions({ rename })
-      const project: HomeProjectEntry =
-        kind === 'local'
-          ? cloudProject
-          : { ...cloudProject, source: 'remote', localProjectPath: undefined }
+      const project = cardProject(kind)
       const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {})
       const errorToast = vi.spyOn(toast, 'error').mockImplementation(() => '')
       renderProjectCard({ project, projectActions })

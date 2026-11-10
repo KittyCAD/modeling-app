@@ -1536,6 +1536,11 @@ describe('KclManager live operation updates', () => {
           '',
           false
         )
+        const writeThumbnail = vi.fn(async () => {})
+        editor.systemDeps.projectSession = {
+          editorChanged: vi.fn(),
+          writeThumbnail,
+        }
         projectFsManager.dir = metadata.path
         editor.engineCommandManager.started = true
         vi.spyOn(
@@ -1563,7 +1568,11 @@ describe('KclManager live operation updates', () => {
         expect(thumbnail).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({ writeThumbnail: expect.any(Function) })
         )
-        const { isCurrent } = thumbnail.mock.calls[0][0]
+        const { isCurrent, writeThumbnail: capturedWriter } =
+          thumbnail.mock.calls[0][0]
+        const image = new Uint8Array([0, 128, 255])
+        await capturedWriter?.(metadata.path, image)
+        expect(writeThumbnail).toHaveBeenCalledWith(metadata.path, image)
         expect(isCurrent()).toBe(true)
         thumbnail.mockClear()
         await editor.executeAst({ ast: createEmptyAst() })
@@ -4100,22 +4109,20 @@ describe('KclManager diagnostics', () => {
   it('reports KCL autosave failures without including source or path', async () => {
     const path = '/tmp/kcl-manager-reporting-test.kcl'
     const newCode = 'local edits'
-    const { kclManager } = createKclManagerTestHarness(newCode)
+    const { kclManager } = createKclManagerTestHarness('disk base')
     const error = new Error('disk write failed')
 
     kclManager.path = path
-    ;(kclManager as any).markFileCodeAsSynced('disk base')
+    kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+      filePath: path,
+      nextContent: 'disk base',
+      shouldSyncRust: false,
+    })
+    setEditorBuffer(kclManager, newCode)
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('disk base')
     vi.spyOn(kclManager, 'write').mockRejectedValue(error)
 
-    await expect(
-      (kclManager as any).performDelayedWriteToFile({
-        newCode,
-        requestedDocumentVersion: (kclManager as any)._documentVersion,
-        requestedPath: path,
-        options: {},
-      })
-    ).rejects.toBe(error)
+    await expect(kclManager.flushWriteToFile()).rejects.toBe(error)
 
     expect(clientErrorMocks.reportFileOperationError).toHaveBeenCalledWith({
       error,
@@ -4139,24 +4146,22 @@ describe('KclManager diagnostics', () => {
   it('does not report KCL autosave writes after the file was removed', async () => {
     const path = '/tmp/kcl-manager-removed-test.kcl'
     const newCode = 'local edits'
-    const { kclManager } = createKclManagerTestHarness(newCode)
+    const { kclManager } = createKclManagerTestHarness('disk base')
     const error = Object.assign(new Error('file was removed'), {
       code: 'ENOENT',
     })
 
     kclManager.path = path
-    ;(kclManager as any).markFileCodeAsSynced('disk base')
+    kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+      filePath: path,
+      nextContent: 'disk base',
+      shouldSyncRust: false,
+    })
+    setEditorBuffer(kclManager, newCode)
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('disk base')
     vi.spyOn(kclManager, 'write').mockRejectedValue(error)
 
-    await expect(
-      (kclManager as any).performDelayedWriteToFile({
-        newCode,
-        requestedDocumentVersion: (kclManager as any)._documentVersion,
-        requestedPath: path,
-        options: {},
-      })
-    ).rejects.toBe(error)
+    await expect(kclManager.flushWriteToFile()).rejects.toBe(error)
 
     expect(clientErrorMocks.reportFileOperationError).not.toHaveBeenCalled()
   })

@@ -362,9 +362,12 @@ for (const workerWrites of [false, true]) {
       await expect(page.getByTestId('gizmo')).toBeVisible()
       await page.waitForLoadState('networkidle')
       const code = `${blankCode}// saved by the offline worker\n`
+      await installPausedClock(page)
       try {
         await context.setOffline(true)
-        await page.waitForTimeout(7_000)
+        await page.waitForFunction(() => !navigator.onLine)
+        await page.clock.runFor(7_000)
+        await page.clock.resume()
         await editThroughUI(page, code)
         await expect.poll(() => storage.read(root)).toBe(code)
       } finally {
@@ -553,8 +556,8 @@ for (const kind of ['local', 'cloud'] as const) {
         const pending = await page.evaluateHandle(() => {
           const editor = window.app.singletons.kclManager
           const rust = editor.rustContext
-          const exitSketch = rust.exitSketch
-          const executeCode = editor.executeCode
+          const exitSketch = rust.exitSketch.bind(rust)
+          const executeCode = editor.executeCode.bind(editor)
           const exit = Promise.withResolvers<undefined>()
           const execution = Promise.withResolvers<undefined>()
           let exitCalls = 0
@@ -885,6 +888,16 @@ for (const kind of ['local', 'cloud'] as const) {
           initialCode
         )
         await scene.settled()
+        await flushEditorAndThumbnailSaves(page)
+        // Prove thumbnail generation is working before asserting that a refresh skips it.
+        await expect
+          .poll(() =>
+            storage.read(root, 'thumbnail.png').then(
+              (contents) => Boolean(contents),
+              () => false
+            )
+          )
+          .toBe(true)
         await openExistingSketch(toolbar, 'profile')
         await expect(
           page.locator('[data-handle="sketch-point-handle"]')
@@ -1464,9 +1477,12 @@ for (const kind of ['local', 'cloud'] as const) {
         await expectEditor(page, blankCode)
         await openLayoutPanes(page, DefaultLayoutPaneID.Files)
         await page.waitForLoadState('networkidle')
+        await installPausedClock(page)
         try {
           await context.setOffline(true)
-          await page.waitForTimeout(7_000)
+          await page.waitForFunction(() => !navigator.onLine)
+          await page.clock.runFor(7_000)
+          await page.clock.resume()
           const code = `${blankCode}// local edit without internet\n`
           if (kind === 'cloud') {
             await expect(
@@ -1546,10 +1562,13 @@ for (const kind of ['local', 'cloud'] as const) {
           await expectEditor(page, blankCode)
           await page.waitForLoadState('networkidle')
           const code = `${blankCode}// typed just before disconnection\n`
+          await installPausedClock(page)
           await editThroughUI(page, code)
           try {
             await context.setOffline(true)
-            await page.waitForTimeout(7_000)
+            await page.waitForFunction(() => !navigator.onLine)
+            await page.clock.runFor(7_000)
+            await page.clock.resume()
             await expectEditor(page, code)
             expect(await storage.read(root)).toBe(blankCode)
             await context.setOffline(false)
@@ -1839,6 +1858,8 @@ for (const kind of ['local', 'cloud'] as const) {
                         : Promise.resolve()
                     if (action === 'rename') await acquired.promise
                     const prototype = FileSystemDirectoryHandle.prototype
+                    // Preserve the native method for restoration; the wrapper calls it with its handle.
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
                     const removeEntry = prototype.removeEntry
                     let started = false
                     if (action === 'delete')
@@ -1931,8 +1952,8 @@ for (const kind of ['local', 'cloud'] as const) {
           } finally {
             gate.resolve(undefined)
             if (local) {
-              await local.evaluate((gate) => {
-                gate.release()
+              await local.evaluate(async (gate) => {
+                await gate.release()
                 gate.restore()
               })
               await local.dispose()
