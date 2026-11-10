@@ -17,7 +17,7 @@ import {
 } from '@src/lib/constants'
 import {
   downloadProjectById,
-  getPublicProjectNameById,
+  getProjectNameById,
 } from '@src/lib/downloadProject'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -170,7 +170,7 @@ export function useQueryParamEffects() {
         )
       }
 
-      const projectName = await getPublicProjectNameById(projectId)
+      const projectName = await getProjectNameById(projectId)
       if (err(projectName)) {
         return Promise.reject(projectName)
       }
