@@ -182,6 +182,53 @@ describe('direct project session file actions', () => {
     expect(stop).toHaveBeenCalledOnce()
   })
 
+  it.each(['tree refresh', 'new snapshot', 'project switch'] as const)(
+    'keeps a cloud rebuild current across %s only when its snapshot still owns the project',
+    async (operation) => {
+      let reconcile:
+        | ((
+            root: string,
+            files: { relativePath: string; data: Uint8Array }[]
+          ) => void)
+        | undefined
+      const s = setup({
+        subscribeReconciled: (listener: NonNullable<typeof reconcile>) => {
+          reconcile = listener
+          return () => {}
+        },
+      } as unknown as CloudStorageService)
+      Object.assign(s.project.executingEditor.peek()!, {
+        adoptCloudSnapshot: vi.fn(),
+      })
+      const pending = Promise.withResolvers<undefined>()
+      const reload = vi.fn(async (_isCurrent: () => boolean) => pending.promise)
+      Object.assign(s.project, { reloadFilesFromStorage: reload })
+      await vi.waitFor(() => expect(reconcile).toBeDefined())
+      const files = [
+        {
+          relativePath: 'parts/main.kcl',
+          data: new TextEncoder().encode('cloud source'),
+        },
+      ]
+      try {
+        reconcile!('/project', files)
+        const isCurrent = reload.mock.calls[0][0]
+        expect(isCurrent()).toBe(true)
+        vi.useFakeTimers()
+        await vi.advanceTimersByTimeAsync(7_000)
+        if (operation === 'tree refresh') {
+          vi.mocked(getProjectInfo).mockResolvedValueOnce(metadata('Fresh'))
+          await s.session.refreshProject()
+        } else if (operation === 'new snapshot') reconcile!('/project', files)
+        else s.session.setProject(createProject().project)
+        expect(isCurrent()).toBe(operation === 'tree refresh')
+      } finally {
+        pending.resolve(undefined)
+        vi.useRealTimers()
+      }
+    }
+  )
+
   it('stages cloud thumbnails and forwards editor activity without file writes', async () => {
     const stageThumbnail = vi.fn(async () => {})
     const editorChanged = vi.fn()
