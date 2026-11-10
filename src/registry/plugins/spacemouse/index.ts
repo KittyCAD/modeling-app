@@ -54,6 +54,17 @@ const spaceMouse = createZdsPlugin({
   description: '3Dconnexion SpaceMouse viewport controls.',
   items: [spaceMouseControls],
   defaultSetting: 'off',
+  activationSetting: {
+    category: 'modeling',
+    settingName: 'spaceMouse',
+    title: 'SpaceMouse',
+    description:
+      'Navigate with a 3Dconnexion SpaceMouse. Requires Use Local Renderer.',
+    commandConfig: { inputType: 'boolean' },
+    hideOnLevel: 'project',
+    // Keep the saved preference when moving the toggle out of Plugins.
+    userToml: { sectionKey: 'plugins', tomlKey: 'spacemouse' },
+  },
 })
 
 export default spaceMouse

@@ -293,7 +293,6 @@ export class DriverSpaceMouseController {
       this.closeDriver()
       return
     }
-    this.focusCanvas()
     this.spaceMouse?.create3dmouse(
       this.controls.domElement,
       'Zoo Design Studio'

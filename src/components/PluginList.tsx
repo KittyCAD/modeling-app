@@ -46,6 +46,7 @@ export const PluginsList = forwardRef(
       if (!activation) {
         return true
       }
+      if (activation.category !== 'plugins') return false
 
       const setting =
         settingsByCategory[activation.category]?.[activation.settingName]
