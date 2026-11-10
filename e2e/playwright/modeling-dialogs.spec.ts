@@ -218,7 +218,7 @@ obstruction = extrude(region002, length = 20mm)`
       await axisMode.selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
       await editor.selectText('line(')
-      await modelingDialog.fillInput(/^angle$/i, '180deg')
+      await modelingDialog.input(/^angle$/i).fill('180deg')
       await expect(submit).toBeEnabled()
       await submit.click()
       await expect(dialog).not.toBeAttached()
@@ -229,7 +229,7 @@ obstruction = extrude(region002, length = 20mm)`
       await toolbar.openFeatureTreePane()
       await (await toolbar.getFeatureTreeOperation('Revolve', 0)).dblclick()
       await expect(axisMode).not.toBeAttached()
-    await modelingDialog.fillInput(/^angle$/i, '90deg')
+      await modelingDialog.input(/^angle$/i).fill('90deg')
       await expect(submit).toBeEnabled()
       await submit.click()
       await expect(dialog).not.toBeAttached()
@@ -264,10 +264,10 @@ obstruction = extrude(region002, length = 20mm)`
       await toolbar.translateButton.click()
       await expect(dialog).toBeVisible()
       const xyz = modelingDialog.input(/^xyz$/i)
-      await modelingDialog.fillInput(/^x$/i, '')
-      await modelingDialog.fillInput(/^xyz$/i, 'missingVector')
+      await modelingDialog.input(/^x$/i).fill('')
+      await xyz.fill('missingVector')
       await expect(submit).toBeDisabled()
-      await modelingDialog.fillInput(/^xyz$/i, '[1mm, 2mm, 3mm]')
+      await xyz.fill('[1mm, 2mm, 3mm]')
       await expect(submit).toBeEnabled()
       await submit.click()
       await expect(dialog).not.toBeAttached()
@@ -324,7 +324,10 @@ body002 = clone(body001)
       )
       await editor.selectText('region(')
       await toolbar.extrudeButton.click()
-      await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'true')
+      await expect(toolbar.extrudeButton).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
       await expect(toolbar.revolveButton).toHaveAttribute(
         'aria-pressed',
         'false'
@@ -401,7 +404,7 @@ body002 = clone(body001)
       const initialHeight = await dialog.evaluate(
         (element) => element.getBoundingClientRect().height
       )
-      await modelingDialog.fillInput('length', '1deg')
+      await length.fill('1deg')
       await expect(submit).toBeEnabled()
       await submit.click()
       await expect(dialog.getByRole('alert')).toContainText(
@@ -419,10 +422,10 @@ body002 = clone(body001)
       expect((await dialog.boundingBox())?.x).toBeCloseTo(
         initialPosition.x - 160
       )
-      await modelingDialog.fillInput('length', 'missingLength')
+      await length.fill('missingLength')
       await expect(dialog.getByRole('alert')).not.toBeAttached()
       await expect(submit).toBeDisabled()
-      await modelingDialog.fillInput('length', '12mm')
+      await length.fill('12mm')
       await expect(submit).toBeEnabled()
       await expect
         .poll(() =>
@@ -434,7 +437,7 @@ body002 = clone(body001)
       await expect(submit).toBeInViewport()
       await expect(modelingDialog.cancelButton).toBeInViewport()
       await expect(tagStart).toHaveAttribute('placeholder', 'None')
-      await modelingDialog.fillInput('tag start', 'startFace')
+      await tagStart.fill('startFace')
       await more.click()
       await page.setBodyDimensions({ width: 1100, height: 540 })
       await expect
@@ -466,25 +469,34 @@ body002 = clone(body001)
       await editor.expectEditor.toContain('length = 12mm')
       await editor.expectEditor.toContain('tagStart = $startFace')
       await scene.settled()
-      await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'false')
+      await expect(toolbar.extrudeButton).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      )
 
       await toolbar.openFeatureTreePane()
       const operation = await toolbar.getFeatureTreeOperation('Extrude', 0)
       await operation.dblclick()
-      await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'true')
+      await expect(toolbar.extrudeButton).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
       await expect(length).toHaveText('12mm')
       await expect(length).toBeFocused()
       await expect(tagStart).toBeHidden()
       await more.click()
       await expect(tagStart).toHaveValue('startFace')
-      await modelingDialog.fillInput('length', '99mm')
+      await length.fill('99mm')
       await modelingDialog.cancelButton.click()
       await expect(dialog).not.toBeAttached()
-      await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'false')
+      await expect(toolbar.extrudeButton).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      )
       await operation.dblclick()
       await expect(length).toHaveText('12mm')
       await expect(tagStart).toBeHidden()
-      await modelingDialog.fillInput('length', '8mm')
+      await length.fill('8mm')
       await expect(submit).toBeEnabled()
       await submit.click()
       await expect(dialog).not.toBeAttached()
