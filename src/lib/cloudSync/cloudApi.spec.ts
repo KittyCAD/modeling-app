@@ -293,28 +293,19 @@ describe('remote project pagination', () => {
       headers: { 'content-type': 'application/json' },
     })
 
-  test('supports the legacy complete array without changing its request URL', async () => {
+  test('rejects a legacy array instead of publishing an incomplete inventory', async () => {
     const fetchMock = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(json([{ id: 'one' }]))
     vi.stubGlobal('fetch', fetchMock)
-    await expect(listRemoteProjects(config)).resolves.toEqual([{ id: 'one' }])
+    await expect(listRemoteProjects(config)).rejects.toMatchObject({
+      message: expect.stringContaining('Invalid remote project'),
+      context: { stage: 'network', point: 'parse-cloud-api-response' },
+    })
     expect(fetchMock).toHaveBeenCalledExactlyOnceWith(
       'https://example.test/user/projects',
       expect.anything()
     )
-  })
-
-  test('preserves the legacy array without changing its contents', async () => {
-    const projects = [
-      { id: 'one', title: 'first' },
-      { id: 'one', title: 'second' },
-    ]
-    vi.stubGlobal(
-      'fetch',
-      vi.fn<typeof fetch>().mockResolvedValueOnce(json(projects))
-    )
-    await expect(listRemoteProjects(config)).resolves.toEqual(projects)
   })
 
   test('loads more than 100 projects and throttles/authenticates every page', async () => {
@@ -362,7 +353,7 @@ describe('remote project pagination', () => {
     ])
   })
 
-  test('uses a complete legacy response if the API rolls back mid-refresh', async () => {
+  test('rejects a legacy response on a later page without returning partial inventory', async () => {
     vi.stubGlobal(
       'fetch',
       vi
@@ -372,9 +363,10 @@ describe('remote project pagination', () => {
         )
         .mockResolvedValueOnce(json([{ id: 'current' }]))
     )
-    await expect(listRemoteProjects(config)).resolves.toEqual([
-      { id: 'current' },
-    ])
+    await expect(listRemoteProjects(config)).rejects.toMatchObject({
+      message: expect.stringContaining('Invalid remote project'),
+      context: { stage: 'network', point: 'parse-cloud-api-response' },
+    })
   })
 
   test('rejects the entire inventory when a later page fails, preserving retry metadata', async () => {

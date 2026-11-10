@@ -1,5 +1,3 @@
-import { unwrapSceneCommandResponse } from '@src/lib/engineConnection/utils'
-import { resolveDistanceSelections } from '@src/lib/gdtDistanceSelections'
 import type { KclManager } from '@src/lang/KclManager'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
@@ -29,9 +27,7 @@ import {
   recast,
 } from '@src/lang/wasm'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type RustContext from '@src/lib/rustContext'
 import {
   clonedRegionBody,
@@ -295,7 +291,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $seg02')
       expect(newCode).toContain('tag = $seg03')
       // Should create three separate GDT annotations (one per face)
-      const gdtCalls = newCode.match(/note\d{3} = gdt::flatness/g)
+      const gdtCalls = newCode.match(/annotation\d{3} = gdt::flatness/g)
       expect(gdtCalls).toHaveLength(3)
       // Verify each face has its own annotation
       expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
@@ -1475,156 +1471,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addDistanceGdt', () => {
-    it.each(['primitive', 'face reference'] as const)(
-      'generates a distance between %s hole rims on the same body without tolerance',
-      async (route) => {
-        const twoHoles = `@settings(defaultLengthUnit = mm, kclVersion = 2)
-holeSketch = sketch(on = XY) {
-  outer = circle(start = [20mm, 0mm], center = [0mm, 0mm])
-  leftHole = circle(start = [-3mm, 0mm], center = [-6mm, 0mm])
-  rightHole = circle(start = [9mm, 0mm], center = [6mm, 0mm])
-}
-plateRegion = region(point = [0mm, 10mm], sketch = holeSketch)
-plate = extrude(plateRegion, length = 5mm)`
-        const { artifactGraph, ast } = await executeCode(
-          twoHoles,
-          instanceInThisFile,
-          kclManagerInThisFile
-        )
-        const bodies = [...artifactGraph.values()].filter(
-          (artifact) => artifact.type === 'sweep'
-        )
-        expect(bodies).toHaveLength(1)
-        const objects: Selections = {
-          graphSelections: [],
-          otherSelections: [],
-        }
-        const cap = [...artifactGraph.values()].find(
-          (artifact) => artifact.type === 'cap' && artifact.subType === 'end'
-        )
-        const walls = [...artifactGraph.values()].filter(
-          (artifact) => artifact.type === 'wall'
-        )
-        expect(cap).toBeDefined()
-        expect(walls).toHaveLength(3)
-        if (route === 'face reference') {
-          objects.graphSelections = walls.slice(1).map((wall) => ({
-            entityRef: { type: 'edge', side_faces: [cap!.id, wall.id] },
-          }))
-        } else {
-          // A sweep artifact identifies the extrusion command; a region's
-          // engine body can retain the sketch ID instead.
-          const parent = unwrapSceneCommandResponse(
-            await engineCommandManagerInThisFile.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: crypto.randomUUID(),
-              cmd: { type: 'entity_get_parent_id', entity_id: cap!.id },
-            })
-          )
-          if (
-            !isModelingResponse(parent) ||
-            parent.resp.data.modeling_response.type !== 'entity_get_parent_id'
-          )
-            throw new Error(`Missing hole rim body: ${JSON.stringify(parent)}`)
-          const bodyId = parent.resp.data.modeling_response.data.entity_id
-          for (const wall of walls.slice(1)) {
-            const response = unwrapSceneCommandResponse(
-              await engineCommandManagerInThisFile.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: crypto.randomUUID(),
-                cmd: {
-                  type: 'solid3d_get_common_edge',
-                  object_id: bodyId,
-                  face_ids: [cap!.id, wall.id],
-                },
-              })
-            )
-            if (
-              !isModelingResponse(response) ||
-              response.resp.data.modeling_response.type !==
-                'solid3d_get_common_edge'
-            )
-              throw new Error(
-                `Missing hole rim edge: ${JSON.stringify(response)}`
-              )
-            const id = response.resp.data.modeling_response.data.edge
-            if (!id) throw new Error('Missing hole rim edge ID')
-            objects.otherSelections.push({
-              type: 'enginePrimitive',
-              primitiveType: 'edge',
-              primitiveIndex: 0,
-              parentEntityId: bodyId,
-              entityId: id,
-            })
-          }
-        }
-        const resolved = await resolveDistanceSelections(
-          objects,
-          artifactGraph,
-          kclManagerInThisFile.engineCommandManager
-        )
-        if (err(resolved)) throw resolved
-        const result = addDistanceGdt({
-          ast,
-          artifactGraph,
-          objects: resolved.selections,
-          edgeFaceSelections: resolved.faces,
-          wasmInstance: instanceInThisFile,
-        })
-        if (err(result)) throw result
-        const code = recast(result.modifiedAst, instanceInThisFile)
-        if (err(code)) throw code
-        expect(code).not.toContain('edgeId(')
-        expect(code).not.toContain('getCommonEdge(')
-        expect(code).toContain('from = {')
-        expect(code).toContain('to = {')
-        expect(code.match(/sideFaces = \[/g)).toHaveLength(2)
-        expect(code).not.toContain('tolerance =')
-        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-      }
-    )
-
-    it.each(['edge length', 'between faces'])(
-      'generates literal bounds-based placement without tolerance for %s through the command flow',
-      async (measurement) => {
-        const { artifactGraph, ast } = await executeCode(
-          box,
-          instanceInThisFile,
-          kclManagerInThisFile
-        )
-        const targets = [...artifactGraph.values()]
-          .filter(
-            (artifact) =>
-              artifact.type ===
-              (measurement === 'edge length' ? 'sweepEdge' : 'wall')
-          )
-          .slice(0, measurement === 'edge length' ? 1 : 2)
-        expect(targets).toHaveLength(measurement === 'edge length' ? 1 : 2)
-        const fontSize = await getKclCommandValue(
-          '2mm',
-          instanceInThisFile,
-          rustContextInThisFile
-        )
-        const result = await modelingCommandCodemods['GDT Distance'].run({
-          args: {
-            objects: createSelectionFromArtifacts(targets, artifactGraph),
-            fontSize,
-            framePlane: 'XY',
-          },
-          ast,
-          kclManager: kclManagerInThisFile,
-          wasmInstance: instanceInThisFile,
-        })
-        if (err(result)) throw result
-        const code = recast(result.modifiedAst, instanceInThisFile)
-        if (err(code)) throw code
-        expect(code).toMatch(/framePosition = \[0mm, -?[\d.]+mm\]/)
-        expect(code).not.toContain('tolerance =')
-        expect(code).toContain('fontSize = 2mm')
-        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-      }
-    )
-
     it('should omit an unspecified tolerance', async () => {
       const { artifactGraph, ast } = await executeCode(
         box,
@@ -2273,7 +2119,7 @@ plate = extrude(plateRegion, length = 5mm)`
       if (err(newCode)) throw newCode
 
       // A note is standalone: no faces/edges selection, just the text.
-      expect(newCode).toContain('note001 = gdt::note(note = "Note:")')
+      expect(newCode).toContain('annotation001 = gdt::note(note = "Note:")')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

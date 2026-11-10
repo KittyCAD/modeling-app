@@ -15,13 +15,6 @@ export const PING_INTERVAL_MS = 1_000
 
 export type ModelTypes = OkModelingCmdResponse['type']
 
-/** Scene commands can return either a single response or a one-element array. */
-export function unwrapSceneCommandResponse(
-  response: WebSocketResponse | [WebSocketResponse] | null
-): WebSocketResponse | null {
-  return isArray(response) ? response[0] : response
-}
-
 /** Normalized result for engine commands whose successful response carries data. */
 export type ModelingDataResult =
   | { type: 'data'; data: unknown }
@@ -103,6 +96,14 @@ export function isHighlightSetEntity_type(
   data: any
 ): data is HighlightSetEntity {
   return data.entity_id && data.sequence
+}
+
+export function isExecutionBoundaryCommand(command: EngineCommand): boolean {
+  return (
+    command.type === 'modeling_cmd_req' &&
+    (command.cmd.type === 'begin_execution' ||
+      command.cmd.type === 'end_execution')
+  )
 }
 
 export type Value<T, U> = U extends undefined

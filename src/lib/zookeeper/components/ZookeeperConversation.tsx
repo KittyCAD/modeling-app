@@ -10,11 +10,14 @@ import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
+import { isImageMimetype } from '@src/lib/mimeTypes'
+import { fileNameHasExtension, getEXTWithPeriod } from '@src/lib/paths'
+import { dataUrlToFile } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import { parseZookeeperActivity } from '@src/lib/zookeeper/activityMessages'
+import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
 import type { QueuedMessage } from '@src/lib/zookeeper/registry/controller'
@@ -27,6 +30,7 @@ import {
   type ZookeeperAttachmentFetchState,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import {
   activateZoodleRuntimeExtension,
   deactivateZoodleRuntimeExtension,
@@ -447,9 +451,12 @@ export const ZookeeperConversationInput = (
   const onCaptureScreenshot = () => {
     if (props.disabled) return
     try {
-      const dataUrl = takeViewportScreenshot()
+      const dataUrl = registry.get(viewportScreenshotService).capture()
       if (!dataUrl) return
-      appendDataUrlAttachment(dataUrl, 'viewport-screenshot.png')
+      appendDataUrlAttachment(
+        dataUrl,
+        `viewport-screenshot-${crypto.randomUUID()}.png`
+      )
     } catch (e) {
       console.error('Failed to capture viewport screenshot', e)
     }
@@ -463,7 +470,7 @@ export const ZookeeperConversationInput = (
 
     if (props.disabled) return
     try {
-      const dataUrl = takeViewportScreenshot()
+      const dataUrl = registry.get(viewportScreenshotService).capture()
       if (!dataUrl) return
       setIsZoodleActive(true)
       activateZoodleRuntimeExtension(registry, {
@@ -472,7 +479,7 @@ export const ZookeeperConversationInput = (
         onSend: (annotatedDataUrl) => {
           appendDataUrlAttachment(
             annotatedDataUrl,
-            'annotated-viewport-screenshot.png'
+            `annotated-viewport-screenshot-${crypto.randomUUID()}.png`
           )
           stopZoodleRuntimeExtension()
         },
@@ -540,7 +547,18 @@ export const ZookeeperConversationInput = (
     const files = Array.from(e.clipboardData.files)
     if (files.length > 0) {
       e.preventDefault()
-      appendAttachments(files)
+      // Clipboard image names can repeat across prompts.
+      const pastedFiles = files.map((file) => {
+        if (!isImageMimetype(file.type)) return file
+        const extension = fileNameHasExtension(file.name)
+          ? (getEXTWithPeriod(file.name) ?? '')
+          : ''
+        return new File([file], `image-${crypto.randomUUID()}${extension}`, {
+          type: file.type,
+          lastModified: file.lastModified,
+        })
+      })
+      appendAttachments(pastedFiles)
       return
     }
 
@@ -621,18 +639,27 @@ export const ZookeeperConversationInput = (
             {attachments.map(({ file, isPastedText }, index) => (
               <div
                 key={`${file.name}-${file.lastModified}-${file.size}`}
-                className="relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs py-1 pl-2 pr-8"
+                className={`relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs ${isImageMimetype(file.type) ? '' : 'py-1 pl-2 pr-8'}`}
                 title={file.name}
               >
-                <ZookeeperAttachmentPreview
+                <ZookeeperAttachment
                   file={file}
-                  isPastedText={isPastedText}
-                />
+                  className="m-0 flex min-w-0 items-center gap-1 border-0 bg-transparent p-0 text-left text-xs focus-visible:ring-2 focus-visible:ring-ml-green"
+                >
+                  <ZookeeperAttachmentPreview
+                    file={file}
+                    isPastedText={isPastedText}
+                  />
+                </ZookeeperAttachment>
                 <button
                   type="button"
                   onClick={() => onRemoveAttachment(index)}
                   className="group absolute right-0 top-0 m-0 flex h-6 w-6 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
-                  aria-label={`Remove ${file.name}`}
+                  aria-label={
+                    isImageMimetype(file.type)
+                      ? `Remove image ${index + 1}`
+                      : `Remove ${file.name}`
+                  }
                 >
                   <CustomIcon
                     name="close"
@@ -719,7 +746,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     shouldFollowActivityRef.current = true
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
-      behavior: 'auto',
+      behavior: 'instant',
     })
   }, [exchangesLength])
 
@@ -744,7 +771,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     if (!isEndOfStream || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: 'instant',
     })
   }, [isEndOfStream])
 
