@@ -1,3 +1,4 @@
+import { applyFaceDepthBiasDeferred } from '@src/clientSideScene/localRenderer/faceDepthBias'
 import type {
   EntityReference,
   EntityType,
@@ -1358,6 +1359,15 @@ export class LocalRenderer {
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
       this.onModelLoadSettled?.(true)
+      const model = gltf.scene
+      const isModelCurrent = () => !this.disposed && this.currentModel === model
+      void applyFaceDepthBiasDeferred(model, isModelCurrent)
+        .then((applied) => {
+          if (!applied || !isModelCurrent()) return
+          this.rebuildSelectionTargets()
+          this.invalidateBaseRender()
+        })
+        .catch(reportRejection)
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)
     }
