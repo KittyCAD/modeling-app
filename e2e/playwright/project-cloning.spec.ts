@@ -172,13 +172,16 @@ async function prepare(
         name: `Open ${destinationLibrary.title} library`,
         exact: true,
       })
-      await expect(library).toBeVisible()
       await library.click()
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+        destinationLibrary.title
+      )
       let title = 'Original'
       for (const nextTitle of ['Renamed clone', 'Original']) {
         const clonedCard = page.getByTestId('project-link').filter({
           has: page.getByText(title, { exact: true }),
         })
+        await expect(clonedCard).toHaveCount(1)
         await expect(clonedCard).toBeVisible()
         await clonedCard.click({ button: 'right' })
         await page.getByTestId('project-card-context-rename').click()
