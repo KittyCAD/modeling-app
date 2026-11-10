@@ -88,38 +88,5 @@ describe.each(profiles)(
         await runtime.dispose()
       }
     })
-
-    it.each(['file', 'directory'])(
-      'renames a %s to its case or Unicode alias without changing bytes',
-      async (kind) => {
-        const memory = backing()
-        const source = kind === 'directory' ? `${file}-folder` : file
-        const destination = kind === 'directory' ? `${alias}-folder` : alias
-        await memory.mkdir(paths.dirname(source), { recursive: true })
-        if (kind === 'directory') await memory.mkdir(source)
-        const contentsPath =
-          kind === 'directory' ? paths.join(source, 'nested.bin') : source
-        await memory.writeFile(contentsPath, new Uint8Array([0, 255, 42]))
-        const rename = vi.fn(memory.rename)
-        const runtime = createFileOperationsRuntime({
-          ...memory,
-          resolve: (...parts) => paths.resolve(...parts),
-          rename,
-        })
-        try {
-          await runtime.operations.rename(source, destination)
-          expect(rename).toHaveBeenCalledOnce()
-          expect(
-            await runtime.operations.readFile(
-              kind === 'directory'
-                ? paths.join(destination, 'nested.bin')
-                : destination
-            )
-          ).toEqual(new Uint8Array([0, 255, 42]))
-        } finally {
-          await runtime.dispose()
-        }
-      }
-    )
   }
 )

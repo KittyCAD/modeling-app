@@ -29,7 +29,12 @@ it.each([
           expect(
             new Uint8Array(await runtime.operations.readFile(destination))
           ).toEqual(bytes)
-          expect(await runtime.operations.readDirectory(root)).toHaveLength(1)
+          // Native volumes may normalize Unicode, but ASCII casing must follow the requested name.
+          expect(
+            (await runtime.operations.readDirectory(root)).map((name) =>
+              name.normalize('NFC')
+            )
+          ).toEqual([to.normalize('NFC')])
           await runtime.operations.remove(destination)
         }),
         { numRuns: 30 }
