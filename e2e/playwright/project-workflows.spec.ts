@@ -230,42 +230,69 @@ async function editThroughUI(page: Page, code: string) {
 }
 
 async function expectEditor(page: Page, code: string) {
+  await page.locator('.cm-content').first().waitFor({ state: 'visible' })
   await expect(page.locator('.cm-content').first()).toHaveText(code, {
     useInnerText: true,
   })
 }
 
-test('waits for a project listing that takes seven seconds @web', async ({
-  page,
-  context,
-}, testInfo) => {
-  const storage = await prepareStorage('cloud', page, context, testInfo)
-  await storage.seed('Slow listing', '@settings(kclVersion = 3.0)\n')
-  const listing = Promise.withResolvers<undefined>()
-  let started = false
-  await context.route(/\/user\/projects(?:\?.*)?$/, async (route) => {
-    started = true
-    await listing.promise
-    await route.fallback()
+for (const cached of [false, true]) {
+  test(`waits for a seven-second project listing with ${cached ? 'cached cards' : 'an empty view'} @web`, async ({
+    page,
+    context,
+  }, testInfo) => {
+    const storage = await prepareStorage('cloud', page, context, testInfo)
+    await storage.seed('Slow listing', blankCode)
+    if (cached) {
+      await storage.refresh()
+      await storage.home.projectsLoaded()
+      await expect(
+        storage.home.projectCard.filter({ hasText: 'Slow listing' })
+      ).toBeVisible()
+      await storage.seed('Added during refresh', blankCode)
+      const time = new Date()
+      await page.clock.install({ time })
+      await page.clock.pauseAt(new Date(time.getTime() + 1_000))
+      await expect(
+        page.getByRole('button', { name: 'Refresh projects' })
+      ).toBeEnabled()
+    }
+    const listing = Promise.withResolvers<undefined>()
+    let started = false
+    let released = false
+    await context.route(/\/user\/projects(?:\?.*)?$/, async (route) => {
+      started = true
+      await listing.promise
+      await route.fallback()
+    })
+    try {
+      if (cached)
+        await page.getByRole('button', { name: 'Refresh projects' }).click()
+      else await page.reload({ waitUntil: 'domcontentloaded' })
+      await expect.poll(() => started).toBe(true)
+      await expect(
+        page.getByRole('status', { name: 'Loading projects', exact: true })
+      ).toBeVisible()
+      // This exercises the runner's readiness budget, which browser time cannot advance.
+      await Promise.all([
+        storage.home.projectsLoaded().then(() => expect(released).toBe(true)),
+        delay(7_000).then(async () => {
+          released = true
+          listing.resolve(undefined)
+          if (cached) await page.clock.resume()
+        }),
+      ])
+      await expect(
+        storage.home.projectCard.filter({
+          hasText: cached ? 'Added during refresh' : 'Slow listing',
+        })
+      ).toBeVisible()
+    } finally {
+      listing.resolve(undefined)
+      if (cached) await page.clock.resume()
+    }
   })
-  try {
-    await page.reload({ waitUntil: 'domcontentloaded' })
-    await expect.poll(() => started).toBe(true)
-    await expect(
-      page.getByRole('status', { name: 'Loading projects', exact: true })
-    ).toBeVisible()
-    // This exercises the runner's readiness budget, which browser time cannot advance.
-    await Promise.all([
-      storage.home.projectsLoaded(),
-      delay(7_000).then(() => listing.resolve(undefined)),
-    ])
-    await expect(
-      storage.home.projectCard.filter({ hasText: 'Slow listing' })
-    ).toBeVisible()
-  } finally {
-    listing.resolve(undefined)
-  }
-})
+}
 
 test('polls cloud project membership, pauses offline and stops outside the projects view @web', async ({
   page,
