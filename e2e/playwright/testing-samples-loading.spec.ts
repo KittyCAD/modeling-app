@@ -156,6 +156,8 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     page,
     cmdBar,
   }) => {
+    await waitForWebKitBillingToSettle(page)
+
     await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
 
     // Home creates and opens a project before the file route applies its layout.
