@@ -337,7 +337,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           console.warn(e)
           setShowManualConnect(true)
         })
-
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

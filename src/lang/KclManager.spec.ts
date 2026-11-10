@@ -783,9 +783,14 @@ describe('KclManager live operation updates', () => {
     }
   )
 
-  it.each([false, true])(
-    'routes generated thumbnails through the project session (cloud: %s)',
-    async (cloud) => {
+  it.each([
+    { cloud: false, localRenderer: false },
+    { cloud: true, localRenderer: false },
+    { cloud: false, localRenderer: true },
+    { cloud: true, localRenderer: true },
+  ])(
+    'routes generated thumbnails through the project session (cloud: $cloud, local renderer: $localRenderer)',
+    async ({ cloud, localRenderer }) => {
       const { app } = createKclManagerTestHarness()
       const originalDirectory = projectFsManager.dir
       const thumbnail = vi
@@ -808,6 +813,11 @@ describe('KclManager live operation updates', () => {
         )
         projectFsManager.dir = metadata.path
         editor.engineCommandManager.started = true
+        vi.spyOn(
+          editor.engineCommandManager,
+          'geometryOnly',
+          'get'
+        ).mockReturnValue(localRenderer)
         vi.spyOn(editor.rustContext, 'execute').mockResolvedValue(
           editor.execState
         )
@@ -816,8 +826,19 @@ describe('KclManager live operation updates', () => {
             shouldExecute: false,
             shouldWriteToDisk: false,
           })
+        const onExecutionDone = vi.fn(() => {
+          expect(editor.isExecuting).toBe(false)
+        })
+        editor.addEventListener('execution-done', onExecutionDone)
         edit('@settings(kclVersion = 3.0)\nwidth = 1\n')
         await editor.executeAst({ ast: createEmptyAst(), executionId: 101 })
+        expect(onExecutionDone).toHaveBeenCalledOnce()
+        const capture = editor.captureProjectThumbnail
+        expect(capture).toEqual(expect.any(Function))
+        if (localRenderer) {
+          expect(thumbnail).not.toHaveBeenCalled()
+          capture?.(document.createElement('canvas'))
+        }
         expect(thumbnail).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({ writeThumbnail: expect.any(Function) })
         )
@@ -826,12 +847,14 @@ describe('KclManager live operation updates', () => {
         thumbnail.mockClear()
         await editor.executeAst({ ast: createEmptyAst() })
         expect(thumbnail).not.toHaveBeenCalled()
+        expect(editor.captureProjectThumbnail).toBeUndefined()
         edit('@settings(kclVersion = 3.0)\nwidth = 2\n')
         await editor.executeAst({
           ast: createEmptyAst(),
           updateThumbnail: false,
         })
         expect(thumbnail).not.toHaveBeenCalled()
+        expect(editor.captureProjectThumbnail).toBeUndefined()
         editor.path = '/project/other.kcl'
         expect(isCurrent()).toBe(false)
         await editor.executeAst({ ast: createEmptyAst() })
@@ -842,6 +865,8 @@ describe('KclManager live operation updates', () => {
         }
         edit('@settings(kclVersion = 3.0)\nwidth = 3\n')
         await editor.executeAst({ ast: createEmptyAst() })
+        if (localRenderer)
+          editor.captureProjectThumbnail?.(document.createElement('canvas'))
         expect(thumbnail).toHaveBeenCalledOnce()
       } finally {
         projectFsManager.dir = originalDirectory

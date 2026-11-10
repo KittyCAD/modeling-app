@@ -441,6 +441,7 @@ export class KclManager extends File {
   private lastExecutedCode: string = ''
   private sketchSourceNeedsRefresh = false
   lastSuccessfulCode: string = ''
+  captureProjectThumbnail?: (renderedCanvas?: HTMLCanvasElement) => void
   get code(): string {
     return this.editorView.state.doc.toString()
   }
@@ -2404,6 +2405,7 @@ export class KclManager extends File {
       this.logs = []
       this.setSketchSolveDiagnostics([])
       this.beginLiveOperationUpdates(currentExecutionId)
+      this.captureProjectThumbnail = undefined
 
       const codeThatExecuted = this.code
       const { logs, errors, execState, isInterrupted } = await executeAst({
@@ -2545,15 +2547,18 @@ export class KclManager extends File {
         !isInterrupted &&
         errors.length === 0 &&
         project &&
-        isCurrentEntrypoint() &&
-        !this.engineCommandManager.geometryOnly
+        isCurrentEntrypoint()
       ) {
-        createProjectThumbnail({
-          fileOperations: this.systemDeps.fileOperations,
-          projectDirectoryWithoutEndingSlash: project.path,
-          writeThumbnail: this.systemDeps.projectSession?.writeThumbnail,
-          isCurrent: isCurrentEntrypoint,
-        })
+        this.captureProjectThumbnail = (renderedCanvas) =>
+          createProjectThumbnail({
+            fileOperations: this.systemDeps.fileOperations,
+            projectDirectoryWithoutEndingSlash: project.path,
+            writeThumbnail: this.systemDeps.projectSession?.writeThumbnail,
+            isCurrent: isCurrentEntrypoint,
+            renderedCanvas,
+          })
+        if (!this.engineCommandManager.geometryOnly)
+          this.captureProjectThumbnail()
       }
 
       if (isCurrent()) this.isExecuting = false
