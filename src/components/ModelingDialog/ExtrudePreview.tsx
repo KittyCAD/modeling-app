@@ -40,7 +40,6 @@ export function ExtrudePreview({
 }) {
   useSignals()
   const app = useApp()
-  const [enabled, setEnabled] = useState(false)
   const [status, setStatus] = useState('')
   const [invocation] = useState(() => context)
   const queue = useRef<
@@ -106,7 +105,7 @@ export function ExtrudePreview({
   )
 
   useEffect(() => {
-    if (!enabled || !renderer || !token || !validBaseline) return
+    if (!IS_STAGING_OR_DEBUG || !renderer || !token || !validBaseline) return
     const abort = new AbortController()
     const executor = createPreviewExecutor(kcl, token, abort.signal)
     // The queue awaits the same promise; observe early connection failures too.
@@ -212,7 +211,6 @@ export function ExtrudePreview({
       )
     }
   }, [
-    enabled,
     renderer,
     token,
     kcl,
@@ -236,37 +234,28 @@ export function ExtrudePreview({
     }
     setStatus('Updating preview...')
     pending.update(JSON.parse(draftKey))
-  }, [draftKey, enabled, supported, unavailable, renderer, source])
+  }, [
+    draftKey,
+    supported,
+    unavailable,
+    renderer,
+    source,
+    token,
+    validBaseline,
+    engineSession,
+    generation,
+    executing,
+  ])
 
   if (!IS_STAGING_OR_DEBUG) return null
   return (
     <div className="flex flex-col gap-1 border-t border-chalkboard-30 pt-2">
-      <label className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          checked={enabled}
-          disabled={!enabled && (!supported || !validBaseline)}
-          onChange={(event) => {
-            if (
-              event.target.checked &&
-              !invocation.argumentsToSubmit.nodeToEdit
-            ) {
-              save('method', 'NEW')
-              save('bodyType', 'SOLID')
-            }
-            setEnabled(event.target.checked)
-          }}
-        />
-        Live preview (experimental)
-      </label>
-      {(enabled || unavailable) && (
-        <output aria-live="polite">
-          {!validBaseline
-            ? 'The model changed. Reopen Extrude to preview.'
-            : unavailable || status}
-        </output>
-      )}
-      {enabled &&
+      <output aria-live="polite">
+        {!validBaseline
+          ? 'The model changed. Reopen Extrude to preview.'
+          : unavailable || status}
+      </output>
+      {supported &&
         validBaseline &&
         frame &&
         distance &&
@@ -350,7 +339,7 @@ function DistanceHandle({
         ref={ref}
         type="button"
         aria-label="Drag extrusion distance"
-        className="absolute z-50 -translate-x-1/2 -translate-y-1/2 touch-none rounded-full border border-primary bg-primary px-3 py-1 text-xs text-white"
+        className="pointer-events-auto absolute z-50 -translate-x-1/2 -translate-y-1/2 cursor-ns-resize touch-none rounded-full border border-primary bg-primary px-3 py-1 text-xs text-white active:cursor-grabbing"
         onPointerDown={(event) => {
           if (event.button !== 0) return
           event.preventDefault()

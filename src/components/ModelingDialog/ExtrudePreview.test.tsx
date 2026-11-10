@@ -134,9 +134,7 @@ function fixture(localRendering = true) {
 it('previews an existing extrusion without creating a new operation or changing source', async () => {
   const { Dialog, kcl, renderer, nodeToEdit } = fixture()
   const view = render(<Dialog />)
-  fireEvent.click(
-    screen.getByRole('checkbox', { name: 'Live preview (experimental)' })
-  )
+  expect(screen.queryByRole('checkbox')).toBeNull()
   await waitFor(() =>
     expect(screen.getByRole('status').textContent).toBe('Preview (5mm)')
   )
@@ -165,5 +163,49 @@ it('explains the missing preview when local rendering is off', () => {
   expect(screen.getByRole('status').textContent).toBe(
     'Enable Local Rendering in Settings to preview.'
   )
-  expect(screen.getByRole<HTMLInputElement>('checkbox').disabled).toBe(true)
+  expect(screen.queryByRole('checkbox')).toBeNull()
+})
+
+it('updates the draft distance while dragging and leaves source untouched', async () => {
+  const { Dialog, kcl } = fixture()
+  vi.spyOn(
+    kcl.sceneInfra.camControls.domElement,
+    'getBoundingClientRect'
+  ).mockReturnValue({
+    x: 0,
+    y: 0,
+    left: 0,
+    top: 0,
+    right: 1000,
+    bottom: 800,
+    width: 1000,
+    height: 800,
+    toJSON: () => ({}),
+  })
+  render(<Dialog />)
+  await waitFor(() =>
+    expect(screen.getByRole('status').textContent).toBe('Preview (5mm)')
+  )
+  const handle = screen.getByRole('button', { name: 'Drag extrusion distance' })
+  const capture = vi.fn()
+  handle.setPointerCapture = capture
+  const pointer = (type: string, y: number) => {
+    const event = new MouseEvent(type, {
+      bubbles: true,
+      button: 0,
+      clientX: 500,
+      clientY: y,
+    })
+    Object.defineProperty(event, 'pointerId', { value: 1 })
+    fireEvent(handle, event)
+  }
+  pointer('pointerdown', 400)
+  pointer('pointermove', 360)
+  pointer('pointerup', 360)
+  await waitFor(() => expect(handle.textContent).not.toBe('5mm ↕'))
+  expect(capture).toHaveBeenCalledWith(1)
+  await waitFor(() =>
+    expect(screen.getByRole('status').textContent).toMatch(/^Preview \((?!5mm)/)
+  )
+  expect(kcl.code).toBe('original')
 })

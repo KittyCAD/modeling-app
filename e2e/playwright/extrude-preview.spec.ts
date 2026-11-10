@@ -22,9 +22,11 @@ test('previews extrusion distance without writing until Submit @web @localRender
   await toolbar.extrudeButton.click()
   await editor.selectText('region001 = region')
   await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
-  await modelingDialog.locator
-    .getByRole('checkbox', { name: 'Live preview (experimental)' })
-    .check()
+  await expect(
+    modelingDialog.locator.getByRole('checkbox', {
+      name: 'Live preview (experimental)',
+    })
+  ).not.toBeAttached()
   const status = modelingDialog.locator.getByRole('status')
   await expect(status).toHaveText(/^Preview \(/, { timeout: 60_000 })
   const length = modelingDialog.input('length')
@@ -33,6 +35,20 @@ test('previews extrusion distance without writing until Submit @web @localRender
   await editor.expectEditor.toBe(original)
   const handle = page.getByRole('button', { name: 'Drag extrusion distance' })
   await expect(handle).toContainText('12mm')
+  await expect(handle).toHaveCSS('pointer-events', 'auto')
+  await expect
+    .poll(() =>
+      handle.evaluate((element) => {
+        const rect = element.getBoundingClientRect()
+        return element.contains(
+          document.elementFromPoint(
+            rect.x + rect.width / 2,
+            rect.y + rect.height / 2
+          )
+        )
+      })
+    )
+    .toBe(true)
   const bounds = await handle.boundingBox()
   if (!bounds) throw new Error('Missing extrusion distance handle')
   await page.mouse.move(
@@ -54,9 +70,6 @@ test('previews extrusion distance without writing until Submit @web @localRender
 
   await toolbar.extrudeButton.click()
   await editor.selectText('region001 = region')
-  await modelingDialog.locator
-    .getByRole('checkbox', { name: 'Live preview (experimental)' })
-    .check()
   await modelingDialog.input('length').fill('8mm')
   await expect(modelingDialog.locator.getByRole('status')).toHaveText(
     'Preview (8mm)',
@@ -67,9 +80,6 @@ test('previews extrusion distance without writing until Submit @web @localRender
   await editor.expectEditor.toContain('length = 8mm')
   const committed = await editor.getCurrentCode()
   await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
-  await modelingDialog.locator
-    .getByRole('checkbox', { name: 'Live preview (experimental)' })
-    .check()
   await modelingDialog.input('length').fill('-12mm')
   await expect(modelingDialog.locator.getByRole('status')).toHaveText(
     'Preview (-12mm)',
