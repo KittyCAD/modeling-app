@@ -241,6 +241,11 @@ pub fn zoo_client(
     if let Some(addr) = engine_addr {
         client.set_base_url(addr);
     } else if let Ok(addr) = std::env::var("ZOO_HOST") {
+        if !(addr.starts_with("http://") || addr.starts_with("https://")) {
+            anyhow::bail!(
+                "ZOO_HOST should probably start with http:// (for local engines) or https:// (for cloud engines)"
+            )
+        }
         if let Ok(kittycad_host) = kittycad_host_env
             && kittycad_host != addr
         {
