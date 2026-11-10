@@ -24,6 +24,7 @@ vi.mock('@src/lib/isDesktop', () => ({
 }))
 
 vi.mock('@src/routes/utils', () => ({
+  APP_DOWNLOAD_PATH: 'design-studio/download',
   APP_VERSION: '1.0.0',
   getReleaseUrl: () =>
     'https://github.com/KittyCAD/modeling-app/releases/tag/v1.0.0',

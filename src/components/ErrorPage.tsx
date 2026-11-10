@@ -5,6 +5,7 @@ import UAParser from 'ua-parser-js'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { AutoUpdateStatus } from '@src/components/StatusBar/AutoUpdateStatus'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -12,7 +13,11 @@ import { PATHS } from '@src/lib/paths'
 import { isErr, reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
+import {
+  APP_DOWNLOAD_PATH,
+  APP_VERSION,
+  getReleaseUrl,
+} from '@src/routes/utils'
 
 const BROWSER_UPDATE_URL = 'https://browser-update.org/update-browser.html'
 const ITERATOR_TO_ARRAY_ERROR = '.toArray is not a function'
@@ -106,8 +111,8 @@ export const ErrorPage = () => {
   }, [browserCompatibilityError, error])
 
   return (
-    <div className="flex flex-col h-screen">
-      <section className="flex-1 flex flex-col justify-center max-w-full xl:max-w-4xl mx-auto">
+    <div className="flex flex-col items-center justify-center h-screen">
+      <section className="max-w-full xl:max-w-4xl mx-auto">
         <h1
           className="text-4xl mb-8 font-bold"
           data-testid={
@@ -125,7 +130,23 @@ export const ErrorPage = () => {
             ? 'Your browser is out of date and cannot open Zoo Design Studio projects. Update your browser or use the latest Chrome, Edge, Firefox, or Safari.'
             : "We're sorry, something went wrong. The error has been reported to our team."}
         </p>
-        <AutoUpdateStatus />
+        {isDesktop() && (
+          <div
+            role="group"
+            aria-label="App update"
+            className="flex items-center"
+          >
+            <ActionButton
+              Element="externalLink"
+              to={getReleaseUrl()}
+              className={defaultStatusBarItemClassNames}
+              title="View this version on GitHub"
+            >
+              v{APP_VERSION}
+            </ActionButton>
+            <AutoUpdateStatus />
+          </div>
+        )}
         <div className="flex justify-between gap-2 mt-6">
           {browserCompatibilityError ? (
             <>
