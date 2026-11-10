@@ -1,7 +1,7 @@
 import { computed, type ReadonlySignal, signal } from '@preact/signals-core'
 import { protect } from './protection'
 
-/** A live observation. Preact supplies dependency tracking and writable signals. */
+/** A readonly observation; Preact tracks reads of its `.value`. */
 export type Signal<T> = ReadonlySignal<T>
 
 /** Explicit reads admit constants and signals without inspecting value shapes. */
@@ -58,6 +58,8 @@ export class Facet<Input, Output> {
     if (existing) return existing
     const sources = signal<readonly Source<Input>[]>([])
     const debug = signal<readonly ContributionInfo[]>([])
+    // Each reconciliation stages its own sources. Only its commit publishes them;
+    // abandoning a failed attempt leaves the previously published sources intact.
     const pending = new WeakMap<
       object,
       {
@@ -129,8 +131,9 @@ export type Resolution<T> =
       readonly providers: readonly [Provider<T>, Provider<T>, ...Provider<T>[]]
     }
 
-/** A service is a facet whose composition requires exactly one provider. */
+/** `provide` uses this private symbol to obtain a registry-specific service facade. */
 const serviceSurface = Symbol('serviceSurface')
+/** A service resolves to missing, one capability, or conflicting providers. */
 export type Service<T extends object> = Facet<Provider<T>, Resolution<T>> & {
   readonly [serviceSurface]: (registry: CellRegistry, value: T) => T
 }
@@ -207,7 +210,10 @@ export function optional<T extends object>(
 /** A shared vocabulary. `satisfies Contract` preserves each token's own types. */
 export type Contract = Readonly<Record<string, Facet<never, unknown>>>
 
-/** Type-check each contribution before packaging it into a heterogeneous graph. */
+/**
+ * `Binding.install` registers sources through `contribute`, which checks each
+ * source against its Facet's input type. The Facet retains that typed pairing.
+ */
 export interface Sink {
   readonly origin: Origin
   readonly runtime?: CellRegistry
@@ -266,9 +272,10 @@ export interface Instance {
 }
 
 /**
- * One owned lifetime. Identity is the object; dependencies remain required while
- * mounted. Acquisition reveals children, so planning must never call create.
- * Replacement reconciles children without reacquiring or disposing their owner.
+ * One owned lifetime, identified by `key` when supplied or by this object otherwise.
+ * Declared dependencies remain required while mounted. Only `create` reveals
+ * children, so the planner cannot inspect them without acquiring resources.
+ * `replace` changes children while retaining the owner's instance and resources.
  */
 export interface Subtree {
   readonly key?: Key
