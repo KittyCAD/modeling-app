@@ -56,6 +56,20 @@ async function flushEditorAndThumbnailSaves(page: Page) {
   ).not.toBeAttached()
 }
 
+async function expectStoredThumbnail(
+  storage: Awaited<ReturnType<typeof prepareStorage>>,
+  root: string
+) {
+  await expect
+    .poll(() =>
+      storage.read(root, 'thumbnail.png').then(
+        (contents) => Boolean(contents),
+        () => false
+      )
+    )
+    .toBe(true)
+}
+
 async function createThroughHome(
   page: Page,
   home: HomePageFixture,
@@ -703,6 +717,7 @@ for (const kind of ['local', 'cloud'] as const) {
         await scene.settled()
         await openExistingSketch(toolbar, 'profile')
         await flushEditorAndThumbnailSaves(page)
+        await expectStoredThumbnail(storage, root)
         const savedBefore = await storage.read(root)
         const uploadsBefore = storage.remote.uploads.length
         const revisionBefore = storage.remote.projects.find((project) =>
@@ -890,14 +905,7 @@ for (const kind of ['local', 'cloud'] as const) {
         await scene.settled()
         await flushEditorAndThumbnailSaves(page)
         // Prove thumbnail generation is working before asserting that a refresh skips it.
-        await expect
-          .poll(() =>
-            storage.read(root, 'thumbnail.png').then(
-              (contents) => Boolean(contents),
-              () => false
-            )
-          )
-          .toBe(true)
+        await expectStoredThumbnail(storage, root)
         await openExistingSketch(toolbar, 'profile')
         await expect(
           page.locator('[data-handle="sketch-point-handle"]')
@@ -1025,6 +1033,10 @@ for (const kind of ['local', 'cloud'] as const) {
               })
           }
           await expectEditor(page, updatedCode)
+          if (removal.startsWith('editor'))
+            await page.evaluate(() =>
+              window.app.singletons.kclManager.flushPendingEditorExecution()
+            )
           await expect
             .poll(() =>
               page.evaluate(() =>
