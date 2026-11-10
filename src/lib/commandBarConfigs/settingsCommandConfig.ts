@@ -80,7 +80,8 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
   if (
     !valueArgPartialConfig ||
     shouldHideOnThisLevel ||
-    shouldHideOnThisPlatform
+    shouldHideOnThisPlatform ||
+    (setting.hideWhenDisabled && !setting.isEnabled(context))
   )
     return null
 
@@ -120,7 +121,11 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
     name: type,
     displayName: `Settings · ${type
       .split('.')
-      .map((segment) => formatSettingsLabel(segment))
+      .map((segment, index) =>
+        index === 1 && setting.title
+          ? setting.title
+          : formatSettingsLabel(segment)
+      )
       .join(' · ')}`,
     description: setting.description,
     groupId: 'settings',

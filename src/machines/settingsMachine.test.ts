@@ -22,6 +22,64 @@ vi.mock('react-hot-toast', () => ({ default: mockToast }))
 afterEach(() => vi.restoreAllMocks())
 
 describe('settingsMachine', () => {
+  it('updates the rendering style command when switching renderers', async () => {
+    const initialSettings = createSettings()
+    initialSettings.commandBar.includeSettings.user = true
+    const wasmInstancePromise = Promise.resolve({} as ModuleType)
+    const commandBarActor = createActor(commandBarMachine, {
+      input: {
+        commands: [],
+        wasmInstancePromise,
+        machineManager: {} as MachineManager,
+      },
+    }).start()
+    const actor = createActor(
+      settingsMachine.provide({
+        actors: {
+          loadUserSettings: fromPromise(async () => initialSettings),
+          persistSettings: fromPromise(async () => undefined),
+          watchSystemTheme: fromCallback(() => () => {}),
+        },
+      }),
+      {
+        input: {
+          ...initialSettings,
+          commandBarActor,
+          defaultProjectLibraries: [],
+          projectLibrarySettingDefaultPolicies: [],
+          extensionSettings: {},
+          fileOperations: testFileOperations,
+          wasmInstancePromise,
+        },
+      }
+    ).start()
+    const renderingCommand = () =>
+      commandBarActor
+        .getSnapshot()
+        .context.commands.find(
+          (command) => command.name === 'modeling.viewportRendering'
+        )
+
+    try {
+      await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+      expect(renderingCommand()?.displayName).toBe(
+        'Settings · modeling · Rendering style'
+      )
+
+      for (const local of [true, false, true]) {
+        actor.send({
+          type: 'set.modeling.useLocalRenderer',
+          data: { level: 'user', value: local },
+        })
+        await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+        expect(renderingCommand() !== undefined).toBe(!local)
+      }
+    } finally {
+      actor.stop()
+      commandBarActor.stop()
+    }
+  })
+
   it('keeps service dependencies out of settings values', () => {
     const settings = createSettings()
     const wasmInstancePromise = Promise.resolve({} as ModuleType)

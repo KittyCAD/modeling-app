@@ -476,6 +476,19 @@ export const settingsMachine = setup({
           ],
         },
 
+        'set.modeling.useLocalRenderer': {
+          target: 'persisting settings',
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            sendTo('registerCommands', ({ context }) => ({
+              type: 'update',
+              settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
+            })),
+          ],
+        },
+
         'set.modeling.defaultUnit': {
           target: 'persisting settings',
 

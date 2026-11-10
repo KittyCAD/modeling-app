@@ -1330,8 +1330,10 @@ export function setSettingsAtLevel(
 export function shouldHideSetting(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel,
+  settings: SettingsType,
   hasFeature?: (feature: Feature) => boolean
 ): boolean {
+  if (setting.hideWhenDisabled && !setting.isEnabled(settings)) return true
   // Async functions should have been resolved in loadAndValidateSettings,
   // but if we encounter one (shouldn't happen), default to hidden
   const hideOnPlatform = setting.hideOnPlatform
@@ -1360,9 +1362,15 @@ export function shouldHideSetting(
 export function shouldShowSettingInput(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel,
+  settings: SettingsType,
   hasFeature?: (feature: Feature) => boolean
 ): boolean {
-  const isHidden = shouldHideSetting(setting, settingsLevel, hasFeature)
+  const isHidden = shouldHideSetting(
+    setting,
+    settingsLevel,
+    settings,
+    hasFeature
+  )
   if (isHidden) {
     return false
   }

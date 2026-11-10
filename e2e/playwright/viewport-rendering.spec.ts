@@ -91,21 +91,38 @@ hide(profile)
       format: 'ratio',
     })
     await openSettings()
+    await expect(
+      page.getByRole('heading', { name: 'Rendering style', exact: true })
+    ).toBeVisible()
     await expect(rendering).toHaveValue('ssao')
+    const search = page.getByPlaceholder(/^Search settings/)
+    await search.fill('Rendering style')
+    await expect(
+      page.getByRole('option', { name: /Rendering style/ })
+    ).toBeVisible()
+    await search.press('Escape')
+    await search.fill('')
 
     const localRenderer = page.locator(
       'input[name="modeling-useLocalRenderer"]'
     )
     const localSSAO = page.locator('input[name="modeling-enableSSAO"]')
-    await expect(localSSAO).toBeDisabled()
+    await expect(page.getByTestId('enableSSAO')).toHaveCount(0)
     await page.locator('label').filter({ has: localRenderer }).click()
     await expect(localRenderer).toBeChecked()
-    await expect(rendering).toBeDisabled()
+    await expect(page.getByTestId('viewportRendering')).toHaveCount(0)
+    await search.fill('Rendering style')
+    await expect(
+      page.getByRole('option', { name: /Rendering style/ })
+    ).toHaveCount(0)
+    await search.press('Escape')
+    await search.fill('')
     await expect(localSSAO).toBeEnabled()
     await page.locator('label').filter({ has: localSSAO }).click()
     await expect(localSSAO).not.toBeChecked()
     await page.locator('label').filter({ has: localRenderer }).click()
     await expect(localRenderer).not.toBeChecked()
+    await expect(page.getByTestId('enableSSAO')).toHaveCount(0)
     await expect(rendering).toBeEnabled()
     await expect(rendering).toHaveValue('ssao')
     await page.waitForFunction(() =>
@@ -119,7 +136,12 @@ hide(profile)
     expect(modes).toEqual(['ssao'])
     await openSettings()
     await expect(rendering).toHaveValue('ssao')
-    await expect(localSSAO).not.toBeChecked()
+    await expect(page.getByTestId('enableSSAO')).toHaveCount(0)
+    expect(
+      await page.evaluate(
+        () => window.app.settings.get().modeling.enableSSAO.current
+      )
+    ).toBe(false)
     await expect(rendering.locator('option:checked')).toHaveText(/Default/)
     await page.getByRole('radio', { name: 'This project' }).click()
     await expect(rendering).toHaveCount(0)

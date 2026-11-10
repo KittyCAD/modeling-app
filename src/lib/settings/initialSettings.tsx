@@ -228,11 +228,13 @@ function createCoreSettings() {
         },
       }),
       viewportRendering: new Setting<ViewportRendering>({
+        title: 'Rendering style',
         hideOnLevel: 'project',
         defaultValue: 'ssao',
         description: 'Choose how streamed models look in the viewport.',
         validate: isViewportRendering,
         isEnabled: (context) => !context.modeling.useLocalRenderer.current,
+        hideWhenDisabled: true,
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) =>
@@ -255,6 +257,7 @@ function createCoreSettings() {
         validate: (v) => typeof v === 'boolean',
         // Only the local renderer lets users choose.
         isEnabled: (context) => context.modeling.useLocalRenderer.current,
+        hideWhenDisabled: true,
       }),
       /**
        * Whether the 3D scene is rendered on this device or streamed as video

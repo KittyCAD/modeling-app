@@ -26,7 +26,8 @@ export function SettingsSectionsList({
     ([_, categorySettings]) =>
       // Filter out categories that don't have any non-hidden settings
       Object.values(categorySettings).some(
-        (setting) => !shouldHideSetting(setting, searchParamTab, hasFeature)
+        (setting) =>
+          !shouldHideSetting(setting, searchParamTab, context, hasFeature)
       )
   )
 
