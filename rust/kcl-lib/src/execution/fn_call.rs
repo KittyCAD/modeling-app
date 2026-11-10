@@ -573,7 +573,7 @@ pub(super) struct CallState {
 impl FunctionBody {
     fn prep_mem(&self, exec_state: &mut ExecState) -> Result<(), KclError> {
         match self {
-            FunctionBody::Rust(_) => exec_state.mut_stack().push_new_root_env(true),
+            FunctionBody::Rust(_) => exec_state.mut_stack().push_new_env_for_builtin(),
             FunctionBody::Kcl(memory) => exec_state.mut_stack().push_new_env_for_call(*memory),
         }
     }
