@@ -1560,6 +1560,14 @@ export class KclManager extends File {
       this.path === path &&
       this.fileSelectionGeneration === generation
     if (!path) return
+    // Drafts belong to the live sketch; flushing them here can delay the next click.
+    if (
+      this.hasUnsavedLocalChanges() ||
+      this.timeoutWriter !== undefined ||
+      this.inFlightFileWrites.has(path) ||
+      this.fileSwitchSaves.has(path)
+    )
+      return
     if (!(await this.flushWriteToFile()))
       return Promise.reject(
         new Error('Save your current edits before adding sketch geometry.')
